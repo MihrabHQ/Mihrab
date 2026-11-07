@@ -41,6 +41,10 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private const ICON = 16;
     // Between rows, and between the time and its side columns.
     private const ROW_GAP = 4;
+    // Between the steps' row and the clock, as much of these as fits, the
+    // largest first: the clock stands apart from the rows above it.
+    private var _clockGaps as Array<Number> = [18, 14, 11, 8] as Array<Number>;
+    private var _clockGap as Number = 4;
     private const SIDE_GAP = 4;
     // Kept clear of the dial's edge, inside the ring.
     private const EDGE = 7;
@@ -500,7 +504,31 @@ class MihrabFaceView extends WatchUi.WatchFace {
                             if (staleVariants[s] == null && _staleText != null) {
                                 continue;
                             }
-                            if (place(c, m, o, s, beside == 1, clocks[c], mihrab[m] as Array, others[o], false, true)) {
+                            if (place(c, m, o, s, beside == 1, clocks[c], mihrab[m] as Array, others[o], false, false)) {
+                                // The arrangement fits. Now room above the
+                                // clock: the largest gap that fits, the rows
+                                // above in a smaller font if that is what it
+                                // takes, rather than the clock crowded.
+                                var keepO = o;
+                                for (var g = 0; g < _clockGaps.size(); g++) {
+                                    _clockGap = _clockGaps[g];
+                                    var found = false;
+                                    for (var o2 = o; o2 < others.size() && !found; o2++) {
+                                        if ((others[o2][15] as Array)[s] == null && _staleText != null) {
+                                            continue;
+                                        }
+                                        if (place(c, m, o2, s, beside == 1, clocks[c], mihrab[m] as Array, others[o2], false, false)) {
+                                            keepO = o2;
+                                            found = true;
+                                        }
+                                    }
+                                    if (found) {
+                                        break;
+                                    }
+                                    _clockGap = ROW_GAP;
+                                }
+                                place(c, m, keepO, s, beside == 1, clocks[c], mihrab[m] as Array, others[keepO], false, true);
+                                _clockGap = ROW_GAP;
                                 return;
                             }
                         }
@@ -668,7 +696,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
         bases[5] = y + stepsUp;
         ok = fit(stepsW / 2 + 1, y, bases[5] + stepsDown) && ok;
-        y = bases[5] + stepsDown + ROW_GAP;
+        y = bases[5] + stepsDown + _clockGap;
 
         // The clock row: the weather, the figures and the seconds, centred
         // together; the rule under the figures.
