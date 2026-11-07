@@ -169,6 +169,14 @@ export function clearRemoval(pk: string): Promise<boolean> {
 }
 
 /** Whether `pk` is a device the user has removed and not re-paired. */
+/** The removal of `pk` still on record here, if there is one. */
+export async function removalOf(
+  pk: string,
+  now: number = Date.now(),
+): Promise<PeerRemoval | undefined> {
+  return (await listRemovals(now)).find(r => r.pk === pk);
+}
+
 export async function isRemoved(
   pk: string,
   now: number = Date.now(),

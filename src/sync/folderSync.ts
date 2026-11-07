@@ -234,17 +234,21 @@ export type SyncSkipped = {
  * Anything malformed is no removals. This is the one message in the
  * protocol that destroys state, so it fails closed.
  */
-function removalsIn(json: string): string[] {
+function removalsIn(json: string): Array<{ pk: string; at: number }> {
   try {
     const parsed = JSON.parse(json) as { removedPeers?: unknown };
     if (!Array.isArray(parsed.removedPeers)) return [];
     return parsed.removedPeers
-      .map(row =>
-        row && typeof row === 'object'
-          ? (row as { pk?: unknown }).pk
-          : undefined,
-      )
-      .filter((pk): pk is string => typeof pk === 'string' && pk.length > 0);
+      .map(row => {
+        if (!row || typeof row !== 'object') return null;
+        const r = row as { pk?: unknown; at?: unknown };
+        if (typeof r.pk !== 'string' || r.pk.length === 0) return null;
+        // Undated is treated as the oldest possible: it cannot outrank a
+        // pairing made since.
+        const at = typeof r.at === 'string' ? Date.parse(r.at) : NaN;
+        return { pk: r.pk, at: Number.isFinite(at) ? at : 0 };
+      })
+      .filter((r): r is { pk: string; at: number } => r !== null);
   } catch {
     return [];
   }
@@ -374,11 +378,20 @@ export async function syncWithFolder(
     // is not merged, and nothing is sealed to it, until the user accepts
     // it there or types its code. `peers.ts` says why.
     if (!(await isTrustedPeer(from))) {
+      // When its file was built, so a device this one removed can come
+      // back with a NEW file but never on its old one (`notePeerSeen`).
+      let builtAt: string | undefined;
+      try {
+        builtAt = readSnapshot(JSON.parse(result.json))?.createdAt;
+      } catch {
+        builtAt = undefined;
+      }
       const before = (await listPeers()).length;
       await notePeerSeen({
         publicKey: result.senderPublicKey,
         name: result.senderName,
         now: options.now,
+        ...(builtAt ? { announcedAt: builtAt } : {}),
       });
       if ((await listPeers()).length > before) learned++;
       skipped.pending++;
@@ -401,9 +414,24 @@ export async function syncWithFolder(
     // Only a device the user has accepted can say any of this — see the
     // check above. Someone with write access to the folder and no
     // acceptance cannot reach this line.
-    const announced = removalsIn(result.json);
+    // A REMOVAL OLDER THAN THE PAIRING IT WOULD UNDO IS STALE. Removals
+    // are announced for ninety days, so a device removed and then paired
+    // again — its owner scanned the other's code — goes on hearing the old
+    // notice from the device that removed it, and used to obey it the
+    // moment it re-paired: drop the sender, wait for an answer that could
+    // now never come. Only a removal made after we paired the device it
+    // names (or after we paired the sender, when it names us) counts.
+    const peersNow = await listPeers();
+    const pairedAt = (pk: string): number => {
+      const row = peersNow.find(p => p.pk === pk);
+      const at = row ? Date.parse(row.addedAt) : NaN;
+      return Number.isFinite(at) ? at : 0;
+    };
+    const mineKey = toBase64(me.publicKey);
+    const announced = removalsIn(result.json)
+      .filter(r => r.at >= pairedAt(r.pk === mineKey ? from : r.pk))
+      .map(r => r.pk);
     if (announced.length > 0) {
-      const mineKey = toBase64(me.publicKey);
       for (const pk of announced) {
         if (pk === mineKey) {
           if (await forgetPeer(from)) forgotten++;

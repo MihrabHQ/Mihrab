@@ -37,7 +37,7 @@ import {
 } from '../storage/durableWrite';
 import { fingerprintOf, getDeviceIdentity } from './deviceIdentity';
 import { decode, KEY_BYTES } from './pairingCode';
-import { clearRemoval, isRemoved, noteRemoval } from './removedPeers';
+import { clearRemoval, noteRemoval, removalOf } from './removedPeers';
 import { fromBase64, toBase64 } from './secureRandom';
 
 /**
@@ -324,6 +324,12 @@ export async function notePeerSeen(input: {
   now?: Date;
   /** ISO stamp from inside the peer's snapshot. Omit if there wasn't one. */
   dataAt?: string;
+  /**
+   * When the file that announced it was built — for a device that is not
+   * trusted yet, whose snapshot is NOT merged and so must not move
+   * `dataAt` (that would mark it merged). Compared with a removal only.
+   */
+  announcedAt?: string;
 }): Promise<Peer | null> {
   if (input.publicKey.length !== KEY_BYTES) return null;
   const pk = toBase64(input.publicKey);
@@ -336,7 +342,21 @@ export async function notePeerSeen(input: {
   // — and this function's whole job is to add whoever sent one. That is how
   // "remove" used to undo itself on the next pass. Pairing it again takes a
   // code, which is the one thing that clears the removal.
-  if (await isRemoved(pk)) return null;
+  //
+  // Unless it writes a NEW file — one built after the removal. That is the
+  // removed device asking to come back (its owner scanned this device's
+  // code there), and until there was an accept step it had nowhere to go:
+  // the removal stood for ninety days, this device kept ignoring it, and
+  // re-pairing worked only by typing the code on the side that removed.
+  // Now it comes back PENDING, as any announcement does, and only the
+  // user's Accept here takes the removal back. Its old, frozen file is
+  // still older than the removal and still ignored.
+  const removal = await removalOf(pk);
+  if (removal) {
+    const stamp = input.announcedAt ?? input.dataAt;
+    const theirs = stamp ? Date.parse(stamp) : NaN;
+    if (!(Number.isFinite(theirs) && theirs > Date.parse(removal.at))) return null;
+  }
   const nowMs = (input.now ?? new Date()).getTime();
   const at = new Date(nowMs).toISOString();
 
@@ -400,14 +420,18 @@ export async function notePeerSeen(input: {
  * merged from. The user's decision, made on the Sync screen after
  * comparing the fingerprint shown there with the one on the other device.
  */
-export function acceptPeer(pk: string): Promise<boolean> {
-  return mutate(peers => {
+export async function acceptPeer(pk: string): Promise<boolean> {
+  const accepted = await mutate(peers => {
     const existing = peers.find(p => p.pk === pk);
     if (!existing || !existing.pending) return { peers, result: false };
-    const accepted: Peer = { ...existing };
-    delete accepted.pending;
-    return { peers: peers.map(p => (p.pk === pk ? accepted : p)), result: true };
+    const trusted: Peer = { ...existing };
+    delete trusted.pending;
+    return { peers: peers.map(p => (p.pk === pk ? trusted : p)), result: true };
   });
+  // Accepting a device this one once removed takes the removal back, so
+  // the eviction notices addressed to it stop.
+  if (accepted) await clearRemoval(pk);
+  return accepted;
 }
 
 /** Whether `pk` is a device this one trusts: paired, and not pending. */

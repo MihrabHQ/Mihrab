@@ -281,6 +281,67 @@ describe('one code, carried once, in one direction', () => {
     expect(awaiting(await as('B', () => listPeers()))).toBeNull();
   });
 
+  it('re-pairs a device the other one removed, by scanning on either side', async () => {
+    // Reported 2026-11-07: the Mac had removed the phone at some point;
+    // the phone then scanned the Mac's code. The Mac ignored the phone for
+    // ninety days (the removal's life), and kept writing it an eviction
+    // notice, which the phone obeyed the moment it re-paired — so the
+    // phone said "checking the folder" for ever and nothing could fix it
+    // but typing the code on the side that removed.
+    const folder = memoryFolder();
+    await pairBFromAAndAccept(folder);
+    await as('B', () => syncWithFolder(folder));
+    const bKey = toBase64(await publicKeyOf('B'));
+    const aKey = toBase64(await publicKeyOf('A'));
+    // A removes B, and writes its eviction notice.
+    const t0 = Date.now();
+    await as('A', async () => {
+      await forgetPeer(bKey);
+      await syncWithFolder(folder, { now: new Date(t0) });
+    });
+    // B hears it, drops A.
+    await as('B', () => syncWithFolder(folder, { now: new Date(t0 + 1000) }));
+    expect((await as('B', () => listPeers())).some(p => p.pk === aKey)).toBe(false);
+
+    // Later: B scans A's code again, and its round writes a new file.
+    const codeOfA = await as('A', () => myPairingCode());
+    await as('B', async () => {
+      expect((await addPeerByCode(codeOfA, { now: new Date(t0 + 60_000) })).ok).toBe(true);
+      await syncWithFolder(folder, { now: new Date(t0 + 60_000) });
+    });
+    // B is not ejected again by the old notice still in the folder.
+    await as('B', () => syncWithFolder(folder, { readOnly: true, now: new Date(t0 + 70_000) }));
+    expect((await as('B', () => listPeers())).some(p => p.pk === aKey && !p.pending)).toBe(true);
+
+    // A sees B waiting — its NEW file is newer than the removal — accepts.
+    const checkA = await as('A', () => syncWithFolder(folder, { readOnly: true, now: new Date(t0 + 80_000) }));
+    expect(checkA.learned).toBe(1);
+    const waiting = (await as('A', () => listPeers())).find(p => p.pk === bKey);
+    expect(waiting?.pending).toBe(true);
+    await as('A', async () => {
+      expect(await acceptPeer(bKey)).toBe(true);
+      await syncWithFolder(folder, { now: new Date(t0 + 90_000) });
+    });
+    // And B hears from A: paired both ways again.
+    const roundB = await as('B', () => syncWithFolder(folder, { now: new Date(t0 + 100_000) }));
+    expect(roundB.read).toBe(1);
+    expect(roundB.forgotten).toBe(0);
+    const peersOfB = await as('B', () => listPeers());
+    expect(peersOfB.find(p => p.pk === aKey)?.lastSeenAt).toBeDefined();
+  });
+
+  it('still ignores a removed device’s old file', async () => {
+    const folder = memoryFolder();
+    await pairBFromAAndAccept(folder);
+    await as('B', () => syncWithFolder(folder));
+    const bKey = toBase64(await publicKeyOf('B'));
+    await as('A', () => forgetPeer(bKey));
+    // B has not written since; its frozen file is older than the removal.
+    const round = await as('A', () => syncWithFolder(folder, { readOnly: true }));
+    expect(round.learned).toBe(0);
+    expect((await as('A', () => listPeers())).some(p => p.pk === bKey)).toBe(false);
+  });
+
   it('does not act on removals a device that has not been accepted announces', async () => {
     const folder = memoryFolder();
     await pairBothWays();
