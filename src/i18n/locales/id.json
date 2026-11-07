@@ -2168,7 +2168,7 @@
     "pairWarnBody": "Semua yang tercatat di perangkat itu akan muncul di sini, dan semua yang di sini akan muncul di sana. Bila keduanya berbeda, entri yang lebih baru yang disimpan, dan apa yang Anda hapus di satu perangkat juga terhapus di perangkat lain.",
     "pairConfirm": "Sandingkan",
     "pairedTitle": "Tersanding",
-    "pairedBody": "Perangkat ini sudah menulis kuncinya ke folder. Buka Mihrab di perangkat satunya — begitu ia membaca folder itu, keduanya tersanding dan tersinkron.",
+    "pairedBody": "Perangkat ini telah menulis kuncinya ke folder. Buka Mihrab di perangkat lain — perangkat ini akan tampil sebagai menunggu, dengan sidik jari untuk dibandingkan; terima di sana, maka keduanya tersambung dan menyinkron.",
     "errorBadCodeTitle": "Kode itu tidak berhasil",
     "errorBadCode": "Periksa kodenya dan coba lagi. Kode ditulis dalam kelompok enam, dan satu karakter salah saja sudah cukup untuk ditolak.",
     "errorThisDevice": "Itu kode milik perangkat ini sendiri. Anda perlu kode yang tampil di perangkat satunya.",
@@ -2232,7 +2232,13 @@
     "scanNoCameraBody": "Perangkat ini tidak punya kamera untuk memindai. Ketik atau tempel kodenya.",
     "freq15Min": "Tiap 15 mnt",
     "errorFolderUnwritable": "Folder itu tidak bisa ditulisi. Pilih yang lain — folder yang Anda buat sendiri di Dokumen atau Unduhan paling cocok.",
-    "errorFolderTitle": "Folder itu tidak berhasil"
+    "errorFolderTitle": "Folder itu tidak berhasil",
+    "accept": "Terima",
+    "pendingHelp": "Menunggu persetujuan Anda. Pastikan sidik jarinya cocok dengan yang ada di bawah “Perangkat ini” pada perangkat tersebut.",
+    "acceptBody": "Perangkat ini memperkenalkan diri dengan menulis ke folder sinkronisasi Anda. Terima hanya jika sidik jarinya cocok dengan yang ditampilkan di sana.",
+    "pendingTitle": "Sebuah perangkat menunggu",
+    "pendingBody": "{{device}} (sidik jari {{fingerprint}}) menulis ke folder sinkronisasi Anda. Tidak ada yang dibagikan sampai Anda menerimanya di Perangkat tersambung.",
+    "storeDegraded": "Penyimpanan aman perangkat ini tidak berfungsi. Sinkronisasi tidak dapat berjalan tanpanya, dan beberapa catatan disimpan dalam berkas tanpa enkripsi sampai pulih."
   },
   "stats": {
     "daysUnit_one": " hari",

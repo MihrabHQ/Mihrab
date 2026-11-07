@@ -36,14 +36,25 @@
  * casualty because it cannot even start without an identity, but the
  * quiet one was worse: a logged prayer that never reached disk.
  *
- * There is a fallback now, and it is honestly worse: AsyncStorage is
- * plaintext in the app's own directory, so on a machine where someone
- * else can read your home folder they can read a sync secret key that
- * the Keychain would have protected. That is a real downgrade and
- * `encryptedStoreDegraded()` exists so a screen can say so out loud.
+ * There is a fallback, and it is honestly worse: a plaintext file in
+ * the app's own folder (`unprotectedStore.ts`), kept out of every backup.
  * It buys the alternative being nothing at all — a prayer log that
- * silently evaporates, on the one platform where the app cannot tell
- * the user why.
+ * silently evaporates — and `encryptedStoreDegraded()` /
+ * `onEncryptedStoreDegraded()` exist so a screen says so out loud.
+ *
+ * ── WHAT NEVER FALLS BACK ─────────────────────────────────────────────
+ *
+ * `sensitive` keys — the sync identity's secret key, and the lists of
+ * paired and removed devices — fail closed. A secret key in plaintext is
+ * the key to every file the device's peers write, and a peer list in
+ * plaintext is a list someone can add their own device to; losing either
+ * costs a re-pairing, which is the cheaper failure by far. So for them a
+ * refused write throws, a refused read answers nothing, and any plaintext
+ * copy an older build left behind is moved into the encrypted store if it
+ * will take it and deleted either way. Sync is then unavailable on that
+ * device, and the Sync screen says why. (Reported privately against
+ * 91cabca0, along with the fallback's old home in AsyncStorage, which
+ * Android's cloud backup carries.)
  *
  * The fallback is drained the moment a real write succeeds, so a device
  * whose Keychain comes back does not keep a plaintext copy around.
@@ -51,6 +62,11 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import {
+  unprotectedGet,
+  unprotectedRemove,
+  unprotectedSet,
+} from './unprotectedStore';
 
 /**
  * Who wants to know that something was written.
@@ -90,14 +106,14 @@ const DEFAULT_ATTEMPTS = 3;
 const BASE_BACKOFF_MS = 120;
 
 /**
- * Where a value goes when the encrypted store will not take it.
- *
- * Namespaced so it is obvious in a storage dump what this is and that it
- * is not the real thing.
+ * Where older builds put a value the encrypted store would not take: in
+ * AsyncStorage, under this prefix. Read once more so nothing is lost,
+ * moved out, and deleted — AsyncStorage is what Android's cloud backup
+ * carries. New copies go to `unprotectedStore.ts`.
  */
-const FALLBACK_PREFIX = 'prayerapp.unprotected.';
+const LEGACY_FALLBACK_PREFIX = 'prayerapp.unprotected.';
 
-const fallbackKey = (key: string) => `${FALLBACK_PREFIX}${key}`;
+const legacyFallbackKey = (key: string) => `${LEGACY_FALLBACK_PREFIX}${key}`;
 
 /**
  * ── THE WITNESS, and why a failed read is not an empty one ────────────
@@ -177,16 +193,41 @@ export function resetEncryptedWitnesses(): void {
 
 /** True once anything has had to go to the plaintext fallback. */
 let degraded = false;
+const degradedListeners = new Set<() => void>();
 
 /**
  * Has the encrypted store refused a value this session?
  *
- * For screens that want to tell the truth about where a secret is
+ * For screens that want to tell the truth about where a record is
  * sitting. False is not a promise that the Keychain works — it is only
  * "nothing has needed the fallback yet".
  */
 export function encryptedStoreDegraded(): boolean {
   return degraded;
+}
+
+/**
+ * Say that the encrypted store has refused something. Exported for
+ * `secureStorage.ts`, whose location fallback is the same kind of event.
+ */
+export function markEncryptedStoreDegraded(): void {
+  if (degraded) return;
+  degraded = true;
+  for (const listener of degradedListeners) {
+    try {
+      listener();
+    } catch {
+      /* a screen's problem is not the store's */
+    }
+  }
+}
+
+/** Hear the moment the store first degrades. Returns the unsubscribe. */
+export function onEncryptedStoreDegraded(listener: () => void): () => void {
+  degradedListeners.add(listener);
+  return () => {
+    degradedListeners.delete(listener);
+  };
 }
 
 /** Tests only. */
@@ -205,7 +246,7 @@ const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
 export async function durableEncryptedSet(
   key: string,
   value: string,
-  options: { attempts?: number } = {},
+  options: { attempts?: number; sensitive?: boolean } = {},
 ): Promise<void> {
   const attempts = options.attempts ?? DEFAULT_ATTEMPTS;
   let lastErr: unknown;
@@ -215,11 +256,7 @@ export async function durableEncryptedSet(
       await markWitnessed(key);
       // Drain any plaintext copy the moment the real store takes a value,
       // so a Keychain that comes back does not leave one behind.
-      try {
-        await AsyncStorage.removeItem(fallbackKey(key));
-      } catch {
-        /* the copy is stale, not wrong; it loses to the real one on read */
-      }
+      await dropPlaintext(key);
       announceWrite(key);
       return;
     } catch (e) {
@@ -231,10 +268,17 @@ export async function durableEncryptedSet(
     }
   }
 
-  // Every attempt failed. Somewhere worse beats nowhere.
+  // Every attempt failed. Somewhere worse beats nowhere — except for a
+  // key whose plaintext copy would be worse than losing it.
+  if (options.sensitive) {
+    markEncryptedStoreDegraded();
+    throw lastErr instanceof Error
+      ? lastErr
+      : new Error(`Failed to persist ${key} after ${attempts} attempts`);
+  }
   try {
-    await AsyncStorage.setItem(fallbackKey(key), value);
-    degraded = true;
+    await unprotectedSet(key, value);
+    markEncryptedStoreDegraded();
     // The value landed somewhere, so the record HAS changed and the other
     // devices should hear about it. A degraded store is a reason to sync
     // harder, not to go quiet.
@@ -264,7 +308,7 @@ export async function durableEncryptedSet(
  */
 export async function durableEncryptedGet(
   key: string,
-  options: { attempts?: number; strict?: boolean } = {},
+  options: { attempts?: number; strict?: boolean; sensitive?: boolean } = {},
 ): Promise<string | null> {
   const attempts = options.attempts ?? DEFAULT_ATTEMPTS;
   let lastErr: unknown;
@@ -275,7 +319,11 @@ export async function durableEncryptedGet(
       // fallback: a device whose Keychain has just started working has its
       // history in the plaintext copy and nowhere else, and answering
       // "nothing here" would read as a first launch and start it over.
-      if (value !== null && value !== undefined) return value;
+      if (value !== null && value !== undefined) {
+        if (options.sensitive) await dropPlaintext(key);
+        return value;
+      }
+      if (options.sensitive) return await adoptPlaintext(key);
       return await readFallback(key);
     } catch (e) {
       lastErr = e;
@@ -285,11 +333,22 @@ export async function durableEncryptedGet(
     }
   }
 
-  // The store is not answering. If a plaintext copy exists it is the best
-  // account of this key that anyone has.
+  // The store is not answering. A sensitive key has no plaintext account
+  // to fall back on, and any an older build left is deleted, not read.
+  if (options.sensitive) {
+    await dropPlaintext(key);
+    markEncryptedStoreDegraded();
+    if (options.strict && lastErr && (await wasWitnessed(key))) {
+      throw encryptedReadError(key, lastErr);
+    }
+    return null;
+  }
+
+  // If a plaintext copy exists it is the best account of this key that
+  // anyone has.
   const stored = await readFallback(key);
   if (stored !== null) {
-    degraded = true;
+    markEncryptedStoreDegraded();
     return stored;
   }
 
@@ -297,7 +356,7 @@ export async function durableEncryptedGet(
   // the key has been written before: the value exists and cannot be read,
   // and the caller must not overwrite what it could not see.
   if (options.strict && lastErr && (await wasWitnessed(key))) {
-    degraded = true;
+    markEncryptedStoreDegraded();
     throw encryptedReadError(key, lastErr);
   }
 
@@ -307,18 +366,108 @@ export async function durableEncryptedGet(
   // how sync ended up unable to start at all. The cost is that a Keychain
   // that is merely wedged looks empty; the retries above are what make
   // that unlikely, and `degraded` is what says it happened.
-  degraded = true;
+  markEncryptedStoreDegraded();
   if (lastErr) {
     console.warn(`durableEncryptedGet(${key}) fell through to absent:`, lastErr);
   }
   return null;
 }
 
-/** The plaintext copy of a key, or null. Never throws. */
+/**
+ * The plaintext copy of a key, or null. Never throws.
+ *
+ * A copy an older build left in AsyncStorage is moved to the
+ * backup-excluded store on the way past, and deleted from AsyncStorage.
+ */
 async function readFallback(key: string): Promise<string | null> {
+  const current = await unprotectedGet(key);
+  if (current !== null) return current;
+  let legacy: string | null = null;
   try {
-    return await AsyncStorage.getItem(fallbackKey(key));
+    legacy = await AsyncStorage.getItem(legacyFallbackKey(key));
   } catch {
     return null;
+  }
+  if (legacy === null) return null;
+  try {
+    await unprotectedSet(key, legacy);
+    await AsyncStorage.removeItem(legacyFallbackKey(key));
+  } catch {
+    /* left where it was: better in a backup than gone */
+  }
+  return legacy;
+}
+
+/** Delete every plaintext copy of a key, old home and new. Never throws. */
+async function dropPlaintext(key: string): Promise<void> {
+  await unprotectedRemove(key);
+  try {
+    await AsyncStorage.removeItem(legacyFallbackKey(key));
+  } catch {
+    /* stale; the encrypted value wins on read */
+  }
+}
+
+/**
+ * A sensitive key the encrypted store has nothing for, but an older build
+ * may have left in plaintext: moved into the encrypted store if it will
+ * take it, deleted either way. Answers the value only once it is
+ * encrypted.
+ */
+async function adoptPlaintext(key: string): Promise<string | null> {
+  let plain = await unprotectedGet(key);
+  if (plain === null) {
+    try {
+      plain = await AsyncStorage.getItem(legacyFallbackKey(key));
+    } catch {
+      plain = null;
+    }
+  }
+  if (plain === null) return null;
+  let moved = false;
+  try {
+    await EncryptedStorage.setItem(key, plain);
+    await markWitnessed(key);
+    moved = true;
+  } catch {
+    markEncryptedStoreDegraded();
+  }
+  await dropPlaintext(key);
+  return moved ? plain : null;
+}
+
+/**
+ * Move every plaintext copy older builds left in AsyncStorage out of it,
+ * once, at launch: AsyncStorage is what Android's backups carry, and a
+ * record nobody happens to read this session would otherwise ride along
+ * in the next one. `sensitive` names the keys that are not moved but
+ * adopted into the encrypted store or deleted. Never throws.
+ */
+export async function evictLegacyFallbacks(sensitive: ReadonlySet<string>): Promise<void> {
+  let keys: readonly string[] = [];
+  try {
+    keys = await AsyncStorage.getAllKeys();
+  } catch {
+    return;
+  }
+  for (const stored of keys) {
+    if (!stored.startsWith(LEGACY_FALLBACK_PREFIX)) continue;
+    const key = stored.slice(LEGACY_FALLBACK_PREFIX.length);
+    try {
+      if (sensitive.has(key)) {
+        let present: string | null = null;
+        try {
+          present = await EncryptedStorage.getItem(key);
+        } catch {
+          present = null;
+        }
+        if (present) await dropPlaintext(key);
+        else await adoptPlaintext(key);
+      } else {
+        await readFallback(key);
+      }
+    } catch {
+      /* next launch tries again */
+    }
   }
 }

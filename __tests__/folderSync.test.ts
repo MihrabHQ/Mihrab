@@ -61,6 +61,7 @@ import {
 } from '../src/sync/deviceIdentity';
 import { forgetCachedDeviceName, setDeviceName } from '../src/sync/deviceName';
 import {
+  acceptPeer,
   addPeerByCode,
   forgetCachedPeers,
   forgetPeer,
@@ -167,7 +168,7 @@ beforeEach(() => {
   forgetCachedDeviceName();
 });
 
-/** The user's flow: A's code, typed into B, once. */
+/** The user's flow: A's code, typed into B, once. A has not heard of B. */
 async function pairBFromA(): Promise<void> {
   const codeOfA = await as('A', () => myPairingCode());
   await as('B', async () => {
@@ -176,6 +177,22 @@ async function pairBFromA(): Promise<void> {
     expect(added.ok).toBe(true);
   });
   await as('A', () => setDeviceName('Phone'));
+}
+
+/**
+ * The rest of that flow: B writes, A sees it waiting and accepts it on
+ * the Sync screen after comparing the fingerprint. Two devices paired by
+ * one code and one tap.
+ */
+async function pairBFromAAndAccept(folder: SyncFolder): Promise<void> {
+  await pairBFromA();
+  await as('B', () => syncWithFolder(folder));
+  await as('A', async () => {
+    await syncWithFolder(folder);
+    const [waiting] = await listPeers();
+    expect(waiting.pending).toBe(true);
+    expect(await acceptPeer(waiting.pk)).toBe(true);
+  });
 }
 
 /** Both codes carried, as someone does when they set two devices up. */
@@ -193,7 +210,7 @@ async function pairBothWays(): Promise<void> {
 }
 
 describe('one code, carried once, in one direction', () => {
-  it('leaves A knowing B as well, without a second code', async () => {
+  it('shows A the device that announced itself, and shares nothing until it is accepted', async () => {
     const folder = memoryFolder();
     await pairBFromA();
 
@@ -205,21 +222,68 @@ describe('one code, carried once, in one direction', () => {
     // A reads with an empty peer list, which it must be allowed to do.
     const roundA = await as('A', () => syncWithFolder(folder));
 
+    // B is on A's screen now — waiting. Not trusted: its file opened, which
+    // proves only that it had A's code, and A's code is in the clear in
+    // every file in this folder (reported privately against 91cabca0).
     expect(roundA.learned).toBe(1);
+    expect(roundA.read).toBe(0);
+    // B's snapshot and its invite to A: both opened, neither merged.
+    expect(roundA.skipped.pending).toBe(2);
     const peersOfA = await as('A', () => listPeers());
     expect(peersOfA).toHaveLength(1);
     expect(peersOfA[0].via).toBe('announced');
+    expect(peersOfA[0].pending).toBe(true);
     expect(peersOfA[0].name).toBe('Tablet');
-    // And A wrote in the same round, sealed to the device it just learned.
-    expect(roundA.wrote).toBe(syncFileNameFor(await publicKeyOf('A')));
-    expect(folder.files.has(roundA.wrote as string)).toBe(true);
+    // And A wrote NOTHING: it has no accepted device to seal to.
+    expect(roundA.wrote).toBeNull();
+    expect(folder.files.has(syncFileNameFor(await publicKeyOf('A')))).toBe(false);
+
+    // Accepted — one tap, after comparing the fingerprint — and the next
+    // round seals to B and merges from it.
+    await as('A', async () => {
+      expect(await acceptPeer(peersOfA[0].pk)).toBe(true);
+    });
+    const roundA2 = await as('A', () => syncWithFolder(folder));
+    expect(roundA2.read).toBe(1);
+    expect(roundA2.wrote).toBe(syncFileNameFor(await publicKeyOf('A')));
+    expect((await as('A', () => listPeers()))[0].pending).toBeUndefined();
+  });
+
+  it('does not act on removals a device that has not been accepted announces', async () => {
+    const folder = memoryFolder();
+    await pairBothWays();
+    // A stranger S who has A's public key (it is in every file) writes a
+    // file to A announcing that B is removed.
+    const codeOfA = await as('A', () => myPairingCode());
+    mockDevices.S = { secure: new Map(), plain: new Map() };
+    await as('S' as 'A', async () => {
+      await setDeviceName('Stranger');
+      expect((await addPeerByCode(codeOfA)).ok).toBe(true);
+      const b = toBase64(await publicKeyOf('B'));
+      // Written through the real path, so the file is exactly what a
+      // hostile build could produce with A's public key alone.
+      await forgetPeer(b).catch(() => undefined);
+    });
+    await as('S' as 'A', () => syncWithFolder(folder));
+    const roundA = await as('A', () => syncWithFolder(folder));
+    // S waits; B is still paired; S got nothing of A's.
+    const peersOfA = await as('A', () => listPeers());
+    const bPk = toBase64(await publicKeyOf('B'));
+    expect(peersOfA.find(p => p.name === 'Stranger')?.pending).toBe(true);
+    expect(peersOfA.some(p => p.pk === bPk && !p.pending)).toBe(true);
+    expect(roundA.forgotten).toBe(0);
+    const sPk = await as('S' as 'A', async () => (await getDeviceIdentity()).publicKey);
+    const fileOfA = folder.files.get(syncFileNameFor(await publicKeyOf('A')));
+    expect(fileOfA).toBeDefined();
+    const envelope = JSON.parse(fileOfA as string) as { keys: Array<{ to: string }> };
+    expect(envelope.keys.map(k => k.to)).not.toContain(toBase64(sPk));
   });
 });
 
 describe('a prayer logged on A', () => {
   it('shows up on B after a round each way', async () => {
     const folder = memoryFolder();
-    await pairBFromA();
+    await pairBFromAAndAccept(folder);
 
     mockDevices.A.secure.set(
       JOURNAL_KEY,
@@ -252,7 +316,7 @@ describe('a prayer logged on A', () => {
 
   it('does not duplicate it when the same file is read again', async () => {
     const folder = memoryFolder();
-    await pairBFromA();
+    await pairBFromAAndAccept(folder);
     mockDevices.A.secure.set(
       JOURNAL_KEY,
       JSON.stringify([
@@ -279,7 +343,7 @@ describe('a prayer logged on A', () => {
 describe('where you left off in the Quran', () => {
   it('carries the plain last-read position across', async () => {
     const folder = memoryFolder();
-    await pairBFromA();
+    await pairBFromAAndAccept(folder);
 
     mockDevices.B.plain.set(
       QURAN_STORAGE_KEY,
@@ -313,7 +377,7 @@ describe('where you left off in the Quran', () => {
 
   it('carries khatmah progress, and takes the further-through position', async () => {
     const folder = memoryFolder();
-    await pairBFromA();
+    await pairBFromAAndAccept(folder);
 
     const plan = {
       id: 'khatmah-1',
@@ -373,7 +437,7 @@ describe('where you left off in the Quran', () => {
    */
   it('and a pin taken off, a bookmark deleted and a star removed all stay gone', async () => {
     const folder = memoryFolder();
-    await pairBFromA();
+    await pairBFromAAndAccept(folder);
 
     const shared = {
       id: 'khatmah-1',
@@ -479,12 +543,13 @@ describe('a folder that will not list itself', () => {
     const peers = await as('A', () => listPeers());
     expect(peers).toHaveLength(1);
     expect(peers[0].via).toBe('announced');
+    expect(peers[0].pending).toBe(true);
     expect(peers[0].name).toBe('Tablet');
   });
 
   it('writes the invite under the recipient’s own id', async () => {
     const folder = memoryFolder();
-    await pairBFromA();
+    await pairBFromAAndAccept(folder);
     await as('B', () => syncWithFolder(folder));
 
     // Named for A, because A is the one who has to find it without a
@@ -496,7 +561,7 @@ describe('a folder that will not list itself', () => {
 
   it('stops inviting once the other device has answered', async () => {
     const folder = memoryFolder();
-    await pairBFromA();
+    await pairBFromAAndAccept(folder);
     await as('B', () => syncWithFolder(folder));
     await as('A', () => syncWithFolder(folder));
 
@@ -523,6 +588,7 @@ describe('a folder that will not list itself', () => {
       notForUs: 0,
       unreadable: 0,
       alreadySeen: 0,
+      pending: 0,
     });
   });
 });
@@ -697,7 +763,7 @@ describe('removing a device', () => {
 
   it('takes the invite too, when one is still waiting', async () => {
     const folder = memoryFolder();
-    await pairBFromA();
+    await pairBFromAAndAccept(folder);
     // B writes, and invites A because A has never answered it.
     await as('B', () => syncWithFolder(folder));
     const aKey = await publicKeyOf('A');
@@ -790,7 +856,7 @@ describe('removing a device', () => {
 describe('the folder is shared with things that are not us', () => {
   it('steps over strangers, junk and half-written files', async () => {
     const folder = memoryFolder();
-    await pairBFromA();
+    await pairBFromAAndAccept(folder);
     await as('B', () => syncWithFolder(folder));
 
     folder.files.set('shopping-list.txt', 'milk, dates');

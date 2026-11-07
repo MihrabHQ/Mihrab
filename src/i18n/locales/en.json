@@ -2168,7 +2168,7 @@
     "pairWarnBody": "Everything recorded on that device will appear here, and everything here will appear there. Where the two disagree, the more recent entry is kept — and what you delete on one device is removed from the other too.",
     "pairConfirm": "Pair",
     "pairedTitle": "Paired",
-    "pairedBody": "This device has written its key to the folder. Open Mihrab on the other device — as soon as it reads the folder, both are paired and syncing.",
+    "pairedBody": "This device has written its key to the folder. Open Mihrab on the other device — it will show this device as waiting, with a fingerprint to compare; accept it there and both are paired and syncing.",
     "errorBadCodeTitle": "That code didn’t work",
     "errorBadCode": "Check the code and try again. It is grouped in sixes, and a single wrong character is enough to reject it.",
     "errorThisDevice": "That is this device’s own code. You need the one shown on the other device.",
@@ -2232,7 +2232,13 @@
     "scanNoCameraBody": "This device has no camera to scan with. Type or paste the code instead.",
     "freq15Min": "Every 15 min",
     "errorFolderUnwritable": "That folder can’t be written to. Pick another one — a folder you made yourself in Documents or Downloads works best.",
-    "errorFolderTitle": "That folder didn’t work"
+    "errorFolderTitle": "That folder didn’t work",
+    "accept": "Accept",
+    "pendingHelp": "Waiting for you to accept it. Check that the fingerprint matches the one under “This device” on that device.",
+    "acceptBody": "This device announced itself by writing to your sync folder. Accept it only if the fingerprint matches the one shown on it.",
+    "pendingTitle": "A device is waiting",
+    "pendingBody": "{{device}} (fingerprint {{fingerprint}}) wrote to your sync folder. Nothing is shared with it until you accept it under Paired devices.",
+    "storeDegraded": "This device’s secure storage isn’t working. Sync can’t run without it, and some records are being kept in an unencrypted file until it comes back."
   },
   "stats": {
     "daysUnit_one": " day",

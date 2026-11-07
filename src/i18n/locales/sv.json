@@ -2168,7 +2168,7 @@
     "pairWarnBody": "Allt som finns registrerat på den enheten dyker upp här, och allt som finns här dyker upp där. Där de två skiljer sig behålls den senaste posten – och det du tar bort på en enhet tas bort på den andra också.",
     "pairConfirm": "Parkoppla",
     "pairedTitle": "Parkopplad",
-    "pairedBody": "Den här enheten har skrivit sin nyckel till mappen. Öppna Mihrab på den andra enheten — så fort den läser mappen är båda parkopplade och synkar.",
+    "pairedBody": "Den här enheten har skrivit sin nyckel till mappen. Öppna Mihrab på den andra enheten — den visar den här enheten som väntande, med ett fingeravtryck att jämföra; godkänn den där så är båda parkopplade och synkar.",
     "errorBadCodeTitle": "Koden fungerade inte",
     "errorBadCode": "Kontrollera koden och försök igen. Den är grupperad i sexor, och ett enda fel tecken räcker för att den ska avvisas.",
     "errorThisDevice": "Det är den här enhetens egen kod. Du behöver den som visas på den andra enheten.",
@@ -2232,7 +2232,13 @@
     "scanNoCameraBody": "Den här enheten har ingen kamera att skanna med. Skriv eller klistra in koden i stället.",
     "freq15Min": "Var 15:e min",
     "errorFolderUnwritable": "Det går inte att skriva i den mappen. Välj en annan — en mapp du själv skapat i Dokument eller Nedladdningar fungerar bäst.",
-    "errorFolderTitle": "Den mappen fungerade inte"
+    "errorFolderTitle": "Den mappen fungerade inte",
+    "accept": "Godkänn",
+    "pendingHelp": "Väntar på att du godkänner den. Kontrollera att fingeravtrycket stämmer med det under ”Den här enheten” på den enheten.",
+    "acceptBody": "Den här enheten anmälde sig genom att skriva i din synkmapp. Godkänn den bara om fingeravtrycket stämmer med det som visas på den.",
+    "pendingTitle": "En enhet väntar",
+    "pendingBody": "{{device}} (fingeravtryck {{fingerprint}}) skrev i din synkmapp. Inget delas med den förrän du godkänner den under Parkopplade enheter.",
+    "storeDegraded": "Enhetens säkra lagring fungerar inte. Synk kan inte köras utan den, och vissa poster sparas i en okrypterad fil tills den fungerar igen."
   },
   "stats": {
     "daysUnit_one": " dag",

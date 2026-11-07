@@ -22,13 +22,14 @@
  * none: we ask the platform for 32 secure bytes, hand them over, and get the
  * same keypair with no PRNG involved. See `secureRandom.ts`.
  */
+import { SYNC_SECRET_KEY } from '../storage/sensitiveKeys';
 import nacl from 'tweetnacl';
 import { durableEncryptedGet, durableEncryptedSet } from '../storage/durableWrite';
 import { encode as encodeCode, KEY_BYTES } from './pairingCode';
 import { fromBase64, randomBytes, toBase64 } from './secureRandom';
 
 /** Namespaced like the other durable keys — see `durableWrite.ts`. */
-const SECRET_KEY = 'prayerapp.sync.secret.v1';
+const SECRET_KEY = SYNC_SECRET_KEY;
 
 export type DeviceIdentity = {
   publicKey: Uint8Array;
@@ -54,12 +55,23 @@ let inFlight: Promise<DeviceIdentity> | null = null;
  * papered over — see `secureRandom.ts`.
  */
 export function getDeviceIdentity(): Promise<DeviceIdentity> {
-  if (!inFlight) inFlight = load();
+  if (!inFlight) {
+    inFlight = load();
+    // A failure is not kept: the store may answer on the next try.
+    inFlight.catch(() => {
+      inFlight = null;
+    });
+  }
   return inFlight;
 }
 
 async function load(): Promise<DeviceIdentity> {
-  const stored = await durableEncryptedGet(SECRET_KEY);
+  // Sensitive: the secret key is never kept in plaintext, so on a device
+  // whose encrypted store refuses it there is no identity and no sync —
+  // see `durableWrite.ts`. Strict: a key that exists and cannot be read
+  // right now must not be taken for a first launch, or a new identity
+  // would be made and written over it, unpairing every device.
+  const stored = await durableEncryptedGet(SECRET_KEY, { strict: true, sensitive: true });
   if (stored) {
     const secret = fromBase64(stored);
     // A truncated or corrupted value is treated as absent rather than as an
@@ -73,7 +85,7 @@ async function load(): Promise<DeviceIdentity> {
   }
   const seed = await randomBytes(nacl.box.secretKeyLength);
   const pair = nacl.box.keyPair.fromSecretKey(seed);
-  await durableEncryptedSet(SECRET_KEY, toBase64(pair.secretKey));
+  await durableEncryptedSet(SECRET_KEY, toBase64(pair.secretKey), { sensitive: true });
   return { publicKey: pair.publicKey, secretKey: pair.secretKey };
 }
 

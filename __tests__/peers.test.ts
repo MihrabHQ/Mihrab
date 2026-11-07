@@ -40,10 +40,12 @@ import {
 import { encode } from '../src/sync/pairingCode';
 import { toBase64 } from '../src/sync/secureRandom';
 import {
+  acceptPeer,
   addPeerByCode,
   forgetCachedPeers,
   forgetPeer,
   hasPeers,
+  isTrustedPeer,
   listPeers,
   MAX_PEERS,
   notePeerSeen,
@@ -144,9 +146,34 @@ describe('the announcement, which is how one code syncs both ways', () => {
       pk: toBase64(other.publicKey),
       name: 'Phone',
       via: 'announced',
+      pending: true,
       lastSeenAt: '2026-08-23T11:00:00.000Z',
     });
+    // Waiting is not paired: nothing to seal to, nothing to merge from.
+    expect(await hasPeers()).toBe(false);
+    expect(await recipientKeys()).toEqual([]);
+    expect(await isTrustedPeer(toBase64(other.publicKey))).toBe(false);
+  });
+
+  it('is paired once the user accepts it', async () => {
+    const other = otherDevice();
+    await notePeerSeen({ publicKey: other.publicKey, name: 'Phone' });
+    expect(await acceptPeer(toBase64(other.publicKey))).toBe(true);
+    expect((await listPeers())[0].pending).toBeUndefined();
     expect(await hasPeers()).toBe(true);
+    expect(await isTrustedPeer(toBase64(other.publicKey))).toBe(true);
+    // Accepting twice, or a device never announced, is a no-op.
+    expect(await acceptPeer(toBase64(other.publicKey))).toBe(false);
+    expect(await acceptPeer('nobody')).toBe(false);
+  });
+
+  it('is paired by typing its code too', async () => {
+    const other = otherDevice();
+    await notePeerSeen({ publicKey: other.publicKey, name: 'Phone' });
+    const added = await addPeerByCode(other.code);
+    expect(added.ok && added.already).toBe(true);
+    expect((await listPeers())[0]).toMatchObject({ via: 'code' });
+    expect((await listPeers())[0].pending).toBeUndefined();
   });
 
   it('moves a known device to last-seen without duplicating it', async () => {

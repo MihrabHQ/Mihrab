@@ -7,12 +7,15 @@
  * user's coordinates and saved location presets so they survive an app
  * relaunch. Memory: "user data must never go missing."
  *
- * The fallback is plaintext AsyncStorage under a dedicated key
- * (`prayerapp.location.fallback.v1`). Once the encrypted store accepts
- * writes again, the fallback is drained.
+ * The fallback is a plaintext file kept out of every backup
+ * (`unprotectedStore.ts`, key `prayerapp.location.fallback.v1`) — not
+ * AsyncStorage, which Android's cloud backup carries; a copy an older
+ * build left there is read once and moved. Once the encrypted store
+ * accepts writes again, the fallback is drained.
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ReactNativeBlobUtil from 'react-native-blob-util';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const EncryptedStorageMock = require('react-native-encrypted-storage');
 import {
@@ -24,12 +27,23 @@ import { DEFAULT_SETTINGS, type LocationPreset } from '../src/settings/types';
 
 const SECURE_KEY = 'prayerapp.location.v1';
 const FALLBACK_KEY = 'prayerapp.location.fallback.v1';
+const FALLBACK_FILE = `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/unprotected/${encodeURIComponent(FALLBACK_KEY)}`;
+const fallbackFile = async (): Promise<string | null> =>
+  (await ReactNativeBlobUtil.fs.exists(FALLBACK_FILE))
+    ? ReactNativeBlobUtil.fs.readFile(FALLBACK_FILE, 'utf8')
+    : null;
+const clearFallbackFile = async (): Promise<void> => {
+  if (await ReactNativeBlobUtil.fs.exists(FALLBACK_FILE)) {
+    await ReactNativeBlobUtil.fs.unlink(FALLBACK_FILE);
+  }
+};
 
 beforeEach(async () => {
   if ((AsyncStorage as { clear?: () => Promise<void> }).clear) {
     await AsyncStorage.clear();
   }
   EncryptedStorageMock.__reset();
+  await clearFallbackFile();
   // Reset spies set by individual tests.
   jest.restoreAllMocks();
 });
@@ -53,7 +67,7 @@ describe('saveSecureSettings — fallback on Keychain failure', () => {
     });
   }
 
-  test('writes to AsyncStorage fallback when encrypted save rejects', async () => {
+  test('writes to the backup-excluded fallback file when encrypted save rejects', async () => {
     rejectEncryptedSetItem();
     await expect(
       saveSecureSettings({
@@ -67,8 +81,9 @@ describe('saveSecureSettings — fallback on Keychain failure', () => {
     // Encrypted store remains empty.
     expect(EncryptedStorageMock.__peek()[SECURE_KEY]).toBeUndefined();
 
-    // Fallback in plaintext AsyncStorage carries the same payload.
-    const raw = await AsyncStorage.getItem(FALLBACK_KEY);
+    // The fallback file carries the same payload; AsyncStorage nothing.
+    const raw = await fallbackFile();
+    expect(await AsyncStorage.getItem(FALLBACK_KEY)).toBeNull();
     expect(raw).toBeTruthy();
     const parsed = JSON.parse(raw as string);
     expect(parsed.manualLatitude).toBe(59.3293);
@@ -77,8 +92,8 @@ describe('saveSecureSettings — fallback on Keychain failure', () => {
     expect(parsed.locationPresets).toEqual([stockholm]);
   });
 
-  test('loadSecureSettings reads from fallback when encrypted store is empty', async () => {
-    // Simulate a prior session that hit the fallback path.
+  test('loadSecureSettings reads a copy an older build left in AsyncStorage, and moves it out', async () => {
+    // Simulate a prior session on an older build that hit the fallback path.
     await AsyncStorage.setItem(
       FALLBACK_KEY,
       JSON.stringify({
@@ -91,6 +106,9 @@ describe('saveSecureSettings — fallback on Keychain failure', () => {
     const loaded = await loadSecureSettings();
     expect(loaded.manualLatitude).toBe(59.3293);
     expect(loaded.locationPresets).toEqual([stockholm]);
+    // Out of the store the backups carry, into the file they do not.
+    expect(await AsyncStorage.getItem(FALLBACK_KEY)).toBeNull();
+    expect(JSON.parse((await fallbackFile()) as string).manualLatitude).toBe(59.3293);
   });
 
   test('successful encrypted save drains the plaintext fallback', async () => {
@@ -144,7 +162,7 @@ describe('saveSettings — keychain failure does not block plaintext settings', 
     expect(parsed.manualLatitude).toBeUndefined();
     expect(parsed.manualLongitude).toBeUndefined();
 
-    const fallback = await AsyncStorage.getItem(FALLBACK_KEY);
+    const fallback = await fallbackFile();
     expect(fallback).toBeTruthy();
     expect(JSON.parse(fallback as string).manualLatitude).toBe(59.3293);
   });

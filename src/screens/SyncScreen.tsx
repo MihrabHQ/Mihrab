@@ -50,7 +50,11 @@ import { HelpText } from '../components/ui/InfoSheet';
 import { PairingQr } from './sync/PairingQr';
 import { useSyncDialog } from './sync/useSyncDialog';
 import { copyToClipboard, readClipboard } from '../sync/clipboard';
-import { fingerprintOf, myPairingCode } from '../sync/deviceIdentity';
+import { fingerprintOf, myPairingCode, getDeviceIdentity } from '../sync/deviceIdentity';
+import {
+  encryptedStoreDegraded,
+  onEncryptedStoreDegraded,
+} from '../storage/durableWrite';
 import {
   defaultDeviceName,
   getDeviceName,
@@ -64,6 +68,7 @@ import {
   scanQrCode,
 } from '../sync/qrScanner';
 import {
+  acceptPeer,
   addPeerByCode,
   forgetPeer,
   listPeers,
@@ -106,14 +111,58 @@ function PeerRow({
   palette,
   onRename,
   onRemove,
+  onAccept,
 }: {
   peer: Peer;
   palette: Palette;
   onRename: (name: string) => void;
   onRemove: () => void;
+  onAccept: () => void;
 }) {
   const { t } = useTranslation();
   const [name, setName] = useState(peer.name ?? '');
+
+  // A DEVICE WAITING TO BE ACCEPTED: its name and fingerprint, Accept and
+  // Remove, and nothing else. Not renamed, not shown as synced: it has
+  // sent nothing this device has read and received nothing from it.
+  if (peer.pending) {
+    return (
+      <View style={styles.peerRow}>
+        <View style={styles.peerText}>
+          <Text style={[typeStyle('body'), { color: palette.text }]}>
+            {peer.name || t('sync.unnamedDevice')}
+          </Text>
+          <Text style={[typeStyle('footnote'), { color: palette.muted }]}>
+            {t('sync.fingerprint', { value: peer.fingerprint })}
+          </Text>
+          <Text style={[typeStyle('footnote'), { color: palette.text }]}>
+            {t('sync.pendingHelp')}
+          </Text>
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('sync.accept')}
+          testID={`sync-accept-${peer.fingerprint}`}
+          onPress={onAccept}
+          style={({ pressed }) => [styles.remove, pressed && styles.pressed]}
+        >
+          <Text style={[typeStyle('footnote'), { color: palette.accent }]}>
+            {t('sync.accept')}
+          </Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('sync.remove')}
+          onPress={onRemove}
+          style={({ pressed }) => [styles.remove, pressed && styles.pressed]}
+        >
+          <Text style={[typeStyle('footnote'), { color: palette.danger }]}>
+            {t('sync.remove')}
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.peerRow}>
@@ -177,6 +226,16 @@ export function SyncScreen() {
   const { palette } = useAppPalette();
 
   const [code, setCode] = useState<string | null>(null);
+  /** This device's own fingerprint, for the other screen to compare. */
+  const [myFingerprint, setMyFingerprint] = useState<string | null>(null);
+  /**
+   * The encrypted store has refused something this session. For sync that
+   * means the identity and the peer list may be unreachable (they never
+   * fall back to plaintext), and for the rest that a record sits in a
+   * plaintext file. Said here, where the person it concerns is looking.
+   */
+  const [degraded, setDegraded] = useState(encryptedStoreDegraded());
+  useEffect(() => onEncryptedStoreDegraded(() => setDegraded(true)), []);
   const [deviceName, setName] = useState('');
   const [peers, setPeers] = useState<Peer[]>([]);
   const [entered, setEntered] = useState('');
@@ -213,6 +272,11 @@ export function SyncScreen() {
         ]);
         if (!alive) return;
         setCode(mine);
+        try {
+          setMyFingerprint(fingerprintOf((await getDeviceIdentity()).publicKey));
+        } catch {
+          /* the code is enough */
+        }
         setName(name);
         setPeers(list);
         setSettings(stored);
@@ -439,6 +503,26 @@ export function SyncScreen() {
     })();
   }, []);
 
+  // ACCEPTING IS THE SAME DECISION AS TYPING THE CODE, so it asks the
+  // same question, with the fingerprint the other device shows under
+  // "This device" for the user to compare before answering.
+  const onAccept = useCallback(
+    (peer: Peer) => {
+      ask({
+        title: t('sync.pairWarnTitle', { value: peer.fingerprint }),
+        message: `${t('sync.acceptBody')}\n\n${t('sync.pairWarnBody')}`,
+        confirmLabel: t('sync.accept'),
+        onConfirm: () => {
+          void (async () => {
+            await acceptPeer(peer.pk);
+            await refreshPeers();
+          })();
+        },
+      });
+    },
+    [ask, refreshPeers, t],
+  );
+
   const onRemove = useCallback(
     (peer: Peer) => {
       ask({
@@ -524,6 +608,14 @@ export function SyncScreen() {
             the folder card each carried a paragraph saying the same thing
             (redesign-plan B.10.4); the intro is the one that stays, with the
             folder card's fuller version behind the ⓘ. */}
+        {degraded ? (
+          <View style={[styles.card, card]}>
+            <Text style={[typeStyle('body'), { color: palette.danger }]}>
+              {t('sync.storeDegraded')}
+            </Text>
+          </View>
+        ) : null}
+
         <HelpText
           title={t('sync.folderSection')}
           text={`${t('sync.pairIntro')}\n\n${t('sync.folderHelp')}`}
@@ -669,6 +761,11 @@ export function SyncScreen() {
               >
                 {code}
               </Text>
+              {myFingerprint ? (
+                <Text style={[typeStyle('footnote'), { color: palette.muted }]}>
+                  {t('sync.fingerprint', { value: myFingerprint })}
+                </Text>
+              ) : null}
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={t('sync.copyCode')}
@@ -800,6 +897,7 @@ export function SyncScreen() {
                   })();
                 }}
                 onRemove={() => onRemove(peer)}
+                onAccept={() => onAccept(peer)}
               />
             ))
           )}

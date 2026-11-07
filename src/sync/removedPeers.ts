@@ -33,6 +33,7 @@
  * ever owned and every file this app writes carries them all. Ninety days
  * is the same answer, for the same reason, as the sunnah tombstones.
  */
+import { SYNC_REMOVED_KEY } from '../storage/sensitiveKeys';
 import {
   durableEncryptedGet,
   durableEncryptedSet,
@@ -41,7 +42,7 @@ import { KEY_BYTES } from './pairingCode';
 import { fromBase64 } from './secureRandom';
 
 /** Beside the peer list, and for the same reason: not in a cloud backup. */
-const REMOVED_KEY = 'prayerapp.sync.removed.v1';
+const REMOVED_KEY = SYNC_REMOVED_KEY;
 
 /** Long enough for a device that has been in a drawer since. */
 export const REMOVAL_TTL_DAYS = 90;
@@ -97,7 +98,8 @@ function coerce(value: unknown, now: number): PeerRemoval[] {
 async function read(now: number): Promise<PeerRemoval[]> {
   let raw: string | null = null;
   try {
-    raw = await durableEncryptedGet(REMOVED_KEY);
+    // Sensitive: never kept in plaintext — see `durableWrite.ts`.
+    raw = await durableEncryptedGet(REMOVED_KEY, { sensitive: true });
   } catch {
     // Same trade as the peer list: an unreadable Keychain degrades to "no
     // removals", which loses the announcement rather than the app.
@@ -121,10 +123,18 @@ function mutate<T>(
   change: (rows: PeerRemoval[]) => { rows: PeerRemoval[]; result: T },
 ): Promise<T> {
   const run = async (): Promise<T> => {
-    const before = await listRemovals();
+    // Read strictly before writing: a list that could not be read is not
+    // an empty one, and writing one entry over it would lose the rest.
+    const strict = await durableEncryptedGet(REMOVED_KEY, { strict: true, sensitive: true });
+    let before: PeerRemoval[] = [];
+    try {
+      before = strict ? coerce(JSON.parse(strict), Date.now()) : [];
+    } catch {
+      before = [];
+    }
     const { rows, result } = change(before);
     if (rows !== before) {
-      await durableEncryptedSet(REMOVED_KEY, JSON.stringify(rows));
+      await durableEncryptedSet(REMOVED_KEY, JSON.stringify(rows), { sensitive: true });
       cached = Promise.resolve(rows);
     }
     return result;

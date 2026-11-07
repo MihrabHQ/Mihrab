@@ -62,7 +62,7 @@ import { encode, KEY_BYTES } from './pairingCode';
 import { fromBase64, toBase64 } from './secureRandom';
 import { getDeviceIdentity } from './deviceIdentity';
 import { getDeviceName } from './deviceName';
-import { forgetPeer, listPeers, notePeerSeen, recipientKeys } from './peers';
+import { forgetPeer, isTrustedPeer, listPeers, notePeerSeen, recipientKeys } from './peers';
 import { listRemovals } from './removedPeers';
 import { open, seal } from './envelope';
 
@@ -219,6 +219,8 @@ export type SyncSkipped = {
    * one, and the Sync screen should be able to tell the user which.
    */
   alreadySeen: number;
+  /** Opened, from a device the user has not accepted yet: noted, not merged. */
+  pending: number;
 };
 
 /**
@@ -253,7 +255,7 @@ export type SyncOutcome = {
   wrote: string | null;
   /** How many envelopes were opened and merged. */
   read: number;
-  /** Devices that announced themselves this round and are now paired. */
+  /** Devices that announced themselves this round and now wait, pending, to be accepted. */
   learned: number;
   /** Devices dropped this round because a peer announced their removal. */
   forgotten: number;
@@ -281,6 +283,7 @@ export async function syncWithFolder(
     notForUs: 0,
     unreadable: 0,
     alreadySeen: 0,
+    pending: 0,
   };
   let read = 0;
   let learned = 0;
@@ -352,6 +355,26 @@ export async function syncWithFolder(
 
     const from = toBase64(result.senderPublicKey);
 
+    // ── A DEVICE WE HAVE NOT ACCEPTED IS NOTED, AND NOTHING MORE ──────
+    //
+    // Its file opened, which proves only that it had our code — and our
+    // code is in the clear in every file in this folder. So it gets a row
+    // on the Sync screen, pending, with its name and its fingerprint for
+    // the user to compare; its removals are not carried out, its snapshot
+    // is not merged, and nothing is sealed to it, until the user accepts
+    // it there or types its code. `peers.ts` says why.
+    if (!(await isTrustedPeer(from))) {
+      const before = (await listPeers()).length;
+      await notePeerSeen({
+        publicKey: result.senderPublicKey,
+        name: result.senderName,
+        now: options.now,
+      });
+      if ((await listPeers()).length > before) learned++;
+      skipped.pending++;
+      continue;
+    }
+
     // ── REMOVALS THE SENDER IS ANNOUNCING ──────────────────────────────
     //
     // Acted on BEFORE the sender is recorded, so a file announcing that WE
@@ -365,10 +388,9 @@ export async function syncWithFolder(
     // that keeps writing files nobody will open is the confusing state, not
     // a safe one.
     //
-    // Only a device already paired with us can say any of this — the
-    // envelope opened, which means it was sealed to our key by someone
-    // holding our code. Someone with write access to the folder and no
-    // pairing cannot reach this line.
+    // Only a device the user has accepted can say any of this — see the
+    // check above. Someone with write access to the folder and no
+    // acceptance cannot reach this line.
     const announced = removalsIn(result.json);
     if (announced.length > 0) {
       const mineKey = toBase64(me.publicKey);
@@ -421,18 +443,13 @@ export async function syncWithFolder(
     // `notePeerSeen` is about to move the stamp forward.
     const knownAt = (await listPeers()).find(p => p.pk === from)?.dataAt;
 
-    // The announcement. A device we already know gets its last-seen and its
-    // name; one we do not is added, which is how a pairing made in one
-    // direction becomes a pair. See `envelope.ts` for what that does and
-    // does not prove.
-    const before = (await listPeers()).length;
+    // A device we know and trust: its last-seen, its name, its record's age.
     await notePeerSeen({
       publicKey: result.senderPublicKey,
       name: result.senderName,
       now: options.now,
       ...(snapshot ? { dataAt: snapshot.createdAt } : {}),
     });
-    if ((await listPeers()).length > before) learned++;
 
     if (!snapshot) {
       // Decrypted cleanly and is not a snapshot: a version of the app that
@@ -573,7 +590,7 @@ export async function syncWithFolder(
   // It stops by itself: the moment a file from that peer is opened, they
   // demonstrably know us — they sealed it to our key — and `lastSeenAt` is
   // set, so no further invite is written.
-  const strangers = (await listPeers()).filter(peer => !peer.lastSeenAt);
+  const strangers = (await listPeers()).filter(peer => !peer.pending && !peer.lastSeenAt);
   for (const stranger of strangers) {
     try {
       await folder.write(inviteFileNameFor(fromBase64(stranger.pk)), body);

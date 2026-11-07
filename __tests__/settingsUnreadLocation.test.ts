@@ -7,6 +7,7 @@
  * every saved location pruned and the active one dropped.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ReactNativeBlobUtil from 'react-native-blob-util';
 import {
   _resetSettingsStorageForTests,
   loadSettings,
@@ -20,6 +21,12 @@ const Enc = require('react-native-encrypted-storage');
 const KEY = 'prayerapp.settings.v1';
 const SECURE_KEY = 'prayerapp.location.v1';
 const FALLBACK_KEY = 'prayerapp.location.fallback.v1';
+// The fallback is a file kept out of every backup — `unprotectedStore.ts`.
+const FALLBACK_FILE = `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/unprotected/${encodeURIComponent(FALLBACK_KEY)}`;
+const fallbackFile = async (): Promise<string | null> =>
+  (await ReactNativeBlobUtil.fs.exists(FALLBACK_FILE))
+    ? ReactNativeBlobUtil.fs.readFile(FALLBACK_FILE, 'utf8')
+    : null;
 
 const HOME: LocationPreset = {
   id: 'p-home',
@@ -105,6 +112,7 @@ test('a theme change after a failed read leaves the location stores untouched', 
   // The encrypted entry was never written, and no fallback was made.
   expect(Enc.default.setItem).not.toHaveBeenCalled();
   expect(secureOnDisk()).toEqual(SECURE);
+  expect(await fallbackFile()).toBeNull();
   expect(await AsyncStorage.getItem(FALLBACK_KEY)).toBeNull();
 
   const plain = await plainOnDisk();
@@ -184,7 +192,7 @@ test('a location set while the store is still unreadable goes to the fallback on
   expect(Enc.default.setItem).not.toHaveBeenCalled();
   expect(secureOnDisk()).toEqual(SECURE);
   const fallback = JSON.parse(
-    (await AsyncStorage.getItem(FALLBACK_KEY)) as string,
+    (await fallbackFile()) as string,
   );
   expect(fallback.manualLatitude).toBe(RIGA.latitude);
   // The saved locations' sources on disk are kept beside the new place's.

@@ -26,6 +26,12 @@
 
 import { launchRead, launchWrite } from '../boot/launchReads';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import { markEncryptedStoreDegraded } from '../storage/durableWrite';
+import {
+  unprotectedGet,
+  unprotectedRemove,
+  unprotectedSet,
+} from '../storage/unprotectedStore';
 import { coerceLocationPresets } from './locationPresets';
 import type { LocationPreset } from './types';
 
@@ -38,9 +44,12 @@ const SECURE_KEY = 'prayerapp.location.v1';
  * If the platform Keychain rejects writes (errSecMissingEntitlement -34018,
  * locked secure enclave, etc.) we MUST NOT lose the user's coordinates and
  * saved presets. Memory: "user data must never go missing." The fallback is
- * plaintext AsyncStorage. That is unfortunately PII at rest, but the
+ * a plaintext file kept out of every backup (`unprotectedStore.ts`) — it
+ * used to be AsyncStorage, which Android's cloud backup carries, and is
+ * moved out of there when found. That is unfortunately PII at rest, but the
  * alternative is silently dropping the user's home/work coordinates on every
- * settings save — which is worse and breaks every prayer-time fetch.
+ * settings save — which is worse and breaks every prayer-time fetch. While
+ * it is in use, the store reports itself degraded and Settings says so.
  *
  * On every successful encrypted save we drain the fallback (delete the
  * AsyncStorage entry) so PII doesn't linger in plaintext once the keychain
@@ -78,8 +87,19 @@ export const SECURE_FIELD_NAMES: ReadonlyArray<keyof SecureSettings> = [
 
 async function readFallback(): Promise<SecureSettings | null> {
   try {
-    const raw = await launchRead(SECURE_FALLBACK_KEY);
-    if (!raw) return null;
+    let raw = await unprotectedGet(SECURE_FALLBACK_KEY);
+    if (!raw) {
+      // Where older builds kept it: moved out, since that store is backed up.
+      raw = await launchRead(SECURE_FALLBACK_KEY);
+      if (!raw) return null;
+      try {
+        await unprotectedSet(SECURE_FALLBACK_KEY, raw);
+        await launchWrite(SECURE_FALLBACK_KEY, null);
+      } catch {
+        /* left where it was: better backed up than gone */
+      }
+    }
+    markEncryptedStoreDegraded();
     return sanitize(JSON.parse(raw) as Partial<SecureSettings>);
   } catch {
     return null;
@@ -88,14 +108,16 @@ async function readFallback(): Promise<SecureSettings | null> {
 
 async function writeFallback(s: SecureSettings): Promise<void> {
   try {
-    await launchWrite(SECURE_FALLBACK_KEY, JSON.stringify(sanitize(s)));
+    await unprotectedSet(SECURE_FALLBACK_KEY, JSON.stringify(sanitize(s)));
+    markEncryptedStoreDegraded();
   } catch (e) {
-    // Even AsyncStorage is failing. Last-resort log; nothing else we can do.
+    // Even the file is failing. Last-resort log; nothing else we can do.
     console.warn('secureStorage.writeFallback failed:', e);
   }
 }
 
 async function clearFallback(): Promise<void> {
+  await unprotectedRemove(SECURE_FALLBACK_KEY);
   try {
     await launchWrite(SECURE_FALLBACK_KEY, null);
   } catch {

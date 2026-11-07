@@ -2169,7 +2169,7 @@
     "pairWarnBody": "Todo lo registrado en ese dispositivo aparecerá aquí, y todo lo de aquí aparecerá allí. Cuando los dos difieren, se conserva la entrada más reciente, y lo que elimines en un dispositivo se elimina también en el otro.",
     "pairConfirm": "Vincular",
     "pairedTitle": "Vinculado",
-    "pairedBody": "Este dispositivo ha escrito su clave en la carpeta. Abre Mihrab en el otro dispositivo: en cuanto lea la carpeta, ambos quedan vinculados y sincronizando.",
+    "pairedBody": "Este dispositivo ha escrito su clave en la carpeta. Abre Mihrab en el otro dispositivo: mostrará este dispositivo en espera, con una huella para comparar; acéptalo allí y ambos quedarán emparejados y sincronizando.",
     "errorBadCodeTitle": "Ese código no funcionó",
     "errorBadCode": "Revisa el código e inténtalo de nuevo. Va en grupos de seis, y un solo carácter equivocado basta para rechazarlo.",
     "errorThisDevice": "Ese es el código de este mismo dispositivo. Necesitas el que aparece en el otro.",
@@ -2233,7 +2233,13 @@
     "scanNoCameraBody": "Este dispositivo no tiene cámara para escanear. Escribe o pega el código.",
     "freq15Min": "Cada 15 min",
     "errorFolderUnwritable": "No se puede escribir en esa carpeta. Elige otra: una carpeta que hayas creado tú en Documentos o Descargas es la que mejor funciona.",
-    "errorFolderTitle": "Esa carpeta no funcionó"
+    "errorFolderTitle": "Esa carpeta no funcionó",
+    "accept": "Aceptar",
+    "pendingHelp": "Esperando a que lo aceptes. Comprueba que la huella coincide con la que aparece bajo «Este dispositivo» en ese dispositivo.",
+    "acceptBody": "Este dispositivo se anunció escribiendo en tu carpeta de sincronización. Acéptalo solo si la huella coincide con la que muestra.",
+    "pendingTitle": "Un dispositivo espera",
+    "pendingBody": "{{device}} (huella {{fingerprint}}) escribió en tu carpeta de sincronización. No se comparte nada con él hasta que lo aceptes en Dispositivos emparejados.",
+    "storeDegraded": "El almacenamiento seguro de este dispositivo no funciona. La sincronización no puede ejecutarse sin él, y algunos registros se guardan en un archivo sin cifrar hasta que vuelva."
   },
   "stats": {
     "daysUnit_one": " día",

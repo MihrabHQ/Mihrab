@@ -25,6 +25,8 @@ import { restoreSkyTheme, useSkyTheme } from './theme/skyTheme';
 import { buildNavigationTheme } from './theme/navigationTheme';
 import { useSyncWidgetUiHints } from './widget/syncWidgetUiHints';
 import { useSyncGarminAccent } from './native/useSyncGarminAccent';
+import { evictLegacyFallbacks } from './storage/durableWrite';
+import { SENSITIVE_KEYS } from './storage/sensitiveKeys';
 import { onWidgetQueueChanged } from './native/WidgetQueueWatcher';
 import { syncWidgetLogQueue } from './widget/syncWidgetLogQueue';
 import { syncWidgetTasbihQueue } from './widget/syncWidgetTasbihQueue';
@@ -82,6 +84,14 @@ export function AppNavigationRoot() {
 
   useSyncWidgetUiHints();
   useSyncGarminAccent();
+
+  // Plaintext copies that older builds left in AsyncStorage — which
+  // Android's cloud backup carries — are moved out of it once, at launch;
+  // the sync identity and peer list among them are taken into the
+  // encrypted store or deleted. See `durableWrite.ts`.
+  useEffect(() => {
+    if (hydrated) void evictLegacyFallbacks(SENSITIVE_KEYS);
+  }, [hydrated]);
 
   // The kept launch screen is only shown under the settings it was taken
   // with — see native/LaunchSnapshot.ts. Not the Sky theme's hour: the

@@ -21,6 +21,8 @@ jest.mock('../src/storage/durableWrite', () => ({
   durableEncryptedSet: jest.fn(async (k: string, v: string) => {
     mockSecure.set(k, v);
   }),
+  encryptedStoreDegraded: jest.fn(() => false),
+  onEncryptedStoreDegraded: jest.fn(() => () => {}),
 }));
 
 jest.mock('../src/sync/secureRandom', () => {

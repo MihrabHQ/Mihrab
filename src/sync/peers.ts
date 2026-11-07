@@ -21,10 +21,16 @@
  * or because it wrote a file that named itself (`via: 'announced'`). The
  * second is what makes one code produce two-way sync — see `envelope.ts` —
  * and it is a weaker claim: it proves only that the sender had this device's
- * code, which is public by design. The distinction is kept because the
- * screen should be able to say which happened, and because a future LAN
- * transport will want to gate the announced case behind an explicit accept.
+ * code, which is public by design — and in fact sits in the clear in every
+ * file in the folder, as the recipient of each sealed key. So an announced
+ * device is NOT trusted on arrival. It is kept as `pending`: nothing is
+ * sealed to it and nothing from it is merged until the user accepts it on
+ * the Sync screen, having compared its fingerprint with the one the other
+ * device shows. Until then, anyone with write access to the folder gets a
+ * row on a screen and nothing else. (Reported privately against 91cabca0:
+ * before this, write access to the folder was read access to the record.)
  */
+import { SYNC_PEERS_KEY } from '../storage/sensitiveKeys';
 import {
   durableEncryptedGet,
   durableEncryptedSet,
@@ -40,7 +46,7 @@ import { fromBase64, toBase64 } from './secureRandom';
  * because a plaintext blob listing someone's devices ends up in Android's
  * automatic cloud backup, and the identity it belongs to does not.
  */
-const PEERS_KEY = 'prayerapp.sync.peers.v1';
+const PEERS_KEY = SYNC_PEERS_KEY;
 
 /**
  * Well past any real household, and low enough to matter.
@@ -102,6 +108,13 @@ export type Peer = {
    */
   dataAt?: string;
   via: PeerVia;
+  /**
+   * Announced, and not yet accepted here. Sealed to by nobody, merged from
+   * by nobody; shown with an Accept button. Cleared by `acceptPeer`, or by
+   * the user typing its code, which is the same decision made the other
+   * way round.
+   */
+  pending?: boolean;
 };
 
 /**
@@ -166,6 +179,7 @@ function coerce(value: unknown): Peer[] {
       ...(typeof r.lastSeenAt === 'string' ? { lastSeenAt: r.lastSeenAt } : {}),
       ...(typeof r.dataAt === 'string' ? { dataAt: r.dataAt } : {}),
       via: r.via === 'code' ? 'code' : 'announced',
+      ...(r.pending === true ? { pending: true } : {}),
     });
   }
   return out.slice(0, MAX_PEERS);
@@ -174,7 +188,8 @@ function coerce(value: unknown): Peer[] {
 async function read(): Promise<Peer[]> {
   let raw: string | null = null;
   try {
-    raw = await durableEncryptedGet(PEERS_KEY);
+    // Sensitive: never kept in plaintext — see `durableWrite.ts`.
+    raw = await durableEncryptedGet(PEERS_KEY, { sensitive: true });
   } catch {
     // An unreadable Keychain is a bad moment to throw: the caller is either
     // drawing a screen or sealing a file, and "no peers" degrades to "sync
@@ -207,10 +222,18 @@ function mutate<T>(
   change: (peers: Peer[]) => { peers: Peer[]; result: T },
 ): Promise<T> {
   const run = async (): Promise<T> => {
-    const before = await listPeers();
+    // Read strictly before writing: a list that could not be read is not
+    // an empty one, and writing one device over it would unpair the rest.
+    const strict = await durableEncryptedGet(PEERS_KEY, { strict: true, sensitive: true });
+    let before: Peer[] = [];
+    try {
+      before = strict ? coerce(JSON.parse(strict)) : [];
+    } catch {
+      before = [];
+    }
     const { peers, result } = change(before);
     if (peers !== before) {
-      await durableEncryptedSet(PEERS_KEY, JSON.stringify(peers));
+      await durableEncryptedSet(PEERS_KEY, JSON.stringify(peers), { sensitive: true });
       cached = Promise.resolve(peers);
     }
     return result;
@@ -258,6 +281,8 @@ export async function addPeerByCode(
         via: 'code',
         ...(options.name ? { name: options.name, renamedHere: true } : {}),
       };
+      // Typing the code is the acceptance.
+      delete upgraded.pending;
       return {
         peers: peers.map(p => (p.pk === pk ? upgraded : p)),
         result: { ok: true, peer: upgraded, already: true } as AddPeerResult,
@@ -284,10 +309,10 @@ export async function addPeerByCode(
  * Record that a file from `publicKey` was opened.
  *
  * This is the other half of the two-way pairing: A learns B here, from the
- * header of the first file B writes. It adds an unknown device rather than
- * ignoring it, which is the deliberate trade the folder transport makes —
- * write access to the folder is the gate, and `envelope.ts` says why. It is
- * also where an already-known peer gets its `lastSeenAt` and its name.
+ * header of the first file B writes. An unknown device is added as
+ * `pending` — a row the user can accept or remove, not yet a recipient and
+ * not yet a source; `envelope.ts` says why. It is also where an
+ * already-known peer gets its `lastSeenAt` and its name.
  *
  * `dataAt` is the snapshot's own `createdAt` — pass it and the peer learns
  * how fresh its record is, which is a different fact from having read a
@@ -364,9 +389,30 @@ export async function notePeerSeen(input: {
       lastSeenAt: at,
       ...(freshest(undefined) ? { dataAt: freshest(undefined) } : {}),
       via: 'announced',
+      pending: true,
     };
     return { peers: [...peers, peer], result: peer };
   });
+}
+
+/**
+ * Trust a device that announced itself: from now on it is sealed to and
+ * merged from. The user's decision, made on the Sync screen after
+ * comparing the fingerprint shown there with the one on the other device.
+ */
+export function acceptPeer(pk: string): Promise<boolean> {
+  return mutate(peers => {
+    const existing = peers.find(p => p.pk === pk);
+    if (!existing || !existing.pending) return { peers, result: false };
+    const accepted: Peer = { ...existing };
+    delete accepted.pending;
+    return { peers: peers.map(p => (p.pk === pk ? accepted : p)), result: true };
+  });
+}
+
+/** Whether `pk` is a device this one trusts: paired, and not pending. */
+export async function isTrustedPeer(pk: string): Promise<boolean> {
+  return (await listPeers()).some(p => p.pk === pk && !p.pending);
 }
 
 /** Rename a peer locally. Never sent anywhere; this device's label for it. */
@@ -417,15 +463,15 @@ export async function forgetPeer(pk: string): Promise<boolean> {
   return removed;
 }
 
-/** Every peer, as keys ready to hand to `seal`. */
+/** Every accepted peer, as keys ready to hand to `seal`. A pending one is not sealed to. */
 export async function recipientKeys(): Promise<Uint8Array[]> {
   const peers = await listPeers();
-  return peers.map(p => fromBase64(p.pk));
+  return peers.filter(p => !p.pending).map(p => fromBase64(p.pk));
 }
 
 /** Whether this device has anywhere to sync to. */
 export async function hasPeers(): Promise<boolean> {
-  return (await listPeers()).length > 0;
+  return (await listPeers()).some(p => !p.pending);
 }
 
 /** For tests, and for "unpair everything". */

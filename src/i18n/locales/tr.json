@@ -2168,7 +2168,7 @@
     "pairWarnBody": "O cihazda kayıtlı olan her şey burada, buradaki her şey de orada görünecek. İkisi ayrıldığında daha yeni kayıt korunur; bir cihazda sildiğiniz şey diğerinden de silinir.",
     "pairConfirm": "Eşleştir",
     "pairedTitle": "Eşleştirildi",
-    "pairedBody": "Bu cihaz anahtarını klasöre yazdı. Diğer cihazda Mihrab’ı açın — klasörü okur okumaz ikisi de eşleşmiş ve eşitleniyor olur.",
+    "pairedBody": "Bu cihaz anahtarını klasöre yazdı. Diğer cihazda Mihrab’ı açın — bu cihazı karşılaştırmak için bir parmak iziyle bekliyor olarak gösterir; orada kabul edin, ikisi de eşleşir ve eşitlenir.",
     "errorBadCodeTitle": "Bu kod işe yaramadı",
     "errorBadCode": "Kodu denetleyip yeniden deneyin. Altışarlı gruplar hâlindedir ve tek bir yanlış karakter reddedilmesine yeter.",
     "errorThisDevice": "Bu, bu cihazın kendi kodu. Diğer cihazda görünen kod gerekiyor.",
@@ -2232,7 +2232,13 @@
     "scanNoCameraBody": "Bu cihazda tarama yapacak kamera yok. Kodu yazın veya yapıştırın.",
     "freq15Min": "15 dk'da bir",
     "errorFolderUnwritable": "O klasöre yazılamıyor. Başka birini seçin — Belgeler ya da İndirilenler içinde kendi oluşturduğunuz bir klasör en iyi sonucu verir.",
-    "errorFolderTitle": "O klasör işe yaramadı"
+    "errorFolderTitle": "O klasör işe yaramadı",
+    "accept": "Kabul et",
+    "pendingHelp": "Kabul etmenizi bekliyor. Parmak izinin o cihazdaki “Bu cihaz” altındakiyle eşleştiğini kontrol edin.",
+    "acceptBody": "Bu cihaz eşitleme klasörünüze yazarak kendini duyurdu. Yalnızca parmak izi onda gösterilenle eşleşiyorsa kabul edin.",
+    "pendingTitle": "Bir cihaz bekliyor",
+    "pendingBody": "{{device}} (parmak izi {{fingerprint}}) eşitleme klasörünüze yazdı. Eşleştirilmiş cihazlar altında kabul edene kadar onunla hiçbir şey paylaşılmaz.",
+    "storeDegraded": "Bu cihazın güvenli depolaması çalışmıyor. Eşitleme onsuz çalışamaz ve bazı kayıtlar geri gelene kadar şifrelenmemiş bir dosyada tutuluyor."
   },
   "stats": {
     "daysUnit_one": " gün",

@@ -104,6 +104,22 @@ export function reportForRound(
     };
   }
 
+  // A device waiting to be accepted comes before everything else: until
+  // the user acts, nothing from it is merged and nothing reaches it, and
+  // "nothing new" would be the wrong account of a folder with a stranger
+  // in it. Named by what it calls itself, with the fingerprint to check.
+  const pending = peers.find(p => p.pending);
+  if (pending) {
+    return {
+      title: 'sync.pendingTitle',
+      body: 'sync.pendingBody',
+      vars: {
+        device: pending.name ?? options.unnamedDevice ?? 'Unnamed device',
+        fingerprint: pending.fingerprint,
+      },
+    };
+  }
+
   if (result.outcome.read > 0) {
     return { title: 'sync.syncDoneTitle', body: 'sync.syncDoneBody' };
   }
@@ -111,7 +127,8 @@ export function reportForRound(
   // Nothing was opened at all. A paired device that has NEVER been seen
   // almost always means the two are looking at different folders — which is
   // invisible from either screen, so it has to be said.
-  const neverAnyone = peers.length > 0 && peers.every(p => !p.lastSeenAt);
+  const accepted = peers.filter(p => !p.pending);
+  const neverAnyone = accepted.length > 0 && accepted.every(p => !p.lastSeenAt);
   return {
     title: 'sync.syncQuietTitle',
     body: neverAnyone ? 'sync.syncNothingArrived' : 'sync.syncNothing',

@@ -41,7 +41,9 @@ Mihrab is free and open source. It has no accounts, no ads, no analytics, no cra
 
 **Photos and files.** When you export a monthly prayer-times image or a data export, the app saves it to the place you choose (photo library or a file). The app only adds the image you export; it does not browse your photo library.
 
-**Device sync (optional).** If you turn on sync, a snapshot of the categories you select is merged between your own devices. The snapshot is sealed to the other device's key and written to a folder you choose (for example a folder in your own cloud-storage app). The developer cannot read it and has no access to that folder. You can turn sync off and forget a device at any time.
+**Device sync (optional).** If you turn on sync, a snapshot of the categories you select is merged between your own devices. The snapshot is sealed to the other device's key and written to a folder you choose (for example a folder in your own cloud-storage app). The developer cannot read it and has no access to that folder. A device is only added to your set when you type its code, or when you accept it on the Sync screen after it has announced itself there; until then nothing is shared with it. You can turn sync off and forget a device at any time.
+
+**If secure storage fails.** Your records and location are kept in the device's encrypted storage (Keychain on iOS, Keystore-backed storage on Android). If that storage refuses to work, the app keeps your records and location in an unencrypted file in its own private folder rather than losing them, excludes that file from system backups, tells you so in Settings → Sync, and moves them back the moment encrypted storage works again. The sync key and the list of paired devices are never kept unencrypted: without encrypted storage, sync is unavailable on that device.
 
 **Widgets and Live Activity.** Home-screen widgets and the iOS Live Activity show the prayer times the app already has. They use no server and no push service.
 
@@ -128,7 +130,9 @@ Mihrab är gratis och öppen källkod. Appen har inga konton, ingen reklam, inge
 
 **Bilder och filer.** När du exporterar en månadsbild med bönetider eller en dataexport sparar appen den där du väljer (fotobibliotek eller fil). Appen lägger bara till den bild du exporterar och bläddrar inte i ditt fotobibliotek.
 
-**Enhetssynk (valfritt).** Om du slår på synk slås en ögonblicksbild av de kategorier du valt samman mellan dina egna enheter. Ögonblicksbilden förseglas till den andra enhetens nyckel och skrivs till en mapp du väljer (t.ex. en mapp i din egen molnlagringsapp). Utvecklaren kan inte läsa den och har ingen åtkomst till mappen. Du kan stänga av synk och glömma en enhet när som helst.
+**Enhetssynk (valfritt).** Om du slår på synk slås en ögonblicksbild av de kategorier du valt samman mellan dina egna enheter. Ögonblicksbilden förseglas till den andra enhetens nyckel och skrivs till en mapp du väljer (t.ex. en mapp i din egen molnlagringsapp). Utvecklaren kan inte läsa den och har ingen åtkomst till mappen. En enhet läggs bara till bland dina när du skriver in dess kod, eller när du godkänner den på synkskärmen efter att den anmält sig där; dessförinnan delas inget med den. Du kan stänga av synk och glömma en enhet när som helst.
+
+**Om säker lagring slutar fungera.** Dina poster och din plats sparas i enhetens krypterade lagring (Keychain på iOS, Keystore-baserad lagring på Android). Om den lagringen vägrar fungera sparar appen poster och plats i en okrypterad fil i sin egen privata mapp hellre än att förlora dem, undantar filen från systemets säkerhetskopior, säger till under Inställningar → Synk, och flyttar tillbaka dem så snart den krypterade lagringen fungerar igen. Synknyckeln och listan över parkopplade enheter sparas aldrig okrypterat: utan krypterad lagring är synk otillgänglig på den enheten.
 
 **Widgetar och Live Activity.** Widgetar och iOS Live Activity visar de bönetider appen redan har. De använder ingen server och ingen pushtjänst.
 
