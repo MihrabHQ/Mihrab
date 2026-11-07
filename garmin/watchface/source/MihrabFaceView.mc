@@ -11,7 +11,7 @@
 //            ─────
 //          Asr  16:42                   the next prayer
 //            5h 49m                     the countdown as Minimal writes it
-//           👣 12 345                   today's steps
+//           👣 004532                   today's steps
 //
 import Toybox.Activity;
 import Toybox.ActivityMonitor;
@@ -322,18 +322,27 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
     }
 
-    // A footprint and today's steps, centred on (cx, cy), in the larger
-    // font that fits the dial there — room for "99 999".
+    // A footprint and today's steps as six figures, "004532", centred on
+    // (cx, cy) in the largest font that fits the dial there; the leading
+    // zeros grey, like the timer at rest.
     private function drawSteps(dc as Dc, cx as Number, cy as Number) as Void {
         var w = dc.getWidth();
         var h = dc.getHeight();
-        var text = stepsText();
+        var steps = stepCount();
+        var text = steps.format("%06d");
+        var lead = 0;
+        while (lead < text.length() - 1 && (text.substring(lead, lead + 1) as String).equals("0")) {
+            lead++;
+        }
+        if (steps == 0) {
+            lead = text.length();
+        }
         var fonts = [Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_XTINY] as Array<Graphics.FontDefinition>;
         var font = Graphics.FONT_XTINY;
         for (var i = 0; i < fonts.size(); i++) {
             var f = fonts[i];
             var bottom = cy + Graphics.getFontAscent(f) / 2;
-            if (ICON + 4 + dc.getTextWidthInPixels("99 999", f) + 8 <= 2 * halfChord(w, h, bottom)) {
+            if (ICON + 4 + dc.getTextWidthInPixels("000000", f) + 8 <= 2 * halfChord(w, h, bottom)) {
                 font = f;
                 break;
             }
@@ -342,7 +351,17 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var x = cx - (ICON + 4 + textW) / 2;
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
         drawFootprints(dc, x, cy - ICON / 2);
-        dc.drawText(x + ICON + 4, cy, font, text, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        x += ICON + 4;
+        var zeros = text.substring(0, lead) as String;
+        if (zeros.length() > 0) {
+            dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(x, cy, font, zeros, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+            x += dc.getTextWidthInPixels(zeros, font);
+        }
+        if (lead < text.length()) {
+            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(x, cy, font, text.substring(lead, text.length()) as String, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        }
     }
 
     // [icon kind or -1, "8°", "16°/7°", 1 at night else 0] from the
@@ -566,18 +585,14 @@ class MihrabFaceView extends WatchUi.WatchFace {
         dc.fillCircle(x + 12, y + 11, 2);
     }
 
-    // Today's steps, thousands spaced: "12 345".
-    private function stepsText() as String {
-        var info = ActivityMonitor.getInfo();
-        var steps = info.steps;
+    // Today's steps (0 when the watch has none to give), at most 999999.
+    private function stepCount() as Number {
+        var steps = ActivityMonitor.getInfo().steps;
         if (steps == null) {
-            return "--";
+            return 0;
         }
         var n = steps as Number;
-        if (n < 1000) {
-            return n.format("%d");
-        }
-        return (n / 1000).format("%d") + " " + (n % 1000).format("%03d");
+        return n > 999999 ? 999999 : n;
     }
 
     // The activity timer as "00:00:00", and whether it is running.
