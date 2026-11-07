@@ -100,7 +100,6 @@ const TAB_UNDER: Readonly<Record<string, string>> = {
   ShareMonth: 'TodayTab',
   Compass: 'TodayTab',
   Fasting: 'LogTab',
-  Sync: 'SettingsTab',
   Backup: 'SettingsTab',
 };
 
@@ -256,7 +255,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
       Khatmah: 'khatmah',
       /** mihrab://hifz — the Hifz page (#121); the hifz reminder lands here. */
       Hifz: 'hifz',
-      Sync: 'sync',
+      SettingsDevices: 'sync',
       /**
        * mihrab://downloads — Settings → Downloads.
        *

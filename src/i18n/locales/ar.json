@@ -16,7 +16,8 @@
     "backup": "نسخ احتياطي",
     "fasting": "الصيام",
     "today": "اليوم",
-    "sync": "المزامنة بين الأجهزة"
+    "sync": "المزامنة بين الأجهزة",
+    "devices": "الأجهزة"
   },
   "a11y": {
     "openSettings": "فتح الإعدادات",
@@ -549,7 +550,10 @@
     "widgetSinceAdhanTitle": "الوقت منذ الأذان",
     "widgetSinceAdhanHelp": "خلال هذه المدة بعد دخول وقت كل صلاة، تعرض أدوات أوقات الصلاة كم مضى على دخوله، ثم تعود إلى العدّ التنازلي للصلاة التالية. وإذا كانت الصلاة التالية قريبة يعود العدّ التنازلي أبكر.",
     "widgetSinceAdhanOff": "إيقاف",
-    "widgetSinceAdhanMinutes": "{{minutes}} د"
+    "widgetSinceAdhanMinutes": "{{minutes}} د",
+    "sectionDevices": "الأجهزة",
+    "sectionDevicesBlurb": "المزامنة بين الأجهزة",
+    "sectionDevicesBlurbAndroid": "المزامنة بين الأجهزة، ساعة Garmin"
   },
   "locationSetup": {
     "headline": "حدّد موقعك",

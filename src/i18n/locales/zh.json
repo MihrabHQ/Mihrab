@@ -16,7 +16,8 @@
     "backup": "备份",
     "fasting": "斋戒",
     "today": "今天",
-    "sync": "在设备之间同步"
+    "sync": "在设备之间同步",
+    "devices": "设备"
   },
   "a11y": {
     "openSettings": "打开设置",
@@ -545,7 +546,10 @@
     "widgetSinceAdhanTitle": "宣礼后的时间",
     "widgetSinceAdhanHelp": "每次礼拜时间到后的这段时间内，礼拜时间小组件会显示已过去多久，然后恢复为下一次礼拜的倒计时。如果下一次礼拜临近，倒计时会更早恢复。",
     "widgetSinceAdhanOff": "关闭",
-    "widgetSinceAdhanMinutes": "{{minutes}} 分钟"
+    "widgetSinceAdhanMinutes": "{{minutes}} 分钟",
+    "sectionDevices": "设备",
+    "sectionDevicesBlurb": "在设备之间同步",
+    "sectionDevicesBlurbAndroid": "在设备之间同步、Garmin 手表"
   },
   "locationSetup": {
     "headline": "设置您的位置",

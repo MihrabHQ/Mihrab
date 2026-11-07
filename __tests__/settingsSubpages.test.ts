@@ -44,6 +44,8 @@ const pageSources = fs
   .readdirSync(path.join(REPO, pagesDir))
   .filter(f => f.endsWith('.tsx'))
   .map(f => read(path.join(pagesDir, f)))
+  // Settings → Devices is the pairing screen itself (nativeHeader).
+  .concat(read('src/screens/SyncScreen.tsx'))
   .join('\n');
 
 describe('the sections', () => {
@@ -158,7 +160,11 @@ describe('every subpage', () => {
     const files = fs
       .readdirSync(path.join(REPO, pagesDir))
       .filter(f => f.endsWith('.tsx'));
-    expect(files.length).toBe(routes.length);
+    // Less the sections that keep their own screen under the native
+    // header — Devices is the pairing screen (see `nativeHeader`).
+    const ownScreens = (SUBPAGES.match(/^\s+nativeHeader: true,$/gm) ?? []).length;
+    expect(ownScreens).toBe(1);
+    expect(files.length).toBe(routes.length - ownScreens);
     for (const f of files) {
       const src = read(path.join(pagesDir, f));
       expect(src).toMatch(/<SettingsPage/);

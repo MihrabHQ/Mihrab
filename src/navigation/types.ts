@@ -99,7 +99,6 @@ export type RootStackParamList = {
   Hifz: undefined;
   Onboarding: undefined;
   Backup: undefined;
-  Sync: undefined;
   Fasting: undefined;
   /**
    * The settings subpages — one destination per section, pushed from the
@@ -132,6 +131,7 @@ export type RootStackParamList = {
   SettingsDownloads: undefined;
   /** Settings → Widgets (Android): every widget's look, and the prayer-times widget's own options. */
   SettingsWidgets: undefined;
+  SettingsDevices: undefined;
   SettingsAbout: undefined;
   /**
    * Pages nested under a section rather than under the index. They are

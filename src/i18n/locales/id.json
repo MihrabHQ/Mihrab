@@ -16,7 +16,8 @@
     "backup": "Pencadangan",
     "fasting": "Puasa",
     "today": "Hari ini",
-    "sync": "Sinkronkan antar perangkat"
+    "sync": "Sinkronkan antar perangkat",
+    "devices": "Perangkat"
   },
   "a11y": {
     "openSettings": "Buka pengaturan",
@@ -545,7 +546,10 @@
     "widgetSinceAdhanTitle": "Waktu sejak azan",
     "widgetSinceAdhanHelp": "Selama waktu ini setelah setiap salat masuk, widget waktu salat menunjukkan sudah berapa lama sejak masuk, lalu kembali menghitung mundur ke salat berikutnya. Jika salat berikutnya sudah dekat, hitung mundur kembali lebih cepat.",
     "widgetSinceAdhanOff": "Mati",
-    "widgetSinceAdhanMinutes": "{{minutes}} mnt"
+    "widgetSinceAdhanMinutes": "{{minutes}} mnt",
+    "sectionDevices": "Perangkat",
+    "sectionDevicesBlurb": "Sinkronkan antar perangkat",
+    "sectionDevicesBlurbAndroid": "Sinkronkan antar perangkat, Jam Garmin"
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",

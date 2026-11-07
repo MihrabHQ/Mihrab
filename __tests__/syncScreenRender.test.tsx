@@ -78,6 +78,11 @@ jest.mock('react-i18next', () => ({
 
 // The picker is native, so in a test it is simply absent — and a screen that
 // asks `hasFolderPicker()` first would never reach the code under test.
+// Android-only, and reads the settings context this render has none of.
+jest.mock('../src/screens/settings/GarminWatchCard', () => ({
+  GarminWatchCard: () => null,
+}));
+
 jest.mock('../src/sync/folderAccess', () => ({
   ...jest.requireActual('../src/sync/folderAccess'),
   hasFolderPicker: () => true,

@@ -16,7 +16,8 @@
     "backup": "ব্যাকআপ",
     "fasting": "রোজা",
     "today": "আজ",
-    "sync": "ডিভাইসের মধ্যে সিঙ্ক"
+    "sync": "ডিভাইসের মধ্যে সিঙ্ক",
+    "devices": "ডিভাইস"
   },
   "a11y": {
     "openSettings": "সেটিংস খুলুন",
@@ -545,7 +546,10 @@
     "widgetSinceAdhanTitle": "আজানের পর থেকে সময়",
     "widgetSinceAdhanHelp": "প্রতিটি নামাজের ওয়াক্ত শুরু হওয়ার পর এই সময় পর্যন্ত নামাজের সময়ের উইজেট দেখায় কতক্ষণ আগে শুরু হয়েছে, তারপর আবার পরের নামাজের কাউন্টডাউনে ফিরে যায়। পরের নামাজ কাছে হলে কাউন্টডাউন আগেই ফিরে আসে।",
     "widgetSinceAdhanOff": "বন্ধ",
-    "widgetSinceAdhanMinutes": "{{minutes}} মিনিট"
+    "widgetSinceAdhanMinutes": "{{minutes}} মিনিট",
+    "sectionDevices": "ডিভাইস",
+    "sectionDevicesBlurb": "ডিভাইসের মধ্যে সিঙ্ক",
+    "sectionDevicesBlurbAndroid": "ডিভাইসের মধ্যে সিঙ্ক, Garmin ঘড়ি"
   },
   "locationSetup": {
     "headline": "আপনার অবস্থান সেট করুন",

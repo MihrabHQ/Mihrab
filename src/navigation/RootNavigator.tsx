@@ -346,15 +346,6 @@ export function RootNavigator() {
           options={{ title: t('nav.backup'), headerLargeTitle: false, contentStyle: edgeToEdge }}
         />
       )}
-      {/* Pairing lives next to Backup because it is the same question asked
-          twice — where does my record live, and how do I get it somewhere
-          else. Its own destination rather than a card inside Backup, since
-          the paired list is something people come back to. */}
-      <Stack.Screen
-        name="Sync"
-        getComponent={() => (require('../screens/SyncScreen') as typeof import('../screens/SyncScreen')).SyncScreen}
-        options={{ title: t('nav.sync'), headerLargeTitle: false, contentStyle: edgeToEdge }}
-      />
       {/* The sunnah calendar, the day-before reminder and the full history —
           reference material, reached from the Log's fasting card rather
           than owning a destination of its own. */}
@@ -382,15 +373,24 @@ export function RootNavigator() {
           key={page.route}
           name={page.route}
           getComponent={page.getComponent}
-          options={{
-            title: t(page.titleKey),
-            headerShown: false,
-            headerBackTitle: t(page.backTitleKey),
-            contentStyle: {
-              backgroundColor: theme.colors.background,
-              paddingBottom: 0,
-            },
-          }}
+          options={
+            page.nativeHeader
+              ? {
+                  title: t(page.titleKey),
+                  headerLargeTitle: false,
+                  headerBackTitle: t(page.backTitleKey),
+                  contentStyle: edgeToEdge,
+                }
+              : {
+                  title: t(page.titleKey),
+                  headerShown: false,
+                  headerBackTitle: t(page.backTitleKey),
+                  contentStyle: {
+                    backgroundColor: theme.colors.background,
+                    paddingBottom: 0,
+                  },
+                }
+          }
         />
       ))}
     </Stack.Navigator>

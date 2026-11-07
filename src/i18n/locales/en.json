@@ -16,7 +16,8 @@
     "backup": "Backup",
     "fasting": "Fasting",
     "today": "Today",
-    "sync": "Sync between devices"
+    "sync": "Sync between devices",
+    "devices": "Devices"
   },
   "a11y": {
     "openSettings": "Open settings",
@@ -545,7 +546,10 @@
     "widgetSinceAdhanTitle": "Time since the adhan",
     "widgetSinceAdhanHelp": "For this long after each prayer comes in, the prayer times widgets show how long ago it was, then go back to counting down to the next prayer. If the next prayer is close, the countdown comes back sooner.",
     "widgetSinceAdhanOff": "Off",
-    "widgetSinceAdhanMinutes": "{{minutes}} min"
+    "widgetSinceAdhanMinutes": "{{minutes}} min",
+    "sectionDevices": "Devices",
+    "sectionDevicesBlurb": "Sync between devices",
+    "sectionDevicesBlurbAndroid": "Sync between devices, Garmin watch"
   },
   "locationSetup": {
     "headline": "Set your location",

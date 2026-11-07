@@ -149,7 +149,7 @@ export function SyncHint({ place, style }: Props) {
         accessibilityLabel={t(`sync.hint.${place}Title`)}
         accessibilityHint={t('sync.hint.openHint')}
         testID={`sync-hint-${place}`}
-        onPress={() => navigation.navigate('Sync')}
+        onPress={() => navigation.navigate('SettingsDevices')}
         style={({ pressed }) => [styles.body, pressed && styles.pressed]}
       >
         <View style={styles.text}>

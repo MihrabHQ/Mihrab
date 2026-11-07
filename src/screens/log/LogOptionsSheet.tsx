@@ -159,7 +159,7 @@ export function LogOptionsSheet({
                 tone="accent"
                 title={t('log.setUpSync', 'Set up sync')}
                 subtitle={t('sync.hint.logBody')}
-                onPress={then(() => navigation.navigate('Sync' as never))}
+                onPress={then(() => navigation.navigate('SettingsDevices' as never))}
               />
             )}
           </Group>

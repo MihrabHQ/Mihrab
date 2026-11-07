@@ -16,7 +16,8 @@
     "backup": "Sauvegarde",
     "fasting": "Jeûne",
     "today": "Aujourd'hui",
-    "sync": "Synchroniser entre appareils"
+    "sync": "Synchroniser entre appareils",
+    "devices": "Appareils"
   },
   "a11y": {
     "openSettings": "Ouvrir les paramètres",
@@ -546,7 +547,10 @@
     "widgetSinceAdhanTitle": "Temps depuis l’adhan",
     "widgetSinceAdhanHelp": "Pendant cette durée après l’entrée de chaque prière, les widgets des horaires indiquent depuis combien de temps elle est entrée, puis reviennent au compte à rebours jusqu’à la prière suivante. Si la prochaine prière est proche, le compte à rebours revient plus tôt.",
     "widgetSinceAdhanOff": "Désactivé",
-    "widgetSinceAdhanMinutes": "{{minutes}} min"
+    "widgetSinceAdhanMinutes": "{{minutes}} min",
+    "sectionDevices": "Appareils",
+    "sectionDevicesBlurb": "Synchroniser entre appareils",
+    "sectionDevicesBlurbAndroid": "Synchroniser entre appareils, Montre Garmin"
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",

@@ -16,7 +16,8 @@
     "backup": "Säkerhetskopiering",
     "fasting": "Fasta",
     "today": "Idag",
-    "sync": "Synka mellan enheter"
+    "sync": "Synka mellan enheter",
+    "devices": "Enheter"
   },
   "a11y": {
     "openSettings": "Öppna inställningar",
@@ -545,7 +546,10 @@
     "widgetSinceAdhanTitle": "Tid sedan adhan",
     "widgetSinceAdhanHelp": "Så länge efter att varje bön har inträtt visar bönetidswidgetarna hur länge sedan det var, och räknar sedan ner till nästa bön igen. Om nästa bön är nära kommer nedräkningen tillbaka tidigare.",
     "widgetSinceAdhanOff": "Av",
-    "widgetSinceAdhanMinutes": "{{minutes}} min"
+    "widgetSinceAdhanMinutes": "{{minutes}} min",
+    "sectionDevices": "Enheter",
+    "sectionDevicesBlurb": "Synka mellan enheter",
+    "sectionDevicesBlurbAndroid": "Synka mellan enheter, Garmin-klocka"
   },
   "locationSetup": {
     "headline": "Ange din plats",

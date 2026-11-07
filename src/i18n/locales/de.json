@@ -16,7 +16,8 @@
     "backup": "Sicherung",
     "fasting": "Fasten",
     "today": "Heute",
-    "sync": "Zwischen Geräten synchronisieren"
+    "sync": "Zwischen Geräten synchronisieren",
+    "devices": "Geräte"
   },
   "a11y": {
     "openSettings": "Einstellungen öffnen",
@@ -545,7 +546,10 @@
     "widgetSinceAdhanTitle": "Zeit seit dem Adhan",
     "widgetSinceAdhanHelp": "So lange nach Beginn jedes Gebets zeigen die Gebetszeiten-Widgets, wie lange das her ist, und zählen dann wieder bis zum nächsten Gebet herunter. Ist das nächste Gebet nah, kommt der Countdown früher zurück.",
     "widgetSinceAdhanOff": "Aus",
-    "widgetSinceAdhanMinutes": "{{minutes}} Min."
+    "widgetSinceAdhanMinutes": "{{minutes}} Min.",
+    "sectionDevices": "Geräte",
+    "sectionDevicesBlurb": "Zwischen Geräten synchronisieren",
+    "sectionDevicesBlurbAndroid": "Zwischen Geräten synchronisieren, Garmin-Uhr"
   },
   "locationSetup": {
     "headline": "Legen Sie Ihren Standort fest",

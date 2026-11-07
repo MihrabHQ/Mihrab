@@ -105,6 +105,21 @@ export const QuranIcon = memo(({ size = S, color }: P) => (
   </Svg>
 ));
 
+/** A phone beside a laptop — the devices that sync. */
+export const DevicesIcon = memo(({ size = S, color }: P) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Path
+      d="M4 15V6.5A1.5 1.5 0 0 1 5.5 5h11A1.5 1.5 0 0 1 18 6.5V8M2.5 18h11"
+      stroke={color}
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    <Rect x="15.5" y="10" width="6" height="10" rx="1.4" stroke={color} strokeWidth={1.8} fill="none" />
+  </Svg>
+));
+
 /** An i in a circle. */
 export const AboutIcon = memo(({ size = S, color }: P) => (
   <Svg width={size} height={size} viewBox="0 0 24 24">

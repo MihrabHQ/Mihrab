@@ -16,7 +16,8 @@
     "backup": "बैकअप",
     "fasting": "रोज़ा",
     "today": "आज",
-    "sync": "उपकरणों के बीच समन्वय"
+    "sync": "उपकरणों के बीच समन्वय",
+    "devices": "डिवाइस"
   },
   "a11y": {
     "openSettings": "खुली सेटिंग",
@@ -545,7 +546,10 @@
     "widgetSinceAdhanTitle": "अज़ान के बाद का समय",
     "widgetSinceAdhanHelp": "हर नमाज़ का वक़्त शुरू होने के बाद इतनी देर तक नमाज़ के समय वाले विजेट दिखाते हैं कि वक़्त शुरू हुए कितनी देर हुई, फिर अगली नमाज़ की उलटी गिनती पर लौट आते हैं। अगर अगली नमाज़ पास हो तो उलटी गिनती पहले लौट आती है।",
     "widgetSinceAdhanOff": "बंद",
-    "widgetSinceAdhanMinutes": "{{minutes}} मिनट"
+    "widgetSinceAdhanMinutes": "{{minutes}} मिनट",
+    "sectionDevices": "डिवाइस",
+    "sectionDevicesBlurb": "उपकरणों के बीच समन्वय",
+    "sectionDevicesBlurbAndroid": "उपकरणों के बीच समन्वय, Garmin घड़ी"
   },
   "locationSetup": {
     "headline": "अपना स्थान निर्धारित करें",

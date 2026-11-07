@@ -24,7 +24,7 @@ import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 
 /**
- * Settings → Notifications → "Garmin watch" — garmin/README.md.
+ * Settings → Devices → "Garmin watch" — garmin/README.md.
  *
  * Android only, and only on a build that carries the module. The card
  * is the switch, the watch's Bluetooth address (copied from Gadgetbridge's

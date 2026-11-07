@@ -12,6 +12,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import {
   AboutIcon,
   AppearanceIcon,
+  DevicesIcon,
   DownloadsIcon,
   LocationIcon,
   NotificationsIcon,
@@ -20,6 +21,7 @@ import {
   WidgetsIcon,
 } from './SettingsSectionIcons';
 import { IS_WEB_APP } from '../../config/webApp';
+import { hasFolderPicker } from '../../sync/folderAccess';
 
 export type SettingsSubpageRoute = Extract<
   keyof RootStackParamList,
@@ -64,6 +66,13 @@ export type SettingsSubpage = {
   platforms?: ReadonlyArray<typeof Platform.OS>;
   /** Pages that hang off this section instead of off the index. */
   children?: readonly SettingsNestedPage[];
+  /**
+   * The page draws its own scroller under the native stack header instead
+   * of sitting in `SettingsPage`. Devices is the pairing screen, which
+   * was a page of its own long before it was a section and scrolls to the
+   * code field and the pairing dialog itself.
+   */
+  nativeHeader?: boolean;
 };
 
 const ALL_SUBPAGES: readonly SettingsSubpage[] = [
@@ -173,6 +182,20 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
     getComponent: () => (require('./pages/DownloadsSettingsScreen') as typeof import('./pages/DownloadsSettingsScreen')).DownloadsSettingsScreen,
   },
   {
+    /**
+     * Everything Mihrab talks to beyond this device: the other devices it
+     * syncs with, and on Android the Garmin watch. Both lived somewhere
+     * nobody looked — pairing under About, the watch at the foot of
+     * Notifications — and both are "my other device".
+     */
+    route: 'SettingsDevices',
+    titleKey: 'settings.sectionDevices',
+    blurbKey: Platform.OS === 'android' ? 'settings.sectionDevicesBlurbAndroid' : 'settings.sectionDevicesBlurb',
+    Icon: DevicesIcon,
+    nativeHeader: true,
+    getComponent: () => (require('../SyncScreen') as typeof import('../SyncScreen')).SyncScreen,
+  },
+  {
     route: 'SettingsAbout',
     titleKey: 'settings.sectionAbout',
     blurbKey: 'settings.sectionAboutBlurb',
@@ -200,7 +223,14 @@ export const SETTINGS_SUBPAGES: readonly SettingsSubpage[] =
     page =>
       (!page.platforms || page.platforms.includes(Platform.OS)) &&
       // Mihrab Web carries everything; there is nothing to manage.
-      !(IS_WEB_APP && page.route === 'SettingsDownloads'),
+      !(IS_WEB_APP && page.route === 'SettingsDownloads') &&
+      // Sync needs a folder to write to and the watch needs Android; a
+      // build with neither has no devices to talk to.
+      !(
+        page.route === 'SettingsDevices' &&
+        !hasFolderPicker() &&
+        Platform.OS !== 'android'
+      ),
   );
 
 /** Every section, whatever the platform — for tests that check the set. */
@@ -225,6 +255,8 @@ export type RegisteredSettingsPage = {
    */
   getComponent: () => ComponentType<Record<string, never>>;
   backTitleKey: string;
+  /** See SettingsSubpage.nativeHeader. */
+  nativeHeader?: boolean;
 };
 
 export const SETTINGS_STACK_PAGES: readonly RegisteredSettingsPage[] =
@@ -234,6 +266,7 @@ export const SETTINGS_STACK_PAGES: readonly RegisteredSettingsPage[] =
       titleKey: page.titleKey,
       getComponent: page.getComponent,
       backTitleKey: 'nav.settings',
+      nativeHeader: page.nativeHeader,
     },
     ...(page.children ?? []).map(child => ({
       route: child.route,

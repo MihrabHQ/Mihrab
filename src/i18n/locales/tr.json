@@ -16,7 +16,8 @@
     "backup": "Yedekleme",
     "fasting": "Oruç",
     "today": "Bugün",
-    "sync": "Cihazlar arasında eşitleme"
+    "sync": "Cihazlar arasında eşitleme",
+    "devices": "Cihazlar"
   },
   "a11y": {
     "openSettings": "Ayarları aç",
@@ -545,7 +546,10 @@
     "widgetSinceAdhanTitle": "Ezandan bu yana geçen süre",
     "widgetSinceAdhanHelp": "Her namaz vakti girdikten sonra bu süre boyunca namaz vakti widget'ları vaktin ne kadar önce girdiğini gösterir, ardından bir sonraki namaza geri sayıma döner. Sonraki namaz yakınsa geri sayım daha erken döner.",
     "widgetSinceAdhanOff": "Kapalı",
-    "widgetSinceAdhanMinutes": "{{minutes}} dk"
+    "widgetSinceAdhanMinutes": "{{minutes}} dk",
+    "sectionDevices": "Cihazlar",
+    "sectionDevicesBlurb": "Cihazlar arasında eşitleme",
+    "sectionDevicesBlurbAndroid": "Cihazlar arasında eşitleme, Garmin saat"
   },
   "locationSetup": {
     "headline": "Konumunuzu ayarlayın",

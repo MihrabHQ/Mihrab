@@ -65,7 +65,7 @@ function AboutCardImpl() {
   };
 
   const goToBackup = () => navigation.navigate('Backup');
-  const goToSync = () => navigation.navigate('Sync');
+  const goToSync = () => navigation.navigate('SettingsDevices');
 
   // v2.7.28: replaying onboarding no longer wipes anything — it simply
   // reruns the welcome flow over the existing data. The destructive
@@ -137,7 +137,7 @@ function AboutCardImpl() {
           {/* Sync needs a folder to write to; Mihrab Web has none. */}
           {hasFolderPicker() ? (
             <SettingsLinkRow
-              title={t('nav.sync')}
+              title={t('nav.devices')}
               help={t('sync.settingsRowHint')}
               onPress={goToSync}
             />

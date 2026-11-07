@@ -93,6 +93,7 @@ import {
 import { Chip } from '../components/controls';
 import { SYNC_CATEGORIES, type SyncCategory } from '../sync/snapshot';
 import { useScrollBottomInset } from '../navigation/pageBottom';
+import { GarminWatchCard } from './settings/GarminWatchCard';
 
 type Palette = ReturnType<typeof useAppPalette>['palette'];
 
@@ -684,6 +685,7 @@ export function SyncScreen() {
               {t('sync.notReady')}
             </Text>
           </View>
+          <GarminWatchCard />
         </CenteredColumn>
       </ScrollView>
     );
@@ -1052,6 +1054,11 @@ export function SyncScreen() {
         >
           {t('sync.privacyNoteP2p')}
         </Text>
+
+        {/* Settings → Devices is everything Mihrab talks to beyond this
+            device, so the Garmin watch (garmin/README.md) is here too.
+            Android only; the card renders nothing anywhere else. */}
+        <GarminWatchCard />
       </CenteredColumn>
       {dialog}
     </ScrollView>

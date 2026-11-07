@@ -20,12 +20,19 @@ it('every pushed page but the mushaf and onboarding drops the stack bottom reser
   expect(nav).toMatch(/const edgeToEdge = \{ backgroundColor: theme\.colors\.background, paddingBottom: 0 \}/);
   for (const route of [
     'QuranListen', 'Khatmah', 'QuranTajweed',
-    'MonthTimes', 'ShareMonth', 'Compass', 'Backup', 'Sync', 'Fasting',
+    'MonthTimes', 'ShareMonth', 'Compass', 'Backup', 'Fasting',
   ]) {
     const block = nav.slice(nav.indexOf(`name="${route}"`));
     const opts = block.slice(0, block.indexOf('/>'));
     expect(`${route}: ${/contentStyle: edgeToEdge/.test(opts)}`).toBe(`${route}: true`);
   }
+});
+
+it('a settings section under the native header (Devices) drops it too', () => {
+  const nav = read('src/navigation/RootNavigator.tsx');
+  const block = nav.slice(nav.indexOf('page.nativeHeader'));
+  expect(block.slice(0, block.indexOf(': {')).length).toBeGreaterThan(0);
+  expect(block.slice(0, 300)).toMatch(/contentStyle: edgeToEdge/);
 });
 
 it('those pages pad their own end', () => {

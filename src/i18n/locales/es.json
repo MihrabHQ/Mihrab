@@ -16,7 +16,8 @@
     "backup": "Copia de seguridad",
     "fasting": "Ayuno",
     "today": "Hoy",
-    "sync": "Sincronizar entre dispositivos"
+    "sync": "Sincronizar entre dispositivos",
+    "devices": "Dispositivos"
   },
   "a11y": {
     "openSettings": "Abrir configuración",
@@ -546,7 +547,10 @@
     "widgetSinceAdhanTitle": "Tiempo desde el adhan",
     "widgetSinceAdhanHelp": "Durante este tiempo después de que entre cada oración, los widgets de horarios muestran cuánto hace que entró y luego vuelven a la cuenta atrás hasta la siguiente. Si la siguiente oración está cerca, la cuenta atrás vuelve antes.",
     "widgetSinceAdhanOff": "Desactivado",
-    "widgetSinceAdhanMinutes": "{{minutes}} min"
+    "widgetSinceAdhanMinutes": "{{minutes}} min",
+    "sectionDevices": "Dispositivos",
+    "sectionDevicesBlurb": "Sincronizar entre dispositivos",
+    "sectionDevicesBlurbAndroid": "Sincronizar entre dispositivos, Reloj Garmin"
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",

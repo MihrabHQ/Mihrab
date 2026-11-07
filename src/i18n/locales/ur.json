@@ -16,7 +16,8 @@
     "backup": "بیک اپ",
     "fasting": "روزہ",
     "today": "آج",
-    "sync": "آلات کے درمیان ہم آہنگی"
+    "sync": "آلات کے درمیان ہم آہنگی",
+    "devices": "آلات"
   },
   "a11y": {
     "openSettings": "ترتیبات کھولیں۔",
@@ -545,7 +546,10 @@
     "widgetSinceAdhanTitle": "اذان کے بعد کا وقت",
     "widgetSinceAdhanHelp": "ہر نماز کا وقت شروع ہونے کے بعد اتنی دیر تک نماز کے اوقات کے ویجیٹ دکھاتے ہیں کہ وقت شروع ہوئے کتنی دیر ہوئی، پھر اگلی نماز کی الٹی گنتی پر واپس آ جاتے ہیں۔ اگر اگلی نماز قریب ہو تو الٹی گنتی پہلے واپس آ جاتی ہے۔",
     "widgetSinceAdhanOff": "بند",
-    "widgetSinceAdhanMinutes": "{{minutes}} منٹ"
+    "widgetSinceAdhanMinutes": "{{minutes}} منٹ",
+    "sectionDevices": "آلات",
+    "sectionDevicesBlurb": "آلات کے درمیان ہم آہنگی",
+    "sectionDevicesBlurbAndroid": "آلات کے درمیان ہم آہنگی، Garmin گھڑی"
   },
   "locationSetup": {
     "headline": "اپنا مقام متعین کریں۔",
