@@ -4,11 +4,4 @@
     <string id="TimesEnded">Vakit kalmadı – Mihrab’ı açın</string>
     <string id="Stale">vakitler eski olabilir</string>
     <string id="Label">Namaz</string>
-    <string id="WClear">Açık</string>
-    <string id="WCloudy">Bulutlu</string>
-    <string id="WSnow">Kar</string>
-    <string id="WStorm">Fırtına</string>
-    <string id="WFog">Sis</string>
-    <string id="WWindy">Rüzgârlı</string>
-    <string id="WRain">Yağmur</string>
 </strings>

@@ -4,18 +4,21 @@ Three Connect IQ apps, fed by the Android app through
 [Gadgetbridge](https://gadgetbridge.org):
 
 - a **watch face**, drawn for a MIP screen (solid ink on black, nothing
-  animating but what must): the date and today's steps; the weather now
-  with today's high and low, in °F where the app's place reads Fahrenheit
-  (the United States, Liberia and a few more) and °C elsewhere; the time as large as the dial allows,
-  with the seconds small and grey beside it; the next prayer with its
-  time and the countdown as the phone's Minimal page writes it — "5h 49m"
-  with the unit letters small, "49m", and inside the last five minutes
-  "4m 37s"; and the activity timer, "00:00:00" in grey at rest and white
-  while it runs. The seconds and, in
-  those last minutes, the countdown are redrawn every second inside their
-  own clips (a partial update); everything else once a minute. The
-  weather is the watch's own, which Gadgetbridge fills from the phone's
-  weather app (Breezy Weather, say);
+  animating but what must): the date; the activity timer, "00:00:00" in
+  grey at rest and white while it runs; the time as large as the dial
+  allows, with the weather to its left — an icon drawn for the condition
+  (sun or moon, partly cloudy, cloud, rain, snow, sleet, storm, fog, wind)
+  and the temperature now, today's high and low under them — and the
+  seconds small and grey to its right; the next prayer with its time and
+  the countdown as the phone's Minimal page writes it — "5h 49m" with the
+  unit letters small, "49m", and inside the last five minutes "4m 37s";
+  and today's steps, room for five digits. Temperatures are in °F where
+  the app's place reads Fahrenheit (the United States, Liberia and a few
+  more) and °C elsewhere. The seconds, a running timer and, in those last
+  minutes, the countdown are redrawn every second inside their own clips
+  (a partial update); everything else once a minute. The weather is the
+  watch's own, which Gadgetbridge fills from the phone's weather app
+  (Breezy Weather, say);
 - a **data field**: "Asr 1h 23m" in any activity screen, or a watch face's
   data-field slot;
 - a **widget**: a glance with the next prayer and the countdown, a page

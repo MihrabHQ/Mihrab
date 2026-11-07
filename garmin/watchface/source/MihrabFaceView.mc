@@ -1,22 +1,24 @@
 // The face, drawn for a MIP screen: solid ink on black, no gradients, no
-// anti-aliased fills, nothing animating but the two figures that must —
-// the seconds beside the time and, inside the last five minutes, the
-// countdown. Those two are redrawn every second inside their own clips
-// (a partial update); everything else once a minute.
+// anti-aliased fills, nothing animating but what must — the seconds, an
+// activity's running timer and, inside the last five minutes, the
+// countdown. Those are redrawn every second inside their own clips (a
+// partial update); everything else once a minute.
 //
-//      Fri 7 Nov  👣4 532         the date · today's steps
-//    8°C Cloudy  10°/4°           the weather now · today's high/low
-//       16:42 07                  the time as large as fits, centred;
-//       ────────                  the seconds small and grey beside it
-//        Asr  16:42               the next prayer
-//          5h 49m                 the countdown as Minimal writes it
-//         00:00:00                an activity's timer, grey when idle
+//            Sat 7 Nov                  the date
+//            00:00:00                   the activity timer, grey at rest
+//   ☁ 8°                  am
+//   16°/7°   16:42        07            the weather · the time · the seconds
+//            ─────
+//          Asr  16:42                   the next prayer
+//            5h 49m                     the countdown as Minimal writes it
+//           👣 12 345                   today's steps
 //
 import Toybox.Activity;
 import Toybox.ActivityMonitor;
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.Math;
+import Toybox.Position;
 import Toybox.System;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
@@ -28,11 +30,29 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private var _countdownBox as [Number, Number, Number, Number]?;
     private var _secondsBox as [Number, Number, Number, Number]?;
     private var _timerBox as [Number, Number, Number, Number]?;
-    private var _timerFont as Graphics.FontDefinition = Graphics.FONT_TINY;
 
     private const INK = Graphics.COLOR_WHITE;
     private const DIM = Graphics.COLOR_LT_GRAY;
     private const RULE = Graphics.COLOR_DK_GRAY;
+    private const SUN = Graphics.COLOR_YELLOW;
+
+    private const ROW_FONT = Graphics.FONT_TINY;
+    private const SMALL_FONT = Graphics.FONT_XTINY;
+    private const SECONDS_FONT = Graphics.FONT_TINY;
+    private const TIMER_FONT = Graphics.FONT_TINY;
+    // The weather icon's box, square.
+    private const ICON = 16;
+
+    // Weather icon kinds.
+    private const W_SUN = 0;
+    private const W_PARTLY = 1;
+    private const W_CLOUD = 2;
+    private const W_RAIN = 3;
+    private const W_SNOW = 4;
+    private const W_SLEET = 5;
+    private const W_STORM = 6;
+    private const W_FOG = 7;
+    private const W_WIND = 8;
 
     function initialize() {
         WatchFace.initialize();
@@ -72,43 +92,29 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var now = nowMoment.value();
         var clock = System.getClockTime();
 
-        var row = Graphics.FONT_TINY;
-
-        // The date in grey, then a footprint and today's steps, the pair
-        // centred together.
+        // The date.
         var date = Gregorian.info(nowMoment, Time.FORMAT_MEDIUM);
-        var dateText = date.day_of_week + " " + date.day.format("%d") + " " + date.month;
-        var steps = stepsText();
-        var icon = 16;
-        var dateW = dc.getTextWidthInPixels(dateText, row);
-        var stepsW = dc.getTextWidthInPixels(steps, row);
-        var x = cx - (dateW + 14 + icon + 3 + stepsW) / 2;
-        var y1 = (h * 0.125).toNumber();
         dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x, y1, row, dateText, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-        x += dateW + 14;
-        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-        drawFootprints(dc, x, y1 - icon / 2);
-        dc.drawText(x + icon + 3, y1, row, steps, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(cx, (h * 0.125).toNumber(), ROW_FONT, date.day_of_week + " " + date.day.format("%d") + " " + date.month, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
-        // The weather now in white, today's high and low in grey.
-        var weather = weatherParts();
-        var nowW = dc.getTextWidthInPixels(weather[0], row);
-        var rangeW = weather[1].length() == 0 ? 0 : 10 + dc.getTextWidthInPixels(weather[1], row);
-        x = cx - (nowW + rangeW) / 2;
-        var y2 = (h * 0.225).toNumber();
-        dc.drawText(x, y2, row, weather[0], Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-        if (rangeW > 0) {
+        // The activity timer, always there — white while it runs, grey at
+        // rest — unless, after days without the phone, a word about that
+        // has to take its place.
+        var timerY = (h * 0.225).toNumber();
+        var timer = activityTimer();
+        if (timer[1] || !Mihrab.stale(now)) {
+            drawTimer(dc, cx, timerY, timer);
+        } else {
             dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x + nowW + 10, y2, row, weather[1], Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(cx, timerY, SMALL_FONT, WatchUi.loadResource(Rez.Strings.Stale) as String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         }
 
-        // The time, with the seconds small and grey beside it, and a
-        // rule under the figures as wide as they are.
+        // The time, the weather to its left and the seconds to its right,
+        // and a rule under the figures as wide as they are.
         var baseline = (h * 0.54).toNumber();
-        var timeW = drawTime(dc, cx, baseline, clock);
+        var figures = drawTime(dc, cx, baseline, clock, nowMoment);
         dc.setColor(RULE, Graphics.COLOR_TRANSPARENT);
-        dc.drawLine(cx - timeW / 2, baseline + 5, cx + timeW / 2 + 1, baseline + 5);
+        dc.drawLine(figures[0], baseline + 5, figures[0] + figures[1] + 1, baseline + 5);
 
         // The next prayer and the countdown.
         var next = Mihrab.next(now);
@@ -122,55 +128,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
             drawCountdown(dc, cx, (h * 0.755).toNumber(), next[1] - now);
         }
 
-        // The foot: the activity timer, always there — white while it
-        // runs, grey at rest — unless, after days without the phone, a
-        // word about that has to take its place.
-        var timer = activityTimer();
-        if (timer[1] || !Mihrab.stale(now)) {
-            drawTimer(dc, timer);
-        } else {
-            dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx, (h * 0.87).toNumber(), Graphics.FONT_XTINY, WatchUi.loadResource(Rez.Strings.Stale) as String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        }
+        // Today's steps, at the foot.
+        drawSteps(dc, cx, (h * 0.865).toNumber());
     }
 
-    // The timer, small: the larger of two fonts that fits the dial
-    // where they sit, centred, from h*0.845 down. Remembers where.
-    private function drawTimer(dc as Dc, timer as [String, Boolean]) as Void {
-        var w = dc.getWidth();
-        var h = dc.getHeight();
-        var top = (h * 0.845).toNumber();
-        var fonts = [Graphics.FONT_TINY, Graphics.FONT_XTINY] as Array<Graphics.FontDefinition>;
-        var font = Graphics.FONT_XTINY;
-        for (var i = 0; i < fonts.size(); i++) {
-            var f = fonts[i];
-            var textW = dc.getTextWidthInPixels("00:00:00", f);
-            var bottom = top + Graphics.getFontAscent(f);
-            if (bottom < h - 4 && textW + 8 <= 2 * halfChord(w, h, bottom)) {
-                font = f;
-                break;
-            }
-        }
-        _timerFont = font;
-        var boxW = dc.getTextWidthInPixels("00:00:00", font) + 4;
-        _timerBox = [w / 2 - boxW / 2, top, boxW, dc.getFontHeight(font)];
-        dc.setColor(timer[1] ? INK : DIM, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(w / 2, top, font, timer[0], Graphics.TEXT_JUSTIFY_CENTER);
-    }
-
-    // Half the width of a round dial at row y (the whole width if square).
-    private function halfChord(w as Number, h as Number, y as Number) as Number {
-        if (System.getDeviceSettings().screenShape != System.SCREEN_SHAPE_ROUND) {
-            return w / 2;
-        }
-        var r = w / 2;
-        var d = y - h / 2;
-        var sq = r * r - d * d;
-        return sq <= 0 ? 0 : Math.sqrt(sq).toNumber();
-    }
-
-    // Every second between the minute's full draws: the seconds, and the
-    // countdown once it has seconds of its own to show.
+    // Every second between the minute's full draws: the seconds, a
+    // running timer, and the countdown once it has seconds to show.
     function onPartialUpdate(dc as Dc) as Void {
         var sbox = _secondsBox;
         if (sbox != null) {
@@ -189,7 +152,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
                 dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
                 dc.clear();
                 dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(dc.getWidth() / 2, tbox[1], _timerFont, timer[0], Graphics.TEXT_JUSTIFY_CENTER);
+                dc.drawText(dc.getWidth() / 2, tbox[1], TIMER_FONT, timer[0], Graphics.TEXT_JUSTIFY_CENTER);
                 dc.clearClip();
             }
         }
@@ -213,14 +176,33 @@ class MihrabFaceView extends WatchUi.WatchFace {
         dc.clearClip();
     }
 
-    private const SECONDS_FONT = Graphics.FONT_TINY;
+    // The timer centred on (cx, cy). Remembers where.
+    private function drawTimer(dc as Dc, cx as Number, cy as Number, timer as [String, Boolean]) as Void {
+        var top = cy - dc.getFontHeight(TIMER_FONT) / 2;
+        var boxW = dc.getTextWidthInPixels("00:00:00", TIMER_FONT) + 4;
+        _timerBox = [cx - boxW / 2, top, boxW, dc.getFontHeight(TIMER_FONT)];
+        dc.setColor(timer[1] ? INK : DIM, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(cx, top, TIMER_FONT, timer[0], Graphics.TEXT_JUSTIFY_CENTER);
+    }
 
-    // "16:42" in the largest number font whose figures, with the seconds
-    // beside them, fit the dial at this height; the figures centred on
-    // cx, the seconds small and grey to their right on the same baseline,
-    // "am"/"pm" stacked above the seconds on a 12-hour clock. Returns the
-    // figures' width.
-    private function drawTime(dc as Dc, cx as Number, baseline as Number, clock as System.ClockTime) as Number {
+    // Half the width of a round dial at row y (the whole width if square).
+    private function halfChord(w as Number, h as Number, y as Number) as Number {
+        if (System.getDeviceSettings().screenShape != System.SCREEN_SHAPE_ROUND) {
+            return w / 2;
+        }
+        var r = w / 2;
+        var d = y - h / 2;
+        var sq = r * r - d * d;
+        return sq <= 0 ? 0 : Math.sqrt(sq).toNumber();
+    }
+
+    // "16:42" in the largest number font that fits the dial with the
+    // weather on its left and the seconds on its right, the three centred
+    // together on cx. On the left, the weather's icon and the temperature
+    // now, and under them today's high and low on the figures' baseline;
+    // on the right the seconds on that baseline, "am"/"pm" above them on a
+    // 12-hour clock. Returns the figures' [x, width].
+    private function drawTime(dc as Dc, cx as Number, baseline as Number, clock as System.ClockTime, now as Time.Moment) as [Number, Number] {
         var hour = clock.hour;
         var suffix = null;
         if (Mihrab.hour12()) {
@@ -231,46 +213,81 @@ class MihrabFaceView extends WatchUi.WatchFace {
             }
         }
         var timeText = hour.format("%d") + ":" + clock.min.format("%02d");
-        var gap = 4;
-        var secW = dc.getTextWidthInPixels("88", SECONDS_FONT);
-        var fonts = [Graphics.FONT_NUMBER_THAI_HOT, Graphics.FONT_NUMBER_HOT, Graphics.FONT_NUMBER_MEDIUM, Graphics.FONT_NUMBER_MILD] as Array<Graphics.FontDefinition>;
-        var font = Graphics.FONT_NUMBER_MILD;
+        var gap = 5;
         var w = dc.getWidth();
         var h = dc.getHeight();
-        // Sized for this hour's digits and the widest minutes, so the
-        // size holds through the hour.
+
+        var weather = weatherParts(now);
+        var kind = weather[0] as Number;
+        var nowText = weather[1] as String;
+        var rangeText = weather[2] as String;
+        var nowW = dc.getTextWidthInPixels(nowText, ROW_FONT);
+        var leftW = (kind >= 0 ? ICON + 3 : 0) + nowW;
+        var rangeW = dc.getTextWidthInPixels(rangeText, SMALL_FONT);
+        if (rangeW > leftW) {
+            leftW = rangeW;
+        }
+        var secW = dc.getTextWidthInPixels("88", SECONDS_FONT);
+        var rightW = secW;
+        if (suffix != null && dc.getTextWidthInPixels(suffix, SMALL_FONT) > rightW) {
+            rightW = dc.getTextWidthInPixels(suffix, SMALL_FONT);
+        }
+        // The side columns reach this far above the baseline.
+        var upperBase = baseline - Graphics.getFontAscent(SMALL_FONT) - 2;
+        var sideTop = upperBase - Graphics.getFontAscent(ROW_FONT);
+        var half = halfChord(w, h, sideTop);
+        var halfB = halfChord(w, h, baseline);
+        if (halfB < half) {
+            half = halfB;
+        }
+
+        var fonts = [Graphics.FONT_NUMBER_THAI_HOT, Graphics.FONT_NUMBER_HOT, Graphics.FONT_NUMBER_MEDIUM, Graphics.FONT_NUMBER_MILD] as Array<Graphics.FontDefinition>;
+        var font = Graphics.FONT_NUMBER_MILD;
+        // Sized for this hour's digits and the widest minutes, so the size
+        // holds through the hour.
         var widest = hour.format("%d") + ":88";
         for (var i = 0; i < fonts.size(); i++) {
             var f = fonts[i];
-            var fw = dc.getTextWidthInPixels(widest, f);
-            // The figures' visible top (the font's ascent carries some
-            // headroom above them); the seconds hang off the right, so
-            // check the narrower of that row and the baseline.
+            // The figures' visible top: the font's ascent carries some
+            // headroom above them.
             var topY = baseline - Graphics.getFontAscent(f) * 3 / 4;
-            var half = halfChord(w, h, topY);
-            var halfB = halfChord(w, h, baseline);
-            if (halfB < half) {
-                half = halfB;
-            }
-            if (topY > (h * 0.27).toNumber() && fw / 2 + gap + secW + 3 <= half) {
+            var groupW = leftW + gap + dc.getTextWidthInPixels(widest, f) + gap + rightW;
+            if (topY > (h * 0.29).toNumber() && groupW / 2 + 4 <= half) {
                 font = f;
                 break;
             }
         }
         var timeW = dc.getTextWidthInPixels(timeText, font);
-        var x = cx - timeW / 2;
+        var x = cx - (leftW + gap + timeW + gap + rightW) / 2 + leftW + gap;
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
         dc.drawText(x, baseline - Graphics.getFontAscent(font), font, timeText, Graphics.TEXT_JUSTIFY_LEFT);
-        // The seconds share the figures' baseline.
+
+        // Right: the seconds on the baseline, am/pm above.
         var secTop = baseline - Graphics.getFontAscent(SECONDS_FONT);
         var secX = x + timeW + gap;
         _secondsBox = [secX, secTop, secW + 2, Graphics.getFontAscent(SECONDS_FONT) + Graphics.getFontDescent(SECONDS_FONT)];
         dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
         dc.drawText(secX, secTop, SECONDS_FONT, clock.sec.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);
         if (suffix != null) {
-            dc.drawText(secX, secTop - Graphics.getFontAscent(SECONDS_FONT), Graphics.FONT_XTINY, suffix, Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(secX, upperBase - Graphics.getFontAscent(SMALL_FONT), SMALL_FONT, suffix, Graphics.TEXT_JUSTIFY_LEFT);
         }
-        return timeW;
+
+        // Left: the icon and the temperature now; under them high/low.
+        var right = x - gap;
+        if (rangeText.length() > 0) {
+            dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(right, baseline - Graphics.getFontAscent(SMALL_FONT), SMALL_FONT, rangeText, Graphics.TEXT_JUSTIFY_RIGHT);
+        } else {
+            upperBase = baseline;
+        }
+        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(right, upperBase - Graphics.getFontAscent(ROW_FONT), ROW_FONT, nowText, Graphics.TEXT_JUSTIFY_RIGHT);
+        if (kind >= 0) {
+            // Centred on the figures' visible middle.
+            var mid = upperBase - Graphics.getFontAscent(ROW_FONT) * 3 / 8;
+            drawWeatherIcon(dc, kind, (weather[3] as Number) == 1, right - nowW - 3 - ICON, mid - ICON / 2);
+        }
+        return [x, timeW];
     }
 
     // "5h 49m": the figures large, the unit letters small on the same
@@ -305,25 +322,63 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
     }
 
-    // ["8°C Cloudy", "10°/4°"] from the watch's weather (Gadgetbridge
-    // feeds it from the phone's weather app), in the unit of the place the
-    // Mihrab app is set to; ["--", ""] without any.
-    private function weatherParts() as [String, String] {
+    // A footprint and today's steps, centred on (cx, cy), in the larger
+    // font that fits the dial there — room for "99 999".
+    private function drawSteps(dc as Dc, cx as Number, cy as Number) as Void {
+        var w = dc.getWidth();
+        var h = dc.getHeight();
+        var text = stepsText();
+        var fonts = [Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_XTINY] as Array<Graphics.FontDefinition>;
+        var font = Graphics.FONT_XTINY;
+        for (var i = 0; i < fonts.size(); i++) {
+            var f = fonts[i];
+            var bottom = cy + Graphics.getFontAscent(f) / 2;
+            if (ICON + 4 + dc.getTextWidthInPixels("99 999", f) + 8 <= 2 * halfChord(w, h, bottom)) {
+                font = f;
+                break;
+            }
+        }
+        var textW = dc.getTextWidthInPixels(text, font);
+        var x = cx - (ICON + 4 + textW) / 2;
+        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+        drawFootprints(dc, x, cy - ICON / 2);
+        dc.drawText(x + ICON + 4, cy, font, text, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+    }
+
+    // [icon kind or -1, "8°", "16°/7°", 1 at night else 0] from the
+    // watch's weather (Gadgetbridge feeds it from the phone's weather
+    // app), in the unit of the place the Mihrab app is set to; [-1, "--",
+    // "", 0] without any.
+    private function weatherParts(moment as Time.Moment) as Array {
         if (!(Toybox has :Weather) || !(Weather has :getCurrentConditions)) {
-            return ["--", ""];
+            return [-1, "--", "", 0];
         }
         var c = Weather.getCurrentConditions();
         if (c == null || c.temperature == null) {
-            return ["--", ""];
+            return [-1, "--", "", 0];
         }
-        var word = c.condition == null ? "" : " " + conditionWord(c.condition as Number);
         var f = Mihrab.fahrenheit();
-        var now = degrees(c.temperature as Numeric, f) + (f ? "°F" : "°C") + word;
+        var now = degrees(c.temperature as Numeric, f) + "°";
         var range = "";
         if (c.highTemperature != null && c.lowTemperature != null) {
             range = degrees(c.highTemperature as Numeric, f) + "°/" + degrees(c.lowTemperature as Numeric, f) + "°";
         }
-        return [now, range];
+        var kind = c.condition == null ? -1 : iconKind(c.condition as Number);
+        return [kind, now, range, isNight(c, moment) ? 1 : 0];
+    }
+
+    // After sunset or before sunrise where the weather was observed.
+    private function isNight(c as Weather.CurrentConditions, moment as Time.Moment) as Boolean {
+        if (!(Weather has :getSunrise) || c.observationLocationPosition == null) {
+            return false;
+        }
+        var where = c.observationLocationPosition as Position.Location;
+        var rise = Weather.getSunrise(where, moment);
+        var set = Weather.getSunset(where, moment);
+        if (rise == null || set == null) {
+            return false;
+        }
+        return moment.compare(rise) < 0 || moment.compare(set) > 0;
     }
 
     // A temperature the watch keeps in Celsius, rounded, in the unit asked.
@@ -335,6 +390,173 @@ class MihrabFaceView extends WatchUi.WatchFace {
         return Math.round(v).toNumber().format("%d");
     }
 
+    // The icon for each of the watch's weather conditions.
+    private function iconKind(condition as Number) as Number {
+        switch (condition) {
+            case Weather.CONDITION_CLEAR:
+            case Weather.CONDITION_FAIR:
+                return W_SUN;
+            case Weather.CONDITION_MOSTLY_CLEAR:
+            case Weather.CONDITION_PARTLY_CLEAR:
+            case Weather.CONDITION_PARTLY_CLOUDY:
+            case Weather.CONDITION_THIN_CLOUDS:
+                return W_PARTLY;
+            case Weather.CONDITION_MOSTLY_CLOUDY:
+            case Weather.CONDITION_CLOUDY:
+            case Weather.CONDITION_UNKNOWN:
+                return W_CLOUD;
+            case Weather.CONDITION_RAIN:
+            case Weather.CONDITION_LIGHT_RAIN:
+            case Weather.CONDITION_HEAVY_RAIN:
+            case Weather.CONDITION_SHOWERS:
+            case Weather.CONDITION_LIGHT_SHOWERS:
+            case Weather.CONDITION_HEAVY_SHOWERS:
+            case Weather.CONDITION_SCATTERED_SHOWERS:
+            case Weather.CONDITION_CHANCE_OF_SHOWERS:
+            case Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN:
+            case Weather.CONDITION_DRIZZLE:
+            case Weather.CONDITION_FREEZING_RAIN:
+            case Weather.CONDITION_UNKNOWN_PRECIPITATION:
+                return W_RAIN;
+            case Weather.CONDITION_SNOW:
+            case Weather.CONDITION_LIGHT_SNOW:
+            case Weather.CONDITION_HEAVY_SNOW:
+            case Weather.CONDITION_CHANCE_OF_SNOW:
+            case Weather.CONDITION_CLOUDY_CHANCE_OF_SNOW:
+            case Weather.CONDITION_FLURRIES:
+            case Weather.CONDITION_ICE_SNOW:
+            case Weather.CONDITION_ICE:
+                return W_SNOW;
+            case Weather.CONDITION_WINTRY_MIX:
+            case Weather.CONDITION_RAIN_SNOW:
+            case Weather.CONDITION_LIGHT_RAIN_SNOW:
+            case Weather.CONDITION_HEAVY_RAIN_SNOW:
+            case Weather.CONDITION_CHANCE_OF_RAIN_SNOW:
+            case Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN_SNOW:
+            case Weather.CONDITION_SLEET:
+            case Weather.CONDITION_HAIL:
+                return W_SLEET;
+            case Weather.CONDITION_THUNDERSTORMS:
+            case Weather.CONDITION_SCATTERED_THUNDERSTORMS:
+            case Weather.CONDITION_CHANCE_OF_THUNDERSTORMS:
+                return W_STORM;
+            case Weather.CONDITION_FOG:
+            case Weather.CONDITION_MIST:
+            case Weather.CONDITION_HAZE:
+            case Weather.CONDITION_HAZY:
+            case Weather.CONDITION_SMOKE:
+            case Weather.CONDITION_DUST:
+            case Weather.CONDITION_SAND:
+            case Weather.CONDITION_VOLCANIC_ASH:
+                return W_FOG;
+            case Weather.CONDITION_WINDY:
+            case Weather.CONDITION_SQUALL:
+            case Weather.CONDITION_SANDSTORM:
+            case Weather.CONDITION_HURRICANE:
+            case Weather.CONDITION_TROPICAL_STORM:
+            case Weather.CONDITION_TORNADO:
+                return W_WIND;
+            default:
+                return W_CLOUD;
+        }
+    }
+
+    // The weather icon in a 16 px square, top-left at (x, y): solid
+    // shapes in white, the sun yellow, a moon for clear skies at night.
+    private function drawWeatherIcon(dc as Dc, kind as Number, night as Boolean, x as Number, y as Number) as Void {
+        if (kind == W_SUN) {
+            if (night) {
+                drawMoon(dc, x + 8, y + 8, 6);
+            } else {
+                drawSun(dc, x + 8, y + 8, 3, 3);
+            }
+        } else if (kind == W_PARTLY) {
+            if (night) {
+                drawMoon(dc, x + 5, y + 5, 4);
+            } else {
+                drawSun(dc, x + 5, y + 5, 2, 2);
+            }
+            drawCloud(dc, x, y + 3);
+        } else if (kind == W_CLOUD) {
+            drawCloud(dc, x, y + 1);
+        } else if (kind == W_RAIN) {
+            drawCloud(dc, x, y - 2);
+            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+            for (var i = 0; i < 3; i++) {
+                dc.drawLine(x + 4 + 4 * i, y + 12, x + 2 + 4 * i, y + 16);
+            }
+        } else if (kind == W_SNOW) {
+            drawCloud(dc, x, y - 2);
+            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+            dc.fillCircle(x + 4, y + 13, 1);
+            dc.fillCircle(x + 8, y + 15, 1);
+            dc.fillCircle(x + 12, y + 13, 1);
+        } else if (kind == W_SLEET) {
+            drawCloud(dc, x, y - 2);
+            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+            dc.drawLine(x + 5, y + 12, x + 3, y + 16);
+            dc.fillCircle(x + 9, y + 14, 1);
+            dc.drawLine(x + 13, y + 12, x + 11, y + 16);
+        } else if (kind == W_STORM) {
+            drawCloud(dc, x, y - 2);
+            dc.setColor(SUN, Graphics.COLOR_TRANSPARENT);
+            dc.fillPolygon([[x + 9, y + 9], [x + 5, y + 14], [x + 8, y + 14], [x + 6, y + 18], [x + 12, y + 12], [x + 9, y + 12], [x + 11, y + 9]]);
+        } else if (kind == W_FOG) {
+            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+            dc.fillRectangle(x + 1, y + 3, 14, 2);
+            dc.fillRectangle(x + 3, y + 7, 13, 2);
+            dc.fillRectangle(x, y + 11, 13, 2);
+            dc.fillRectangle(x + 4, y + 15, 10, 1);
+        } else if (kind == W_WIND) {
+            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+            dc.fillRectangle(x, y + 4, 11, 2);
+            dc.drawArc(x + 11, y + 2, 3, Graphics.ARC_COUNTER_CLOCKWISE, 270, 180);
+            dc.fillRectangle(x, y + 8, 15, 2);
+            dc.fillRectangle(x, y + 12, 9, 2);
+            dc.drawArc(x + 9, y + 15, 2, Graphics.ARC_CLOCKWISE, 90, 180);
+        }
+    }
+
+    // A sun: a disc of radius r and eight rays of length ray.
+    private function drawSun(dc as Dc, cx as Number, cy as Number, r as Number, ray as Number) as Void {
+        dc.setColor(SUN, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(cx, cy, r);
+        var a = r + 2;
+        var b = r + 1 + ray;
+        var da = (a * 7) / 10;
+        var db = (b * 7) / 10;
+        dc.drawLine(cx, cy - a, cx, cy - b);
+        dc.drawLine(cx, cy + a, cx, cy + b);
+        dc.drawLine(cx - a, cy, cx - b, cy);
+        dc.drawLine(cx + a, cy, cx + b, cy);
+        dc.drawLine(cx - da, cy - da, cx - db, cy - db);
+        dc.drawLine(cx + da, cy - da, cx + db, cy - db);
+        dc.drawLine(cx - da, cy + da, cx - db, cy + db);
+        dc.drawLine(cx + da, cy + da, cx + db, cy + db);
+    }
+
+    // A crescent: a disc with a black disc bitten out of it.
+    private function drawMoon(dc as Dc, cx as Number, cy as Number, r as Number) as Void {
+        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(cx, cy, r);
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(cx + r / 2 + 1, cy - r / 3 - 1, r - 1);
+    }
+
+    // A cloud, about 16 × 10 below (x, y + 3), edged in black so it reads
+    // over a sun or moon behind it.
+    private function drawCloud(dc as Dc, x as Number, y as Number) as Void {
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(x + 5, y + 9, 4);
+        dc.fillCircle(x + 9, y + 7, 5);
+        dc.fillCircle(x + 12, y + 10, 4);
+        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(x + 5, y + 9, 3);
+        dc.fillCircle(x + 9, y + 7, 4);
+        dc.fillCircle(x + 12, y + 10, 3);
+        dc.fillRectangle(x + 3, y + 10, 11, 3);
+    }
+
     // Two footprints, 16 px square, top-left at (x, y): a sole and a
     // heel each, the right foot a step ahead.
     private function drawFootprints(dc as Dc, x as Number, y as Number) as Void {
@@ -344,58 +566,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         dc.fillCircle(x + 12, y + 11, 2);
     }
 
-    // A short word for the condition; the rarer ones fall into the nearest.
-    private function conditionWord(condition as Number) as String {
-        switch (condition) {
-            case Weather.CONDITION_CLEAR:
-            case Weather.CONDITION_MOSTLY_CLEAR:
-            case Weather.CONDITION_PARTLY_CLEAR:
-            case Weather.CONDITION_FAIR:
-                return WatchUi.loadResource(Rez.Strings.WClear) as String;
-            case Weather.CONDITION_PARTLY_CLOUDY:
-            case Weather.CONDITION_MOSTLY_CLOUDY:
-            case Weather.CONDITION_CLOUDY:
-            case Weather.CONDITION_THIN_CLOUDS:
-                return WatchUi.loadResource(Rez.Strings.WCloudy) as String;
-            case Weather.CONDITION_SNOW:
-            case Weather.CONDITION_LIGHT_SNOW:
-            case Weather.CONDITION_HEAVY_SNOW:
-            case Weather.CONDITION_WINTRY_MIX:
-            case Weather.CONDITION_RAIN_SNOW:
-            case Weather.CONDITION_LIGHT_RAIN_SNOW:
-            case Weather.CONDITION_HEAVY_RAIN_SNOW:
-            case Weather.CONDITION_CHANCE_OF_SNOW:
-            case Weather.CONDITION_CHANCE_OF_RAIN_SNOW:
-            case Weather.CONDITION_FLURRIES:
-            case Weather.CONDITION_ICE_SNOW:
-            case Weather.CONDITION_SLEET:
-            case Weather.CONDITION_HAIL:
-                return WatchUi.loadResource(Rez.Strings.WSnow) as String;
-            case Weather.CONDITION_THUNDERSTORMS:
-            case Weather.CONDITION_SCATTERED_THUNDERSTORMS:
-            case Weather.CONDITION_CHANCE_OF_THUNDERSTORMS:
-                return WatchUi.loadResource(Rez.Strings.WStorm) as String;
-            case Weather.CONDITION_FOG:
-            case Weather.CONDITION_HAZY:
-            case Weather.CONDITION_MIST:
-            case Weather.CONDITION_HAZE:
-            case Weather.CONDITION_SMOKE:
-            case Weather.CONDITION_DUST:
-            case Weather.CONDITION_SAND:
-            case Weather.CONDITION_VOLCANIC_ASH:
-                return WatchUi.loadResource(Rez.Strings.WFog) as String;
-            case Weather.CONDITION_WINDY:
-            case Weather.CONDITION_SANDSTORM:
-            case Weather.CONDITION_HURRICANE:
-            case Weather.CONDITION_TROPICAL_STORM:
-            case Weather.CONDITION_TORNADO:
-                return WatchUi.loadResource(Rez.Strings.WWindy) as String;
-            default:
-                return WatchUi.loadResource(Rez.Strings.WRain) as String;
-        }
-    }
-
-    // Today's steps, thousands spaced: "4 532".
+    // Today's steps, thousands spaced: "12 345".
     private function stepsText() as String {
         var info = ActivityMonitor.getInfo();
         var steps = info.steps;

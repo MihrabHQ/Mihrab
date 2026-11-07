@@ -4,11 +4,4 @@
     <string id="TimesEnded">Времена закончились – откройте Mihrab</string>
     <string id="Stale">времена могут устареть</string>
     <string id="Label">Намаз</string>
-    <string id="WClear">Ясно</string>
-    <string id="WCloudy">Облачно</string>
-    <string id="WSnow">Снег</string>
-    <string id="WStorm">Гроза</string>
-    <string id="WFog">Туман</string>
-    <string id="WWindy">Ветер</string>
-    <string id="WRain">Дождь</string>
 </strings>

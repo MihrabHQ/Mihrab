@@ -4,11 +4,4 @@
     <string id="TimesEnded">Keine Zeiten mehr – Mihrab öffnen</string>
     <string id="Stale">Zeiten evtl. veraltet</string>
     <string id="Label">Gebet</string>
-    <string id="WClear">Klar</string>
-    <string id="WCloudy">Bewölkt</string>
-    <string id="WSnow">Schnee</string>
-    <string id="WStorm">Gewitter</string>
-    <string id="WFog">Nebel</string>
-    <string id="WWindy">Windig</string>
-    <string id="WRain">Regen</string>
 </strings>

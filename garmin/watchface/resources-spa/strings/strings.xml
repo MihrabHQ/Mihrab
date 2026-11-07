@@ -4,11 +4,4 @@
     <string id="TimesEnded">Sin horarios – abre Mihrab</string>
     <string id="Stale">horarios quizá antiguos</string>
     <string id="Label">Oración</string>
-    <string id="WClear">Despejado</string>
-    <string id="WCloudy">Nublado</string>
-    <string id="WSnow">Nieve</string>
-    <string id="WStorm">Tormenta</string>
-    <string id="WFog">Niebla</string>
-    <string id="WWindy">Viento</string>
-    <string id="WRain">Lluvia</string>
 </strings>

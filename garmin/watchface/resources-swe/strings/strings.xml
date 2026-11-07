@@ -4,11 +4,4 @@
     <string id="TimesEnded">Inga tider kvar – öppna Mihrab</string>
     <string id="Stale">tiderna kan vara gamla</string>
     <string id="Label">Bön</string>
-    <string id="WClear">Klart</string>
-    <string id="WCloudy">Molnigt</string>
-    <string id="WSnow">Snö</string>
-    <string id="WStorm">Åska</string>
-    <string id="WFog">Dimma</string>
-    <string id="WWindy">Blåsigt</string>
-    <string id="WRain">Regn</string>
 </strings>

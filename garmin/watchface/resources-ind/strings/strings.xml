@@ -4,11 +4,4 @@
     <string id="TimesEnded">Tidak ada waktu lagi – buka Mihrab</string>
     <string id="Stale">waktu mungkin usang</string>
     <string id="Label">Salat</string>
-    <string id="WClear">Cerah</string>
-    <string id="WCloudy">Berawan</string>
-    <string id="WSnow">Salju</string>
-    <string id="WStorm">Badai</string>
-    <string id="WFog">Kabut</string>
-    <string id="WWindy">Berangin</string>
-    <string id="WRain">Hujan</string>
 </strings>
