@@ -45,6 +45,28 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
+  /** The paired devices, or null when the permission is missing. */
+  @ReactMethod
+  fun pairedDevices(promise: Promise) {
+    try {
+      if (!GarminWatch.canListPaired(reactContext)) {
+        promise.resolve(null)
+        return
+      }
+      val list = Arguments.createArray()
+      for (d in GarminWatch.pairedDevices(reactContext)) {
+        val m = Arguments.createMap()
+        m.putString("name", d.name)
+        m.putString("address", d.address)
+        m.putBoolean("garmin", d.garmin)
+        list.pushMap(m)
+      }
+      promise.resolve(list)
+    } catch (e: Exception) {
+      promise.reject("E_GARMIN", e.message, e)
+    }
+  }
+
   companion object {
     const val NAME = "GarminWatch"
   }

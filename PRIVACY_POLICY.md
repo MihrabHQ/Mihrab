@@ -33,6 +33,8 @@ Mihrab is free and open source. It has no accounts, no ads, no analytics, no cra
 
 **Camera.** Used only to scan the pairing QR code when you link two of your own devices for sync. Nothing is recorded, saved or sent.
 
+**Bluetooth (Android).** Only if you turn on the Garmin watch setting and tap "Find the watch": the app reads the list of devices paired with your phone to pick the watch's address, with the system's Bluetooth permission. It does not scan, connect or send anything over Bluetooth; the prayer times go to the watch through the Gadgetbridge app on your phone, which you install and control.
+
 **Notifications and alarms.** If you enable prayer notifications, they are scheduled locally on your device. Optional full-screen prayer alerts use Android's full-screen notification and exact-alarm permissions, and on iOS 26+ the system alarm service (AlarmKit); both are scheduled and shown entirely on the device. The app also requests Do Not Disturb access (Android `ACCESS_NOTIFICATION_POLICY`) only so a prayer alert can ring when you ask it to. Nothing about your notifications is sent to the developer.
 
 **Your worship record and settings.** Prayer log, fasting, dhikr, sunnah log, journal entries, Quran bookmarks, starred ayat, khatmah plans, last-read position, language, appearance, calculation method and notification preferences are stored locally. Sensitive records (journal, fasting, dhikr, sunnah) are encrypted at rest with a device-bound key. On Android, the app's settings and records can be included in Android's own backup and device-to-device transfer when you have those turned on in the system; that backup is Google's, under your Google account's settings, and the developer has no access to it.
@@ -117,6 +119,8 @@ Mihrab är gratis och öppen källkod. Appen har inga konton, ingen reklam, inge
 **Rörelsesensorer.** Används enbart för att visa Qibla-kompassen. Sensorvärdena bearbetas på enheten och varken lagras eller skickas.
 
 **Kamera.** Används enbart för att läsa parnings-QR-koden när du länkar två av dina egna enheter för synkronisering. Inget spelas in, sparas eller skickas.
+
+**Bluetooth (Android).** Bara om du slår på inställningen för Garmin-klocka och trycker på "Hitta klockan": appen läser listan över enheter som är parade med telefonen för att välja klockans adress, med systemets Bluetooth-behörighet. Den söker inte, ansluter inte och skickar inget över Bluetooth; bönetiderna går till klockan via appen Gadgetbridge på telefonen, som du själv installerar och styr.
 
 **Notiser och alarm.** Om du aktiverar bönenotiser schemaläggs de lokalt på enheten. Valfria helskärmsaviseringar använder Androids behörigheter för helskärmsnotis och exakta alarm, och på iOS 26+ systemets alarmtjänst (AlarmKit); allt schemaläggs och visas helt på enheten. Appen begär också åtkomst till Stör ej (Android `ACCESS_NOTIFICATION_POLICY`) bara för att en bönepåminnelse ska kunna ringa när du har bett om det. Inget om dina notiser skickas till utvecklaren.
 

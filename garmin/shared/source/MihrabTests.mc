@@ -71,8 +71,9 @@ module MihrabTests {
         Test.assertEqual("2h 18m", Mihrab.countdown(2 * 3600 + 18 * 60));
         Test.assertEqual("1h 0m", Mihrab.countdown(3600));
         Test.assertEqual("18m", Mihrab.countdown(18 * 60));
-        // Seconds round up: 17 minutes 1 second is 18 minutes away, not 17.
-        Test.assertEqual("18m", Mihrab.countdown(17 * 60 + 1));
+        // Whole minutes, as the phone counts: 17 minutes 59 seconds is 17m.
+        Test.assertEqual("17m", Mihrab.countdown(17 * 60 + 59));
+        Test.assertEqual("2h 18m", Mihrab.countdown(2 * 3600 + 18 * 60 + 59));
         Test.assertEqual("5m", Mihrab.countdown(5 * 60));
         // The last five minutes tick in seconds, as the phone's Minimal page.
         Test.assertEqual("4m 59s", Mihrab.countdown(5 * 60 - 1));

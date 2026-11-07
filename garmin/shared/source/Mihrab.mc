@@ -190,10 +190,9 @@ module Mihrab {
         if (h > 0) {
             out.add([h.format("%d"), "h"]);
         }
-        // Rounded up: 17 minutes 1 second is 18 minutes away, as a clock
-        // that shows no seconds has it.
-        var up = (safe + 59) / 60;
-        out.add([(h > 0 ? up % 60 : up).format("%d"), "m"]);
+        // Whole minutes, the seconds dropped — exactly as the phone's
+        // Minimal page counts, so the two never disagree by a minute.
+        out.add([m.format("%d"), "m"]);
         return out;
     }
 

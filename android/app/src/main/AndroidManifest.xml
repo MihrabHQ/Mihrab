@@ -36,6 +36,11 @@
          else. Optional hardware: a tablet without a camera still pairs by
          typing the code, and must not be filtered out of the store. -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Listing the phone's paired devices, so the Garmin watch's address
+         is picked rather than typed (GarminWatch.kt). Asked only from that
+         setting; no scanning, no connecting, nothing sent. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />

@@ -59,9 +59,10 @@ On the phone:
   install the `.prg` files (`garmin/build/mihrab-face.prg`,
   `mihrab-field.prg`, `mihrab-widget.prg`), or open a `.prg` with
   Gadgetbridge. Any one of them is enough for what it does.
-- In Mihrab: Settings → Notifications → Garmin watch: on, and the watch's
-  Bluetooth address as Gadgetbridge shows it under the watch's name.
-  "Send now" says what happened.
+- In Mihrab: Settings → Notifications → Garmin watch: on, then "Find the
+  watch" (the phone's paired devices, with the Bluetooth permission; one
+  Garmin watch is taken as it is) — or type the address Gadgetbridge shows
+  under the watch's name. "Send now" says what happened.
 
 On the watch: choose the Mihrab face; add the Mihrab data field to an
 activity's data screen; add the widget's glance to the glance list; and in

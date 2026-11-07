@@ -12,8 +12,10 @@ import {
   configureGarminWatch,
   garminWatchAvailable,
   garminWatchStatus,
+  pairedWatches,
   sendToGarminWatch,
   type GarminSendResult,
+  type PairedDevice,
 } from '../../native/GarminWatch';
 import { SettingsBlock, SettingsGroup, SettingsToggleRow } from './SettingsGroup';
 import { sharedSettingsStyles as s } from './sharedStyles';
@@ -43,6 +45,10 @@ function GarminWatchCardImpl() {
   const [draft, setDraft] = useState(watch.address);
   const [gadgetbridge, setGadgetbridge] = useState<boolean | null>(null);
   const [outcome, setOutcome] = useState<GarminSendResult | null>(null);
+  // The paired devices offered for picking: null until asked, [] when
+  // the permission was refused or nothing is paired.
+  const [choices, setChoices] = useState<PairedDevice[] | null>(null);
+  const [choicesNote, setChoicesNote] = useState<'refused' | 'none' | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -72,6 +78,41 @@ function GarminWatchCardImpl() {
     setDraft(address || draft);
     if (address !== watch.address) apply({ ...watch, address });
   }, [apply, draft, watch]);
+
+  // The watch's address from the phone's paired devices: one Garmin
+  // watch is taken as it is, more than one is offered to pick from.
+  const onFind = useCallback(() => {
+    setChoicesNote(null);
+    void pairedWatches().then(list => {
+      if (list == null) {
+        setChoices(null);
+        setChoicesNote('refused');
+        return;
+      }
+      const garmin = list.filter(d => d.garmin);
+      if (garmin.length === 1) {
+        setChoices(null);
+        setDraft(garmin[0].address);
+        apply({ ...watch, address: garmin[0].address });
+        return;
+      }
+      if (list.length === 0) {
+        setChoices(null);
+        setChoicesNote('none');
+        return;
+      }
+      setChoices(garmin.length > 0 ? garmin : list);
+    });
+  }, [apply, watch]);
+
+  const onPick = useCallback(
+    (d: PairedDevice) => {
+      setChoices(null);
+      setDraft(d.address);
+      apply({ ...watch, address: d.address });
+    },
+    [apply, watch],
+  );
 
   const onSend = useCallback(() => {
     setOutcome(null);
@@ -124,6 +165,35 @@ function GarminWatchCardImpl() {
               },
             ]}
           />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('settings.garminFind')}
+            onPress={onFind}
+            style={styles.send}>
+            <Text style={[s.changeLink, { color: palette.accent }]}>
+              {t('settings.garminFind')}
+            </Text>
+          </Pressable>
+          {choices ? (
+            <View style={styles.choices}>
+              {choices.map(d => (
+                <Pressable
+                  key={d.address}
+                  accessibilityRole="button"
+                  accessibilityLabel={d.name}
+                  onPress={() => onPick(d)}
+                  style={[styles.choice, { borderColor: palette.border }]}>
+                  <Text style={[s.valueText, { color: palette.text }]}>{d.name}</Text>
+                  <Text style={[s.help, tabularNumeralStyle, { color: palette.muted }]}>{d.address}</Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+          {choicesNote ? (
+            <Text style={[s.help, { color: palette.muted }]}>
+              {t(choicesNote === 'refused' ? 'settings.garminFindRefused' : 'settings.garminFindNone')}
+            </Text>
+          ) : null}
           <Text style={[s.help, { color: palette.muted }]}>
             {t('settings.garminAddressHelp')}
           </Text>
@@ -159,6 +229,14 @@ const styles = StyleSheet.create({
     fontSize: TYPE.body.fontSize,
   },
   warn: { marginBottom: SPACING.sm },
+  choices: { marginVertical: SPACING.xs },
+  choice: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: RADIUS.sm,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    marginBottom: SPACING.xs,
+  },
   send: { paddingVertical: SPACING.sm, alignSelf: 'flex-start' },
   disabled: { opacity: 0.4 },
 });

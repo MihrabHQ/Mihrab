@@ -1,7 +1,12 @@
 package com.prayer_times
 
+import android.Manifest
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.os.Build
+import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
 import android.util.Log
 import com.prayer_times.contract.WallClock
@@ -42,6 +47,7 @@ object GarminWatch {
   const val FIELD_APP_ID = "d58b7cb1-c37b-4629-92b1-4720b95ac49b"
   /** The widget, which publishes the complications (garmin/widget). */
   const val WIDGET_APP_ID = "ff148f06-923b-45ec-9afe-542d6779a952"
+  val APP_IDS = listOf(FACE_APP_ID, FIELD_APP_ID, WIDGET_APP_ID)
 
   const val ACTION = "nodomain.freeyourgadget.gadgetbridge.command.SEND_WATCH_APP_MESSAGE"
   val GADGETBRIDGE_PACKAGES = listOf(
@@ -132,13 +138,16 @@ object GarminWatch {
     val message = message(context) ?: return "no-times"
     val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     val now = System.currentTimeMillis()
+    // The app list is part of what was sent: a build that adds a watch app
+    // sends again, or the new app waits for the next change of schedule.
+    val sent = APP_IDS.joinToString(",") + "|" + message
     if (!force &&
-      message == prefs.getString(PREFS_LAST_SENT, null) &&
+      sent == prefs.getString(PREFS_LAST_SENT, null) &&
       now - prefs.getLong(PREFS_LAST_SENT_AT, 0L) in 0..RESEND_AFTER_MS
     ) {
       return "unchanged"
     }
-    for (appId in listOf(FACE_APP_ID, FIELD_APP_ID, WIDGET_APP_ID)) {
+    for (appId in APP_IDS) {
       val intent = Intent(ACTION)
         .setPackage(pkg)
         .putExtra("device", address)
@@ -146,9 +155,39 @@ object GarminWatch {
         .putExtra("payload", message)
       context.sendBroadcast(intent)
     }
-    prefs.edit().putString(PREFS_LAST_SENT, message).putLong(PREFS_LAST_SENT_AT, now).apply()
+    prefs.edit().putString(PREFS_LAST_SENT, sent).putLong(PREFS_LAST_SENT_AT, now).apply()
     Log.i(TAG, "sent ${message.length} bytes to $pkg for $address")
     return "sent"
+  }
+
+  /** A paired Bluetooth device, as the picker in Settings shows it. */
+  data class Paired(val name: String, val address: String, val garmin: Boolean)
+
+  private val GARMIN_NAMES = Regex(
+    "enduro|f[eē]nix|forerunner|venu|instinct|epix|v[ií]voactive|vivomove|descent|quatix|tactix|marq|approach|lily|edge|garmin",
+    RegexOption.IGNORE_CASE,
+  )
+
+  /** Whether the paired-devices list may be read (Android 12+: BLUETOOTH_CONNECT). */
+  fun canListPaired(context: Context): Boolean =
+    Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+      ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PERMISSION_GRANTED
+
+  /**
+   * The devices paired with this phone, Garmin watches first — the watch
+   * Gadgetbridge connects to is bonded like any other. Empty without the
+   * permission, or without Bluetooth.
+   */
+  fun pairedDevices(context: Context): List<Paired> {
+    if (!canListPaired(context)) return emptyList()
+    val adapter = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter ?: return emptyList()
+    return try {
+      adapter.bondedDevices
+        .map { d -> Paired(d.name ?: d.address, d.address, GARMIN_NAMES.containsMatchIn(d.name ?: "")) }
+        .sortedWith(compareByDescending<Paired> { it.garmin }.thenBy { it.name })
+    } catch (e: SecurityException) {
+      emptyList()
+    }
   }
 
   /** After the app wrote its widget payload: send if it is on, quietly. */
