@@ -579,7 +579,12 @@
     "garminFaceRowSteps": "Шаги",
     "garminFaceRowHeart": "Пульс",
     "garminFaceRowNone": "Ничего",
-    "garminFaceFooter": "Отправляется на часы сразу. Для циферблата Mihrab."
+    "garminFaceFooter": "Отправляется на часы сразу. Для циферблата Mihrab.",
+    "garminFaceRefresh": "Обновить циферблат",
+    "garminFaceRefreshHelp": "Заново отправляет время намазов и эти настройки, чтобы циферблат перерисовался с ними, а затем открывает Gadgetbridge, чтобы установить циферблат из этой версии Mihrab.",
+    "garminFaceRefreshHelpNoInstall": "Заново отправляет время намазов и эти настройки, чтобы циферблат перерисовался с ними.",
+    "garminFaceRefreshed": "Отправлено. Циферблат сейчас перерисуется.",
+    "garminFaceInstallFailed": "Отправлено, но установщик Gadgetbridge не открылся. Установите циферблат через Gadgetbridge."
   },
   "locationSetup": {
     "headline": "Укажите своё местоположение",

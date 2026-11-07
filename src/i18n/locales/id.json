@@ -567,7 +567,12 @@
     "garminFaceRowSteps": "Langkah",
     "garminFaceRowHeart": "Detak jantung",
     "garminFaceRowNone": "Tidak ada",
-    "garminFaceFooter": "Langsung dikirim ke jam. Untuk tampilan jam Mihrab."
+    "garminFaceFooter": "Langsung dikirim ke jam. Untuk tampilan jam Mihrab.",
+    "garminFaceRefresh": "Segarkan tampilan jam",
+    "garminFaceRefreshHelp": "Mengirim ulang waktu salat dan pengaturan ini agar tampilan digambar ulang, lalu membuka Gadgetbridge untuk memasang tampilan jam yang disertakan dengan versi Mihrab ini.",
+    "garminFaceRefreshHelpNoInstall": "Mengirim ulang waktu salat dan pengaturan ini agar tampilan digambar ulang.",
+    "garminFaceRefreshed": "Terkirim. Tampilan digambar ulang sebentar lagi.",
+    "garminFaceInstallFailed": "Terkirim, tetapi penginstal Gadgetbridge tidak dapat dibuka. Pasang tampilan jam dari Gadgetbridge."
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",

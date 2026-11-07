@@ -171,6 +171,11 @@ android {
     sourceSets {
         main {
             assets.srcDirs += ["$rootDir/../assets"]
+            // The Garmin watch face, when garmin/build.sh has built it on
+            // this machine (copyGarminFace below): Settings → Devices →
+            // "Refresh watch face" hands it to Gadgetbridge to install. A
+            // build without it (F-Droid's, CI's) simply has no face to offer.
+            assets.srcDirs += ["$buildDir/generated/garminAssets"]
         }
     }
 
@@ -411,4 +416,19 @@ dependencies {
     // The hinge of a foldable and how far it is folded (FoldPostureModule).
     implementation("androidx.window:window:1.3.0")
     implementation("androidx.window:window-java:1.3.0")
+}
+
+/*
+ * The watch face the phone can install (GarminWatch.installFace): copied
+ * from garmin/build/ before every build, so the APK carries whichever face
+ * was built last next to it — or none, where nothing was built.
+ */
+tasks.register('copyGarminFace', Copy) {
+    from("$rootDir/../garmin/build") {
+        include 'mihrab-face.prg'
+    }
+    into "$buildDir/generated/garminAssets/garmin"
+}
+tasks.named('preBuild') {
+    dependsOn 'copyGarminFace'
 }

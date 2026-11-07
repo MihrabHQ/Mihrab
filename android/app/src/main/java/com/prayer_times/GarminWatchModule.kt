@@ -55,6 +55,20 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
+  /**
+   * Opens Gadgetbridge's installer on the watch face this build carries;
+   * resolves to "opened", "no-face", "no-gadgetbridge" or "failed". From
+   * the current activity when there is one, so back returns to Settings.
+   */
+  @ReactMethod
+  fun installFace(promise: Promise) {
+    try {
+      promise.resolve(GarminWatch.installFace(reactContext.currentActivity ?: reactContext))
+    } catch (e: Exception) {
+      promise.reject("E_GARMIN", e.message, e)
+    }
+  }
+
   /** Sends now, whatever was sent before; resolves to the outcome word. */
   @ReactMethod
   fun sendNow(promise: Promise) {
@@ -72,6 +86,7 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
       map.putBoolean("enabled", GarminWatch.enabled(reactContext))
       map.putString("address", GarminWatch.address(reactContext))
       map.putString("gadgetbridge", GarminWatch.gadgetbridgePackage(reactContext))
+      map.putBoolean("bundledFace", GarminWatch.hasBundledFace(reactContext))
       promise.resolve(map)
     } catch (e: Exception) {
       promise.reject("E_GARMIN", e.message, e)

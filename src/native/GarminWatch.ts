@@ -22,7 +22,12 @@ export type GarminWatchStatus = {
   address: string;
   /** The installed Gadgetbridge build's package name, or null. */
   gadgetbridge: string | null;
+  /** Whether this build carries a watch face to install (absent on older builds). */
+  bundledFace?: boolean;
 };
+
+/** What handing the watch face to Gadgetbridge did. */
+export type GarminInstallResult = 'opened' | 'no-face' | 'no-gadgetbridge' | 'failed';
 
 /** A device paired with the phone; `garmin` when its name says so. */
 export type PairedDevice = { name: string; address: string; garmin: boolean };
@@ -35,6 +40,7 @@ type GarminWatchNative = {
   setFahrenheit?(fahrenheit: boolean): Promise<void>;
   setAccent?(hex: string): Promise<void>;
   setFaceOptions?(bits: number): Promise<void>;
+  installFace?(): Promise<GarminInstallResult>;
 };
 
 const native: GarminWatchNative | undefined =
@@ -94,6 +100,20 @@ export async function setGarminFaceOptions(bits: number): Promise<void> {
     await native.setFaceOptions(bits);
   } catch {
     /* best-effort */
+  }
+}
+
+/**
+ * Opens Gadgetbridge's installer on the watch face this build carries
+ * (android/app/build.gradle, copyGarminFace); Gadgetbridge asks before
+ * it installs.
+ */
+export async function installGarminFace(): Promise<GarminInstallResult> {
+  if (!native?.installFace) return 'no-face';
+  try {
+    return await native.installFace();
+  } catch {
+    return 'failed';
   }
 }
 

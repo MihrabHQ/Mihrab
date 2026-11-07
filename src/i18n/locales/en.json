@@ -567,7 +567,12 @@
     "garminFaceRowSteps": "Steps",
     "garminFaceRowHeart": "Heart rate",
     "garminFaceRowNone": "Nothing",
-    "garminFaceFooter": "Sent to the watch at once. For the Mihrab watch face."
+    "garminFaceFooter": "Sent to the watch at once. For the Mihrab watch face.",
+    "garminFaceRefresh": "Refresh watch face",
+    "garminFaceRefreshHelp": "Sends the times and these settings again so the face redraws with them, then opens Gadgetbridge to install the watch face that came with this version of Mihrab.",
+    "garminFaceRefreshHelpNoInstall": "Sends the times and these settings again so the face redraws with them.",
+    "garminFaceRefreshed": "Sent. The face redraws within a moment.",
+    "garminFaceInstallFailed": "Sent, but Gadgetbridge's installer could not be opened. Install the face from Gadgetbridge instead."
   },
   "locationSetup": {
     "headline": "Set your location",

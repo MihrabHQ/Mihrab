@@ -568,7 +568,12 @@
     "garminFaceRowSteps": "Pas",
     "garminFaceRowHeart": "Fréquence cardiaque",
     "garminFaceRowNone": "Rien",
-    "garminFaceFooter": "Envoyé à la montre immédiatement. Pour le cadran Mihrab."
+    "garminFaceFooter": "Envoyé à la montre immédiatement. Pour le cadran Mihrab.",
+    "garminFaceRefresh": "Actualiser le cadran",
+    "garminFaceRefreshHelp": "Renvoie les horaires et ces réglages pour que le cadran se redessine avec eux, puis ouvre Gadgetbridge pour installer le cadran fourni avec cette version de Mihrab.",
+    "garminFaceRefreshHelpNoInstall": "Renvoie les horaires et ces réglages pour que le cadran se redessine avec eux.",
+    "garminFaceRefreshed": "Envoyé. Le cadran se redessine dans un instant.",
+    "garminFaceInstallFailed": "Envoyé, mais l'installateur de Gadgetbridge n'a pas pu s'ouvrir. Installez le cadran depuis Gadgetbridge."
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",

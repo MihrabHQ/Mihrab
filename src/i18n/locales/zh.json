@@ -567,7 +567,12 @@
     "garminFaceRowSteps": "步数",
     "garminFaceRowHeart": "心率",
     "garminFaceRowNone": "无",
-    "garminFaceFooter": "立即发送到手表。适用于 Mihrab 表盘。"
+    "garminFaceFooter": "立即发送到手表。适用于 Mihrab 表盘。",
+    "garminFaceRefresh": "刷新表盘",
+    "garminFaceRefreshHelp": "重新发送时间和这些设置，让表盘按它们重绘，然后打开 Gadgetbridge 安装随此版本 Mihrab 附带的表盘。",
+    "garminFaceRefreshHelpNoInstall": "重新发送时间和这些设置，让表盘按它们重绘。",
+    "garminFaceRefreshed": "已发送。表盘稍后重绘。",
+    "garminFaceInstallFailed": "已发送，但无法打开 Gadgetbridge 的安装程序。请改从 Gadgetbridge 安装表盘。"
   },
   "locationSetup": {
     "headline": "设置您的位置",

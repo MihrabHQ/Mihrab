@@ -14,8 +14,10 @@ import {
   configureGarminWatch,
   garminWatchAvailable,
   garminWatchStatus,
+  installGarminFace,
   pairedWatches,
   sendToGarminWatch,
+  type GarminInstallResult,
   type GarminSendResult,
   type PairedDevice,
 } from '../../native/GarminWatch';
@@ -47,6 +49,12 @@ function GarminWatchCardImpl() {
   const [draft, setDraft] = useState(watch.address);
   const [gadgetbridge, setGadgetbridge] = useState<boolean | null>(null);
   const [outcome, setOutcome] = useState<GarminSendResult | null>(null);
+  // Whether this build carries a watch face to install, and what the
+  // last refresh did.
+  const [bundledFace, setBundledFace] = useState(false);
+  const [refreshed, setRefreshed] = useState<
+    { sent: GarminSendResult; installed: GarminInstallResult | null } | null
+  >(null);
   // The paired devices offered for picking: null until asked, [] when
   // the permission was refused or nothing is paired.
   const [choices, setChoices] = useState<PairedDevice[] | null>(null);
@@ -55,7 +63,10 @@ function GarminWatchCardImpl() {
   useEffect(() => {
     let alive = true;
     void garminWatchStatus().then(st => {
-      if (alive && st) setGadgetbridge(st.gadgetbridge != null);
+      if (alive && st) {
+        setGadgetbridge(st.gadgetbridge != null);
+        setBundledFace(st.bundledFace === true);
+      }
     });
     return () => {
       alive = false;
@@ -120,6 +131,18 @@ function GarminWatchCardImpl() {
     setOutcome(null);
     void sendToGarminWatch().then(setOutcome);
   }, []);
+
+  // Refresh: the times and the face's options again, whatever was sent
+  // before, so the face redraws with them; then, when this build carries
+  // the face, Gadgetbridge's installer on it — the newest face, installed
+  // after a yes there.
+  const onRefresh = useCallback(() => {
+    setRefreshed(null);
+    void sendToGarminWatch().then(async sent => {
+      const installed = bundledFace && sent === 'sent' ? await installGarminFace() : null;
+      setRefreshed({ sent, installed });
+    });
+  }, [bundledFace]);
 
   // The face's options: kept with the rest; useSyncGarminAccent hands
   // them to the watch.
@@ -297,6 +320,40 @@ function GarminWatchCardImpl() {
             value={face.row}
             onChange={row => setFace({ row })}
           />
+        </SettingsBlock>
+        <SettingsBlock>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('settings.garminFaceRefresh')}
+            accessibilityHint={t(bundledFace ? 'settings.garminFaceRefreshHelp' : 'settings.garminFaceRefreshHelpNoInstall')}
+            onPress={onRefresh}
+            testID="settings-garmin-face-refresh"
+            style={styles.send}>
+            <Text style={[s.changeLink, { color: palette.accent }]}>
+              {t('settings.garminFaceRefresh')}
+            </Text>
+          </Pressable>
+          <Text style={[s.help, { color: palette.muted }]}>
+            {t(bundledFace ? 'settings.garminFaceRefreshHelp' : 'settings.garminFaceRefreshHelpNoInstall')}
+          </Text>
+          {refreshed ? (
+            <Text
+              style={[
+                s.help,
+                {
+                  color:
+                    refreshed.sent === 'sent' && refreshed.installed !== 'failed'
+                      ? palette.text
+                      : palette.danger,
+                },
+              ]}>
+              {refreshed.sent !== 'sent'
+                ? t(`settings.garminResult.${refreshed.sent}`)
+                : refreshed.installed === 'failed'
+                  ? t('settings.garminFaceInstallFailed')
+                  : t('settings.garminFaceRefreshed')}
+            </Text>
+          ) : null}
         </SettingsBlock>
       </SettingsGroup>
     ) : null}

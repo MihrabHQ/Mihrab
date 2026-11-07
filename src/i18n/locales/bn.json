@@ -567,7 +567,12 @@
     "garminFaceRowSteps": "পদক্ষেপ",
     "garminFaceRowHeart": "হৃদস্পন্দন",
     "garminFaceRowNone": "কিছুই না",
-    "garminFaceFooter": "সঙ্গে সঙ্গে ঘড়িতে পাঠানো হয়। Mihrab ঘড়ির ফেসের জন্য।"
+    "garminFaceFooter": "সঙ্গে সঙ্গে ঘড়িতে পাঠানো হয়। Mihrab ঘড়ির ফেসের জন্য।",
+    "garminFaceRefresh": "ঘড়ির ফেস রিফ্রেশ করুন",
+    "garminFaceRefreshHelp": "সময় ও এই সেটিংস আবার পাঠায় যাতে ফেস এগুলো নিয়ে আবার আঁকা হয়, তারপর Mihrab-এর এই সংস্করণের সঙ্গে আসা ঘড়ির ফেস ইনস্টল করতে Gadgetbridge খোলে।",
+    "garminFaceRefreshHelpNoInstall": "সময় ও এই সেটিংস আবার পাঠায় যাতে ফেস এগুলো নিয়ে আবার আঁকা হয়।",
+    "garminFaceRefreshed": "পাঠানো হয়েছে। ফেস এক মুহূর্তে আবার আঁকা হবে।",
+    "garminFaceInstallFailed": "পাঠানো হয়েছে, কিন্তু Gadgetbridge-এর ইনস্টলার খোলা যায়নি। Gadgetbridge থেকে ফেস ইনস্টল করুন।"
   },
   "locationSetup": {
     "headline": "আপনার অবস্থান সেট করুন",

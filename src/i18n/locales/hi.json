@@ -567,7 +567,12 @@
     "garminFaceRowSteps": "कदम",
     "garminFaceRowHeart": "हृदय गति",
     "garminFaceRowNone": "कुछ नहीं",
-    "garminFaceFooter": "तुरंत घड़ी पर भेजा जाता है। Mihrab वॉच फ़ेस के लिए।"
+    "garminFaceFooter": "तुरंत घड़ी पर भेजा जाता है। Mihrab वॉच फ़ेस के लिए।",
+    "garminFaceRefresh": "वॉच फ़ेस रीफ़्रेश करें",
+    "garminFaceRefreshHelp": "समय और ये सेटिंग्स फिर से भेजता है ताकि फ़ेस इनके साथ दोबारा बने, फिर Mihrab के इस संस्करण के साथ आया वॉच फ़ेस इंस्टॉल करने के लिए Gadgetbridge खोलता है।",
+    "garminFaceRefreshHelpNoInstall": "समय और ये सेटिंग्स फिर से भेजता है ताकि फ़ेस इनके साथ दोबारा बने।",
+    "garminFaceRefreshed": "भेज दिया। फ़ेस एक पल में दोबारा बनेगा।",
+    "garminFaceInstallFailed": "भेज दिया, लेकिन Gadgetbridge का इंस्टॉलर नहीं खुल सका। फ़ेस Gadgetbridge से इंस्टॉल करें।"
   },
   "locationSetup": {
     "headline": "अपना स्थान निर्धारित करें",

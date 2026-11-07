@@ -567,7 +567,12 @@
     "garminFaceRowSteps": "Steg",
     "garminFaceRowHeart": "Puls",
     "garminFaceRowNone": "Inget",
-    "garminFaceFooter": "Skickas till klockan direkt. Gäller Mihrabs urtavla."
+    "garminFaceFooter": "Skickas till klockan direkt. Gäller Mihrabs urtavla.",
+    "garminFaceRefresh": "Uppdatera urtavlan",
+    "garminFaceRefreshHelp": "Skickar tiderna och de här inställningarna igen så att urtavlan ritas om med dem, och öppnar sedan Gadgetbridge för att installera urtavlan som kom med den här versionen av Mihrab.",
+    "garminFaceRefreshHelpNoInstall": "Skickar tiderna och de här inställningarna igen så att urtavlan ritas om med dem.",
+    "garminFaceRefreshed": "Skickat. Urtavlan ritas om inom en stund.",
+    "garminFaceInstallFailed": "Skickat, men Gadgetbridges installerare gick inte att öppna. Installera urtavlan från Gadgetbridge i stället."
   },
   "locationSetup": {
     "headline": "Ange din plats",

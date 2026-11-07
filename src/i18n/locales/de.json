@@ -567,7 +567,12 @@
     "garminFaceRowSteps": "Schritte",
     "garminFaceRowHeart": "Herzfrequenz",
     "garminFaceRowNone": "Nichts",
-    "garminFaceFooter": "Wird sofort an die Uhr gesendet. Für das Mihrab-Zifferblatt."
+    "garminFaceFooter": "Wird sofort an die Uhr gesendet. Für das Mihrab-Zifferblatt.",
+    "garminFaceRefresh": "Zifferblatt aktualisieren",
+    "garminFaceRefreshHelp": "Sendet die Zeiten und diese Einstellungen erneut, damit sich das Zifferblatt damit neu zeichnet, und öffnet dann Gadgetbridge, um das Zifferblatt zu installieren, das mit dieser Mihrab-Version kam.",
+    "garminFaceRefreshHelpNoInstall": "Sendet die Zeiten und diese Einstellungen erneut, damit sich das Zifferblatt damit neu zeichnet.",
+    "garminFaceRefreshed": "Gesendet. Das Zifferblatt zeichnet sich gleich neu.",
+    "garminFaceInstallFailed": "Gesendet, aber das Installationsprogramm von Gadgetbridge ließ sich nicht öffnen. Installiere das Zifferblatt stattdessen über Gadgetbridge."
   },
   "locationSetup": {
     "headline": "Legen Sie Ihren Standort fest",

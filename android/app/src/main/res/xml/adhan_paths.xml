@@ -8,4 +8,7 @@
 -->
 <paths>
     <files-path name="custom_adhan" path="custom_adhan/" />
+    <!-- The Garmin watch face, handed to Gadgetbridge's installer
+         (GarminWatch.installFace). -->
+    <files-path name="garmin" path="garmin/" />
 </paths>

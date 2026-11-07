@@ -7,6 +7,8 @@ import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import java.io.File
 import android.content.pm.PackageManager
 import android.util.Log
 import com.prayer_times.contract.WallClock
@@ -290,6 +292,44 @@ object GarminWatch {
         .sortedWith(compareByDescending<Paired> { it.garmin }.thenBy { it.name })
     } catch (e: SecurityException) {
       emptyList()
+    }
+  }
+
+  /** The watch face built with this APK (app/build.gradle, copyGarminFace). */
+  private const val FACE_ASSET = "garmin/mihrab-face.prg"
+
+  /** Whether this build carries a watch face to install. */
+  fun hasBundledFace(context: Context): Boolean =
+    try {
+      context.assets.open(FACE_ASSET).close()
+      true
+    } catch (e: Exception) {
+      false
+    }
+
+  /**
+   * Hands the watch face that came with this build to Gadgetbridge's
+   * installer, which asks before it installs — the same screen as opening
+   * the .prg from a file manager. Returns "opened", "no-face",
+   * "no-gadgetbridge" or "failed".
+   */
+  fun installFace(context: Context): String {
+    val pkg = gadgetbridgePackage(context) ?: return "no-gadgetbridge"
+    if (!hasBundledFace(context)) return "no-face"
+    return try {
+      val dir = File(context.filesDir, "garmin").apply { mkdirs() }
+      val file = File(dir, "mihrab-face.prg")
+      context.assets.open(FACE_ASSET).use { input -> file.outputStream().use { input.copyTo(it) } }
+      val uri = FileProvider.getUriForFile(context, "${context.packageName}.adhan", file)
+      val intent = Intent(Intent.ACTION_VIEW)
+        .setDataAndType(uri, "application/octet-stream")
+        .setPackage(pkg)
+        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+      context.startActivity(intent)
+      "opened"
+    } catch (e: Exception) {
+      Log.w(TAG, "could not open Gadgetbridge's installer", e)
+      "failed"
     }
   }
 

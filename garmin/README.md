@@ -92,6 +92,16 @@ The phone sends again whenever its schedule is rebuilt (daily, on a
 change of place or method), and from Settings ("Send now"). The same
 message is not repeated within six hours.
 
+## Installing from the phone
+
+An Android build made on a machine where `garmin/build.sh` has run carries
+the watch face (`android/app/build.gradle`, `copyGarminFace`: whatever
+`garmin/build/mihrab-face.prg` is at build time). Settings → Devices →
+Garmin watch → Watch face → **Refresh watch face** sends the times and the
+face's settings again, then hands that face to Gadgetbridge's installer
+(`GarminWatch.installFace`), which asks before installing. A build without
+it — F-Droid's, CI's — only resends. Build the face before the APK.
+
 ## Setting it up
 
 On the phone:
