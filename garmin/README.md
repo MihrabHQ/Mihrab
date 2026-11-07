@@ -72,7 +72,13 @@ Connect IQ store — the apps are side-loaded through Gadgetbridge.
    times in; and whether the app's place reads Fahrenheit (`f`, worked
    out on the phone from the coordinates, `src/utils/temperatureUnit.ts`),
    for the face's weather; and the app's accent (`a`), which the face
-   wears. Once for each of the three apps. `android/.../GarminWatch.kt`.
+   wears, with the face's options from Settings → Devices → Garmin watch →
+   Watch face in its top byte (seconds, weather, the ring, the countdown's
+   style, the bar under the clock, and steps, heart rate or nothing above
+   it; `garminFaceBits` in `src/settings/garminWatch.ts`, `face()` in
+   `shared/source/Mihrab.mc`) — a key of their own would cost bytes the
+   limit does not have. Once for each of the three apps.
+   `android/.../GarminWatch.kt`.
 2. Gadgetbridge (2026.11 or later) encodes it the Garmin way, encrypts it
    and delivers it to the app on the watch over the Connect IQ channel.
    The limit is about 260 bytes per message, which is why it is numbers

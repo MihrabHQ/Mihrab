@@ -20,6 +20,7 @@
 // the first arrangement in which everything fits is kept until what the
 // face shows changes its shape (another language, a message, the weather).
 //
+import Toybox.Activity;
 import Toybox.ActivityMonitor;
 import Toybox.Graphics;
 import Toybox.Lang;
@@ -114,6 +115,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private var _weather as Array = [-1, "--", "", 0];
     private var _next as [Number, Number]? = null;
     private var _reasonText as String? = null;
+    // The options from the phone (Mihrab.face()), and what they say.
+    private var _face as Number = 0;
+    private var _seconds as Boolean = true;
+    private var _weatherOn as Boolean = true;
+    private var _shortCount as Boolean = false;
+    private var _row as Number = 0;
 
     // The layout, and what it was made for.
     private var _key as String = "";
@@ -200,7 +207,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
             }
         }
         _hourText = hour.format("%d");
-        _weather = weatherParts(nowMoment);
+        _face = Mihrab.face();
+        _seconds = (_face & Mihrab.FACE_NO_SECONDS) == 0;
+        _weatherOn = (_face & Mihrab.FACE_NO_WEATHER) == 0;
+        _shortCount = (_face & Mihrab.FACE_SHORT) != 0;
+        _row = Mihrab.faceRow(_face);
+        _weather = _weatherOn ? weatherParts(nowMoment) : [-1, "", "", 0];
         _next = Mihrab.next(now);
         _reasonText = null;
         if (_next == null) {
@@ -212,7 +224,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var key = (_w.toString() + "|" + _dateText + "|" + (_staleText == null ? "" : _staleText) + "|" + (_hour12 ? "12" : "24")
             + "|" + _hourText.length().toString() + "|" + (_weather[0] as Number).toString() + "|" + (_weather[1] as String)
             + "|" + (_weather[2] as String) + "|" + (_reasonText == null ? "" : _reasonText)
-            + "|" + System.getDeviceSettings().systemLanguage.toString()) as String;
+            + "|" + System.getDeviceSettings().systemLanguage.toString() + "|" + _face.toString()) as String;
         if (!key.equals(_key)) {
             layout(dc);
             _key = key;
@@ -222,7 +234,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
 
         // The ring: the way from the last prayer to the next, in the
         // app's accent, as the app's own track draws it.
-        drawRing(dc, now, accent);
+        if ((_face & Mihrab.FACE_NO_RING) == 0) {
+            drawRing(dc, now, accent);
+        }
 
         // The date.
         dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
@@ -238,7 +252,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         // The time with the weather and the seconds, and the battery under
         // the figures as wide as they are.
         var figures = drawClock(dc, clock.min.format("%02d"), clock.sec, suffix, accent);
-        drawBattery(dc, figures[0], figures[1] + 1);
+        drawBattery(dc, figures[0], figures[1] + 1, accent);
 
         // The next prayer and the countdown, or why there is none.
         var next = _next;
@@ -251,7 +265,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
             drawLines(dc, reasonLines, _fMessage, _bPrayer);
         }
 
-        // Today's steps.
+        // Today's steps, or the heart rate, or only the weather if it is there.
         drawSteps(dc, accent);
     }
 
@@ -274,6 +288,11 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var now = Time.now().value();
         var next = Mihrab.next(now);
         if (next == null) {
+            return;
+        }
+        // The short countdown counts whole minutes until its last five,
+        // which the minute's full draw keeps: nothing to do every second.
+        if (_shortCount && next[1] - now > Mihrab.SECONDS_UNDER + 60) {
             return;
         }
         dc.setClip(box[0], box[1], box[2], box[3]);
@@ -442,7 +461,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
                     nameW = nw > nameW ? nw : nameW;
                 }
                 var prayerW = nameW + textW(dc, "  " + (_hour12 ? "88:88 pm" : "88:88"), fP);
-                var countW = textW(dc, "88:88:88", fC);
+                var countW = textW(dc, _shortCount ? "88h 88m" : "88:88:88", fC);
                 mihrab.add([Graphics.getFontAscent(fP), Graphics.getFontDescent(fP), prayerW, figuresUp(fC), countW]);
             }
         } else {
@@ -608,22 +627,36 @@ class MihrabFaceView extends WatchUi.WatchFace {
             leftUp = leftUp > iconTop ? leftUp : iconTop;
         }
 
-        // The seconds, and am/pm above them.
-        var rightW = textW(dc, "88", fSeconds);
-        var rightUp = figuresUp(fSeconds);
+        // No weather: nothing beside the clock or on the steps' row.
+        if (!_weatherOn) {
+            leftW = 0;
+            leftUp = 0;
+            upperOff = 0;
+        }
+
+        // The seconds, and am/pm above them (on the baseline without them).
+        var rightW = _seconds ? textW(dc, "88", fSeconds) : 0;
+        var rightUp = _seconds ? figuresUp(fSeconds) : 0;
         var suffixOff = 0;
         if (_hour12) {
             var sw = textW(dc, "pm", fSide);
             rightW = rightW > sw ? rightW : sw;
-            suffixOff = figuresUp(fSeconds) + 3 + Graphics.getFontDescent(fSide);
+            suffixOff = _seconds ? figuresUp(fSeconds) + 3 + Graphics.getFontDescent(fSide) : 0;
             rightUp = suffixOff + figuresUp(fSide);
         }
 
-        // The steps behind the footprint, centred on the figures' middle.
+        // The steps (or the heart rate) behind their icon, centred on the
+        // figures' middle; nothing when the row is set to show neither.
         var stepsUp = figuresUp(fSteps);
         var sUp = stepsUp > stepsUp / 2 + ICON / 2 ? stepsUp : stepsUp / 2 + ICON / 2;
         var sDown = ICON / 2 - stepsUp / 2;
         sDown = sDown > 0 ? sDown : 0;
+        var rowW = ICON + 4 + textW(dc, _row == Mihrab.ROW_HEART ? "888" : "000000", fSteps);
+        if (_row == Mihrab.ROW_NONE) {
+            sUp = 0;
+            sDown = 0;
+            rowW = 0;
+        }
 
         // The stale message on one line or two.
         var lineH = Graphics.getFontAscent(fStale) + Graphics.getFontDescent(fStale);
@@ -648,16 +681,22 @@ class MihrabFaceView extends WatchUi.WatchFace {
             var sample = textW(dc, "88°/88°", fSide);
             inlineW += 6 + (rw > sample ? rw : sample);
         }
-        inlineW += 14;
+        // The gap before the footprint, when there is one.
+        inlineW += _row == Mihrab.ROW_NONE ? 0 : 14;
         var inlineUp = kind >= 0 && ICON / 2 + nowUp / 2 > nowUp ? ICON / 2 + nowUp / 2 : nowUp;
         var inlineDown = kind >= 0 ? ICON / 2 - nowUp / 2 : 0;
         inlineDown = inlineDown > 0 ? inlineDown : 0;
+        if (!_weatherOn) {
+            inlineW = 0;
+            inlineUp = 0;
+            inlineDown = 0;
+        }
 
         return [
             Graphics.getFontAscent(fDate), Graphics.getFontDescent(fDate), textW(dc, _dateText, fDate),
             inlineW, inlineUp * 1000 + inlineDown,
             leftW, leftUp, upperOff, rightW, rightUp, suffixOff,
-            sUp, sDown, ICON + 4 + textW(dc, "000000", fSteps),
+            sUp, sDown, rowW,
             lineH, stale
         ];
     }
@@ -691,9 +730,15 @@ class MihrabFaceView extends WatchUi.WatchFace {
             stepsDown = iDown > stepsDown ? iDown : stepsDown;
             stepsW += om[3] as Number;
         }
-        bases[5] = y + stepsUp;
-        ok = fit(stepsW / 2 + 1, y, bases[5] + stepsDown) && ok;
-        y = bases[5] + stepsDown + _clockGap;
+        if (stepsW == 0) {
+            // Nothing on the row: the clock under the date.
+            bases[5] = y;
+            y += _clockGap - ROW_GAP;
+        } else {
+            bases[5] = y + stepsUp;
+            ok = fit(stepsW / 2 + 1, y, bases[5] + stepsDown) && ok;
+            y = bases[5] + stepsDown + _clockGap;
+        }
 
         // The clock row: the weather, the figures and the seconds, centred
         // together; the rule under the figures.
@@ -708,7 +753,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var b = y + up;
         bases[2] = b;
         var leftPart = leftW > 0 ? leftW + SIDE_GAP : 0;
-        var group = leftPart + digitsW + SIDE_GAP + rightW;
+        var group = leftPart + digitsW + (rightW > 0 ? SIDE_GAP + rightW : 0);
         var gx = -group / 2;
         var lx = abs(gx) > abs(gx + leftW) ? abs(gx) : abs(gx + leftW);
         var dx0 = gx + leftPart;
@@ -796,7 +841,17 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // The battery: a bar from x, w wide, under the figures — the charge
     // left in its colour (green, then yellow, orange and red as it runs
     // down), what has been used in grey.
-    private function drawBattery(dc as Dc, x as Number, w as Number) as Void {
+    private function drawBattery(dc as Dc, x as Number, w as Number, accent as Number) as Void {
+        var mode = Mihrab.faceBattery(_face);
+        if (mode == Mihrab.BATTERY_OFF) {
+            return;
+        }
+        if (mode == Mihrab.BATTERY_ACCENT) {
+            // The plain rule it was before it was the battery.
+            dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
+            dc.fillRectangle(x, _bClock + 5, w, 2);
+            return;
+        }
         var pct = System.getSystemStats().battery;
         pct = pct < 0.0 ? 0.0 : (pct > 100.0 ? 100.0 : pct);
         var y = _bClock + RULE_DROP;
@@ -845,7 +900,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var timeText = _hourText + ":" + minutes;
         var timeW = textW(dc, timeText, _fClock);
         var leftPart = _leftW > 0 ? _leftW + SIDE_GAP : 0;
-        var group = leftPart + timeW + SIDE_GAP + _rightW;
+        var group = leftPart + timeW + (_rightW > 0 ? SIDE_GAP + _rightW : 0);
         var x = _w / 2 - group / 2 + leftPart;
         var top = b - Graphics.getFontAscent(_fClock);
         var hourW = textW(dc, _hourText, _fClock);
@@ -858,16 +913,20 @@ class MihrabFaceView extends WatchUi.WatchFace {
 
         // Right: the seconds on the baseline, am/pm above.
         var secX = x + timeW + SIDE_GAP;
-        var secUp = figuresUp(_fSeconds);
-        _secondsBox = [secX, b - secUp - 1, textW(dc, "88", _fSeconds) + 2, secUp + 2];
         dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(secX, b - Graphics.getFontAscent(_fSeconds), _fSeconds, seconds.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);
+        if (_seconds) {
+            var secUp = figuresUp(_fSeconds);
+            _secondsBox = [secX, b - secUp - 1, textW(dc, "88", _fSeconds) + 2, secUp + 2];
+            dc.drawText(secX, b - Graphics.getFontAscent(_fSeconds), _fSeconds, seconds.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);
+        } else {
+            _secondsBox = null;
+        }
         if (suffix != null) {
             dc.drawText(secX, b - _suffixOff - Graphics.getFontAscent(_fSide), _fSide, suffix, Graphics.TEXT_JUSTIFY_LEFT);
         }
 
         // Left: the icon and the temperature now; under them high/low.
-        if (!_weatherBeside) {
+        if (!_weatherBeside || !_weatherOn) {
             return [x, timeW];
         }
         var right = x - SIDE_GAP;
@@ -891,6 +950,10 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // The countdown in full, "05:49:12", the figures white and the colons
     // in the accent, centred. Remembers where it was drawn.
     private function drawCountdown(dc as Dc, remaining as Number, accent as Number) as Void {
+        if (_shortCount) {
+            drawShortCountdown(dc, remaining, accent);
+            return;
+        }
         var parts = Mihrab.hms(remaining);
         var f = _fCount;
         var cx = _w / 2;
@@ -910,6 +973,35 @@ class MihrabFaceView extends WatchUi.WatchFace {
             dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
             dc.drawText(x, top, f, parts[i], Graphics.TEXT_JUSTIFY_LEFT);
             x += textW(dc, parts[i], f);
+        }
+    }
+
+    // The countdown as the phone's Minimal page writes it, "5h 49m", the
+    // figures white and the unit letters in the accent.
+    private function drawShortCountdown(dc as Dc, remaining as Number, accent as Number) as Void {
+        var ps = Mihrab.pieces(remaining);
+        var f = _fCount;
+        var cx = _w / 2;
+        var space = textW(dc, " ", f);
+        var width = 0;
+        for (var i = 0; i < ps.size(); i++) {
+            width += (i > 0 ? space : 0) + textW(dc, ps[i][0], f) + textW(dc, ps[i][1], f);
+        }
+        var up = figuresUp(f);
+        var boxW = textW(dc, "88h 88m", f) + 4;
+        _countdownBox = [cx - boxW / 2, _bCount - up - 1, boxW, up + 2];
+        var top = _bCount - Graphics.getFontAscent(f);
+        var x = cx - width / 2;
+        for (var i = 0; i < ps.size(); i++) {
+            if (i > 0) {
+                x += space;
+            }
+            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(x, top, f, ps[i][0], Graphics.TEXT_JUSTIFY_LEFT);
+            x += textW(dc, ps[i][0], f);
+            dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(x, top, f, ps[i][1], Graphics.TEXT_JUSTIFY_LEFT);
+            x += textW(dc, ps[i][1], f);
         }
     }
 
@@ -971,15 +1063,38 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private function drawSteps(dc as Dc, accent as Number) as Void {
         var f = _fSteps;
         var b = _bSteps;
+        var inline = !_weatherBeside && _weatherOn;
+        if (_row == Mihrab.ROW_NONE) {
+            if (inline) {
+                drawInlineWeather(dc, _w / 2 - inlineWeatherW(dc) / 2, b);
+            }
+            return;
+        }
+        if (_row == Mihrab.ROW_HEART) {
+            var hr = heartRate();
+            var hrText = hr == null ? "--" : hr.format("%d");
+            var hrW = ICON + 4 + textW(dc, hrText, f);
+            var weatherW0 = inline ? inlineWeatherW(dc) : 0;
+            var x0 = _w / 2 - (weatherW0 + hrW) / 2;
+            if (inline) {
+                drawInlineWeather(dc, x0, b);
+                x0 += weatherW0;
+            }
+            dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
+            drawHeart(dc, x0, b - figuresUp(f) / 2 - ICON / 2);
+            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(x0 + ICON + 4, b - Graphics.getFontAscent(f), f, hrText, Graphics.TEXT_JUSTIFY_LEFT);
+            return;
+        }
         var text = stepCount().format("%06d");
         var lead = 0;
         while (lead < text.length() - 1 && (text.substring(lead, lead + 1) as String).equals("0")) {
             lead++;
         }
         var stepsW = ICON + 4 + textW(dc, text, f);
-        var weatherW = _weatherBeside ? 0 : inlineWeatherW(dc);
+        var weatherW = inline ? inlineWeatherW(dc) : 0;
         var x = _w / 2 - (weatherW + stepsW) / 2;
-        if (!_weatherBeside) {
+        if (inline) {
             drawInlineWeather(dc, x, b);
             x += weatherW;
         }
@@ -1005,7 +1120,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         if (rangeText.length() > 0) {
             w += 6 + textW(dc, rangeText, _fSide);
         }
-        return w + 14;
+        return w + (_row == Mihrab.ROW_NONE ? 0 : 14);
     }
 
     // The weather on the steps' row from x, on baseline b: the icon, the
@@ -1246,6 +1361,28 @@ class MihrabFaceView extends WatchUi.WatchFace {
         dc.fillCircle(x + 4, y + 14, 2);
         dc.fillEllipse(x + 12, y + 4, 3, 5);
         dc.fillCircle(x + 12, y + 11, 2);
+    }
+
+    // A heart, 16 px square, top-left at (x, y).
+    private function drawHeart(dc as Dc, x as Number, y as Number) as Void {
+        dc.fillCircle(x + 5, y + 6, 4);
+        dc.fillCircle(x + 11, y + 6, 4);
+        dc.fillPolygon([[x + 1, y + 8], [x + 15, y + 8], [x + 8, y + 15]] as Array<[Numeric, Numeric]>);
+    }
+
+    // The heart rate now, else the latest the watch measured, or null.
+    private function heartRate() as Number? {
+        var info = Activity.getActivityInfo();
+        if (info != null && info.currentHeartRate != null) {
+            return info.currentHeartRate as Number;
+        }
+        if (ActivityMonitor has :getHeartRateHistory) {
+            var sample = ActivityMonitor.getHeartRateHistory(1, true).next();
+            if (sample != null && sample.heartRate != null && sample.heartRate != ActivityMonitor.INVALID_HR_SAMPLE) {
+                return sample.heartRate as Number;
+            }
+        }
+        return null;
     }
 
     // Today's steps (0 when the watch has none to give), at most 999999.

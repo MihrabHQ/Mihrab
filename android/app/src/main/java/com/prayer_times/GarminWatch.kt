@@ -24,8 +24,9 @@ import org.json.JSONObject
  * about 260 bytes encoded — so the payload is numbers only: the five
  * prayers and sunrise for three days as epoch seconds, today first, two
  * flags — the app's 12-hour clock, and Fahrenheit for its place — and the
- * app's accent. The watch keeps them and counts down by itself; its own
- * strings name the prayers.
+ * app's accent, with the face's options in its top byte (a key of their
+ * own would cost bytes the limit does not have). The watch keeps them and
+ * counts down by itself; its own strings name the prayers.
  *
  * Sent whenever the app writes its widget payload (PrayerWidgetModule), which
  * is the one schedule every Android surface draws from — daily by the
@@ -47,6 +48,8 @@ object GarminWatch {
   private const val PREFS_FAHRENHEIT = "fahrenheit"
   /** The face's accent, 0xRRGGBB on the watch screen's palette. */
   private const val PREFS_ACCENT = "accent"
+  /** The face's options, one byte (garminWatch.ts, garminFaceBits). */
+  private const val PREFS_FACE = "face"
   /** The app's green as the watch screen shows it (garminWatch.ts). */
   const val DEFAULT_ACCENT = 0x00AA55
 
@@ -152,6 +155,21 @@ object GarminWatch {
     return best
   }
 
+  /**
+   * The watch face's options, a byte (garminFaceBits): kept, and sent at
+   * once when they change, as the accent is.
+   */
+  fun setFaceOptions(context: Context, bits: Int) {
+    val face = bits and 0xFF
+    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    if (prefs.getInt(PREFS_FACE, 0) == face && prefs.contains(PREFS_FACE)) return
+    prefs.edit().putInt(PREFS_FACE, face).apply()
+    if (enabled(context)) send(context)
+  }
+
+  private fun face(context: Context): Int =
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getInt(PREFS_FACE, 0)
+
   private fun accent(context: Context): Int =
     context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getInt(PREFS_ACCENT, DEFAULT_ACCENT)
 
@@ -173,19 +191,21 @@ object GarminWatch {
 
   /**
    * The message for the payload the app last wrote:
-   * `{"v":2,"t":[…],"h12":0|1,"f":0|1,"a":0xRRGGBB}` — the times (six a
+   * `{"v":2,"t":[…],"h12":0|1,"f":0|1,"a":0xOORRGGBB}` — the times (six a
    * day: the prayers and sunrise, 0 where one does not occur), the app's
    * clock (Settings → Appearance, as the widgets have it), the thermometer
-   * of its place and its accent — or null when there is no payload, or no times from today on.
+   * of its place and its accent, the face's options (OO) above it — or null
+   * when there is no payload, or no times from today on. With the top bit
+   * of the options set the number is negative, which the watch reads the same.
    */
   fun message(context: Context, nowMs: Long = System.currentTimeMillis()): String? {
     val prefs = context.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
     val payload = WidgetContract.Payload.parse(prefs.getString(WidgetPayloadSource.PREFS_KEY_V2, null))
       ?.takeIf { it.schemaVersion == WidgetContract.VERSION } ?: return null
-    return message(payload, nowMs, fahrenheit(context), accent(context))
+    return message(payload, nowMs, fahrenheit(context), accent(context), face(context))
   }
 
-  fun message(payload: WidgetContract.Payload, nowMs: Long, fahrenheit: Boolean = false, accent: Int = DEFAULT_ACCENT): String? {
+  fun message(payload: WidgetContract.Payload, nowMs: Long, fahrenheit: Boolean = false, accent: Int = DEFAULT_ACCENT, face: Int = 0): String? {
     val today = WallClock.dateKey(nowMs)
     val days = payload.days.dropWhile { it.dateKey < today }.take(DAYS)
     if (days.isEmpty()) return null
@@ -205,7 +225,7 @@ object GarminWatch {
       .put("t", times)
       .put("h12", if (payload.clock.hour12) 1 else 0)
       .put("f", if (fahrenheit) 1 else 0)
-      .put("a", accent)
+      .put("a", ((face and 0xFF) shl 24) or (accent and 0xFFFFFF))
       .toString()
   }
 

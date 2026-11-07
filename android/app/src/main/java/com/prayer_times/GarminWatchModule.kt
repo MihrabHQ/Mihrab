@@ -44,6 +44,17 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
+  /** The face's options (garminFaceBits): kept, and sent when they change. */
+  @ReactMethod
+  fun setFaceOptions(bits: Double, promise: Promise) {
+    try {
+      GarminWatch.setFaceOptions(reactContext, bits.toInt())
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject("E_GARMIN", e.message, e)
+    }
+  }
+
   /** Sends now, whatever was sent before; resolves to the outcome word. */
   @ReactMethod
   fun sendNow(promise: Promise) {
