@@ -71,10 +71,11 @@ async function onboard(d) {
   await d.page.waitForTimeout(2500);
 }
 
+// Settings → Devices, the pairing page (its own section since it moved
+// out of About).
 async function openSync(d) {
   await d.click(/^Settings$/);
-  await d.click(/^About$/);
-  await d.click(/^Sync between devices$/, 2500);
+  await d.click(/^Devices$/, 2500);
 }
 
 async function code(d) {
@@ -110,7 +111,7 @@ async function clear(d) {
   if (!(await d.page.getByText(/^Sync now$/).count())) await openSync(d);
 }
 
-// Back out of Sync and About (Esc is the app's back), to Today.
+// Back out of Devices (Esc is the app's back), to Today.
 async function home(d) {
   for (let i = 0; i < 2; i++) {
     await d.page.keyboard.press('Escape');
