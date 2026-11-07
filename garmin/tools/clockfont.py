@@ -15,6 +15,9 @@ compiler reads.
 
 Needs Pillow. The font's base sits on the tops of the figures, with no room
 for accents above them, so the ascent the face measures is the ink.
+
+Also the battery's percentage under the clock's bar: figures and "%", small
+enough to tuck into the room above the prayer line rather than push it down.
 """
 import os
 from PIL import Image, ImageDraw, ImageFont
@@ -25,6 +28,8 @@ TTF = os.path.join(ROOT, 'android', 'app', 'src', 'main', 'res', 'font', 'roboto
 OUT = os.path.join(HERE, '..', 'watchface', 'resources', 'fonts')
 CHARS = '0123456789:'
 HEIGHTS = [76, 70, 64, 60, 56, 53, 50, 47, 44, 40]
+PCT_CHARS = '0123456789%'
+PCT_HEIGHT = 8
 
 
 def font_for(height):
@@ -41,11 +46,11 @@ def font_for(height):
     return f
 
 
-def build(height):
+def build(height, chars=CHARS, name=None):
     f = font_for(height)
     glyphs = []
     top = 0
-    for ch in CHARS:
+    for ch in chars:
         l, t, r, b = f.getbbox(ch, anchor='ls')
         w, h = r - l + 4, b - t + 4
         img = Image.new('L', (w, h), 0)
@@ -71,7 +76,7 @@ def build(height):
             f'char id={ord(ch)} x={x} y=1 width={ink.width} height={ink.height} '
             f'xoffset={x0} yoffset={base + y0} xadvance={adv} page=0 chnl=15')
         x += ink.width + 1
-    name = f'clock{height}'
+    name = name or f'clock{height}'
     sheet.save(os.path.join(OUT, name + '.png'))
     with open(os.path.join(OUT, name + '.fnt'), 'w') as out:
         out.write(f'info face="Roboto Bold" size={f.size} bold=1 italic=0 charset="" unicode=1 '
@@ -91,6 +96,9 @@ def main():
         name, base, adv = build(h)
         entries.append(f'    <font id="Clock{h}" filename="{name}.fnt" antialias="false" filter="{CHARS}"/>')
         print(name, 'base', base, 'digit advance', adv)
+    name, base, adv = build(PCT_HEIGHT, PCT_CHARS, f'pct{PCT_HEIGHT}')
+    entries.append(f'    <font id="Pct" filename="{name}.fnt" antialias="false" filter="{PCT_CHARS}"/>')
+    print(name, 'base', base, 'digit advance', adv)
     with open(os.path.join(OUT, 'fonts.xml'), 'w') as out:
         out.write('<!-- garmin/tools/clockfont.py: the clock figures in the app\'s Roboto. -->\n<fonts>\n')
         out.write('\n'.join(entries) + '\n</fonts>\n')

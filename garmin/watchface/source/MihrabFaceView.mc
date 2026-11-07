@@ -56,11 +56,18 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private const RING_IN = 3;
     private const RING_PEN = 4;
     // The battery bar under the time, thick enough to read its colour.
-    private const RULE_PEN = 4;
-    // The bar under the time sits this far below its baseline.
-    private const RULE_DROP = 5;
+    private const RULE_PEN = 3;
+    // The bar under the time sits this far below its baseline: the
+    // clock's own figures have no descent, so close under them.
+    private const RULE_DROP = 2;
     // Between the bar and the percentage under its right end.
-    private const PCT_GAP = 2;
+    private const PCT_GAP = 1;
+    // What the rows under the clock start below its baseline, less the
+    // row gap: the room the plain rule under the time took before it was
+    // the battery, kept so that nothing under it moved. The percentage's
+    // small figures (clockfont.py) end a little past it, in the room a
+    // system font keeps above its capitals for accents.
+    private const UNDER_CLOCK = 7;
 
     // Weather icon kinds.
     private const W_SUN = 0;
@@ -351,6 +358,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // heights one by one.
 
     private var _round as Boolean = true;
+    // The battery percentage's font and its height.
+    private var _fPct as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _pctUp as Number = 0;
     private var _lo as Number = 0;
     private var _hi as Number = 0;
 
@@ -455,6 +465,10 @@ class MihrabFaceView extends WatchUi.WatchFace {
                 }
             }
         }
+
+        // The battery's percentage: its own small figures.
+        _fPct = WatchUi.loadResource(Rez.Fonts.Pct) as Graphics.FontReference;
+        _pctUp = Graphics.getFontAscent(_fPct);
 
         // The rest, per candidate: see measureOthers.
         var others = [] as Array<Array>;
@@ -571,7 +585,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // its up * 1000 + down there, left width, left up, upper offset, right width, right up,
     // suffix offset, steps up, down, width, stale line height, stale
     // variants ([up, down, width, lines] for one and two lines, null where
-    // it will not wrap), the battery percentage's up].
+    // it will not wrap)].
     private function measureOthers(dc as Dc, fonts as Array<Graphics.FontType>, full as Number) as Array {
         var fDate = fonts[0];
         var fStale = fonts[1];
@@ -656,8 +670,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
             inlineW, inlineUp * 1000 + inlineDown,
             leftW, leftUp, upperOff, rightW, rightUp, suffixOff,
             sUp, sDown, ICON + 4 + textW(dc, "000000", fSteps),
-            lineH, stale,
-            Graphics.getFontAscent(fSide)
+            lineH, stale
         ];
     }
 
@@ -716,12 +729,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
         if (leftW > 0) {
             ok = fit(lx, b - leftUp, b) && ok;
         }
-        // The bar, and under its right end the percentage, which ends
-        // where the figures do and so is no wider than they are.
-        var pctB = b + RULE_DROP + RULE_PEN + PCT_GAP + (om[16] as Number);
+        // The bar, and under its right end the percentage, in figures
+        // small enough not to push the rows under it down (UNDER_CLOCK).
+        var pctB = b + RULE_DROP + RULE_PEN + PCT_GAP + _pctUp;
         ok = fit(dx, b - clockUp, pctB) && ok;
         ok = fit(rx, b - rightUp, b) && ok;
-        y = pctB + ROW_GAP;
+        y = b + UNDER_CLOCK + ROW_GAP;
 
         // The prayer and its countdown, or the message.
         var hasNext = _next != null;
@@ -809,7 +822,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
             dc.fillRectangle(x, y, full, RULE_PEN);
         }
         dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + w, y + RULE_PEN + PCT_GAP, _fSide, (pct + 0.5).toNumber().format("%d") + "%", Graphics.TEXT_JUSTIFY_RIGHT);
+        dc.drawText(x + w, y + RULE_PEN + PCT_GAP, _fPct, (pct + 0.5).toNumber().format("%d") + "%", Graphics.TEXT_JUSTIFY_RIGHT);
     }
 
     private function batteryColor(pct as Float) as Number {

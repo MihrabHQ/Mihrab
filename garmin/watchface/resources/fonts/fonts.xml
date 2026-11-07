@@ -10,4 +10,5 @@
     <font id="Clock47" filename="clock47.fnt" antialias="false" filter="0123456789:"/>
     <font id="Clock44" filename="clock44.fnt" antialias="false" filter="0123456789:"/>
     <font id="Clock40" filename="clock40.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Pct" filename="pct8.fnt" antialias="false" filter="0123456789%"/>
 </fonts>
