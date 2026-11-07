@@ -1,0 +1,13 @@
+<!-- garmin/tools/clockfont.py: the clock figures in the app's Roboto. -->
+<fonts>
+    <font id="Clock76" filename="clock76.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Clock70" filename="clock70.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Clock64" filename="clock64.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Clock60" filename="clock60.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Clock56" filename="clock56.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Clock53" filename="clock53.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Clock50" filename="clock50.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Clock47" filename="clock47.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Clock44" filename="clock44.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Clock40" filename="clock40.fnt" antialias="false" filter="0123456789:"/>
+</fonts>

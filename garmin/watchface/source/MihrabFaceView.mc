@@ -41,9 +41,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private const ICON = 16;
     // Between rows, and between the time and its side columns.
     private const ROW_GAP = 4;
-    private const SIDE_GAP = 5;
+    private const SIDE_GAP = 4;
     // Kept clear of the dial's edge, inside the ring.
-    private const EDGE = 9;
+    private const EDGE = 7;
     // The ring round the edge: its radius in from the edge, its width.
     private const RING_IN = 3;
     private const RING_PEN = 4;
@@ -64,29 +64,33 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private const W_WIND = 8;
 
     // The candidates, best first. The clock's figures:
-    private var _clockFonts as Array<Graphics.FontDefinition> = [Graphics.FONT_NUMBER_THAI_HOT, Graphics.FONT_NUMBER_HOT, Graphics.FONT_NUMBER_MEDIUM, Graphics.FONT_NUMBER_MILD] as Array<Graphics.FontDefinition>;
+    // The app's Roboto figures, tallest first (garmin/tools/clockfont.py),
+    // then Garmin's smallest number font should none fit.
+    private var _clockFontIds as Array<ResourceId> = [
+        Rez.Fonts.Clock76, Rez.Fonts.Clock70, Rez.Fonts.Clock64, Rez.Fonts.Clock60, Rez.Fonts.Clock56,
+        Rez.Fonts.Clock53, Rez.Fonts.Clock50, Rez.Fonts.Clock47, Rez.Fonts.Clock44, Rez.Fonts.Clock40
+    ] as Array<ResourceId>;
     // The prayer line and the countdown's figures; or, with no prayer to
     // show, the message's font and how many lines it may take.
-    private var _mihrabFonts as Array<[Graphics.FontDefinition, Graphics.FontDefinition]> = [
-        [Graphics.FONT_SMALL, Graphics.FONT_NUMBER_MILD],
-        [Graphics.FONT_SMALL, Graphics.FONT_LARGE],
+    private var _mihrabFonts as Array<[Graphics.FontType, Graphics.FontType]> = [
+        [Graphics.FONT_SMALL, Graphics.FONT_MEDIUM],
         [Graphics.FONT_SMALL, Graphics.FONT_MEDIUM],
         [Graphics.FONT_TINY, Graphics.FONT_MEDIUM],
         [Graphics.FONT_TINY, Graphics.FONT_SMALL],
         [Graphics.FONT_XTINY, Graphics.FONT_TINY]
-    ] as Array<[Graphics.FontDefinition, Graphics.FontDefinition]>;
-    private var _messageFonts as Array<[Graphics.FontDefinition, Number]> = [
+    ] as Array<[Graphics.FontType, Graphics.FontType]>;
+    private var _messageFonts as Array<[Graphics.FontType, Number]> = [
         [Graphics.FONT_SMALL, 1], [Graphics.FONT_TINY, 1], [Graphics.FONT_SMALL, 2],
         [Graphics.FONT_TINY, 2], [Graphics.FONT_XTINY, 2], [Graphics.FONT_XTINY, 3]
-    ] as Array<[Graphics.FontDefinition, Number]>;
+    ] as Array<[Graphics.FontType, Number]>;
     // The rest: date, the stale message, the weather now, the small side text (high
     // and low, am/pm), the seconds, the steps.
-    private var _otherFonts as Array<Array<Graphics.FontDefinition>> = [
+    private var _otherFonts as Array<Array<Graphics.FontType>> = [
         [Graphics.FONT_TINY, Graphics.FONT_TINY, Graphics.FONT_TINY, Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_SMALL],
         [Graphics.FONT_TINY, Graphics.FONT_TINY, Graphics.FONT_TINY, Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_TINY],
         [Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_TINY],
         [Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_XTINY]
-    ] as Array<Array<Graphics.FontDefinition>>;
+    ] as Array<Array<Graphics.FontType>>;
 
     // What the face shows this minute.
     private var _w as Number = 0;
@@ -101,16 +105,16 @@ class MihrabFaceView extends WatchUi.WatchFace {
 
     // The layout, and what it was made for.
     private var _key as String = "";
-    private var _fDate as Graphics.FontDefinition = Graphics.FONT_XTINY;
-    private var _fStale as Graphics.FontDefinition = Graphics.FONT_XTINY;
-    private var _fClock as Graphics.FontDefinition = Graphics.FONT_NUMBER_MILD;
-    private var _fNow as Graphics.FontDefinition = Graphics.FONT_XTINY;
-    private var _fSide as Graphics.FontDefinition = Graphics.FONT_XTINY;
-    private var _fSeconds as Graphics.FontDefinition = Graphics.FONT_XTINY;
-    private var _fSteps as Graphics.FontDefinition = Graphics.FONT_XTINY;
-    private var _fPrayer as Graphics.FontDefinition = Graphics.FONT_XTINY;
-    private var _fCount as Graphics.FontDefinition = Graphics.FONT_XTINY;
-    private var _fMessage as Graphics.FontDefinition = Graphics.FONT_XTINY;
+    private var _fDate as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _fStale as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _fClock as Graphics.FontType = Graphics.FONT_NUMBER_MILD;
+    private var _fNow as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _fSide as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _fSeconds as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _fSteps as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _fPrayer as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _fCount as Graphics.FontType = Graphics.FONT_XTINY;
+    private var _fMessage as Graphics.FontType = Graphics.FONT_XTINY;
     private var _staleLines as Array<String>? = null;
     private var _reasonLines as Array<String>? = null;
     // Baselines of the rows (a message's: its first line's).
@@ -125,6 +129,8 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private var _rightW as Number = 0;
     private var _upperOff as Number = 0;
     private var _suffixOff as Number = 0;
+    // The weather beside the clock, or on the steps' row.
+    private var _weatherBeside as Boolean = true;
 
     // Where the moving parts were last drawn: [x, y, w, h].
     private var _countdownBox as [Number, Number, Number, Number]?;
@@ -187,6 +193,8 @@ class MihrabFaceView extends WatchUi.WatchFace {
         _reasonText = null;
         if (_next == null) {
             _reasonText = WatchUi.loadResource(Mihrab.times() == null ? Rez.Strings.OpenMihrab : Rez.Strings.TimesEnded) as String;
+            // Which already says to open the app: no word about old times too.
+            _staleText = null;
         }
 
         var key = (_w.toString() + "|" + _dateText + "|" + (_staleText == null ? "" : _staleText) + "|" + (_hour12 ? "12" : "24")
@@ -269,8 +277,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // How far a font's figures reach above the baseline. The ascent keeps
     // room for accents above the figures; these are measured on the
     // Enduro 3's fonts, with a margin (and the whole ascent where unknown).
-    private function figuresUp(f as Graphics.FontDefinition) as Number {
+    private function figuresUp(f as Graphics.FontType) as Number {
         var a = Graphics.getFontAscent(f);
+        if (!(f instanceof Number)) {
+            // The clock's own figures: their base is the tops of the figures.
+            return a;
+        }
         var k = 88;
         if (f == Graphics.FONT_NUMBER_THAI_HOT) {
             k = 74;
@@ -284,13 +296,22 @@ class MihrabFaceView extends WatchUi.WatchFace {
         return (a * k + 99) / 100;
     }
 
-    private function textW(dc as Dc, s as String, f as Graphics.FontDefinition) as Number {
+    // The clock's candidate c: one of the app's figures, loaded, or past
+    // them Garmin's smallest number font.
+    private function clockFont(c as Number) as Graphics.FontType {
+        if (c < _clockFontIds.size()) {
+            return WatchUi.loadResource(_clockFontIds[c]) as Graphics.FontReference;
+        }
+        return Graphics.FONT_NUMBER_MILD;
+    }
+
+    private function textW(dc as Dc, s as String, f as Graphics.FontType) as Number {
         return dc.getTextWidthInPixels(s, f);
     }
 
     // The text as lines no wider than maxW, at most maxLines of them, or
     // null when it cannot be (a word wider than a line, too many lines).
-    private function wrap(dc as Dc, text as String, f as Graphics.FontDefinition, maxW as Number, maxLines as Number) as Array<String>? {
+    private function wrap(dc as Dc, text as String, f as Graphics.FontType, maxW as Number, maxLines as Number) as Array<String>? {
         if (maxW <= 0) {
             return null;
         }
@@ -361,8 +382,28 @@ class MihrabFaceView extends WatchUi.WatchFace {
         return _lo <= _hi;
     }
 
+    // The text in at most maxLines lines, as narrow as that allows (a
+    // narrow block fits further from the middle of a round dial than one
+    // line as wide as the dial), or null when it will not go into them.
+    private function balanced(dc as Dc, text as String, f as Graphics.FontType, full as Number, maxLines as Number) as Array<String>? {
+        var best = wrap(dc, text, f, full, maxLines);
+        if (best == null) {
+            return null;
+        }
+        var w = widest(dc, best, f) - 6;
+        while (w > 0) {
+            var lines = wrap(dc, text, f, w, maxLines);
+            if (lines == null) {
+                break;
+            }
+            best = lines;
+            w = widest(dc, lines, f) - 6;
+        }
+        return best;
+    }
+
     // The widest of a text's wrapped lines.
-    private function widest(dc as Dc, lines as Array<String>, f as Graphics.FontDefinition) as Number {
+    private function widest(dc as Dc, lines as Array<String>, f as Graphics.FontType) as Number {
         var w = 0;
         for (var i = 0; i < lines.size(); i++) {
             var lw = textW(dc, lines[i], f);
@@ -381,9 +422,10 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var hasNext = _next != null;
 
         // The clock: [figures' width for this hour and the widest minutes, their height].
+        // Each loaded only to be measured; the one kept is loaded again.
         var clocks = [] as Array<Array<Number>>;
-        for (var c = 0; c < _clockFonts.size(); c++) {
-            var f = _clockFonts[c];
+        for (var c = 0; c <= _clockFontIds.size(); c++) {
+            var f = clockFont(c);
             clocks.add([textW(dc, _hourText + ":88", f), figuresUp(f)]);
         }
 
@@ -407,7 +449,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         } else {
             for (var m = 0; m < _messageFonts.size(); m++) {
                 var fM = _messageFonts[m][0];
-                var lines = wrap(dc, _reasonText as String, fM, full, _messageFonts[m][1]);
+                var lines = balanced(dc, _reasonText as String, fM, full, _messageFonts[m][1]);
                 if (lines == null) {
                     mihrab.add(null);
                 } else {
@@ -423,19 +465,44 @@ class MihrabFaceView extends WatchUi.WatchFace {
             others.add(measureOthers(dc, _otherFonts[o], full));
         }
 
+        // The weather beside the clock first; on the steps' row when that
+        // lets the clock be larger. A smaller font never makes a row harder
+        // to fit, so an arrangement is tried only once the same with the
+        // smallest of everything after it has fitted: a clock too large
+        // costs a few tries, not every arrangement under it.
+        var lastM = mihrab.size() - 1;
+        while (lastM > 0 && mihrab[lastM] == null) {
+            lastM--;
+        }
+        var lastO = others.size() - 1;
         for (var c = 0; c < clocks.size(); c++) {
+            // A message on more lines is narrower but taller, so for the
+            // clock's own try every prayer or message arrangement is tried
+            // with the smallest of the rest.
+            var any = false;
+            for (var m = 0; m < mihrab.size() && !any; m++) {
+                any = tries(c, m, lastO, -1, clocks[c], mihrab, others);
+            }
+            if (!any) {
+                continue;
+            }
             for (var m = 0; m < mihrab.size(); m++) {
-                if (mihrab[m] == null) {
+                if (mihrab[m] == null || !tries(c, m, lastO, -1, clocks[c], mihrab, others)) {
                     continue;
                 }
-                for (var o = 0; o < others.size(); o++) {
-                    var staleVariants = others[o][15] as Array;
-                    for (var s = 0; s < staleVariants.size(); s++) {
-                        if (staleVariants[s] == null && _staleText != null) {
-                            continue;
-                        }
-                        if (place(c, m, o, s, clocks[c], mihrab[m] as Array, others[o], false)) {
-                            return;
+                for (var beside = 1; beside >= 0; beside--) {
+                    if (!tries(c, m, lastO, beside, clocks[c], mihrab, others)) {
+                        continue;
+                    }
+                    for (var o = 0; o < others.size(); o++) {
+                        var staleVariants = others[o][15] as Array;
+                        for (var s = 0; s < staleVariants.size(); s++) {
+                            if (staleVariants[s] == null && _staleText != null) {
+                                continue;
+                            }
+                            if (place(c, m, o, s, beside == 1, clocks[c], mihrab[m] as Array, others[o], false, true)) {
+                                return;
+                            }
                         }
                     }
                 }
@@ -443,25 +510,46 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
         // Nothing fits: the smallest of everything, as near the middle as
         // it can be, the messages on one line however wide.
-        var lastM = mihrab.size() - 1;
-        while (lastM > 0 && mihrab[lastM] == null) {
-            lastM--;
-        }
         var mm = mihrab[lastM];
         if (mm == null) {
             var fM = _messageFonts[lastM][0];
             mm = [Graphics.getFontAscent(fM), Graphics.getFontDescent(fM), textW(dc, _reasonText as String, fM), [_reasonText as String]];
         }
-        var lastO = others.size() - 1;
-        place(clocks.size() - 1, lastM, lastO, 0, clocks[clocks.size() - 1], mm as Array, others[lastO], true);
+        place(clocks.size() - 1, lastM, lastO, 0, false, clocks[clocks.size() - 1], mm as Array, others[lastO], true, true);
+    }
+
+    // Whether anything fits with this clock, these prayer fonts and these
+    // others — the weather beside (1), on the steps' row (0) or either
+    // (-1) — trying every stale variant, keeping nothing.
+    private function tries(c as Number, m as Number, o as Number, beside as Number, cm as Array<Number>, mihrab as Array<Array?>, others as Array<Array>) as Boolean {
+        var mm = mihrab[m];
+        if (mm == null) {
+            return false;
+        }
+        var staleVariants = others[o][15] as Array;
+        for (var b = 1; b >= 0; b--) {
+            if (beside != -1 && beside != b) {
+                continue;
+            }
+            for (var s = 0; s < staleVariants.size(); s++) {
+                if (staleVariants[s] == null && _staleText != null) {
+                    continue;
+                }
+                if (place(c, m, o, s, b == 1, cm, mm as Array, others[o], false, false)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // The date, the stale message, the side columns and the steps in one
-    // set of fonts: [date up, down, width, (unused), (unused), left width, left up, upper offset, right width, right up,
+    // set of fonts: [date up, down, width, the weather's width on the steps' row,
+    // its up * 1000 + down there, left width, left up, upper offset, right width, right up,
     // suffix offset, steps up, down, width, stale line height, stale
     // variants ([up, down, width, lines] for one and two lines, null where
     // it will not wrap)].
-    private function measureOthers(dc as Dc, fonts as Array<Graphics.FontDefinition>, full as Number) as Array {
+    private function measureOthers(dc as Dc, fonts as Array<Graphics.FontType>, full as Number) as Array {
         var fDate = fonts[0];
         var fStale = fonts[1];
         var fNow = fonts[2];
@@ -518,7 +606,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         if (_staleText != null) {
             stale = [] as Array;
             for (var n = 1; n <= 2; n++) {
-                var lines = wrap(dc, _staleText as String, fStale, full, n);
+                var lines = balanced(dc, _staleText as String, fStale, full, n);
                 if (lines == null) {
                     stale.add(null);
                 } else {
@@ -527,18 +615,31 @@ class MihrabFaceView extends WatchUi.WatchFace {
             }
         }
 
+        // The weather on the steps' row instead: icon, the temperature now,
+        // the high and low, then a gap before the footprint.
+        var inlineW = (kind >= 0 ? ICON + 3 : 0) + nowW;
+        if (rangeText.length() > 0) {
+            var rw = textW(dc, rangeText, fSide);
+            var sample = textW(dc, "88°/88°", fSide);
+            inlineW += 6 + (rw > sample ? rw : sample);
+        }
+        inlineW += 14;
+        var inlineUp = kind >= 0 && ICON / 2 + nowUp / 2 > nowUp ? ICON / 2 + nowUp / 2 : nowUp;
+        var inlineDown = kind >= 0 ? ICON / 2 - nowUp / 2 : 0;
+        inlineDown = inlineDown > 0 ? inlineDown : 0;
+
         return [
             Graphics.getFontAscent(fDate), Graphics.getFontDescent(fDate), textW(dc, _dateText, fDate),
-            0, 0,
+            inlineW, inlineUp * 1000 + inlineDown,
             leftW, leftUp, upperOff, rightW, rightUp, suffixOff,
             sUp, sDown, ICON + 4 + textW(dc, "000000", fSteps),
             lineH, stale
         ];
     }
 
-    // One arrangement, stacked top to bottom: keeps it and returns true
-    // when every row lies inside the dial (or when forced).
-    private function place(c as Number, m as Number, o as Number, s as Number, cm as Array<Number>, mm as Array, om as Array, force as Boolean) as Boolean {
+    // One arrangement, stacked top to bottom: true when every row lies
+    // inside the dial (or when forced), and then kept if asked to.
+    private function place(c as Number, m as Number, o as Number, s as Number, beside as Boolean, cm as Array<Number>, mm as Array, om as Array, force as Boolean, keep as Boolean) as Boolean {
         _lo = -100000;
         _hi = 100000;
         var ok = true;
@@ -552,30 +653,45 @@ class MihrabFaceView extends WatchUi.WatchFace {
         ok = fit((om[2] as Number) / 2 + 1, y, bases[0] + down) && ok;
         y = bases[0] + down + ROW_GAP;
 
-        // The steps, under the date.
-        bases[5] = y + (om[11] as Number);
-        ok = fit((om[13] as Number) / 2 + 1, y, bases[5] + (om[12] as Number)) && ok;
-        y = bases[5] + (om[12] as Number) + ROW_GAP;
+        // The steps, under the date, and the weather before them when it
+        // is not beside the clock.
+        var stepsUp = om[11] as Number;
+        var stepsDown = om[12] as Number;
+        var stepsW = om[13] as Number;
+        if (!beside) {
+            var inline = om[4] as Number;
+            var iUp = inline / 1000;
+            var iDown = inline % 1000;
+            stepsUp = iUp > stepsUp ? iUp : stepsUp;
+            stepsDown = iDown > stepsDown ? iDown : stepsDown;
+            stepsW += om[3] as Number;
+        }
+        bases[5] = y + stepsUp;
+        ok = fit(stepsW / 2 + 1, y, bases[5] + stepsDown) && ok;
+        y = bases[5] + stepsDown + ROW_GAP;
 
         // The clock row: the weather, the figures and the seconds, centred
         // together; the rule under the figures.
         var digitsW = cm[0];
         var clockUp = cm[1];
-        var leftW = om[5] as Number;
-        var leftUp = om[6] as Number;
+        var leftW = beside ? om[5] as Number : 0;
+        var leftUp = beside ? om[6] as Number : 0;
         var rightW = om[8] as Number;
         var rightUp = om[9] as Number;
         up = clockUp > leftUp ? clockUp : leftUp;
         up = up > rightUp ? up : rightUp;
         var b = y + up;
         bases[2] = b;
-        var group = leftW + SIDE_GAP + digitsW + SIDE_GAP + rightW;
+        var leftPart = leftW > 0 ? leftW + SIDE_GAP : 0;
+        var group = leftPart + digitsW + SIDE_GAP + rightW;
         var gx = -group / 2;
         var lx = abs(gx) > abs(gx + leftW) ? abs(gx) : abs(gx + leftW);
-        var dx0 = gx + leftW + SIDE_GAP;
+        var dx0 = gx + leftPart;
         var dx = abs(dx0) > abs(dx0 + digitsW) ? abs(dx0) : abs(dx0 + digitsW);
         var rx = abs(gx + group);
-        ok = fit(lx, b - leftUp, b) && ok;
+        if (leftW > 0) {
+            ok = fit(lx, b - leftUp, b) && ok;
+        }
         ok = fit(dx, b - clockUp, b + RULE_DROP + RULE_PEN) && ok;
         ok = fit(rx, b - rightUp, b) && ok;
         y = b + RULE_DROP + RULE_PEN + ROW_GAP;
@@ -608,6 +724,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
         if (!ok && !force) {
             return false;
         }
+        if (!keep) {
+            return true;
+        }
         // As near the middle as the ranges allow.
         var start = (_h - total) / 2;
         if (ok) {
@@ -621,7 +740,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         _fSide = others[3];
         _fSeconds = others[4];
         _fSteps = others[5];
-        _fClock = _clockFonts[c];
+        _fClock = clockFont(c);
         if (hasNext) {
             _fPrayer = _mihrabFonts[m][0];
             _fCount = _mihrabFonts[m][1];
@@ -639,6 +758,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         _bSteps = start + bases[5];
         _leftW = leftW;
         _rightW = rightW;
+        _weatherBeside = beside;
         _upperOff = om[7] as Number;
         _suffixOff = om[10] as Number;
         return true;
@@ -647,12 +767,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // ---- Drawing ----
 
     // Text centred on the dial, on baseline b.
-    private function drawRow(dc as Dc, text as String, f as Graphics.FontDefinition, b as Number) as Void {
+    private function drawRow(dc as Dc, text as String, f as Graphics.FontType, b as Number) as Void {
         dc.drawText(_w / 2, b - Graphics.getFontAscent(f), f, text, Graphics.TEXT_JUSTIFY_CENTER);
     }
 
     // Lines centred on the dial, the first on baseline b.
-    private function drawLines(dc as Dc, lines as Array<String>, f as Graphics.FontDefinition, b as Number) as Void {
+    private function drawLines(dc as Dc, lines as Array<String>, f as Graphics.FontType, b as Number) as Void {
         var lineH = Graphics.getFontAscent(f) + Graphics.getFontDescent(f);
         for (var i = 0; i < lines.size(); i++) {
             drawRow(dc, lines[i], f, b + i * lineH);
@@ -668,8 +788,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var b = _bClock;
         var timeText = _hourText + ":" + minutes;
         var timeW = textW(dc, timeText, _fClock);
-        var group = _leftW + SIDE_GAP + timeW + SIDE_GAP + _rightW;
-        var x = _w / 2 - group / 2 + _leftW + SIDE_GAP;
+        var leftPart = _leftW > 0 ? _leftW + SIDE_GAP : 0;
+        var group = leftPart + timeW + SIDE_GAP + _rightW;
+        var x = _w / 2 - group / 2 + leftPart;
         var top = b - Graphics.getFontAscent(_fClock);
         var hourW = textW(dc, _hourText, _fClock);
         var colonW = textW(dc, ":", _fClock);
@@ -690,6 +811,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
 
         // Left: the icon and the temperature now; under them high/low.
+        if (!_weatherBeside) {
+            return [x, timeW];
+        }
         var right = x - SIDE_GAP;
         var kind = _weather[0] as Number;
         var nowText = _weather[1] as String;
@@ -796,7 +920,13 @@ class MihrabFaceView extends WatchUi.WatchFace {
         while (lead < text.length() - 1 && (text.substring(lead, lead + 1) as String).equals("0")) {
             lead++;
         }
-        var x = _w / 2 - (ICON + 4 + textW(dc, text, f)) / 2;
+        var stepsW = ICON + 4 + textW(dc, text, f);
+        var weatherW = _weatherBeside ? 0 : inlineWeatherW(dc);
+        var x = _w / 2 - (weatherW + stepsW) / 2;
+        if (!_weatherBeside) {
+            drawInlineWeather(dc, x, b);
+            x += weatherW;
+        }
         dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
         drawFootprints(dc, x, b - figuresUp(f) / 2 - ICON / 2);
         x += ICON + 4;
@@ -809,6 +939,36 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
         dc.drawText(x, top, f, text.substring(lead, text.length()) as String, Graphics.TEXT_JUSTIFY_LEFT);
+    }
+
+    // The weather on the steps' row: its width with the gap after it.
+    private function inlineWeatherW(dc as Dc) as Number {
+        var kind = _weather[0] as Number;
+        var rangeText = _weather[2] as String;
+        var w = (kind >= 0 ? ICON + 3 : 0) + textW(dc, _weather[1] as String, _fNow);
+        if (rangeText.length() > 0) {
+            w += 6 + textW(dc, rangeText, _fSide);
+        }
+        return w + 14;
+    }
+
+    // The weather on the steps' row from x, on baseline b: the icon, the
+    // temperature now in white, the high and low in grey.
+    private function drawInlineWeather(dc as Dc, x as Number, b as Number) as Void {
+        var kind = _weather[0] as Number;
+        var nowText = _weather[1] as String;
+        var rangeText = _weather[2] as String;
+        if (kind >= 0) {
+            drawWeatherIcon(dc, kind, (_weather[3] as Number) == 1, x, b - figuresUp(_fNow) / 2 - ICON / 2);
+            x += ICON + 3;
+        }
+        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(x, b - Graphics.getFontAscent(_fNow), _fNow, nowText, Graphics.TEXT_JUSTIFY_LEFT);
+        x += textW(dc, nowText, _fNow);
+        if (rangeText.length() > 0) {
+            dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(x + 6, b - Graphics.getFontAscent(_fSide), _fSide, rangeText, Graphics.TEXT_JUSTIFY_LEFT);
+        }
     }
 
     // [icon kind or -1, "8°", "16°/7°", 1 at night else 0] from the

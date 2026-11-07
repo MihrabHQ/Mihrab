@@ -10,11 +10,14 @@ Three Connect IQ apps, fed by the Android app through
   the nearest): a ring round the edge filling, in the accent, from the
   last prayer to the next, with a white bead where it has got to; the date, and under it today's steps as six
   figures, "004532" — the figures the count uses white, the unused
-  leading zeros grey; the time as large as the dial allows, with the
-  weather to its left — an icon drawn for the condition (sun or moon,
-  partly cloudy, cloud, rain, snow, sleet, storm, fog, wind) and the
-  temperature now, today's high and low under them — and the seconds
-  small and grey to its right, the colon and a rule under the figures in
+  leading zeros grey; the time as large as the dial allows, in the app's
+  own Roboto at whichever of a ladder of sizes fits (40 to 76 pixels
+  tall, one bit deep so the screen has nothing to dither;
+  garmin/tools/clockfont.py), with the weather to its left — an icon
+  drawn for the condition (sun or moon, partly cloudy, cloud, rain, snow,
+  sleet, storm, fog, wind) and the temperature now, today's high and low
+  under them — or, where that would make the clock smaller, on the steps'
+  row before the footprint; and the seconds small and grey to its right, the colon and a rule under the figures in
   the accent; the next prayer, its name in the accent and its time in
   white, and the countdown to it in full, "05:49:12", ticking by the
   second, its colons in the accent;
