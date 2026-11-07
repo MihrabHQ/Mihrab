@@ -12,7 +12,7 @@ Three Connect IQ apps, fed by the Android app through
   seconds small and grey to its right; the next prayer with its time and
   the countdown as the phone's Minimal page writes it — "5h 49m" with the
   unit letters small, "49m", and inside the last five minutes "4m 37s";
-  and today's steps as six figures, "004532", the leading zeros grey. Temperatures are in °F where
+  and today's steps as six figures, "004532", the figures the count uses white and the unused leading zeros grey. Temperatures are in °F where
   the app's place reads Fahrenheit (the United States, Liberia and a few
   more) and °C elsewhere. The seconds, a running timer and, in those last
   minutes, the countdown are redrawn every second inside their own clips

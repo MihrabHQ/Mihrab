@@ -323,8 +323,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
     }
 
     // A footprint and today's steps as six figures, "004532", centred on
-    // (cx, cy) in the largest font that fits the dial there; the leading
-    // zeros grey, like the timer at rest.
+    // (cx, cy) in the largest font that fits the dial there: the figures
+    // the count uses white (its own zeros too, and the one of a count of
+    // none), the unused leading zeros grey.
     private function drawSteps(dc as Dc, cx as Number, cy as Number) as Void {
         var w = dc.getWidth();
         var h = dc.getHeight();
@@ -333,9 +334,6 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var lead = 0;
         while (lead < text.length() - 1 && (text.substring(lead, lead + 1) as String).equals("0")) {
             lead++;
-        }
-        if (steps == 0) {
-            lead = text.length();
         }
         var fonts = [Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_XTINY] as Array<Graphics.FontDefinition>;
         var font = Graphics.FONT_XTINY;
