@@ -15,9 +15,6 @@ compiler reads.
 
 Needs Pillow. The font's base sits on the tops of the figures, with no room
 for accents above them, so the ascent the face measures is the ink.
-
-Also the battery's percentage under the clock's bar: figures and "%", small
-enough to sit under the seconds, in the room above the prayer line.
 """
 import os
 from PIL import Image, ImageDraw, ImageFont
@@ -28,8 +25,6 @@ TTF = os.path.join(ROOT, 'android', 'app', 'src', 'main', 'res', 'font', 'roboto
 OUT = os.path.join(HERE, '..', 'watchface', 'resources', 'fonts')
 CHARS = '0123456789:'
 HEIGHTS = [76, 70, 64, 60, 56, 53, 50, 47, 44, 40]
-PCT_CHARS = '0123456789%'
-PCT_HEIGHT = 8
 
 
 def font_for(height):
@@ -96,9 +91,6 @@ def main():
         name, base, adv = build(h)
         entries.append(f'    <font id="Clock{h}" filename="{name}.fnt" antialias="false" filter="{CHARS}"/>')
         print(name, 'base', base, 'digit advance', adv)
-    name, base, adv = build(PCT_HEIGHT, PCT_CHARS, f'pct{PCT_HEIGHT}')
-    entries.append(f'    <font id="Pct" filename="{name}.fnt" antialias="false" filter="{PCT_CHARS}"/>')
-    print(name, 'base', base, 'digit advance', adv)
     with open(os.path.join(OUT, 'fonts.xml'), 'w') as out:
         out.write('<!-- garmin/tools/clockfont.py: the clock figures in the app\'s Roboto. -->\n<fonts>\n')
         out.write('\n'.join(entries) + '\n</fonts>\n')

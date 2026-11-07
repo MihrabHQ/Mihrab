@@ -8,8 +8,7 @@
 //           👣 004532                   today's steps
 //   ☁ 8°                  am
 //   16°/7°   16:42        07            the weather · the time · the seconds
-//            ━━━── 87%                  the battery, as wide as the figures,
-//                                       and how full it is, under the seconds
+//            ━━━──                      the battery, as wide as the figures
 //          Asr  16:42                   the next prayer
 //            5h 49m                     the countdown as Minimal writes it
 //      times may be out of date         after days without the phone
@@ -60,12 +59,6 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // The bar under the time sits this far below its baseline: the
     // clock's own figures have no descent, so close under them.
     private const RULE_DROP = 3;
-    // The percentage's top, below the clock's baseline: beside the bar,
-    // under the seconds, in the room between the clock and the prayer
-    // line that was already there — it takes none of its own.
-    private const PCT_DROP = 1;
-    // At least this far from the bar's end.
-    private const PCT_SIDE = 3;
     // What the rows under the clock start below its baseline, less the
     // row gap: the room the plain rule under the time took before it was
     // the battery, kept so that nothing under it moved.
@@ -360,10 +353,6 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // heights one by one.
 
     private var _round as Boolean = true;
-    // The battery percentage's font, its widest text and its height.
-    private var _fPct as Graphics.FontType = Graphics.FONT_XTINY;
-    private var _pctW as Number = 0;
-    private var _pctUp as Number = 0;
     private var _lo as Number = 0;
     private var _hi as Number = 0;
 
@@ -468,11 +457,6 @@ class MihrabFaceView extends WatchUi.WatchFace {
                 }
             }
         }
-
-        // The battery's percentage: its own small figures, at their widest.
-        _fPct = WatchUi.loadResource(Rez.Fonts.Pct) as Graphics.FontReference;
-        _pctW = textW(dc, "100%", _fPct);
-        _pctUp = Graphics.getFontAscent(_fPct);
 
         // The rest, per candidate: see measureOthers.
         var others = [] as Array<Array>;
@@ -733,17 +717,10 @@ class MihrabFaceView extends WatchUi.WatchFace {
         if (leftW > 0) {
             ok = fit(lx, b - leftUp, b) && ok;
         }
-        // The bar under the figures, and beside its end, under the seconds,
-        // the percentage: both in the room above the prayer line that the
-        // plain rule left (UNDER_CLOCK), so nothing under them moves. The
-        // percentage ends where the seconds do, or past them only as far
-        // as keeping clear of the bar takes.
-        var pctL = dx0 + digitsW + PCT_SIDE;
-        var pctR = gx + group;
-        pctR = pctR > pctL + _pctW ? pctR : pctL + _pctW;
+        // The bar under the figures, in the room above the prayer line that
+        // the plain rule left (UNDER_CLOCK), so nothing under it moves.
         ok = fit(dx, b - clockUp, b + RULE_DROP + RULE_PEN) && ok;
         ok = fit(rx, b - rightUp, b) && ok;
-        ok = fit(abs(pctR), b + PCT_DROP, b + PCT_DROP + _pctUp) && ok;
         y = b + UNDER_CLOCK + ROW_GAP;
 
         // The prayer and its countdown, or the message.
@@ -818,8 +795,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
 
     // The battery: a bar from x, w wide, under the figures — the charge
     // left in its colour (green, then yellow, orange and red as it runs
-    // down), what has been used in grey — and the percentage beside its
-    // end, under the seconds.
+    // down), what has been used in grey.
     private function drawBattery(dc as Dc, x as Number, w as Number) as Void {
         var pct = System.getSystemStats().battery;
         pct = pct < 0.0 ? 0.0 : (pct > 100.0 ? 100.0 : pct);
@@ -831,14 +807,6 @@ class MihrabFaceView extends WatchUi.WatchFace {
             dc.setColor(batteryColor(pct), Graphics.COLOR_TRANSPARENT);
             dc.fillRectangle(x, y, full, RULE_PEN);
         }
-        // Ending where the seconds end, clear of the bar.
-        var text = (pct + 0.5).toNumber().format("%d") + "%";
-        var tw = dc.getTextWidthInPixels(text, _fPct);
-        var right = x + w + SIDE_GAP + _rightW;
-        var left = right - tw;
-        left = left > x + w + PCT_SIDE ? left : x + w + PCT_SIDE;
-        dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(left, _bClock + PCT_DROP, _fPct, text, Graphics.TEXT_JUSTIFY_LEFT);
     }
 
     private function batteryColor(pct as Float) as Number {
