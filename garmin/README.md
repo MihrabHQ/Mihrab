@@ -61,12 +61,15 @@ Connect IQ store — the apps are side-loaded through Gadgetbridge.
    and, if "Garmin watch" is on in Settings → Notifications, broadcasts to
    Gadgetbridge `nodomain.freeyourgadget.gadgetbridge.command.SEND_WATCH_APP_MESSAGE`
    with the watch's Bluetooth address, the watch app's UUID and the payload
-   `{"v":1,"t":[…],"h12":0,"f":0}` — the five prayers for four days as
-   epoch seconds, today first, `0` for a time that does not occur; the
+   `{"v":2,"t":[…],"h12":0,"f":0,"a":…}` — six times a day, the five
+   prayers and sunrise in the app's order, for three days as epoch
+   seconds, today first, `0` for a time that does not occur (and for
+   sunrise when the app is set not to show it); the
    app's clock (`h12`, Settings → Appearance), which the watch writes its
    times in; and whether the app's place reads Fahrenheit (`f`, worked
    out on the phone from the coordinates, `src/utils/temperatureUnit.ts`),
-   for the face's weather. Once for each of the three apps. `android/.../GarminWatch.kt`.
+   for the face's weather; and the app's accent (`a`), which the face
+   wears. Once for each of the three apps. `android/.../GarminWatch.kt`.
 2. Gadgetbridge (2026.11 or later) encodes it the Garmin way, encrypts it
    and delivers it to the app on the watch over the Connect IQ channel.
    The limit is about 260 bytes per message, which is why it is numbers

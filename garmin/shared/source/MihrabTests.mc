@@ -7,13 +7,13 @@ import Toybox.Time;
 
 (:test)
 module MihrabTests {
-    // Five prayers, two days, from a base instant.
+    // Six times (the prayers and sunrise), two days, from a base instant.
     function sample(base as Number) as Dictionary {
         var t = [
-            base + 5 * 3600, base + 12 * 3600, base + 15 * 3600, base + 18 * 3600, base + 20 * 3600,
-            base + 29 * 3600, base + 36 * 3600, base + 39 * 3600, base + 42 * 3600, base + 44 * 3600,
+            base + 5 * 3600, base + 7 * 3600, base + 12 * 3600, base + 15 * 3600, base + 18 * 3600, base + 20 * 3600,
+            base + 29 * 3600, base + 31 * 3600, base + 36 * 3600, base + 39 * 3600, base + 42 * 3600, base + 44 * 3600,
         ];
-        return { "v" => 1, "t" => t };
+        return { "v" => 2, "t" => t };
     }
 
     (:test)
@@ -22,7 +22,7 @@ module MihrabTests {
         Test.assert(MihrabStore.store(sample(1000000)));
         var t = MihrabStore.times();
         Test.assert(t != null);
-        Test.assertEqual(10, (t as Array<Number>).size());
+        Test.assertEqual(12, (t as Array<Number>).size());
         Test.assert(MihrabStore.receivedAt() > 0);
         return true;
     }
@@ -71,7 +71,11 @@ module MihrabTests {
         Storage.clearValues();
         Test.assert(!MihrabStore.store("hello"));
         Test.assert(!MihrabStore.store({ "v" => 1, "t" => [1, 2] }));
-        Test.assert(!MihrabStore.store({ "v" => 1, "t" => [1, 2, 3, "x", 5] }));
+        Test.assert(!MihrabStore.store({ "v" => 2, "t" => [1, 2, 3, "x", 5, 6] }));
+        // Version 1: five a day, no sunrise.
+        Test.assert(!MihrabStore.store({ "v" => 1, "t" => [1, 2, 3, 4, 5, 6] }));
+        // Not a whole number of days.
+        Test.assert(!MihrabStore.store({ "v" => 2, "t" => [1, 2, 3, 4, 5, 6, 7] }));
         Test.assert(MihrabStore.times() == null);
         return true;
     }
@@ -83,7 +87,7 @@ module MihrabTests {
         MihrabStore.store(sample(base));
         var n = Mihrab.next(base + 13 * 3600);
         Test.assert(n != null);
-        Test.assertEqual(2, (n as [Number, Number])[0]);
+        Test.assertEqual(3, (n as [Number, Number])[0]);
         Test.assertEqual(base + 15 * 3600, (n as [Number, Number])[1]);
         // Past the last stored time there is no next.
         Test.assert(Mihrab.next(base + 50 * 3600) == null);
@@ -94,14 +98,23 @@ module MihrabTests {
         MihrabStore.store(m);
         var first = Mihrab.next(base);
         Test.assertEqual(1, (first as [Number, Number])[0]);
+        // Sunrise is counted down to, after Fajr; off (0), it is skipped.
+        MihrabStore.store(sample(base));
+        Test.assertEqual(Mihrab.SUNRISE, (Mihrab.next(base + 6 * 3600) as [Number, Number])[0]);
+        mt = m["t"] as Array<Number>;
+        mt[0] = base + 5 * 3600;
+        mt[1] = 0;
+        MihrabStore.store(m);
+        Test.assertEqual(2, (Mihrab.next(base + 6 * 3600) as [Number, Number])[0]);
         return true;
     }
 
     (:test)
     function namesCycleThroughTheDay(logger as Logger) as Boolean {
-        Test.assertEqual(Mihrab.name(0), Mihrab.name(5));
-        Test.assertEqual(Mihrab.name(4), Mihrab.name(9));
+        Test.assertEqual(Mihrab.name(0), Mihrab.name(6));
+        Test.assertEqual(Mihrab.name(5), Mihrab.name(11));
         Test.assertNotEqual(Mihrab.name(0), Mihrab.name(1));
+        Test.assertNotEqual(Mihrab.name(Mihrab.SUNRISE), Mihrab.name(2));
         return true;
     }
 
@@ -152,12 +165,13 @@ module MihrabSeed {
         for (var d = 0; d < 4; d++) {
             var b = midnight + d * 86400;
             t.add(b + 5 * 3600 + 32 * 60);
+            t.add(b + 7 * 3600 + 18 * 60);
             t.add(b + 11 * 3600 + 39 * 60);
             t.add(b + 13 * 3600 + 24 * 60);
             t.add(b + 15 * 3600 + 5 * 60);
             t.add(b + 17 * 3600 + 2 * 60);
         }
-        Test.assert(MihrabStore.store({ "v" => 1, "t" => t }));
+        Test.assert(MihrabStore.store({ "v" => 2, "t" => t }));
         return true;
     }
 }

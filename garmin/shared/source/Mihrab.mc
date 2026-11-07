@@ -4,12 +4,16 @@
 // THE MESSAGE. Mihrab on the phone asks Gadgetbridge to deliver, to each
 // of the two watch apps (by its UUID), one small message:
 //
-//   { "v": 1, "t": [ fajr, dhuhr, asr, maghrib, isha, fajr, ... ] }
+//   { "v": 2, "t": [ fajr, sunrise, dhuhr, asr, maghrib, isha, fajr, ... ],
+//     "h12": 0, "f": 0, "a": 0x00AA55 }
 //
-// `t` is epoch seconds (UTC), five per day, today first and then the days
-// after it — four days as the phone sends it, but any multiple of five is
-// read. Sunrise is not in it: the watch counts down to the prayers. A time
-// that does not occur at the latitude is 0 and is skipped. The whole
+// `t` is epoch seconds (UTC), six per day — the five prayers and sunrise,
+// as the app's own schedule lists them — today first and then the days
+// after it: three days as the phone sends it, but any multiple of six is
+// read. A time that does not occur at the latitude, or sunrise when the
+// app is set not to show it, is 0 and is skipped. Version 1 (five a day,
+// no sunrise) is not read: its times sit under another key, so a watch
+// updated before the phone says to open Mihrab rather than misplace them. The whole
 // message has to fit Gadgetbridge's limit for a watch-app message (about
 // 260 bytes once encoded and encrypted), which is why it is numbers and
 // nothing else: names, and the zone, are the watch's.
@@ -30,8 +34,10 @@ import Toybox.WatchUi;
 // may touch resources or the UI, which a background process has none of.
 (:background, :glance)
 module MihrabStore {
-    const PER_DAY = 5;
-    const KEY_TIMES = "t";
+    // Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha.
+    const PER_DAY = 6;
+    // Version 1 kept five a day under "t"; this key leaves them unread.
+    const KEY_TIMES = "t6";
     const KEY_RECEIVED = "r";
     const KEY_HOUR12 = "h12";
     const KEY_FAHRENHEIT = "f";
@@ -43,8 +49,10 @@ module MihrabStore {
         if (!(data instanceof Dictionary)) {
             return false;
         }
+        var version = data.get("v");
         var times = data.get("t");
-        if (!(times instanceof Array) || times.size() < PER_DAY) {
+        if (!(version instanceof Number) || version < 2 || !(times instanceof Array)
+            || times.size() < PER_DAY || times.size() % PER_DAY != 0) {
             return false;
         }
         var kept = [] as Array<Number>;
@@ -148,7 +156,10 @@ module Mihrab {
         return found;
     }
 
-    // The name of the prayer at an index into `times`, in the watch's
+    // The index of sunrise within a day.
+    const SUNRISE = 1;
+
+    // The name of the prayer (or sunrise) at an index into `times`, in the watch's
     // language. A table rather than string resources: the names are needed
     // in the background and the glance as well as on the page, and a
     // string resource lives in one scope only.
@@ -161,15 +172,15 @@ module Mihrab {
     }
 
     const NAMES = {
-        System.LANGUAGE_ENG => ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"],
-        System.LANGUAGE_SWE => ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"],
-        System.LANGUAGE_DEU => ["Fadschr", "Dhuhr", "Asr", "Maghrib", "Ischa"],
-        System.LANGUAGE_FRE => ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"],
-        System.LANGUAGE_SPA => ["Fayr", "Dhuhr", "Asr", "Magrib", "Isha"],
-        System.LANGUAGE_IND => ["Subuh", "Zuhur", "Asar", "Magrib", "Isya"],
-        System.LANGUAGE_TUR => ["İmsak", "Öğle", "İkindi", "Akşam", "Yatsı"],
-        System.LANGUAGE_RUS => ["Фаджр", "Зухр", "Аср", "Магриб", "Иша"],
-        System.LANGUAGE_ARA => ["الفجر", "الظهر", "العصر", "المغرب", "العشاء"],
+        System.LANGUAGE_ENG => ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"],
+        System.LANGUAGE_SWE => ["Fajr", "Soluppgång", "Dhuhr", "Asr", "Maghrib", "Isha"],
+        System.LANGUAGE_DEU => ["Fadschr", "Sonnenaufgang", "Dhuhr", "Asr", "Maghrib", "Ischa"],
+        System.LANGUAGE_FRE => ["Fajr", "Lever du soleil", "Dhuhr", "Asr", "Maghrib", "Isha"],
+        System.LANGUAGE_SPA => ["Fayr", "Amanecer", "Dhuhr", "Asr", "Magrib", "Isha"],
+        System.LANGUAGE_IND => ["Subuh", "Terbit", "Zuhur", "Asar", "Magrib", "Isya"],
+        System.LANGUAGE_TUR => ["İmsak", "Güneş", "Öğle", "İkindi", "Akşam", "Yatsı"],
+        System.LANGUAGE_RUS => ["Фаджр", "Восход", "Зухр", "Аср", "Магриб", "Иша"],
+        System.LANGUAGE_ARA => ["الفجر", "الشروق", "الظهر", "العصر", "المغرب", "العشاء"],
     } as Dictionary<Number, Array<String>>;
 
     // Whether the times are too old to trust (no message for days).

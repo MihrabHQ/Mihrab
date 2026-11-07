@@ -22,9 +22,10 @@ import org.json.JSONObject
  * app's UUID and a JSON payload, which Gadgetbridge encodes the Garmin way
  * and encrypts to the watch (its GarminWatchAppCommunicator). It is small —
  * about 260 bytes encoded — so the payload is numbers only: the five
- * prayers for four days as epoch seconds, today first, and two flags — the
- * app's 12-hour clock, and Fahrenheit for its place. The watch keeps
- * them and counts down by itself; its own strings name the prayers.
+ * prayers and sunrise for three days as epoch seconds, today first, two
+ * flags — the app's 12-hour clock, and Fahrenheit for its place — and the
+ * app's accent. The watch keeps them and counts down by itself; its own
+ * strings name the prayers.
  *
  * Sent whenever the app writes its widget payload (PrayerWidgetModule), which
  * is the one schedule every Android surface draws from — daily by the
@@ -63,8 +64,13 @@ object GarminWatch {
     "nodomain.freeyourgadget.gadgetbridge.nightly_nopebble",
   )
 
-  private const val DAYS = 4
-  private val PRAYER_KEYS = listOf("Fajr", "Dhuhr", "Asr", "Maghrib", "Isha")
+  /**
+   * Three days of six times — eighteen numbers, fewer than the twenty of
+   * four days of five, so the message stays inside Gadgetbridge's limit.
+   */
+  private const val DAYS = 3
+  /** Each day's times as the watch reads them; Sunrise from the day's own row. */
+  private val TIME_KEYS = listOf("Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha")
   private const val RESEND_AFTER_MS = 6 * 60 * 60_000L
   private const val TAG = "MihrabGarmin"
 
@@ -167,7 +173,8 @@ object GarminWatch {
 
   /**
    * The message for the payload the app last wrote:
-   * `{"v":1,"t":[…],"h12":0|1,"f":0|1,"a":0xRRGGBB}` — the times, the app's
+   * `{"v":2,"t":[…],"h12":0|1,"f":0|1,"a":0xRRGGBB}` — the times (six a
+   * day: the prayers and sunrise, 0 where one does not occur), the app's
    * clock (Settings → Appearance, as the widgets have it), the thermometer
    * of its place and its accent — or null when there is no payload, or no times from today on.
    */
@@ -185,15 +192,16 @@ object GarminWatch {
     val times = JSONArray()
     for (day in days) {
       val byKey = day.prayers.associateBy { it.key }
-      for (key in PRAYER_KEYS) {
-        val minutes = byKey[key]?.minutes
+      for (key in TIME_KEYS) {
+        // Sunrise is its own row, absent when the app is set not to show it.
+        val minutes = if (key == "Sunrise") day.sunrise?.minutes else byKey[key]?.minutes
         val ms = if (minutes == null) null else WallClock.epochMs(day.dateKey, minutes)
         // 0 is "does not occur": the watch skips it.
         times.put(if (ms == null) 0 else (ms / 1000).toInt())
       }
     }
     return JSONObject()
-      .put("v", 1)
+      .put("v", 2)
       .put("t", times)
       .put("h12", if (payload.clock.hour12) 1 else 0)
       .put("f", if (fahrenheit) 1 else 0)

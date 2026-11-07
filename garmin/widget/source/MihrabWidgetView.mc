@@ -61,9 +61,9 @@ class MihrabGlance extends WatchUi.GlanceView {
     }
 }
 
-// The page: the day's five, the next one marked, the countdown under
+// The page: the day's prayers and sunrise, the next one marked, the countdown under
 // them. Laid out as a table — the marker, the names, the times — sized for
-// the longest name and the widest time of the five, in the largest font
+// the longest name and the widest time of the day, in the largest font
 // whose rows all lie inside the round screen.
 class MihrabWidgetView extends WatchUi.View {
     private const EDGE = 4;
@@ -88,15 +88,23 @@ class MihrabWidgetView extends WatchUi.View {
             return;
         }
 
-        // The day the next prayer belongs to: its five, Fajr to Isha.
+        // The day the next prayer belongs to: Fajr to Isha with sunrise,
+        // unless the app is set not to show sunrise (its time is 0).
         var day = next[0] / Mihrab.PER_DAY;
         var names = [] as Array<String>;
         var clocks = [] as Array<String>;
+        var indices = [] as Array<Number>;
         for (var i = 0; i < Mihrab.PER_DAY; i++) {
-            var at = times[day * Mihrab.PER_DAY + i];
+            var index = day * Mihrab.PER_DAY + i;
+            var at = times[index];
+            if (i == Mihrab.SUNRISE && at <= 0) {
+                continue;
+            }
             names.add(Mihrab.name(i));
             clocks.add(at > 0 ? Mihrab.clock(at) : "—");
+            indices.add(index);
         }
+        var rows = names.size();
         var countdown = Mihrab.countdown(next[1] - now);
 
         var rowFonts = [Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_XTINY] as Array<Graphics.FontDefinition>;
@@ -117,10 +125,10 @@ class MihrabWidgetView extends WatchUi.View {
         var table = tableWidths(dc, names, clocks, rowFont);
         var rowH = Graphics.getFontAscent(rowFont) + Graphics.getFontDescent(rowFont) + 2;
         var countH = Graphics.getFontAscent(countFont) + Graphics.getFontDescent(countFont);
-        var top = (h - (Mihrab.PER_DAY * rowH + rowH / 2 + countH)) / 2;
+        var top = (h - (rows * rowH + rowH / 2 + countH)) / 2;
         var x0 = w / 2 - table[3] / 2;
-        for (var i = 0; i < Mihrab.PER_DAY; i++) {
-            var isNext = day * Mihrab.PER_DAY + i == next[0];
+        for (var i = 0; i < rows; i++) {
+            var isNext = indices[i] == next[0];
             dc.setColor(isNext ? Graphics.COLOR_WHITE : Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             var y = top + i * rowH;
             if (isNext) {
@@ -130,7 +138,7 @@ class MihrabWidgetView extends WatchUi.View {
             dc.drawText(x0 + table[3], y, rowFont, clocks[i], Graphics.TEXT_JUSTIFY_RIGHT);
         }
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(w / 2, top + Mihrab.PER_DAY * rowH + rowH / 2, countFont, countdown, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(w / 2, top + rows * rowH + rowH / 2, countFont, countdown, Graphics.TEXT_JUSTIFY_CENTER);
     }
 
     // [marker width, longest name, widest time, whole table] in a font.
@@ -154,17 +162,18 @@ class MihrabWidgetView extends WatchUi.View {
         var table = tableWidths(dc, names, clocks, rowFont);
         var rowH = Graphics.getFontAscent(rowFont) + Graphics.getFontDescent(rowFont) + 2;
         var countH = Graphics.getFontAscent(countFont) + Graphics.getFontDescent(countFont);
-        var top = (h - (Mihrab.PER_DAY * rowH + rowH / 2 + countH)) / 2;
+        var rows = names.size();
+        var top = (h - (rows * rowH + rowH / 2 + countH)) / 2;
         if (top < EDGE) {
             return false;
         }
-        for (var i = 0; i < Mihrab.PER_DAY; i++) {
+        for (var i = 0; i < rows; i++) {
             var y = top + i * rowH;
             if (!spans(dc, table[3] / 2, y, y + rowH - 2)) {
                 return false;
             }
         }
-        var cy = top + Mihrab.PER_DAY * rowH + rowH / 2;
+        var cy = top + rows * rowH + rowH / 2;
         return spans(dc, dc.getTextWidthInPixels(countdown, countFont) / 2, cy, cy + countH);
     }
 
