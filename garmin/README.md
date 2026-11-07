@@ -5,7 +5,8 @@ Three Connect IQ apps, fed by the Android app through
 
 - a **watch face**, drawn for a MIP screen (solid ink on black, nothing
   animating but what must): the date and today's steps; the weather now
-  in °C with today's high and low; the time as large as the dial allows,
+  with today's high and low, in °F where the app's place reads Fahrenheit
+  (the United States, Liberia and a few more) and °C elsewhere; the time as large as the dial allows,
   with the seconds small and grey beside it; the next prayer with its
   time and the countdown as the phone's Minimal page writes it — "5h 49m"
   with the unit letters small, "49m", and inside the last five minutes
@@ -40,9 +41,12 @@ Connect IQ store — the apps are side-loaded through Gadgetbridge.
    and, if "Garmin watch" is on in Settings → Notifications, broadcasts to
    Gadgetbridge `nodomain.freeyourgadget.gadgetbridge.command.SEND_WATCH_APP_MESSAGE`
    with the watch's Bluetooth address, the watch app's UUID and the payload
-   `{"v":1,"t":[…]}` — the five prayers for four days as epoch seconds,
-   today first; `0` for a time that does not occur. Once for each of the
-   three apps. `android/.../GarminWatch.kt`.
+   `{"v":1,"t":[…],"h12":0,"f":0}` — the five prayers for four days as
+   epoch seconds, today first, `0` for a time that does not occur; the
+   app's clock (`h12`, Settings → Appearance), which the watch writes its
+   times in; and whether the app's place reads Fahrenheit (`f`, worked
+   out on the phone from the coordinates, `src/utils/temperatureUnit.ts`),
+   for the face's weather. Once for each of the three apps. `android/.../GarminWatch.kt`.
 2. Gadgetbridge (2026.11 or later) encodes it the Garmin way, encrypts it
    and delivers it to the app on the watch over the Connect IQ channel.
    The limit is about 260 bytes per message, which is why it is numbers

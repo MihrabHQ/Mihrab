@@ -22,7 +22,8 @@ import org.json.JSONObject
  * app's UUID and a JSON payload, which Gadgetbridge encodes the Garmin way
  * and encrypts to the watch (its GarminWatchAppCommunicator). It is small —
  * about 260 bytes encoded — so the payload is numbers only: the five
- * prayers for four days as epoch seconds, today first. The watch keeps
+ * prayers for four days as epoch seconds, today first, and two flags — the
+ * app's 12-hour clock, and Fahrenheit for its place. The watch keeps
  * them and counts down by itself; its own strings name the prayers.
  *
  * Sent whenever the app writes its widget payload (PrayerWidgetModule), which
@@ -41,6 +42,8 @@ object GarminWatch {
   const val PREFS_ADDRESS = "address"
   private const val PREFS_LAST_SENT = "last_sent"
   private const val PREFS_LAST_SENT_AT = "last_sent_at"
+  /** Whether the app's place reads its thermometer in Fahrenheit (JS decides, from the coordinates). */
+  private const val PREFS_FAHRENHEIT = "fahrenheit"
 
   /** The watch apps' manifest ids (garmin/watchface, garmin/datafield, garmin/widget: manifest.xml). */
   const val FACE_APP_ID = "ce7d1151-6b87-42a1-b561-364b45404b37"
@@ -85,6 +88,18 @@ object GarminWatch {
       .apply()
   }
 
+  /**
+   * Whether the weather on the watch reads in Fahrenheit, for the place the
+   * app is set to. Kept, not sent: the next payload write carries it.
+   */
+  fun setFahrenheit(context: Context, fahrenheit: Boolean) {
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+      .edit().putBoolean(PREFS_FAHRENHEIT, fahrenheit).apply()
+  }
+
+  private fun fahrenheit(context: Context): Boolean =
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getBoolean(PREFS_FAHRENHEIT, false)
+
   /** Which Gadgetbridge build is installed, or null. */
   fun gadgetbridgePackage(context: Context): String? {
     val pm = context.packageManager
@@ -99,17 +114,19 @@ object GarminWatch {
   }
 
   /**
-   * The message for the payload the app last wrote: `{"v":1,"t":[…]}`, or
-   * null when there is no payload, or no times from today on.
+   * The message for the payload the app last wrote:
+   * `{"v":1,"t":[…],"h12":0|1,"f":0|1}` — the times, the app's clock
+   * (Settings → Appearance, as the widgets have it) and the thermometer of
+   * its place — or null when there is no payload, or no times from today on.
    */
   fun message(context: Context, nowMs: Long = System.currentTimeMillis()): String? {
     val prefs = context.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
     val payload = WidgetContract.Payload.parse(prefs.getString(WidgetPayloadSource.PREFS_KEY_V2, null))
       ?.takeIf { it.schemaVersion == WidgetContract.VERSION } ?: return null
-    return message(payload, nowMs)
+    return message(payload, nowMs, fahrenheit(context))
   }
 
-  fun message(payload: WidgetContract.Payload, nowMs: Long): String? {
+  fun message(payload: WidgetContract.Payload, nowMs: Long, fahrenheit: Boolean = false): String? {
     val today = WallClock.dateKey(nowMs)
     val days = payload.days.dropWhile { it.dateKey < today }.take(DAYS)
     if (days.isEmpty()) return null
@@ -123,7 +140,12 @@ object GarminWatch {
         times.put(if (ms == null) 0 else (ms / 1000).toInt())
       }
     }
-    return JSONObject().put("v", 1).put("t", times).toString()
+    return JSONObject()
+      .put("v", 1)
+      .put("t", times)
+      .put("h12", if (payload.clock.hour12) 1 else 0)
+      .put("f", if (fahrenheit) 1 else 0)
+      .toString()
   }
 
   /**

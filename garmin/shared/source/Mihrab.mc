@@ -33,6 +33,8 @@ module MihrabStore {
     const PER_DAY = 5;
     const KEY_TIMES = "t";
     const KEY_RECEIVED = "r";
+    const KEY_HOUR12 = "h12";
+    const KEY_FAHRENHEIT = "f";
 
     // Takes the phone's message (the data of a PhoneAppMessage) and keeps
     // it. Returns whether it was a message this version reads.
@@ -57,7 +59,27 @@ module MihrabStore {
         }
         Storage.setValue(KEY_TIMES, kept as Array<Storage.ValueType>);
         Storage.setValue(KEY_RECEIVED, Time.now().value());
+        // The app's clock (Settings → Appearance) and the thermometer of
+        // the place it is set to; absent from an older app's message.
+        Storage.setValue(KEY_HOUR12, flag(data.get("h12") as Object?));
+        Storage.setValue(KEY_FAHRENHEIT, flag(data.get("f") as Object?));
         return true;
+    }
+
+    // 1/true → 1, 0/false → 0, anything else (absent) → -1.
+    function flag(v as Object?) as Number {
+        if (v instanceof Boolean) {
+            return v ? 1 : 0;
+        }
+        if (v instanceof Number) {
+            return v != 0 ? 1 : 0;
+        }
+        return -1;
+    }
+
+    function storedFlag(key as String) as Number {
+        var v = Storage.getValue(key);
+        return v instanceof Number ? v : -1;
     }
 
     // The stored times, or null.
@@ -150,12 +172,27 @@ module Mihrab {
         return r == 0 || now - r > STALE_SECONDS;
     }
 
-    // "16:42" or "4:42 pm", in the watch's own setting.
+    // Whether to write a 12-hour clock: as the Mihrab app does, once it
+    // has said; before that, as the watch is set.
+    function hour12() as Boolean {
+        var f = MihrabStore.storedFlag(MihrabStore.KEY_HOUR12);
+        return f == -1 ? !System.getDeviceSettings().is24Hour : f == 1;
+    }
+
+    // Whether the weather reads in Fahrenheit: where the app's place is
+    // (the United States, Liberia and a few more), once it has said;
+    // before that, as the watch is set.
+    function fahrenheit() as Boolean {
+        var f = MihrabStore.storedFlag(MihrabStore.KEY_FAHRENHEIT);
+        return f == -1 ? System.getDeviceSettings().temperatureUnits == System.UNIT_STATUTE : f == 1;
+    }
+
+    // "16:42" or "4:42 pm", in the app's clock.
     function clock(epoch as Number) as String {
         var info = Gregorian.info(new Time.Moment(epoch), Time.FORMAT_SHORT);
         var hour = info.hour;
         var suffix = "";
-        if (!System.getDeviceSettings().is24Hour) {
+        if (hour12()) {
             suffix = hour < 12 ? " am" : " pm";
             hour = hour % 12;
             if (hour == 0) {

@@ -12,6 +12,8 @@ import { contractClock } from './wallClock';
 import { activeClock } from '../utils/activeClock';
 import { widgetSinceAdhanMinutes } from './sinceAdhanSetting';
 import i18n from '../i18n';
+import { setGarminFahrenheit } from '../native/GarminWatch';
+import { usesFahrenheitAt } from '../utils/temperatureUnit';
 
 /**
  * Updates home-screen widget data (Android + iOS when native module is linked).
@@ -54,6 +56,11 @@ export async function syncPrayerWidget(
     yesterday,
   );
   const json = JSON.stringify(payload);
+  if (Platform.OS === 'android' && coords) {
+    // The Garmin watch's weather in the place's own unit; written before
+    // the payload, whose write is what sends to the watch.
+    await setGarminFahrenheit(usesFahrenheitAt(coords.lat, coords.lng));
+  }
   if (mod.setDataV2) {
     try {
       const v2 = widgetPayloadV2FromV1(payload, {

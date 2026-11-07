@@ -28,6 +28,27 @@ module MihrabTests {
     }
 
     (:test)
+    function clockAndUnitsFollowThePhone(logger as Logger) as Boolean {
+        Storage.clearValues();
+        var base = 1000000;
+        var m = sample(base);
+        m.put("h12", 1);
+        m.put("f", 0);
+        MihrabStore.store(m);
+        Test.assert(Mihrab.hour12());
+        Test.assert(!Mihrab.fahrenheit());
+        var c = Mihrab.clock(base);
+        Test.assert(c.find("am") != null || c.find("pm") != null);
+        m.put("h12", 0);
+        m.put("f", 1);
+        MihrabStore.store(m);
+        Test.assert(!Mihrab.hour12());
+        Test.assert(Mihrab.fahrenheit());
+        Test.assert(Mihrab.clock(base).find("m") == null);
+        return true;
+    }
+
+    (:test)
     function storeRefusesJunk(logger as Logger) as Boolean {
         Storage.clearValues();
         Test.assert(!MihrabStore.store("hello"));

@@ -32,6 +32,7 @@ type GarminWatchNative = {
   sendNow(): Promise<GarminSendResult>;
   status(): Promise<GarminWatchStatus>;
   pairedDevices(): Promise<PairedDevice[] | null>;
+  setFahrenheit?(fahrenheit: boolean): Promise<void>;
 };
 
 const native: GarminWatchNative | undefined =
@@ -52,6 +53,19 @@ export async function configureGarminWatch(
     return await native.configure(enabled, address);
   } catch {
     return 'disabled';
+  }
+}
+
+/**
+ * Whether the watch's weather reads in Fahrenheit — the place's own
+ * thermometer (`temperatureUnit.ts`). Kept natively; the next send carries it.
+ */
+export async function setGarminFahrenheit(fahrenheit: boolean): Promise<void> {
+  if (!native?.setFahrenheit) return;
+  try {
+    await native.setFahrenheit(fahrenheit);
+  } catch {
+    /* best-effort */
   }
 }
 

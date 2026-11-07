@@ -22,6 +22,17 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
+  /** The thermometer of the app's place; kept for the next send. */
+  @ReactMethod
+  fun setFahrenheit(fahrenheit: Boolean, promise: Promise) {
+    try {
+      GarminWatch.setFahrenheit(reactContext, fahrenheit)
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject("E_GARMIN", e.message, e)
+    }
+  }
+
   /** Sends now, whatever was sent before; resolves to the outcome word. */
   @ReactMethod
   fun sendNow(promise: Promise) {

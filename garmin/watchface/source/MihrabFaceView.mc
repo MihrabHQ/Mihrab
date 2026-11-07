@@ -223,7 +223,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private function drawTime(dc as Dc, cx as Number, baseline as Number, clock as System.ClockTime) as Number {
         var hour = clock.hour;
         var suffix = null;
-        if (!System.getDeviceSettings().is24Hour) {
+        if (Mihrab.hour12()) {
             suffix = hour < 12 ? "am" : "pm";
             hour = hour % 12;
             if (hour == 0) {
@@ -288,8 +288,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
             }
         }
         var figureH = dc.getFontHeight(figureFont);
-        var unitH = dc.getFontHeight(unitFont);
         var top = cy - figureH / 2;
+        // The unit letters sit on the figures' baseline.
+        var unitTop = top + Graphics.getFontAscent(figureFont) - Graphics.getFontAscent(unitFont);
         var boxW = dc.getTextWidthInPixels("88h 88m", figureFont) + 2 * dc.getTextWidthInPixels("m", unitFont) + gap + 8;
         _countdownBox = [cx - boxW / 2, top, boxW, figureH];
 
@@ -299,14 +300,14 @@ class MihrabFaceView extends WatchUi.WatchFace {
             dc.drawText(x, top, figureFont, pieces[i][0], Graphics.TEXT_JUSTIFY_LEFT);
             x += dc.getTextWidthInPixels(pieces[i][0], figureFont);
             dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x, top + figureH - unitH, unitFont, pieces[i][1], Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(x, unitTop, unitFont, pieces[i][1], Graphics.TEXT_JUSTIFY_LEFT);
             x += dc.getTextWidthInPixels(pieces[i][1], unitFont) + gap;
         }
     }
 
     // ["8°C Cloudy", "10°/4°"] from the watch's weather (Gadgetbridge
-    // feeds it from the phone's weather app), in Celsius as the watch
-    // keeps it; ["--", ""] without any.
+    // feeds it from the phone's weather app), in the unit of the place the
+    // Mihrab app is set to; ["--", ""] without any.
     private function weatherParts() as [String, String] {
         if (!(Toybox has :Weather) || !(Weather has :getCurrentConditions)) {
             return ["--", ""];
@@ -316,12 +317,22 @@ class MihrabFaceView extends WatchUi.WatchFace {
             return ["--", ""];
         }
         var word = c.condition == null ? "" : " " + conditionWord(c.condition as Number);
-        var now = (c.temperature as Numeric).format("%d") + "°C" + word;
+        var f = Mihrab.fahrenheit();
+        var now = degrees(c.temperature as Numeric, f) + (f ? "°F" : "°C") + word;
         var range = "";
         if (c.highTemperature != null && c.lowTemperature != null) {
-            range = (c.highTemperature as Numeric).format("%d") + "°/" + (c.lowTemperature as Numeric).format("%d") + "°";
+            range = degrees(c.highTemperature as Numeric, f) + "°/" + degrees(c.lowTemperature as Numeric, f) + "°";
         }
         return [now, range];
+    }
+
+    // A temperature the watch keeps in Celsius, rounded, in the unit asked.
+    private function degrees(celsius as Numeric, fahrenheit as Boolean) as String {
+        var v = celsius.toFloat();
+        if (fahrenheit) {
+            v = v * 9.0 / 5.0 + 32.0;
+        }
+        return Math.round(v).toNumber().format("%d");
     }
 
     // Two footprints, 16 px square, top-left at (x, y): a sole and a

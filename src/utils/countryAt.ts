@@ -27,7 +27,7 @@ const DATA = shapes as Shapes;
 /** Offshore, or a coast the outline cut: the nearest country this close. */
 export const COASTAL_REACH_KM = 25;
 
-type Ring = {
+export type Ring = {
   xs: Float64Array;
   ys: Float64Array;
   minX: number;
@@ -47,7 +47,7 @@ type Country = {
 
 let countries: Country[] | null = null;
 
-function ring(flat: number[], scale: number): Ring {
+export function ring(flat: number[], scale: number): Ring {
   const n = flat.length / 2;
   const xs = new Float64Array(n);
   const ys = new Float64Array(n);
@@ -115,7 +115,7 @@ function load(): Country[] {
   return countries;
 }
 
-function inRing(r: Ring, x: number, y: number): boolean {
+export function inRing(r: Ring, x: number, y: number): boolean {
   if (x < r.minX || x > r.maxX || y < r.minY || y > r.maxY) return false;
   let hit = false;
   const { xs, ys } = r;
@@ -130,7 +130,7 @@ function inRing(r: Ring, x: number, y: number): boolean {
 }
 
 /** Distance (km) from a point to a ring's edge, on a local flat projection. */
-function edgeKm(r: Ring, x: number, y: number): number {
+export function edgeKm(r: Ring, x: number, y: number): number {
   const kx = 111.32 * Math.cos((y * Math.PI) / 180);
   const ky = 110.57;
   let best = Infinity;
