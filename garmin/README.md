@@ -27,9 +27,13 @@ Three Connect IQ apps, fed by the Android app through
   watch's own, which Gadgetbridge fills from the phone's weather app
   (Breezy Weather, say);
 - a **data field**: "Asr 1h 23m" in any activity screen, or a watch face's
-  data-field slot;
-- a **widget**: a glance with the next prayer and the countdown, a page
-  with today's five, and two **published complications** for Face It
+  data-field slot, in the largest font the field's box takes — the name
+  over the countdown in a box too narrow for one line;
+- a **widget**: a glance with the next prayer and the countdown (the
+  prayer and its time alone where the glance is too narrow), a page with
+  today's five laid out as a table sized for the longest name and the
+  widest time in the largest font whose rows all clear the round edge,
+  and two **published complications** for Face It
   watch faces and any Connect IQ face that subscribes — "Next prayer"
   (Asr 16:42) and "Until prayer" in one unit ("5h", "49m", "37s").
 
