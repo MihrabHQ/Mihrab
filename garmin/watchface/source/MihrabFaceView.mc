@@ -1,17 +1,17 @@
 // The face, drawn for a MIP screen: solid ink on black, no gradients, no
-// anti-aliased fills, nothing animating but what must — the seconds, an
-// activity's running timer and, inside the last five minutes, the
-// countdown. Those are redrawn every second inside their own clips (a
-// partial update); everything else once a minute.
+// anti-aliased fills, nothing animating but what must — the seconds and,
+// inside the last five minutes, the countdown. Those are redrawn every
+// second inside their own clips (a partial update); everything else once
+// a minute.
 //
 //            Sat 7 Nov                  the date
-//            00:00:00                   the activity timer, grey at rest
+//           👣 004532                   today's steps
 //   ☁ 8°                  am
 //   16°/7°   16:42        07            the weather · the time · the seconds
 //            ─────
 //          Asr  16:42                   the next prayer
 //            5h 49m                     the countdown as Minimal writes it
-//           👣 004532                   today's steps
+//      times may be out of date         after days without the phone
 //
 // Laid out, not placed: every row's fonts are chosen and the rows stacked
 // so that each one's ink — measured for the widest thing it can show, not
@@ -20,7 +20,6 @@
 // the first arrangement in which everything fits is kept until what the
 // face shows changes its shape (another language, a message, the weather).
 //
-import Toybox.Activity;
 import Toybox.ActivityMonitor;
 import Toybox.Graphics;
 import Toybox.Lang;
@@ -74,7 +73,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         [Graphics.FONT_SMALL, 1], [Graphics.FONT_TINY, 1], [Graphics.FONT_SMALL, 2],
         [Graphics.FONT_TINY, 2], [Graphics.FONT_XTINY, 2], [Graphics.FONT_XTINY, 3]
     ] as Array<[Graphics.FontDefinition, Number]>;
-    // The rest: date, timer, the weather now, the small side text (high
+    // The rest: date, the stale message, the weather now, the small side text (high
     // and low, am/pm), the seconds, the steps.
     private var _otherFonts as Array<Array<Graphics.FontDefinition>> = [
         [Graphics.FONT_TINY, Graphics.FONT_TINY, Graphics.FONT_TINY, Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_SMALL],
@@ -97,7 +96,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // The layout, and what it was made for.
     private var _key as String = "";
     private var _fDate as Graphics.FontDefinition = Graphics.FONT_XTINY;
-    private var _fTimer as Graphics.FontDefinition = Graphics.FONT_XTINY;
+    private var _fStale as Graphics.FontDefinition = Graphics.FONT_XTINY;
     private var _fClock as Graphics.FontDefinition = Graphics.FONT_NUMBER_MILD;
     private var _fNow as Graphics.FontDefinition = Graphics.FONT_XTINY;
     private var _fSide as Graphics.FontDefinition = Graphics.FONT_XTINY;
@@ -110,7 +109,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private var _reasonLines as Array<String>? = null;
     // Baselines of the rows (a message's: its first line's).
     private var _bDate as Number = 0;
-    private var _bTimer as Number = 0;
+    private var _bStale as Number = 0;
     private var _bClock as Number = 0;
     private var _bPrayer as Number = 0;
     private var _bCount as Number = 0;
@@ -124,7 +123,6 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // Where the moving parts were last drawn: [x, y, w, h].
     private var _countdownBox as [Number, Number, Number, Number]?;
     private var _secondsBox as [Number, Number, Number, Number]?;
-    private var _timerBox as [Number, Number, Number, Number]?;
 
     function initialize() {
         WatchFace.initialize();
@@ -158,7 +156,6 @@ class MihrabFaceView extends WatchUi.WatchFace {
         dc.clear();
         _countdownBox = null;
         _secondsBox = null;
-        _timerBox = null;
 
         var nowMoment = Time.now();
         var now = nowMoment.value();
@@ -167,8 +164,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         // What to show.
         var date = Gregorian.info(nowMoment, Time.FORMAT_MEDIUM);
         _dateText = date.day_of_week + " " + date.day.format("%d") + " " + date.month;
-        var timer = activityTimer();
-        _staleText = !timer[1] && Mihrab.stale(now) ? WatchUi.loadResource(Rez.Strings.Stale) as String : null;
+        _staleText = Mihrab.stale(now) ? WatchUi.loadResource(Rez.Strings.Stale) as String : null;
         _hour12 = Mihrab.hour12();
         var hour = clock.hour;
         var suffix = null;
@@ -200,14 +196,11 @@ class MihrabFaceView extends WatchUi.WatchFace {
         dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
         drawRow(dc, _dateText, _fDate, _bDate);
 
-        // The activity timer, always there — white while it runs, grey at
-        // rest — unless, after days without the phone, a word about that
-        // has to take its place.
+        // At the foot, after days without the phone, a word about that.
         var staleLines = _staleLines;
         if (_staleText != null && staleLines != null) {
-            drawLines(dc, staleLines, _fTimer, _bTimer);
-        } else {
-            drawTimer(dc, timer);
+            dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
+            drawLines(dc, staleLines, _fStale, _bStale);
         }
 
         // The time with the weather and the seconds, and a rule under the
@@ -232,8 +225,8 @@ class MihrabFaceView extends WatchUi.WatchFace {
         drawSteps(dc);
     }
 
-    // Every second between the minute's full draws: the seconds, a
-    // running timer, and the countdown once it has seconds to show.
+    // Every second between the minute's full draws: the seconds, and the
+    // countdown once it has seconds to show.
     function onPartialUpdate(dc as Dc) as Void {
         var sbox = _secondsBox;
         if (sbox != null) {
@@ -243,18 +236,6 @@ class MihrabFaceView extends WatchUi.WatchFace {
             dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
             dc.drawText(sbox[0], _bClock - Graphics.getFontAscent(_fSeconds), _fSeconds, System.getClockTime().sec.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);
             dc.clearClip();
-        }
-        var tbox = _timerBox;
-        if (tbox != null) {
-            var timer = activityTimer();
-            if (timer[1]) {
-                dc.setClip(tbox[0], tbox[1], tbox[2], tbox[3]);
-                dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
-                dc.clear();
-                dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-                drawRow(dc, timer[0], _fTimer, _bTimer);
-                dc.clearClip();
-            }
         }
         var box = _countdownBox;
         if (box == null) {
@@ -468,15 +449,14 @@ class MihrabFaceView extends WatchUi.WatchFace {
         place(clocks.size() - 1, lastM, lastO, 0, clocks[clocks.size() - 1], mm as Array, others[lastO], true);
     }
 
-    // The date, the timer (or the stale message), the side columns and
-    // the steps in one set of fonts: [date up, down, width, timer up,
-    // width, left width, left up, upper offset, right width, right up,
-    // suffix offset, steps up, down, width, timer line height, stale
+    // The date, the stale message, the side columns and the steps in one
+    // set of fonts: [date up, down, width, (unused), (unused), left width, left up, upper offset, right width, right up,
+    // suffix offset, steps up, down, width, stale line height, stale
     // variants ([up, down, width, lines] for one and two lines, null where
     // it will not wrap)].
     private function measureOthers(dc as Dc, fonts as Array<Graphics.FontDefinition>, full as Number) as Array {
         var fDate = fonts[0];
-        var fTimer = fonts[1];
+        var fStale = fonts[1];
         var fNow = fonts[2];
         var fSide = fonts[3];
         var fSeconds = fonts[4];
@@ -526,23 +506,23 @@ class MihrabFaceView extends WatchUi.WatchFace {
         sDown = sDown > 0 ? sDown : 0;
 
         // The stale message on one line or two.
-        var lineH = Graphics.getFontAscent(fTimer) + Graphics.getFontDescent(fTimer);
+        var lineH = Graphics.getFontAscent(fStale) + Graphics.getFontDescent(fStale);
         var stale = [null] as Array;
         if (_staleText != null) {
             stale = [] as Array;
             for (var n = 1; n <= 2; n++) {
-                var lines = wrap(dc, _staleText as String, fTimer, full, n);
+                var lines = wrap(dc, _staleText as String, fStale, full, n);
                 if (lines == null) {
                     stale.add(null);
                 } else {
-                    stale.add([Graphics.getFontAscent(fTimer), (lines.size() - 1) * lineH + Graphics.getFontDescent(fTimer), widest(dc, lines, fTimer), lines]);
+                    stale.add([Graphics.getFontAscent(fStale), (lines.size() - 1) * lineH + Graphics.getFontDescent(fStale), widest(dc, lines, fStale), lines]);
                 }
             }
         }
 
         return [
             Graphics.getFontAscent(fDate), Graphics.getFontDescent(fDate), textW(dc, _dateText, fDate),
-            figuresUp(fTimer), textW(dc, "00:00:00", fTimer),
+            0, 0,
             leftW, leftUp, upperOff, rightW, rightUp, suffixOff,
             sUp, sDown, ICON + 4 + textW(dc, "000000", fSteps),
             lineH, stale
@@ -565,20 +545,10 @@ class MihrabFaceView extends WatchUi.WatchFace {
         ok = fit((om[2] as Number) / 2 + 1, y, bases[0] + down) && ok;
         y = bases[0] + down + ROW_GAP;
 
-        // The timer, or the stale message.
-        var stale = (om[15] as Array)[s] as Array?;
-        if (_staleText != null && stale != null) {
-            up = stale[0] as Number;
-            down = stale[1] as Number;
-            bases[1] = y + up;
-            ok = fit((stale[2] as Number) / 2 + 1, y, bases[1] + down) && ok;
-        } else {
-            up = om[3] as Number;
-            down = 0;
-            bases[1] = y + up;
-            ok = fit((om[4] as Number) / 2 + 2, y, bases[1]) && ok;
-        }
-        y = bases[1] + down + ROW_GAP;
+        // The steps, under the date.
+        bases[5] = y + (om[11] as Number);
+        ok = fit((om[13] as Number) / 2 + 1, y, bases[5] + (om[12] as Number)) && ok;
+        y = bases[5] + (om[12] as Number) + ROW_GAP;
 
         // The clock row: the weather, the figures and the seconds, centred
         // together; the rule under the figures.
@@ -616,10 +586,17 @@ class MihrabFaceView extends WatchUi.WatchFace {
             bases[4] = 0;
         }
 
-        // The steps.
-        bases[5] = y + (om[11] as Number);
-        ok = fit((om[13] as Number) / 2 + 1, y, bases[5] + (om[12] as Number)) && ok;
-        var total = bases[5] + (om[12] as Number);
+        // At the foot, after days without the phone, a word about that.
+        var stale = (om[15] as Array)[s] as Array?;
+        bases[1] = 0;
+        var total = y - ROW_GAP;
+        if (_staleText != null && stale != null) {
+            var sUp = stale[0] as Number;
+            var sDown = stale[1] as Number;
+            bases[1] = y + sUp;
+            ok = fit((stale[2] as Number) / 2 + 1, y, bases[1] + sDown) && ok;
+            total = bases[1] + sDown;
+        }
 
         if (!ok && !force) {
             return false;
@@ -632,7 +609,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
 
         var others = _otherFonts[o];
         _fDate = others[0];
-        _fTimer = others[1];
+        _fStale = others[1];
         _fNow = others[2];
         _fSide = others[3];
         _fSeconds = others[4];
@@ -648,7 +625,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
         _staleLines = (_staleText != null && stale != null) ? stale[3] as Array<String> : null;
         _bDate = start + bases[0];
-        _bTimer = start + bases[1];
+        _bStale = start + bases[1];
         _bClock = start + bases[2];
         _bPrayer = start + bases[3];
         _bCount = start + bases[4];
@@ -673,15 +650,6 @@ class MihrabFaceView extends WatchUi.WatchFace {
         for (var i = 0; i < lines.size(); i++) {
             drawRow(dc, lines[i], f, b + i * lineH);
         }
-    }
-
-    // The timer on its row. Remembers where its figures are.
-    private function drawTimer(dc as Dc, timer as [String, Boolean]) as Void {
-        var up = figuresUp(_fTimer);
-        var boxW = textW(dc, "00:00:00", _fTimer) + 4;
-        _timerBox = [_w / 2 - boxW / 2, _bTimer - up - 1, boxW, up + 2];
-        dc.setColor(timer[1] ? INK : DIM, Graphics.COLOR_TRANSPARENT);
-        drawRow(dc, timer[0], _fTimer, _bTimer);
     }
 
     // The clock's figures, the weather to their left (icon and the
@@ -1012,21 +980,5 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
         var n = steps as Number;
         return n > 999999 ? 999999 : n;
-    }
-
-    // The activity timer as "00:00:00", and whether it is running.
-    private function activityTimer() as [String, Boolean] {
-        var ms = 0;
-        var running = false;
-        if (Activity has :getActivityInfo) {
-            var info = Activity.getActivityInfo();
-            if (info != null && info.timerTime != null) {
-                ms = info.timerTime as Number;
-                running = (info has :timerState) && info.timerState == Activity.TIMER_STATE_ON;
-            }
-        }
-        var s = ms / 1000;
-        var text = (s / 3600).format("%02d") + ":" + ((s % 3600) / 60).format("%02d") + ":" + (s % 60).format("%02d");
-        return [text, running];
     }
 }

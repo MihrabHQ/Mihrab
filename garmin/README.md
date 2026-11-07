@@ -4,17 +4,19 @@ Three Connect IQ apps, fed by the Android app through
 [Gadgetbridge](https://gadgetbridge.org):
 
 - a **watch face**, drawn for a MIP screen (solid ink on black, nothing
-  animating but what must): the date; the activity timer, "00:00:00" in
-  grey at rest and white while it runs; the time as large as the dial
-  allows, with the weather to its left — an icon drawn for the condition
-  (sun or moon, partly cloudy, cloud, rain, snow, sleet, storm, fog, wind)
-  and the temperature now, today's high and low under them — and the
-  seconds small and grey to its right; the next prayer with its time and
-  the countdown as the phone's Minimal page writes it — "5h 49m" with the
+  animating but what must): the date, and under it today's steps as six
+  figures, "004532" — the figures the count uses white, the unused
+  leading zeros grey; the time as large as the dial allows, with the
+  weather to its left — an icon drawn for the condition (sun or moon,
+  partly cloudy, cloud, rain, snow, sleet, storm, fog, wind) and the
+  temperature now, today's high and low under them — and the seconds
+  small and grey to its right; the next prayer with its time and the
+  countdown as the phone's Minimal page writes it — "5h 49m" with the
   unit letters small, "49m", and inside the last five minutes "4m 37s";
-  and today's steps as six figures, "004532", the figures the count uses white and the unused leading zeros grey. Temperatures are in °F where
-  the app's place reads Fahrenheit (the United States, Liberia and a few
-  more) and °C elsewhere. The seconds, a running timer and, in those last
+  and at the foot, only after days without the phone, a word about that.
+  Temperatures are in °F where the app's place reads Fahrenheit (the
+  United States, Liberia and a few more) and °C elsewhere. The seconds
+  and, in those last
   minutes, the countdown are redrawn every second inside their own clips
   (a partial update); everything else once a minute. The face is laid
   out, not placed: it picks each row's font and stacks the rows so that
