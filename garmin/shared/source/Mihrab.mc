@@ -35,6 +35,7 @@ module MihrabStore {
     const KEY_RECEIVED = "r";
     const KEY_HOUR12 = "h12";
     const KEY_FAHRENHEIT = "f";
+    const KEY_ACCENT = "a";
 
     // Takes the phone's message (the data of a PhoneAppMessage) and keeps
     // it. Returns whether it was a message this version reads.
@@ -63,6 +64,11 @@ module MihrabStore {
         // the place it is set to; absent from an older app's message.
         Storage.setValue(KEY_HOUR12, flag(data.get("h12") as Object?));
         Storage.setValue(KEY_FAHRENHEIT, flag(data.get("f") as Object?));
+        // The app's accent, 0xRRGGBB on the watch's palette.
+        var accent = data.get("a");
+        if (accent instanceof Number && accent >= 0 && accent <= 0xFFFFFF) {
+            Storage.setValue(KEY_ACCENT, accent);
+        }
         return true;
     }
 
@@ -185,6 +191,18 @@ module Mihrab {
     function fahrenheit() as Boolean {
         var f = MihrabStore.storedFlag(MihrabStore.KEY_FAHRENHEIT);
         return f == -1 ? System.getDeviceSettings().temperatureUnits == System.UNIT_STATUTE : f == 1;
+    }
+
+    // The app's accent as the phone sent it, else the app's green.
+    function accent() as Number {
+        var a = Storage.getValue(MihrabStore.KEY_ACCENT);
+        return a instanceof Number ? a : 0x00AA55;
+    }
+
+    // The countdown in full, "05:49:12", hours, minutes and seconds.
+    function hms(seconds as Number) as [String, String, String] {
+        var safe = seconds < 0 ? 0 : seconds;
+        return [(safe / 3600).format("%02d"), ((safe % 3600) / 60).format("%02d"), (safe % 60).format("%02d")];
     }
 
     // "16:42" or "4:42 pm", in the app's clock.

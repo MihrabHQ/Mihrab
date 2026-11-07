@@ -49,6 +49,24 @@ module MihrabTests {
     }
 
     (:test)
+    function accentAndFullCountdown(logger as Logger) as Boolean {
+        Storage.clearValues();
+        Test.assertEqual(0x00AA55, Mihrab.accent());
+        var m = sample(1000000);
+        m.put("a", 0xFFAA00);
+        MihrabStore.store(m);
+        Test.assertEqual(0xFFAA00, Mihrab.accent());
+        var t = Mihrab.hms(5 * 3600 + 49 * 60 + 12);
+        Test.assertEqual("05", t[0]);
+        Test.assertEqual("49", t[1]);
+        Test.assertEqual("12", t[2]);
+        var z = Mihrab.hms(-4);
+        Test.assertEqual("00", z[0]);
+        Test.assertEqual("00", z[2]);
+        return true;
+    }
+
+    (:test)
     function storeRefusesJunk(logger as Logger) as Boolean {
         Storage.clearValues();
         Test.assert(!MihrabStore.store("hello"));

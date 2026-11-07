@@ -33,6 +33,7 @@ type GarminWatchNative = {
   status(): Promise<GarminWatchStatus>;
   pairedDevices(): Promise<PairedDevice[] | null>;
   setFahrenheit?(fahrenheit: boolean): Promise<void>;
+  setAccent?(hex: string): Promise<void>;
 };
 
 const native: GarminWatchNative | undefined =
@@ -64,6 +65,19 @@ export async function setGarminFahrenheit(fahrenheit: boolean): Promise<void> {
   if (!native?.setFahrenheit) return;
   try {
     await native.setFahrenheit(fahrenheit);
+  } catch {
+    /* best-effort */
+  }
+}
+
+/**
+ * The watch face's accent, the app's (`garminAccentHex`). Kept natively,
+ * and sent at once when it changes.
+ */
+export async function setGarminAccent(hex: string): Promise<void> {
+  if (!native?.setAccent) return;
+  try {
+    await native.setAccent(hex);
   } catch {
     /* best-effort */
   }

@@ -44,6 +44,10 @@ object GarminWatch {
   private const val PREFS_LAST_SENT_AT = "last_sent_at"
   /** Whether the app's place reads its thermometer in Fahrenheit (JS decides, from the coordinates). */
   private const val PREFS_FAHRENHEIT = "fahrenheit"
+  /** The face's accent, 0xRRGGBB on the watch screen's palette. */
+  private const val PREFS_ACCENT = "accent"
+  /** The app's green as the watch screen shows it (garminWatch.ts). */
+  const val DEFAULT_ACCENT = 0x00AA55
 
   /** The watch apps' manifest ids (garmin/watchface, garmin/datafield, garmin/widget: manifest.xml). */
   const val FACE_APP_ID = "ce7d1151-6b87-42a1-b561-364b45404b37"
@@ -97,6 +101,54 @@ object GarminWatch {
       .edit().putBoolean(PREFS_FAHRENHEIT, fahrenheit).apply()
   }
 
+  /**
+   * The app's accent (#RRGGBB), snapped to the watch's palette: a
+   * memory-in-pixel screen shows 64 colours, each channel one of 00, 55,
+   * AA or FF, and any other is dithered into a speckle. Sent at once when
+   * it changes, since no new schedule may come for a day.
+   */
+  fun setAccent(context: Context, hex: String) {
+    val rgb = snapToWatchPalette(hex) ?: return
+    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    if (prefs.getInt(PREFS_ACCENT, DEFAULT_ACCENT) == rgb && prefs.contains(PREFS_ACCENT)) return
+    prefs.edit().putInt(PREFS_ACCENT, rgb).apply()
+    if (enabled(context)) send(context)
+  }
+
+  /**
+   * #RRGGBB to the nearest of the 64 colours, or null if not a colour: the
+   * hue kept first, then the saturation and brightness, among those bright
+   * enough to read on black (a grey stays a grey).
+   */
+  fun snapToWatchPalette(hex: String): Int? {
+    val m = Regex("^#?([0-9a-fA-F]{6})$").find(hex.trim()) ?: return null
+    val n = m.groupValues[1].toInt(16)
+    val want = FloatArray(3)
+    android.graphics.Color.RGBToHSV((n shr 16) and 0xFF, (n shr 8) and 0xFF, n and 0xFF, want)
+    val grey = want[1] <= 0.15f
+    val levels = intArrayOf(0x00, 0x55, 0xAA, 0xFF)
+    val have = FloatArray(3)
+    var best = DEFAULT_ACCENT
+    var bestScore = Float.MAX_VALUE
+    for (r in levels) for (g in levels) for (b in levels) {
+      android.graphics.Color.RGBToHSV(r, g, b, have)
+      if (have[2] < 0.6f) continue
+      if (grey != (have[1] <= 0.15f)) continue
+      if (!grey && have[1] < 0.3f) continue
+      var dh = Math.abs(want[0] - have[0]) / 360f
+      if (dh > 0.5f) dh = 1f - dh
+      val score = (if (grey) 0f else dh * 10f) + Math.abs(want[1] - have[1]) + Math.abs(want[2] - have[2])
+      if (score < bestScore) {
+        bestScore = score
+        best = (r shl 16) or (g shl 8) or b
+      }
+    }
+    return best
+  }
+
+  private fun accent(context: Context): Int =
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getInt(PREFS_ACCENT, DEFAULT_ACCENT)
+
   private fun fahrenheit(context: Context): Boolean =
     context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getBoolean(PREFS_FAHRENHEIT, false)
 
@@ -115,18 +167,18 @@ object GarminWatch {
 
   /**
    * The message for the payload the app last wrote:
-   * `{"v":1,"t":[…],"h12":0|1,"f":0|1}` — the times, the app's clock
-   * (Settings → Appearance, as the widgets have it) and the thermometer of
-   * its place — or null when there is no payload, or no times from today on.
+   * `{"v":1,"t":[…],"h12":0|1,"f":0|1,"a":0xRRGGBB}` — the times, the app's
+   * clock (Settings → Appearance, as the widgets have it), the thermometer
+   * of its place and its accent — or null when there is no payload, or no times from today on.
    */
   fun message(context: Context, nowMs: Long = System.currentTimeMillis()): String? {
     val prefs = context.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
     val payload = WidgetContract.Payload.parse(prefs.getString(WidgetPayloadSource.PREFS_KEY_V2, null))
       ?.takeIf { it.schemaVersion == WidgetContract.VERSION } ?: return null
-    return message(payload, nowMs, fahrenheit(context))
+    return message(payload, nowMs, fahrenheit(context), accent(context))
   }
 
-  fun message(payload: WidgetContract.Payload, nowMs: Long, fahrenheit: Boolean = false): String? {
+  fun message(payload: WidgetContract.Payload, nowMs: Long, fahrenheit: Boolean = false, accent: Int = DEFAULT_ACCENT): String? {
     val today = WallClock.dateKey(nowMs)
     val days = payload.days.dropWhile { it.dateKey < today }.take(DAYS)
     if (days.isEmpty()) return null
@@ -145,6 +197,7 @@ object GarminWatch {
       .put("t", times)
       .put("h12", if (payload.clock.hour12) 1 else 0)
       .put("f", if (fahrenheit) 1 else 0)
+      .put("a", accent)
       .toString()
   }
 

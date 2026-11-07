@@ -24,6 +24,7 @@ import {
 import { restoreSkyTheme, useSkyTheme } from './theme/skyTheme';
 import { buildNavigationTheme } from './theme/navigationTheme';
 import { useSyncWidgetUiHints } from './widget/syncWidgetUiHints';
+import { useSyncGarminAccent } from './native/useSyncGarminAccent';
 import { onWidgetQueueChanged } from './native/WidgetQueueWatcher';
 import { syncWidgetLogQueue } from './widget/syncWidgetLogQueue';
 import { syncWidgetTasbihQueue } from './widget/syncWidgetTasbihQueue';
@@ -80,6 +81,7 @@ export function AppNavigationRoot() {
   const systemScheme = useSystemColorScheme();
 
   useSyncWidgetUiHints();
+  useSyncGarminAccent();
 
   // The kept launch screen is only shown under the settings it was taken
   // with — see native/LaunchSnapshot.ts. Not the Sky theme's hour: the

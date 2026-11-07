@@ -22,3 +22,22 @@ describe('the Garmin watch setting', () => {
     });
   });
 });
+
+describe('garminAccentHex', () => {
+  const { garminAccentHex, GARMIN_PRESET_ACCENTS } = require('../src/settings/garminWatch');
+  const palette = /^#(00|55|AA|FF){3}$/;
+
+  it('gives every preset a colour the watch screen shows as it is', () => {
+    for (const hex of Object.values(GARMIN_PRESET_ACCENTS) as string[]) {
+      expect(hex).toMatch(palette);
+    }
+    expect(garminAccentHex('green', '')).toBe('#00AA55');
+    expect(garminAccentHex('amber', '')).toBe('#FFAA00');
+  });
+
+  it('makes a custom colour legible on black', () => {
+    const hex = garminAccentHex('custom', '#101010');
+    expect(hex).toMatch(/^#[0-9a-fA-F]{6}$/);
+    expect(hex.toLowerCase()).not.toBe('#101010');
+  });
+});

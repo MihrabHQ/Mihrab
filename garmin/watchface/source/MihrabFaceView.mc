@@ -42,8 +42,13 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // Between rows, and between the time and its side columns.
     private const ROW_GAP = 4;
     private const SIDE_GAP = 5;
-    // Kept clear of the dial's edge.
-    private const EDGE = 3;
+    // Kept clear of the dial's edge, inside the ring.
+    private const EDGE = 9;
+    // The ring round the edge: its radius in from the edge, its width.
+    private const RING_IN = 3;
+    private const RING_PEN = 4;
+    // The rule under the time, thick enough to carry the accent.
+    private const RULE_PEN = 2;
     // The rule under the time sits this far below its baseline.
     private const RULE_DROP = 5;
 
@@ -63,6 +68,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // The prayer line and the countdown's figures; or, with no prayer to
     // show, the message's font and how many lines it may take.
     private var _mihrabFonts as Array<[Graphics.FontDefinition, Graphics.FontDefinition]> = [
+        [Graphics.FONT_SMALL, Graphics.FONT_NUMBER_MILD],
         [Graphics.FONT_SMALL, Graphics.FONT_LARGE],
         [Graphics.FONT_SMALL, Graphics.FONT_MEDIUM],
         [Graphics.FONT_TINY, Graphics.FONT_MEDIUM],
@@ -192,6 +198,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
             _key = key;
         }
 
+        var accent = Mihrab.accent();
+
+        // The ring: the way from the last prayer to the next, in the
+        // app's accent, as the app's own track draws it.
+        drawRing(dc, now, accent);
+
         // The date.
         dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
         drawRow(dc, _dateText, _fDate, _bDate);
@@ -205,28 +217,27 @@ class MihrabFaceView extends WatchUi.WatchFace {
 
         // The time with the weather and the seconds, and a rule under the
         // figures as wide as they are.
-        var figures = drawClock(dc, clock.min.format("%02d"), clock.sec, suffix);
-        dc.setColor(RULE, Graphics.COLOR_TRANSPARENT);
-        dc.drawLine(figures[0], _bClock + RULE_DROP, figures[0] + figures[1] + 1, _bClock + RULE_DROP);
+        var figures = drawClock(dc, clock.min.format("%02d"), clock.sec, suffix, accent);
+        dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
+        dc.fillRectangle(figures[0], _bClock + RULE_DROP, figures[1] + 1, RULE_PEN);
 
         // The next prayer and the countdown, or why there is none.
         var next = _next;
         var reasonLines = _reasonLines;
         if (next != null) {
-            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-            drawRow(dc, Mihrab.name(next[0]) + "  " + Mihrab.clock(next[1]), _fPrayer, _bPrayer);
-            drawCountdown(dc, next[1] - now);
+            drawPrayer(dc, Mihrab.name(next[0]), Mihrab.clock(next[1]), accent);
+            drawCountdown(dc, next[1] - now, accent);
         } else if (reasonLines != null) {
             dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
             drawLines(dc, reasonLines, _fMessage, _bPrayer);
         }
 
         // Today's steps.
-        drawSteps(dc);
+        drawSteps(dc, accent);
     }
 
-    // Every second between the minute's full draws: the seconds, and the
-    // countdown once it has seconds to show.
+    // Every second between the minute's full draws: the seconds and the
+    // countdown.
     function onPartialUpdate(dc as Dc) as Void {
         var sbox = _secondsBox;
         if (sbox != null) {
@@ -246,14 +257,10 @@ class MihrabFaceView extends WatchUi.WatchFace {
         if (next == null) {
             return;
         }
-        var remaining = next[1] - now;
-        if (remaining >= Mihrab.SECONDS_UNDER) {
-            return;
-        }
         dc.setClip(box[0], box[1], box[2], box[3]);
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
         dc.clear();
-        drawCountdown(dc, remaining);
+        drawCountdown(dc, next[1] - now, Mihrab.accent());
         dc.clearClip();
     }
 
@@ -394,7 +401,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
                     nameW = nw > nameW ? nw : nameW;
                 }
                 var prayerW = nameW + textW(dc, "  " + (_hour12 ? "88:88 pm" : "88:88"), fP);
-                var countW = 2 * textW(dc, "88", fC) + 2 * textW(dc, "m", Graphics.FONT_XTINY) + 6;
+                var countW = textW(dc, "88:88:88", fC);
                 mihrab.add([Graphics.getFontAscent(fP), Graphics.getFontDescent(fP), prayerW, figuresUp(fC), countW]);
             }
         } else {
@@ -569,9 +576,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var dx = abs(dx0) > abs(dx0 + digitsW) ? abs(dx0) : abs(dx0 + digitsW);
         var rx = abs(gx + group);
         ok = fit(lx, b - leftUp, b) && ok;
-        ok = fit(dx, b - clockUp, b + RULE_DROP + 1) && ok;
+        ok = fit(dx, b - clockUp, b + RULE_DROP + RULE_PEN) && ok;
         ok = fit(rx, b - rightUp, b) && ok;
-        y = b + RULE_DROP + 1 + ROW_GAP;
+        y = b + RULE_DROP + RULE_PEN + ROW_GAP;
 
         // The prayer and its countdown, or the message.
         var hasNext = _next != null;
@@ -655,15 +662,22 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // The clock's figures, the weather to their left (icon and the
     // temperature now; under them the high and low on the baseline) and
     // the seconds to their right (am/pm above them on a 12-hour clock),
-    // the three centred together. Returns the figures' [x, width].
-    private function drawClock(dc as Dc, minutes as String, seconds as Number, suffix as String?) as [Number, Number] {
+    // the three centred together; the colon in the accent. Returns the
+    // figures' [x, width].
+    private function drawClock(dc as Dc, minutes as String, seconds as Number, suffix as String?, accent as Number) as [Number, Number] {
         var b = _bClock;
         var timeText = _hourText + ":" + minutes;
         var timeW = textW(dc, timeText, _fClock);
         var group = _leftW + SIDE_GAP + timeW + SIDE_GAP + _rightW;
         var x = _w / 2 - group / 2 + _leftW + SIDE_GAP;
+        var top = b - Graphics.getFontAscent(_fClock);
+        var hourW = textW(dc, _hourText, _fClock);
+        var colonW = textW(dc, ":", _fClock);
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x, b - Graphics.getFontAscent(_fClock), _fClock, timeText, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(x, top, _fClock, _hourText, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(x + hourW + colonW, top, _fClock, minutes, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(x + hourW, top, _fClock, ":", Graphics.TEXT_JUSTIFY_LEFT);
 
         // Right: the seconds on the baseline, am/pm above.
         var secX = x + timeW + SIDE_GAP;
@@ -694,41 +708,87 @@ class MihrabFaceView extends WatchUi.WatchFace {
         return [x, timeW];
     }
 
-    // "5h 49m": the figures large, the unit letters small on the same
-    // baseline, centred as a whole. Remembers where it was drawn.
-    private function drawCountdown(dc as Dc, remaining as Number) as Void {
-        var pieces = Mihrab.pieces(remaining);
-        var figureFont = _fCount;
-        var unitFont = Graphics.FONT_XTINY;
-        var gap = 6;
+    // The countdown in full, "05:49:12", the figures white and the colons
+    // in the accent, centred. Remembers where it was drawn.
+    private function drawCountdown(dc as Dc, remaining as Number, accent as Number) as Void {
+        var parts = Mihrab.hms(remaining);
+        var f = _fCount;
         var cx = _w / 2;
-        var width = 0;
-        for (var i = 0; i < pieces.size(); i++) {
-            width += textW(dc, pieces[i][0], figureFont) + textW(dc, pieces[i][1], unitFont);
-            if (i > 0) {
-                width += gap;
-            }
-        }
-        var up = figuresUp(figureFont);
-        var boxW = 2 * textW(dc, "88", figureFont) + 2 * textW(dc, "m", unitFont) + gap + 8;
+        var colonW = textW(dc, ":", f);
+        var width = textW(dc, parts[0], f) + textW(dc, parts[1], f) + textW(dc, parts[2], f) + 2 * colonW;
+        var up = figuresUp(f);
+        var boxW = textW(dc, "88:88:88", f) + 4;
         _countdownBox = [cx - boxW / 2, _bCount - up - 1, boxW, up + 2];
-        var top = _bCount - Graphics.getFontAscent(figureFont);
-        var unitTop = _bCount - Graphics.getFontAscent(unitFont);
+        var top = _bCount - Graphics.getFontAscent(f);
         var x = cx - width / 2;
-        for (var i = 0; i < pieces.size(); i++) {
+        for (var i = 0; i < 3; i++) {
+            if (i > 0) {
+                dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(x, top, f, ":", Graphics.TEXT_JUSTIFY_LEFT);
+                x += colonW;
+            }
             dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x, top, figureFont, pieces[i][0], Graphics.TEXT_JUSTIFY_LEFT);
-            x += textW(dc, pieces[i][0], figureFont);
-            dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x, unitTop, unitFont, pieces[i][1], Graphics.TEXT_JUSTIFY_LEFT);
-            x += textW(dc, pieces[i][1], unitFont) + gap;
+            dc.drawText(x, top, f, parts[i], Graphics.TEXT_JUSTIFY_LEFT);
+            x += textW(dc, parts[i], f);
         }
+    }
+
+    // The next prayer: its name in the accent, its time in white, the two
+    // centred together.
+    private function drawPrayer(dc as Dc, name as String, time as String, accent as Number) as Void {
+        var f = _fPrayer;
+        var gap = textW(dc, "  ", f);
+        var nameW = textW(dc, name, f);
+        var x = _w / 2 - (nameW + gap + textW(dc, time, f)) / 2;
+        var top = _bPrayer - Graphics.getFontAscent(f);
+        dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(x, top, f, name, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(x + nameW + gap, top, f, time, Graphics.TEXT_JUSTIFY_LEFT);
+    }
+
+    // Round the edge, from twelve o'clock clockwise: a thin dark track,
+    // and over it, thick in the accent, how far it is from the last
+    // prayer to the next, with a white bead where it has got to. Square
+    // screens have no edge to run round and go without.
+    private function drawRing(dc as Dc, now as Number, accent as Number) as Void {
+        if (System.getDeviceSettings().screenShape != System.SCREEN_SHAPE_ROUND) {
+            return;
+        }
+        var cx = _w / 2;
+        var cy = _h / 2;
+        var r = _w / 2 - RING_IN;
+        dc.setPenWidth(1);
+        dc.setColor(RULE, Graphics.COLOR_TRANSPARENT);
+        dc.drawCircle(cx, cy, r);
+        var next = _next;
+        var last = Mihrab.current(now);
+        if (next == null || last == null || next[1] <= last[1]) {
+            return;
+        }
+        var degrees = (360 * (now - last[1]) / (next[1] - last[1])).toNumber();
+        degrees = degrees < 0 ? 0 : (degrees > 360 ? 360 : degrees);
+        dc.setPenWidth(RING_PEN);
+        dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
+        if (degrees >= 360) {
+            dc.drawCircle(cx, cy, r);
+        } else if (degrees > 0) {
+            dc.drawArc(cx, cy, r, Graphics.ARC_CLOCKWISE, 90, 90 - degrees);
+        }
+        dc.setPenWidth(1);
+        var a = Math.toRadians(90 - degrees);
+        var bx = cx + (r * Math.cos(a)).toNumber();
+        var by = cy - (r * Math.sin(a)).toNumber();
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(bx, by, RING_PEN);
+        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(bx, by, RING_PEN - 1);
     }
 
     // A footprint and today's steps as six figures, "004532": the figures
     // the count uses white (its own zeros too, and the one of a count of
     // none), the unused leading zeros grey.
-    private function drawSteps(dc as Dc) as Void {
+    private function drawSteps(dc as Dc, accent as Number) as Void {
         var f = _fSteps;
         var b = _bSteps;
         var text = stepCount().format("%06d");
@@ -737,7 +797,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
             lead++;
         }
         var x = _w / 2 - (ICON + 4 + textW(dc, text, f)) / 2;
-        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
         drawFootprints(dc, x, b - figuresUp(f) / 2 - ICON / 2);
         x += ICON + 4;
         var top = b - Graphics.getFontAscent(f);

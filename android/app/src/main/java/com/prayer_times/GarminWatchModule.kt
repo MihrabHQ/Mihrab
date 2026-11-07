@@ -33,6 +33,17 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
+  /** The face's accent, the app's: kept, and sent when it changes. */
+  @ReactMethod
+  fun setAccent(hex: String, promise: Promise) {
+    try {
+      GarminWatch.setAccent(reactContext, hex)
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject("E_GARMIN", e.message, e)
+    }
+  }
+
   /** Sends now, whatever was sent before; resolves to the outcome word. */
   @ReactMethod
   fun sendNow(promise: Promise) {
