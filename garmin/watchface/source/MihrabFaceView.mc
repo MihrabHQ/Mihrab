@@ -43,8 +43,11 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private const ROW_GAP = 4;
     // Between the steps' row and the clock, as much of these as fits, the
     // largest first: the clock stands apart from the rows above it.
-    private var _clockGaps as Array<Number> = [18, 14, 11, 8] as Array<Number>;
+    private var _clockGaps as Array<Number> = [18, 14, 11] as Array<Number>;
     private var _clockGap as Number = 4;
+    // The least room above the clock a clock size may leave: a size that
+    // fits only by touching the steps' row is a size too large.
+    private const MIN_CLOCK_GAP = 8;
     private const SIDE_GAP = 4;
     // Kept clear of the dial's edge, inside the ring.
     private const EDGE = 7;
@@ -278,26 +281,14 @@ class MihrabFaceView extends WatchUi.WatchFace {
 
     // ---- Measuring ----
 
-    // How far a font's figures reach above the baseline. The ascent keeps
-    // room for accents above the figures; these are measured on the
-    // Enduro 3's fonts, with a margin (and the whole ascent where unknown).
+    // How far a font's figures reach above the baseline: its whole
+    // ascent. Garmin's own fonts are not the same on every firmware — an
+    // Enduro 3 draws them larger than the simulator's copies, with the
+    // figures filling more of the ascent — so no share of it measured on
+    // one is trusted on another. The clock's own figures (clockfont.py)
+    // have no room above them, so for them the ascent is the ink.
     private function figuresUp(f as Graphics.FontType) as Number {
-        var a = Graphics.getFontAscent(f);
-        if (!(f instanceof Number)) {
-            // The clock's own figures: their base is the tops of the figures.
-            return a;
-        }
-        var k = 88;
-        if (f == Graphics.FONT_NUMBER_THAI_HOT) {
-            k = 74;
-        } else if (f == Graphics.FONT_NUMBER_HOT) {
-            k = 77;
-        } else if (f == Graphics.FONT_NUMBER_MEDIUM) {
-            k = 73;
-        } else if (f == Graphics.FONT_NUMBER_MILD) {
-            k = 100;
-        }
-        return (a * k + 99) / 100;
+        return Graphics.getFontAscent(f);
     }
 
     // The clock's candidate c: one of the app's figures, loaded, or past
@@ -479,6 +470,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
             lastM--;
         }
         var lastO = others.size() - 1;
+        _clockGap = MIN_CLOCK_GAP;
         for (var c = 0; c < clocks.size(); c++) {
             // A message on more lines is narrower but taller, so for the
             // clock's own try every prayer or message arrangement is tried
@@ -525,7 +517,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
                                     if (found) {
                                         break;
                                     }
-                                    _clockGap = ROW_GAP;
+                                    _clockGap = MIN_CLOCK_GAP;
                                 }
                                 place(c, m, keepO, s, beside == 1, clocks[c], mihrab[m] as Array, others[keepO], false, true);
                                 _clockGap = ROW_GAP;
@@ -538,6 +530,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
         // Nothing fits: the smallest of everything, as near the middle as
         // it can be, the messages on one line however wide.
+        _clockGap = ROW_GAP;
         var mm = mihrab[lastM];
         if (mm == null) {
             var fM = _messageFonts[lastM][0];
