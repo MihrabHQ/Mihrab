@@ -13,6 +13,13 @@
 //            5h 49m                     the countdown as Minimal writes it
 //           👣 004532                   today's steps
 //
+// Laid out, not placed: every row's fonts are chosen and the rows stacked
+// so that each one's ink — measured for the widest thing it can show, not
+// what it shows now — lies inside the dial. The search gives the clock the
+// largest font first, then the prayer and its countdown, then the rest;
+// the first arrangement in which everything fits is kept until what the
+// face shows changes its shape (another language, a message, the weather).
+//
 import Toybox.Activity;
 import Toybox.ActivityMonitor;
 import Toybox.Graphics;
@@ -26,22 +33,20 @@ import Toybox.WatchUi;
 import Toybox.Weather;
 
 class MihrabFaceView extends WatchUi.WatchFace {
-    // Where the moving parts were last drawn: [x, y, w, h].
-    private var _countdownBox as [Number, Number, Number, Number]?;
-    private var _secondsBox as [Number, Number, Number, Number]?;
-    private var _timerBox as [Number, Number, Number, Number]?;
-
     private const INK = Graphics.COLOR_WHITE;
     private const DIM = Graphics.COLOR_LT_GRAY;
     private const RULE = Graphics.COLOR_DK_GRAY;
     private const SUN = Graphics.COLOR_YELLOW;
 
-    private const ROW_FONT = Graphics.FONT_TINY;
-    private const SMALL_FONT = Graphics.FONT_XTINY;
-    private const SECONDS_FONT = Graphics.FONT_TINY;
-    private const TIMER_FONT = Graphics.FONT_TINY;
-    // The weather icon's box, square.
+    // The weather and footprint icons' box, square.
     private const ICON = 16;
+    // Between rows, and between the time and its side columns.
+    private const ROW_GAP = 4;
+    private const SIDE_GAP = 5;
+    // Kept clear of the dial's edge.
+    private const EDGE = 3;
+    // The rule under the time sits this far below its baseline.
+    private const RULE_DROP = 5;
 
     // Weather icon kinds.
     private const W_SUN = 0;
@@ -53,6 +58,73 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private const W_STORM = 6;
     private const W_FOG = 7;
     private const W_WIND = 8;
+
+    // The candidates, best first. The clock's figures:
+    private var _clockFonts as Array<Graphics.FontDefinition> = [Graphics.FONT_NUMBER_THAI_HOT, Graphics.FONT_NUMBER_HOT, Graphics.FONT_NUMBER_MEDIUM, Graphics.FONT_NUMBER_MILD] as Array<Graphics.FontDefinition>;
+    // The prayer line and the countdown's figures; or, with no prayer to
+    // show, the message's font and how many lines it may take.
+    private var _mihrabFonts as Array<[Graphics.FontDefinition, Graphics.FontDefinition]> = [
+        [Graphics.FONT_SMALL, Graphics.FONT_LARGE],
+        [Graphics.FONT_SMALL, Graphics.FONT_MEDIUM],
+        [Graphics.FONT_TINY, Graphics.FONT_MEDIUM],
+        [Graphics.FONT_TINY, Graphics.FONT_SMALL],
+        [Graphics.FONT_XTINY, Graphics.FONT_TINY]
+    ] as Array<[Graphics.FontDefinition, Graphics.FontDefinition]>;
+    private var _messageFonts as Array<[Graphics.FontDefinition, Number]> = [
+        [Graphics.FONT_SMALL, 1], [Graphics.FONT_TINY, 1], [Graphics.FONT_SMALL, 2],
+        [Graphics.FONT_TINY, 2], [Graphics.FONT_XTINY, 2], [Graphics.FONT_XTINY, 3]
+    ] as Array<[Graphics.FontDefinition, Number]>;
+    // The rest: date, timer, the weather now, the small side text (high
+    // and low, am/pm), the seconds, the steps.
+    private var _otherFonts as Array<Array<Graphics.FontDefinition>> = [
+        [Graphics.FONT_TINY, Graphics.FONT_TINY, Graphics.FONT_TINY, Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_SMALL],
+        [Graphics.FONT_TINY, Graphics.FONT_TINY, Graphics.FONT_TINY, Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_TINY],
+        [Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_TINY],
+        [Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_XTINY]
+    ] as Array<Array<Graphics.FontDefinition>>;
+
+    // What the face shows this minute.
+    private var _w as Number = 0;
+    private var _h as Number = 0;
+    private var _dateText as String = "";
+    private var _staleText as String? = null;
+    private var _hour12 as Boolean = false;
+    private var _hourText as String = "";
+    private var _weather as Array = [-1, "--", "", 0];
+    private var _next as [Number, Number]? = null;
+    private var _reasonText as String? = null;
+
+    // The layout, and what it was made for.
+    private var _key as String = "";
+    private var _fDate as Graphics.FontDefinition = Graphics.FONT_XTINY;
+    private var _fTimer as Graphics.FontDefinition = Graphics.FONT_XTINY;
+    private var _fClock as Graphics.FontDefinition = Graphics.FONT_NUMBER_MILD;
+    private var _fNow as Graphics.FontDefinition = Graphics.FONT_XTINY;
+    private var _fSide as Graphics.FontDefinition = Graphics.FONT_XTINY;
+    private var _fSeconds as Graphics.FontDefinition = Graphics.FONT_XTINY;
+    private var _fSteps as Graphics.FontDefinition = Graphics.FONT_XTINY;
+    private var _fPrayer as Graphics.FontDefinition = Graphics.FONT_XTINY;
+    private var _fCount as Graphics.FontDefinition = Graphics.FONT_XTINY;
+    private var _fMessage as Graphics.FontDefinition = Graphics.FONT_XTINY;
+    private var _staleLines as Array<String>? = null;
+    private var _reasonLines as Array<String>? = null;
+    // Baselines of the rows (a message's: its first line's).
+    private var _bDate as Number = 0;
+    private var _bTimer as Number = 0;
+    private var _bClock as Number = 0;
+    private var _bPrayer as Number = 0;
+    private var _bCount as Number = 0;
+    private var _bSteps as Number = 0;
+    // The side columns' widths and offsets above the clock's baseline.
+    private var _leftW as Number = 0;
+    private var _rightW as Number = 0;
+    private var _upperOff as Number = 0;
+    private var _suffixOff as Number = 0;
+
+    // Where the moving parts were last drawn: [x, y, w, h].
+    private var _countdownBox as [Number, Number, Number, Number]?;
+    private var _secondsBox as [Number, Number, Number, Number]?;
+    private var _timerBox as [Number, Number, Number, Number]?;
 
     function initialize() {
         WatchFace.initialize();
@@ -75,9 +147,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
     }
 
     function onUpdate(dc as Dc) as Void {
-        var w = dc.getWidth();
-        var h = dc.getHeight();
-        var cx = w / 2;
+        _w = dc.getWidth();
+        _h = dc.getHeight();
+        var cx = _w / 2;
 
         if (dc has :clearClip) {
             dc.clearClip();
@@ -92,44 +164,72 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var now = nowMoment.value();
         var clock = System.getClockTime();
 
-        // The date.
+        // What to show.
         var date = Gregorian.info(nowMoment, Time.FORMAT_MEDIUM);
+        _dateText = date.day_of_week + " " + date.day.format("%d") + " " + date.month;
+        var timer = activityTimer();
+        _staleText = !timer[1] && Mihrab.stale(now) ? WatchUi.loadResource(Rez.Strings.Stale) as String : null;
+        _hour12 = Mihrab.hour12();
+        var hour = clock.hour;
+        var suffix = null;
+        if (_hour12) {
+            suffix = hour < 12 ? "am" : "pm";
+            hour = hour % 12;
+            if (hour == 0) {
+                hour = 12;
+            }
+        }
+        _hourText = hour.format("%d");
+        _weather = weatherParts(nowMoment);
+        _next = Mihrab.next(now);
+        _reasonText = null;
+        if (_next == null) {
+            _reasonText = WatchUi.loadResource(Mihrab.times() == null ? Rez.Strings.OpenMihrab : Rez.Strings.TimesEnded) as String;
+        }
+
+        var key = (_w.toString() + "|" + _dateText + "|" + (_staleText == null ? "" : _staleText) + "|" + (_hour12 ? "12" : "24")
+            + "|" + _hourText.length().toString() + "|" + (_weather[0] as Number).toString() + "|" + (_weather[1] as String)
+            + "|" + (_weather[2] as String) + "|" + (_reasonText == null ? "" : _reasonText)
+            + "|" + System.getDeviceSettings().systemLanguage.toString()) as String;
+        if (!key.equals(_key)) {
+            layout(dc);
+            _key = key;
+        }
+
+        // The date.
         dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, (h * 0.125).toNumber(), ROW_FONT, date.day_of_week + " " + date.day.format("%d") + " " + date.month, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        drawRow(dc, _dateText, _fDate, _bDate);
 
         // The activity timer, always there — white while it runs, grey at
         // rest — unless, after days without the phone, a word about that
         // has to take its place.
-        var timerY = (h * 0.225).toNumber();
-        var timer = activityTimer();
-        if (timer[1] || !Mihrab.stale(now)) {
-            drawTimer(dc, cx, timerY, timer);
+        var staleLines = _staleLines;
+        if (_staleText != null && staleLines != null) {
+            drawLines(dc, staleLines, _fTimer, _bTimer);
         } else {
-            dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx, timerY, SMALL_FONT, WatchUi.loadResource(Rez.Strings.Stale) as String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+            drawTimer(dc, timer);
         }
 
-        // The time, the weather to its left and the seconds to its right,
-        // and a rule under the figures as wide as they are.
-        var baseline = (h * 0.54).toNumber();
-        var figures = drawTime(dc, cx, baseline, clock, nowMoment);
+        // The time with the weather and the seconds, and a rule under the
+        // figures as wide as they are.
+        var figures = drawClock(dc, clock.min.format("%02d"), clock.sec, suffix);
         dc.setColor(RULE, Graphics.COLOR_TRANSPARENT);
-        dc.drawLine(figures[0], baseline + 5, figures[0] + figures[1] + 1, baseline + 5);
+        dc.drawLine(figures[0], _bClock + RULE_DROP, figures[0] + figures[1] + 1, _bClock + RULE_DROP);
 
-        // The next prayer and the countdown.
-        var next = Mihrab.next(now);
-        if (next == null) {
-            dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-            var why = Mihrab.times() == null ? Rez.Strings.OpenMihrab : Rez.Strings.TimesEnded;
-            dc.drawText(cx, (h * 0.69).toNumber(), Graphics.FONT_TINY, WatchUi.loadResource(why) as String, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        } else {
+        // The next prayer and the countdown, or why there is none.
+        var next = _next;
+        var reasonLines = _reasonLines;
+        if (next != null) {
             dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(cx, (h * 0.64).toNumber(), Graphics.FONT_SMALL, Mihrab.name(next[0]) + "  " + Mihrab.clock(next[1]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-            drawCountdown(dc, cx, (h * 0.755).toNumber(), next[1] - now);
+            drawRow(dc, Mihrab.name(next[0]) + "  " + Mihrab.clock(next[1]), _fPrayer, _bPrayer);
+            drawCountdown(dc, next[1] - now);
+        } else if (reasonLines != null) {
+            dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
+            drawLines(dc, reasonLines, _fMessage, _bPrayer);
         }
 
-        // Today's steps, at the foot.
-        drawSteps(dc, cx, (h * 0.865).toNumber());
+        // Today's steps.
+        drawSteps(dc);
     }
 
     // Every second between the minute's full draws: the seconds, a
@@ -141,7 +241,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
             dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
             dc.clear();
             dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(sbox[0], sbox[1], SECONDS_FONT, System.getClockTime().sec.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(sbox[0], _bClock - Graphics.getFontAscent(_fSeconds), _fSeconds, System.getClockTime().sec.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);
             dc.clearClip();
         }
         var tbox = _timerBox;
@@ -152,7 +252,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
                 dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
                 dc.clear();
                 dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(dc.getWidth() / 2, tbox[1], TIMER_FONT, timer[0], Graphics.TEXT_JUSTIFY_CENTER);
+                drawRow(dc, timer[0], _fTimer, _bTimer);
                 dc.clearClip();
             }
         }
@@ -172,194 +272,515 @@ class MihrabFaceView extends WatchUi.WatchFace {
         dc.setClip(box[0], box[1], box[2], box[3]);
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
         dc.clear();
-        drawCountdown(dc, dc.getWidth() / 2, box[1] + box[3] / 2, remaining);
+        drawCountdown(dc, remaining);
         dc.clearClip();
     }
 
-    // The timer centred on (cx, cy). Remembers where.
-    private function drawTimer(dc as Dc, cx as Number, cy as Number, timer as [String, Boolean]) as Void {
-        var top = cy - dc.getFontHeight(TIMER_FONT) / 2;
-        var boxW = dc.getTextWidthInPixels("00:00:00", TIMER_FONT) + 4;
-        _timerBox = [cx - boxW / 2, top, boxW, dc.getFontHeight(TIMER_FONT)];
-        dc.setColor(timer[1] ? INK : DIM, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(cx, top, TIMER_FONT, timer[0], Graphics.TEXT_JUSTIFY_CENTER);
-    }
+    // ---- Measuring ----
 
-    // Half the width of a round dial at row y (the whole width if square).
-    private function halfChord(w as Number, h as Number, y as Number) as Number {
-        if (System.getDeviceSettings().screenShape != System.SCREEN_SHAPE_ROUND) {
-            return w / 2;
+    // How far a font's figures reach above the baseline. The ascent keeps
+    // room for accents above the figures; these are measured on the
+    // Enduro 3's fonts, with a margin (and the whole ascent where unknown).
+    private function figuresUp(f as Graphics.FontDefinition) as Number {
+        var a = Graphics.getFontAscent(f);
+        var k = 88;
+        if (f == Graphics.FONT_NUMBER_THAI_HOT) {
+            k = 74;
+        } else if (f == Graphics.FONT_NUMBER_HOT) {
+            k = 77;
+        } else if (f == Graphics.FONT_NUMBER_MEDIUM) {
+            k = 73;
+        } else if (f == Graphics.FONT_NUMBER_MILD) {
+            k = 100;
         }
-        var r = w / 2;
-        var d = y - h / 2;
-        var sq = r * r - d * d;
-        return sq <= 0 ? 0 : Math.sqrt(sq).toNumber();
+        return (a * k + 99) / 100;
     }
 
-    // "16:42" in the largest number font that fits the dial with the
-    // weather on its left and the seconds on its right, the three centred
-    // together on cx. On the left, the weather's icon and the temperature
-    // now, and under them today's high and low on the figures' baseline;
-    // on the right the seconds on that baseline, "am"/"pm" above them on a
-    // 12-hour clock. Returns the figures' [x, width].
-    private function drawTime(dc as Dc, cx as Number, baseline as Number, clock as System.ClockTime, now as Time.Moment) as [Number, Number] {
-        var hour = clock.hour;
-        var suffix = null;
-        if (Mihrab.hour12()) {
-            suffix = hour < 12 ? "am" : "pm";
-            hour = hour % 12;
-            if (hour == 0) {
-                hour = 12;
+    private function textW(dc as Dc, s as String, f as Graphics.FontDefinition) as Number {
+        return dc.getTextWidthInPixels(s, f);
+    }
+
+    // The text as lines no wider than maxW, at most maxLines of them, or
+    // null when it cannot be (a word wider than a line, too many lines).
+    private function wrap(dc as Dc, text as String, f as Graphics.FontDefinition, maxW as Number, maxLines as Number) as Array<String>? {
+        if (maxW <= 0) {
+            return null;
+        }
+        if (textW(dc, text, f) <= maxW) {
+            return [text];
+        }
+        var lines = [] as Array<String>;
+        var line = "";
+        var rest = text;
+        while (rest.length() > 0) {
+            var sp = rest.find(" ");
+            var word = sp == null ? rest : rest.substring(0, sp) as String;
+            rest = sp == null ? "" : rest.substring(sp + 1, rest.length()) as String;
+            if (word.length() == 0) {
+                continue;
+            }
+            if (textW(dc, word, f) > maxW) {
+                return null;
+            }
+            var joined = line.length() == 0 ? word : line + " " + word;
+            if (textW(dc, joined, f) <= maxW) {
+                line = joined;
+            } else {
+                lines.add(line);
+                line = word;
             }
         }
-        var timeText = hour.format("%d") + ":" + clock.min.format("%02d");
-        var gap = 5;
-        var w = dc.getWidth();
-        var h = dc.getHeight();
+        if (line.length() > 0) {
+            lines.add(line);
+        }
+        return lines.size() <= maxLines ? lines : null;
+    }
 
-        var weather = weatherParts(now);
-        var kind = weather[0] as Number;
-        var nowText = weather[1] as String;
-        var rangeText = weather[2] as String;
-        var nowW = dc.getTextWidthInPixels(nowText, ROW_FONT);
+    // ---- Laying out ----
+    //
+    // A box of half-width hw lies inside a round dial of radius r exactly
+    // while its top and bottom are within sqrt(r² − hw²) of the middle:
+    // so each box allows a range of heights for the stack, and the stack
+    // fits where all the ranges meet. One pass per arrangement, no trying
+    // heights one by one.
+
+    private var _round as Boolean = true;
+    private var _lo as Number = 0;
+    private var _hi as Number = 0;
+
+    private function abs(n as Number) as Number {
+        return n < 0 ? -n : n;
+    }
+
+    // Narrows the stack's range of starting heights so that a box of
+    // half-width hw, from top to bottom (relative to the stack's start),
+    // lies inside the dial. False once the range is empty.
+    private function fit(hw as Number, top as Number, bottom as Number) as Boolean {
+        var r = _w / 2 - EDGE;
+        if (hw > r) {
+            return false;
+        }
+        var reach = _round ? Math.sqrt(r * r - hw * hw).toNumber() : _h / 2 - EDGE;
+        var cy = _h / 2;
+        var lo = cy - reach - top;
+        var hi = cy + reach - bottom;
+        if (lo > _lo) {
+            _lo = lo;
+        }
+        if (hi < _hi) {
+            _hi = hi;
+        }
+        return _lo <= _hi;
+    }
+
+    // The widest of a text's wrapped lines.
+    private function widest(dc as Dc, lines as Array<String>, f as Graphics.FontDefinition) as Number {
+        var w = 0;
+        for (var i = 0; i < lines.size(); i++) {
+            var lw = textW(dc, lines[i], f);
+            w = lw > w ? lw : w;
+        }
+        return w;
+    }
+
+    // Measures every candidate once, then tries the arrangements best
+    // first — the clock's font, then the prayer's, then the rest — and
+    // keeps the first in which every row lies inside the dial. Should
+    // none, the smallest of all is kept, placed as well as it can be.
+    private function layout(dc as Dc) as Void {
+        _round = System.getDeviceSettings().screenShape == System.SCREEN_SHAPE_ROUND;
+        var full = 2 * (_w / 2 - EDGE);
+        var hasNext = _next != null;
+
+        // The clock: [figures' width for this hour and the widest minutes, their height].
+        var clocks = [] as Array<Array<Number>>;
+        for (var c = 0; c < _clockFonts.size(); c++) {
+            var f = _clockFonts[c];
+            clocks.add([textW(dc, _hourText + ":88", f), figuresUp(f)]);
+        }
+
+        // The prayer: [line up, down, width, countdown up, width] for the
+        // widest name and time and "88h 88m"; or the message: [up, down,
+        // width, lines], null where it will not wrap into its lines.
+        var mihrab = [] as Array<Array?>;
+        if (hasNext) {
+            for (var m = 0; m < _mihrabFonts.size(); m++) {
+                var fP = _mihrabFonts[m][0];
+                var fC = _mihrabFonts[m][1];
+                var nameW = 0;
+                for (var i = 0; i < Mihrab.PER_DAY; i++) {
+                    var nw = textW(dc, Mihrab.name(i), fP);
+                    nameW = nw > nameW ? nw : nameW;
+                }
+                var prayerW = nameW + textW(dc, "  " + (_hour12 ? "88:88 pm" : "88:88"), fP);
+                var countW = 2 * textW(dc, "88", fC) + 2 * textW(dc, "m", Graphics.FONT_XTINY) + 6;
+                mihrab.add([Graphics.getFontAscent(fP), Graphics.getFontDescent(fP), prayerW, figuresUp(fC), countW]);
+            }
+        } else {
+            for (var m = 0; m < _messageFonts.size(); m++) {
+                var fM = _messageFonts[m][0];
+                var lines = wrap(dc, _reasonText as String, fM, full, _messageFonts[m][1]);
+                if (lines == null) {
+                    mihrab.add(null);
+                } else {
+                    var lineH = Graphics.getFontAscent(fM) + Graphics.getFontDescent(fM);
+                    mihrab.add([Graphics.getFontAscent(fM), (lines.size() - 1) * lineH + Graphics.getFontDescent(fM), widest(dc, lines, fM), lines]);
+                }
+            }
+        }
+
+        // The rest, per candidate: see measureOthers.
+        var others = [] as Array<Array>;
+        for (var o = 0; o < _otherFonts.size(); o++) {
+            others.add(measureOthers(dc, _otherFonts[o], full));
+        }
+
+        for (var c = 0; c < clocks.size(); c++) {
+            for (var m = 0; m < mihrab.size(); m++) {
+                if (mihrab[m] == null) {
+                    continue;
+                }
+                for (var o = 0; o < others.size(); o++) {
+                    var staleVariants = others[o][15] as Array;
+                    for (var s = 0; s < staleVariants.size(); s++) {
+                        if (staleVariants[s] == null && _staleText != null) {
+                            continue;
+                        }
+                        if (place(c, m, o, s, clocks[c], mihrab[m] as Array, others[o], false)) {
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        // Nothing fits: the smallest of everything, as near the middle as
+        // it can be, the messages on one line however wide.
+        var lastM = mihrab.size() - 1;
+        while (lastM > 0 && mihrab[lastM] == null) {
+            lastM--;
+        }
+        var mm = mihrab[lastM];
+        if (mm == null) {
+            var fM = _messageFonts[lastM][0];
+            mm = [Graphics.getFontAscent(fM), Graphics.getFontDescent(fM), textW(dc, _reasonText as String, fM), [_reasonText as String]];
+        }
+        var lastO = others.size() - 1;
+        place(clocks.size() - 1, lastM, lastO, 0, clocks[clocks.size() - 1], mm as Array, others[lastO], true);
+    }
+
+    // The date, the timer (or the stale message), the side columns and
+    // the steps in one set of fonts: [date up, down, width, timer up,
+    // width, left width, left up, upper offset, right width, right up,
+    // suffix offset, steps up, down, width, timer line height, stale
+    // variants ([up, down, width, lines] for one and two lines, null where
+    // it will not wrap)].
+    private function measureOthers(dc as Dc, fonts as Array<Graphics.FontDefinition>, full as Number) as Array {
+        var fDate = fonts[0];
+        var fTimer = fonts[1];
+        var fNow = fonts[2];
+        var fSide = fonts[3];
+        var fSeconds = fonts[4];
+        var fSteps = fonts[5];
+
+        // The weather, for its text now or "88°" and "88°/88°", whichever
+        // is wider, so a change of a degree does not move the clock.
+        var kind = _weather[0] as Number;
+        var nowText = _weather[1] as String;
+        var rangeText = _weather[2] as String;
+        var nowW = textW(dc, nowText, fNow);
+        if (!nowText.equals("--")) {
+            var sample = textW(dc, "88°", fNow);
+            nowW = nowW > sample ? nowW : sample;
+        }
         var leftW = (kind >= 0 ? ICON + 3 : 0) + nowW;
-        var rangeW = dc.getTextWidthInPixels(rangeText, SMALL_FONT);
-        if (rangeW > leftW) {
-            leftW = rangeW;
+        var upperOff = 0;
+        if (rangeText.length() > 0) {
+            var rw = textW(dc, rangeText, fSide);
+            var sample = textW(dc, "88°/88°", fSide);
+            rw = rw > sample ? rw : sample;
+            leftW = leftW > rw ? leftW : rw;
+            upperOff = figuresUp(fSide) + 3;
         }
-        var secW = dc.getTextWidthInPixels("88", SECONDS_FONT);
-        var rightW = secW;
-        if (suffix != null && dc.getTextWidthInPixels(suffix, SMALL_FONT) > rightW) {
-            rightW = dc.getTextWidthInPixels(suffix, SMALL_FONT);
-        }
-        // The side columns reach this far above the baseline.
-        var upperBase = baseline - Graphics.getFontAscent(SMALL_FONT) - 2;
-        var sideTop = upperBase - Graphics.getFontAscent(ROW_FONT);
-        var half = halfChord(w, h, sideTop);
-        var halfB = halfChord(w, h, baseline);
-        if (halfB < half) {
-            half = halfB;
+        var nowUp = figuresUp(fNow);
+        var leftUp = upperOff + nowUp;
+        if (kind >= 0) {
+            var iconTop = upperOff + nowUp / 2 + ICON / 2;
+            leftUp = leftUp > iconTop ? leftUp : iconTop;
         }
 
-        var fonts = [Graphics.FONT_NUMBER_THAI_HOT, Graphics.FONT_NUMBER_HOT, Graphics.FONT_NUMBER_MEDIUM, Graphics.FONT_NUMBER_MILD] as Array<Graphics.FontDefinition>;
-        var font = Graphics.FONT_NUMBER_MILD;
-        // Sized for this hour's digits and the widest minutes, so the size
-        // holds through the hour.
-        var widest = hour.format("%d") + ":88";
-        for (var i = 0; i < fonts.size(); i++) {
-            var f = fonts[i];
-            // The figures' visible top: the font's ascent carries some
-            // headroom above them.
-            var topY = baseline - Graphics.getFontAscent(f) * 3 / 4;
-            var groupW = leftW + gap + dc.getTextWidthInPixels(widest, f) + gap + rightW;
-            if (topY > (h * 0.29).toNumber() && groupW / 2 + 4 <= half) {
-                font = f;
-                break;
+        // The seconds, and am/pm above them.
+        var rightW = textW(dc, "88", fSeconds);
+        var rightUp = figuresUp(fSeconds);
+        var suffixOff = 0;
+        if (_hour12) {
+            var sw = textW(dc, "pm", fSide);
+            rightW = rightW > sw ? rightW : sw;
+            suffixOff = figuresUp(fSeconds) + 3 + Graphics.getFontDescent(fSide);
+            rightUp = suffixOff + figuresUp(fSide);
+        }
+
+        // The steps behind the footprint, centred on the figures' middle.
+        var stepsUp = figuresUp(fSteps);
+        var sUp = stepsUp > stepsUp / 2 + ICON / 2 ? stepsUp : stepsUp / 2 + ICON / 2;
+        var sDown = ICON / 2 - stepsUp / 2;
+        sDown = sDown > 0 ? sDown : 0;
+
+        // The stale message on one line or two.
+        var lineH = Graphics.getFontAscent(fTimer) + Graphics.getFontDescent(fTimer);
+        var stale = [null] as Array;
+        if (_staleText != null) {
+            stale = [] as Array;
+            for (var n = 1; n <= 2; n++) {
+                var lines = wrap(dc, _staleText as String, fTimer, full, n);
+                if (lines == null) {
+                    stale.add(null);
+                } else {
+                    stale.add([Graphics.getFontAscent(fTimer), (lines.size() - 1) * lineH + Graphics.getFontDescent(fTimer), widest(dc, lines, fTimer), lines]);
+                }
             }
         }
-        var timeW = dc.getTextWidthInPixels(timeText, font);
-        var x = cx - (leftW + gap + timeW + gap + rightW) / 2 + leftW + gap;
+
+        return [
+            Graphics.getFontAscent(fDate), Graphics.getFontDescent(fDate), textW(dc, _dateText, fDate),
+            figuresUp(fTimer), textW(dc, "00:00:00", fTimer),
+            leftW, leftUp, upperOff, rightW, rightUp, suffixOff,
+            sUp, sDown, ICON + 4 + textW(dc, "000000", fSteps),
+            lineH, stale
+        ];
+    }
+
+    // One arrangement, stacked top to bottom: keeps it and returns true
+    // when every row lies inside the dial (or when forced).
+    private function place(c as Number, m as Number, o as Number, s as Number, cm as Array<Number>, mm as Array, om as Array, force as Boolean) as Boolean {
+        _lo = -100000;
+        _hi = 100000;
+        var ok = true;
+        var y = 0;
+        var bases = new [6] as Array<Number>;
+
+        // The date.
+        var up = om[0] as Number;
+        var down = om[1] as Number;
+        bases[0] = y + up;
+        ok = fit((om[2] as Number) / 2 + 1, y, bases[0] + down) && ok;
+        y = bases[0] + down + ROW_GAP;
+
+        // The timer, or the stale message.
+        var stale = (om[15] as Array)[s] as Array?;
+        if (_staleText != null && stale != null) {
+            up = stale[0] as Number;
+            down = stale[1] as Number;
+            bases[1] = y + up;
+            ok = fit((stale[2] as Number) / 2 + 1, y, bases[1] + down) && ok;
+        } else {
+            up = om[3] as Number;
+            down = 0;
+            bases[1] = y + up;
+            ok = fit((om[4] as Number) / 2 + 2, y, bases[1]) && ok;
+        }
+        y = bases[1] + down + ROW_GAP;
+
+        // The clock row: the weather, the figures and the seconds, centred
+        // together; the rule under the figures.
+        var digitsW = cm[0];
+        var clockUp = cm[1];
+        var leftW = om[5] as Number;
+        var leftUp = om[6] as Number;
+        var rightW = om[8] as Number;
+        var rightUp = om[9] as Number;
+        up = clockUp > leftUp ? clockUp : leftUp;
+        up = up > rightUp ? up : rightUp;
+        var b = y + up;
+        bases[2] = b;
+        var group = leftW + SIDE_GAP + digitsW + SIDE_GAP + rightW;
+        var gx = -group / 2;
+        var lx = abs(gx) > abs(gx + leftW) ? abs(gx) : abs(gx + leftW);
+        var dx0 = gx + leftW + SIDE_GAP;
+        var dx = abs(dx0) > abs(dx0 + digitsW) ? abs(dx0) : abs(dx0 + digitsW);
+        var rx = abs(gx + group);
+        ok = fit(lx, b - leftUp, b) && ok;
+        ok = fit(dx, b - clockUp, b + RULE_DROP + 1) && ok;
+        ok = fit(rx, b - rightUp, b) && ok;
+        y = b + RULE_DROP + 1 + ROW_GAP;
+
+        // The prayer and its countdown, or the message.
+        var hasNext = _next != null;
+        bases[3] = y + (mm[0] as Number);
+        ok = fit((mm[2] as Number) / 2 + 1, y, bases[3] + (mm[1] as Number)) && ok;
+        y = bases[3] + (mm[1] as Number) + ROW_GAP;
+        if (hasNext) {
+            bases[4] = y + (mm[3] as Number);
+            ok = fit((mm[4] as Number) / 2 + 1, y, bases[4]) && ok;
+            y = bases[4] + ROW_GAP;
+        } else {
+            bases[4] = 0;
+        }
+
+        // The steps.
+        bases[5] = y + (om[11] as Number);
+        ok = fit((om[13] as Number) / 2 + 1, y, bases[5] + (om[12] as Number)) && ok;
+        var total = bases[5] + (om[12] as Number);
+
+        if (!ok && !force) {
+            return false;
+        }
+        // As near the middle as the ranges allow.
+        var start = (_h - total) / 2;
+        if (ok) {
+            start = start < _lo ? _lo : (start > _hi ? _hi : start);
+        }
+
+        var others = _otherFonts[o];
+        _fDate = others[0];
+        _fTimer = others[1];
+        _fNow = others[2];
+        _fSide = others[3];
+        _fSeconds = others[4];
+        _fSteps = others[5];
+        _fClock = _clockFonts[c];
+        if (hasNext) {
+            _fPrayer = _mihrabFonts[m][0];
+            _fCount = _mihrabFonts[m][1];
+            _reasonLines = null;
+        } else {
+            _fMessage = _messageFonts[m][0];
+            _reasonLines = mm[3] as Array<String>;
+        }
+        _staleLines = (_staleText != null && stale != null) ? stale[3] as Array<String> : null;
+        _bDate = start + bases[0];
+        _bTimer = start + bases[1];
+        _bClock = start + bases[2];
+        _bPrayer = start + bases[3];
+        _bCount = start + bases[4];
+        _bSteps = start + bases[5];
+        _leftW = leftW;
+        _rightW = rightW;
+        _upperOff = om[7] as Number;
+        _suffixOff = om[10] as Number;
+        return true;
+    }
+
+    // ---- Drawing ----
+
+    // Text centred on the dial, on baseline b.
+    private function drawRow(dc as Dc, text as String, f as Graphics.FontDefinition, b as Number) as Void {
+        dc.drawText(_w / 2, b - Graphics.getFontAscent(f), f, text, Graphics.TEXT_JUSTIFY_CENTER);
+    }
+
+    // Lines centred on the dial, the first on baseline b.
+    private function drawLines(dc as Dc, lines as Array<String>, f as Graphics.FontDefinition, b as Number) as Void {
+        var lineH = Graphics.getFontAscent(f) + Graphics.getFontDescent(f);
+        for (var i = 0; i < lines.size(); i++) {
+            drawRow(dc, lines[i], f, b + i * lineH);
+        }
+    }
+
+    // The timer on its row. Remembers where its figures are.
+    private function drawTimer(dc as Dc, timer as [String, Boolean]) as Void {
+        var up = figuresUp(_fTimer);
+        var boxW = textW(dc, "00:00:00", _fTimer) + 4;
+        _timerBox = [_w / 2 - boxW / 2, _bTimer - up - 1, boxW, up + 2];
+        dc.setColor(timer[1] ? INK : DIM, Graphics.COLOR_TRANSPARENT);
+        drawRow(dc, timer[0], _fTimer, _bTimer);
+    }
+
+    // The clock's figures, the weather to their left (icon and the
+    // temperature now; under them the high and low on the baseline) and
+    // the seconds to their right (am/pm above them on a 12-hour clock),
+    // the three centred together. Returns the figures' [x, width].
+    private function drawClock(dc as Dc, minutes as String, seconds as Number, suffix as String?) as [Number, Number] {
+        var b = _bClock;
+        var timeText = _hourText + ":" + minutes;
+        var timeW = textW(dc, timeText, _fClock);
+        var group = _leftW + SIDE_GAP + timeW + SIDE_GAP + _rightW;
+        var x = _w / 2 - group / 2 + _leftW + SIDE_GAP;
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x, baseline - Graphics.getFontAscent(font), font, timeText, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(x, b - Graphics.getFontAscent(_fClock), _fClock, timeText, Graphics.TEXT_JUSTIFY_LEFT);
 
         // Right: the seconds on the baseline, am/pm above.
-        var secTop = baseline - Graphics.getFontAscent(SECONDS_FONT);
-        var secX = x + timeW + gap;
-        _secondsBox = [secX, secTop, secW + 2, Graphics.getFontAscent(SECONDS_FONT) + Graphics.getFontDescent(SECONDS_FONT)];
+        var secX = x + timeW + SIDE_GAP;
+        var secUp = figuresUp(_fSeconds);
+        _secondsBox = [secX, b - secUp - 1, textW(dc, "88", _fSeconds) + 2, secUp + 2];
         dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(secX, secTop, SECONDS_FONT, clock.sec.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(secX, b - Graphics.getFontAscent(_fSeconds), _fSeconds, seconds.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);
         if (suffix != null) {
-            dc.drawText(secX, upperBase - Graphics.getFontAscent(SMALL_FONT), SMALL_FONT, suffix, Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(secX, b - _suffixOff - Graphics.getFontAscent(_fSide), _fSide, suffix, Graphics.TEXT_JUSTIFY_LEFT);
         }
 
         // Left: the icon and the temperature now; under them high/low.
-        var right = x - gap;
+        var right = x - SIDE_GAP;
+        var kind = _weather[0] as Number;
+        var nowText = _weather[1] as String;
+        var rangeText = _weather[2] as String;
+        var upper = b - _upperOff;
         if (rangeText.length() > 0) {
             dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(right, baseline - Graphics.getFontAscent(SMALL_FONT), SMALL_FONT, rangeText, Graphics.TEXT_JUSTIFY_RIGHT);
-        } else {
-            upperBase = baseline;
+            dc.drawText(right, b - Graphics.getFontAscent(_fSide), _fSide, rangeText, Graphics.TEXT_JUSTIFY_RIGHT);
         }
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(right, upperBase - Graphics.getFontAscent(ROW_FONT), ROW_FONT, nowText, Graphics.TEXT_JUSTIFY_RIGHT);
+        dc.drawText(right, upper - Graphics.getFontAscent(_fNow), _fNow, nowText, Graphics.TEXT_JUSTIFY_RIGHT);
         if (kind >= 0) {
-            // Centred on the figures' visible middle.
-            var mid = upperBase - Graphics.getFontAscent(ROW_FONT) * 3 / 8;
-            drawWeatherIcon(dc, kind, (weather[3] as Number) == 1, right - nowW - 3 - ICON, mid - ICON / 2);
+            var mid = upper - figuresUp(_fNow) / 2;
+            drawWeatherIcon(dc, kind, (_weather[3] as Number) == 1, right - textW(dc, nowText, _fNow) - 3 - ICON, mid - ICON / 2);
         }
         return [x, timeW];
     }
 
     // "5h 49m": the figures large, the unit letters small on the same
-    // baseline, centred as a whole on cx. Remembers where it was drawn.
-    private function drawCountdown(dc as Dc, cx as Number, cy as Number, remaining as Number) as Void {
+    // baseline, centred as a whole. Remembers where it was drawn.
+    private function drawCountdown(dc as Dc, remaining as Number) as Void {
         var pieces = Mihrab.pieces(remaining);
-        var figureFont = Graphics.FONT_LARGE;
+        var figureFont = _fCount;
         var unitFont = Graphics.FONT_XTINY;
         var gap = 6;
+        var cx = _w / 2;
         var width = 0;
         for (var i = 0; i < pieces.size(); i++) {
-            width += dc.getTextWidthInPixels(pieces[i][0], figureFont) + dc.getTextWidthInPixels(pieces[i][1], unitFont);
+            width += textW(dc, pieces[i][0], figureFont) + textW(dc, pieces[i][1], unitFont);
             if (i > 0) {
                 width += gap;
             }
         }
-        var figureH = dc.getFontHeight(figureFont);
-        var top = cy - figureH / 2;
-        // The unit letters sit on the figures' baseline.
-        var unitTop = top + Graphics.getFontAscent(figureFont) - Graphics.getFontAscent(unitFont);
-        var boxW = dc.getTextWidthInPixels("88h 88m", figureFont) + 2 * dc.getTextWidthInPixels("m", unitFont) + gap + 8;
-        _countdownBox = [cx - boxW / 2, top, boxW, figureH];
-
+        var up = figuresUp(figureFont);
+        var boxW = 2 * textW(dc, "88", figureFont) + 2 * textW(dc, "m", unitFont) + gap + 8;
+        _countdownBox = [cx - boxW / 2, _bCount - up - 1, boxW, up + 2];
+        var top = _bCount - Graphics.getFontAscent(figureFont);
+        var unitTop = _bCount - Graphics.getFontAscent(unitFont);
         var x = cx - width / 2;
         for (var i = 0; i < pieces.size(); i++) {
             dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
             dc.drawText(x, top, figureFont, pieces[i][0], Graphics.TEXT_JUSTIFY_LEFT);
-            x += dc.getTextWidthInPixels(pieces[i][0], figureFont);
+            x += textW(dc, pieces[i][0], figureFont);
             dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
             dc.drawText(x, unitTop, unitFont, pieces[i][1], Graphics.TEXT_JUSTIFY_LEFT);
-            x += dc.getTextWidthInPixels(pieces[i][1], unitFont) + gap;
+            x += textW(dc, pieces[i][1], unitFont) + gap;
         }
     }
 
-    // A footprint and today's steps as six figures, "004532", centred on
-    // (cx, cy) in the largest font that fits the dial there: the figures
+    // A footprint and today's steps as six figures, "004532": the figures
     // the count uses white (its own zeros too, and the one of a count of
     // none), the unused leading zeros grey.
-    private function drawSteps(dc as Dc, cx as Number, cy as Number) as Void {
-        var w = dc.getWidth();
-        var h = dc.getHeight();
-        var steps = stepCount();
-        var text = steps.format("%06d");
+    private function drawSteps(dc as Dc) as Void {
+        var f = _fSteps;
+        var b = _bSteps;
+        var text = stepCount().format("%06d");
         var lead = 0;
         while (lead < text.length() - 1 && (text.substring(lead, lead + 1) as String).equals("0")) {
             lead++;
         }
-        var fonts = [Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_XTINY] as Array<Graphics.FontDefinition>;
-        var font = Graphics.FONT_XTINY;
-        for (var i = 0; i < fonts.size(); i++) {
-            var f = fonts[i];
-            var bottom = cy + Graphics.getFontAscent(f) / 2;
-            if (ICON + 4 + dc.getTextWidthInPixels("000000", f) + 8 <= 2 * halfChord(w, h, bottom)) {
-                font = f;
-                break;
-            }
-        }
-        var textW = dc.getTextWidthInPixels(text, font);
-        var x = cx - (ICON + 4 + textW) / 2;
+        var x = _w / 2 - (ICON + 4 + textW(dc, text, f)) / 2;
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-        drawFootprints(dc, x, cy - ICON / 2);
+        drawFootprints(dc, x, b - figuresUp(f) / 2 - ICON / 2);
         x += ICON + 4;
+        var top = b - Graphics.getFontAscent(f);
         var zeros = text.substring(0, lead) as String;
         if (zeros.length() > 0) {
             dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x, cy, font, zeros, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-            x += dc.getTextWidthInPixels(zeros, font);
+            dc.drawText(x, top, f, zeros, Graphics.TEXT_JUSTIFY_LEFT);
+            x += textW(dc, zeros, f);
         }
-        if (lead < text.length()) {
-            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x, cy, font, text.substring(lead, text.length()) as String, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-        }
+        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(x, top, f, text.substring(lead, text.length()) as String, Graphics.TEXT_JUSTIFY_LEFT);
     }
 
     // [icon kind or -1, "8°", "16°/7°", 1 at night else 0] from the

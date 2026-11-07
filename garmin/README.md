@@ -16,7 +16,14 @@ Three Connect IQ apps, fed by the Android app through
   the app's place reads Fahrenheit (the United States, Liberia and a few
   more) and °C elsewhere. The seconds, a running timer and, in those last
   minutes, the countdown are redrawn every second inside their own clips
-  (a partial update); everything else once a minute. The weather is the
+  (a partial update); everything else once a minute. The face is laid
+  out, not placed: it picks each row's font and stacks the rows so that
+  every row's ink — measured for the widest thing that row can show (any
+  minute, any prayer's name in the watch's language, "88h 88m", six-figure
+  steps; the weather and date as they are) — lies inside the round dial,
+  giving the clock the largest font first, then the prayer and its
+  countdown, then the rest. Messages wrap onto a second line rather than
+  run off the edge. The weather is the
   watch's own, which Gadgetbridge fills from the phone's weather app
   (Breezy Weather, say);
 - a **data field**: "Asr 1h 23m" in any activity screen, or a watch face's
