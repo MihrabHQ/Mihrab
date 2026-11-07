@@ -3,10 +3,16 @@
 Three Connect IQ apps, fed by the Android app through
 [Gadgetbridge](https://gadgetbridge.org):
 
-- a **watch face**: the time, the date, the next prayer with its time and
-  the countdown as the phone's Minimal page writes it — "5h 49m" with the
-  unit letters small, "49m", and inside the last five minutes "4m 37s",
-  ticking every second (a partial update of the countdown alone);
+- a **watch face**, drawn for a MIP screen (solid ink on black, nothing
+  animating but what must): the date; the weather and today's steps; the
+  time with the seconds small and grey beside it; the next prayer with its
+  time and the countdown as the phone's Minimal page writes it — "5h 49m"
+  with the unit letters small, "49m", and inside the last five minutes
+  "4m 37s"; and an activity's timer while one runs. The seconds and, in
+  those last minutes, the countdown are redrawn every second inside their
+  own clips (a partial update); everything else once a minute. The
+  weather is the watch's own, which Gadgetbridge fills from the phone's
+  weather app (Breezy Weather, say);
 - a **data field**: "Asr 1h 23m" in any activity screen, or a watch face's
   data-field slot;
 - a **widget**: a glance with the next prayer and the countdown, a page

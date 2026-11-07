@@ -4,4 +4,11 @@
     <string id="TimesEnded">No times left — open Mihrab</string>
     <string id="Stale">times may be out of date</string>
     <string id="Label">Prayer</string>
+    <string id="WClear">Clear</string>
+    <string id="WCloudy">Cloudy</string>
+    <string id="WSnow">Snow</string>
+    <string id="WStorm">Storm</string>
+    <string id="WFog">Fog</string>
+    <string id="WWindy">Windy</string>
+    <string id="WRain">Rain</string>
 </strings>
