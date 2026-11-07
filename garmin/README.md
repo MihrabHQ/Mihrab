@@ -4,11 +4,13 @@ Three Connect IQ apps, fed by the Android app through
 [Gadgetbridge](https://gadgetbridge.org):
 
 - a **watch face**, drawn for a MIP screen (solid ink on black, nothing
-  animating but what must): the date; the weather and today's steps; the
-  time with the seconds small and grey beside it; the next prayer with its
+  animating but what must): the date and today's steps; the weather now
+  in °C with today's high and low; the time as large as the dial allows,
+  with the seconds small and grey beside it; the next prayer with its
   time and the countdown as the phone's Minimal page writes it — "5h 49m"
   with the unit letters small, "49m", and inside the last five minutes
-  "4m 37s"; and an activity's timer while one runs. The seconds and, in
+  "4m 37s"; and the activity timer, "00:00:00" in grey at rest and white
+  while it runs. The seconds and, in
   those last minutes, the countdown are redrawn every second inside their
   own clips (a partial update); everything else once a minute. The
   weather is the watch's own, which Gadgetbridge fills from the phone's
