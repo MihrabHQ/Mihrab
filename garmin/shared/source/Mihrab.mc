@@ -80,12 +80,29 @@ module MihrabStore {
         Storage.setValue(KEY_FAHRENHEIT, flag(data.get("f") as Object?));
         // The app's accent, 0xRRGGBB on the watch's palette, and above
         // it the face's options (0, all as they were, from an older app).
-        var accent = data.get("a");
-        if (accent instanceof Number) {
+        var accent = whole(data.get("a") as Object?);
+        if (accent != null) {
             Storage.setValue(KEY_ACCENT, accent & 0xFFFFFF);
             Storage.setValue(KEY_FACE, (accent >> 24) & 0xFF);
         }
         return true;
+    }
+
+    // A whole number as the message carries it — Gadgetbridge may hand a
+    // JSON number over as a Long, or a Double — or null. A Long keeps its low 32 bits,
+    // so a negative number from the phone (the options' top bit) reads the
+    // same either way.
+    function whole(v as Object?) as Number? {
+        if (v instanceof Number) {
+            return v;
+        }
+        if (v instanceof Long) {
+            return (v & 0xFFFFFFFFl).toNumber();
+        }
+        if (v instanceof Double) {
+            return (v.toLong() & 0xFFFFFFFFl).toNumber();
+        }
+        return null;
     }
 
     // 1/true → 1, 0/false → 0, anything else (absent) → -1.
@@ -93,8 +110,9 @@ module MihrabStore {
         if (v instanceof Boolean) {
             return v ? 1 : 0;
         }
-        if (v instanceof Number) {
-            return v != 0 ? 1 : 0;
+        var n = whole(v);
+        if (n != null) {
+            return n != 0 ? 1 : 0;
         }
         return -1;
     }
