@@ -568,11 +568,10 @@
     "garminFaceRowHeart": "دل کی دھڑکن",
     "garminFaceRowNone": "کچھ نہیں",
     "garminFaceFooter": "فوراً گھڑی کو بھیجا جاتا ہے۔ Mihrab کے گھڑی کے چہرے کے لیے۔",
-    "garminFaceRefresh": "گھڑی کا چہرہ تازہ کریں",
-    "garminFaceRefreshHelp": "اوقات اور یہ ترتیبات دوبارہ بھیجتا ہے تاکہ چہرہ ان کے ساتھ دوبارہ بنے، پھر Gadgetbridge کھولتا ہے تاکہ Mihrab کے اس ورژن کے ساتھ آنے والا گھڑی کا چہرہ انسٹال ہو۔",
-    "garminFaceRefreshHelpNoInstall": "اوقات اور یہ ترتیبات دوبارہ بھیجتا ہے تاکہ چہرہ ان کے ساتھ دوبارہ بنے۔",
-    "garminFaceRefreshed": "بھیج دیا گیا۔ چہرہ ایک لمحے میں دوبارہ بنے گا۔",
-    "garminFaceInstallFailed": "بھیج دیا گیا، لیکن Gadgetbridge کا انسٹالر نہیں کھل سکا۔ چہرہ Gadgetbridge سے انسٹال کریں۔"
+    "garminInstallFace": "گھڑی کا چہرہ انسٹال یا دوبارہ انسٹال کریں",
+    "garminInstallFaceHelp": "اوقات اور گھڑی کے چہرے کی ترتیبات دوبارہ بھیجتا ہے، پھر Gadgetbridge کھولتا ہے تاکہ Mihrab کے اس ورژن کے ساتھ آنے والا گھڑی کا چہرہ انسٹال ہو۔",
+    "garminInstallFaceOpened": "Gadgetbridge کا انسٹالر کھلا ہے — وہاں تصدیق کریں۔",
+    "garminInstallFaceFailed": "بھیج دیا گیا، لیکن Gadgetbridge کا انسٹالر نہیں کھل سکا۔ چہرہ Gadgetbridge سے انسٹال کریں۔"
   },
   "locationSetup": {
     "headline": "اپنا مقام متعین کریں۔",

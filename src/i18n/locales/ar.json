@@ -572,11 +572,10 @@
     "garminFaceRowHeart": "نبض القلب",
     "garminFaceRowNone": "لا شيء",
     "garminFaceFooter": "تُرسل إلى الساعة فورًا. لواجهة ساعة «محراب».",
-    "garminFaceRefresh": "تحديث واجهة الساعة",
-    "garminFaceRefreshHelp": "تُرسل الأوقات وهذه الإعدادات من جديد لتُعاد رسم الواجهة بها، ثم تفتح Gadgetbridge لتثبيت واجهة الساعة المرفقة بهذا الإصدار من «محراب».",
-    "garminFaceRefreshHelpNoInstall": "تُرسل الأوقات وهذه الإعدادات من جديد لتُعاد رسم الواجهة بها.",
-    "garminFaceRefreshed": "تم الإرسال. تُعاد رسم الواجهة خلال لحظات.",
-    "garminFaceInstallFailed": "تم الإرسال، لكن تعذّر فتح أداة التثبيت في Gadgetbridge. ثبّت الواجهة من Gadgetbridge بدلًا من ذلك."
+    "garminInstallFace": "تثبيت واجهة الساعة أو إعادة تثبيتها",
+    "garminInstallFaceHelp": "تُرسل الأوقات وإعدادات واجهة الساعة من جديد، ثم تفتح Gadgetbridge لتثبيت واجهة الساعة المرفقة بهذا الإصدار من «محراب».",
+    "garminInstallFaceOpened": "أداة التثبيت في Gadgetbridge مفتوحة — أكّد هناك.",
+    "garminInstallFaceFailed": "تم الإرسال، لكن تعذّر فتح أداة التثبيت في Gadgetbridge. ثبّت الواجهة من Gadgetbridge بدلًا من ذلك."
   },
   "locationSetup": {
     "headline": "حدّد موقعك",

@@ -569,11 +569,10 @@
     "garminFaceRowHeart": "Frecuencia cardíaca",
     "garminFaceRowNone": "Nada",
     "garminFaceFooter": "Se envía al reloj al instante. Para la esfera de Mihrab.",
-    "garminFaceRefresh": "Actualizar la esfera",
-    "garminFaceRefreshHelp": "Vuelve a enviar los horarios y estos ajustes para que la esfera se redibuje con ellos y luego abre Gadgetbridge para instalar la esfera que vino con esta versión de Mihrab.",
-    "garminFaceRefreshHelpNoInstall": "Vuelve a enviar los horarios y estos ajustes para que la esfera se redibuje con ellos.",
-    "garminFaceRefreshed": "Enviado. La esfera se redibuja en un momento.",
-    "garminFaceInstallFailed": "Enviado, pero no se pudo abrir el instalador de Gadgetbridge. Instala la esfera desde Gadgetbridge."
+    "garminInstallFace": "Instalar o reinstalar la esfera",
+    "garminInstallFaceHelp": "Vuelve a enviar los horarios y los ajustes de la esfera y luego abre Gadgetbridge para instalar la esfera que vino con esta versión de Mihrab.",
+    "garminInstallFaceOpened": "El instalador de Gadgetbridge está abierto: confirma allí.",
+    "garminInstallFaceFailed": "Enviado, pero no se pudo abrir el instalador de Gadgetbridge. Instala la esfera desde Gadgetbridge."
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",

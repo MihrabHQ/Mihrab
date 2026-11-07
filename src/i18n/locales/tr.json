@@ -568,11 +568,10 @@
     "garminFaceRowHeart": "Nabız",
     "garminFaceRowNone": "Hiçbiri",
     "garminFaceFooter": "Saate hemen gönderilir. Mihrab saat kadranı için.",
-    "garminFaceRefresh": "Saat kadranını yenile",
-    "garminFaceRefreshHelp": "Vakitleri ve bu ayarları yeniden gönderir, kadran bunlarla yeniden çizilir; ardından Mihrab'ın bu sürümüyle gelen kadranı yüklemek için Gadgetbridge'i açar.",
-    "garminFaceRefreshHelpNoInstall": "Vakitleri ve bu ayarları yeniden gönderir, kadran bunlarla yeniden çizilir.",
-    "garminFaceRefreshed": "Gönderildi. Kadran birazdan yeniden çizilir.",
-    "garminFaceInstallFailed": "Gönderildi, ancak Gadgetbridge yükleyicisi açılamadı. Kadranı Gadgetbridge üzerinden yükleyin."
+    "garminInstallFace": "Saat kadranını yükle veya yeniden yükle",
+    "garminInstallFaceHelp": "Vakitleri ve kadran ayarlarını yeniden gönderir, ardından Mihrab'ın bu sürümüyle gelen kadranı yüklemek için Gadgetbridge'i açar.",
+    "garminInstallFaceOpened": "Gadgetbridge yükleyicisi açık — orada onaylayın.",
+    "garminInstallFaceFailed": "Gönderildi, ancak Gadgetbridge yükleyicisi açılamadı. Kadranı Gadgetbridge üzerinden yükleyin."
   },
   "locationSetup": {
     "headline": "Konumunuzu ayarlayın",

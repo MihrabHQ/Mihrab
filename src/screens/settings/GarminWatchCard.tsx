@@ -132,17 +132,16 @@ function GarminWatchCardImpl() {
     void sendToGarminWatch().then(setOutcome);
   }, []);
 
-  // Refresh: the times and the face's options again, whatever was sent
-  // before, so the face redraws with them; then, when this build carries
-  // the face, Gadgetbridge's installer on it — the newest face, installed
-  // after a yes there.
-  const onRefresh = useCallback(() => {
+  // Install or reinstall: the times and the face's options again, whatever
+  // was sent before, so the face redraws with them; then Gadgetbridge's
+  // installer on the face this build carries — installed after a yes there.
+  const onInstall = useCallback(() => {
     setRefreshed(null);
     void sendToGarminWatch().then(async sent => {
-      const installed = bundledFace && sent === 'sent' ? await installGarminFace() : null;
+      const installed = sent === 'sent' ? await installGarminFace() : null;
       setRefreshed({ sent, installed });
     });
-  }, [bundledFace]);
+  }, []);
 
   // The face's options: kept with the rest; useSyncGarminAccent hands
   // them to the watch.
@@ -228,6 +227,44 @@ function GarminWatchCardImpl() {
             <Text style={[s.help, { color: palette.muted }]}>
               {t(choicesNote === 'refused' ? 'settings.garminFindRefused' : 'settings.garminFindNone')}
             </Text>
+          ) : null}
+          {/* Only on a build that carries the face (app/build.gradle). */}
+          {bundledFace ? (
+            <>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('settings.garminInstallFace')}
+                accessibilityHint={t('settings.garminInstallFaceHelp')}
+                onPress={onInstall}
+                disabled={!addressOk}
+                testID="settings-garmin-install-face"
+                style={[styles.send, !addressOk ? styles.disabled : null]}>
+                <Text style={[s.changeLink, { color: palette.accent }]}>
+                  {t('settings.garminInstallFace')}
+                </Text>
+              </Pressable>
+              <Text style={[s.help, { color: palette.muted }]}>
+                {t('settings.garminInstallFaceHelp')}
+              </Text>
+              {refreshed ? (
+                <Text
+                  style={[
+                    s.help,
+                    {
+                      color:
+                        refreshed.sent === 'sent' && refreshed.installed !== 'failed'
+                          ? palette.text
+                          : palette.danger,
+                    },
+                  ]}>
+                  {refreshed.sent !== 'sent'
+                    ? t(`settings.garminResult.${refreshed.sent}`)
+                    : refreshed.installed === 'failed'
+                      ? t('settings.garminInstallFaceFailed')
+                      : t('settings.garminInstallFaceOpened')}
+                </Text>
+              ) : null}
+            </>
           ) : null}
           <Text style={[s.help, { color: palette.muted }]}>
             {t('settings.garminAddressHelp')}
@@ -320,40 +357,6 @@ function GarminWatchCardImpl() {
             value={face.row}
             onChange={row => setFace({ row })}
           />
-        </SettingsBlock>
-        <SettingsBlock>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('settings.garminFaceRefresh')}
-            accessibilityHint={t(bundledFace ? 'settings.garminFaceRefreshHelp' : 'settings.garminFaceRefreshHelpNoInstall')}
-            onPress={onRefresh}
-            testID="settings-garmin-face-refresh"
-            style={styles.send}>
-            <Text style={[s.changeLink, { color: palette.accent }]}>
-              {t('settings.garminFaceRefresh')}
-            </Text>
-          </Pressable>
-          <Text style={[s.help, { color: palette.muted }]}>
-            {t(bundledFace ? 'settings.garminFaceRefreshHelp' : 'settings.garminFaceRefreshHelpNoInstall')}
-          </Text>
-          {refreshed ? (
-            <Text
-              style={[
-                s.help,
-                {
-                  color:
-                    refreshed.sent === 'sent' && refreshed.installed !== 'failed'
-                      ? palette.text
-                      : palette.danger,
-                },
-              ]}>
-              {refreshed.sent !== 'sent'
-                ? t(`settings.garminResult.${refreshed.sent}`)
-                : refreshed.installed === 'failed'
-                  ? t('settings.garminFaceInstallFailed')
-                  : t('settings.garminFaceRefreshed')}
-            </Text>
-          ) : null}
         </SettingsBlock>
       </SettingsGroup>
     ) : null}
