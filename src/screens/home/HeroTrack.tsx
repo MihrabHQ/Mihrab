@@ -298,9 +298,17 @@ function HeroTrackImpl({
         <Path d={drawn.stretch} stroke={ink} strokeWidth={STRETCH_W} strokeOpacity={0.6} strokeLinecap="round" fill="none" />
       ) : null}
       <Line x1={0} y1={horizon} x2={width} y2={horizon} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.5} />
-      {!running && at && !at.under && body.kind === 'sun' && track.kind === 'sun' ? (
+      {!running && at && !at.under && track.kind === 'sun' ? (
+        // The sun where the chart has it. The sky's own sun when the sky
+        // draws one; when the sky's hour is the night's and the sun is up
+        // anyway — the midnight sun, between Isha and Fajr — the sun in its
+        // own light at that height, or the chart would have no mark for now.
         <G clipPath={`url(#${clipId})`}>
-          <Circle cx={X(at)} cy={Y(at) + 2 * body.below * sunR} r={sunR} fill={body.light} fillOpacity={body.alpha} />
+          {body.kind === 'sun' ? (
+            <Circle cx={X(at)} cy={Y(at) + 2 * body.below * sunR} r={sunR} fill={body.light} fillOpacity={body.alpha} />
+          ) : (
+            <Circle cx={X(at)} cy={Y(at)} r={sunR} fill={tintedBy(SUN_SURFACE, at.altitude)} />
+          )}
         </G>
       ) : null}
       {!running && at && !at.under && body.kind === 'moon' && track.kind === 'moon' ? (

@@ -916,14 +916,18 @@ const HeroToday = memo(function HeroToday({
       // the day's one loop; where it closes, a day apart, the two ends are
       // a fraction of a degree out, and that seam is under the ring.
       // By night, in either layout, the same: the sun through the night.
+      // And by day too when the next prayer is past the day's midnight —
+      // a Maghrib or Isha after midnight in a northern summer, tomorrow's
+      // Dhuhr under the midnight sun — or its ring would have no place.
       const throughNight = trackDepth || passage === 'night';
-      const window = throughNight
+      const day = trackWindow(at);
+      const window = throughNight || targetAtMs > day.to.getTime()
         ? {
             kind: 'sun' as const,
             from: new Date(Math.min(at.getTime(), targetAtMs - 24 * 3_600_000)),
             to: new Date(Math.max(at.getTime(), targetAtMs)),
           }
-        : trackWindow(at);
+        : day;
       return trackFrame({
         ...window,
         now: at,

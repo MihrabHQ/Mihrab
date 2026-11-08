@@ -417,6 +417,16 @@ describe('the night along the floor', () => {
   });
 });
 
+describe('the midnight sun between Isha and Fajr', () => {
+  // The sky's hour is the night's, so the sky draws no sun; the chart
+  // still has one, up, and must draw it or have no mark for now.
+  it('is drawn in its own light when the sky draws none', () => {
+    const chart = read('src/screens/home/HeroTrack.tsx');
+    expect(chart).toMatch(/\{!running && at && !at\.under && track\.kind === 'sun' \? \(/);
+    expect(chart).toMatch(/fill=\{tintedBy\(SUN_SURFACE, at\.altitude\)\}/);
+  });
+});
+
 describe("the sheet's foot", () => {
   it('holds the place, the source (label over provider, small) and the Qibla on one row', () => {
     const sheet = read('src/screens/home/TodayTimesSheet.tsx');
