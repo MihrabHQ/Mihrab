@@ -1,0 +1,4 @@
+• Android: nästa bön på en Garmin-klocka via Gadgetbridge — urtavla, datafält och widget, installerade från telefonen.
+• Inställningar → Enheter: synk och Garmin-klockan på ett ställe.
+• Synk: en enhet som anmäler sig väntar tills du godkänner den, och parkopplingen blir klar utan att du trycker på Synka igen.
+• Säkerhetsrättningar i synk och lagring, rapporterade av Ahmad Al-Khasawneh. Tack.

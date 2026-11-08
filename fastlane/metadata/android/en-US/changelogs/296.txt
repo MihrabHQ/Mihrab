@@ -1,0 +1,4 @@
+• Android: the next prayer on a Garmin watch through Gadgetbridge — a watch face, a data field and a widget, installed from the phone.
+• Settings → Devices: sync and the Garmin watch in one place.
+• Sync: a device that announces itself waits until you accept it, and pairing finishes without pressing Sync again.
+• Security fixes in sync and storage, reported by Ahmad Al-Khasawneh. Thank you.

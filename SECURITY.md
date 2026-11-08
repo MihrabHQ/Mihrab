@@ -12,6 +12,12 @@ Reported privately in November 2026 and changed in response; recorded here so th
 - **The sync secret key and the peer lists are never stored in plaintext.** If the device's encrypted store (Keychain / Keystore) refuses them, sync is unavailable on that device, and Settings → Sync says so. The Homebrew macOS build, which cannot use the Keychain, therefore has no sync.
 - **Records fall back to an unencrypted file rather than be lost** — journal, fasting, sunnah log, location — in the app's private folder, excluded from iCloud and Android backups, drained as soon as the encrypted store takes a write again. This is a deliberate availability trade for data whose loss is worse than its exposure on an already-compromised device.
 
+## Thanks
+
+People who reported a vulnerability responsibly, and what came of it:
+
+- **Ahmad Al-Khasawneh** ([ahmadkhasawneh92](https://github.com/ahmadkhasawneh92)) — November 2026: sync trusted a device that merely announced itself in the shared folder, and a refused encrypted write fell back to a plaintext copy that Android backups could carry off. Both fixed in 2.37.0 (see "Sync and local storage" above).
+
 ## What must not be committed
 
 Do **not** commit or paste into issues/PRs:
