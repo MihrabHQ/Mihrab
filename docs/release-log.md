@@ -1367,3 +1367,18 @@ Changed the release cycle itself:
   - `scripts/sync-version.js`
 
 **Lesson:** _(unfilled)_
+
+## 2.37.0 (296) — 2026-11-08
+
+Ran clean on the first attempt.
+
+Changed the release cycle itself:
+
+  - `.github/workflows/desktop.yml`
+  - `.github/workflows/ms-store.yml`
+  - `docs/DISTRIBUTION.md`
+  - `scripts/release.sh`
+  - `scripts/release/publish.ts`
+  - `scripts/release/release.ts`
+
+**Lesson:** _(unfilled)_
