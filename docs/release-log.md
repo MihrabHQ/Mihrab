@@ -1366,7 +1366,7 @@ Changed the release cycle itself:
   - `scripts/release/verify.ts`
   - `scripts/sync-version.js`
 
-**Lesson:** _(unfilled)_
+**Lesson:** not written at the time, and the Catalyst log it points to is gone, so what broke is not known. Filled in at 2.37.0 so the journal has no owed lesson but the newest.
 
 ## 2.37.0 (296) — 2026-11-08
 
@@ -1381,4 +1381,4 @@ Changed the release cycle itself:
   - `scripts/release/publish.ts`
   - `scripts/release/release.ts`
 
-**Lesson:** _(unfilled)_
+**Lesson:** the release clone had no `garmin/build/`, so the Android build would have shipped without the watch face that Settings → Devices installs (copyGarminFace copies it only when it exists). The first attempt was stopped during the Android build, the face built with `garmin/build.sh`, and the release restarted. Build the Garmin apps in the release clone before cutting, or have the release tool build them.
