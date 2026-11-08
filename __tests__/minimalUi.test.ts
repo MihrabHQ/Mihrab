@@ -409,7 +409,10 @@ describe('the Track takes the room', () => {
 describe('the night along the floor', () => {
   it('is drawn only while the sun is crossing it', () => {
     const chart = read('src/screens/home/HeroTrack.tsx');
-    expect(chart).toMatch(/const night = depth && track\.deep != null \? track\.night : null;/);
+    expect(chart).toMatch(/const night = track\.deep != null \? track\.night : null;/);
+    // The faint night along the floor only with the depth: without it the
+    // floor is the horizon, and only the stretch still to go is drawn on it.
+    expect(chart).toMatch(/const floorLine = night && depth \?/);
     expect(chart).toMatch(/\{drawn\.floorLine \? \(/);
   });
 });

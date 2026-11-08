@@ -199,8 +199,10 @@ function HeroTrackImpl({
     // the track left the chart to where it comes back, and of it the part
     // still to go — from the body to the next prayer, or to where the body
     // comes back up when the prayer is past that.
-    const night = depth && track.deep != null ? track.night : null;
-    const floorLine = night ? { x1: night.x1 * width, x2: night.x2 * width } : null;
+    // Without the depth the floor is the horizon itself: no faint night
+    // along it (it would be the line twice), only the stretch still to go.
+    const night = track.deep != null ? track.night : null;
+    const floorLine = night && depth ? { x1: night.x1 * width, x2: night.x2 * width } : null;
     let floorStretch: { x1: number; x2: number } | null = null;
     if (night && track.deep != null && track.nextAt != null) {
       floorStretch = { x1: track.deep * width, x2: acrossNight(night, Math.min(track.nextAt, night.at2)) * width };
@@ -280,9 +282,9 @@ function HeroTrackImpl({
         <Line x1={drawn.floorLine.x1} y1={floor} x2={drawn.floorLine.x2} y2={floor} stroke={ink} strokeWidth={1.25} strokeOpacity={0.35} strokeDasharray="1 3" />
       ) : null}
       {!running && drawn.floorStretch ? (
-        <Line x1={drawn.floorStretch.x1} y1={floor} x2={drawn.floorStretch.x2} y2={floor} stroke={ink} strokeWidth={1.25} strokeOpacity={0.75} strokeDasharray="1 3" />
+        <Line x1={drawn.floorStretch.x1} y1={depth ? floor : horizon} x2={drawn.floorStretch.x2} y2={depth ? floor : horizon} stroke={ink} strokeWidth={1.25} strokeOpacity={0.75} strokeDasharray="1 3" />
       ) : null}
-      {depth && track.start ? (
+      {track.start ? (
         // The interval's prayer — Isha through the night — where it was: the
         // other end of what the countdown measures, quieter than the ring.
         <Circle cx={X(track.start)} cy={Y(track.start)} r={RING_R - 1} stroke={ink} strokeWidth={1} strokeOpacity={0.55} fill="none" />
@@ -307,9 +309,21 @@ function HeroTrackImpl({
       {!running && at && at.under ? (
         <Circle cx={X(at)} cy={Y(at)} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
       ) : null}
-      {!running && depth && !at && track.deep != null ? (
-        // Past the floor: standing on it, where it will come up from.
-        <Circle cx={track.deep * width} cy={floor} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
+      {!running && !at && track.deep != null ? (
+        // Past the floor: standing on it (on the line, without the depth),
+        // moving from Isha to Fajr as the hours do.
+        <Circle cx={track.deep * width} cy={depth ? floor : horizon} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
+      ) : null}
+      {!running && track.moon && body.kind === 'moon' ? (
+        // The moon where it is, while it is up: seen, not counted.
+        <MoonDisc
+          cx={track.moon.x * width}
+          cy={roomTop + track.moon.y * room}
+          illuminated={body.illuminated}
+          tilt={body.tilt}
+          lit={body.light}
+          alpha={body.alpha}
+        />
       ) : null}
       {ring ? (
         <Circle cx={X(ring)} cy={Y(ring)} r={RING_R} stroke={ink} strokeWidth={1} strokeOpacity={0.95} fill="none" />

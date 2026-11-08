@@ -199,23 +199,63 @@ describe('trackSpan', () => {
 });
 
 describe('trackWindow', () => {
-  const now = new Date('2026-11-05T22:10:00Z');
-  const night = { maghrib: new Date('2026-11-05T14:54:00Z'), sunrise: new Date('2026-11-06T06:23:00Z') };
-  it('follows the moon through the night', () => {
-    const w = trackWindow('night', now, night);
-    expect(w.kind).toBe('moon');
-    expect(w.from).toBe(night.maghrib);
-    expect(w.to).toBe(night.sunrise);
+  it('follows the sun over the local day', () => {
+    const w = trackWindow(new Date('2026-11-05T22:10:00Z'));
+    expect(w.kind).toBe('sun');
+    expect(w.to.getTime() - w.from.getTime()).toBe(24 * 3600_000);
   });
-  it('follows the sun through the day and the twilights, over the local day', () => {
-    for (const passage of ['dawn', 'day', 'sunset', 'dusk'] as const) {
-      const w = trackWindow(passage, now, night);
-      expect(w.kind).toBe('sun');
-      expect(w.to.getTime() - w.from.getTime()).toBe(24 * 3600_000);
-    }
+});
+
+/**
+ * THE NIGHT FOLLOWS THE SUN. Stockholm, 7–8 November 2026: the moon a
+ * day from new, rising at 06:50, half an hour before the sun. Followed
+ * by the moon, the night drew its daytime path over an empty band, with
+ * no mark for now from Isha until four. The night's window is the 24
+ * hours to the next prayer (TodayCard's), Isha behind and Fajr ahead.
+ */
+describe('a night near the new moon, Stockholm', () => {
+  const STO = { latitude: 59.3293, longitude: 18.0686 };
+  const isha = new Date('2026-11-07T17:48:00+01:00');
+  const fajr = new Date('2026-11-08T05:01:00+01:00');
+  const night = (now: Date) =>
+    trackFrame({
+      kind: 'sun',
+      now,
+      ...STO,
+      from: new Date(fajr.getTime() - 24 * 3600_000),
+      to: fajr,
+      nextAt: fajr,
+      prevAt: isha,
+    });
+  it('marks now along the line, from Isha on the right to Fajr on the left', () => {
+    const late = night(new Date('2026-11-07T22:30:00+01:00'));
+    const early = night(new Date('2026-11-08T02:30:00+01:00'));
+    expect(late.body).toBeNull();
+    expect(late.deep).not.toBeNull();
+    expect(early.deep).not.toBeNull();
+    expect(late.start).not.toBeNull();
+    expect(late.ring).not.toBeNull();
+    const ishaX = late.start!.x;
+    const fajrX = late.ring!.x;
+    expect(ishaX).toBeGreaterThan(fajrX);
+    // Through the night, right to left as the hours go.
+    expect(late.deep!).toBeLessThanOrEqual(ishaX);
+    expect(early.deep!).toBeLessThan(late.deep!);
+    expect(early.deep!).toBeGreaterThanOrEqual(fajrX);
   });
-  it('falls back to the sun when the night has no bounds', () => {
-    expect(trackWindow('night', now, null).kind).toBe('sun');
+  it('draws no moon while the moon is down, and the moon where it is once it is up', () => {
+    expect(night(new Date('2026-11-07T22:30:00+01:00')).moon).toBeNull();
+    const morning = trackFrame({
+      now: new Date('2026-11-08T10:00:00+01:00'),
+      ...STO,
+      ...trackWindow(new Date('2026-11-08T10:00:00+01:00')),
+      nextAt: new Date('2026-11-08T11:37:00+01:00'),
+    });
+    expect(morning.moon).not.toBeNull();
+    expect(morning.moon!.altitude).toBeGreaterThan(0);
+    expect(morning.moon!.x).toBeGreaterThan(0);
+    expect(morning.moon!.x).toBeLessThan(1);
+    expect(morning.moon!.y).toBeLessThan(1);
   });
 });
 

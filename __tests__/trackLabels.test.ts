@@ -50,10 +50,13 @@ function chartAt(place: (typeof PLACES)[keyof typeof PLACES], date: string, hour
   const now = new Date(Date.parse(`${date}T00:00:00Z`) + (hour - place.tz) * 3600_000);
   const night = hour >= 20 || hour < 5;
   const passage = night ? 'night' : 'day';
-  const maghrib = new Date(now.getTime() - 4 * 3600_000);
-  const sunrise = new Date(now.getTime() + 6 * 3600_000);
-  const w = trackWindow(passage, now, { maghrib, sunrise });
-  return trackFrame({ ...w, now, nextAt: new Date(now.getTime() + 3 * 3600_000), latitude: place.latitude, longitude: place.longitude });
+  const nextAt = new Date(now.getTime() + 3 * 3600_000);
+  // As TodayCard: by night the 24 hours to the next prayer, else the local day.
+  const w =
+    passage === 'night'
+      ? { kind: 'sun' as const, from: new Date(nextAt.getTime() - 24 * 3600_000), to: nextAt }
+      : trackWindow(now);
+  return trackFrame({ ...w, now, nextAt, latitude: place.latitude, longitude: place.longitude });
 }
 
 const overlap = (a: PlacedLabel, b: { x: number; y: number; w: number; h: number }) =>
@@ -138,7 +141,7 @@ describe('what the first name says', () => {
     // The ring at noon: the arc's top, where the path's name first goes.
     const place = PLACES.Stockholm;
     const now = new Date('2026-11-05T08:30:00Z');
-    const w = trackWindow('day', now, null);
+    const w = trackWindow(now);
     const t = trackFrame({ ...w, now, nextAt: new Date('2026-11-05T10:38:00Z'), latitude: place.latitude, longitude: place.longitude });
     const placed = placeTrackLabels(t, g, { ...TEXTS.en, prayer: 'Dhuhr' });
     expect(placed.map(l => l.key).sort()).toEqual(['horizon', 'path', 'prayer']);

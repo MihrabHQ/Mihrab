@@ -10,12 +10,15 @@
  * and takes the band. It draws, and nothing else:
  *
  *   the horizon      a hairline at the band's foot — altitude 0°
- *   the track        today's path of the sun (by night: tonight's path
- *                    of the moon), altitude over azimuth, TO SCALE, from
- *                    the reader's own coordinates
- *   the body         the sun or the moon where it is on that track —
- *                    clipped by the horizon when it is going under, an
- *                    outline ON the line when it is under
+ *   the track        the sun's path, altitude over azimuth, TO SCALE,
+ *                    from the reader's own coordinates — by night too
+ *   the body         the sun where it is on that track — clipped by the
+ *                    horizon when it is going under, an outline ON the
+ *                    line when it is under, and by night, past the
+ *                    chart's floor, an outline on the line moving from
+ *                    Isha to Fajr by the clock
+ *   the moon         where it is, in its phase, only while it is up
+ *                    (`moon`); a landmark, not the timekeeper
  *   the ring         where the body will be at the next prayer: Dhuhr is
  *                    the top of the arc, Maghrib where the track meets
  *                    the horizon; Fajr, Isha and sunrise are under, so a
@@ -120,6 +123,13 @@ export type TrackFrame = {
   /** The frame's moment and the next prayer's, ms: the drawing measures the stretch across the floor by them. */
   nowAt: number;
   nextAt: number | null;
+  /**
+   * On the sun's chart, the moon where it is while it is above the
+   * horizon, or null. Every prayer on the chart is the sun's — Fajr and
+   * Isha are its depth, Maghrib its setting — so the night follows the
+   * sun, and the moon is drawn as what is seen, not what is counted.
+   */
+  moon: { x: number; y: number; altitude: number } | null;
 };
 
 /**
@@ -429,23 +439,34 @@ export function trackFrame(input: TrackInput): TrackFrame {
   const start = input.prevAt ? placeAt(input.prevAt.getTime()) : null;
   const night = body == null && onPass(nowMs) ? nightAt(nowMs) : null;
   const deep = body == null && onPass(nowMs) ? (night ? acrossNight(night, nowMs) : across({ at: nowMs, azimuth: hereAz })) : null;
-  return { kind, base, points, body, ring, peak, top, circumpolar, byHour, deep, night, start, nowAt: nowMs, nextAt: nextMs };
+  let moon: TrackFrame['moon'] = null;
+  if (kind === 'sun') {
+    const m = moonPosition(now, latitude, longitude);
+    if (m.altitude > 0) {
+      const az = face(m.azimuth);
+      // By the hour the chart's across is the sun's clock, which says
+      // nothing of the moon: east to west by its azimuth instead.
+      const x = byHour ? clamp01((az - 90) / 180) : across({ at: nowMs, azimuth: az });
+      moon = { x, y: 1 - clamp01(m.altitude / top), altitude: m.altitude };
+    }
+  }
+  return { kind, base, points, body, ring, peak, top, circumpolar, byHour, deep, night, start, nowAt: nowMs, nextAt: nextMs, moon };
 }
 
 /**
- * Which body the band follows: the sun by day and through the
- * twilights, the moon through the night — the body that is actually the
- * hour's. The sun's window is the local day; the moon's the night, from
- * the evening's Maghrib to the morning's sunrise.
+ * The window the band is drawn over by day: the sun over the local day.
+ *
+ * IT USED TO FOLLOW THE MOON BY NIGHT, from Maghrib to sunrise. On a
+ * night near the new moon there is no moon in the night at all — in
+ * Stockholm on 7 November 2026 it rose at 06:50, half an hour before the
+ * sun — and the chart drew its daytime path over an empty band, with no
+ * mark for now from Isha until four, and the ring at Fajr wherever the
+ * MOON would be then, which moves from night to night with the phase. The
+ * night's prayers are the sun's depth, so the night follows the sun (the
+ * caller's window to the next prayer, as Minimal's does) and the moon is
+ * drawn where it is while it is up (`TrackFrame.moon`).
  */
-export function trackWindow(
-  passage: 'night' | 'dawn' | 'day' | 'sunset' | 'dusk',
-  now: Date,
-  night: { maghrib: Date; sunrise: Date } | null,
-): { kind: TrackKind; from: Date; to: Date } {
-  if (passage === 'night' && night && night.sunrise.getTime() > night.maghrib.getTime()) {
-    return { kind: 'moon', from: night.maghrib, to: night.sunrise };
-  }
+export function trackWindow(now: Date): { kind: TrackKind; from: Date; to: Date } {
   const from = new Date(now);
   from.setHours(0, 0, 0, 0);
   const to = new Date(from);

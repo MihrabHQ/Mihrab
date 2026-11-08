@@ -907,17 +907,6 @@ const HeroToday = memo(function HeroToday({
   const trackAt = useCallback(
     (at: Date, passage: SkyFrame['passage']) => {
       if (heroLook !== 'track' || typeof latitude !== 'number' || typeof longitude !== 'number') return null;
-      const map = skyToday ?? today;
-      let night: { maghrib: Date; sunrise: Date } | null = null;
-      if (map.Maghrib && map.Sunrise) {
-        // The night around `at`: the Maghrib behind it, the sunrise ahead —
-        // on the clock the sky reads the day by (skyMoment), not the rows'.
-        let maghrib = combineLocalDateAndTime(at, map.Maghrib);
-        if (maghrib.getTime() > at.getTime()) maghrib = addDays(maghrib, -1);
-        let sunrise = combineLocalDateAndTime(at, map.Sunrise);
-        if (sunrise.getTime() < at.getTime()) sunrise = addDays(sunrise, 1);
-        night = { maghrib, sunrise };
-      }
       // Under the line the sun is followed through the night, so the window
       // is the 24 hours that END at the next prayer, not the calendar's
       // day: it holds now and the next prayer at once — at 18:00 the
@@ -926,13 +915,15 @@ const HeroToday = memo(function HeroToday({
       // Across is by azimuth, so whichever 24 hours they are, the loop is
       // the day's one loop; where it closes, a day apart, the two ends are
       // a fraction of a degree out, and that seam is under the ring.
-      const window = trackDepth
+      // By night, in either layout, the same: the sun through the night.
+      const throughNight = trackDepth || passage === 'night';
+      const window = throughNight
         ? {
             kind: 'sun' as const,
             from: new Date(Math.min(at.getTime(), targetAtMs - 24 * 3_600_000)),
             to: new Date(Math.max(at.getTime(), targetAtMs)),
           }
-        : trackWindow(passage, at, night);
+        : trackWindow(at);
       return trackFrame({
         ...window,
         now: at,
@@ -941,10 +932,10 @@ const HeroToday = memo(function HeroToday({
         nextAt: new Date(targetAtMs),
         // Under the line, the interval's other end too: Isha's place on the
         // right while the night runs to Fajr on the left.
-        prevAt: trackDepth && trackPrevAtMs != null ? new Date(trackPrevAtMs) : null,
+        prevAt: throughNight && trackPrevAtMs != null ? new Date(trackPrevAtMs) : null,
       });
     },
-    [heroLook, latitude, longitude, skyToday, today, targetAtMs, trackDepth, trackPrevAtMs],
+    [heroLook, latitude, longitude, targetAtMs, trackDepth, trackPrevAtMs],
   );
   const skyRunRef = useRef<SkyRun | null>(null);
   if (launchRun && warp && !skyRunRef.current) {
