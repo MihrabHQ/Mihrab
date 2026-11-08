@@ -39,7 +39,6 @@ type GarminWatchNative = {
   pairedDevices(): Promise<PairedDevice[] | null>;
   setFahrenheit?(fahrenheit: boolean): Promise<void>;
   setAccent?(hex: string): Promise<void>;
-  setFaceOptions?(bits: number): Promise<void>;
   installFace?(): Promise<GarminInstallResult>;
 };
 
@@ -85,19 +84,6 @@ export async function setGarminAccent(hex: string): Promise<void> {
   if (!native?.setAccent) return;
   try {
     await native.setAccent(hex);
-  } catch {
-    /* best-effort */
-  }
-}
-
-/**
- * The watch face's options (`garminFaceBits`). Kept natively, and sent at
- * once when they change.
- */
-export async function setGarminFaceOptions(bits: number): Promise<void> {
-  if (!native?.setFaceOptions) return;
-  try {
-    await native.setFaceOptions(bits);
   } catch {
     /* best-effort */
   }

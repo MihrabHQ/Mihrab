@@ -1,15 +1,13 @@
 // hover-ok: settings rows; the touch feedback is the affordance.
-import { Fragment, memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { usePrayerSettings } from '../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import {
   normalizeWatchAddress,
-  type GarminFaceOptions,
   type GarminWatchSettings,
 } from '../../settings/garminWatch';
-import { SegmentedControl } from '../../components/ui';
 import {
   configureGarminWatch,
   garminWatchAvailable,
@@ -132,9 +130,9 @@ function GarminWatchCardImpl() {
     void sendToGarminWatch().then(setOutcome);
   }, []);
 
-  // Install or reinstall: the times and the face's options again, whatever
-  // was sent before, so the face redraws with them; then Gadgetbridge's
-  // installer on the face this build carries — installed after a yes there.
+  // Install or reinstall: the times again, whatever was sent before; then
+  // Gadgetbridge's installer on the face this build carries — installed
+  // after a yes there.
   const onInstall = useCallback(() => {
     setRefreshed(null);
     void sendToGarminWatch().then(async sent => {
@@ -143,21 +141,11 @@ function GarminWatchCardImpl() {
     });
   }, []);
 
-  // The face's options: kept with the rest; useSyncGarminAccent hands
-  // them to the watch.
-  const setFace = useCallback(
-    (patch: Partial<GarminFaceOptions>) =>
-      updateSettings({ garminWatch: { ...watch, face: { ...watch.face, ...patch } } }),
-    [updateSettings, watch],
-  );
-
   if (Platform.OS !== 'android' || !garminWatchAvailable) return null;
 
   const addressOk = normalizeWatchAddress(draft) != null;
 
-  const face = watch.face;
   return (
-    <Fragment>
     <SettingsGroup
       title={t('settings.garminTitle')}
       footer={t('settings.garminFooter')}>
@@ -287,80 +275,6 @@ function GarminWatchCardImpl() {
         </SettingsBlock>
       ) : null}
     </SettingsGroup>
-    {watch.enabled ? (
-      <SettingsGroup
-        title={t('settings.garminFaceTitle')}
-        footer={t('settings.garminFaceFooter')}>
-        <SettingsToggleRow
-          title={t('settings.garminFaceSeconds')}
-          help={t('settings.garminFaceSecondsHelp')}
-          value={face.seconds}
-          onValueChange={v => setFace({ seconds: v })}
-          testID="settings-garmin-face-seconds"
-        />
-        <SettingsToggleRow
-          title={t('settings.garminFaceWeather')}
-          value={face.weather}
-          onValueChange={v => setFace({ weather: v })}
-          testID="settings-garmin-face-weather"
-        />
-        <SettingsToggleRow
-          title={t('settings.garminFaceRing')}
-          help={t('settings.garminFaceRingHelp')}
-          value={face.ring}
-          onValueChange={v => setFace({ ring: v })}
-          testID="settings-garmin-face-ring"
-        />
-        <SettingsBlock>
-          <Text style={[s.label, { color: palette.muted }]}>
-            {t('settings.garminFaceCountdown')}
-          </Text>
-          <SegmentedControl<GarminFaceOptions['countdown']>
-            accessibilityLabel={t('settings.garminFaceCountdown')}
-            testID="settings-garmin-face-countdown"
-            segments={[
-              { key: 'full', label: t('settings.garminFaceCountdownFull') },
-              { key: 'short', label: t('settings.garminFaceCountdownShort') },
-            ]}
-            value={face.countdown}
-            onChange={countdown => setFace({ countdown })}
-          />
-        </SettingsBlock>
-        <SettingsBlock>
-          <Text style={[s.label, { color: palette.muted }]}>
-            {t('settings.garminFaceBattery')}
-          </Text>
-          <SegmentedControl<GarminFaceOptions['battery']>
-            accessibilityLabel={t('settings.garminFaceBattery')}
-            testID="settings-garmin-face-battery"
-            segments={[
-              { key: 'charge', label: t('settings.garminFaceBatteryCharge') },
-              { key: 'accent', label: t('settings.garminFaceBatteryAccent') },
-              { key: 'off', label: t('settings.garminFaceOff') },
-            ]}
-            value={face.battery}
-            onChange={battery => setFace({ battery })}
-          />
-        </SettingsBlock>
-        <SettingsBlock>
-          <Text style={[s.label, { color: palette.muted }]}>
-            {t('settings.garminFaceRow')}
-          </Text>
-          <SegmentedControl<GarminFaceOptions['row']>
-            accessibilityLabel={t('settings.garminFaceRow')}
-            testID="settings-garmin-face-row"
-            segments={[
-              { key: 'steps', label: t('settings.garminFaceRowSteps') },
-              { key: 'heartRate', label: t('settings.garminFaceRowHeart') },
-              { key: 'off', label: t('settings.garminFaceRowNone') },
-            ]}
-            value={face.row}
-            onChange={row => setFace({ row })}
-          />
-        </SettingsBlock>
-      </SettingsGroup>
-    ) : null}
-    </Fragment>
   );
 }
 

@@ -7,11 +7,6 @@
 //   { "v": 2, "t": [ fajr, sunrise, dhuhr, asr, maghrib, isha, fajr, ... ],
 //     "h12": 0, "f": 0, "a": 0x00AA55 }
 //
-// `a` is the app's accent, 0xRRGGBB, and in its top byte the face's
-// options (Settings → Devices → Garmin watch → Watch face): carried in a
-// number already sent rather than a key of their own, since every key
-// costs bytes the limit below does not have. See `face()`.
-//
 // `t` is epoch seconds (UTC), six per day — the five prayers and sunrise,
 // as the app's own schedule lists them — today first and then the days
 // after it: three days as the phone sends it, but any multiple of six is
@@ -47,7 +42,6 @@ module MihrabStore {
     const KEY_HOUR12 = "h12";
     const KEY_FAHRENHEIT = "f";
     const KEY_ACCENT = "a";
-    const KEY_FACE = "o";
 
     // Takes the phone's message (the data of a PhoneAppMessage) and keeps
     // it. Returns whether it was a message this version reads.
@@ -78,20 +72,16 @@ module MihrabStore {
         // the place it is set to; absent from an older app's message.
         Storage.setValue(KEY_HOUR12, flag(data.get("h12") as Object?));
         Storage.setValue(KEY_FAHRENHEIT, flag(data.get("f") as Object?));
-        // The app's accent, 0xRRGGBB on the watch's palette, and above
-        // it the face's options (0, all as they were, from an older app).
+        // The app's accent, 0xRRGGBB on the watch's palette.
         var accent = whole(data.get("a") as Object?);
-        if (accent != null) {
-            Storage.setValue(KEY_ACCENT, accent & 0xFFFFFF);
-            Storage.setValue(KEY_FACE, (accent >> 24) & 0xFF);
+        if (accent != null && accent >= 0 && accent <= 0xFFFFFF) {
+            Storage.setValue(KEY_ACCENT, accent);
         }
         return true;
     }
 
     // A whole number as the message carries it — Gadgetbridge may hand a
-    // JSON number over as a Long, or a Double — or null. A Long keeps its low 32 bits,
-    // so a negative number from the phone (the options' top bit) reads the
-    // same either way.
+    // JSON number over as a Long, or a Double — or null.
     function whole(v as Object?) as Number? {
         if (v instanceof Number) {
             return v;
@@ -234,34 +224,6 @@ module Mihrab {
     function accent() as Number {
         var a = Storage.getValue(MihrabStore.KEY_ACCENT);
         return a instanceof Number ? a : 0x00AA55;
-    }
-
-    // The face's options as the phone sent them, 0 for all as they come:
-    // FACE_NO_SECONDS, FACE_NO_WEATHER, FACE_NO_RING and FACE_SHORT as
-    // bits, the battery bar (BATTERY_*) and the row above the clock
-    // (ROW_*) as two bits each.
-    const FACE_NO_SECONDS = 1;
-    const FACE_NO_WEATHER = 2;
-    const FACE_NO_RING = 4;
-    const FACE_SHORT = 8;
-    const BATTERY_CHARGE = 0;
-    const BATTERY_ACCENT = 1;
-    const BATTERY_OFF = 2;
-    const ROW_STEPS = 0;
-    const ROW_HEART = 1;
-    const ROW_NONE = 2;
-
-    function face() as Number {
-        var o = Storage.getValue(MihrabStore.KEY_FACE);
-        return o instanceof Number ? o : 0;
-    }
-
-    function faceBattery(o as Number) as Number {
-        return (o >> 4) & 3;
-    }
-
-    function faceRow(o as Number) as Number {
-        return (o >> 6) & 3;
     }
 
     // The countdown in full, "05:49:12", hours, minutes and seconds.

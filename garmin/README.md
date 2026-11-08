@@ -72,12 +72,7 @@ Connect IQ store — the apps are side-loaded through Gadgetbridge.
    times in; and whether the app's place reads Fahrenheit (`f`, worked
    out on the phone from the coordinates, `src/utils/temperatureUnit.ts`),
    for the face's weather; and the app's accent (`a`), which the face
-   wears, with the face's options from Settings → Devices → Garmin watch →
-   Watch face in its top byte (seconds, weather, the ring, the countdown's
-   style, the bar under the clock, and steps, heart rate or nothing above
-   it; `garminFaceBits` in `src/settings/garminWatch.ts`, `face()` in
-   `shared/source/Mihrab.mc`) — a key of their own would cost bytes the
-   limit does not have. Once for each of the three apps.
+   wears. Once for each of the three apps.
    `android/.../GarminWatch.kt`.
 2. Gadgetbridge (2026.11 or later) encodes it the Garmin way, encrypts it
    and delivers it to the app on the watch over the Connect IQ channel.
@@ -97,8 +92,8 @@ message is not repeated within six hours.
 An Android build made on a machine where `garmin/build.sh` has run carries
 the watch face (`android/app/build.gradle`, `copyGarminFace`: whatever
 `garmin/build/mihrab-face.prg` is at build time). Settings → Devices →
-Garmin watch → **Install or reinstall watch face** (beside Find the watch) sends the times and the
-face's settings again, then hands that face to Gadgetbridge's installer
+Garmin watch → **Install or reinstall watch face** (beside Find the watch) sends the times
+again, then hands that face to Gadgetbridge's installer
 (`GarminWatch.installFace`), which asks before installing. A build without
 it — F-Droid's, CI's — does not show the button. Build the face before the APK.
 

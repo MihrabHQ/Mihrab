@@ -56,33 +56,15 @@ module MihrabTests {
         m.put("a", 0xFFAA00);
         MihrabStore.store(m);
         Test.assertEqual(0xFFAA00, Mihrab.accent());
-        Test.assertEqual(0, Mihrab.face());
-        // The face's options ride above the accent, the top bit too.
-        m.put("a", (0x9D << 24) | 0x55AAFF);
-        MihrabStore.store(m);
-        Test.assertEqual(0x55AAFF, Mihrab.accent());
-        var o = Mihrab.face();
-        Test.assertEqual(0x9D, o);
-        Test.assert((o & Mihrab.FACE_NO_SECONDS) != 0);
-        Test.assert((o & Mihrab.FACE_NO_WEATHER) == 0);
-        Test.assert((o & Mihrab.FACE_NO_RING) != 0);
-        Test.assert((o & Mihrab.FACE_SHORT) != 0);
-        Test.assertEqual(Mihrab.BATTERY_ACCENT, Mihrab.faceBattery(o));
-        Test.assertEqual(Mihrab.ROW_NONE, Mihrab.faceRow(o));
-        // As Gadgetbridge may deliver it: a Long, the flags too.
-        m.put("a", 0x1055AAFFl);
+        // As Gadgetbridge may deliver it: a Long or a Double, the flags too.
+        m.put("a", 0x55AAFFl);
         m.put("h12", 1l);
         MihrabStore.store(m);
         Test.assertEqual(0x55AAFF, Mihrab.accent());
-        Test.assertEqual(0x10, Mihrab.face());
         Test.assert(Mihrab.hour12());
-        m.put("a", 0x9D55AAFFl);
+        m.put("a", 16755200.0d);
         MihrabStore.store(m);
-        Test.assertEqual(0x9D, Mihrab.face());
-        m.put("a", -1655330049.0d);
-        MihrabStore.store(m);
-        Test.assertEqual(0x9D, Mihrab.face());
-        Test.assertEqual(0x55AAFF, Mihrab.accent());
+        Test.assertEqual(0xFFAA00, Mihrab.accent());
         var t = Mihrab.hms(5 * 3600 + 49 * 60 + 12);
         Test.assertEqual("05", t[0]);
         Test.assertEqual("49", t[1]);

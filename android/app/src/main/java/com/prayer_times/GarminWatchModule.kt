@@ -44,17 +44,6 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  /** The face's options (garminFaceBits): kept, and sent when they change. */
-  @ReactMethod
-  fun setFaceOptions(bits: Double, promise: Promise) {
-    try {
-      GarminWatch.setFaceOptions(reactContext, bits.toInt())
-      promise.resolve(null)
-    } catch (e: Exception) {
-      promise.reject("E_GARMIN", e.message, e)
-    }
-  }
-
   /**
    * Opens Gadgetbridge's installer on the watch face this build carries;
    * resolves to "opened", "no-face", "no-gadgetbridge" or "failed". From
