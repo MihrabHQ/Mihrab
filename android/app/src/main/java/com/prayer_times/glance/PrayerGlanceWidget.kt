@@ -523,7 +523,12 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     // it goes.
     val compact = m.practice != null && d.showTable && entry == Entry.TALL && !graphFits(h) && compactGraphFits(h)
     val practice = m.practice?.takeIf { graphFits(h) || compact }
-    val slack = if (h <= 0 || practice != null) 0
+    // With nothing under the times — no graph, and the next prayer on top —
+    // the times sit in the middle of the room under the header: equal
+    // weighted spacers above and below them take the spare height.
+    // (`topNext` without a graph.)
+    val centreTimes = practice == null && h > 0 && d.showTable && !timesOnly && (compact || entry == Entry.STRIP)
+    val slack = if (h <= 0 || practice != null || centreTimes) 0
     else ((h - budget) / 2).coerceIn(0, STRIP_SLACK_CAP_DP)
     val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP && !compact
     val columns = m.rows.take(STRIP_COLUMNS)
@@ -536,13 +541,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     // and give its line below the times (and the rule over it) to the room.
     val topNext = d.showTable && !timesOnly && (compact || entry == Entry.STRIP)
 
-    // With nothing under the times — no graph, and the next prayer on top —
-    // the card's spare height goes above and below the whole, not all under
-    // the times.
-    DirColumn(
-      modifier = GlanceModifier.fillMaxSize(),
-      verticalAlignment = if (practice == null && topNext) Alignment.CenterVertically else Alignment.Top,
-    ) {
+    DirColumn(modifier = GlanceModifier.fillMaxSize()) {
       if (!oneRow || topNext) Header(m.header, m.hijri, d, center = if (!topNext) null else ({
         DirRow(verticalAlignment = Alignment.CenterVertically, modifier = GlanceModifier.padding(horizontal = 6.dp)) {
           val named = size.widthDp - insetDp(context, size) >= COMPACT_NAMED_MIN_WIDTH_DP
@@ -551,9 +550,10 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           else if (!named && m.nextName.isNotEmpty()) cell { Label(m.nextName, 11f, d.text) }
         }
       }))
+      if (centreTimes) Spacer(GlanceModifier.defaultWeight())
       if (d.showTable) {
         DirRow(
-          modifier = GlanceModifier.fillMaxWidth().padding(top = (if (timesOnly) 0 else if (oneRow) 4 else 8 + slack).dp, bottom = slack.dp),
+          modifier = GlanceModifier.fillMaxWidth().padding(top = (if (timesOnly || centreTimes) 0 else if (oneRow) 4 else 8 + slack).dp, bottom = slack.dp),
           verticalAlignment = Alignment.CenterVertically,
         ) {
           for (r in columns) cell {
@@ -599,6 +599,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           DirColumn(modifier = GlanceModifier.fillMaxWidth()) { NextBlock(context, m, size, top = 0, nameSp = nameSp) }
         }
       }
+      if (centreTimes) Spacer(GlanceModifier.defaultWeight())
       // The next-prayer line is in the header when `topNext`.
       if (!tight && !topNext) Rule(d.rule, top = 6, bottom = 8)
       if ((!timesOnly || !d.showTable) && !topNext) DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
