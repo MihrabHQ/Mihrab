@@ -834,10 +834,10 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
      * The compact tall card's chrome: the tall card's less the next-prayer
      * line (15dp, moved into the header) and the rule over it (15dp), on
      * the short strip's 6dp ends (16dp less) and a rule over the graph of
-     * 4dp a side (8dp less) — measured on Nova (Pixel 10 Pro), reckoned a
-     * little over as STRIP_TALL_CHROME_DP is.
+     * 4dp a side (8dp less). Measured on Nova at a row and a half (Pixel 10
+     * Pro): a 190dp card, an 84dp graph — 106dp of chrome, reckoned 2 over.
      */
-    private const val STRIP_COMPACT_CHROME_DP = 115
+    private const val STRIP_COMPACT_CHROME_DP = 108
 
     /**
      * The compact card's header names the next prayer ("Asr in 07:56") from

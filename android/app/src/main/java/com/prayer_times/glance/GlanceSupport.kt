@@ -623,12 +623,14 @@ internal data class CardSize(val widthDp: Int, val heightDp: Int)
  *
  * The band is the tall cards' default size on every launcher we have
  * measured: two rows are 201dp on the Pixel launcher and 259dp on Nova
- * (Pixel 10 Pro, `dumpsys activity com.teslacoilsw.launcher`). The steps
- * are what the graph may come out short of its room by, before the room
- * is spread between its rows (`SpreadGrid`).
+ * (Pixel 10 Pro, `dumpsys activity com.teslacoilsw.launcher`), and Nova's
+ * row and a half is 190dp — the steps land on 190 and 254 so the two
+ * sizes people place most get a graph drawn for their own height. The
+ * steps are what the graph may come out short of its room by, before the
+ * room is spread between its rows (`SpreadGrid`).
  */
 internal val STRETCHABLE_SIZES: Set<DpSize> = buildSet {
-  for (h in listOf(66, 92, 112, 134, 176, 192, 208, 224, 240, 256, GRAPH_BAND_TOP_DP, GRAPH_SPREAD_MAX_DP)) add(DpSize(370.dp, h.dp))
+  for (h in listOf(66, 92, 112, 134, 176, 190, 206, 222, 238, 254, GRAPH_BAND_TOP_DP, GRAPH_SPREAD_MAX_DP)) add(DpSize(370.dp, h.dp))
   for (h in listOf(66, 112, 176, 240)) add(DpSize(280.dp, h.dp))
 }
 
@@ -641,7 +643,7 @@ internal val STRETCHABLE_SIZES: Set<DpSize> = buildSet {
  * card that grew its graph with its height would only invite being made
  * larger than it is meant to be.
  */
-internal const val GRAPH_BAND_TOP_DP = 272
+internal const val GRAPH_BAND_TOP_DP = 270
 
 /** The first size above the band: from here on the graph is the band's and sits in its room unspread. */
 internal const val GRAPH_SPREAD_MAX_DP = 300
@@ -659,9 +661,11 @@ internal const val GRAPH_SPREAD_MAX_DP = 300
  * few percent narrower than their neighbours and the days stopped lining
  * up. 0.92 left room for a card 9% wider than its size map's width; Nova
  * at a row and a half on a Pixel 10 Pro is 11% wider (410dp against 370),
- * so the rows went height-bound there. 0.8 covers a card a quarter wider.
+ * so the rows went height-bound there. 0.85 covers a card 17% wider —
+ * the widest four-cell card on a phone — and leaves the days as large as
+ * that allows: 0.8 spent the difference as gaps between the rows.
  */
-internal const val SPREAD_FILL = 0.8f
+internal const val SPREAD_FILL = 0.85f
 
 @Composable
 internal fun cardSize(): CardSize {

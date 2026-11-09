@@ -225,11 +225,13 @@ describe('two rows always hold the tall cards’ graph', () => {
     );
     // Compact keeps the date and the times, and moves the next prayer up
     // into the header, centred, to give its line and rule to the graph.
-    expect(constOf(strip, 'STRIP_TALL_CHROME_DP') - constOf(strip, 'STRIP_COMPACT_CHROME_DP')).toBeLessThanOrEqual(54);
+    expect(constOf(strip, 'STRIP_TALL_CHROME_DP') - constOf(strip, 'STRIP_COMPACT_CHROME_DP')).toBeLessThanOrEqual(60);
     expect(strip).toContain('if (!oneRow) Header(m.header, m.hijri, d, center = if (!compact || !d.showTable) null');
     expect(strip).toContain('&& !(compact && d.showTable)) DirRow(');
-    // A row and a half on Nova (about 194dp) has the graph.
-    expect(194 - constOf(strip, 'STRIP_COMPACT_CHROME_DP')).toBeGreaterThanOrEqual(constOf(strip, 'GRID_MIN_BOX_DP'));
+    // A row and a half on Nova (190dp) has the graph, and the chrome is
+    // its measure (106dp), a little over.
+    expect(constOf(strip, 'STRIP_COMPACT_CHROME_DP')).toBeGreaterThanOrEqual(106);
+    expect(190 - constOf(strip, 'STRIP_COMPACT_CHROME_DP')).toBeGreaterThanOrEqual(constOf(strip, 'GRID_MIN_BOX_DP'));
   });
 
   it('and so does the compact log card, without its footer', () => {
