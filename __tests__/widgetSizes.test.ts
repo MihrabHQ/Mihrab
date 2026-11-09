@@ -68,6 +68,26 @@ describe('one composition per size the launcher can show', () => {
     expect(base).toMatch(/override val sizeMode: SizeMode = SizeMode\.Exact/);
   });
 
+  /**
+   * A launcher that stretches the cards against their resizeMode (Nova)
+   * and keeps reporting the size they were placed at: the strip, the tall
+   * card and the log hand the host a size map instead, and the host view
+   * picks by its own measured size.
+   */
+  it('draws the stretchable cards for every height they may be stretched to', () => {
+    const support = glance('GlanceSupport');
+    const sizes = support.match(/for \(w in listOf\(([\d, ]+)\)\) for \(h in listOf\(([\d, ]+)\)\)/);
+    expect(sizes).not.toBeNull();
+    const count = sizes![1].split(',').length * sizes![2].split(',').length;
+    // RemoteViews takes at most sixteen sizes in a map.
+    expect(count).toBeLessThanOrEqual(16);
+    expect(glance('PrayerGlanceWidget')).toMatch(/if \(entry == Entry\.SMALL\) SizeMode\.Exact else SizeMode\.Responsive\(STRETCHABLE_SIZES\)/);
+    expect(glance('LogGlanceWidget')).toMatch(/override val sizeMode: SizeMode = SizeMode\.Responsive\(STRETCHABLE_SIZES\)/);
+    // The graph by the room, not the entry.
+    expect(glance('PrayerGlanceWidget')).toMatch(/val practice = m\.practice\?\.takeIf \{ graphFits\(h\) \}/);
+    expect(glance('PrayerGlanceWidget')).not.toMatch(/entry == Entry\.TALL/);
+  });
+
   it.each(widgets)('%s draws through it', name => {
     expect(glance(name)).toMatch(/: MihrabGlanceWidget\("[a-z]+"\)/);
   });

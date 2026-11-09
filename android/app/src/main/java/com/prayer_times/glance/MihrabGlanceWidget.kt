@@ -31,6 +31,7 @@ import com.prayer_times.WidgetErrorCard
 internal abstract class MihrabGlanceWidget(private val what: String) :
   GlanceAppWidget(errorUiLayout = R.layout.glance_error_card) {
 
+  /** Exact, unless a card is drawn for whatever its host stretches it to (STRETCHABLE_SIZES). */
   override val sizeMode: SizeMode = SizeMode.Exact
 
   override suspend fun provideGlance(context: Context, id: GlanceId) {

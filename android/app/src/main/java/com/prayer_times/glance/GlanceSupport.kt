@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceModifier
@@ -598,6 +599,30 @@ internal fun textWidthDp(context: Context, text: String, sp: Float, medium: Bool
 
 /** The card's size as the launcher hands it, in whole dp; 0 when unmeasured. */
 internal data class CardSize(val widthDp: Int, val heightDp: Int)
+
+/**
+ * THE SIZES A STRETCHED CARD MAY BE, for `SizeMode.Responsive`.
+ *
+ * The cards are fixed heights (the manifest's resizeMode is horizontal),
+ * and a launcher that keeps to that hands `SizeMode.Exact` the one size
+ * the card is. Nova does not: it lets a card be stretched to any height
+ * and goes on reporting the size it was placed at, so every layout was
+ * built for a card it was not — the graph drawn for a 44dp box filled a
+ * 500dp card as a strip of dots, and a stretched 4×1 log left its lower
+ * half empty. With these, the layouts go to the host as a size map and
+ * the host view picks the one that fits by its OWN measured size
+ * (AppWidgetHostView re-picks on every layout), whatever the launcher
+ * reports.
+ *
+ * Sixteen is RemoteViews' ceiling for a size map. Two widths — a five-
+ * and a four-column home screen's four cells — and the heights where the
+ * layouts change: the strip's 66/92/112/134/160 steps, then the graph's
+ * rooms. Above the tallest, the tallest is drawn and the graph takes the
+ * rest of the height (it is the card's weighted row).
+ */
+internal val STRETCHABLE_SIZES: Set<DpSize> = buildSet {
+  for (w in listOf(280, 370)) for (h in listOf(66, 92, 112, 134, 160, 211, 300, 420)) add(DpSize(w.dp, h.dp))
+}
 
 @Composable
 internal fun cardSize(): CardSize {

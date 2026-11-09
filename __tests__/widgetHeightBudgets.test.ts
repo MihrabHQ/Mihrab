@@ -137,7 +137,7 @@ describe('the graph is drawn for the room the card leaves it', () => {
   it('the log card chooses its chrome by its padding, and gates on the box', () => {
     expect(log).toContain('val chrome = if (tight) LOG_CHROME_TIGHT_DP else LOG_CHROME_ROOMY_DP');
     expect(log).toContain('val graphBox = h - chrome');
-    expect(log).toContain('val graphHeight = tall && graphBox >= GRID_MIN_BOX_DP');
+    expect(log).toContain('val graphHeight = h > 0 && graphBox >= GRID_MIN_BOX_DP');
     // Roomy pays 8dp of padding, 8dp of chip and a 15dp rule the tight
     // card does without.
     expect(constOf(log, 'LOG_CHROME_ROOMY_DP') - constOf(log, 'LOG_CHROME_TIGHT_DP')).toBe(31);

@@ -3,6 +3,7 @@ package com.prayer_times.glance
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import androidx.glance.appwidget.SizeMode
 import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
@@ -51,13 +52,15 @@ import com.prayer_times.contract.WidgetContract
  */
 internal class LogGlanceWidget(
   /**
-   * The 4×2 (PrayerWidgetLogLargeProvider) draws the practice graph under
-   * today's row; the 4×1 never does. The widgets keep the height they are
-   * placed at (they stretch sideways only, #115), so which card has the
-   * graph is the entry's to say, not the height's.
+   * The 4×2 (PrayerWidgetLogLargeProvider), placed with room for the
+   * practice graph under today's row; the 4×1 without. The graph follows
+   * the room, not the entry: a launcher that stretches the cards (Nova)
+   * gives a 4×1 the room and a squeezed 4×2 none (STRETCHABLE_SIZES).
    */
-  private val tall: Boolean = false,
+  @Suppress("unused") private val tall: Boolean = false,
 ) : MihrabGlanceWidget("log") {
+
+  override val sizeMode: SizeMode = SizeMode.Responsive(STRETCHABLE_SIZES)
 
   private class Chip(
     val key: String,
@@ -229,7 +232,7 @@ internal class LogGlanceWidget(
     // a 15dp rule less once the card is tight. What is left is the graph's.
     val chrome = if (tight) LOG_CHROME_TIGHT_DP else LOG_CHROME_ROOMY_DP
     val graphBox = h - chrome
-    val graphHeight = tall && graphBox >= GRID_MIN_BOX_DP
+    val graphHeight = h > 0 && graphBox >= GRID_MIN_BOX_DP
     // Null when there is no block or no room for it: one value, no `!!`.
     val practice = m.practice?.takeIf { graphHeight }
     val showGrid = practice != null

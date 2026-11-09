@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import androidx.glance.appwidget.SizeMode
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
@@ -57,6 +58,9 @@ import com.prayer_times.contract.WidgetPayloadV1
  * instant on its own date.
  */
 internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget("prayer") {
+
+  /** The strip and the tall card follow the height they are stretched to (STRETCHABLE_SIZES). */
+  override val sizeMode: SizeMode = if (entry == Entry.SMALL) SizeMode.Exact else SizeMode.Responsive(STRETCHABLE_SIZES)
 
   /**
    * Which picker entry this instance was placed from — its intent. The
@@ -178,6 +182,9 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
       else -> Design.STRIP
     }
   }
+
+  /** Room for the practice graph under the strip's chrome: a box of at least GRID_MIN_BOX_DP. */
+  private fun graphFits(h: Int) = h > 0 && h - STRIP_TALL_CHROME_DP >= GRID_MIN_BOX_DP
 
   private fun sideDp(d: Design) = when (d) {
     Design.SMALL -> 10
@@ -498,11 +505,12 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val tight = h in 1 until STRIP_ROOMY_CONTENT_DP
     val budget = if (oneRow) STRIP_BARE_CONTENT_DP else if (tight) STRIP_TIGHT_CONTENT_DP else STRIP_ROOMY_CONTENT_DP
     // The same with the table hidden: its segment is the table's, as tall.
-    val slack = if (h <= 0 || entry == Entry.TALL) 0
+    // The graph wherever there is room for it — the tall card as placed,
+    // and either card stretched (STRETCHABLE_SIZES) — and not where there
+    // is not: a tall card squeezed short drew it as a line of dots.
+    val practice = m.practice?.takeIf { graphFits(h) }
+    val slack = if (h <= 0 || practice != null) 0
     else ((h - budget) / 2).coerceIn(0, STRIP_SLACK_CAP_DP)
-    // The graph is the tall entry's, and only when the card has been
-    // measured (an unmeasured card has no box to draw it into).
-    val practice = m.practice?.takeIf { entry == Entry.TALL && h > 0 }
     val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP
     val columns = m.rows.take(STRIP_COLUMNS)
     val columnDp = (size.widthDp - insetDp(context, size)).toFloat() / columns.size.coerceAtLeast(1) - TIME_GUTTER_DP
@@ -657,7 +665,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   private fun ListCard(context: Context, m: Model, size: CardSize) {
     val d = m.display
     val h = size.heightDp
-    val practice = m.practice?.takeIf { entry == Entry.TALL && h > 0 }
+    val practice = m.practice?.takeIf { graphFits(h) }
     val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP
     val shown = m.rows.take(LIST_SLOTS)
     // The provider sizes every layout's times by the same measure.
@@ -765,7 +773,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     private const val STRIP_FOOT_DP = 19
     /** The strip's side padding (sideDp). */
     private const val STRIP_SIDE_DP = 8
-    private const val GRID_MIN_HEIGHT_DP = 211
+    /** The least box the graph is drawn into: six rows of the smallest cell, and its gaps. */
+    private const val GRID_MIN_BOX_DP = 36
     private const val PRACTICE_MIN_HEIGHT_DP = 375
     private const val MAX_GRID_DAYS = 210
     private const val STRIP_COLUMNS = 6
