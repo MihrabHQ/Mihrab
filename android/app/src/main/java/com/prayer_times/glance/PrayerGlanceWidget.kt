@@ -188,7 +188,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   /** Room for the practice graph under the strip's chrome: a box of at least GRID_MIN_BOX_DP. */
   private fun graphFits(h: Int) = h > 0 && h - STRIP_TALL_CHROME_DP >= GRID_MIN_BOX_DP
 
-  /** …and under the compact tall card's: the same lines on tighter ends and rule. */
+  /** …and under the compact tall card's: the next prayer in the header, on tighter ends and rule. */
   private fun compactGraphFits(h: Int) = h > 0 && h - STRIP_COMPACT_CHROME_DP >= GRID_MIN_BOX_DP
 
   private fun sideDp(d: Design) = when (d) {
@@ -514,12 +514,14 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     // and either card stretched (STRETCHABLE_SIZES) — and not where there
     // is not: a tall card squeezed short drew it as a line of dots.
     //
-    // THE TALL CARD KEEPS ITS TOP AND SHRINKS ITS GRAPH. Where the card is
-    // short of the full layout (two short rows, or Nova's row and a half),
-    // the date, the times, the night marks and the next-prayer line all
-    // stay, and the graph takes what is left on tighter ends and a tighter
-    // rule (`compact`) — down to its smallest, and below that it goes.
-    val compact = m.practice != null && entry == Entry.TALL && !graphFits(h) && compactGraphFits(h)
+    // THE TALL CARD KEEPS ITS TOP AND MAKES ROOM FOR ITS GRAPH. Where the
+    // card is short of the full layout (two short rows, or Nova's row and a
+    // half), the next-prayer line moves up into the header, centred between
+    // the dates — with the prayer's name where the card is wide enough —
+    // and the graph takes the line's place and its rule, on tighter ends
+    // and a tighter rule (`compact`): down to its smallest, and below that
+    // it goes.
+    val compact = m.practice != null && d.showTable && entry == Entry.TALL && !graphFits(h) && compactGraphFits(h)
     val practice = m.practice?.takeIf { graphFits(h) || compact }
     val slack = if (h <= 0 || practice != null) 0
     else ((h - budget) / 2).coerceIn(0, STRIP_SLACK_CAP_DP)
@@ -530,7 +532,14 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val timeSp = scaledClockSp(context, columns.map { it.minutes }, m.clock, baseSp, d.timeScale, if (size.widthDp > 0) columnDp else 0f)
 
     DirColumn(modifier = GlanceModifier.fillMaxSize()) {
-      if (!oneRow) Header(m.header, m.hijri, d)
+      if (!oneRow) Header(m.header, m.hijri, d, center = if (!compact || !d.showTable) null else ({
+        DirRow(verticalAlignment = Alignment.CenterVertically, modifier = GlanceModifier.padding(horizontal = 6.dp)) {
+          val named = size.widthDp - insetDp(context, size) >= COMPACT_NAMED_MIN_WIDTH_DP
+          if (named && m.nextName.isNotEmpty()) cell { Label(m.nextName, 11f, d.text) }
+          if (d.showCountdown) cell { Counter(m, 11f, d.muted, if (named) GlanceModifier.padStart(4.dp) else GlanceModifier) }
+          else if (!named && m.nextName.isNotEmpty()) cell { Label(m.nextName, 11f, d.text) }
+        }
+      }))
       if (d.showTable) {
         DirRow(
           modifier = GlanceModifier.fillMaxWidth().padding(top = (if (timesOnly) 0 else 8 + slack).dp, bottom = slack.dp),
@@ -579,8 +588,9 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           DirColumn(modifier = GlanceModifier.fillMaxWidth()) { NextBlock(context, m, size, top = 0, nameSp = nameSp) }
         }
       }
-      if (!tight) Rule(d.rule, top = 6, bottom = 8)
-      if (!timesOnly || !d.showTable) DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+      // The compact card's next-prayer line is in its header.
+      if (!tight && !(compact && d.showTable)) Rule(d.rule, top = 6, bottom = 8)
+      if ((!timesOnly || !d.showTable) && !(compact && d.showTable)) DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         // The next-prayer line is the NextBlock's when the table is hidden.
         if (d.showTable) {
           if (m.nextName.isNotEmpty()) cell { Label(m.nextName, 11f, d.text) }
@@ -619,21 +629,47 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   }
 
   @Composable
-  private fun Header(text: String, hijri: String, d: PrayerWidgetDisplay) {
+  private fun Header(
+    text: String,
+    hijri: String,
+    d: PrayerWidgetDisplay,
+    /** The compact tall card's next prayer, centred between the dates. */
+    center: (@Composable () -> Unit)? = null,
+  ) {
     val refresh = localizedContext().getString(R.string.widget_intent_refresh)
+    @Composable
+    fun Refresh() = Label(
+      "↻",
+      14f,
+      d.refresh,
+      modifier = GlanceModifier
+        .padStart(8.dp)
+        .clickable(actionRunCallback<PrayerRefresh>())
+        .semantics { contentDescription = refresh },
+    )
+    if (center != null) {
+      // Equal weights either side, so the middle is the card's middle.
+      DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        cell { Label(text, 10f, d.muted, medium = true, modifier = GlanceModifier.defaultWeight()) }
+        cell { center() }
+        cell {
+          DirRow(
+            modifier = GlanceModifier.defaultWeight(),
+            horizontalAlignment = Alignment.End,
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            if (hijri.isNotEmpty()) cell { Label(hijri, 10f, d.muted, medium = true, modifier = GlanceModifier.padStart(6.dp)) }
+            cell { Refresh() }
+          }
+        }
+      }
+      return
+    }
     DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
       cell { Label(text, 10f, d.muted, medium = true, modifier = GlanceModifier.defaultWeight()) }
       if (hijri.isNotEmpty()) cell { Label(hijri, 10f, d.muted, medium = true, modifier = GlanceModifier.padStart(6.dp)) }
       // The refresh glyph: redraw now, then go and look (a sync round).
-      cell { Label(
-        "↻",
-        14f,
-        d.refresh,
-        modifier = GlanceModifier
-          .padStart(8.dp)
-          .clickable(actionRunCallback<PrayerRefresh>())
-          .semantics { contentDescription = refresh },
-      ) }
+      cell { Refresh() }
     }
   }
 
@@ -795,11 +831,20 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     private const val STRIP_TALL_CHROME_DP = 167
     private const val STRIP_FOOT_DP = 19
     /**
-     * The compact tall card's chrome: the tall card's, every line kept, on
+     * The compact tall card's chrome: the tall card's less the next-prayer
+     * line (15dp, moved into the header) and the rule over it (15dp), on
      * the short strip's 6dp ends (16dp less) and a rule over the graph of
-     * 4dp a side (8dp less).
+     * 4dp a side (8dp less) — measured on Nova (Pixel 10 Pro), reckoned a
+     * little over as STRIP_TALL_CHROME_DP is.
      */
-    private const val STRIP_COMPACT_CHROME_DP = 143
+    private const val STRIP_COMPACT_CHROME_DP = 115
+
+    /**
+     * The compact card's header names the next prayer ("Asr in 07:56") from
+     * this inner width; under it, the countdown alone, so the dates either
+     * side keep their room.
+     */
+    private const val COMPACT_NAMED_MIN_WIDTH_DP = 340
     /** The strip's side padding (sideDp). */
     private const val STRIP_SIDE_DP = 8
     /** The least box the graph is drawn into: six rows of the smallest cell, and its gaps. */
