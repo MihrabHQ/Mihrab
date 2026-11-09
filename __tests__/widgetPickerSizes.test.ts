@@ -74,21 +74,12 @@ describe('what each entry places', () => {
   });
 });
 
-describe('the tall entries arrive with their graph', () => {
-  // A launcher places targetCellHeight only when it is at least the span
-  // minHeight needs; minHeight is the shortest card that draws the graph,
-  // so where two rows are too short the card is placed taller instead.
-  const constOf = (src: string, name: string) => Number(new RegExp(`const val ${name} = (\\d+)`).exec(src)![1]);
-  const kt = (name: string) =>
-    readFileSync(path.join(ROOT, 'android/app/src/main/java/com/prayer_times/glance', `${name}.kt`), 'utf8');
-  const minHeight = (file: string) => Number(/android:minHeight="(\d+)dp"/.exec(xml('xml', file))![1]);
-  it('prayer times, tall', () => {
-    const src = kt('PrayerGlanceWidget');
-    expect(minHeight('glance_prayer_tall_info')).toBe(constOf(src, 'STRIP_TALL_CHROME_DP') + constOf(src, 'GRID_MIN_BOX_DP'));
-  });
-  it('log today, tall', () => {
-    const src = kt('LogGlanceWidget');
-    expect(minHeight('glance_log_tall_info')).toBe(constOf(src, 'LOG_CHROME_ROOMY_DP') + constOf(src, 'GRID_MIN_BOX_DP'));
+describe('two rows by every launcher’s reckoning', () => {
+  // Launchers that size by the old formula (Nova: 70dp a row, less 30)
+  // place a third row for any minHeight past 110dp — and Nova's own 4×2
+  // already draws the graph. So the tall entries ask for two rows' worth.
+  it.each(['glance_prayer_tall_info', 'glance_log_tall_info'])('%s asks for 110dp', file => {
+    expect(xml('xml', file)).toMatch(/android:minHeight="110dp"/);
   });
 });
 

@@ -6,11 +6,11 @@
   first composition lands.
 -->
 <!--
-  minHeight is the shortest card that draws the practice graph:
-  LOG_CHROME_ROOMY_DP (162) + GRID_MIN_BOX_DP (36), LogGlanceWidget. A launcher places targetCellHeight (2) only when two of its rows
-  are at least that tall; where they are shorter — a dense grid, small
-  cells — it places as many rows as minHeight needs instead, so the tall
-  entry always arrives with its graph.
+  minHeight stays 110dp, the old formula's two rows (70 × 2 − 30). Raising
+  it to the graph's height (203dp) to make a launcher with short rows
+  place three made Nova, which reckons spans by that formula, place 4×3
+  where its 4×2 already draws the graph. A card placed too short still
+  draws the graph once stretched (STRETCHABLE_SIZES).
 -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:configure="com.prayer_times.PrayerWidgetConfigureActivity"
@@ -18,7 +18,7 @@
     android:description="@string/widget_description_log_tall"
     android:initialLayout="@layout/glance_default_loading_layout"
     android:minWidth="250dp"
-    android:minHeight="198dp"
+    android:minHeight="110dp"
     android:previewImage="@mipmap/ic_launcher"
     android:previewLayout="@layout/prayer_widget_log_tall_preview"
     android:resizeMode="horizontal"
