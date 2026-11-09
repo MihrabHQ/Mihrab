@@ -83,7 +83,7 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 | Algeria’s Ministry of Religious Affairs and Wakfs | 101,184 | **0** |
 | Indonesia’s Kemenag | 362,934 | **0** |
 
-<sub>Last checked 4 November 2026. Generated from mihrab-methods’ <code>certification.json</code> by <code>scripts/build-copy.js</code>. Mihrab is independent and not affiliated with any of these authorities.</sub>
+<sub>Last checked 9 November 2026. Generated from mihrab-methods’ <code>certification.json</code> by <code>scripts/build-copy.js</code>. Mihrab is independent and not affiliated with any of these authorities.</sub>
 <!-- accuracy:end -->
 
 ---
