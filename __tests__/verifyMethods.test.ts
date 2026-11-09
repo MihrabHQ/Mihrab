@@ -78,6 +78,18 @@ describe('verify-methods', () => {
     expect(other.accepted).toBe(0);
   });
 
+  it('does not call a place misplaced over a stretch of dates already set aside (#49)', () => {
+    if (!haveTable('jakim')) return;
+    // The shipped list sets aside JAKIM's December Maghrib for Gunung
+    // Kinabalu; with more December days than November in the window, those
+    // rows made the place's median and flagged the whole place.
+    const shipped = JSON.parse(
+      fs.readFileSync(path.join(__dirname, '../tools/verify-methods/accepted.json'), 'utf8'),
+    ) as Accepted[];
+    const r = verifyAuthority(byId('jakim'), shipped);
+    expect(r.misplaced.map(m => m.place)).not.toContain('Gunung Kinabalu (SBH06)');
+  });
+
   it('knows which clock each Indonesian province keeps', () => {
     expect(indonesiaZone('DKI Jakarta')).toBe('Asia/Jakarta');
     expect(indonesiaZone('Kalimantan Barat')).toBe('Asia/Jakarta');

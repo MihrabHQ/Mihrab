@@ -277,8 +277,20 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
   let acceptedCount = 0;
 
   for (const [name, rows] of byPlace) {
+    // A place's constant is read from the rows that are not already
+    // understood. accepted.json may set aside a stretch of dates — JAKIM's
+    // December 2026 Maghrib for Gunung Kinabalu, eight minutes under the
+    // allowance the rest of the year keeps — and once the window held more
+    // of those days than of the others, their eight minutes became the
+    // place's median and the whole place was reported as misplaced (#49).
+    const understood = (r: (typeof rows)[number]) =>
+      Math.abs(r.diff) > a.toleranceMin && isAccepted(accepted, a, { place: name, ...r });
+    const counted = rows.filter(r => !understood(r));
     const med = Object.fromEntries(
-      PRAYERS.map(p => [p, median(rows.filter(r => r.prayer === p).map(r => r.diff))]),
+      PRAYERS.map(p => {
+        const own = counted.filter(r => r.prayer === p);
+        return [p, median((own.length ? own : rows.filter(r => r.prayer === p)).map(r => r.diff))];
+      }),
     ) as Record<Prayer, number>;
     const maxAbs = Math.max(...rows.map(r => Math.abs(r.diff)));
     const stats: PlaceStats = {
