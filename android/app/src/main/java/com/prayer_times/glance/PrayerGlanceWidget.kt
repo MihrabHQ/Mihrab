@@ -607,9 +607,13 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
       }
       practice?.let { pr ->
         if (compact) Rule(d.ruleStrong, top = 4, bottom = 4) else Rule(d.ruleStrong, top = 8, bottom = 8)
-        val box = size.heightDp - (if (compact) STRIP_COMPACT_CHROME_DP else STRIP_TALL_CHROME_DP) - (if (showFoot) STRIP_FOOT_DP else 0)
+        // The tall card's graph fills its room in the two-row band and
+        // stops growing above it (GRAPH_BAND_TOP_DP).
+        val tall = entry == Entry.TALL
+        val room = if (tall) minOf(size.heightDp, GRAPH_BAND_TOP_DP) else size.heightDp
+        val box = room - (if (compact) STRIP_COMPACT_CHROME_DP else STRIP_TALL_CHROME_DP) - (if (showFoot) STRIP_FOOT_DP else 0)
         PracticeImage(context, pr.block, size.widthDp - insetDp(context, size), box, MAX_GRID_DAYS, m.colors.accent,
-          GlanceModifier.fillMaxWidth().defaultWeight())
+          GlanceModifier.fillMaxWidth().defaultWeight(), spread = tall && size.heightDp < GRAPH_SPREAD_MAX_DP)
         if (showFoot) Foot(pr, top = 7, d)
       }
     }
@@ -659,11 +663,18 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     maxDays: Int,
     accent: Int,
     modifier: GlanceModifier,
+    spread: Boolean = false,
   ) {
+    val rtl = LocalDirection.current.rtl
+    val drawnH = if (spread) (boxHeightDp * SPREAD_FILL).toInt() else boxHeightDp
+    val layout = PracticeGridBitmap.layoutFor(boxWidthDp, drawnH, context.resources.displayMetrics.density, maxDays)
     val grid = extra("practiceGrid") {
-      val layout = PracticeGridBitmap.layoutFor(boxWidthDp, boxHeightDp, context.resources.displayMetrics.density, maxDays)
-      practiceGrid(pr, layout.rows, layout.columns, layout.cellWPx, layout.cellHPx, layout.gapPx, accent, mirror = LocalDirection.current.rtl)
+      practiceGrid(pr, layout.rows, layout.columns, layout.cellWPx, layout.cellHPx, layout.gapPx, accent, mirror = rtl)
     } ?: return
+    if (spread) {
+      SpreadGrid(gridRows(grid, layout.rows, layout.cellHPx, layout.gapPx), context.getString(R.string.widget_streak_grid_description), modifier)
+      return
+    }
     Image(
       provider = ImageProvider(grid),
       contentDescription = context.getString(R.string.widget_streak_grid_description),

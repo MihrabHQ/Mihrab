@@ -76,9 +76,9 @@ describe('one composition per size the launcher can show', () => {
    */
   it('draws the stretchable cards for every height they may be stretched to', () => {
     const support = glance('GlanceSupport');
-    const sizes = support.match(/for \(w in listOf\(([\d, ]+)\)\) for \(h in listOf\(([\d, ]+)\)\)/);
-    expect(sizes).not.toBeNull();
-    const count = sizes![1].split(',').length * sizes![2].split(',').length;
+    const lists = [...support.matchAll(/for \(h in listOf\(([\w, ]+)\)\) add\(DpSize\((\d+)\.dp, h\.dp\)\)/g)];
+    expect(lists.map(l => Number(l[2])).sort()).toEqual([280, 370]);
+    const count = lists.reduce((n, l) => n + l[1].split(',').length, 0);
     // RemoteViews takes at most sixteen sizes in a map.
     expect(count).toBeLessThanOrEqual(16);
     expect(glance('PrayerGlanceWidget')).toMatch(/if \(entry == Entry\.SMALL\) SizeMode\.Exact else SizeMode\.Responsive\(STRETCHABLE_SIZES\)/);

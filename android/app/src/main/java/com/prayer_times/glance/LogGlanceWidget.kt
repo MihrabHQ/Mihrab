@@ -337,15 +337,24 @@ internal class LogGlanceWidget(
         // grid gets the rest — PrayerWidgetLogProvider.bindGrid's box.
         val density = context.resources.displayMetrics.density
         val boxW = size.widthDp - 2 * (CARD_INSET_DP + paddingFor(size))
-        val grid = PracticeGridBitmap.layoutFor(boxW, if (compact) h - LOG_CHROME_COMPACT_DP else graphBox, density, MAX_GRID_DAYS)
-        Image(
-          provider = ImageProvider(
-            practiceGrid(pr, grid.rows, grid.columns, grid.cellWPx, grid.cellHPx, grid.gapPx, m.colors.accent, mirror = LocalDirection.current.rtl),
-          ),
-          contentDescription = context.getString(R.string.widget_streak_grid_description),
-          modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
-          contentScale = ContentScale.Fit,
-        )
+        // The tall card's graph fills its room in the two-row band and
+        // stops growing above it (GRAPH_BAND_TOP_DP).
+        val room = if (tall) minOf(h, GRAPH_BAND_TOP_DP) else h
+        val box = room - (if (compact) LOG_CHROME_COMPACT_DP else chrome)
+        val spread = tall && h < GRAPH_SPREAD_MAX_DP
+        val grid = PracticeGridBitmap.layoutFor(boxW, if (spread) (box * SPREAD_FILL).toInt() else box, density, MAX_GRID_DAYS)
+        val bitmap = practiceGrid(pr, grid.rows, grid.columns, grid.cellWPx, grid.cellHPx, grid.gapPx, m.colors.accent, mirror = LocalDirection.current.rtl)
+        if (spread) {
+          SpreadGrid(gridRows(bitmap, grid.rows, grid.cellHPx, grid.gapPx), context.getString(R.string.widget_streak_grid_description),
+            GlanceModifier.fillMaxWidth().defaultWeight())
+        } else {
+          Image(
+            provider = ImageProvider(bitmap),
+            contentDescription = context.getString(R.string.widget_streak_grid_description),
+            modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
+            contentScale = ContentScale.Fit,
+          )
+        }
       }
     }
   }

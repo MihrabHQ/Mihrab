@@ -173,19 +173,21 @@ describe('the graph is sized for the space it is actually given', () => {
   it('the log card gives the whole remainder to the graph alone', () => {
     const at = log.indexOf('val grid = PracticeGridBitmap.layoutFor(');
     expect(at).toBeGreaterThan(-1);
-    const block = log.slice(at, at + 900);
-    expect(block.match(/defaultWeight\(\)/g)).toHaveLength(1);
-    expect(block).toContain('GlanceModifier.fillMaxWidth().defaultWeight()');
+    const block = log.slice(at, at + 1100);
+    // One weighted child either way: the rows spread, or the one image.
+    expect(block.match(/defaultWeight\(\)/g)).toHaveLength(2);
+    expect(block).toMatch(/if \(spread\) \{\s*SpreadGrid\([\s\S]*?\} else \{\s*Image\(/);
   });
 
   it('both subtract what the card costs instead of taking a fraction', () => {
     expect(strip).toContain(
-      'val box = size.heightDp - (if (compact) STRIP_COMPACT_CHROME_DP else STRIP_TALL_CHROME_DP) - (if (showFoot) STRIP_FOOT_DP else 0)',
+      'val box = room - (if (compact) STRIP_COMPACT_CHROME_DP else STRIP_TALL_CHROME_DP) - (if (showFoot) STRIP_FOOT_DP else 0)',
     );
     expect(strip).toContain('size.widthDp - insetDp(context, size), box,');
     expect(log).toContain('val boxW = size.widthDp - 2 * (CARD_INSET_DP + paddingFor(size))');
+    expect(log).toContain('val box = room - (if (compact) LOG_CHROME_COMPACT_DP else chrome)');
     expect(log).toContain(
-      'PracticeGridBitmap.layoutFor(boxW, if (compact) h - LOG_CHROME_COMPACT_DP else graphBox, density, MAX_GRID_DAYS)',
+      'PracticeGridBitmap.layoutFor(boxW, if (spread) (box * SPREAD_FILL).toInt() else box, density, MAX_GRID_DAYS)',
     );
     // (The list card's graph — beside the streak number, in a wrap_content
     // row — keeps its share: `((h - STRIP_CHROME_DP) * 2) / 3`.)
@@ -239,5 +241,36 @@ describe('two rows always hold the tall cards’ graph', () => {
   it('only the tall entries go compact; the strip keeps the full threshold', () => {
     expect(constOf(strip, 'STRIP_COMPACT_CHROME_DP')).toBeLessThan(constOf(strip, 'STRIP_TALL_CHROME_DP'));
     expect(constOf(log, 'LOG_CHROME_COMPACT_DP')).toBeLessThan(constOf(log, 'LOG_CHROME_TIGHT_DP'));
+  });
+});
+
+/**
+ * THE TALL CARDS' GRAPH FILLS ITS ROOM AT THE DEFAULT SIZE, AND ONLY THERE.
+ * In the two-row band the rows are spread over the room; above it the graph
+ * is the band's, so a card stretched taller does not get a bigger graph.
+ */
+describe('the tall cards’ graph fills the default size and grows no further', () => {
+  const support = readFileSync(path.join(JAVA, 'glance', 'GlanceSupport.kt'), 'utf8');
+  const top = constOf(support, 'GRAPH_BAND_TOP_DP');
+  const max = constOf(support, 'GRAPH_SPREAD_MAX_DP');
+
+  it('the band reaches both launchers’ two rows', () => {
+    // Two rows measured on a Pixel 10 Pro: 201dp on the Pixel launcher, 259dp on Nova.
+    expect(top).toBeGreaterThanOrEqual(259);
+    expect(max).toBeGreaterThan(top);
+  });
+
+  it('caps the room at the band and spreads only inside it', () => {
+    expect(strip).toContain('val room = if (tall) minOf(size.heightDp, GRAPH_BAND_TOP_DP) else size.heightDp');
+    expect(strip).toContain('spread = tall && size.heightDp < GRAPH_SPREAD_MAX_DP');
+    expect(log).toContain('val room = if (tall) minOf(h, GRAPH_BAND_TOP_DP) else h');
+    expect(log).toContain('val spread = tall && h < GRAPH_SPREAD_MAX_DP');
+  });
+
+  it('steps through the band finely enough for the spread to stay small', () => {
+    const band = /for \(h in listOf\(([\w, ]+)\)\) add\(DpSize\(370\.dp/.exec(support)![1]
+      .split(',').map(s => s.trim()).map(s => (/^\d+$/.test(s) ? Number(s) : s === 'GRAPH_BAND_TOP_DP' ? top : max))
+      .filter(h => h >= 176 && h <= top);
+    for (let i = 1; i < band.length; i++) expect(band[i] - band[i - 1]).toBeLessThanOrEqual(16);
   });
 });

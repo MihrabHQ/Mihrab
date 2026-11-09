@@ -15,6 +15,7 @@ import androidx.glance.layout.ContentScale
 import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxHeight
 import androidx.glance.layout.fillMaxSize
+import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import com.prayer_times.PracticeGridBitmap
 import com.prayer_times.R
@@ -216,6 +217,47 @@ internal class StreakGlanceWidget : MihrabGlanceWidget("streak") {
  * every widget uses, from each day in the v1 shape it reads — written by
  * the v1 adapter's own `practiceDayJson`, so the two cannot drift.
  */
+/**
+ * The grid cut into its rows, each with half the gap above and below it
+ * (the outer two with the bitmap's margin), for `SpreadGrid`.
+ *
+ * The cell and gap are clamped as `PracticeGridBitmap.render` clamps them,
+ * so the cuts fall where it drew the gaps.
+ */
+internal fun gridRows(grid: Bitmap, rows: Int, cellHPx: Int, gapPx: Int): List<Bitmap> {
+  val cell = cellHPx.coerceIn(3, 96)
+  val gap = gapPx.coerceIn(1, 24)
+  val pad = ((grid.height - rows * cell - (rows - 1) * gap) / 2).coerceAtLeast(0)
+  val cuts = IntArray(rows + 1) { i ->
+    when (i) {
+      0 -> 0
+      rows -> grid.height
+      else -> (pad + i * (cell + gap) - gap / 2).coerceIn(0, grid.height)
+    }
+  }
+  return (0 until rows).map { i -> Bitmap.createBitmap(grid, 0, cuts[i], grid.width, (cuts[i + 1] - cuts[i]).coerceAtLeast(1)) }
+}
+
+/**
+ * The grid filling its room: its rows in equal weighted slots, each scaled
+ * to the room's width, so a room taller than the grid was drawn for goes
+ * between the rows rather than above and below the whole — the graph
+ * reaches the room's top and bottom with its days the size they were drawn.
+ */
+@Composable
+internal fun SpreadGrid(rows: List<Bitmap>, description: String, modifier: GlanceModifier) {
+  Column(modifier = modifier) {
+    rows.forEachIndexed { i, row ->
+      Image(
+        provider = ImageProvider(row),
+        contentDescription = if (i == 0) description else null,
+        modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
+        contentScale = ContentScale.Fit,
+      )
+    }
+  }
+}
+
 internal fun practiceGrid(
   pr: WidgetContract.Practice,
   rows: Int,

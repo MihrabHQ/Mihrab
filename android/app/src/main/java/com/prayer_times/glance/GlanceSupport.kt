@@ -616,13 +616,44 @@ internal data class CardSize(val widthDp: Int, val heightDp: Int)
  *
  * Sixteen is RemoteViews' ceiling for a size map. Two widths — a five-
  * and a four-column home screen's four cells — and the heights where the
- * layouts change: the strip's 66/92/112/134/160 steps, then the graph's
- * rooms. Above the tallest, the tallest is drawn and the graph takes the
- * rest of the height (it is the card's weighted row).
+ * layouts change: the strip's 66/92/112/134 steps, then the TWO-ROW BAND
+ * in 16dp steps, where the tall cards' graph fills its room
+ * (GRAPH_BAND_TOP_DP), and one size above it, where it stops growing. The
+ * narrow width gets the coarse steps; there are not sixteen to go round.
+ *
+ * The band is the tall cards' default size on every launcher we have
+ * measured: two rows are 201dp on the Pixel launcher and 259dp on Nova
+ * (Pixel 10 Pro, `dumpsys activity com.teslacoilsw.launcher`). The steps
+ * are what the graph may come out short of its room by, before the room
+ * is spread between its rows (`SpreadGrid`).
  */
 internal val STRETCHABLE_SIZES: Set<DpSize> = buildSet {
-  for (w in listOf(280, 370)) for (h in listOf(66, 92, 112, 134, 160, 211, 300, 420)) add(DpSize(w.dp, h.dp))
+  for (h in listOf(66, 92, 112, 134, 176, 192, 208, 224, 240, 256, GRAPH_BAND_TOP_DP, GRAPH_SPREAD_MAX_DP)) add(DpSize(370.dp, h.dp))
+  for (h in listOf(66, 112, 176, 240)) add(DpSize(280.dp, h.dp))
 }
+
+/**
+ * THE TALL CARDS' GRAPH FILLS ITS ROOM AT THE DEFAULT SIZE, AND ONLY THERE.
+ *
+ * Up to the top of the two-row band the graph is drawn for the card it is
+ * on and spread over whatever the layout's step left over; a card
+ * stretched taller than that gets the band's graph, not a bigger one — a
+ * card that grew its graph with its height would only invite being made
+ * larger than it is meant to be.
+ */
+internal const val GRAPH_BAND_TOP_DP = 272
+
+/** The first size above the band: from here on the graph is the band's and sits in its room unspread. */
+internal const val GRAPH_SPREAD_MAX_DP = 300
+
+/**
+ * How much of its box a spread graph is drawn for. The layout is drawn for
+ * its size map's width, and the card is up to a step wider; the rows are
+ * scaled to the card's width, so they are drawn this much short of the
+ * height to keep them width-bound — inside the card's edges on both sides
+ * — with what is left going between them.
+ */
+internal const val SPREAD_FILL = 0.92f
 
 @Composable
 internal fun cardSize(): CardSize {
