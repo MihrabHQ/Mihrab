@@ -101,7 +101,9 @@ internal class LogGlanceWidget(
     }
     val colors = result.getOrNull()?.colors ?: Colors.of(context)
     // The Log, not the app wherever it was (#27).
-    MihrabCard(colors.background, openRoute(context, "mihrab://log"), contentPadding = paddingFor(size).dp) {
+    // The tall card is the prayer times card's twin: Today from the card,
+    // the Log from its graph. The 4×1 card, all chips, opens the Log.
+    MihrabCard(colors.background, openRoute(context, if (tall) "mihrab://today" else "mihrab://log", clearTop = tall), contentPadding = paddingFor(size).dp) {
       result.fold(
         onSuccess = { m ->
           // No `today` block means "we do not know what has been logged" —
@@ -355,7 +357,7 @@ internal class LogGlanceWidget(
         Image(
           provider = ImageProvider(bitmap),
           contentDescription = context.getString(R.string.widget_streak_grid_description),
-          modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
+          modifier = GlanceModifier.fillMaxWidth().defaultWeight().clickable(openRoute(context, "mihrab://log")),
           contentScale = spreadScale(spread),
         )
       }

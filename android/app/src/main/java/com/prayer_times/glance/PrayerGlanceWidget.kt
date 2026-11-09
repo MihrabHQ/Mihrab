@@ -719,7 +719,9 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     Image(
       provider = ImageProvider(grid),
       contentDescription = context.getString(R.string.widget_streak_grid_description),
-      modifier = modifier,
+      // The graph is the Log's: a tap on it opens the Log, the rest of the
+      // card Today.
+      modifier = modifier.clickable(openRoute(context, "mihrab://log")),
       contentScale = spreadScale(spread),
     )
   }
