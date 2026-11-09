@@ -1,21 +1,21 @@
 {
   "sweden": {
     "certified": true,
-    "checkedAt": "2026-11-04",
+    "checkedAt": "2026-11-09",
     "places": 108,
     "checks": [
       {
         "tables": "Sweden — Islamiska Förbundet’s tables",
         "places": 107,
-        "times": 61344,
+        "times": 63114,
         "off": 0,
         "offWithoutCorrections": 20,
         "from": "2026-10-11",
-        "to": "2027-12-07",
+        "to": "2027-12-14",
         "setAside": {
           "misplaced": [],
-          "sourceFaults": 35037,
-          "copiedRows": 682
+          "sourceFaults": 35491,
+          "copiedRows": 696
         }
       },
       {
