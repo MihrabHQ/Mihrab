@@ -536,7 +536,13 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     // and give its line below the times (and the rule over it) to the room.
     val topNext = d.showTable && !timesOnly && (compact || entry == Entry.STRIP)
 
-    DirColumn(modifier = GlanceModifier.fillMaxSize()) {
+    // With nothing under the times — no graph, and the next prayer on top —
+    // the card's spare height goes above and below the whole, not all under
+    // the times.
+    DirColumn(
+      modifier = GlanceModifier.fillMaxSize(),
+      verticalAlignment = if (practice == null && topNext) Alignment.CenterVertically else Alignment.Top,
+    ) {
       if (!oneRow || topNext) Header(m.header, m.hijri, d, center = if (!topNext) null else ({
         DirRow(verticalAlignment = Alignment.CenterVertically, modifier = GlanceModifier.padding(horizontal = 6.dp)) {
           val named = size.widthDp - insetDp(context, size) >= COMPACT_NAMED_MIN_WIDTH_DP

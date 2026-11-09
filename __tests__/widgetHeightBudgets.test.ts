@@ -238,7 +238,9 @@ describe('two rows always hold the tall cards’ graph', () => {
     expect(log).toContain(
       'val compact = tall && h > 0 && graphBox < GRID_MIN_BOX_DP && h - LOG_CHROME_COMPACT_DP >= GRID_MIN_BOX_DP',
     );
-    expect(constOf(log, 'LOG_CHROME_ROOMY_DP') - constOf(log, 'LOG_CHROME_COMPACT_DP')).toBeGreaterThanOrEqual(40);
+    expect(constOf(log, 'LOG_CHROME_ROOMY_DP') - constOf(log, 'LOG_CHROME_COMPACT_DP')).toBeGreaterThanOrEqual(30);
+    // Measured on Nova at a row and a half: 123dp of chrome.
+    expect(constOf(log, 'LOG_CHROME_COMPACT_DP')).toBeGreaterThanOrEqual(123);
     expect(log).toContain('val showFoot = fit.showFoot && !compact');
   });
 

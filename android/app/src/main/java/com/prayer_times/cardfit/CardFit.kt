@@ -72,6 +72,8 @@ fun fitLogCard(
   minSp: Float,
   nameDp: (Float) -> Float,
   lineDp: (Float) -> Float,
+  /** False for a card with no footer line at all (the 4×1 Log card). */
+  foot: Boolean = true,
 ): LogFit {
   var pill = startPillDp
   var topPad = 6 + slackDp
@@ -80,7 +82,7 @@ fun fitLogCard(
   var nameSp = 11f
   var timeSp = 15f
   var footSp = 11f
-  var showFoot = true
+  var showFoot = foot
   var showTime = true
   var showName = true
   if (roomDp <= 0) {

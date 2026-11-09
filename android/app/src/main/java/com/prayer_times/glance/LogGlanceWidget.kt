@@ -247,7 +247,13 @@ internal class LogGlanceWidget(
     // a script whose lines are taller (Arabic) takes the difference out of
     // the chip, not off the bottom of the card (#118).
     val nameSurplus = m.chips.maxOfOrNull { textHeightDp(context, it.name, 11f, medium = false) - textLineDp(context, 11f, medium = false) } ?: 0f
-    var chipHeight = ((if (tight) 30 else 38) - (if (h > 0) Math.ceil(nameSurplus.toDouble()).toInt() else 0)).coerceAtLeast(CHIP_MIN_HEIGHT_DP)
+    // THE 4×1 CARD HAS NO FOOTER: the next prayer's countdown is the prayer
+    // times widgets', and "Tap ✓ to log Asr on time" says what the chips
+    // already show. Its line (and the rule over it) go to the chips.
+    val foot = tall
+    val footRoom = if (foot || h <= 0) 0 else LOG_FOOT_ROOM_DP + (if (!tight) 15 else 0)
+    var chipHeight = ((if (tight) 30 else 38) + footRoom - (if (h > 0) Math.ceil(nameSurplus.toDouble()).toInt() else 0))
+      .coerceIn(CHIP_MIN_HEIGHT_DP, CHIP_MAX_HEIGHT_DP)
 
     // ── A CARD SHORTER THAN ITS BUDGET ─────────────────────────────────
     //
@@ -273,8 +279,8 @@ internal class LogGlanceWidget(
     val fit = fitLogCard(
       roomDp = if (graphHeight) 0 else h - 2 * CARD_INSET_DP - 2 * paddingFor(size),
       titleDp = if (!bare) textLineDp(context, 11f, medium = true) else 0f,
-      // Rule(top = 6, bottom = 8) plus its own 1dp line.
-      ruleDp = if (!tight) 15f else 0f,
+      // Rule(top = 6, bottom = 8) plus its own 1dp line, over the footer.
+      ruleDp = if (!tight && foot) 15f else 0f,
       slackDp = slack,
       startPillDp = chipHeight,
       minPillDp = CHIP_MIN_HEIGHT_DP,
@@ -284,6 +290,7 @@ internal class LogGlanceWidget(
           ?: textLineDp(context, sp, medium = false)
       },
       lineDp = { sp -> textLineDp(context, sp, medium = false) },
+      foot = foot,
     )
     chipHeight = fit.pillDp
     val topPad = fit.topPadDp
@@ -438,6 +445,10 @@ internal class LogGlanceWidget(
     private const val CHIPS = 5
     /** The shortest a chip gets to make room for a taller script's names. */
     private const val CHIP_MIN_HEIGHT_DP = 22
+    /** The tallest a chip grows into a footer's room: still a pill, not a tile. */
+    private const val CHIP_MAX_HEIGHT_DP = 46
+    /** The footer line a 4×1 card gives its chips. */
+    private const val LOG_FOOT_ROOM_DP = 16
 
     /**
      * The smallest type the card will set to fit a short cell. Below this a
@@ -468,9 +479,12 @@ internal class LogGlanceWidget(
     private const val GRID_MIN_BOX_DP = 36
     /**
      * The compact tall card's chrome: the tight card's less the footer line
-     * and 8dp of the rule over the graph — about 108dp, reckoned over.
+     * and 8dp of the rule over the graph. Measured on Nova at a row and a
+     * half (Pixel 10 Pro): a 190dp card, a 67dp graph — 123dp of chrome.
+     * Reckoned at 110 it drew the graph for 80dp, and stretched into 67 its
+     * days came out a third wider than tall.
      */
-    private const val LOG_CHROME_COMPACT_DP = 110
+    private const val LOG_CHROME_COMPACT_DP = 125
     private const val CARD_INSET_DP = 6
     private const val MAX_GRID_DAYS = 210
   }
