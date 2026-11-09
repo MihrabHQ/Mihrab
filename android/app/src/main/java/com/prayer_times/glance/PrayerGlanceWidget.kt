@@ -531,8 +531,13 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val baseSp = fitTimesSp(context, columns.map { it.minutes }, m.clock, columnDp, TIME_MAX_SP, TIME_MIN_SP)
     val timeSp = scaledClockSp(context, columns.map { it.minutes }, m.clock, baseSp, d.timeScale, if (size.widthDp > 0) columnDp else 0f)
 
+    // THE NEXT PRAYER ON TOP: the 4×1 card always, and the tall card when it
+    // is compact, centre the next prayer in the header between the dates,
+    // and give its line below the times (and the rule over it) to the room.
+    val topNext = d.showTable && !timesOnly && (compact || entry == Entry.STRIP)
+
     DirColumn(modifier = GlanceModifier.fillMaxSize()) {
-      if (!oneRow) Header(m.header, m.hijri, d, center = if (!compact || !d.showTable) null else ({
+      if (!oneRow || topNext) Header(m.header, m.hijri, d, center = if (!topNext) null else ({
         DirRow(verticalAlignment = Alignment.CenterVertically, modifier = GlanceModifier.padding(horizontal = 6.dp)) {
           val named = size.widthDp - insetDp(context, size) >= COMPACT_NAMED_MIN_WIDTH_DP
           if (named && m.nextName.isNotEmpty()) cell { Label(m.nextName, 11f, d.text) }
@@ -542,7 +547,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
       }))
       if (d.showTable) {
         DirRow(
-          modifier = GlanceModifier.fillMaxWidth().padding(top = (if (timesOnly) 0 else 8 + slack).dp, bottom = slack.dp),
+          modifier = GlanceModifier.fillMaxWidth().padding(top = (if (timesOnly) 0 else if (oneRow) 4 else 8 + slack).dp, bottom = slack.dp),
           verticalAlignment = Alignment.CenterVertically,
         ) {
           for (r in columns) cell {
@@ -588,9 +593,9 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           DirColumn(modifier = GlanceModifier.fillMaxWidth()) { NextBlock(context, m, size, top = 0, nameSp = nameSp) }
         }
       }
-      // The compact card's next-prayer line is in its header.
-      if (!tight && !(compact && d.showTable)) Rule(d.rule, top = 6, bottom = 8)
-      if ((!timesOnly || !d.showTable) && !(compact && d.showTable)) DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+      // The next-prayer line is in the header when `topNext`.
+      if (!tight && !topNext) Rule(d.rule, top = 6, bottom = 8)
+      if ((!timesOnly || !d.showTable) && !topNext) DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         // The next-prayer line is the NextBlock's when the table is hidden.
         if (d.showTable) {
           if (m.nextName.isNotEmpty()) cell { Label(m.nextName, 11f, d.text) }
@@ -701,20 +706,15 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     spread: Boolean = false,
   ) {
     val rtl = LocalDirection.current.rtl
-    val drawnH = if (spread) (boxHeightDp * SPREAD_FILL).toInt() else boxHeightDp
-    val layout = PracticeGridBitmap.layoutFor(boxWidthDp, drawnH, context.resources.displayMetrics.density, maxDays)
+    val layout = PracticeGridBitmap.layoutFor(boxWidthDp, boxHeightDp, context.resources.displayMetrics.density, maxDays)
     val grid = extra("practiceGrid") {
       practiceGrid(pr, layout.rows, layout.columns, layout.cellWPx, layout.cellHPx, layout.gapPx, accent, mirror = rtl)
     } ?: return
-    if (spread) {
-      SpreadGrid(gridRows(grid, layout.rows, layout.cellHPx, layout.gapPx), context.getString(R.string.widget_streak_grid_description), modifier)
-      return
-    }
     Image(
       provider = ImageProvider(grid),
       contentDescription = context.getString(R.string.widget_streak_grid_description),
       modifier = modifier,
-      contentScale = ContentScale.Fit,
+      contentScale = spreadScale(spread),
     )
   }
 

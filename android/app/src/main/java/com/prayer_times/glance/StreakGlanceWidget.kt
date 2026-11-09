@@ -15,7 +15,6 @@ import androidx.glance.layout.ContentScale
 import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxHeight
 import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import com.prayer_times.PracticeGridBitmap
 import com.prayer_times.R
@@ -217,61 +216,6 @@ internal class StreakGlanceWidget : MihrabGlanceWidget("streak") {
  * every widget uses, from each day in the v1 shape it reads — written by
  * the v1 adapter's own `practiceDayJson`, so the two cannot drift.
  */
-/**
- * The grid cut into its rows, for `SpreadGrid`: each row with half the gap
- * above and below it (the outer two with the bitmap's margin), placed in a
- * bitmap of ONE height for every row, the cell at the same place in each.
- *
- * The same height is the point. Each row is scaled into its slot on its
- * own, and the outer rows carry the margin the inner ones do not: cut as
- * they lie, a row that came out taller was scaled a little smaller than
- * its neighbours, and the days stopped lining up from row to row.
- *
- * The cell and gap are clamped as `PracticeGridBitmap.render` clamps them,
- * so the cuts fall where it drew the gaps.
- */
-internal fun gridRows(grid: Bitmap, rows: Int, cellHPx: Int, gapPx: Int): List<Bitmap> {
-  val cell = cellHPx.coerceIn(3, 96)
-  val gap = gapPx.coerceIn(1, 24)
-  val pad = ((grid.height - rows * cell - (rows - 1) * gap) / 2).coerceAtLeast(0)
-  // Room above and below each cell: the margin, or half a gap if that is more.
-  val room = maxOf(pad, (gap + 1) / 2)
-  val height = cell + 2 * room
-  return (0 until rows).map { i ->
-    val cellTop = pad + i * (cell + gap)
-    val from = if (i == 0) 0 else cellTop - gap / 2
-    val to = if (i == rows - 1) grid.height else cellTop + cell + (gap - gap / 2)
-    val row = Bitmap.createBitmap(grid.width, height, Bitmap.Config.ARGB_8888)
-    android.graphics.Canvas(row).drawBitmap(
-      grid,
-      android.graphics.Rect(0, from.coerceIn(0, grid.height), grid.width, to.coerceIn(0, grid.height)),
-      android.graphics.Rect(0, room - (cellTop - from), grid.width, room - (cellTop - from) + (to - from)),
-      null,
-    )
-    row
-  }
-}
-
-/**
- * The grid filling its room: its rows in equal weighted slots, each scaled
- * to the room's width, so a room taller than the grid was drawn for goes
- * between the rows rather than above and below the whole — the graph
- * reaches the room's top and bottom with its days the size they were drawn.
- */
-@Composable
-internal fun SpreadGrid(rows: List<Bitmap>, description: String, modifier: GlanceModifier) {
-  Column(modifier = modifier) {
-    rows.forEachIndexed { i, row ->
-      Image(
-        provider = ImageProvider(row),
-        contentDescription = if (i == 0) description else null,
-        modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
-        contentScale = ContentScale.Fit,
-      )
-    }
-  }
-}
-
 internal fun practiceGrid(
   pr: WidgetContract.Practice,
   rows: Int,

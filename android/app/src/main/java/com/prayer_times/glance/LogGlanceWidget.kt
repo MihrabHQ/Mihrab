@@ -321,7 +321,8 @@ internal class LogGlanceWidget(
       if (!tight && showFoot) Rule(Palette.RULE, top = 6, bottom = 8)
       if (showFoot) DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         if (!showGrid) cell { Label(m.footLeft, footSp, Palette.MUTED, modifier = GlanceModifier.defaultWeight()) }
-        m.next?.let { (name, at) ->
+        // The countdown is the tall card's; the 4×1 says the day's count.
+        m.next?.takeIf { tall }?.let { (name, at) ->
           cell { Label(name, footSp, Palette.MUTED) }
           cell { Countdown(at, m.now, footSp, Palette.MUTED, modifier = GlanceModifier.padStart(4.dp)) }
         }
@@ -342,19 +343,14 @@ internal class LogGlanceWidget(
         val room = if (tall) minOf(h, GRAPH_BAND_TOP_DP) else h
         val box = room - (if (compact) LOG_CHROME_COMPACT_DP else chrome)
         val spread = tall && h < GRAPH_SPREAD_MAX_DP
-        val grid = PracticeGridBitmap.layoutFor(boxW, if (spread) (box * SPREAD_FILL).toInt() else box, density, MAX_GRID_DAYS)
+        val grid = PracticeGridBitmap.layoutFor(boxW, box, density, MAX_GRID_DAYS)
         val bitmap = practiceGrid(pr, grid.rows, grid.columns, grid.cellWPx, grid.cellHPx, grid.gapPx, m.colors.accent, mirror = LocalDirection.current.rtl)
-        if (spread) {
-          SpreadGrid(gridRows(bitmap, grid.rows, grid.cellHPx, grid.gapPx), context.getString(R.string.widget_streak_grid_description),
-            GlanceModifier.fillMaxWidth().defaultWeight())
-        } else {
-          Image(
-            provider = ImageProvider(bitmap),
-            contentDescription = context.getString(R.string.widget_streak_grid_description),
-            modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
-            contentScale = ContentScale.Fit,
-          )
-        }
+        Image(
+          provider = ImageProvider(bitmap),
+          contentDescription = context.getString(R.string.widget_streak_grid_description),
+          modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
+          contentScale = spreadScale(spread),
+        )
       }
     }
   }

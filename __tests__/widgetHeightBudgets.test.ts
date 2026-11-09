@@ -173,10 +173,9 @@ describe('the graph is sized for the space it is actually given', () => {
   it('the log card gives the whole remainder to the graph alone', () => {
     const at = log.indexOf('val grid = PracticeGridBitmap.layoutFor(');
     expect(at).toBeGreaterThan(-1);
-    const block = log.slice(at, at + 1100);
-    // One weighted child either way: the rows spread, or the one image.
-    expect(block.match(/defaultWeight\(\)/g)).toHaveLength(2);
-    expect(block).toMatch(/if \(spread\) \{\s*SpreadGrid\([\s\S]*?\} else \{\s*Image\(/);
+    const block = log.slice(at, at + 700);
+    expect(block.match(/defaultWeight\(\)/g)).toHaveLength(1);
+    expect(block).toContain('contentScale = spreadScale(spread)');
   });
 
   it('both subtract what the card costs instead of taking a fraction', () => {
@@ -187,7 +186,7 @@ describe('the graph is sized for the space it is actually given', () => {
     expect(log).toContain('val boxW = size.widthDp - 2 * (CARD_INSET_DP + paddingFor(size))');
     expect(log).toContain('val box = room - (if (compact) LOG_CHROME_COMPACT_DP else chrome)');
     expect(log).toContain(
-      'PracticeGridBitmap.layoutFor(boxW, if (spread) (box * SPREAD_FILL).toInt() else box, density, MAX_GRID_DAYS)',
+      'PracticeGridBitmap.layoutFor(boxW, box, density, MAX_GRID_DAYS)',
     );
     // (The list card's graph — beside the streak number, in a wrap_content
     // row — keeps its share: `((h - STRIP_CHROME_DP) * 2) / 3`.)
@@ -226,8 +225,9 @@ describe('two rows always hold the tall cards’ graph', () => {
     // Compact keeps the date and the times, and moves the next prayer up
     // into the header, centred, to give its line and rule to the graph.
     expect(constOf(strip, 'STRIP_TALL_CHROME_DP') - constOf(strip, 'STRIP_COMPACT_CHROME_DP')).toBeLessThanOrEqual(60);
-    expect(strip).toContain('if (!oneRow) Header(m.header, m.hijri, d, center = if (!compact || !d.showTable) null');
-    expect(strip).toContain('&& !(compact && d.showTable)) DirRow(');
+    expect(strip).toContain('val topNext = d.showTable && !timesOnly && (compact || entry == Entry.STRIP)');
+    expect(strip).toContain('if (!oneRow || topNext) Header(m.header, m.hijri, d, center = if (!topNext) null');
+    expect(strip).toContain('&& !topNext) DirRow(');
     // A row and a half on Nova (190dp) has the graph, and the chrome is
     // its measure (106dp), a little over.
     expect(constOf(strip, 'STRIP_COMPACT_CHROME_DP')).toBeGreaterThanOrEqual(106);
@@ -271,10 +271,12 @@ describe('the tall cards’ graph fills the default size and grows no further', 
     expect(log).toContain('val spread = tall && h < GRAPH_SPREAD_MAX_DP');
   });
 
-  it('draws the spread rows short enough to stay width-bound on a card wider than its size', () => {
-    // Nova at a row and a half on a Pixel 10 Pro: 410dp against the 370 size.
-    const fill = Number(/SPREAD_FILL = ([\d.]+)f/.exec(support)![1]);
-    expect(1 / fill).toBeGreaterThanOrEqual(410 / 370 + 0.05);
+  it('stretches the graph to its room in the band, in one image, so the days stay in columns', () => {
+    // Rows cut apart and fitted one by one were scaled by slots a pixel
+    // apart, and stopped lining up; one stretched image has one scale.
+    expect(support).toContain('if (spread) ContentScale.FillBounds else ContentScale.Fit');
+    expect(support).not.toMatch(/SpreadGrid|gridRows/);
+    expect(strip).toContain('contentScale = spreadScale(spread)');
   });
 
   it('steps through the band finely enough for the spread to stay small', () => {

@@ -31,6 +31,7 @@ import androidx.glance.action.clickable
 import androidx.glance.appwidget.AndroidRemoteViews
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.background
+import androidx.glance.layout.ContentScale
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
@@ -627,7 +628,7 @@ internal data class CardSize(val widthDp: Int, val heightDp: Int)
  * row and a half is 190dp — the steps land on 190 and 254 so the two
  * sizes people place most get a graph drawn for their own height. The
  * steps are what the graph may come out short of its room by, before the
- * room is spread between its rows (`SpreadGrid`).
+ * graph is stretched to its room (`spreadScale`).
  */
 internal val STRETCHABLE_SIZES: Set<DpSize> = buildSet {
   for (h in listOf(66, 92, 112, 134, 176, 190, 206, 222, 238, 254, GRAPH_BAND_TOP_DP, GRAPH_SPREAD_MAX_DP)) add(DpSize(370.dp, h.dp))
@@ -649,23 +650,23 @@ internal const val GRAPH_BAND_TOP_DP = 270
 internal const val GRAPH_SPREAD_MAX_DP = 300
 
 /**
- * How much of its box a spread graph is drawn for. The layout is drawn for
- * its size map's width, and the card is up to a step wider; the rows are
- * scaled to the card's width, so they are drawn this much short of the
- * height to keep them width-bound — inside the card's edges on both sides
- * — with what is left going between them.
+ * How the tall cards' graph meets its room in the two-row band: STRETCHED
+ * to it, so it reaches the room's four edges whatever the launcher made of
+ * the card, and the days grow with the room rather than the gaps.
  *
- * WIDTH-BOUND IS WHAT KEEPS THE DAYS IN COLUMNS. A row that is bound by
- * its slot's height instead is scaled by that height, and the slots are
- * whole pixels — some a pixel shorter than others — so rows came out a
- * few percent narrower than their neighbours and the days stopped lining
- * up. 0.92 left room for a card 9% wider than its size map's width; Nova
- * at a row and a half on a Pixel 10 Pro is 11% wider (410dp against 370),
- * so the rows went height-bound there. 0.85 covers a card 17% wider —
- * the widest four-cell card on a phone — and leaves the days as large as
- * that allows: 0.8 spent the difference as gaps between the rows.
+ * The graph is drawn for its size map's box, and the card's room is a
+ * little more on each side — up to a step taller (16dp on a box of 60 to
+ * 100) and a few percent wider — so the days come out within a tenth or so
+ * of square, which PracticeGridBitmap already allows itself (MAX_ROW_RATIO).
+ *
+ * Fitting the whole kept the days square and left the rest as a band of
+ * empty card; cutting the rows apart and fitting each spread the rest
+ * between them, but a row fitted by its slot's height is scaled by that
+ * height, the slots are whole pixels, and rows a pixel apart came out a few
+ * percent different in width — the days stopped lining up from row to row.
+ * A stretched image has one scale per axis, so they cannot.
  */
-internal const val SPREAD_FILL = 0.85f
+internal fun spreadScale(spread: Boolean): ContentScale = if (spread) ContentScale.FillBounds else ContentScale.Fit
 
 @Composable
 internal fun cardSize(): CardSize {

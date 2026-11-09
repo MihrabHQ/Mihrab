@@ -281,7 +281,7 @@ describe('the streak sits on the line with what is next', () => {
     return file.slice(at, at + 1400);
   };
   const STRIP_ROW = 'if (m.nextName.isNotEmpty()) cell { Label(m.nextName, 11f';
-  const LOG_ROW = 'm.next?.let { (name, at) ->';
+  const LOG_ROW = 'm.next?.takeIf { tall }?.let { (name, at) ->';
 
   it.each([
     ['the strip', strip, STRIP_ROW, 'practice.block.streak.toString()'],
@@ -301,7 +301,7 @@ describe('the streak sits on the line with what is next', () => {
     // The night times belong to the times, so they are above the rule and
     // the band between the times and the graph is a single line on both.
     const night = strip.indexOf('m.night?.let { n ->');
-    const rule = strip.indexOf('if (!tight && !(compact && d.showTable)) Rule(d.rule, top = 6, bottom = 8)');
+    const rule = strip.indexOf('if (!tight && !topNext) Rule(d.rule, top = 6, bottom = 8)');
     const next = strip.indexOf(STRIP_ROW);
     expect(night).toBeGreaterThan(-1);
     expect(night).toBeLessThan(rule);
@@ -314,7 +314,7 @@ describe('the streak sits on the line with what is next', () => {
     // The Log card carries one condition the strip does not — a cell too
     // short for the footer drops it, and a rule over a footer that is not
     // there is a line to nowhere.
-    expect(strip).toContain('if (!tight && !(compact && d.showTable)) Rule(d.rule, top = 6, bottom = 8)');
+    expect(strip).toContain('if (!tight && !topNext) Rule(d.rule, top = 6, bottom = 8)');
     expect(log).toContain('if (!tight && showFoot) Rule(Palette.RULE, top = 6, bottom = 8)');
   });
 
@@ -357,8 +357,9 @@ describe('the streak sits on the line with what is next', () => {
     ['the log card', log],
   ])('%s centres the graph in whatever slack is left', (_l, file) => {
     // The row count quantises, so up to a row's worth of the box goes
-    // unspent. Fit centres the bitmap and splits it above and below.
-    expect(file).toContain('contentScale = ContentScale.Fit');
+    // unspent. Fit centres the bitmap and splits it above and below —
+    // except the tall cards in the two-row band, stretched to their room.
+    expect(file).toContain('contentScale = spreadScale(spread)');
   });
 
   it('reads at the same size on both cards', () => {
