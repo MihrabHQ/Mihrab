@@ -135,6 +135,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val side = sideDp(design)
     val ends = when {
       design == Design.STRIP && size.heightDp in 1 until STRIP_ROOMY_CONTENT_DP -> 6
+      // The compact tall card (Strip's `compact`) spends its room on the graph.
+      design == Design.STRIP && entry == Entry.TALL && !graphFits(size.heightDp) && compactGraphFits(size.heightDp) -> 6
       design == Design.SMALL -> 10
       else -> 14
     }
@@ -185,6 +187,9 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
 
   /** Room for the practice graph under the strip's chrome: a box of at least GRID_MIN_BOX_DP. */
   private fun graphFits(h: Int) = h > 0 && h - STRIP_TALL_CHROME_DP >= GRID_MIN_BOX_DP
+
+  /** …and under the compact tall card's: the ends and the times. */
+  private fun compactGraphFits(h: Int) = h > 0 && h - STRIP_COMPACT_CHROME_DP >= GRID_MIN_BOX_DP
 
   private fun sideDp(d: Design) = when (d) {
     Design.SMALL -> 10
@@ -508,20 +513,28 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     // The graph wherever there is room for it — the tall card as placed,
     // and either card stretched (STRETCHABLE_SIZES) — and not where there
     // is not: a tall card squeezed short drew it as a line of dots.
-    val practice = m.practice?.takeIf { graphFits(h) }
+    //
+    // THE TALL CARD IS ALWAYS 4×2 WITH ITS GRAPH. No launcher can be told
+    // how many rows to place (Pixel reads targetCellHeight, Nova the old
+    // 70dp-a-row rule), so the card asks for two everywhere and makes two
+    // enough: where two rows are short of the full card, it gives up the
+    // header, the night marks and the next-prayer line — the highlighted
+    // column already says what is next — before the graph (`compact`).
+    val compact = m.practice != null && entry == Entry.TALL && !graphFits(h) && compactGraphFits(h)
+    val practice = m.practice?.takeIf { graphFits(h) || compact }
     val slack = if (h <= 0 || practice != null) 0
     else ((h - budget) / 2).coerceIn(0, STRIP_SLACK_CAP_DP)
-    val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP
+    val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP && !compact
     val columns = m.rows.take(STRIP_COLUMNS)
     val columnDp = (size.widthDp - insetDp(context, size)).toFloat() / columns.size.coerceAtLeast(1) - TIME_GUTTER_DP
     val baseSp = fitTimesSp(context, columns.map { it.minutes }, m.clock, columnDp, TIME_MAX_SP, TIME_MIN_SP)
     val timeSp = scaledClockSp(context, columns.map { it.minutes }, m.clock, baseSp, d.timeScale, if (size.widthDp > 0) columnDp else 0f)
 
     DirColumn(modifier = GlanceModifier.fillMaxSize()) {
-      if (!oneRow) Header(m.header, m.hijri, d)
+      if (!oneRow && !compact) Header(m.header, m.hijri, d)
       if (d.showTable) {
         DirRow(
-          modifier = GlanceModifier.fillMaxWidth().padding(top = (if (timesOnly) 0 else 8 + slack).dp, bottom = slack.dp),
+          modifier = GlanceModifier.fillMaxWidth().padding(top = (if (timesOnly || compact) 0 else 8 + slack).dp, bottom = slack.dp),
           verticalAlignment = Alignment.CenterVertically,
         ) {
           for (r in columns) cell {
@@ -542,7 +555,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
             }
           }
         }
-        m.night?.let { n ->
+        m.night?.takeUnless { compact }?.let { n ->
           DirRow(modifier = GlanceModifier.fillMaxWidth().padding(top = 4.dp)) {
             cell { Label(n.left, 11f, d.muted, modifier = GlanceModifier.defaultWeight()) }
             n.mid?.let { mid -> cell { Label(mid, 11f, d.muted, modifier = GlanceModifier.padding(horizontal = 6.dp)) } }
@@ -567,8 +580,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           DirColumn(modifier = GlanceModifier.fillMaxWidth()) { NextBlock(context, m, size, top = 0, nameSp = nameSp) }
         }
       }
-      if (!tight) Rule(d.rule, top = 6, bottom = 8)
-      if (!timesOnly || !d.showTable) DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+      if (!tight && !compact) Rule(d.rule, top = 6, bottom = 8)
+      if ((!timesOnly || !d.showTable) && !compact) DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         // The next-prayer line is the NextBlock's when the table is hidden.
         if (d.showTable) {
           if (m.nextName.isNotEmpty()) cell { Label(m.nextName, 11f, d.text) }
@@ -593,8 +606,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         }
       }
       practice?.let { pr ->
-        Rule(d.ruleStrong, top = 8, bottom = 8)
-        val box = size.heightDp - STRIP_TALL_CHROME_DP - (if (showFoot) STRIP_FOOT_DP else 0)
+        if (compact) Rule(d.ruleStrong, top = 4, bottom = 4) else Rule(d.ruleStrong, top = 8, bottom = 8)
+        val box = size.heightDp - (if (compact) STRIP_COMPACT_CHROME_DP else STRIP_TALL_CHROME_DP) - (if (showFoot) STRIP_FOOT_DP else 0)
         PracticeImage(context, pr.block, size.widthDp - insetDp(context, size), box, MAX_GRID_DAYS, m.colors.accent,
           GlanceModifier.fillMaxWidth().defaultWeight())
         if (showFoot) Foot(pr, top = 7, d)
@@ -771,6 +784,13 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
      */
     private const val STRIP_TALL_CHROME_DP = 167
     private const val STRIP_FOOT_DP = 19
+    /**
+     * The compact tall card's chrome: the tall card's less the header, the
+     * night marks, the rule and the next-prayer line, with the short
+     * strip's 6dp ends and a tighter rule over the graph — about 80dp,
+     * reckoned a little over as STRIP_TALL_CHROME_DP is.
+     */
+    private const val STRIP_COMPACT_CHROME_DP = 88
     /** The strip's side padding (sideDp). */
     private const val STRIP_SIDE_DP = 8
     /** The least box the graph is drawn into: six rows of the smallest cell, and its gaps. */

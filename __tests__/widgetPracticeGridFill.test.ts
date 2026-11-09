@@ -300,8 +300,8 @@ describe('the streak sits on the line with what is next', () => {
   it('is one line on the prayer card, as it is on the Log card', () => {
     // The night times belong to the times, so they are above the rule and
     // the band between the times and the graph is a single line on both.
-    const night = strip.indexOf('m.night?.let { n ->');
-    const rule = strip.indexOf('if (!tight) Rule(d.rule, top = 6, bottom = 8)');
+    const night = strip.indexOf('m.night?.takeUnless { compact }?.let { n ->');
+    const rule = strip.indexOf('if (!tight && !compact) Rule(d.rule, top = 6, bottom = 8)');
     const next = strip.indexOf(STRIP_ROW);
     expect(night).toBeGreaterThan(-1);
     expect(night).toBeLessThan(rule);
@@ -314,7 +314,7 @@ describe('the streak sits on the line with what is next', () => {
     // The Log card carries one condition the strip does not — a cell too
     // short for the footer drops it, and a rule over a footer that is not
     // there is a line to nowhere.
-    expect(strip).toContain('if (!tight) Rule(d.rule, top = 6, bottom = 8)');
+    expect(strip).toContain('if (!tight && !compact) Rule(d.rule, top = 6, bottom = 8)');
     expect(log).toContain('if (!tight && showFoot) Rule(Palette.RULE, top = 6, bottom = 8)');
   });
 

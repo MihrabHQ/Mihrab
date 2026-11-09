@@ -137,7 +137,7 @@ describe('the graph is drawn for the room the card leaves it', () => {
   it('the log card chooses its chrome by its padding, and gates on the box', () => {
     expect(log).toContain('val chrome = if (tight) LOG_CHROME_TIGHT_DP else LOG_CHROME_ROOMY_DP');
     expect(log).toContain('val graphBox = h - chrome');
-    expect(log).toContain('val graphHeight = h > 0 && graphBox >= GRID_MIN_BOX_DP');
+    expect(log).toContain('val graphHeight = h > 0 && (graphBox >= GRID_MIN_BOX_DP || compact)');
     // Roomy pays 8dp of padding, 8dp of chip and a 15dp rule the tight
     // card does without.
     expect(constOf(log, 'LOG_CHROME_ROOMY_DP') - constOf(log, 'LOG_CHROME_TIGHT_DP')).toBe(31);
@@ -163,7 +163,7 @@ describe('the graph is drawn for the room the card leaves it', () => {
  */
 describe('the graph is sized for the space it is actually given', () => {
   it('the strip gives the whole remainder to the graph alone', () => {
-    const at = strip.indexOf('practice?.let { pr ->\n        Rule(');
+    const at = strip.indexOf('practice?.let { pr ->\n        if (compact) Rule(');
     expect(at).toBeGreaterThan(-1);
     const block = strip.slice(at, at + 700);
     expect(block.match(/defaultWeight\(\)/g)).toHaveLength(1);
@@ -180,11 +180,13 @@ describe('the graph is sized for the space it is actually given', () => {
 
   it('both subtract what the card costs instead of taking a fraction', () => {
     expect(strip).toContain(
-      'val box = size.heightDp - STRIP_TALL_CHROME_DP - (if (showFoot) STRIP_FOOT_DP else 0)',
+      'val box = size.heightDp - (if (compact) STRIP_COMPACT_CHROME_DP else STRIP_TALL_CHROME_DP) - (if (showFoot) STRIP_FOOT_DP else 0)',
     );
     expect(strip).toContain('size.widthDp - insetDp(context, size), box,');
     expect(log).toContain('val boxW = size.widthDp - 2 * (CARD_INSET_DP + paddingFor(size))');
-    expect(log).toContain('PracticeGridBitmap.layoutFor(boxW, graphBox, density, MAX_GRID_DAYS)');
+    expect(log).toContain(
+      'PracticeGridBitmap.layoutFor(boxW, if (compact) h - LOG_CHROME_COMPACT_DP else graphBox, density, MAX_GRID_DAYS)',
+    );
     // (The list card's graph — beside the streak number, in a wrap_content
     // row — keeps its share: `((h - STRIP_CHROME_DP) * 2) / 3`.)
   });
@@ -201,5 +203,41 @@ describe('the graph is sized for the space it is actually given', () => {
     // guess left over from a smaller layout.
     expect(stripChrome).toBeGreaterThan(150);
     expect(logChrome).toBeGreaterThan(150);
+  });
+});
+
+/**
+ * THE TALL CARDS ARE ALWAYS 4×2 WITH THEIR GRAPH. Launchers disagree on how
+ * many rows a widget takes (Pixel reads targetCellHeight, Nova the old
+ * 70dp-a-row rule), so the cards ask for two rows everywhere and, where two
+ * rows are short of the full card, give up their header and footer lines
+ * before they give up the graph.
+ */
+describe('two rows always hold the tall cards’ graph', () => {
+  // How much shorter than the full card's each compact card still draws its
+  // smallest graph — the room that short two-row launchers took from it.
+
+  it('the compact prayer card fits its smallest graph into two short rows', () => {
+    expect(strip).toContain(
+      'val compact = m.practice != null && entry == Entry.TALL && !graphFits(h) && compactGraphFits(h)',
+    );
+    expect(constOf(strip, 'STRIP_TALL_CHROME_DP') - constOf(strip, 'STRIP_COMPACT_CHROME_DP')).toBeGreaterThanOrEqual(60);
+    // Compact drops the header, the night marks and the next-prayer line.
+    expect(strip).toContain('if (!oneRow && !compact) Header(');
+    expect(strip).toContain('m.night?.takeUnless { compact }');
+    expect(strip).toContain('&& !compact) DirRow(');
+  });
+
+  it('and so does the compact log card, without its footer', () => {
+    expect(log).toContain(
+      'val compact = tall && h > 0 && graphBox < GRID_MIN_BOX_DP && h - LOG_CHROME_COMPACT_DP >= GRID_MIN_BOX_DP',
+    );
+    expect(constOf(log, 'LOG_CHROME_ROOMY_DP') - constOf(log, 'LOG_CHROME_COMPACT_DP')).toBeGreaterThanOrEqual(40);
+    expect(log).toContain('val showFoot = fit.showFoot && !compact');
+  });
+
+  it('only the tall entries go compact; the strip keeps the full threshold', () => {
+    expect(constOf(strip, 'STRIP_COMPACT_CHROME_DP')).toBeLessThan(constOf(strip, 'STRIP_TALL_CHROME_DP'));
+    expect(constOf(log, 'LOG_CHROME_COMPACT_DP')).toBeLessThan(constOf(log, 'LOG_CHROME_TIGHT_DP'));
   });
 });

@@ -57,7 +57,7 @@ internal class LogGlanceWidget(
    * the room, not the entry: a launcher that stretches the cards (Nova)
    * gives a 4×1 the room and a squeezed 4×2 none (STRETCHABLE_SIZES).
    */
-  @Suppress("unused") private val tall: Boolean = false,
+  private val tall: Boolean = false,
 ) : MihrabGlanceWidget("log") {
 
   override val sizeMode: SizeMode = SizeMode.Responsive(STRETCHABLE_SIZES)
@@ -232,7 +232,11 @@ internal class LogGlanceWidget(
     // a 15dp rule less once the card is tight. What is left is the graph's.
     val chrome = if (tight) LOG_CHROME_TIGHT_DP else LOG_CHROME_ROOMY_DP
     val graphBox = h - chrome
-    val graphHeight = h > 0 && graphBox >= GRID_MIN_BOX_DP
+    // THE TALL CARD IS ALWAYS 4×2 WITH ITS GRAPH (PrayerGlanceWidget's
+    // `compact`): where two rows are short of the full card, the footer
+    // line goes before the graph does.
+    val compact = tall && h > 0 && graphBox < GRID_MIN_BOX_DP && h - LOG_CHROME_COMPACT_DP >= GRID_MIN_BOX_DP
+    val graphHeight = h > 0 && (graphBox >= GRID_MIN_BOX_DP || compact)
     // Null when there is no block or no room for it: one value, no `!!`.
     val practice = m.practice?.takeIf { graphHeight }
     val showGrid = practice != null
@@ -288,7 +292,7 @@ internal class LogGlanceWidget(
     val nameSp = fit.nameSp
     val timeSp = fit.timeSp
     val footSp = fit.footSp
-    val showFoot = fit.showFoot
+    val showFoot = fit.showFoot && !compact
 
     DirColumn(
       modifier = GlanceModifier.fillMaxSize(),
@@ -328,12 +332,12 @@ internal class LogGlanceWidget(
         }
       }
       practice?.let { pr ->
-        Rule(Palette.RULE, top = 8, bottom = 8)
+        if (compact) Rule(Palette.RULE, top = 4, bottom = 4) else Rule(Palette.RULE, top = 8, bottom = 8)
         // The card's chrome off the height, the padding off the width; the
         // grid gets the rest — PrayerWidgetLogProvider.bindGrid's box.
         val density = context.resources.displayMetrics.density
         val boxW = size.widthDp - 2 * (CARD_INSET_DP + paddingFor(size))
-        val grid = PracticeGridBitmap.layoutFor(boxW, graphBox, density, MAX_GRID_DAYS)
+        val grid = PracticeGridBitmap.layoutFor(boxW, if (compact) h - LOG_CHROME_COMPACT_DP else graphBox, density, MAX_GRID_DAYS)
         Image(
           provider = ImageProvider(
             practiceGrid(pr, grid.rows, grid.columns, grid.cellWPx, grid.cellHPx, grid.gapPx, m.colors.accent, mirror = LocalDirection.current.rtl),
@@ -457,6 +461,11 @@ internal class LogGlanceWidget(
     private const val LOG_CHROME_TIGHT_DP = 131
     /** Under this much room the graph is left out rather than squashed. */
     private const val GRID_MIN_BOX_DP = 36
+    /**
+     * The compact tall card's chrome: the tight card's less the footer line
+     * and 8dp of the rule over the graph — about 108dp, reckoned over.
+     */
+    private const val LOG_CHROME_COMPACT_DP = 110
     private const val CARD_INSET_DP = 6
     private const val MAX_GRID_DAYS = 210
   }
