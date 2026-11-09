@@ -267,6 +267,12 @@ describe('the tall cards’ graph fills the default size and grows no further', 
     expect(log).toContain('val spread = tall && h < GRAPH_SPREAD_MAX_DP');
   });
 
+  it('draws the spread rows short enough to stay width-bound on a card wider than its size', () => {
+    // Nova at a row and a half on a Pixel 10 Pro: 410dp against the 370 size.
+    const fill = Number(/SPREAD_FILL = ([\d.]+)f/.exec(support)![1]);
+    expect(1 / fill).toBeGreaterThanOrEqual(410 / 370 + 0.05);
+  });
+
   it('steps through the band finely enough for the spread to stay small', () => {
     const band = /for \(h in listOf\(([\w, ]+)\)\) add\(DpSize\(370\.dp/.exec(support)![1]
       .split(',').map(s => s.trim()).map(s => (/^\d+$/.test(s) ? Number(s) : s === 'GRAPH_BAND_TOP_DP' ? top : max))

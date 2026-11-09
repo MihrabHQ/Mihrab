@@ -652,8 +652,16 @@ internal const val GRAPH_SPREAD_MAX_DP = 300
  * scaled to the card's width, so they are drawn this much short of the
  * height to keep them width-bound — inside the card's edges on both sides
  * — with what is left going between them.
+ *
+ * WIDTH-BOUND IS WHAT KEEPS THE DAYS IN COLUMNS. A row that is bound by
+ * its slot's height instead is scaled by that height, and the slots are
+ * whole pixels — some a pixel shorter than others — so rows came out a
+ * few percent narrower than their neighbours and the days stopped lining
+ * up. 0.92 left room for a card 9% wider than its size map's width; Nova
+ * at a row and a half on a Pixel 10 Pro is 11% wider (410dp against 370),
+ * so the rows went height-bound there. 0.8 covers a card a quarter wider.
  */
-internal const val SPREAD_FILL = 0.92f
+internal const val SPREAD_FILL = 0.8f
 
 @Composable
 internal fun cardSize(): CardSize {
