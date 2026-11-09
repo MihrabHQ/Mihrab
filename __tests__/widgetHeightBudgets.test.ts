@@ -219,15 +219,15 @@ describe('two rows always hold the tall cards’ graph', () => {
   // How much shorter than the full card's each compact card still draws its
   // smallest graph — the room that short two-row launchers took from it.
 
-  it('the compact prayer card fits its smallest graph into two short rows', () => {
+  it('the compact prayer card keeps its top and shrinks its graph', () => {
     expect(strip).toContain(
       'val compact = m.practice != null && entry == Entry.TALL && !graphFits(h) && compactGraphFits(h)',
     );
-    expect(constOf(strip, 'STRIP_TALL_CHROME_DP') - constOf(strip, 'STRIP_COMPACT_CHROME_DP')).toBeGreaterThanOrEqual(60);
-    // Compact drops the header, the night marks and the next-prayer line.
-    expect(strip).toContain('if (!oneRow && !compact) Header(');
-    expect(strip).toContain('m.night?.takeUnless { compact }');
-    expect(strip).toContain('&& !compact) DirRow(');
+    // Compact keeps every line on top — the date, the night marks, the
+    // next prayer — and saves only on the ends and the graph's rule.
+    expect(constOf(strip, 'STRIP_TALL_CHROME_DP') - constOf(strip, 'STRIP_COMPACT_CHROME_DP')).toBe(24);
+    expect(strip).toContain('if (!oneRow) Header(');
+    expect(strip).not.toMatch(/!compact\)/);
   });
 
   it('and so does the compact log card, without its footer', () => {
