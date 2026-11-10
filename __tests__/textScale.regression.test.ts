@@ -29,7 +29,6 @@ const TABULAR_REQUIRED = [
   'src/screens/home/PrayerRow.tsx', // HH:MM in the day-card grid
   'src/screens/home/HeroToday.tsx', // countdown + HH:MM in the hero
   'src/screens/compass/BearingHeader.tsx', // "N° from north"
-  'src/screens/settings/WidgetCard.tsx', // "88%" opacity readout
 ];
 
 /**
@@ -46,7 +45,6 @@ const FONT_CLAMP_REQUIRED = [
   // CompassDial is one SVG now (redesign-plan §4): its numerals are drawn,
   // not laid out as Text, and an instrument's face does not follow the
   // system font size — the screen reader gets the bearing from the label.
-  'src/screens/settings/WidgetCard.tsx',
 ];
 
 function read(rel: string): string {

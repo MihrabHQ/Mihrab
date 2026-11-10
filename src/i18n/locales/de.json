@@ -264,7 +264,6 @@
     "widgetHighlightHexPlaceholder": "#6BC98A",
     "widgetConfigureHint": "Sie können auch das Widget → Einstellungen (Zahnrad) berühren und halten, um dieselben Optionen auf Android anzupassen.",
     "prayerWidgetTitle": "Gebetszeiten-Widget",
-    "prayerWidgetFooter": "Dieselben Optionen gibt es am Widget selbst: gedrückt halten, dann Einstellungen.",
     "prayerWidgetOnly": "Nur für die Gebetszeiten-Widgets (Nächstes Gebet und Gebetszeiten). Andere Widgets bleiben unverändert.",
     "widgetTextCustom": "Eigene Farbe",
     "widgetTextHexInvalid": "Sechs Hex-Ziffern, z. B. #FFD27F",

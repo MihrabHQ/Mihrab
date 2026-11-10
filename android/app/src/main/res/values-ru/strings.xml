@@ -230,4 +230,8 @@
     <string name="widget_description_tall">Шесть времён дня с городом, датой по хиджре и графиком практики. 4×2.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Отметить намазы (высокое)</string>
     <string name="widget_description_log_tall">Нажмите на намаз, чтобы отметить его вовремя, с обратным отсчётом до следующего и графиком практики. 4×2.</string>
+    <string name="widget_configure_all_title">Все виджеты</string>
+    <string name="widget_configure_since_adhan">Время после азана</string>
+    <string name="widget_configure_since_adhan_off">Выкл.</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d мин</string>
 </resources>

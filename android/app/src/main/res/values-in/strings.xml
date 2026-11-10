@@ -188,4 +188,8 @@
     <string name="widget_description_tall">Enam waktu hari ini dengan kota, tanggal Hijriah, dan grafik amalan. 4×2.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Catat hari ini (tinggi)</string>
     <string name="widget_description_log_tall">Ketuk salat untuk mencatatnya tepat waktu, dengan hitung mundur ke berikutnya dan grafik amalan. 4×2.</string>
+    <string name="widget_configure_all_title">Semua widget</string>
+    <string name="widget_configure_since_adhan">Waktu sejak azan</string>
+    <string name="widget_configure_since_adhan_off">Mati</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d mnt</string>
 </resources>

@@ -264,7 +264,6 @@
     "widgetHighlightHexPlaceholder": "#6BC98A",
     "widgetConfigureHint": "På Android kan du också trycka länge på widgeten → inställningar (kugghjul) för samma val.",
     "prayerWidgetTitle": "Bönetidswidget",
-    "prayerWidgetFooter": "Samma val finns på själva widgeten: håll fingret på den och välj Inställningar.",
     "prayerWidgetOnly": "Gäller bara bönetidswidgetarna (Nästa bön och Bönetider). Andra widgetar påverkas inte.",
     "widgetTextCustom": "Egen färg",
     "widgetTextHexInvalid": "Sex hexsiffror, t.ex. #FFD27F",

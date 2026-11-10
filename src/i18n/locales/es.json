@@ -264,7 +264,6 @@
     "widgetHighlightHexPlaceholder": "#6BC98A",
     "widgetConfigureHint": "También puedes tocar y mantener presionado el widget → configuración (engranaje) para ajustar las mismas opciones en Android.",
     "prayerWidgetTitle": "Widget de horarios",
-    "prayerWidgetFooter": "Las mismas opciones están en el propio widget: mantenlo pulsado y elige Ajustes.",
     "prayerWidgetOnly": "Solo para los widgets de horarios (Próxima oración y Horarios). Los demás widgets no cambian.",
     "widgetTextCustom": "Color personalizado",
     "widgetTextHexInvalid": "Seis dígitos hexadecimales, como #FFD27F",

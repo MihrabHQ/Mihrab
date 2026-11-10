@@ -198,4 +198,8 @@
     <string name="widget_description_tall">Die sechs Zeiten des Tages mit Stadt, Hidschri-Datum und der Praxisgrafik. 4×2.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Heute eintragen (hoch)</string>
     <string name="widget_description_log_tall">Tippe auf ein Gebet, um es pünktlich einzutragen, mit Countdown zum nächsten und der Praxisgrafik. 4×2.</string>
+    <string name="widget_configure_all_title">Alle Widgets</string>
+    <string name="widget_configure_since_adhan">Zeit seit dem Adhan</string>
+    <string name="widget_configure_since_adhan_off">Aus</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d Min.</string>
 </resources>

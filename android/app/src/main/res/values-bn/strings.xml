@@ -193,4 +193,8 @@
     <string name="widget_description_tall">আজকের ছয়টি সময়, শহর, হিজরি তারিখ ও আমলের গ্রাফসহ। 4×2।</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 আজকের লগ (উঁচু)</string>
     <string name="widget_description_log_tall">সময়মতো লগ করতে একটি নামাজে ট্যাপ করুন, পরেরটির কাউন্টডাউন ও আমলের গ্রাফসহ। 4×2।</string>
+    <string name="widget_configure_all_title">সব উইজেট</string>
+    <string name="widget_configure_since_adhan">আজানের পর থেকে সময়</string>
+    <string name="widget_configure_since_adhan_off">বন্ধ</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d মিনিট</string>
 </resources>

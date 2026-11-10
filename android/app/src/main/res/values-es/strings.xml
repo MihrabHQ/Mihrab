@@ -198,4 +198,8 @@
     <string name="widget_description_tall">Las seis horas de hoy con la ciudad, la fecha hiyrí y el gráfico de práctica. 4×2.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Registrar hoy (alto)</string>
     <string name="widget_description_log_tall">Toca una oración para registrarla a tiempo, con la cuenta atrás hasta la siguiente y el gráfico de práctica. 4×2.</string>
+    <string name="widget_configure_all_title">Todos los widgets</string>
+    <string name="widget_configure_since_adhan">Tiempo desde el adhan</string>
+    <string name="widget_configure_since_adhan_off">Desactivado</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d min</string>
 </resources>

@@ -53,6 +53,8 @@ export interface PrayerWidgetInterface {
     showCountdown: boolean,
     showTable: boolean,
     timeScalePercent: number,
+    /** Time since the adhan (#111), minutes; 0 is off. */
+    sinceAdhanMinutes: number,
   ): Promise<void>;
   getAndroidPrayerWidgetDisplay?(): Promise<{
     textHex: string;
@@ -60,6 +62,8 @@ export interface PrayerWidgetInterface {
     showCountdown: boolean;
     showTable: boolean;
     timeScale: number;
+    /** -1 when the native side has never stored one. */
+    sinceAdhan?: number;
   } | null>;
   getAndroidWidgetAppearance?(): Promise<{
     opacity: number;

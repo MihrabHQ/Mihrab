@@ -220,4 +220,8 @@
     <string name="widget_description_tall">Les six heures du jour avec la ville, la date hégirienne et le graphique de pratique. 4×2.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Journal du jour (haut)</string>
     <string name="widget_description_log_tall">Touchez une prière pour la consigner à l\'heure, avec le compte à rebours jusqu\'à la suivante et le graphique de pratique. 4×2.</string>
+    <string name="widget_configure_all_title">Tous les widgets</string>
+    <string name="widget_configure_since_adhan">Temps depuis l’adhan</string>
+    <string name="widget_configure_since_adhan_off">Désactivé</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d min</string>
 </resources>

@@ -10,10 +10,10 @@
  *   • Prayer times widget (`PrayerWidgetCard`): text colour, what is shown
  *     and the size of the times, which ONLY the prayer-times widgets read.
  *
- *   • Time since the adhan (`WidgetSinceAdhanCard`, #111): what the
- *     prayer-times widgets count after a prayer comes in — the one widget
- *     setting iOS has too, so the page is on both platforms now and the
- *     two Android cards draw nothing on iOS.
+ *   • Time since the adhan (#111): what the prayer-times widgets count
+ *     after a prayer comes in — the one widget setting iOS has too. On
+ *     Android it is a row of the prayer-times card; on iOS, where the two
+ *     Android cards draw nothing, `WidgetSinceAdhanCard` is the page.
  *
  * On Appearance they were the bottom of a long page about the app's own
  * look; here they are the page, and the line between them is the point.

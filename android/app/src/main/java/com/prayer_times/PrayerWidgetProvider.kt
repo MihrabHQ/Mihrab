@@ -405,7 +405,7 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
 
       val json = WidgetPayloadSource.json(context) ?: return
       val next = try {
-        nextBoundaryMillis(JSONObject(json))
+        nextBoundaryMillis(JSONObject(json), PrayerWidgetDisplay.sinceAdhanMinutes(context, JSONObject(json).optInt("sinceAdhanMinutes", 0)))
       } catch (_: Exception) {
         null
       } ?: return
@@ -454,7 +454,7 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
      * from `WallClock`, so the night the clocks go back lands on the first
      * of the two readings, as iOS and the app do.
      */
-    private fun nextBoundaryMillis(o: JSONObject): Long? {
+    private fun nextBoundaryMillis(o: JSONObject, window: Int): Long? {
       val todayKey = todayDateKey()
       val tomorrow = dayAfter(o, todayKey)
       val yesterday = dayBefore(o, todayKey)
@@ -465,7 +465,6 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
       // The ends of the count-ups after each prayer (#111) are boundaries
       // too: there the card goes back to counting down. Each measured
       // against what follows it, the next day's times included.
-      val window = o.optInt("sinceAdhanMinutes", 0)
       fun ends(day: JSONObject?, own: List<Int>, after: List<Int>) =
         WidgetInstants.sinceEnds(prayerMinutes(day, o), own + after.map { it + WallClock.MINUTES_PER_DAY }, window)
       return WidgetInstants.next(

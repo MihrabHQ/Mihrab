@@ -264,7 +264,6 @@
     "widgetHighlightHexPlaceholder": "#6बीसी98ए",
     "widgetConfigureHint": "आप एंड्रॉइड पर समान विकल्पों को समायोजित करने के लिए विजेट → सेटिंग्स (गियर) को भी स्पर्श करके रख सकते हैं।",
     "prayerWidgetTitle": "नमाज़ समय विजेट",
-    "prayerWidgetFooter": "यही विकल्प विजेट पर भी हैं: विजेट को दबाए रखें, फिर सेटिंग्स चुनें।",
     "prayerWidgetOnly": "केवल नमाज़ समय विजेट के लिए (अगली नमाज़ और नमाज़ के समय)। दूसरे विजेट पर असर नहीं पड़ता।",
     "widgetTextCustom": "अपना रंग",
     "widgetTextHexInvalid": "छह हेक्स अंक, जैसे #FFD27F",

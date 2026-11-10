@@ -193,4 +193,8 @@
     <string name="widget_description_tall">آج کے چھ اوقات، شہر، ہجری تاریخ اور عمل کے گراف کے ساتھ۔ 4×2۔</string>
     <string name="widget_name_log_tall">محراب \u00b7 آج کا اندراج (اونچا)</string>
     <string name="widget_description_log_tall">وقت پر درج کرنے کے لیے کسی نماز پر ٹیپ کریں، اگلی تک الٹی گنتی اور عمل کے گراف کے ساتھ۔ 4×2۔</string>
+    <string name="widget_configure_all_title">تمام ویجیٹس</string>
+    <string name="widget_configure_since_adhan">اذان کے بعد کا وقت</string>
+    <string name="widget_configure_since_adhan_off">بند</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d منٹ</string>
 </resources>

@@ -57,7 +57,9 @@ describe('the two kinds of setting are told apart', () => {
 
   it('says at the top of its own card that it is the prayer-times widget only', () => {
     expect(PRAYER_CARD).toMatch(/title=\{t\('settings\.prayerWidgetTitle'/);
-    expect(PRAYER_CARD).toMatch(/styles\.banner[\s\S]{0,400}settings\.prayerWidgetOnly/);
+    // As the group's footer, not a coloured notice above the first switch.
+    expect(PRAYER_CARD).toMatch(/footer=\{t\(\s*'settings\.prayerWidgetOnly'/);
+    expect(PRAYER_CARD).not.toMatch(/styles\.banner/);
   });
 
   it('draw nothing off Android', () => {
@@ -102,7 +104,7 @@ describe('the text colour is common to every widget', () => {
   });
 
   it('is on every widget\'s own settings screen, outside the prayer-times section', () => {
-    const textAt = LAYOUT.indexOf('widget_configure_text_group');
+    const textAt = LAYOUT.indexOf('widget_configure_text_swatches');
     const prayerAt = LAYOUT.indexOf('widget_configure_prayer_section');
     expect(textAt).toBeGreaterThan(-1);
     expect(textAt).toBeLessThan(prayerAt);

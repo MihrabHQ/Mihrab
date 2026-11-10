@@ -264,7 +264,6 @@
     "widgetHighlightHexPlaceholder": "#6BC98A",
     "widgetConfigureHint": "您还可以触摸并按住小部件 → 设置（齿轮）来调整 Android 上的相同选项。",
     "prayerWidgetTitle": "礼拜时间小组件",
-    "prayerWidgetFooter": "小组件本身也有相同选项：长按小组件，然后选择设置。",
     "prayerWidgetOnly": "仅适用于礼拜时间小组件（下一次礼拜和礼拜时间），其他小组件不受影响。",
     "widgetTextCustom": "自定义颜色",
     "widgetTextHexInvalid": "六位十六进制数字，例如 #FFD27F",

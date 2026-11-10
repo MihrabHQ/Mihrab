@@ -178,4 +178,8 @@
     <string name="widget_description_tall">今天的六个时间，含城市、伊历日期和功课图表。4×2。</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 记录今日（高）</string>
     <string name="widget_description_log_tall">点按一次礼拜以记录按时完成，并显示到下一次的倒计时和功课图表。4×2。</string>
+    <string name="widget_configure_all_title">所有小组件</string>
+    <string name="widget_configure_since_adhan">宣礼后的时间</string>
+    <string name="widget_configure_since_adhan_off">关闭</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d 分钟</string>
 </resources>

@@ -264,7 +264,6 @@
     "widgetHighlightHexPlaceholder": "#6BC98A",
     "widgetConfigureHint": "Anda juga dapat menyentuh dan menahan widget → pengaturan (roda gigi) untuk menyesuaikan opsi yang sama di Android.",
     "prayerWidgetTitle": "Widget waktu salat",
-    "prayerWidgetFooter": "Pilihan yang sama ada di widget itu sendiri: tekan lama widget, lalu Setelan.",
     "prayerWidgetOnly": "Hanya untuk widget waktu salat (Salat berikutnya dan Waktu salat). Widget lain tidak berubah.",
     "widgetTextCustom": "Warna sendiri",
     "widgetTextHexInvalid": "Enam digit heksadesimal, misalnya #FFD27F",

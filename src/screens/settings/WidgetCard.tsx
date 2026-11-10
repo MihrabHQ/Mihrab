@@ -12,10 +12,7 @@ import {
   widgetPatchForAccent,
   widgetSwatchSelected,
 } from '../../settings/widgetAccent';
-import {
-  TABULAR_MAX_FONT_SCALE,
-  tabularNumeralStyle,
-} from '../../theme/textScale';
+import { Stepper } from '../../components/ui';
 import { SettingsBlock, SettingsGroup } from './SettingsGroup';
 import { WidgetTextColor } from './WidgetTextColor';
 import { RADIUS, SPACING } from '../../theme/tokens';
@@ -47,6 +44,8 @@ import { TYPE } from '../../theme/typography';
  * the unified one is on screen, a second control writing the same setting
  * would be two answers to one question.
  */
+const OPACITY_STEP = 4;
+
 function WidgetCardImpl() {
   const { t } = useTranslation();
   // Subscribes only to the widget slice (task #11) — toggling theme or
@@ -68,6 +67,7 @@ function WidgetCardImpl() {
   // no longer tied to the System appearance, since system colours can now
   // be chosen under Light and Dark too.
   const needsOwnPicker = appearance.useSystemDynamicTheme;
+  const opacity = settings.androidWidgetBackgroundOpacity;
 
   return (
     // Titled now. This used to be the whole of a page called Home screen
@@ -87,60 +87,24 @@ function WidgetCardImpl() {
         <Text style={[styles.label, { color: palette.muted }]}>
           {t('settings.widgetBackgroundOpacity')}
         </Text>
-        <View style={styles.widgetOpacityRow}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('settings.widgetBackgroundOpacity')}
-            style={[
-              styles.widgetOpacityBtn,
-              {
-                borderColor: palette.border,
-                opacity: settings.androidWidgetBackgroundOpacity <= 0 ? 0.4 : 1,
-              },
-            ]}
-            disabled={settings.androidWidgetBackgroundOpacity <= 0}
-            onPress={() =>
-              updateSettings({
-                androidWidgetBackgroundOpacity: Math.max(
-                  0,
-                  settings.androidWidgetBackgroundOpacity - 4,
-                ),
-              })
-            }>
-            <Text style={[styles.stepGlyph, { color: palette.text }]}>−</Text>
-          </Pressable>
-          <Text
-            style={[
-              styles.widgetOpacityValue,
-              tabularNumeralStyle,
-              { color: palette.text },
-            ]}
-            maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
-            {settings.androidWidgetBackgroundOpacity}%
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('settings.widgetBackgroundOpacity')}
-            style={[
-              styles.widgetOpacityBtn,
-              {
-                borderColor: palette.border,
-                opacity:
-                  settings.androidWidgetBackgroundOpacity >= 100 ? 0.4 : 1,
-              },
-            ]}
-            disabled={settings.androidWidgetBackgroundOpacity >= 100}
-            onPress={() =>
-              updateSettings({
-                androidWidgetBackgroundOpacity: Math.min(
-                  100,
-                  settings.androidWidgetBackgroundOpacity + 4,
-                ),
-              })
-            }>
-            <Text style={[styles.stepGlyph, { color: palette.text }]}>+</Text>
-          </Pressable>
-        </View>
+        {/* The design system's stepper (components/ui), as Month and the
+            Log step: one control for "a value with a before and an after",
+            not a pair of boxed − and + drawn for this card alone. */}
+        <Stepper
+          title={`${opacity}%`}
+          prevLabel={`${t('settings.widgetBackgroundOpacity')} −${OPACITY_STEP}%`}
+          nextLabel={`${t('settings.widgetBackgroundOpacity')} +${OPACITY_STEP}%`}
+          onPrev={
+            opacity <= 0
+              ? undefined
+              : () => updateSettings({ androidWidgetBackgroundOpacity: Math.max(0, opacity - OPACITY_STEP) })
+          }
+          onNext={
+            opacity >= 100
+              ? undefined
+              : () => updateSettings({ androidWidgetBackgroundOpacity: Math.min(100, opacity + OPACITY_STEP) })
+          }
+        />
       </SettingsBlock>
 
       <WidgetTextColor />
@@ -195,7 +159,6 @@ const styles = StyleSheet.create({
   // not like a second group heading.
   label: { fontSize: TYPE.footnote.fontSize, marginBottom: SPACING.xs },
   help: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginTop: SPACING.md },
-  stepGlyph: { fontSize: TYPE.title2.fontSize },
   // Same geometry as the Appearance card's row, so the two read as one
   // control that moved rather than two different pickers.
   swatchRow: {
@@ -208,26 +171,5 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: RADIUS.xl,
-  },
-  widgetOpacityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: SPACING.xl,
-    marginTop: SPACING.sm,
-  },
-  widgetOpacityBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  widgetOpacityValue: {
-    fontSize: TYPE.title3.fontSize,
-    fontWeight: '400',
-    minWidth: 52,
-    textAlign: 'center',
   },
 });

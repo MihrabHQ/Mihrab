@@ -233,4 +233,8 @@
     <string name="widget_description_tall">أوقات اليوم الستة مع المدينة والتاريخ الهجري والرسم البياني للالتزام. 4×2.</string>
     <string name="widget_name_log_tall">محراب \u00b7 سجل اليوم (الطويل)</string>
     <string name="widget_description_log_tall">اضغط على صلاة لتسجيلها في وقتها، مع العد التنازلي للصلاة التالية والرسم البياني للالتزام. 4×2.</string>
+    <string name="widget_configure_all_title">كل الودجات</string>
+    <string name="widget_configure_since_adhan">الوقت منذ الأذان</string>
+    <string name="widget_configure_since_adhan_off">إيقاف</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d د</string>
 </resources>

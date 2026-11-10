@@ -388,7 +388,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   private fun sinceOf(context: Context, p: WidgetContract.Payload, s: Schedule, now: Now): Since? {
     val came = s.came ?: return null
     val next = s.next ?: return null
-    val end = WidgetPayloadV1.sinceAdhanEnd(came.at, next.at, p.sinceAdhanMinutes) ?: return null
+    val window = PrayerWidgetDisplay.sinceAdhanMinutes(context, p.sinceAdhanMinutes)
+    val end = WidgetPayloadV1.sinceAdhanEnd(came.at, next.at, window) ?: return null
     if (s.nowMinutes >= end) return null
     val at = came.epochMs() ?: return null
     if (at > now.epochMs) return null

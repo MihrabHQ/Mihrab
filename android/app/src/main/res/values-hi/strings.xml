@@ -192,4 +192,8 @@
     <string name="widget_description_tall">आज के छह समय, शहर, हिजरी तारीख़ और अमल के ग्राफ़ के साथ। 4×2।</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 आज दर्ज करें (ऊँचा)</string>
     <string name="widget_description_log_tall">समय पर दर्ज करने के लिए किसी नमाज़ पर टैप करें, अगली तक की उलटी गिनती और अमल के ग्राफ़ के साथ। 4×2।</string>
+    <string name="widget_configure_all_title">सभी विजेट</string>
+    <string name="widget_configure_since_adhan">अज़ान के बाद का समय</string>
+    <string name="widget_configure_since_adhan_off">बंद</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d मिनट</string>
 </resources>

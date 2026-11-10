@@ -302,6 +302,8 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       map.putBoolean("showCountdown", prefs.getBoolean(PrayerWidgetDisplay.KEY_SHOW_COUNTDOWN, true))
       map.putBoolean("showTable", prefs.getBoolean(PrayerWidgetDisplay.KEY_SHOW_TABLE, true))
       map.putInt("timeScale", prefs.getInt(PrayerWidgetDisplay.KEY_TIME_SCALE, 100))
+      // -1: never stored, so there is nothing for the app to adopt.
+      map.putInt("sinceAdhan", if (prefs.contains(PrayerWidgetDisplay.KEY_SINCE_ADHAN)) prefs.getInt(PrayerWidgetDisplay.KEY_SINCE_ADHAN, 0) else -1)
       promise.resolve(map)
     } catch (e: Exception) {
       promise.reject("E_WIDGET_DISPLAY_GET", e.message, e)
@@ -316,12 +318,14 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
     showCountdown: Boolean,
     showTable: Boolean,
     timeScalePercent: Int,
+    sinceAdhanMinutes: Int,
     promise: Promise,
   ) {
     try {
       val prefs = reactContext.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
       val hex = textHex.trim().takeIf { it.matches(Regex("^#[0-9A-Fa-f]{6}$")) } ?: ""
       val scale = timeScalePercent.coerceIn(PrayerWidgetDisplay.SCALE_MIN, PrayerWidgetDisplay.SCALE_MAX)
+      val since = sinceAdhanMinutes.coerceIn(0, PrayerWidgetDisplay.SINCE_ADHAN_CHOICES.last())
       // Redrawn only when something changed: this runs on every settings
       // change in the app, and a redraw of every widget is not free.
       val same =
@@ -329,7 +333,9 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
           prefs.getBoolean(PrayerWidgetDisplay.KEY_SHOW_LOCATION, true) == showLocation &&
           prefs.getBoolean(PrayerWidgetDisplay.KEY_SHOW_COUNTDOWN, true) == showCountdown &&
           prefs.getBoolean(PrayerWidgetDisplay.KEY_SHOW_TABLE, true) == showTable &&
-          prefs.getInt(PrayerWidgetDisplay.KEY_TIME_SCALE, 100) == scale
+          prefs.getInt(PrayerWidgetDisplay.KEY_TIME_SCALE, 100) == scale &&
+          prefs.contains(PrayerWidgetDisplay.KEY_SINCE_ADHAN) &&
+          prefs.getInt(PrayerWidgetDisplay.KEY_SINCE_ADHAN, 0) == since
       if (!same) {
         prefs.edit()
           .putString(PrayerWidgetDisplay.KEY_TEXT_HEX, hex)
@@ -337,6 +343,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
           .putBoolean(PrayerWidgetDisplay.KEY_SHOW_COUNTDOWN, showCountdown)
           .putBoolean(PrayerWidgetDisplay.KEY_SHOW_TABLE, showTable)
           .putInt(PrayerWidgetDisplay.KEY_TIME_SCALE, scale)
+          .putInt(PrayerWidgetDisplay.KEY_SINCE_ADHAN, since)
           .apply()
         PrayerWidgetProvider.requestUpdate(reactContext)
       }

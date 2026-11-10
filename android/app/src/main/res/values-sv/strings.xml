@@ -208,4 +208,8 @@
     <string name="widget_description_tall">Dagens sex tider med stad, hijridatum och aktivitetsgrafen. 4×2.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Logga idag (hög)</string>
     <string name="widget_description_log_tall">Tryck på en bön för att logga den i tid, med nedräkning till nästa och aktivitetsgrafen. 4×2.</string>
+    <string name="widget_configure_all_title">Alla widgetar</string>
+    <string name="widget_configure_since_adhan">Tid sedan adhan</string>
+    <string name="widget_configure_since_adhan_off">Av</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d min</string>
 </resources>

@@ -241,4 +241,8 @@
     <string name="widget_description_tall">Today\'s six times with the city, the Hijri date and the practice graph. 4×2.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Log today (tall)</string>
     <string name="widget_description_log_tall">Tap a prayer to log it on time, with the countdown to the next and the practice graph. 4×2.</string>
+    <string name="widget_configure_all_title">All widgets</string>
+    <string name="widget_configure_since_adhan">Time since the adhan</string>
+    <string name="widget_configure_since_adhan_off">Off</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d min</string>
 </resources>

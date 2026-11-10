@@ -35,6 +35,16 @@ data class PrayerWidgetDisplay(
     const val KEY_SHOW_COUNTDOWN = "widget_show_countdown"
     const val KEY_SHOW_TABLE = "widget_show_table"
     const val KEY_TIME_SCALE = "widget_time_scale"
+    /**
+     * Time since the adhan (#111), in minutes; 0 is off. The app also
+     * publishes it in the payload, but the widget's own settings screen
+     * can change it while the app is closed, so the stored value is the
+     * one that counts and the payload's is what a store without it falls
+     * back to (`sinceAdhanMinutes`).
+     */
+    const val KEY_SINCE_ADHAN = "widget_since_adhan"
+    /** `WIDGET_SINCE_ADHAN_CHOICES` in src/settings/types.ts. */
+    val SINCE_ADHAN_CHOICES = listOf(0, 10, 20, 30)
     const val SCALE_MIN = 80
     const val SCALE_MAX = 150
     private const val DEFAULT_TEXT = 0xFFE8EAED.toInt()
@@ -52,6 +62,13 @@ data class PrayerWidgetDisplay(
         showTable = p.getBoolean(KEY_SHOW_TABLE, true),
         timeScale = p.getInt(KEY_TIME_SCALE, 100).coerceIn(SCALE_MIN, SCALE_MAX) / 100f,
       )
+    }
+
+    /** The count-up window in force: the stored one, else what the app published. */
+    fun sinceAdhanMinutes(context: Context, published: Int): Int {
+      val p = context.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
+      val v = if (p.contains(KEY_SINCE_ADHAN)) p.getInt(KEY_SINCE_ADHAN, 0) else published
+      return v.coerceIn(0, SINCE_ADHAN_CHOICES.last())
     }
 
     /** The card as it was, for a draw that cannot read the store. */

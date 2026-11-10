@@ -3,6 +3,7 @@ import { Platform, AppState } from 'react-native';
 import { afterFirstPaint } from '../boot/firstPaint';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import type { PrayerAppSettings, WidgetHighlightId } from '../settings/types';
+import { WIDGET_SINCE_ADHAN_CHOICES } from '../settings/types';
 import { getPrayerWidgetModule } from '../native/PrayerWidget';
 import { coerceWidgetTimeScale } from '../settings/storage';
 import { getSkyThemeDay, useSkyTheme } from '../theme/skyTheme';
@@ -63,6 +64,7 @@ function syncNativeWidgetAppearance(
       settings.androidWidgetShowCountdown,
       settings.androidWidgetShowTable,
       settings.androidWidgetTimeScale,
+      settings.widgetSinceAdhanMinutes,
     );
     return;
   }
@@ -95,6 +97,7 @@ export function prayerWidgetDisplayUpdates(
     showCountdown: boolean;
     showTable: boolean;
     timeScale: number;
+    sinceAdhan?: number;
   },
   current: PrayerAppSettings,
 ): Partial<PrayerAppSettings> {
@@ -114,6 +117,16 @@ export function prayerWidgetDisplayUpdates(
   }
   const scale = coerceWidgetTimeScale(display.timeScale);
   if (scale !== current.androidWidgetTimeScale) updates.androidWidgetTimeScale = scale;
+  // Time since the adhan (#111): the widget's own screen can set it too.
+  // Only one of the offered choices, and never the "nothing stored" -1.
+  const since = display.sinceAdhan;
+  if (
+    typeof since === 'number' &&
+    (WIDGET_SINCE_ADHAN_CHOICES as readonly number[]).includes(since) &&
+    since !== current.widgetSinceAdhanMinutes
+  ) {
+    updates.widgetSinceAdhanMinutes = since;
+  }
   return updates;
 }
 

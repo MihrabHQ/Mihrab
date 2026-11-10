@@ -264,7 +264,6 @@
     "widgetHighlightHexPlaceholder": "#6BC98A",
     "widgetConfigureHint": "আপনি অ্যান্ড্রয়েডে একই বিকল্পগুলি সামঞ্জস্য করতে উইজেট → সেটিংস (গিয়ার) স্পর্শ এবং ধরে রাখতে পারেন৷",
     "prayerWidgetTitle": "নামাজের সময়ের উইজেট",
-    "prayerWidgetFooter": "একই বিকল্প উইজেটেও আছে: উইজেটটি চেপে ধরে সেটিংস বেছে নিন।",
     "prayerWidgetOnly": "শুধু নামাজের সময়ের উইজেটের জন্য (পরের নামাজ ও নামাজের সময়)। অন্য উইজেটে প্রভাব পড়ে না।",
     "widgetTextCustom": "নিজস্ব রং",
     "widgetTextHexInvalid": "ছয়টি হেক্স অঙ্ক, যেমন #FFD27F",

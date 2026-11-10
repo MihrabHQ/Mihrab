@@ -264,7 +264,6 @@
     "widgetHighlightHexPlaceholder": "#6BC98A",
     "widgetConfigureHint": "Aynı seçenekleri Android'de de ayarlamak için widget → ayarlara (dişli) dokunup basılı tutabilirsiniz.",
     "prayerWidgetTitle": "Namaz vakitleri widget’ı",
-    "prayerWidgetFooter": "Aynı seçenekler widget’ın kendisinde de var: basılı tutun, ardından Ayarlar.",
     "prayerWidgetOnly": "Yalnızca namaz vakitleri widget’ları için (Sıradaki namaz ve Namaz vakitleri). Diğer widget’lar etkilenmez.",
     "widgetTextCustom": "Özel renk",
     "widgetTextHexInvalid": "Altı onaltılık rakam, ör. #FFD27F",

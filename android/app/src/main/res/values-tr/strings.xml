@@ -188,4 +188,8 @@
     <string name="widget_description_tall">Bugünün altı vakti; şehir, hicri tarih ve ibadet grafiğiyle. 4×2.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Bugünü kaydet (yüksek)</string>
     <string name="widget_description_log_tall">Vaktinde kaydetmek için bir namaza dokunun, sonrakine geri sayım ve ibadet grafiğiyle. 4×2.</string>
+    <string name="widget_configure_all_title">Tüm widget’lar</string>
+    <string name="widget_configure_since_adhan">Ezandan bu yana geçen süre</string>
+    <string name="widget_configure_since_adhan_off">Kapalı</string>
+    <string name="widget_configure_since_adhan_minutes">%1$d dk</string>
 </resources>

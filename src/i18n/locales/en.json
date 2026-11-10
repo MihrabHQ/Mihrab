@@ -264,7 +264,6 @@
     "widgetHighlightHexPlaceholder": "#6BC98A",
     "widgetConfigureHint": "You can also touch and hold the widget → settings (gear) to adjust the same options on Android.",
     "prayerWidgetTitle": "Prayer times widget",
-    "prayerWidgetFooter": "The same options are on the widget itself: touch and hold it, then Settings.",
     "prayerWidgetOnly": "Only for the prayer times widgets (Next prayer and Prayer times). Other widgets are not affected.",
     "widgetTextCustom": "Custom color",
     "widgetTextHexInvalid": "Six hex digits, like #FFD27F",
