@@ -23,7 +23,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Animated, Easing, Modal, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { linearDown } from './skyPaint';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  PanGestureHandler,
+  State,
+  type HandlerStateChangeEvent,
+  type PanGestureHandlerEventPayload,
+} from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
@@ -48,7 +54,7 @@ export const MINIMAL_SHEET_CLOSE_MS = 220;
  * The transform the page takes from the sheet's `progress`: back by a
  * few percent, in place, under Reduce Motion none at all.
  */
-export function pageRecess(progress: Animated.Value, reduceMotion: boolean) {
+export function pageRecess(progress: Animated.AnimatedInterpolation<number>, reduceMotion: boolean) {
   if (reduceMotion) return [];
   const scale = progress.interpolate({
     inputRange: [0, 1],
@@ -82,7 +88,13 @@ export function MinimalSheet({
   // The modal stays up through the close so the sheet can go down.
   const [mounted, setMounted] = useState(visible);
   const [sheetHeight, setSheetHeight] = useState(0);
-  const drag = useRef(new Animated.Value(0)).current;
+  // The finger's own offset, written by the handler on the UI thread
+  // (`dragEvent` below), and what the sheet reads of it: down only.
+  const dragRaw = useRef(new Animated.Value(0)).current;
+  const drag = useMemo(
+    () => dragRaw.interpolate({ inputRange: [0, 1], outputRange: [0, 1], extrapolateLeft: 'clamp' }),
+    [dragRaw],
+  );
   const running = useRef<Animated.CompositeAnimation | null>(null);
 
   const rise = useCallback(() => {
@@ -96,7 +108,7 @@ export function MinimalSheet({
 
   useEffect(() => {
     if (visible) {
-      drag.setValue(0);
+      dragRaw.setValue(0);
       if (mounted) {
         // Opened again while going down: up from where it is.
         rise();
@@ -144,56 +156,73 @@ export function MinimalSheet({
 
   // A drag down on the sheet: it follows, and past the threshold goes.
   //
-  // ONE GESTURE FOR THE SHEET'S LIFE. It was built anew on every render,
-  // and the sheet renders every second with the countdown under it: the
-  // handler was reconfigured each second, and a slow drag down the sheet
-  // could be cut off part way. Built once; what changes (the sheet's
-  // height, the close) is read through refs at the moment it is needed.
+  // THE FINGER MOVES THE SHEET ON THE UI THREAD. The drag went through
+  // JavaScript on every move (`runOnJS`, then `setValue`), so the sheet
+  // followed the finger only as fast as the JS thread answered — and this
+  // sheet has the countdown under it, rendering every second: the sheet
+  // lagged the finger and caught up. The handler writes its translation
+  // straight into `dragRaw` now (`Animated.event`, native driver), as the
+  // pages' swipe and the pull to refresh do, and JavaScript hears of the
+  // drag once, when the finger lifts, to decide whether the sheet goes.
+  //
+  // ONE HANDLER FOR THE SHEET'S LIFE: what changes (the sheet's height,
+  // the close) is read through refs at the moment it is needed, so the
+  // render every second reconfigures nothing under a finger.
   const heightRef = useRef(sheetHeight);
   heightRef.current = sheetHeight;
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
   const reduceMotionRef = useRef(reduceMotion);
   reduceMotionRef.current = reduceMotion;
-  const springDragBack = useCallback(() => {
-    Animated.spring(drag, { toValue: 0, damping: 24, stiffness: 320, mass: 1, useNativeDriver: true }).start();
-  }, [drag]);
-  const pull = useMemo(
-    () =>
-      Gesture.Pan()
-        .activeOffsetY(12)
-        .failOffsetX([-16, 16])
-        .runOnJS(true)
-        .onUpdate(e => {
-          drag.setValue(Math.max(0, e.translationY));
-        })
-        .onEnd((e, success) => {
-          // Taken from the finger (another handler, the system): not a
-          // release, so not a dismissal however far it had got.
-          if (!success) {
-            springDragBack();
-            return;
-          }
-          if (e.translationY > DISMISS_DISTANCE || e.velocityY > DISMISS_VELOCITY) {
-            // Under Reduce Motion the sheet does not slide — its drag is
-            // its only motion, and its close is a fade. Left where the
-            // finger let it go, it fades from there; put back, it leapt
-            // up to fade. The drag is reset on the next open.
-            if (reduceMotionRef.current) {
-              onCloseRef.current();
-              return;
-            }
-            // Hand the rest of the way to the close: the sheet is already
-            // part way down, so the close starts from there.
-            const h = heightRef.current || UNMEASURED;
-            progress.setValue(Math.max(0, 1 - e.translationY / h));
-            drag.setValue(0);
-            onCloseRef.current();
-          } else {
-            springDragBack();
-          }
-        }),
-    [drag, progress, springDragBack],
+  const dragEvent = useMemo(
+    () => Animated.event([{ nativeEvent: { translationY: dragRaw } }], { useNativeDriver: true }),
+    [dragRaw],
+  );
+  const onDragState = useMemo(
+    () => (e: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
+      const { state, oldState, translationY, velocityY } = e.nativeEvent;
+      if (state === State.ACTIVE) {
+        // A finger back on a sheet still springing up from the last drag
+        // takes it from there.
+        dragRaw.stopAnimation();
+        return;
+      }
+      if (oldState !== State.ACTIVE) return;
+      const springBack = () =>
+        Animated.spring(dragRaw, {
+          toValue: 0,
+          velocity: velocityY,
+          damping: 24,
+          stiffness: 320,
+          mass: 1,
+          useNativeDriver: true,
+        }).start();
+      // Taken from the finger (another handler, the system): not a
+      // release, so not a dismissal however far it had got.
+      if (state !== State.END) {
+        springBack();
+        return;
+      }
+      if (translationY > DISMISS_DISTANCE || velocityY > DISMISS_VELOCITY) {
+        // Under Reduce Motion the sheet does not slide — its drag is
+        // its only motion, and its close is a fade. Left where the
+        // finger let it go, it fades from there; put back, it leapt
+        // up to fade. The drag is reset on the next open.
+        if (reduceMotionRef.current) {
+          onCloseRef.current();
+          return;
+        }
+        // Hand the rest of the way to the close: the sheet is already
+        // part way down, so the close starts from there.
+        const h = heightRef.current || UNMEASURED;
+        progress.setValue(Math.max(0, 1 - translationY / h));
+        dragRaw.setValue(0);
+        onCloseRef.current();
+      } else {
+        springBack();
+      }
+    },
+    [dragRaw, progress],
   );
 
   // Built when the sheet's height changes, not every second: each new node
@@ -236,7 +265,11 @@ export function MinimalSheet({
           />
         </Animated.View>
         <Pressable accessibilityLabel={closeLabel} onPress={onClose} style={StyleSheet.absoluteFill} />
-        <GestureDetector gesture={pull}>
+        <PanGestureHandler
+          activeOffsetY={12}
+          failOffsetX={[-16, 16]}
+          onGestureEvent={dragEvent}
+          onHandlerStateChange={onDragState}>
           <Animated.View
             onLayout={onLayout}
             style={[
@@ -252,7 +285,7 @@ export function MinimalSheet({
             <View style={[styles.grip, { backgroundColor: palette.muted }]} />
             {children}
           </Animated.View>
-        </GestureDetector>
+        </PanGestureHandler>
       </GestureHandlerRootView>
     </Modal>
   );

@@ -78,7 +78,12 @@ import {
 import type { JournalPrayer } from '../../journal/journal';
 import { pagerPosition } from './pagerPosition';
 import { LogPassedPrayerSheet } from './LogPassedPrayerSheet';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  PanGestureHandler,
+  State,
+  type HandlerStateChangeEvent,
+  type PanGestureHandlerEventPayload,
+} from 'react-native-gesture-handler';
 import { TodayTimesSheet, type TimesSheetDay, type TimesSheetRow } from './TodayTimesSheet';
 import { pageRecess } from './MinimalSheet';
 import { type SkyInkColors } from './skyModel';
@@ -1084,46 +1089,76 @@ function TodayCardImpl({
   // a little as the drag rises (a third of the way at most), and the
   // sheet's own rise carries on from wherever the finger let go — or the
   // page springs back if it let go short.
-  const swipeUp = useMemo(
+  //
+  // ON THE UI THREAD. The drag went through JavaScript on every move
+  // (`runOnJS`, then `setValue`), and this is the page whose countdown
+  // renders on that thread: the page answered the finger a beat late. The
+  // handler writes its translation into `pullRaw` now (`Animated.event`,
+  // native driver) and `pulled` is that as a share of the rise — an
+  // interpolation, so native too. What the page recedes by is the sheet's
+  // rise and the pull together (`recess` below); JavaScript hears once,
+  // at the lift, and there hands the pull over to the rise in one step,
+  // so the sheet's spring still carries on from where the finger let go.
+  const pullRaw = useRef(new Animated.Value(0)).current;
+  const pulled = useMemo(
     () =>
-      Gesture.Pan()
-        .enabled(minimal)
-        .activeOffsetY(-14)
-        .failOffsetX([-18, 18])
-        .runOnJS(true)
-        .onUpdate(e => {
-          if (reduceMotion) return;
-          sheetProgress.setValue(Math.min(SWIPE_UP_PULL, Math.max(0, -e.translationY / SWIPE_UP_REACH)));
-        })
-        .onEnd((e, success) => {
-          // A release opens; a drag taken from the finger (another
-          // handler, the system) only puts the page back.
-          if (success && (e.translationY < -30 || e.velocityY < -400)) {
-            onOpenTimes();
-          } else {
-            Animated.spring(sheetProgress, {
-              toValue: 0,
-              damping: 24,
-              stiffness: 320,
-              mass: 1,
-              useNativeDriver: true,
-            }).start();
-          }
-        }),
-    [minimal, onOpenTimes, reduceMotion, sheetProgress],
+      pullRaw.interpolate({
+        inputRange: [-SWIPE_UP_PULL * SWIPE_UP_REACH, 0],
+        outputRange: [SWIPE_UP_PULL, 0],
+        extrapolate: 'clamp',
+      }),
+    [pullRaw],
+  );
+  const swipeUpEvent = useMemo(
+    () => Animated.event([{ nativeEvent: { translationY: pullRaw } }], { useNativeDriver: true }),
+    [pullRaw],
+  );
+  const onSwipeUpState = useMemo(
+    () => (e: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
+      const { state, oldState, translationY, velocityY } = e.nativeEvent;
+      if (state === State.ACTIVE) {
+        // A finger back on a page still springing home takes it from there.
+        pullRaw.stopAnimation();
+        return;
+      }
+      if (oldState !== State.ACTIVE) return;
+      // A release opens; a drag taken from the finger (another
+      // handler, the system) only puts the page back.
+      if (state === State.END && (translationY < -30 || velocityY < -400)) {
+        // The pull becomes the rise, in the one step: the same share of
+        // the way, now the sheet's to carry on from.
+        sheetProgress.setValue(
+          reduceMotion ? 0 : Math.min(SWIPE_UP_PULL, Math.max(0, -translationY / SWIPE_UP_REACH)),
+        );
+        pullRaw.setValue(0);
+        onOpenTimes();
+      } else {
+        Animated.spring(pullRaw, {
+          toValue: 0,
+          damping: 24,
+          stiffness: 320,
+          mass: 1,
+          useNativeDriver: true,
+        }).start();
+      }
+    },
+    [onOpenTimes, pullRaw, reduceMotion, sheetProgress],
   );
   // Minimal: the hero's foreground recedes under the sheet — see
   // MinimalSheet. Built once: the card renders every second with the
   // countdown, and each build is a new native node on the rise.
   const recess = useMemo(
-    () => (minimal ? { transform: pageRecess(sheetProgress, reduceMotion) } : null),
-    [minimal, sheetProgress, reduceMotion],
+    () => (minimal ? { transform: pageRecess(Animated.add(sheetProgress, pulled), reduceMotion) } : null),
+    [minimal, sheetProgress, pulled, reduceMotion],
   );
   // Minimal: the drag up opens the day's times, and only the drag — a tap
   // on the page opened them too, and a page that opens a sheet wherever it
   // is touched is a page that cannot be touched. A screen reader, which
   // has no drag up, opens them from the prayer's line (HeroToday).
-  const HeroWrap = View;
+  // An Animated.View though nothing on it moves: the handler hands its
+  // child `onGestureEvent`, and a native Animated.event on a plain View
+  // is a crash at the first drag (MinimalSwipe has the same note).
+  const HeroWrap = Animated.View;
   const compact = fullBleed && tier === 'compact';
   const renderQibla = (ink: SkyInkColors, column?: boolean) =>
     fullBleed && qiblaBearing != null ? (
@@ -1306,7 +1341,12 @@ function TodayCardImpl({
       {/* Full-bleed, the hero GROWS: the card fills the page and the hero
           takes whatever the table leaves, so the sky ends at the tab bar
           and the page has no band of nothing under the rows. */}
-      <GestureDetector gesture={swipeUp}>
+      <PanGestureHandler
+        enabled={minimal}
+        activeOffsetY={-14}
+        failOffsetX={[-18, 18]}
+        onGestureEvent={swipeUpEvent}
+        onHandlerStateChange={onSwipeUpState}>
       <HeroWrap
         // Minimal: the whole hero is the way to the day's times — by the
         // drag up above, and for a screen reader by its prayer's line.
@@ -1471,7 +1511,7 @@ function TodayCardImpl({
           />
         )}
       </HeroWrap>
-      </GestureDetector>
+      </PanGestureHandler>
 
       {/* Minimal: no table — the day’s times are a drag up away (HomeScreen's
           sheet), and the hero has the page. */}

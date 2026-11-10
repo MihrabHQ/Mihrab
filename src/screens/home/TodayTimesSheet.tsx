@@ -363,6 +363,9 @@ function DayRows({ rows }: { rows: TimesSheetRow[] }) {
  * The sheet's drag down fails on a horizontal move (MinimalSheet's
  * `failOffsetX`), so the two gestures do not fight over a finger.
  */
+/** The sheet's rise, and a beat: after this the other days are built. */
+export const DAYS_AFTER_RISE_MS = 450;
+
 function DayPager({
   days,
   offset,
@@ -377,6 +380,12 @@ function DayPager({
   const [width, setWidth] = useState(0);
   const listRef = useRef<FlatList<TimesSheetDay>>(null);
   const count = days.length;
+  // The sheet has risen (MinimalSheet's spring): the other days may be built.
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setReady(true), DAYS_AFTER_RISE_MS);
+    return () => clearTimeout(t);
+  }, []);
   const data = rtl ? days.slice().reverse() : days;
   const positionOf = useCallback(
     (o: number) => {
@@ -432,7 +441,16 @@ function DayPager({
           bounces={false}
           data={data}
           keyExtractor={d => String(d.offset)}
-          initialNumToRender={count}
+          // THE DAY ON SHOW FIRST, THE REST ONCE THE SHEET IS UP. Every day
+          // was rendered at once (the list's initial count was all of them): two weeks
+          // of rows and checks, built the moment the list had its width —
+          // which is in the middle of the sheet's rise, on the thread the
+          // rise is drawn on. The sheet opens on one day now, and the
+          // others come in behind it two at a time after it has landed
+          // (`ready`, below), long before a finger can have swiped to one.
+          initialNumToRender={1}
+          windowSize={ready ? 21 : 1}
+          maxToRenderPerBatch={2}
           initialScrollIndex={positionOf(offset)}
           getItemLayout={layout}
           onMomentumScrollEnd={onSettled}

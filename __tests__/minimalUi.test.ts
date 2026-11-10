@@ -122,7 +122,7 @@ describe('the swipe', () => {
     expect(read('src/navigation/tabBarInset.ts')).toContain('return useAppearanceSettings().hydrated;');
   });
 
-  it('keeps only the pages in reach laid out, and mounts the rest as the warm-up comes to them', () => {
+  it('mounts the pages as they come within reach or the warm-up comes to them, and keeps them laid out', () => {
     // The page on show alone until its first paint and launch run are over.
     // A swipe brings in only the neighbours; a turn from the dots, every page
     // — laying out all of them as a finger starts to swipe stalled the swipe.
@@ -133,8 +133,12 @@ describe('the swipe', () => {
     expect(read('src/navigation/MinimalTabBar.tsx')).toContain('if (!swiped && !pagerHeldByFinger()) engagePagerFor(PAGER_TRANSITION_MS + 60);');
     expect(swipe).toMatch(/void afterRun\(\)\.then\(\(\) => \{\s*if \(cancelled\) return;\s*setSettled\(true\);\s*startPagerWarmup\(\);/);
     expect(read('src/navigation/minimalPager.ts')).toContain('let warmth = 0;');
-    expect(swipe).toContain('inReach ? null : styles.away');
-    expect(swipe).toContain("away: { display: 'none' },");
+    // A page that has come up stays laid out: a view out of layout is taken
+    // down natively under Fabric, so a reach that moved with every turn
+    // built and tore down a screen of views on the thread the swipe is
+    // drawn on. Reach decides when a page MOUNTS, and nothing after.
+    expect(swipe).not.toContain('styles.away');
+    expect(swipe.slice(swipe.indexOf('StyleSheet.create'))).not.toMatch(/display:/);
     expect(swipe).toContain('{mounted ? children : null}');
     expect(swipe).toContain('if (enabled && !mounted && (inReach || distance <= warmth)) setMounted(true);');
     const pager = read('src/navigation/minimalPager.ts');
@@ -143,13 +147,13 @@ describe('the swipe', () => {
   });
 
   it("never takes the swipe's own view out of the tree, so iOS keeps each page's swipe on its page", () => {
-    // The handler's view always carries the offset and never `away`; the
-    // page inside it is what leaves the tree out of reach.
+    // The handler's view always carries the offset, and the page inside it
+    // stays in the tree once it has come up.
     expect(swipe).toContain(
       '<Animated.View style={[styles.fill, { transform: [{ translateX: offset }] }]} collapsable={false}>',
     );
     expect(swipe).toMatch(
-      /<Animated\.View style=\{\[styles\.fill, \{ transform[^\n]*\n\s*<View style=\{\[styles\.fill, inReach \? null : styles\.away\]\} collapsable=\{false\}>/,
+      /<Animated\.View style=\{\[styles\.fill, \{ transform[^\n]*\n\s*<View style=\{styles\.fill\} collapsable=\{false\}>\s*\{mounted \? children : null\}/,
     );
   });
 
@@ -199,11 +203,11 @@ describe('the swipe', () => {
 
 describe('the minimal Today', () => {
   it('opens the day’s times on a drag up — not a tap — and keeps the heart', () => {
-    expect(card).toContain('.enabled(minimal)');
-    expect(card).toContain('.activeOffsetY(-14)');
+    expect(card).toMatch(/<PanGestureHandler\s+enabled=\{minimal\}\s+activeOffsetY=\{-14\}\s+failOffsetX=\{\[-18, 18\]\}/);
     // A tap on the page opens nothing; a screen reader activates it instead.
     expect(card).not.toContain('onPress: onOpenTimes,');
-    expect(card).toContain('const HeroWrap = View;');
+    // Animated, for the handler's native event (a plain View crashes on it).
+    expect(card).toContain('const HeroWrap = Animated.View;');
     expect(card).toContain("if (e.nativeEvent.actionName === 'activate') onOpenTimes();");
     expect(card).toContain("topRow={fullBleed ? (minimal ? { renderHelp } : { renderLocation, renderQibla, renderHelp }) : undefined}");
     expect(card).toContain('<TodayTimesSheet');
@@ -224,16 +228,19 @@ describe('the minimal Today', () => {
     expect(minimalSheet).toContain('[`rgba(0, 0, 0, ${VEIL_FOOT})`, 1],');
     expect(minimalSheet).toMatch(/const VEIL_TOP = 0\.\d+;\nconst VEIL_FOOT = 0\.\d+;/);
     // A drag down on the sheet follows the finger and lets go past a threshold.
-    expect(minimalSheet).toContain('if (e.translationY > DISMISS_DISTANCE || e.velocityY > DISMISS_VELOCITY)');
-    // One gesture for the sheet's life, not one a render (it renders every second).
-    expect(minimalSheet).toMatch(/const pull = useMemo\(\s*\(\) =>\s*Gesture\.Pan\(\)/);
-    expect(minimalSheet).toContain('[drag, progress, springDragBack],');
+    expect(minimalSheet).toContain('if (translationY > DISMISS_DISTANCE || velocityY > DISMISS_VELOCITY)');
+    // One handler for the sheet's life, not one a render (it renders every second).
+    expect(minimalSheet).toMatch(/const onDragState = useMemo\(/);
+    expect(minimalSheet).toContain('[dragRaw, progress],');
     // The page: scaled back by the same value, driven early by a drag up
     // on it, and spared under Reduce Motion.
     expect(card).toMatch(
-      /const recess = useMemo\(\s*\(\) => \(minimal \? \{ transform: pageRecess\(sheetProgress, reduceMotion\) \} : null\),\s*\[minimal, sheetProgress, reduceMotion\],\s*\);/,
+      /const recess = useMemo\(\s*\(\) => \(minimal \? \{ transform: pageRecess\(Animated\.add\(sheetProgress, pulled\), reduceMotion\) \} : null\),\s*\[minimal, sheetProgress, pulled, reduceMotion\],\s*\);/,
     );
-    expect(card).toContain('sheetProgress.setValue(Math.min(SWIPE_UP_PULL, Math.max(0, -e.translationY / SWIPE_UP_REACH)));');
+    // The pull is handed to the rise at the lift, the same share of the way.
+    expect(card).toMatch(
+      /sheetProgress\.setValue\(\s*reduceMotion \? 0 : Math\.min\(SWIPE_UP_PULL, Math\.max\(0, -translationY \/ SWIPE_UP_REACH\)\),\s*\);\s*pullRaw\.setValue\(0\);\s*onOpenTimes\(\);/,
+    );
     expect(card).toContain('progress={sheetProgress}');
     // The FOREGROUND recedes, not the page: the sky stays out to every edge.
     expect(card).toContain('recess={recess}');
@@ -278,8 +285,14 @@ describe('the minimal Today', () => {
     expect(sheet).toContain('onMomentumScrollEnd={onSettled}');
     expect(sheet).toContain("import { pagerPosition } from './pagerPosition';");
     expect(sheet).toContain('listRef.current?.scrollToIndex({ index: positionOf(offset), animated: true });');
+    // One day under the rise; the rest once the sheet has landed — two
+    // weeks of rows built mid-rise were the rise's stutter.
+    expect(sheet).not.toContain('initialNumToRender={count}');
+    expect(sheet).toContain('initialNumToRender={1}');
+    expect(sheet).toContain('windowSize={ready ? 21 : 1}');
+    expect(sheet).toMatch(/setTimeout\(\(\) => setReady\(true\), DAYS_AFTER_RISE_MS\)/);
     // The sheet's drag down gives a horizontal move up to the pager.
-    expect(read('src/screens/home/MinimalSheet.tsx')).toContain('.failOffsetX([-16, 16])');
+    expect(read('src/screens/home/MinimalSheet.tsx')).toContain('failOffsetX={[-16, 16]}');
   });
 
   it('takes the sheet down when Today is no longer the page in front', () => {
@@ -447,5 +460,41 @@ describe('icons instead of dots', () => {
     expect(bar).toContain('const iconsAlways = useAppearanceSliceOrNull()?.minimalTabIcons ?? true;');
     expect(bar).toContain('iconsAlways ? new Animated.Value(1) : pagerEngaged');
     expect(bar).toContain('iconOpacity: Animated.multiply(shown,');
+  });
+});
+
+describe('nothing under a finger goes through JavaScript', () => {
+  // The three drags Minimal has — the pages, the drag up on Today, the
+  // drag down on its sheet — are each written by their handler straight
+  // into a native value. One that went through JS on every move followed
+  // the finger only as fast as that thread answered.
+  const files = {
+    swipe: read('src/navigation/MinimalSwipe.tsx'),
+    card: read('src/screens/home/TodayCard.tsx'),
+    sheet: read('src/screens/home/MinimalSheet.tsx'),
+  };
+
+  it('each drag is a native Animated.event', () => {
+    expect(files.swipe).toMatch(/Animated\.event\(\[\{ nativeEvent: \{ translationX: pagerDragRaw \} \}\], \{ useNativeDriver: true \}\)/);
+    expect(files.card).toMatch(/Animated\.event\(\[\{ nativeEvent: \{ translationY: pullRaw \} \}\], \{ useNativeDriver: true \}\)/);
+    expect(files.sheet).toMatch(/Animated\.event\(\[\{ nativeEvent: \{ translationY: dragRaw \} \}\], \{ useNativeDriver: true \}\)/);
+  });
+
+  it('none of them is a JS-run gesture', () => {
+    for (const src of Object.values(files)) {
+      expect(src).not.toMatch(/\.runOnJS\(true\)/);
+      expect(src).not.toMatch(/\.onUpdate\(/);
+    }
+  });
+
+  it('the drag up and the drag down are clamped natively, as they were in JS', () => {
+    // Up: none below the page's rest, SWIPE_UP_PULL of the rise at most.
+    expect(files.card).toMatch(
+      /pullRaw\.interpolate\(\{\s*inputRange: \[-SWIPE_UP_PULL \* SWIPE_UP_REACH, 0\],\s*outputRange: \[SWIPE_UP_PULL, 0\],\s*extrapolate: 'clamp',/,
+    );
+    // Down: the sheet never rides above where it stands.
+    expect(files.sheet).toMatch(
+      /dragRaw\.interpolate\(\{ inputRange: \[0, 1\], outputRange: \[0, 1\], extrapolateLeft: 'clamp' \}\)/,
+    );
   });
 });

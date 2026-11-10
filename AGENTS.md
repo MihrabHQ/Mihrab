@@ -176,7 +176,7 @@ without the bar reads null. So:
   sheets, the month table or the walkthrough is looked at on the iPhone Duo
   simulator (iOS 27.1) as well, and the PR says so — or says it was not.
 
-## 9. Minimal's pager — three rules that keep regressing
+## 9. Minimal's pager — the rules that keep regressing
 
 The swipe between tabs under Minimal (`src/navigation/minimalPager.ts`,
 `MinimalSwipe.tsx`, `MinimalTabBar.tsx`, `MinimalScreens.tsx`) has broken
@@ -196,6 +196,14 @@ another. Read "A SWIPE'S TURN" in `minimalPager.ts` before touching it.
   (`MinimalScreens` keeps its `pointerEvents`): each scene is the whole
   screen, and one that takes touches lies over every page before it.
 - **Direction is the app's** (`useLayoutRtl`), never `I18nManager.isRTL`.
+- **A page that has come up stays laid out.** No `display: none` for a
+  page off the strip: under Fabric that takes its native views down, and
+  a reach that moved with every turn built and tore down a screen of
+  views on the UI thread, which is the thread the swipe is drawn on.
+  Reach and the warm-up decide when a page first MOUNTS, nothing after.
+- **Nothing under a finger goes through JavaScript**: the pages' swipe,
+  the drag up on Today and the drag down on its sheet are each a native
+  `Animated.event`; JS hears at the lift.
 
 `__tests__/minimalPagerTurn.test.ts` holds these. A change to the pager is
 tried on a device: a slow swipe, a fast flick, two swipes in quick
