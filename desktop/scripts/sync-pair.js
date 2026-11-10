@@ -63,8 +63,17 @@ async function onboard(d) {
   await d.click(/^Continue$/);
   await d.click(/^Search or enter coordinates$/);
   await d.page.locator('input').first().fill('Stockholm');
-  await d.page.waitForTimeout(2500);
-  await d.click(/^Stockholm, Stockholm Municipality$/, 2500);
+  // The results come from OpenStreetMap over the network, and a CI runner
+  // waits on it anywhere from a moment to many seconds: a fixed 2.5 s
+  // looked before they had come, and the device never got past
+  // onboarding (A's screenshot showed the result there by the end).
+  const city = /^Stockholm, Stockholm Municipality$/;
+  await d.page
+    .getByText(city)
+    .first()
+    .waitFor({ state: 'visible', timeout: 45_000 })
+    .catch(() => d.say('no search result after 45 s'));
+  await d.click(city, 2500);
   for (let i = 0; i < 10; i++) {
     if (!(await d.click(/^(Continue|Next|Skip|Not now|Get started|Done|Maybe later|Start)$/))) break;
   }
