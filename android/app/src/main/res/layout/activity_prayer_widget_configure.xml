@@ -30,7 +30,7 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="4dp"
         android:contentDescription="@string/widget_configure_title"
-        android:importantForAccessibility="no-hide-descendants"
+        android:importantForAccessibility="noHideDescendants"
         android:orientation="vertical"
         android:padding="14dp">
 
