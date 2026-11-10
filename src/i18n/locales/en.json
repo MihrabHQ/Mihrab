@@ -542,6 +542,7 @@
     "minimalTabIconsHelp": "Keep the tabs’ small icons at the foot of the page, instead of dots that show them only while turning.",
     "minimalClassicOnly": "Minimal keeps the classic colours. Turn it off to choose a colour theme or system colours.",
     "minimalRestartBody": "Minimal comes on in the Sky theme, so system colours will be turned off. The app needs to restart so every screen picks up the change. Restart now?",
+    "layoutRestartBody": "Switching the layout needs the app to restart so every screen is built for it. Restart now?",
     "widgetSinceAdhanTitle": "Time since the adhan",
     "widgetSinceAdhanHelp": "For this long after each prayer comes in, the prayer times widgets show how long ago it was, then go back to counting down to the next prayer. If the next prayer is close, the countdown comes back sooner.",
     "widgetSinceAdhanOff": "Off",

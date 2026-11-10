@@ -542,6 +542,7 @@
     "minimalTabIconsHelp": "Sekmelerin küçük simgeleri sayfanın altında kalsın; yalnızca sayfa değişirken gösteren noktalar yerine.",
     "minimalClassicOnly": "Minimal klasik renkleri korur. Bir renk teması veya sistem renkleri seçmek için kapatın.",
     "minimalRestartBody": "Minimal Gökyüzü temasıyla açılır, bu yüzden sistem renkleri kapatılacak. Değişikliğin her ekrana yansıması için uygulamanın yeniden başlaması gerekir. Şimdi yeniden başlatılsın mı?",
+    "layoutRestartBody": "Düzeni değiştirmek için uygulamanın yeniden başlatılması gerekir; böylece her ekran ona göre kurulur. Şimdi yeniden başlatılsın mı?",
     "widgetSinceAdhanTitle": "Ezandan bu yana geçen süre",
     "widgetSinceAdhanHelp": "Her namaz vakti girdikten sonra bu süre boyunca namaz vakti widget'ları vaktin ne kadar önce girdiğini gösterir, ardından bir sonraki namaza geri sayıma döner. Sonraki namaz yakınsa geri sayım daha erken döner.",
     "widgetSinceAdhanOff": "Kapalı",

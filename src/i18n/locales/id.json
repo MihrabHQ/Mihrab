@@ -542,6 +542,7 @@
     "minimalTabIconsHelp": "Tampilkan ikon kecil tab di bawah halaman, bukan titik yang hanya menampilkannya saat berpindah halaman.",
     "minimalClassicOnly": "Minimal tetap memakai warna klasik. Matikan untuk memilih tema warna atau warna sistem.",
     "minimalRestartBody": "Minimal aktif dengan tema Langit, jadi warna sistem akan dimatikan. Aplikasi perlu dimulai ulang agar setiap layar menerapkan perubahan. Mulai ulang sekarang?",
+    "layoutRestartBody": "Mengganti tata letak memerlukan aplikasi dimulai ulang agar setiap layar dibangun untuknya. Mulai ulang sekarang?",
     "widgetSinceAdhanTitle": "Waktu sejak azan",
     "widgetSinceAdhanHelp": "Selama waktu ini setelah setiap salat masuk, widget waktu salat menunjukkan sudah berapa lama sejak masuk, lalu kembali menghitung mundur ke salat berikutnya. Jika salat berikutnya sudah dekat, hitung mundur kembali lebih cepat.",
     "widgetSinceAdhanOff": "Mati",

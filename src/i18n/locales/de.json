@@ -542,6 +542,7 @@
     "minimalTabIconsHelp": "Die kleinen Symbole der Tabs unten auf der Seite stehen lassen, statt Punkten, die sie nur beim Blättern zeigen.",
     "minimalClassicOnly": "Minimal behält die klassischen Farben. Schalte es aus, um ein Farbthema oder Systemfarben zu wählen.",
     "minimalRestartBody": "Minimal startet im Himmel-Design, daher werden die Systemfarben ausgeschaltet. Die App muss neu starten, damit jeder Bildschirm die Änderung übernimmt. Jetzt neu starten?",
+    "layoutRestartBody": "Für den Wechsel des Layouts muss die App neu starten, damit jeder Bildschirm dafür aufgebaut wird. Jetzt neu starten?",
     "widgetSinceAdhanTitle": "Zeit seit dem Adhan",
     "widgetSinceAdhanHelp": "So lange nach Beginn jedes Gebets zeigen die Gebetszeiten-Widgets, wie lange das her ist, und zählen dann wieder bis zum nächsten Gebet herunter. Ist das nächste Gebet nah, kommt der Countdown früher zurück.",
     "widgetSinceAdhanOff": "Aus",

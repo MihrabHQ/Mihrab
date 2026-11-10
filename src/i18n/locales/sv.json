@@ -542,6 +542,7 @@
     "minimalTabIconsHelp": "Behåll flikarnas små ikoner längst ned på sidan, i stället för prickar som bara visar dem när sidan byts.",
     "minimalClassicOnly": "Minimal behåller de klassiska färgerna. Stäng av det för att välja ett färgtema eller systemfärger.",
     "minimalRestartBody": "Minimal startar i Himmel-temat, så systemfärgerna stängs av. Appen behöver startas om så att varje skärm får ändringen. Starta om nu?",
+    "layoutRestartBody": "För att byta layout behöver appen startas om så att varje skärm byggs för den. Starta om nu?",
     "widgetSinceAdhanTitle": "Tid sedan adhan",
     "widgetSinceAdhanHelp": "Så länge efter att varje bön har inträtt visar bönetidswidgetarna hur länge sedan det var, och räknar sedan ner till nästa bön igen. Om nästa bön är nära kommer nedräkningen tillbaka tidigare.",
     "widgetSinceAdhanOff": "Av",

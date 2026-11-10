@@ -542,6 +542,7 @@
     "minimalTabIconsHelp": "在页面底部始终显示各标签的小图标，而不是只在翻页时才显示图标的圆点。",
     "minimalClassicOnly": "极简模式保留经典配色。关闭它即可选择颜色主题或系统颜色。",
     "minimalRestartBody": "极简模式会以天空主题开启，因此将关闭系统颜色。应用需要重新启动，才能让每个页面应用此更改。现在重新启动？",
+    "layoutRestartBody": "切换布局需要重启应用，以便每个页面都按该布局构建。现在重启吗？",
     "widgetSinceAdhanTitle": "宣礼后的时间",
     "widgetSinceAdhanHelp": "每次礼拜时间到后的这段时间内，礼拜时间小组件会显示已过去多久，然后恢复为下一次礼拜的倒计时。如果下一次礼拜临近，倒计时会更早恢复。",
     "widgetSinceAdhanOff": "关闭",

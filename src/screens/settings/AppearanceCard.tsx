@@ -85,6 +85,14 @@ function AppearanceCardImpl() {
   const [pendingDynamic, setPendingDynamic] = useState<boolean | null>(null);
   // Minimal asked for while system colours are on: they go, with a restart.
   const [pendingMinimal, setPendingMinimal] = useState(false);
+  // The layout asked for on Android, awaiting the same confirm: null ⇒
+  // hidden, else whether Minimal is to be on. The two layouts are two
+  // navigators over the same six pages, and Fabric on Android does not
+  // survive trading one for the other in a running app: after Minimal
+  // on and off again, a tab change could die in SurfaceMountingManager
+  // ("Unable to find view for viewState", in 2.37.0 too). A fresh start
+  // in either layout is clean, so the switch is a restart there.
+  const [pendingLayout, setPendingLayout] = useState<boolean | null>(null);
 
   // Persist the toggled value to disk, then restart so PlatformColor /
   // dynamic refs re-resolve. Persist DIRECTLY (not via the async
@@ -260,8 +268,10 @@ function AppearanceCardImpl() {
                 const on = v === 'minimal';
                 if (on === settings.minimalUi) return;
                 // Under system colours, Minimal takes them off — a restart,
-                // as switching them off is; otherwise at once.
+                // as switching them off is. On Android any change of layout
+                // is a restart (`pendingLayout`); elsewhere at once.
                 if (on && dynamicColorsActive) setPendingMinimal(true);
+                else if (Platform.OS === 'android') setPendingLayout(on);
                 else updateSettings({ minimalUi: on });
               }}
               skyTop={previewSky ? previewSky.heroTop : String(palette.accentBg)}
@@ -443,6 +453,19 @@ function AppearanceCardImpl() {
         onConfirm={() => {
           setPendingMinimal(false);
           applyAndRestart({ minimalUi: true, useSystemDynamicTheme: false, tintedSurfaces: false });
+        }}
+      />
+      <ConfirmModal
+        visible={pendingLayout !== null}
+        title={t('settings.themeRestartTitle', 'Restart required')}
+        message={t('settings.layoutRestartBody')}
+        confirmLabel={t('settings.themeRestartConfirm', 'Restart')}
+        cancelLabel={t('common.cancel', 'Cancel')}
+        onCancel={() => setPendingLayout(null)}
+        onConfirm={() => {
+          const on = pendingLayout;
+          setPendingLayout(null);
+          if (on !== null) applyAndRestart({ minimalUi: on });
         }}
       />
     </>
