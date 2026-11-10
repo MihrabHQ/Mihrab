@@ -74,11 +74,8 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-// eslint-disable-next-line import/first
 import { Animated, Text, View, StyleSheet } from 'react-native';
-// eslint-disable-next-line import/first
 import { TodayCard } from '../src/screens/home/TodayCard';
-// eslint-disable-next-line import/first
 import { _resetLaunchWarpForTests, WARP_AFTER_HIDE_MS, WARP_MAX_MS, WARP_READY_MAX_MS } from '../src/boot/launchWarp';
 
 const TIMINGS = {

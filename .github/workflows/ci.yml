@@ -28,6 +28,9 @@ jobs:
       - name: TypeScript typecheck
         run: npx tsc --noEmit
 
+      - name: Lint (errors)
+        run: npm run lint:errors
+
       - name: Jest
         run: npx jest --ci --runInBand
 

@@ -22,12 +22,10 @@ jest.mock('../src/providers/preciseSun', () => {
   };
 });
 
-// eslint-disable-next-line import/first
 import {
   namazvaktiCityPoint,
   _resetNamazvaktiForTests,
 } from '../src/providers/namazvakti';
-// eslint-disable-next-line import/first
 import { parseNamazvaktiXml } from '../src/providers/namazvaktiParser';
 
 const xml = fs.readFileSync(

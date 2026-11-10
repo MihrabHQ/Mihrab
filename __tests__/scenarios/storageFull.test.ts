@@ -299,8 +299,8 @@ describe('settings', () => {
   });
 
   it('a read that fails at launch does not get the defaults saved over everything', async () => {
-    let s = await loadSettings();
-    s = await changeSettings(s, {
+    const s = await loadSettings();
+    await changeSettings(s, {
       onboardingComplete: true,
       locationOnboardingComplete: true,
       appearance: 'dark',

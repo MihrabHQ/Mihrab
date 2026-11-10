@@ -19,7 +19,6 @@ jest.mock('react-native', () => ({
   },
 }));
 
-// eslint-disable-next-line import/first
 import {
   _resetLaunchWarpForTests,
   claimLaunchWarp,
@@ -30,7 +29,6 @@ import {
   warpSkyAt,
   WARP_MAX_MS,
 } from '../src/boot/launchWarp';
-// eslint-disable-next-line import/first
 import { _resetLaunchSnapshotForTests } from '../src/native/LaunchSnapshot';
 
 const HOUR = 3600_000;

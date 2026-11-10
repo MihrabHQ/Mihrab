@@ -23,14 +23,10 @@ jest.mock('@react-native-async-storage/async-storage', () => {
 
 jest.mock('../src/native/LaunchSnapshot', () => ({ crossfadeScreen: jest.fn() }));
 
-// eslint-disable-next-line import/first
 import { crossfadeScreen } from '../src/native/LaunchSnapshot';
-// eslint-disable-next-line import/first
 import { resolveAppPalette, resolveThemePaletteForMode, skyPalette } from '../src/theme/appPalette';
-// eslint-disable-next-line import/first
 import { contrastRatio } from '../src/theme/themeMap';
 import { hexToOklch } from '../src/theme/oklch';
-// eslint-disable-next-line import/first
 import {
   activeSkyVariant,
   nominalSkyLight,
@@ -44,11 +40,8 @@ import {
 } from '../src/theme/skyMoods';
 const SKY_MOODS = skyMoodsOf('vibrant');
 const REALISTIC_SKY_MOODS = skyMoodsOf('realistic');
-// eslint-disable-next-line import/first
 import { SKY_THEME_MID_AT, skyColorAt, themedSkyFrame, type SkyPassage } from '../src/screens/home/skyModel';
-// eslint-disable-next-line import/first
 import { SUN_HORIZON_GROWTH, sunScaleAt } from '../src/screens/home/HeroSky';
-// eslint-disable-next-line import/first
 import {
   _resetSkyThemeForTests,
   _subscribeSkyThemeForTests as useSkyThemeSubscribe,

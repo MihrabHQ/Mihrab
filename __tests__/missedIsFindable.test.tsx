@@ -12,7 +12,6 @@ import {
   upsertEntry,
   type JournalEntry,
 } from '../src/journal/journal';
-import { dayKey } from '../src/practice/practiceStore';
 
 const NOW = new Date(2026, 4, 13, 12, 0, 0); // Wed 13 May 2026
 

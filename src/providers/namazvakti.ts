@@ -49,7 +49,6 @@ import {
 } from '../config/datasets';
 import { formatLocalDate } from '../utils/date';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
-import { formatLocalTime } from '../utils/prayerTimes';
 import { gunzipSync, strFromU8 } from 'fflate';
 import { fromBase64 } from '../sync/secureRandom';
 import { mirrorUrl } from '../config/mirrors';

@@ -729,6 +729,7 @@ export function MushafSurahScreen({
     // following mid-reading would not show until the next resize.
     sessionColor,
     palette.bg,
+    palette.textSolid,
     tone,
     ground,
     quranHydrated,

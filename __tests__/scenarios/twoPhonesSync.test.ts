@@ -104,7 +104,7 @@ async function phoneA(): Promise<Phone> {
     lastFetchedLongitude: HOME.longitude,
     locationPresets: [HOME],
   });
-  s = await change(s, {
+  await change(s, {
     dataProviderAuto: true,
     dataProvider: 'aladhan',
     appearance: 'light',
@@ -134,7 +134,7 @@ async function phoneB(): Promise<Phone> {
     manualLatitude: BERLIN.latitude,
     manualLongitude: BERLIN.longitude,
   });
-  s = await change(s, { dataProviderAuto: false, dataProvider: 'diyanet' });
+  await change(s, { dataProviderAuto: false, dataProvider: 'diyanet' });
   return capture();
 }
 

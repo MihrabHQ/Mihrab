@@ -22,7 +22,6 @@ jest.mock('../src/providers/localAdhan', () => {
   };
 });
 
-// eslint-disable-next-line import/first
 import { fetchPrayerTimesUnified } from '../src/providers/fetchPrayerTimes';
 
 const read = (...p: string[]) =>
