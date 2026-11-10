@@ -40,7 +40,7 @@ it('is wired: the hero ticks it, the watchdog hears it', () => {
   const path = require('path');
   const card = fs.readFileSync(path.join(__dirname, '..', 'src/screens/home/TodayCard.tsx'), 'utf-8');
   const home = fs.readFileSync(path.join(__dirname, '..', 'src/screens/HomeScreen.tsx'), 'utf-8');
-  expect(card).toMatch(/noteClockTick\(t\);/);
+  expect(card).toMatch(/noteClockTick\(t, gap\);/);
   expect(card).toMatch(/forgetClockTicks\(\);/);
   expect(home).toMatch(/const off = onClockJump\(tick\);/);
 });

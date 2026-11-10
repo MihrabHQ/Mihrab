@@ -15,12 +15,16 @@ let lastTick: number | null = null;
 /** A tick that is this far from a second after the last one is a jump. */
 export const CLOCK_JUMP_MS = 60_000;
 
-/** Called on the clock's seconds. */
-export function noteClockTick(now: number = Date.now()): void {
+/**
+ * Called on the hero's ticks: every second, or once a minute under Minimal
+ * (`heroTick.ts`) — `expectedMs` is how far after the last this one was set
+ * for.
+ */
+export function noteClockTick(now: number = Date.now(), expectedMs: number = 1000): void {
   const prev = lastTick;
   lastTick = now;
   if (prev == null) return;
-  if (Math.abs(now - prev - 1000) < CLOCK_JUMP_MS) return;
+  if (Math.abs(now - prev - expectedMs) < CLOCK_JUMP_MS) return;
   listeners.forEach(fn => fn());
 }
 
