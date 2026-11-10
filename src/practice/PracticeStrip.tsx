@@ -16,8 +16,17 @@
  * dots, no edges on empty days — the record's shape comes from the days that have something
  * in them, and a bright screen is answered by the ink's own contrast.
  */
-import { memo, useMemo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  type LayoutChangeEvent,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { KeepsSideways } from '../navigation/KeepsSideways';
@@ -27,6 +36,7 @@ import { SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
 import { monthLabelFor, STRIP_PRAYERS, type StripDay, type StripStatus } from './stripRecord';
 import { useHistoryScroll } from './useHistoryScroll';
+import { nextWindow, openingWindow, weekIsDrawn, weeksOnShow, type StripWindow } from './stripWindow';
 
 /** One cell, and the gap after it; a wider gap after each week. */
 export const CELL = 10;
@@ -35,6 +45,8 @@ const DAY = CELL + GAP;
 const WEEK_GAP = 6;
 /** The average column, for the scroll arithmetic: growth is always whole weeks. */
 const COLUMN = DAY + WEEK_GAP / 7;
+/** A whole week of columns and the gap after it. */
+const WEEK = 7 * DAY + WEEK_GAP;
 const ROW = CELL + GAP;
 const MONTH_ROW = 16;
 /** How far the hollow make-up cell's line is from its edge. */
@@ -70,6 +82,61 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
   const danger = String(palette.danger);
 
   const scroll = useHistoryScroll({ columns: days.length, columnWidth: COLUMN, rtl, onReachOldest });
+
+  // Only the weeks on show and a few either side are drawn; the rest are
+  // blanks of the same width (stripWindow.ts has the why and the sums).
+  const weeks = useMemo(() => {
+    const out: StripDay[][] = [];
+    for (let i = 0; i < days.length; i += 7) out.push(days.slice(i, i + 7));
+    return out;
+  }, [days]);
+  const [drawn, setDrawn] = useState<StripWindow>(openingWindow);
+  const seen = useRef({ offset: 0, viewport: 0, content: 0, measured: false });
+  const weekCount = weeks.length;
+  const look = useCallback(() => {
+    const at = seen.current;
+    // Until a scroll event has said where the view is, it is parked on
+    // today (useHistoryScroll): the newest weeks, which the opening
+    // window is.
+    if (!at.measured) return;
+    // The weeks the MEASURED row holds, not the weeks just handed in: when
+    // older weeks arrive, the next scroll event can still describe the row
+    // as it was — its old width and offset — and read against the new
+    // count that put the view at the far end of weeks it was nowhere near
+    // (seen on a phone: the strip went blank at the first growth). Counted
+    // back from the newest, the answer from the row's own width is right
+    // either side of the growth.
+    const measuredWeeks = Math.max(1, Math.round(at.content / WEEK));
+    const shown = weeksOnShow({
+      rtl,
+      offset: at.offset,
+      viewportWidth: at.viewport,
+      contentWidth: at.content,
+      weekWidth: WEEK,
+      weeks: measuredWeeks,
+    });
+    setDrawn(prev => nextWindow(prev, shown, weekCount));
+  }, [rtl, weekCount]);
+  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
+    seen.current = {
+      offset: contentOffset.x,
+      viewport: layoutMeasurement.width,
+      content: contentSize.width,
+      measured: true,
+    };
+    look();
+    scroll.onScroll(e);
+  };
+  const onLayout = (e: LayoutChangeEvent) => {
+    seen.current.viewport = e.nativeEvent.layout.width;
+    scroll.onLayout(e);
+  };
+  const onContentSizeChange = (w: number, h: number) => {
+    seen.current.content = w;
+    scroll.onContentSizeChange(w);
+    void h;
+  };
 
   const rowLabels = useMemo(
     () => [
@@ -120,16 +187,21 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
         ref={scroll.scrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        onContentSizeChange={scroll.onContentSizeChange}
-        onLayout={scroll.onLayout}
-        scrollEventThrottle={64}
+        onContentSizeChange={onContentSizeChange}
+        onLayout={onLayout}
+        scrollEventThrottle={32}
         onScrollBeginDrag={scroll.onScrollBeginDrag}
-        onScroll={scroll.onScroll}
+        onScroll={onScroll}
         directionalLockEnabled
         nestedScrollEnabled
         contentContainerStyle={styles.scrollBody}>
         <View style={styles.columns}>
-          {days.map(day => {
+          {weeks.map((week, w) => {
+            if (!weekIsDrawn(drawn, w, weekCount)) {
+              // A week not on show: its width, and nothing in it.
+              return <View key={`blank-${week[0].key}`} style={styles.blankWeek} />;
+            }
+            return week.map(day => {
             const selected = !day.future && day.key === selectedKey;
             const dim = emphasise !== undefined && !emphasise.has(day.key) && !day.future && !selected;
             const endOfWeek = day.weekday === 6;
@@ -197,6 +269,7 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
                 </View>
               </Pressable>
             );
+            });
           })}
         </View>
       </ScrollView>
@@ -241,6 +314,7 @@ const styles = StyleSheet.create({
   columns: { flexDirection: 'row', alignItems: 'flex-start' },
   column: { width: DAY, alignItems: 'flex-start' },
   weekEnd: { marginEnd: WEEK_GAP },
+  blankWeek: { width: WEEK },
   dim: { opacity: 0.3 },
   monthCell: { height: MONTH_ROW, width: DAY },
   monthText: {
