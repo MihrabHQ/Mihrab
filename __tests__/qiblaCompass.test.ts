@@ -19,6 +19,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import { normalizeHeadingDeg, qiblaBearingFrom } from '../src/utils/qibla';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const repo = (...parts: string[]) =>
   readFileSync(path.join(__dirname, '..', ...parts), 'utf8');
@@ -95,7 +96,7 @@ describe('the bearing the chip shows', () => {
 
 describe('the way back in', () => {
   const home = repo('src', 'screens', 'HomeScreen.tsx');
-  const card = repo('src', 'screens', 'home', 'TodayCard.tsx');
+  const card = todayCardSource();
   const chip = repo('src', 'screens', 'home', 'QiblaChip.tsx');
 
   test('the home screen computes a bearing and can open the compass', () => {
@@ -263,7 +264,7 @@ describe('the page does not exist on a desktop', () => {
     // Keyed on the bearing, not on the callback — the bug this guards
     // against is `{onOpenQibla ? <chip/> : null}`, which would take the
     // chip away with the page.
-    const card = code('src', 'screens', 'home', 'TodayCard.tsx');
+    const card = todayCardSource();
     expect(card).not.toMatch(/onOpenQibla \? \(\s*<QiblaChipCorner/);
     expect(card).toContain('<QiblaChipCorner');
 

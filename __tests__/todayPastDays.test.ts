@@ -12,6 +12,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { cachedDaysBefore, PAST_DAYS } from '../src/prayer/widgetDayWindow';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const mockDataset = jest.fn();
 const mockMany = jest.fn();
@@ -115,7 +116,7 @@ describe('the days behind today', () => {
 });
 
 describe('the pages', () => {
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
 
   it('run from the oldest past day through the week, opening where the day says', () => {
     expect(card).toMatch(/pastDays\.slice\(\)\.reverse\(\)\.concat\(week\)/);
@@ -141,7 +142,7 @@ describe('the pages', () => {
 });
 
 describe('the day bar', () => {
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
   const home = read('src/screens/HomeScreen.tsx');
   const bar = card.slice(
     card.indexOf('<View style={[styles.dayBar'),
@@ -234,7 +235,7 @@ describe('the day bar', () => {
 
 describe('the edges', () => {
   const row = read('src/screens/home/PrayerRow.tsx');
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
 
   it('give the rows the hero’s own inset, on both sides, with nothing wrapped round them', () => {
     expect(row).toMatch(/row: \{[\s\S]*?paddingHorizontal: SPACING\.xl,[\s\S]*?position: 'relative',\s*\}/);

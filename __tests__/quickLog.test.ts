@@ -14,6 +14,7 @@ import {
   SALAH,
 } from '../src/journal/quickLog';
 import { LOGGABLE_STATUSES } from '../src/journal/journal';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const read = (p: string) => readFileSync(join(__dirname, '..', p), 'utf8');
 
@@ -187,7 +188,7 @@ describe('the window', () => {
 
 describe('the row and the card', () => {
   const row = read('src/screens/home/PrayerRow.tsx');
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
   const check = read('src/screens/home/LogCheck.tsx');
   const quick = read('src/journal/quickLog.ts');
 

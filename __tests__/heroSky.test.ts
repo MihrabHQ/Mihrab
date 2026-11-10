@@ -18,6 +18,7 @@ import {
 } from '../src/screens/home/skyModel';
 import { glowCy, moonLitPath, moonShadowPath, skyScene } from '../src/screens/home/HeroSky';
 import { moonIllumination, moonPhaseFraction } from '../src/screens/home/moon';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const read = (p: string) => readFileSync(join(__dirname, '..', p), 'utf8');
 const PASSAGES: SkyPassage[] = ['night', 'dawn', 'day', 'sunset', 'dusk'];
@@ -135,7 +136,7 @@ describe('the ink', () => {
   });
 
   it('is taken per element in the hero, at that element’s height', () => {
-    const card = read('src/screens/home/TodayCard.tsx');
+    const card = todayCardSource();
     const hero = card.slice(card.indexOf('const HeroToday = memo('), card.indexOf('function TodayCardImpl'));
     // Measured where the hero grows (the phone), the design's fixed
     // fractions where it does not — each element, at its own height.

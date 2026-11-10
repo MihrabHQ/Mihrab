@@ -27,7 +27,7 @@ const SRC = path.join(__dirname, '..', 'src');
 /** Files that render clock text and therefore MUST use tabular numerals. */
 const TABULAR_REQUIRED = [
   'src/screens/home/PrayerRow.tsx', // HH:MM in the day-card grid
-  'src/screens/home/TodayCard.tsx', // countdown + HH:MM in the hero
+  'src/screens/home/HeroToday.tsx', // countdown + HH:MM in the hero
   'src/screens/compass/BearingHeader.tsx', // "N° from north"
   'src/screens/settings/WidgetCard.tsx', // "88%" opacity readout
 ];

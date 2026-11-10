@@ -8,6 +8,7 @@ import { bookPanePadding, postureFrom } from '../src/native/FoldPosture';
 import { sheetSides, SHEET_MAX_WIDTH } from '../src/responsive/sheetSides';
 import * as fs from 'fs';
 import * as path from 'path';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
 
@@ -124,7 +125,7 @@ describe('the open foldable', () => {
     expect(home).toMatch(/Platform\.OS === 'android' &&[\s\S]{0,120}!book &&/);
     expect(home).toMatch(/Math\.round\(\(screenWidth - MAX_CONTENT_WIDTH\) \/ 2\)/);
     expect(home).toMatch(/sideInset=\{wideInset\}/);
-    const card = read('src/screens/home/TodayCard.tsx');
+    const card = todayCardSource();
     expect(card).toMatch(/const skySide = SPACING\.xl \+ wideInset;/);
     expect(card).toMatch(/bleed=\{\{ horizontal: skySide/);
   });

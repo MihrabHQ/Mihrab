@@ -30,6 +30,7 @@ import {
   WARP_MAX_MS,
 } from '../src/boot/launchWarp';
 import { _resetLaunchSnapshotForTests } from '../src/native/LaunchSnapshot';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const HOUR = 3600_000;
 
@@ -201,7 +202,7 @@ describe('keeping the screen while the app is open', () => {
 
 describe('wiring', () => {
   const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf-8');
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
 
   it('draws the countdown, the rail and the sky from the run', () => {
     expect(card).toMatch(/warp \? warpRemaining\(warp, remainingSeconds, warpE\) : remainingSeconds/);

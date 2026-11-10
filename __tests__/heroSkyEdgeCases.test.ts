@@ -29,6 +29,7 @@ import { MOON, SKY_CRAMPED_BELOW, skyScene, STAR_FIELD_BOTTOM, STAR_FIELD_TOP, S
 import { HERO_SCENE_MIN } from '../src/screens/home/homeBudget';
 import { filterOptionalTimes } from '../src/utils/nightTimes';
 import type { TimingsMap } from '../src/types/prayer';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const read = (p: string) => readFileSync(join(__dirname, '..', p), 'utf8');
 const HEX = /^#[0-9a-f]{6}$/i;
@@ -357,7 +358,7 @@ describe('the open sky, on every phone and every table', () => {
   });
 
   it('the hero reserves a moon’s worth of sky, and the threshold sits under it', () => {
-    const card = read('src/screens/home/TodayCard.tsx');
+    const card = todayCardSource();
     // The floor is the tier's (homeBudget.ts): 64 on a comfortable page,
     // and never under what HeroSky calls cramped on the compact one.
     expect(card).toMatch(/minHeight: HERO_SCENE_MIN\[tier\]/);
@@ -382,14 +383,14 @@ describe('the open sky, on every phone and every table', () => {
     // short of it.
     expect(sky).toMatch(/StyleSheet\.absoluteFill,\s*\{\s*backgroundImage: linearDown\(/);
     // And the clip that makes the overdraw safe.
-    expect(read('src/screens/home/TodayCard.tsx')).toMatch(
+    expect(todayCardSource()).toMatch(
       /heroWrapBleed: \{[^}]*overflow: 'hidden'/s,
     );
   });
 });
 
 describe('the hero grows but never shrinks under its text', () => {
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
   const home = read('src/screens/HomeScreen.tsx');
   it('every link in the chain is grow-only', () => {
     for (const key of ['cardBleed', 'heroWrapBleed', 'heroFill']) {
@@ -439,7 +440,7 @@ describe('the hero grows but never shrinks under its text', () => {
 });
 
 describe('the rows adapt to the phone and to the table', () => {
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
   const row = read('src/screens/home/PrayerRow.tsx');
   it('take the page’s tier from the budget, on the phone only', () => {
     // The two thresholds that used to decide `dense` are gone; the budget
@@ -475,7 +476,7 @@ describe('the rows adapt to the phone and to the table', () => {
  * and the city out of line with the countdown and the date below it.
  */
 describe('the hero top row sits on the page edge', () => {
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
 
   it('sizes the location slot to its chip and pulls the chip onto the edge', () => {
     expect(card).toMatch(/heroTopLeading: \{[^}]*alignItems: 'flex-start'[^}]*\}/s);

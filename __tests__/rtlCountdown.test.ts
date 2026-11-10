@@ -5,6 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import { countdownPieces } from '../src/utils/prayerTimes';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf-8');
 
@@ -22,7 +23,7 @@ describe('the countdown as pieces', () => {
   });
 
   it('is drawn as separate texts, so the row orders them in reading order', () => {
-    const card = read('src/screens/home/TodayCard.tsx');
+    const card = todayCardSource();
     expect(card).toContain('{pieces.h}');
     expect(card).toContain('{pieces.m}');
     expect(card).toContain('{pieces.s}');

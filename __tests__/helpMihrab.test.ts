@@ -8,6 +8,7 @@
  */
 import { readFileSync } from 'fs';
 import path from 'path';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const REPO = path.resolve(__dirname, '..');
 const read = (p: string) => readFileSync(path.join(REPO, p), 'utf8');
@@ -103,7 +104,7 @@ describe('the page', () => {
   });
 
   it('is offered from the Today hero, on the far end of the "Fajr in" line', () => {
-    const card = read('src/screens/home/TodayCard.tsx');
+    const card = todayCardSource();
     // The eyebrow row is its own memoised component (HeroEyebrow): the
     // label first, the heart after it — the trailing end.
     // The label (and the "chosen" word after it, when the hero is aimed —

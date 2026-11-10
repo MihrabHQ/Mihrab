@@ -1,4 +1,5 @@
 import { pagerPosition } from '../src/screens/home/pagerPosition';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 describe('the Home day pager position', () => {
   it('is the page index itself in a left-to-right language', () => {
@@ -28,11 +29,7 @@ describe('the Home day pager position', () => {
   });
 
   it('is what the card scrolls by, and what it reads a settled scroll with', () => {
-    const fs = require('fs');
-    const card: string = fs.readFileSync(
-      require('path').join(__dirname, '..', 'src/screens/home/TodayCard.tsx'),
-      'utf8',
-    );
+    const card: string = todayCardSource();
     // The list itself is left to right in every language; only the pages'
     // own content follows the language.
     expect(card).toMatch(/pager: \{ direction: 'ltr' \}/);

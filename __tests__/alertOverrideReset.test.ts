@@ -35,6 +35,7 @@ import {
   startOfLocalDay,
 } from '../src/utils/prayerTimes';
 import { ymdLocal } from '../src/notifications/scheduling';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const ROOT = path.join(__dirname, '..');
 const read = (p: string) => readFileSync(path.join(ROOT, p), 'utf-8');
@@ -105,7 +106,7 @@ describe('the marker belongs to an occurrence, not to a name', () => {
   });
 
   it('is matched on the instant in the card', () => {
-    const ts = read('src/screens/home/TodayCard.tsx');
+    const ts = todayCardSource();
     expect(ts).toMatch(
       /if \(ymdLocal\(eventAt\(key, dayTimings, base, dayClock\)\) !== override\.date\) continue;/,
     );
@@ -118,7 +119,7 @@ describe('the marker belongs to an occurrence, not to a name', () => {
 });
 
 describe('the row shows what will actually happen', () => {
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
 
   it('renders the override on the bell, not the standing setting', () => {
     expect(card).toMatch(
@@ -184,7 +185,7 @@ describe('the row does not disturb the column beside it', () => {
 
 describe('reset reaches both copies, and the schedule', () => {
   it('clears the native one as well as its own', () => {
-    const card = read('src/screens/home/TodayCard.tsx');
+    const card = todayCardSource();
     expect(card).toMatch(
       /await clearNextAlertOverride\(\);\s*\n\s*await clearNativeAlertOverride\(\);/,
     );
@@ -251,7 +252,7 @@ describe('every language can say it', () => {
 
 
 describe('the row and the card agree about whether anything is temporary', () => {
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
   const kt = read(
     'android/app/src/main/java/com/prayer_times/LiveActivityAlertModes.kt',
   );
@@ -318,7 +319,7 @@ describe('an occurrence survives its own clock time changing', () => {
    * silenced Fajr from the lock screen and it played anyway", which is
    * the precise complaint this control exists to answer.
    */
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
   const ts = read('src/notifications/adhanMute.ts');
   const kt = read(
     'android/app/src/main/java/com/prayer_times/LiveActivityAlertModes.kt',

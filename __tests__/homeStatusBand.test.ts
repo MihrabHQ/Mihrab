@@ -15,6 +15,7 @@ import {
 } from '../src/screens/home/heroSkyBand';
 import fs from 'fs';
 import path from 'path';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const read = (p: string) =>
   fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
@@ -39,7 +40,7 @@ describe('the store the hero publishes through', () => {
 
 describe('the band is wired to the page', () => {
   const home = read('src/screens/HomeScreen.tsx');
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
   const band = read('src/screens/home/HomeStatusBand.tsx');
 
   it('only the phone renders it — the dashboard has no strip to cover', () => {

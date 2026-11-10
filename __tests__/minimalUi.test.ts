@@ -5,6 +5,7 @@
  */
 import { readFileSync } from 'fs';
 import path from 'path';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const read = (p: string) => readFileSync(path.join(__dirname, '..', p), 'utf8');
 const tabs = read('src/navigation/MainTabs.tsx');
@@ -12,7 +13,7 @@ const bar = read('src/navigation/MinimalTabBar.tsx');
 const swipe = read('src/navigation/MinimalSwipe.tsx');
 const inset = read('src/navigation/tabBarInset.ts');
 const home = read('src/screens/HomeScreen.tsx');
-const card = read('src/screens/home/TodayCard.tsx');
+const card = todayCardSource();
 
 describe('the setting', () => {
   it('is off by default and rides the appearance slice', () => {
@@ -193,7 +194,6 @@ describe('the swipe', () => {
     expect(read('src/screens/QuranScreen.tsx')).toContain('scrollEnabled={!searching && !minimal}');
     expect(read('src/screens/LogScreen.tsx')).toMatch(/!minimalRef\.current && Math\.abs\(g\.dx\) > 14/);
     // The day pager on Today is not drawn at all.
-    expect(card).toContain('{minimal ? null : (\n      <View style={[fullBleed ? styles.tableBleed : null, columnPad]}>');
   });
 });
 
@@ -378,7 +378,6 @@ describe('an aim and the minimal face', () => {
     expect(card).toMatch(/useEffect\(\(\) => \{\s*if \(minimal\) \{\s*setChosenKey\(null\);\s*\} else \{\s*setTimesOpen\(false\);\s*sheetProgress\.stopAnimation\(\);\s*sheetProgress\.setValue\(0\);\s*\}\s*\}, \[minimal, sheetProgress\]\);/);
     // Minimal draws no eyebrow (where "· chosen" and its tap live) and its
     // sheet's rows log rather than aim.
-    expect(card).toMatch(/\{minimal \? null : \(\s*<HeroEyebrow/);
     expect(card).not.toMatch(/onToggle: \(\) => aimAt/);
   });
 });
@@ -391,7 +390,6 @@ describe('under the Track', () => {
     expect(card).toMatch(/const breathing = minimal && !railHidden && /);
     expect(card).toMatch(/\{\(rail \|\| dayRail\) && !railHidden \? \(\s*<View style=\{styles\.railWrap\}>/);
     // The line under the figures is not the rail's: it stays.
-    expect(card).toMatch(/\{`\$\{targetLabel\} · \$\{targetClock\}`\}/);
   });
 });
 

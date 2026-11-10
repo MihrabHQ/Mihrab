@@ -18,6 +18,7 @@ import {
 } from '../src/screens/home/homeBudget';
 import { SPACING } from '../src/theme/tokens';
 import { HOME_ROW_PADDING_V } from '../src/screens/home/tokens';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const read = (p: string) => readFileSync(join(__dirname, '..', p), 'utf8');
 
@@ -92,7 +93,7 @@ describe('the pick', () => {
 });
 
 describe('the constants are the styles’', () => {
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
   const row = read('src/screens/home/PrayerRow.tsx');
 
   it('the rows’ padding', () => {

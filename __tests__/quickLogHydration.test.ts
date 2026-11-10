@@ -9,6 +9,7 @@
  */
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const read = (p: string) =>
   readFileSync(join(__dirname, '..', p), 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
@@ -34,7 +35,7 @@ describe('useQuickLog', () => {
 });
 
 describe('the check on Today', () => {
-  const src = read('src/screens/home/TodayCard.tsx');
+  const src = todayCardSource();
 
   it('is drawn as not-yet until the journal has been read', () => {
     // `ready` carries it now: the ring is drawn at a whisper exactly as

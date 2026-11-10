@@ -6,6 +6,7 @@ import {
   noteClockTick,
   onClockJump,
 } from '../src/utils/clockJumps';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 beforeEach(_resetClockJumpsForTests);
 
@@ -38,7 +39,7 @@ it('does not take the first tick after a pause for a jump', () => {
 it('is wired: the hero ticks it, the watchdog hears it', () => {
   const fs = require('fs');
   const path = require('path');
-  const card = fs.readFileSync(path.join(__dirname, '..', 'src/screens/home/TodayCard.tsx'), 'utf-8');
+  const card = todayCardSource();
   const home = fs.readFileSync(path.join(__dirname, '..', 'src/screens/HomeScreen.tsx'), 'utf-8');
   expect(card).toMatch(/noteClockTick\(t, gap\);/);
   expect(card).toMatch(/forgetClockTicks\(\);/);

@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import { enteringMinimal, minimalLook } from '../src/settings/minimalLook';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const read = (p: string) => readFileSync(path.join(__dirname, '..', p), 'utf8');
 
@@ -98,7 +99,7 @@ describe('Minimal is not offered on a desktop page', () => {
     expect(card).toMatch(/\{minimalOffered \? \(\s*<SettingsBlock>[\s\S]{0,200}onboarding\.personalise\.layout[\s\S]{0,100}<LayoutPicker\s*testID="appearance-layout"/);
     expect(card).not.toMatch(/<SettingsToggleRow\s*title=\{t\('settings\.minimalUi'\)\}/);
     expect(read('src/onboarding/screens/PersonaliseScreen.tsx')).toMatch(/\{minimalOffered && !settings\.useSystemDynamicTheme \? \(\s*<SettingsBlock>[\s\S]{0,200}onboarding\.personalise\.layout/);
-    expect(read('src/screens/home/TodayCard.tsx')).toContain("{settings.showDataStats && minimalOffered && !settings.useSystemDynamicTheme ? (");
+    expect(todayCardSource()).toContain("{settings.showDataStats && minimalOffered && !settings.useSystemDynamicTheme ? (");
     // Nor beside an iPhone's vertical bar, where Minimal stands down.
     expect(read('src/settings/useMinimalOffered.ts')).toContain('return MINIMAL_OFFERED && !vbar;');
     expect(read('src/screens/HomeScreen.tsx')).toContain('const minimal = minimalUi && !isDashboard && !isRoomy && !book;');

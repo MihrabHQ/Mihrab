@@ -52,6 +52,7 @@ import {
   setSkyVariant,
   skyDayKey,
 } from '../src/theme/skyTheme';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 /** Moments of the day, as the hero would publish them. */
 const SKIES = {
@@ -393,7 +394,7 @@ describe('the hero under the theme', () => {
   });
 
   it('is painted in the hero and in the launch run\'s keyframes alike, with flat figures, and has the fuller stars', () => {
-    const card = read('src/screens/home/TodayCard.tsx');
+    const card = todayCardSource();
     // Every look has the theme's hero: Sky in the chosen colours, the
     // others in Realistic's, running into the page the theme draws.
     expect(card).toMatch(/const heroVariant: SkyVariant = skyTheme \? skyVariant : 'realistic';/);
@@ -506,7 +507,7 @@ describe('access and polish', () => {
     // skeleton (the hero runs from the prayer's start under it anyway).
     expect(root).toMatch(/setLaunchSnapshotLook\(lookKeyOf\(settings\), settings\.appearance === 'system'\);/);
     expect(root).not.toMatch(/lookMoodKey/);
-    const card = read('src/screens/home/TodayCard.tsx');
+    const card = todayCardSource();
     // The hero asks for the crossfade before it repaints across the switch.
     expect(card).toMatch(/if \(!posed && !launchRun && moodDark != null && lastMoodDark\.current != null && lastMoodDark\.current !== moodDark\) \{\s*crossfadeScreen\(\);/);
     const hook = read('src/hooks/useIncreasedContrast.ts');
@@ -518,7 +519,7 @@ describe('access and polish', () => {
 
 describe('wiring', () => {
   it('the hero publishes the live sky, the palettes read it, the card offers it', () => {
-    const card = read('src/screens/home/TodayCard.tsx');
+    const card = todayCardSource();
     expect(card).toMatch(/publishSkyTheme\(\s*\{ top: liveSky\.top, bottom: liveSky\.bottom, passage: liveSky\.passage, t: liveSky\.t, light: liveSky\.light \},\s*\{\s*day: skyDayKey\(new Date\(liveMinuteKey \* 60_000\)\),\s*times: skyToday \?\? today,\s*tomorrowFajr,\s*where:/);
     // The hour decides light or dark: the hooks take it off the palette.
     expect(read('src/hooks/useAppPalette.ts')).toMatch(/isDark: palette\.isDark/);

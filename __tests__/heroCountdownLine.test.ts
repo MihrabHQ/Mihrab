@@ -6,10 +6,9 @@
  * Three Text views aligned on 'baseline' let the seconds ride high beside
  * the figures on both platforms; spans of one Text cannot.
  */
-import { readFileSync } from 'fs';
-import path from 'path';
+import { todayCardSource } from './fixtures/todayCardSource';
 
-const src = readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'TodayCard.tsx'), 'utf8');
+const src = todayCardSource();
 // The row's opening: centred under Minimal (settings.minimalUi), else as it was.
 const ROW_OPEN = '<View style={[styles.heroCountdownRow, minimal && styles.heroCountdownRowMinimal]}>';
 const row = src.slice(src.indexOf(ROW_OPEN), src.indexOf('{rail ? (', src.indexOf(ROW_OPEN)));

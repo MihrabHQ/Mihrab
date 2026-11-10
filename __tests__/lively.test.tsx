@@ -9,6 +9,7 @@ import path from 'path';
 import React from 'react';
 import { act, create } from 'react-test-renderer';
 import { LIVELY_MS, useLively } from '../src/hooks/useLively';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const read = (rel: string) => readFileSync(path.join(__dirname, '..', rel), 'utf8');
 
@@ -56,7 +57,7 @@ describe('useLively', () => {
 
 describe('what the window gates', () => {
   it('the breath and the twinkle', () => {
-    const card = read('src/screens/home/TodayCard.tsx');
+    const card = todayCardSource();
     expect(card).toContain('const lively = useLively(active && !posed);');
     expect(card).toContain('const breathing = minimal && !railHidden && lively && !reduceMotion && !posed;');
     expect(card).toContain('still={posed || !lively}');

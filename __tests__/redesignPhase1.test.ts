@@ -4,11 +4,12 @@
  */
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 const read = (p: string) => readFileSync(join(__dirname, '..', p), 'utf8');
 
 describe('Today', () => {
-  const card = read('src/screens/home/TodayCard.tsx');
+  const card = todayCardSource();
   const home = read('src/screens/HomeScreen.tsx');
   const panel = read('src/screens/home/DataStatsPanel.tsx');
 

@@ -25,6 +25,7 @@ import {
   subscribeIslamicDay,
   todaysMaghrib,
 } from '../src/hijri/islamicDay';
+import { todayCardSource } from './fixtures/todayCardSource';
 
 /** The Qur'an store, and the parts of it that were split out of it. */
 const STORE_FILES = [
@@ -196,10 +197,7 @@ describe('what the boundary deliberately does NOT move', () => {
     // Isha, or the First Third when it is on — `dayRollover`, untouched.
     // The table is not a "what day is it" question and must not be made
     // into one: tomorrow's times after maghrib would be four hours early.
-    const card = readFileSync(
-      join(__dirname, '..', 'src', 'screens', 'home', 'TodayCard.tsx'),
-      'utf8',
-    );
+    const card = todayCardSource();
     expect(card).toMatch(/lastTimeOfDay\(week\[0\] \?\? \{\}, startOfLocalDay\(new Date\(\)\), dayClock\)/);
     const rollover = readFileSync(
       join(__dirname, '..', 'src', 'prayer', 'dayRollover.ts'),
