@@ -458,7 +458,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   /** One round swatch: a colour, or "#" for a colour of one's own. */
   private fun swatch(colour: Int?, name: String, selected: Boolean, onPick: () -> Unit): View {
     val size = dp(40f).toInt()
-    val ring = MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary, Color.WHITE)
+    val ring = MaterialColors.getColor(this, androidx.appcompat.R.attr.colorPrimary, Color.WHITE)
     val edge = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutline, Color.GRAY)
     val dot = TextView(this).apply {
       gravity = Gravity.CENTER
