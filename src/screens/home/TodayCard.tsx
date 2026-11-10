@@ -1355,6 +1355,12 @@ function TodayCardImpl({
         onGestureEvent={swipeUpEvent}
         onHandlerStateChange={onSwipeUpState}>
       <HeroWrap
+        // A REAL VIEW, ALWAYS. The handler above is bound to this view by
+        // its tag, and a view with nothing to draw is one Fabric is free to
+        // flatten out of the native tree — leaving the handler the tag of
+        // a view that is not there. MinimalSwipe's views carry the same
+        // prop for the same reason.
+        collapsable={false}
         // Minimal: the whole hero is the way to the day's times — by the
         // drag up above, and for a screen reader by its prayer's line.
         {...(minimal

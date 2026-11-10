@@ -271,6 +271,8 @@ export function MinimalSheet({
           onGestureEvent={dragEvent}
           onHandlerStateChange={onDragState}>
           <Animated.View
+            // The handler's own view: never flattened (TodayCard's note).
+            collapsable={false}
             onLayout={onLayout}
             style={[
               styles.card,

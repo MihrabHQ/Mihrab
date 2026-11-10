@@ -48,7 +48,7 @@ import {
 import { TabBarScrim } from './TabBarScrim';
 import { StatusBarBand } from './StatusBarBand';
 import { TabBarButton } from './TabBarButton';
-import { forgetOpenedTabs, setHoverTint } from './tabBarPress';
+import { forgetOpenedTabs, noteTabOpened, setHoverTint } from './tabBarPress';
 import { showTabBar, useTabBarHidden } from './tabBarVisibility';
 import { HomeScreen } from '../screens/HomeScreen';
 import { HomeHeaderControls } from './HomeHeaderControls';
@@ -75,6 +75,23 @@ import { MinimalScreens } from './MinimalScreens';
 import { PAGER_TRANSITION_MS, pagerEasing } from './minimalPager';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
+
+/**
+ * Rendered in every tab's layout, which the navigator draws only for a
+ * tab whose page exists: says so to the bar's press (`noteTabOpened`).
+ *
+ * The buttons alone could not know. Under Minimal every page is built
+ * with no button pressed — and the full bar's buttons are not even drawn
+ * — so on the way back to the full page a first touch on a tab would
+ * "warm" a page that was already there: a preload of a mounted tab, which
+ * at the least replaces its route's params object for nothing.
+ */
+function TabHasPage({ name }: { name: string }) {
+  useEffect(() => {
+    noteTabOpened(name);
+  }, [name]);
+  return null;
+}
 
 /** The wrapper the playback bar and the screen share. */
 const SCREEN = { flex: 1 } as const;
@@ -215,6 +232,10 @@ export function MainTabs() {
               rides inside the swipe's wrapper, so under Minimal it stands
               aside with its page: every tab is drawn then, and a band
               left outside would lie over the page on show. */}
+          {/* This tab has a page now, however it came by one — opened,
+              warmed, or built with the rest under Minimal — so a later
+              touch on its button has nothing to warm (tabBarPress.ts). */}
+          <TabHasPage name={route.name} />
           <MinimalSwipe enabled={minimal} routeKey={route.key}>
           <HeaderPlaybackBar
             surface={palette.bg}
