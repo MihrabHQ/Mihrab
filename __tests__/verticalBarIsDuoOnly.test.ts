@@ -87,6 +87,7 @@ describe('the vertical bar is the iPhone Duo’s alone', () => {
       'src/responsive/sheetSides.ts',
       'src/screens/HomeScreen.tsx',
       'src/screens/home/HeroSky.tsx',
+      'src/screens/home/HeroToday.tsx',
       'src/screens/home/TodayCard.tsx',
       'src/screens/month/MonthTable.tsx',
       'src/screens/quran/MushafSurahScreen.tsx',

@@ -1,5 +1,29 @@
 /* eslint-env jest */
 
+// THE TODAY CARD IS SEVERAL FILES. It was one, TodayCard.tsx, of 3,400
+// lines, and some thirty test files read that one file's text to hold a
+// line of it in place. Split into the card, its hero, the hero's clock
+// and the styles, the text they look for is in one of the four; a read of
+// TodayCard.tsx here answers with all four, in the order they stood, so
+// those tests hold the same lines wherever they now live. (New tests
+// should test what a function does, not what its file says.)
+{
+  const fs = require('fs');
+  const path = require('path');
+  const HOME = path.join(__dirname, 'src', 'screens', 'home');
+  const CARD = path.join(HOME, 'TodayCard.tsx');
+  const PARTS = ['HeroToday.tsx', 'useHeroClock.ts', 'todayCardStyles.ts'];
+  const readFileSync = fs.readFileSync;
+  fs.readFileSync = function (file, ...rest) {
+    const text = readFileSync.call(this, file, ...rest);
+    if (typeof file !== 'string' || typeof text !== 'string' || path.resolve(file) !== CARD) return text;
+    const at = text.indexOf('\nfunction TodayCardImpl(');
+    const parts = PARTS.map(f => readFileSync.call(this, path.join(HOME, f), ...rest)).join('\n');
+    // The hero stood before the card's own component.
+    return at < 0 ? text + '\n' + parts : text.slice(0, at) + '\n' + parts + text.slice(at);
+  };
+}
+
 // NetInfo touches its native module at import time, which is null under Jest.
 // The library ships a mock for exactly this; register it globally so any test
 // that renders the app (which watches for Wi-Fi to warm the mushaf font store)
