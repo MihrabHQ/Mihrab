@@ -391,8 +391,14 @@ function TodayCardImpl({
   // today when opened, a day behind or ahead by its chevrons.
   const [timesOpen, setTimesOpen] = useState(false);
   const [sheetOffset, setSheetOffset] = useState(0);
+  // The day the sheet opens on: the one the full page's table is on —
+  // tomorrow once today has nothing left in it (`landing`, below). The
+  // countdown turns to tomorrow's Fajr the moment the day's last time
+  // passes, and the sheet opened on today all evening: the page counting
+  // to 05:07 over a sheet whose Fajr said 05:05.
+  const landingRef = useRef(0);
   const onOpenTimes = useCallback(() => {
-    setSheetOffset(0);
+    setSheetOffset(landingRef.current);
     setTimesOpen(true);
   }, []);
   const onCloseTimes = useCallback(() => setTimesOpen(false), []);
@@ -484,6 +490,7 @@ function TodayCardImpl({
   const spent =
     week.length > 1 && lastToday != null && Date.now() > lastToday.getTime();
   const landing = spent ? 1 : 0;
+  landingRef.current = landing;
   /**
    * One timeout to the last time of the day, so the turn happens AT it
    * rather than at whatever else next re-renders the card. The same shape
