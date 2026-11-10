@@ -95,9 +95,12 @@ describe('the budgets stay in order', () => {
 });
 
 describe('a variant is filled against the budget that chose it', () => {
-  it('the strip picks its variant on the budgets and nothing else', () => {
-    expect(strip).toContain('val oneRow = h in 1 until STRIP_TIGHT_CONTENT_DP');
-    expect(strip).toContain('val tight = h in 1 until STRIP_ROOMY_CONTENT_DP');
+  it('the strip takes its variant from the one decision, its budgets as floors', () => {
+    // cardfit.stripVariant, swept in contract-tests/kotlin (StripVariantTest).
+    expect(strip).toContain('val oneRow = plan.variant.oneRow');
+    expect(strip).toContain('val tight = plan.variant.tight');
+    expect(strip).toContain('roomyFloorDp = STRIP_ROOMY_CONTENT_DP,');
+    expect(strip).toContain('tightFloorDp = STRIP_TIGHT_CONTENT_DP,');
   });
 
   it('the log card picks its three the same way', () => {
@@ -111,9 +114,12 @@ describe('a variant is filled against the budget that chose it', () => {
   ])('%s measures its slack against that same budget', (_label, file, prefix) => {
     // `budget` is assigned from the same three constants the flags above
     // read, and the slack subtracts `budget` — never a fourth number.
-    const assign = new RegExp(
-      `val budget =[\\s\\S]{0,200}?${prefix}_ROOMY_CONTENT_DP`,
-    );
+    // The strip's budget is the variant's own (`plan.variant.budgetDp`:
+    // the height its layout begins at); the log card's, its constants.
+    const assign =
+      prefix === 'STRIP'
+        ? /val budget = plan\.variant\.budgetDp/
+        : new RegExp(`val budget =[\\s\\S]{0,200}?${prefix}_ROOMY_CONTENT_DP`);
     expect(file).toMatch(assign);
     expect(file).toContain('((h - budget) / 2)');
     // No bare numeral may creep back into the slack arithmetic.
@@ -147,7 +153,7 @@ describe('the graph is drawn for the room the card leaves it', () => {
     // Every part of the layout over the graph is in the sum.
     const at = strip.indexOf('private fun stripChromeDp(');
     const body = strip.slice(at, strip.indexOf('\n  }\n', at));
-    for (const part of ['cardInsetsDp(context)', 'stripEnds(h, compact)', 'header', 'table', 'next', 'rule']) {
+    for (const part of ['cardInsetsDp(context)', 'stripEnds(tight, compact)', 'header', 'table', 'next', 'rule']) {
       expect(body).toContain(part);
     }
     // The night marks are part of the times' segment — the constant forgot them.
@@ -197,7 +203,7 @@ describe('two rows always hold the tall cards’ graph', () => {
   });
 
   it('the strip’s padding and layout read one plan', () => {
-    expect(strip).toContain('design == Design.STRIP -> plan?.ends ?: stripEnds(size.heightDp, compact = false)');
+    expect(strip).toContain('design == Design.STRIP -> plan?.ends ?: stripEnds(');
   });
 });
 

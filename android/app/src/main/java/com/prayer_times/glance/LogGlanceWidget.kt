@@ -491,7 +491,6 @@ internal class LogGlanceWidget(
     private const val CARD_MIN_SP = 9f
 
     /** PrayerWidgetLogProvider's budgets, unchanged (see the notes there). */
-    private const val GRID_MIN_HEIGHT_DP = 190
     private const val LOG_ROOMY_CONTENT_DP = 157
     private const val LOG_TIGHT_CONTENT_DP = 134
     private const val LOG_BARE_CONTENT_DP = 112

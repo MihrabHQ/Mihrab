@@ -32,6 +32,8 @@ import androidx.glance.text.TextAlign
 import androidx.glance.visibility
 import com.prayer_times.PracticeGridBitmap
 import com.prayer_times.cardfit.GraphRoom
+import com.prayer_times.cardfit.StripVariant
+import com.prayer_times.cardfit.stripVariant
 import com.prayer_times.cardfit.graphBoxDp
 import com.prayer_times.cardfit.graphRoom
 import com.prayer_times.PrayerWidgetDisplay
@@ -140,7 +142,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     // the layout in `Strip` read the same plan.
     val plan = result.getOrNull()?.takeIf { design == Design.STRIP }?.let { stripPlan(context, it, size) }
     val ends = when {
-      design == Design.STRIP -> plan?.ends ?: stripEnds(size.heightDp, compact = false)
+      design == Design.STRIP -> plan?.ends ?: stripEnds(size.heightDp in 1 until STRIP_ROOMY_CONTENT_DP, compact = false)
       design == Design.SMALL -> 10
       else -> 14
     }
@@ -207,10 +209,44 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     /** The card's height less the graph's room (and less the foot line, `footDp`). */
     val chromeDp: Int,
     val footDp: Int,
+    /** Which layout the height gets (`cardfit.stripVariant`). */
+    val variant: StripVariant,
   )
 
   /** The strip's top and bottom padding: 6 once it is shorter than its roomy budget, or compact. */
-  private fun stripEnds(h: Int, compact: Boolean) = if (compact || h in 1 until STRIP_ROOMY_CONTENT_DP) 6 else 14
+  private fun stripEnds(tight: Boolean, compact: Boolean) = if (compact || tight) 6 else 14
+
+  /** The row under the times: the next prayer and its countdown, or the streak's words. */
+  private fun nextLineDp(context: Context, m: Model): Float =
+    rowDp(context, 11f, false, m.nextName, m.practice?.let { "${it.streakText} · ${it.second}" }, "0:00:00")
+
+  private fun headerDp(context: Context, m: Model, onTop: Boolean): Float = maxOf(
+    rowDp(context, 10f, true, m.header, m.hijri),
+    rowDp(context, 14f, false, "↻"),
+    if (onTop) rowDp(context, 11f, false, m.nextName, "0:00:00") else 0f,
+  )
+
+  /**
+   * Which layout the strip gets at this height: the fixed budgets as
+   * floors, and never a layout the card's own rows do not fit
+   * (`cardfit.stripVariant`).
+   */
+  private fun variantOf(context: Context, m: Model, size: CardSize, timeSp: Float): StripVariant {
+    val d = m.display
+    val h = size.heightDp
+    val onTop = topNext(d, h, compact = false)
+    val body = cardInsetsDp(context) + headerDp(context, m, onTop) +
+      (if (d.showTable) tableDp(context, m, timeSp, slack = 0) else noTableDp(context, m, size, timeSp, slack = 0).first)
+    val next = if (onTop) 0f else nextLineDp(context, m)
+    return stripVariant(
+      heightDp = h,
+      roomyNeedDp = Math.ceil((body + 28 + (if (onTop) 0f else ruleDp(6, 8)) + next).toDouble()).toInt(),
+      tightNeedDp = Math.ceil((body + 12 + next).toDouble()).toInt(),
+      roomyFloorDp = STRIP_ROOMY_CONTENT_DP,
+      tightFloorDp = STRIP_TIGHT_CONTENT_DP,
+      bareBudgetDp = STRIP_BARE_CONTENT_DP,
+    )
+  }
 
   /** The next prayer rides in the header: the 4×1 card always, the tall card when compact. */
   private fun topNext(d: PrayerWidgetDisplay, h: Int, compact: Boolean) =
@@ -227,21 +263,15 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
    * the card's inset and ends, the header, the times (or the next prayer
    * in their place), the next-prayer line and its rule, the graph's rule.
    */
-  private fun stripChromeDp(context: Context, m: Model, size: CardSize, timeSp: Float, compact: Boolean): Float {
+  private fun stripChromeDp(context: Context, m: Model, size: CardSize, timeSp: Float, compact: Boolean, tight: Boolean): Float {
     val d = m.display
     val h = size.heightDp
     val onTop = topNext(d, h, compact)
-    val header = maxOf(
-      rowDp(context, 10f, true, m.header, m.hijri),
-      rowDp(context, 14f, false, "↻"),
-      if (onTop) rowDp(context, 11f, false, m.nextName, "0:00:00") else 0f,
-    )
+    val header = headerDp(context, m, onTop)
     val table = if (d.showTable) tableDp(context, m, timeSp, slack = 0) else noTableDp(context, m, size, timeSp, slack = 0).first
-    val next = if (onTop) 0f else
-      (if (h in 1 until STRIP_ROOMY_CONTENT_DP) 0f else ruleDp(6, 8)) +
-        rowDp(context, 11f, false, m.nextName, m.practice?.let { "${it.streakText} · ${it.second}" }, "0:00:00")
+    val next = if (onTop) 0f else (if (tight) 0f else ruleDp(6, 8)) + nextLineDp(context, m)
     val rule = if (compact) ruleDp(4, 4) else ruleDp(8, 8)
-    return cardInsetsDp(context) + 2 * stripEnds(h, compact) + header + table + next + rule
+    return cardInsetsDp(context) + 2 * stripEnds(tight, compact) + header + table + next + rule
   }
 
   /** With the table hidden: the segment the next prayer stands in — as tall as the table's — and its name's size. */
@@ -260,10 +290,11 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val columnDp = (size.widthDp - insetDp(context, size)).toFloat() / columns.size.coerceAtLeast(1) - TIME_GUTTER_DP
     val baseSp = fitTimesSp(context, columns.map { it.minutes }, m.clock, columnDp, TIME_MAX_SP, TIME_MIN_SP)
     val timeSp = scaledClockSp(context, columns.map { it.minutes }, m.clock, baseSp, d.timeScale, if (size.widthDp > 0) columnDp else 0f)
+    val variant = variantOf(context, m, size, timeSp)
     fun plan(graph: Boolean, compact: Boolean, chrome: Int): StripPlan {
       val foot = graph && !compact && h >= PRACTICE_MIN_HEIGHT_DP
-      return StripPlan(timeSp, graph, compact, foot, stripEnds(h, compact), chrome,
-        Math.ceil((7 + rowDp(context, 11f, false, m.practice?.sunnah, m.practice?.fasts)).toDouble()).toInt())
+      return StripPlan(timeSp, graph, compact, foot, stripEnds(variant.tight, compact), chrome,
+        Math.ceil((7 + rowDp(context, 11f, false, m.practice?.sunnah, m.practice?.fasts)).toDouble()).toInt(), variant)
     }
     if (m.practice == null || h <= 0) return plan(graph = false, compact = false, chrome = 0)
     // The graph wherever there is room for it — the tall card as placed,
@@ -277,7 +308,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     // and the graph takes the line's place and its rule, on tighter ends
     // and a tighter rule (`compact`): down to its smallest, and below that
     // it goes. The decision itself is `cardfit.graphRoom`.
-    fun chrome(compact: Boolean) = Math.ceil(stripChromeDp(context, m, size, timeSp, compact).toDouble()).toInt()
+    fun chrome(compact: Boolean) = Math.ceil(stripChromeDp(context, m, size, timeSp, compact, variant.tight).toDouble()).toInt()
     val room = graphRoom(h, chrome(false), if (d.showTable && entry == Entry.TALL) chrome(true) else null, GRID_MIN_BOX_DP)
     return plan(room.graph, room.compact, room.chromeDp)
   }
@@ -590,16 +621,17 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   private fun Strip(context: Context, m: Model, size: CardSize, plan: StripPlan) {
     val d = m.display
     val h = size.heightDp
-    // An unmeasured card (0) keeps the header and the roomy padding.
-    val oneRow = h in 1 until STRIP_TIGHT_CONTENT_DP
+    // An unmeasured card (0) keeps the header and the roomy padding. Which
+    // layout a height gets: `variantOf`.
+    val oneRow = plan.variant.oneRow
     // A row shorter than the strip's own minimum — a dense home screen,
     // five by seven (#115): the six times and nothing under them. The next
     // prayer is still the highlighted column; its line and the logged count
     // are what the row has no room for. Below this the card is the next
     // prayer alone.
     val timesOnly = h in 1 until STRIP_MIN_HEIGHT_DP
-    val tight = h in 1 until STRIP_ROOMY_CONTENT_DP
-    val budget = if (oneRow) STRIP_BARE_CONTENT_DP else if (tight) STRIP_TIGHT_CONTENT_DP else STRIP_ROOMY_CONTENT_DP
+    val tight = plan.variant.tight
+    val budget = plan.variant.budgetDp
     // Whether the graph is drawn, and how: `stripPlan`.
     val compact = plan.compact
     val practice = m.practice?.takeIf { plan.graph }
