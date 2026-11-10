@@ -27,7 +27,17 @@ async function open(name) {
   const app = await electron.launch({
     // Linux CI runs the unpackaged Electron, whose sandbox helper is not
     // set up; the packaged app's is (see the deb's postinst).
-    args: [...(process.platform === 'linux' ? ['--no-sandbox'] : []), path.join(__dirname, '..')],
+    // Two windows, one on top of the other: Chromium slows the timers of a
+    // window it thinks is hidden, and A — under B from B's launch on —
+    // typed into its place search and never saw the results, its debounce
+    // waiting on a timer that hardly ran (B, on top, found them at once).
+    args: [
+      ...(process.platform === 'linux' ? ['--no-sandbox'] : []),
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding',
+      path.join(__dirname, '..'),
+    ],
     env: { ...process.env, MIHRAB_USER_DATA: profile, NODE_ENV: '' },
   });
   // The folder dialog, answered.
@@ -44,6 +54,8 @@ async function open(name) {
   await page.waitForLoadState('domcontentloaded');
   const say = (...a) => console.log(`[${name}]`, ...a);
   const click = async (re, wait = 1500) => {
+    // The window clicked in is the window in front (see `front`).
+    await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0]?.focus());
     const els = page.getByText(re);
     for (let i = (await els.count()) - 1; i >= 0; i--) {
       if (await els.nth(i).isVisible()) {
@@ -58,7 +70,19 @@ async function open(name) {
   return { app, page, say, click };
 }
 
+// The device being driven, in front, as a person would have it: the page's
+// clock (page.clock) is moved on by the page's own frames, which a window
+// under the other one may not get.
+async function front(d) {
+  await d.app.evaluate(({ BrowserWindow }) => {
+    const w = BrowserWindow.getAllWindows()[0];
+    w.show();
+    w.focus();
+  });
+}
+
 async function onboard(d) {
+  await front(d);
   await d.page.waitForTimeout(3000);
   await d.click(/^Continue$/);
   await d.click(/^Search or enter coordinates$/);
@@ -83,6 +107,7 @@ async function onboard(d) {
 // Settings → Devices, the pairing page (its own section since it moved
 // out of About).
 async function openSync(d) {
+  await front(d);
   await d.click(/^Settings$/);
   await d.click(/^Devices$/, 2500);
 }
@@ -95,6 +120,7 @@ async function code(d) {
 }
 
 async function pairWith(d, other) {
+  await front(d);
   const input = d.page.getByPlaceholder(/MHRB/).first();
   await input.fill(other);
   await d.click(/^Pair$/, 1500);
@@ -104,6 +130,7 @@ async function pairWith(d, other) {
 // Put away anything over the page — an alert's OK, a sheet's Not now, or
 // Esc — until "Sync now" can be clicked, without leaving the Sync page.
 async function clear(d) {
+  await front(d);
   for (let i = 0; i < 4; i++) {
     const target = d.page.getByText(/^Sync now$/).first();
     if (await target.count()) {
@@ -122,6 +149,7 @@ async function clear(d) {
 
 // Back out of Devices (Esc is the app's back), to Today.
 async function home(d) {
+  await front(d);
   for (let i = 0; i < 2; i++) {
     await d.page.keyboard.press('Escape');
     await d.page.waitForTimeout(800);
