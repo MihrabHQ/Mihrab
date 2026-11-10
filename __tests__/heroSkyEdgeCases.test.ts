@@ -433,9 +433,9 @@ describe('the hero grows but never shrinks under its text', () => {
   it('reads the sky from the raw day and the rail from the drawn one', () => {
     expect(home).toMatch(/skyTimings=\{state\.phase === 'ready' \? state\.today : undefined\}/);
     expect(card).toMatch(/skyMoment\(skyToday \?\? today,/);
-    const rail = card.slice(card.indexOf('const rail = useMemo'), card.indexOf('return { from, pct };'));
-    expect(rail).toMatch(/const passed = DISPLAY_ORDER\.map\(key => \(\{\s*key,\s*raw: today\[key\]/);
-    expect(rail).not.toMatch(/skyToday/);
+    // The rail is given the drawn day and nothing of the sky's (heroRail.ts,
+    // tested by what it returns in heroRail.test.ts).
+    expect(card).toContain('intervalRail(today, now, target.at, dayClock)');
   });
 });
 
@@ -452,18 +452,6 @@ describe('the rows adapt to the phone and to the table', () => {
     expect(row).toMatch(/rowCompact: \{ paddingVertical: ROW_PAD\.compact \}/);
     // Compact keeps the Mālikī line on the current row alone.
     expect(row).toMatch(/daruriAt && \(tier !== 'compact' \|\| isNext\)/);
-  });
-
-  it('the rail reads an Isha past midnight as tomorrow’s, like the sky does', () => {
-    // Stockholm in June: Isha "00:47". As a clock on today's date it had
-    // "passed" at 23:00, and the rail ran from Isha to Isha with nothing
-    // in it. The evening's rows past midnight are the next day's — by
-    // `eventAt`, the rule every reader of a row shares (`rowDateShift`).
-    const rail = card.slice(card.indexOf('const rail = useMemo'), card.indexOf('return { from, pct };'));
-    expect(rail).toMatch(/eventAt\(key, today, now, dayClock\)/);
-    expect(rail).toMatch(/\.sort\(\(a, b\) => a\.at\.getTime\(\) - b\.at\.getTime\(\)\)/);
-    // And before Fajr it runs from LAST night's Isha, not from nothing.
-    expect(rail).toMatch(/yesterday\.setDate\(yesterday\.getDate\(\) - 1\)/);
   });
 });
 

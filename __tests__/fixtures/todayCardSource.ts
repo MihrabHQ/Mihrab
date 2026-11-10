@@ -2,7 +2,7 @@
  * The Today card's source, for the tests that still hold a line of it in
  * place by its text.
  *
- * The card was one file of 3,400 lines and is now four; a test that looks
+ * The card was one file of 3,400 lines and is now five; a test that looks
  * for a line looks in all of them, in the order they stood. Said here, in
  * the open, rather than by answering a read of TodayCard.tsx with more
  * than the file (which jest.setup.js did for a while).
@@ -16,7 +16,7 @@ import { join } from 'path';
 const HOME = join(__dirname, '..', '..', 'src', 'screens', 'home');
 
 /** The card's files, in the order their text stood in the one file. */
-export const TODAY_CARD_FILES = ['TodayCard.tsx', 'HeroToday.tsx', 'useHeroClock.ts', 'todayCardStyles.ts'] as const;
+export const TODAY_CARD_FILES = ['TodayCard.tsx', 'HeroToday.tsx', 'heroRail.ts', 'useHeroClock.ts', 'todayCardStyles.ts'] as const;
 
 export function todayCardSource(): string {
   const card = readFileSync(join(HOME, 'TodayCard.tsx'), 'utf8');
