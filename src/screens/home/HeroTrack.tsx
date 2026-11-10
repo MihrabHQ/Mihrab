@@ -54,6 +54,7 @@ function HeroTrackImpl({
   bandTop,
   horizon: given,
   ink,
+  labelInk,
   run,
   labels,
   depth = false,
@@ -88,6 +89,13 @@ function HeroTrackImpl({
   horizon: number;
   /** The hero's ink at the band, hex. */
   ink: string;
+  /**
+   * The names' ink. They are "the eyebrow's muted ink", and were the full
+   * ink at a fixed 0.75 instead — on the day's blue, 3.2:1 for the
+   * smallest words in the hero. Given, it is the eyebrow's own secondary
+   * ink, whose strength is set for the sky it is over (`skyInkAt`).
+   */
+  labelInk?: string;
 }) {
   const body = frame.body;
   const margin = MOON / 2;
@@ -360,7 +368,11 @@ function HeroTrackImpl({
             key={l.key}
             numberOfLines={1}
             maxFontSizeMultiplier={LABEL_MAX_SCALE}
-            style={[styles.label, { color: ink, left: l.x, top: l.y, width: l.w, textAlign: l.align }]}>
+            style={[
+              styles.label,
+              labelInk ? { color: labelInk, opacity: 1 } : { color: ink },
+              { left: l.x, top: l.y, width: l.w, textAlign: l.align },
+            ]}>
             {l.text}
           </Text>
         ))}

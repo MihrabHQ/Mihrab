@@ -521,25 +521,111 @@ export function themedSkyFrame(
  */
 export const INK_SWITCH_LUMINANCE = 0.18;
 
-/** The ink for an element drawn at height `y` of the card. */
-export function skyInkAt(frame: Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt'>, y: number): SkyInkColors {
-  const light = luminance(skyColorAt(frame, y)) < INK_SWITCH_LUMINANCE;
+/** WCAG contrast of a colour of luminance `a` on one of luminance `b`. */
+function ratio(a: number, b: number): number {
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
+/** The luminance of white (or black) laid at `alpha` over a sky colour. */
+function inkLuminanceOver(white: boolean, alpha: number, sky: string): number {
+  const n = parseInt(sky.slice(1), 16);
+  const lin = (c: number) => {
+    const over = (white ? 255 : 0) * alpha + c * (1 - alpha);
+    const v = over / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  };
+  return 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+}
+
+/**
+ * The secondary ink — the eyebrow, the units, the rail's labels, the
+ * footer: white or black let through at an alpha, so it is the sky's own
+ * colour lightened or darkened and sits in every sky.
+ *
+ * ── THE ALPHA IS THE SKY'S TO SET ────────────────────────────────────
+ * It was one number (white at 0.78, black at 0.66), chosen on the night
+ * and on the pale foot of a morning, where it reads at 7:1 and more. But
+ * the eyebrow stands at the top of the hero, and by day the top of the
+ * hero is the sky's blue — a colour of middling luminance, the one place
+ * where neither ink has much to spare (white on it is about 5:1). There
+ * the fixed alpha left the smallest words on the page at 3.3:1, for as
+ * long as the sky was blue: a third of every day, in both colour sets,
+ * measured over five dates in six cities. The same at the rail's labels
+ * where a sunset's glow lies behind them.
+ *
+ * So the alpha is the least of these that reads at MUTED_INK_FLOOR on
+ * the sky it is over — the old one wherever that already did, which is
+ * the night, the dawn's and the evening's dark, and every pale sky — and
+ * a step firmer where it did not. Where even the firmest falls short
+ * (the middle luminances, where the full ink itself is under 5:1), the
+ * firmest is what it gets: nearly the full ink, and still told from it
+ * by its size and weight.
+ */
+export const MUTED_INK_FLOOR = 4.5;
+const MUTED_WHITE = [0.78, 0.84, 0.9, 0.95] as const;
+const MUTED_BLACK = [0.66, 0.74, 0.82, 0.9] as const;
+
+/**
+ * The ink for an element drawn at height `y` of the card.
+ *
+ * `span`: how far the element reaches above and below `y`, as a fraction
+ * of the card. The ink used to be chosen for the element's middle alone,
+ * and the sky is a gradient: the countdown's figures cross the band where
+ * a sunset's glow comes up under a dark top, and the ink that suited
+ * their middle was the worse one at their foot. With a span, the ink is
+ * the one whose WORST contrast across the element is the better, and the
+ * muted alpha is set for that worst place too.
+ */
+export function skyInkAt(
+  frame: Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt'>,
+  y: number,
+  span = 0,
+): SkyInkColors {
+  const skies =
+    span > 0 ? [skyColorAt(frame, y - span), skyColorAt(frame, y), skyColorAt(frame, y + span)] : [skyColorAt(frame, y)];
+  let worstWhite = Infinity;
+  let worstBlack = Infinity;
+  for (const sky of skies) {
+    const l = luminance(sky);
+    worstWhite = Math.min(worstWhite, ratio(1, l));
+    worstBlack = Math.min(worstBlack, ratio(0, l));
+  }
+  // Without a span this is the old rule exactly: white under
+  // INK_SWITCH_LUMINANCE, where the two inks read alike.
+  const light = span > 0 ? worstWhite >= worstBlack : luminance(skies[0]) < INK_SWITCH_LUMINANCE;
+  const ladder = light ? MUTED_WHITE : MUTED_BLACK;
+  let alpha: number = ladder[ladder.length - 1];
+  for (const step of ladder) {
+    let worst = Infinity;
+    for (const sky of skies) worst = Math.min(worst, ratio(inkLuminanceOver(light, step, sky), luminance(sky)));
+    if (worst >= MUTED_INK_FLOOR) {
+      alpha = step;
+      break;
+    }
+  }
   return light
     ? {
         text: '#FFFFFF',
-        muted: 'rgba(255,255,255,0.78)',
+        muted: `rgba(255,255,255,${alpha})`,
         track: 'rgba(255,255,255,0.24)',
         fill: '#FFFFFF',
         ring: 'rgba(255,255,255,0.22)',
       }
     : {
         text: '#000000',
-        muted: 'rgba(0,0,0,0.66)',
+        muted: `rgba(0,0,0,${alpha})`,
         track: 'rgba(0,0,0,0.16)',
         fill: '#000000',
         ring: 'rgba(0,0,0,0.14)',
       };
 }
+
+/**
+ * How far each of the hero's elements reaches either side of its middle,
+ * as a fraction of the hero's height — `skyInkAt`'s span: a line of small
+ * words, the tall figures, the rail with its labels under it.
+ */
+export const HERO_SPAN = { eyebrow: 0.03, countdown: 0.07, foot: 0.04 } as const;
 
 /** Where the hero's elements sit, as fractions of its height. */
 export const HERO_Y = { eyebrow: 0.12, countdown: 0.4, foot: 0.82 } as const;

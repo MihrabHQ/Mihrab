@@ -141,6 +141,7 @@ function HeroSkyImpl({
   sceneBottom = 0,
   track,
   trackInk,
+  trackLabelInk,
   trackLabels,
   trackDepth = false,
 }: {
@@ -156,6 +157,8 @@ function HeroSkyImpl({
   track?: TrackFrame | null;
   /** The hero's ink at the band — the lines are drawn in it. */
   trackInk?: string;
+  /** The chart's names' ink: the eyebrow's secondary one, set for the sky it is over (skyInkAt). */
+  trackLabelInk?: string;
   /** The chart's parts named, shown on a tap of the band (TrackExplainer). */
   trackLabels?: TrackLabels;
   /** The chart goes on under the line to its floor (HeroTrack's `depth`): Minimal's. */
@@ -408,6 +411,7 @@ function HeroSkyImpl({
           bandTop={scene.top}
           horizon={horizon}
           ink={trackInk}
+          labelInk={trackLabelInk}
           labels={trackLabels}
           depth={trackDepth}
           // Through a launch run the chart stands and the body rides the

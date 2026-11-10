@@ -125,6 +125,64 @@ describe('the ink', () => {
     }
   });
 
+  it('sets the secondary ink\'s alpha by the sky it is over', () => {
+    const over = (ink: string, sky: string) => {
+      const m = /^rgba\((\d+),(\d+),(\d+),([0-9.]+)\)$/.exec(ink)!;
+      const a = Number(m[4]);
+      const n = parseInt(sky.slice(1), 16);
+      const ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c, i) => Math.round(Number(m[i + 1]) * a + c * (1 - a)));
+      return { alpha: a, hex: '#' + ch.map(c => c.toString(16).padStart(2, '0')).join('') };
+    };
+    // Where the old alpha read, it is the old alpha: the night, a pale sky.
+    expect(skyInkAt({ top: '#0B1230', bottom: '#0B1230' }, 0.5).muted).toBe('rgba(255,255,255,0.78)');
+    expect(skyInkAt({ top: '#EAF4FF', bottom: '#EAF4FF' }, 0.5).muted).toBe('rgba(0,0,0,0.66)');
+    // On the day's blue — the top of the hero, where the eyebrow stands —
+    // the old alpha was 3.4:1. It is firmer there, and reads.
+    const blue = '#2B7ADA';
+    const day = skyInkAt({ top: blue, bottom: blue }, 0.5);
+    expect(contrast(over('rgba(255,255,255,0.78)', blue).hex, blue)).toBeLessThan(4);
+    const now = over(day.muted, blue);
+    expect(now.alpha).toBeGreaterThan(0.78);
+    expect(contrast(now.hex, blue)).toBeGreaterThanOrEqual(4.4);
+    // Every passage, every step, the three heights: at the floor, or as
+    // firm as the secondary ink goes (the middle luminances, where the
+    // full ink itself has little to spare).
+    for (const p of PASSAGES) {
+      for (let i = 0; i <= 100; i++) {
+        const frame = skyFrame({ passage: p, t: i / 100, daylight: i / 100 }, at(12));
+        for (const y of Object.values(HERO_Y)) {
+          const ink = skyInkAt(frame, y);
+          const sky = skyColorAt(frame, y);
+          const m = over(ink.muted, sky);
+          const firmest = ink.text === '#FFFFFF' ? 0.95 : 0.9;
+          if (m.alpha < firmest) expect(contrast(m.hex, sky)).toBeGreaterThanOrEqual(4.45);
+          // Never the full ink: it is still the secondary one.
+          expect(m.alpha).toBeLessThan(1);
+        }
+      }
+    }
+  });
+
+  it('with a span, takes the ink that is better at the element\'s worst place', () => {
+    // Dark above, a bright band below: the middle alone says white, and
+    // white is nearly unreadable on the band the element's foot is over.
+    let differed = 0;
+    for (let g = 0; g <= 255; g += 5) {
+      const h = g.toString(16).padStart(2, '0');
+      const frame = { top: `#${h}${h}${h}`, mid: '#F2B58A', midAt: 0.5, bottom: '#F2B58A' };
+      const worst = (ink: string) => Math.min(...[0, 0.14, 0.28].map(y => contrast(ink, skyColorAt(frame, y))));
+      const spanned = skyInkAt(frame, 0.14, 0.14).text;
+      const other = spanned === '#FFFFFF' ? '#000000' : '#FFFFFF';
+      expect(worst(spanned)).toBeGreaterThanOrEqual(worst(other));
+      if (spanned !== skyInkAt(frame, 0.14).text) differed += 1;
+      // And no span is the rule as it always was.
+      expect(skyInkAt(frame, 0.14, 0).text).toBe(skyInkAt(frame, 0.14).text);
+    }
+    // Somewhere on the way from a black top to a white one, the middle
+    // alone and the whole element disagree — which is what the span is for.
+    expect(differed).toBeGreaterThan(0);
+  });
+
   it('switches where pure white and pure black both clear AA', () => {
     // Just under the switch, white must clear; at it, black must.
     const under = mixHex('#000000', '#ffffff', 0.44); // ~L 0.17
@@ -143,9 +201,9 @@ describe('the ink', () => {
     expect(hero).toMatch(/const yEyebrow = measured \? heroY\.eyebrow : HERO_Y\.eyebrow;/);
     expect(hero).toMatch(/const yCountdown = measured \? heroY\.countdown : HERO_Y\.countdown;/);
     expect(hero).toMatch(/const yFoot = measured \? heroY\.foot : HERO_Y\.foot;/);
-    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yEyebrow\), \[frame, yEyebrow\]\)/);
-    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yCountdown\), \[frame, yCountdown\]\)/);
-    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yFoot\), \[frame, yFoot\]\)/);
+    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yEyebrow, HERO_SPAN\.eyebrow\), \[frame, yEyebrow\]\)/);
+    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yCountdown, HERO_SPAN\.countdown\), \[frame, yCountdown\]\)/);
+    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yFoot, HERO_SPAN\.foot\), \[frame, yFoot\]\)/);
     expect(hero).not.toMatch(/palette\./);
     // The sky is the clock's, not the target's.
     expect(hero).toMatch(/skyMoment\(skyToday \?\? today, /);

@@ -1123,7 +1123,23 @@ export function skyMoodFor(
   // many whole-app re-renders through a Makkah afternoon.
   const far = Math.abs(light.sun) > 20;
   const q = steps ? (far ? 0.5 : 1) : 4;
-  const sun = Math.round(light.sun * q) / q;
+  let sun = Math.round(light.sun * q) / q;
+  // The rounding must not move the sun across the line the polarity turns
+  // on (`skyMoodOf`, POLAR_UNDER): the hero rounds to a quarter of a
+  // degree and the page to a whole one, so in a polar twilight — the one
+  // case where the altitude and not the passage decides light or dark —
+  // the two crossed it at different moments, and with the sun creeping
+  // along the horizon that was minutes of a light sky over a dark page.
+  // Whichever side the sun itself is on, its rounded self is on too: held
+  // at the line, or a step short of it.
+  const lightPassage = passage === 'day' || passage === 'sunset';
+  const litOf = (alt: number) => (lightPassage ? alt >= -POLAR_UNDER : alt > POLAR_UNDER);
+  if (litOf(sun) !== litOf(light.sun)) {
+    const line = lightPassage ? -POLAR_UNDER : POLAR_UNDER;
+    const step = 1 / q;
+    // The line itself is lit for a light passage and unlit for a dark one.
+    sun = litOf(light.sun) ? (lightPassage ? line : line + step) : lightPassage ? line - step : line;
+  }
   const prog = steps ? Math.round(clamp01(t) * steps) / steps : Math.round(clamp01(t) * 240) / 240;
   const daylight = light.daylight == null ? null : Math.round(light.daylight * 64) / 64;
   const moonF = Math.round(moonlight(light.moon) * 8) / 8;

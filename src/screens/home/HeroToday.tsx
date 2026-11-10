@@ -57,6 +57,7 @@ import {
   SKY_THEME_MID_AT,
   skyFrame,
   skyInkAt,
+  HERO_SPAN,
   skyMoment,
   themedSkyFrame,
   type SkyFrame,
@@ -838,8 +839,8 @@ export const HeroToday = memo(function HeroToday({
       ? countdownBase - atBase
       : HERO_ASCENT_EM * (bigSize - styles.heroAt.fontSize),
   );
-  const inkTop = useMemo(() => skyInkAt(frame, yEyebrow), [frame, yEyebrow]);
-  const ink = useMemo(() => skyInkAt(frame, yCountdown), [frame, yCountdown]);
+  const inkTop = useMemo(() => skyInkAt(frame, yEyebrow, HERO_SPAN.eyebrow), [frame, yEyebrow]);
+  const ink = useMemo(() => skyInkAt(frame, yCountdown, HERO_SPAN.countdown), [frame, yCountdown]);
   /**
    * The Track look (trackModel.ts): the band as a chart of the sky, from
    * the reader's coordinates — nothing without them, when the painted sky
@@ -852,7 +853,7 @@ export const HeroToday = memo(function HeroToday({
     () => trackAt(new Date(minuteKey * 60_000), frame.passage),
     [trackAt, minuteKey, frame.passage],
   );
-  const inkFoot = useMemo(() => skyInkAt(frame, yFoot), [frame, yFoot]);
+  const inkFoot = useMemo(() => skyInkAt(frame, yFoot, HERO_SPAN.foot), [frame, yFoot]);
   /**
    * Minimal stacks the countdown, its line and the rail in the middle of
    * the page, and the rail took the foot's ink while the figures over it
@@ -875,7 +876,7 @@ export const HeroToday = memo(function HeroToday({
   }, []);
   const yFooter =
     minimal && footerAt != null && skyH > 0 ? Math.min(1, (bleedTop + footerAt) / skyH) : yFoot;
-  const inkFooter = useMemo(() => skyInkAt(frame, yFooter), [frame, yFooter]);
+  const inkFooter = useMemo(() => skyInkAt(frame, yFooter, HERO_SPAN.eyebrow), [frame, yFooter]);
   // The units: under half the figures' size, the muted ink, plain weight,
   // untracked — small caps beside the digits, on their baseline.
   const unitStyle = useMemo(
@@ -969,6 +970,7 @@ export const HeroToday = memo(function HeroToday({
         sceneBottom={sceneBottom}
         track={track}
         trackInk={inkTop.text}
+        trackLabelInk={inkTop.muted}
         trackLabels={trackLabels}
         trackDepth={trackDepth}
         bleed={

@@ -693,3 +693,24 @@ describe('Realistic', () => {
     }
   });
 });
+
+describe('the hero and the page turn together', () => {
+  // Polarity is the passage's, except in a polar twilight, where the sun's
+  // altitude decides it (POLAR_UNDER). The hero's sky is rounded to a
+  // quarter of a degree and the page's to a whole one; rounded before the
+  // line was asked about, the two crossed it at different altitudes.
+  it('whatever the rounding, at every altitude either side of the line', () => {
+    for (const variant of ['realistic', 'vibrant'] as const) {
+      for (const passage of ['day', 'sunset', 'dusk', 'night', 'dawn'] as const) {
+        for (let sun = -4; sun <= 4; sun += 0.01) {
+          const light = { sun, daylight: passage === 'day' ? 0.3 : passage === 'sunset' ? 0.8 : null };
+          const hero = skyMoodFor(passage, 0.5, undefined, variant, light);
+          const page = skyMoodFor(passage, 0.5, PALETTE_STEPS, variant, light);
+          const exact = skyMoodOf(passage, 0.5, light, variant);
+          expect(`${variant} ${passage} ${sun.toFixed(2)} ${hero.isDark}`).toBe(`${variant} ${passage} ${sun.toFixed(2)} ${exact.isDark}`);
+          expect(`${variant} ${passage} ${sun.toFixed(2)} ${page.isDark}`).toBe(`${variant} ${passage} ${sun.toFixed(2)} ${exact.isDark}`);
+        }
+      }
+    }
+  });
+});
