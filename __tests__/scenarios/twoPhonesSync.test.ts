@@ -37,7 +37,6 @@ import {
   providerChoiceForKey,
 } from '../../src/settings/locationProviders';
 import type { PrayerAppSettings } from '../../src/settings/types';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const EncryptedStorageMock = require('react-native-encrypted-storage');
 
 jest.mock('../../src/widget/republishWidgetPayload', () => ({

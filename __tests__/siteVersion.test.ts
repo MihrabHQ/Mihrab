@@ -148,7 +148,6 @@ describe('the other language pages', () => {
   });
 
   it('sync-version knows about every one of them', () => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { OTHER_SITES } = require('../scripts/sync-version.js');
     expect(OTHER_SITES.map((s: { lang: string }) => s.lang).sort()).toEqual([...langs].sort());
   });

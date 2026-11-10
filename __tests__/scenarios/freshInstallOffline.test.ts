@@ -32,7 +32,6 @@ import {
   setZone,
   until,
 } from '../fixtures/scenarioHarness';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const EncryptedStorageMock = require('react-native-encrypted-storage');
 
 const NOW = new Date('2026-10-17T10:00:00Z');

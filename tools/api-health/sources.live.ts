@@ -50,7 +50,6 @@ const CASES: [PrayerDataProviderId, string, number, number, number | 'auto', str
 
 const report: string[] = [];
 afterAll(() => {
-  // eslint-disable-next-line no-console
   console.log(report.join('\n') + '\n\nREQUESTS\n' + calls.map(c => `${c.status} ${c.ms}ms ${c.url}`).join('\n'));
 });
 

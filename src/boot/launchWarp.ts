@@ -257,7 +257,6 @@ function endRun(): void {
     // drew, how often the JS thread held it up and for how long at most,
     // and how long it was from being decided to being over. Read from
     // logcat on a release build; nothing leaves the phone.
-    // eslint-disable-next-line no-console
     console.log(
       `[run] ${r.kind} frames=${r.frames} stalls=${r.stalls} longest=${Math.round(r.longestStall)} duration=${r.duration} total=${Math.round(Date.now() - r.decidedAt)}`,
     );

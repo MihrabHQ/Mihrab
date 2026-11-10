@@ -45,7 +45,6 @@ export const MIN_TRIM = 0.15;
  */
 type Table = { v: number; e: string; d?: string };
 
-/* eslint-disable @typescript-eslint/no-require-imports */
 const TABLES: Record<string, () => Table> = {
   Husary_64kbps: () => require('../data/recitationEdges/Husary_64kbps.json'),
   Husary_Mujawwad_64kbps: () =>
@@ -83,7 +82,6 @@ const TABLES: Record<string, () => Table> = {
   'warsh/warsh_yassin_al_jazaery_64kbps': () =>
     require('../data/recitationEdges/warsh_warsh_yassin_al_jazaery_64kbps.json'),
 };
-/* eslint-enable @typescript-eslint/no-require-imports */
 
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 

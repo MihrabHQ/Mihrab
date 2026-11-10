@@ -88,7 +88,6 @@ describe('the bar button', () => {
   afterEach(() => jest.useRealTimers());
 
   it('locks on a tap, unlocks on a hold, and the lift after the hold does not re-lock', () => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { MushafLockButton } = require('../src/quran/mushafReaderCore');
     const onLock = jest.fn();
     const onUnlock = jest.fn();

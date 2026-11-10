@@ -7,7 +7,6 @@
  */
 import { readFileSync } from 'fs';
 import path from 'path';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { withPostTable } = require('../desktop/web/native/sfnt');
 
 type Table = { tag: string; checksum: number; offset: number; length: number };

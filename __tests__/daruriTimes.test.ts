@@ -610,7 +610,6 @@ describe("Ishāʾ's boundary agrees with the row it shares an instant with", () 
   );
 
   it('is present on every day of a window, including the last', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { injectNightTimes } = require('../src/utils/nightTimes');
     const withNight = injectNightTimes(raw, START);
     const out = injectDaruriTimes(withNight, START, CASA.lat, CASA.lng);
@@ -628,7 +627,6 @@ describe("Ishāʾ's boundary agrees with the row it shares an instant with", () 
   });
 
   it('agrees across the night the clocks go back', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { injectNightTimes } = require('../src/utils/nightTimes');
     const clock = 'Europe/Stockholm';
     const week: TimingsMap[] = [
@@ -647,7 +645,6 @@ describe("Ishāʾ's boundary agrees with the row it shares an instant with", () 
    * first-third column showing the time.
    */
   it('agrees on the last day, where the proxy is doing the work', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { injectNightTimes } = require('../src/utils/nightTimes');
     const withNight = injectNightTimes(raw, START);
     const out = injectDaruriTimes(withNight, START, CASA.lat, CASA.lng);

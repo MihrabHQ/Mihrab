@@ -46,7 +46,6 @@ const GAP_FONT_COPIES = [
 
 /** Advance of one character in a TrueType file, in ems. Enough of the format
  *  to read a single metric: table directory → cmap format 4 → hmtx. */
-/* eslint-disable no-bitwise -- TrueType glyph ids are 16-bit by definition */
 function advanceEm(ttf: Buffer, codepoint: number): number | null {
   const tables = new Map<string, number>();
   const numTables = ttf.readUInt16BE(4);
@@ -104,7 +103,6 @@ function advanceEm(ttf: Buffer, codepoint: number): number | null {
   const index = Math.min(glyph, longMetrics - 1);
   return ttf.readUInt16BE(hmtx + index * 4) / unitsPerEm;
 }
-/* eslint-enable no-bitwise */
 
 describe('mushaf layout data', () => {
   it('covers every page of the Madinah mushaf', () => {

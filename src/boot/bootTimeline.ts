@@ -43,7 +43,6 @@ export function bootMark(label: string): void {
   // A step after the first paint — the launch run's — is printed on its
   // own, on the same clock, so it lines up with the line already printed.
   if (reported) {
-    // eslint-disable-next-line no-console
     console.log(`[boot] ${label}=${ms}`);
     return;
   }
@@ -60,7 +59,6 @@ export function reportBoot(): void {
   if (reported) return;
   reported = true;
   const parts = marks.map(m => `${m.label}=${m.ms}`);
-  // eslint-disable-next-line no-console
   console.log(`[boot] js0=${wallStart} ${parts.join(' ')}`);
   // The module-level trace, when a build was made with
   // tools/startup-trace (never in a shipped build).
@@ -79,7 +77,6 @@ export function logHeap(label: string): void {
     .HermesInternal?.getInstrumentedStats?.();
   if (!stats) return;
   const mb = (n: number | undefined) => (n == null ? '?' : (n / 1048576).toFixed(1));
-  // eslint-disable-next-line no-console
   console.log(
     `[heap] ${label} live=${mb(stats.js_allocatedBytes)}MB heap=${mb(stats.js_heapSize)}MB external=${mb(stats.js_externalBytes)}MB malloc=${mb(stats.js_mallocSizeEstimate)}MB va=${mb(stats.js_vaSize)}MB gcs=${stats.js_numGCs ?? '?'}`,
   );

@@ -70,7 +70,6 @@ try {
 // button would have to either guess or refuse. It writes only if nothing
 // is stored, so it records a first launch and never a later one.
 try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { recordFirstSeen } = require('./src/journal/installDate');
   void recordFirstSeen();
 } catch (e) {
@@ -86,9 +85,7 @@ try {
 // download is driven from JS, and resolving this is how the service is
 // told it may stop. See src/quran/downloadNotification.ts.
 try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const notifee = require('@notifee/react-native').default;
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { foregroundServiceTask } = require('./src/quran/downloadNotification');
   notifee.registerForegroundService(() => foregroundServiceTask());
 } catch (e) {
@@ -102,9 +99,7 @@ AppRegistry.registerComponent(APP_REGISTRY_NAME, () => App);
 // controls + memorization pause-between-repeats). The player itself is
 // only set up on first play (see src/quran/audio/playback.ts).
 try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const TrackPlayer = require('react-native-track-player').default;
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PlaybackService } = require('./src/quran/audio/PlaybackService');
   TrackPlayer.registerPlaybackService(() => PlaybackService);
 } catch (e) {

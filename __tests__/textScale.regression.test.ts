@@ -82,7 +82,6 @@ describe('font-scale clamp coverage', () => {
 describe('textScale module exports', () => {
   // Quick sanity check that the constants exist and are sensible.
   test('all three clamps are between 1.0 and 2.0 (inclusive)', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const m = require('../src/theme/textScale');
     for (const key of [
       'TABULAR_MAX_FONT_SCALE',

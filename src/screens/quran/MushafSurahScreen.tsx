@@ -407,12 +407,10 @@ export function MushafSurahScreen({
               writingDirection: isArabic ? 'rtl' : 'ltr',
               // writingDirection is a valid TextStyle prop, but react-navigation
               // types the title style as a narrower Pick<> that omits it.
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any,
             headerLargeTitleStyle: {
               color: ink,
               writingDirection: isArabic ? 'rtl' : 'ltr',
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any,
           }
         : null;

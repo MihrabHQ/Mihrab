@@ -120,7 +120,6 @@ describe('font scaffolding', () => {
 
 describe('content expansion', () => {
   test('Dua collection covers nineteen categories with at least 60 entries', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const mod = require('../src/duas/duas');
     expect(mod.DUA_CATEGORIES).toEqual(
       expect.arrayContaining([

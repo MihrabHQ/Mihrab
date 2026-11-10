@@ -151,11 +151,8 @@ type PrintedTable = {
  * it is what every riwayah did before there was a table at all.
  */
 const TABLES: Partial<Record<RiwayahId, PrintedTable>> = {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   warsh: require('./data/warshLines.json') as PrintedTable,
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   qalun: require('./data/warshLines.json') as PrintedTable,
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   shubah: require('./data/shubahLines.json') as PrintedTable,
 };
 

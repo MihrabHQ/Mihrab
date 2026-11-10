@@ -83,12 +83,10 @@ const RANK = new Map(PRIORITY.map((id, i) => [id, i]));
 export function warshWordHash(text: string): string {
   let h = 0x811c9dc5;
   // A hash is bit arithmetic; there is no other way to write it.
-  /* eslint-disable no-bitwise */
   for (let i = 0; i < text.length; i++) {
     h ^= text.charCodeAt(i);
     h = Math.imul(h, 0x01000193) >>> 0;
   }
-  /* eslint-enable no-bitwise */
   return h.toString(16).padStart(8, '0');
 }
 

@@ -1139,7 +1139,6 @@ export function printedEdgeInk(
   ownFace = false,
 ): PrintedEdgeInk | null {
   if (printedEdgeTable == null) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     printedEdgeTable = require('./data/unicodeEdgeInk.json') as PrintedEdgeTable;
   }
   const key = ownFace ? `${riwayah}@qpc` : riwayah === 'qalun' ? 'warsh' : riwayah;

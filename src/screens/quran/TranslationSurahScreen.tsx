@@ -258,12 +258,10 @@ export function TranslationSurahScreen({
       headerTitleStyle: {
         color: palette.text,
         writingDirection: isArabic ? 'rtl' : 'ltr',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
       headerLargeTitleStyle: {
         color: palette.text,
         writingDirection: isArabic ? 'rtl' : 'ltr',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
       // The NAME follows the app language.
       title: surahName(surah),

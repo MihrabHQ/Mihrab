@@ -15,7 +15,6 @@ import { useAppPalette } from '../hooks/useAppPalette';
 // keep jitpack out of the Android/F-Droid build, so require it lazily on iOS
 // only — importing it on Android would try to resolve a native component that
 // isn't linked.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const BlurView: any =
   Platform.OS === 'ios'
     ? require('@react-native-community/blur').BlurView

@@ -512,7 +512,6 @@ describe('wiring', () => {
 
 describe('the year a site file is for', () => {
   it('is the one the file names, not the phone’s', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const xml: string = require('fs').readFileSync(
       require('path').join(__dirname, 'fixtures/namazvakti/istanbul-16741.xml'),
       'utf8',

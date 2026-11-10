@@ -267,7 +267,6 @@ export function PrayerSettingsProvider({
     if (before != null && before !== settings.widgetSinceAdhanMinutes) {
       // Required here, not imported: the provider is on the launch path and
       // the payload builder need not be.
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { republishWidgetPayload } = require('../widget/republishWidgetPayload') as typeof import('../widget/republishWidgetPayload');
       void republishWidgetPayload('settings');
     }

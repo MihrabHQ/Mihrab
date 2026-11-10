@@ -197,7 +197,6 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
           holding.current = false;
           settlePagerHold(() => setPagerEngaged(false, true));
         }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [navigation, state.routes],
   );
   // Icons kept up: as if a turn never settled — no dots, the icons always.

@@ -81,7 +81,6 @@ async function tick() {
   for (let i = 0; i < 6; i++) await Promise.resolve();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { WordPlayer } = require('../desktop/web/native/wordPlayer') as {
   WordPlayer: { play(p: string, s: number, e: number): Promise<boolean>; stop(): Promise<boolean> };
 };

@@ -70,7 +70,6 @@ function withDefaultFamily<T extends Wrappable>(
 
 export function installAndroidUiFont(): void {
   if (Platform.OS !== 'android') return;
-  /* eslint-disable @typescript-eslint/no-require-imports */
   const text = require('react-native/Libraries/Text/Text') as { default: Wrappable };
   const input = require('react-native/Libraries/Components/TextInput/TextInput') as {
     default: Wrappable;
@@ -78,7 +77,6 @@ export function installAndroidUiFont(): void {
   const ancestor = require('react-native/Libraries/Text/TextAncestorContext') as {
     default: React.Context<boolean>;
   };
-  /* eslint-enable @typescript-eslint/no-require-imports */
   text.default = withDefaultFamily(text.default, 'Text', ancestor.default);
   input.default = withDefaultFamily(input.default, 'TextInput');
 }

@@ -232,7 +232,6 @@ describe('the readers hand the page a handler, not an arrow around one', () => {
   // through three memos. Every page turn and every recited ayah rebuilt
   // ~250 pieces per page.
   const read = (p: string) =>
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('fs').readFileSync(require('path').join(__dirname, '..', p), 'utf8') as string;
 
   it.each(['MushafSpreadReader.tsx', 'MushafPhoneReader.tsx'])('%s', file => {

@@ -9,7 +9,6 @@
  * has to answer the same question the same way the screens do.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const EncryptedStorageMock = require('react-native-encrypted-storage');
 import { loadSettings } from '../src/settings/storage';
 import { DEFAULT_SETTINGS } from '../src/settings/types';

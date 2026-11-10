@@ -186,7 +186,6 @@ export function QuranSurahScreen() {
       to: span.endSurah === surahNumber ? span.to : ayahCount(surahNumber),
       practice: hifzPractice === true,
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hifzReview, hifzPractice, surahNumber]);
   const isMushaf = activeReaderMode(settings) === 'mushaf' && !review;
   const toggleMode = useCallback(() => {

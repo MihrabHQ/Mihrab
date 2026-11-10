@@ -54,7 +54,6 @@ describe('scrubber chrome follows the page mode, not the app mode', () => {
 });
 
 describe('the page ornament follows the same rule', () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { pageOrnament, TONE_ORNAMENT: ORN } = require('../src/quran/mushafTone');
 
   it('themed night page: the surah band takes the dark accent', () => {

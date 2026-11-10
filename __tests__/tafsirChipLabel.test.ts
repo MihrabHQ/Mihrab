@@ -18,7 +18,6 @@ describe('tafsirChipLabel', () => {
   });
 
   it('is used by the ayah sheet chips', () => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const src = require('fs').readFileSync(
       require('path').join(__dirname, '..', 'src/quran/mushaf/EditionPicker.tsx'),
       'utf8',

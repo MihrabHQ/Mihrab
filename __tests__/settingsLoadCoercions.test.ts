@@ -10,7 +10,6 @@ import { loadSettings } from '../src/settings/storage';
 import { coerceCustomAngle } from '../src/prayer/calculationPreferences';
 import { CALCULATION_METHODS } from '../src/settings/methods';
 import { DEFAULT_SETTINGS } from '../src/settings/types';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const EncryptedStorageMock = require('react-native-encrypted-storage');
 
 const KEY = 'prayerapp.settings.v1';

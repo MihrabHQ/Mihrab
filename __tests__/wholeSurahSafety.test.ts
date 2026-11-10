@@ -38,14 +38,12 @@ import {
 } from '../src/quran/audio/reciters';
 import { ayahCount } from '../src/quran/ayahIndex';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const files: Map<string, string> = require('react-native-blob-util').__files;
 const blob = ReactNativeBlobUtil as unknown as {
   config: jest.Mock;
   fs: Record<string, jest.Mock | unknown>;
 };
 
-/* eslint-disable no-bitwise */
 const pack = (values: number[], width: 3 | 4, scale = 1) => {
   const out: number[] = [];
   for (const v of values) {
@@ -54,7 +52,6 @@ const pack = (values: number[], width: 3 | 4, scale = 1) => {
   }
   return Buffer.from(out).toString('base64');
 };
-/* eslint-enable no-bitwise */
 
 /** Surah s's file is 2000 + s bytes; its ayahs are ten seconds apart. */
 const sizeOf = (s: number) => 2000 + s;

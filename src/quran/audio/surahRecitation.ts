@@ -55,7 +55,6 @@ type Table = {
   x?: number[];
 };
 
-/* eslint-disable @typescript-eslint/no-require-imports */
 const TABLES: Record<string, () => Table> = {
   'husary-warsh': () => require('../data/surahRecitations/husary-warsh.json'),
   'warsh-koshi': () => require('../data/surahRecitations/warsh-koshi.json'),
@@ -75,11 +74,9 @@ const TABLES: Record<string, () => Table> = {
   dukhain: () => require('../data/surahRecitations/dukhain.json'),
   'wadee-yamani': () => require('../data/surahRecitations/wadee-yamani.json'),
 };
-/* eslint-enable @typescript-eslint/no-require-imports */
 
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-/* eslint-disable no-bitwise -- base64 and packed integers are bit work. */
 function bytesOf(b64: string): number[] {
   const clean = b64.replace(/=+$/, '');
   const bytes: number[] = [];
@@ -118,7 +115,6 @@ function uint32s(b64: string): number[] {
   }
   return out;
 }
-/* eslint-enable no-bitwise */
 
 type Decoded = {
   /** Per surah (index surah − 1): its n + 1 boundaries, in seconds. */
@@ -169,7 +165,6 @@ function tableOf(reciterId: string): Decoded | null {
           b[b.length - 1] <= lengths[i] + 0.5,
       );
       let confirmed: boolean[][] | null = null;
-      /* eslint-disable no-bitwise -- one bit per boundary */
       if (table.v === 3 && typeof table.c === 'string') {
         const bits = bytesOf(table.c);
         confirmed = [];
@@ -182,7 +177,6 @@ function tableOf(reciterId: string): Decoded | null {
           confirmed.push(row);
         }
       }
-      /* eslint-enable no-bitwise */
       const confirmedAddsUp = table.v !== 3 || confirmed != null;
       const excluded = table.x ?? [];
       const excludedSane =

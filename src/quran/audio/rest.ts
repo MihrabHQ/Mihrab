@@ -40,7 +40,6 @@ export const MAX_REST_SECONDS = 30;
  * The silent files, longest first, with their length in ms.
  * Keep in step with LENGTHS_MS in tools/silence/make.py.
  */
-/* eslint-disable @typescript-eslint/no-require-imports */
 export const REST_PIECES: ReadonlyArray<{ ms: number; asset: number }> = [
   { ms: 8000, asset: require('../../../assets/audio/silence-8000ms.mp3') },
   { ms: 4000, asset: require('../../../assets/audio/silence-4000ms.mp3') },
@@ -48,7 +47,6 @@ export const REST_PIECES: ReadonlyArray<{ ms: number; asset: number }> = [
   { ms: 1000, asset: require('../../../assets/audio/silence-1000ms.mp3') },
   { ms: 500, asset: require('../../../assets/audio/silence-500ms.mp3') },
 ];
-/* eslint-enable @typescript-eslint/no-require-imports */
 
 const SHORTEST_MS = REST_PIECES[REST_PIECES.length - 1].ms;
 

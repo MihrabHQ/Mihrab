@@ -606,7 +606,6 @@ export async function getStoredPrayerData(): Promise<StoredPrayerData | null> {
     return ta >= tb ? a : b;
   });
   // Strip lastAccessedAt to keep the public StoredPrayerData shape stable.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { lastAccessedAt: _ts, fallbackDays: _marks, clock: _clock, dayClocks: _dayClocks, ...rest } = v2.caches[newest];
   return rest;
 }

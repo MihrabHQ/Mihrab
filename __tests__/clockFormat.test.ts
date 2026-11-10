@@ -130,7 +130,6 @@ describe('localisation', () => {
 
   it('falls back to English markers when Intl cannot answer', () => {
     const real = Intl.DateTimeFormat;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (Intl as any).DateTimeFormat = function () {
       throw new Error('no ICU in this build');
     };
@@ -138,7 +137,6 @@ describe('localisation', () => {
       _resetClockFormatCaches();
       expect(formatClock('17:31', true, 'ar')).toBe('5:31 PM');
     } finally {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (Intl as any).DateTimeFormat = real;
       _resetClockFormatCaches();
     }

@@ -41,7 +41,6 @@ import { civilInZone } from '../src/utils/zoneClock';
 import { widgetPayloadV2FromV1 } from '../src/widget/widgetPayloadV2';
 import type { WidgetPrayerPayload } from '../src/widget/buildWidgetPayload';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const realProcess = require('vm').runInThisContext('process') as NodeJS.Process;
 const ZONE_BEFORE = realProcess.env.TZ;
 function setZone(zone: string): void {

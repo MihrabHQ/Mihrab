@@ -410,7 +410,6 @@ describe('un-logging survives a paired device', () => {
   // the merge was already correct and already tested; the merge was where a
   // removal turned back into a count.
   //
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { mergeSunnah } = require('../src/sync/merge');
 
   it('a cleared day is not resurrected by a peer that still remembers it', () => {

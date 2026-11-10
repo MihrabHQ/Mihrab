@@ -134,7 +134,6 @@ describe('sound design', () => {
 // ─────────────────────────────────────────────────────────────────────────
 describe('design QA invariants', () => {
   test('component library exports the expected primitives', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const ui = require('../src/components/ui');
     expect(ui).toHaveProperty('Card');
     expect(ui).toHaveProperty('Button');
@@ -144,7 +143,6 @@ describe('design QA invariants', () => {
   });
 
   test('icon module exports the in-house Islamic motifs', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const icons = require('../src/theme/icons');
     expect(icons).toHaveProperty('CrescentIcon');
     expect(icons).toHaveProperty('MihrabArchIcon');
@@ -155,7 +153,6 @@ describe('design QA invariants', () => {
   });
 
   test('motion module exports the four named easing curves', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const m = require('../src/theme/motion');
     expect(m.EASING_BEZIERS.emphasized).toBeDefined();
     expect(m.EASING_BEZIERS.standard).toBeDefined();
@@ -164,7 +161,6 @@ describe('design QA invariants', () => {
   });
 
   test('typography exposes nine type tokens with the documented names', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { TYPE } = require('../src/theme/typography');
     const expected = [
       'display', 'title1', 'title2', 'title3', 'headline',

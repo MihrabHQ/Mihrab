@@ -214,7 +214,6 @@ describe('the merge', () => {
 });
 
 describe('the stock line', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { hifzStockLine } = require('../src/quran/hifzLabels');
   const t = (k: string, o: { defaultValue: string; count: number }) => o.defaultValue.replace('{{count}}', String(o.count));
   it('names the surahs and the ayahs', () => {

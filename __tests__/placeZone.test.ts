@@ -36,7 +36,6 @@ import {
 } from '../src/utils/zoneClock';
 import { net } from './fixtures/providerMatrixHarness';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const realProcess = require('vm').runInThisContext('process') as NodeJS.Process;
 const ZONE_BEFORE = realProcess.env.TZ;
 function setZone(zone: string): void {

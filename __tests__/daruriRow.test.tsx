@@ -30,7 +30,6 @@ jest.mock('../src/hooks/useAppPalette', () => ({
 }));
 
 jest.mock('../src/hooks/useClockFormatter', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { makeClockFormatter } = require('../src/utils/clockFormat');
   const formatter = makeClockFormatter(false, 'en');
   return {
@@ -132,9 +131,7 @@ describe('the second-time line', () => {
   });
 
   it('formats it the way the user reads a clock', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const hook = require('../src/hooks/useClockFormatter');
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { makeClockFormatter } = require('../src/utils/clockFormat');
     const twelve = makeClockFormatter(true, 'en');
     const spy = jest
@@ -162,9 +159,7 @@ describe('the second-time line', () => {
  * and the place to say it is beside the switch, before it is touched.
  */
 describe('the boundary a Hanafi user would find surprising', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { solarDaruriBoundaries } = require('../src/prayer/daruriTimes');
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const adhan = jest.requireActual('adhan');
 
   it('sits well before the Hanafi Asr on the row below it', () => {

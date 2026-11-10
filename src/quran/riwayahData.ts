@@ -165,7 +165,6 @@ export function hydrateRiwayahData(): Promise<void> {
     // the fetcher imports this module, and a cycle at load time would
     // leave one of the two half-initialised.
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const fonts = require('./riwayahFontDownload') as {
         fetchMissingRiwayahFonts: () => Promise<void>;
       };

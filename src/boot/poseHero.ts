@@ -62,7 +62,6 @@ export async function capturePoseHero(): Promise<PosedHero | null> {
   if (!p || !view) return null;
   // Lazy: view-shot is only ever needed here and on the share screen, and
   // nothing of it should load at boot.
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { captureRef } = require('react-native-view-shot') as typeof import('react-native-view-shot');
   const file = await captureRef(view, { format: 'png', quality: 1, result: 'tmpfile' });
   const rect = await new Promise<{ x: number; y: number; w: number; h: number }>(resolve =>

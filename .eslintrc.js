@@ -16,6 +16,15 @@ module.exports = {
     'branding/',
   ],
   rules: {
+    // Two the preset warns of that this codebase does on purpose, some six
+    // hundred times between them: `void save()` marks a promise let go
+    // deliberately, and the hashes, the QR code and the sync envelope are
+    // bit arithmetic. Warnings nobody will act on only hide the others.
+    'no-void': 'off',
+    'no-bitwise': 'off',
+    // A comment that turns a rule off for nothing is a rule turned off for
+    // whatever is written there next.
+    'eslint-comments/no-unused-disable': 'error',
     // `const { Sunrise: _hidden, ...rest } = full` is how a key is left
     // out: the named one is unused on purpose.
     '@typescript-eslint/no-unused-vars': [

@@ -11,7 +11,6 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const EncryptedStorageMock = require('react-native-encrypted-storage');
 import { loadSettings, saveSettings } from '../src/settings/storage';
 import { DEFAULT_SETTINGS } from '../src/settings/types';

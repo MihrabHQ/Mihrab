@@ -140,7 +140,6 @@ describe('HomeScreen integration (tasks #45–#47)', () => {
 
 describe('home/RamadanCountdownCard module surface', () => {
   test('exports the RamadanCountdownCard component (memoised)', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const mod = require('../src/screens/home/RamadanCountdownCard');
     expect(mod).toHaveProperty('RamadanCountdownCard');
     // memo() wraps the component as an object; the function/object check
@@ -151,7 +150,6 @@ describe('home/RamadanCountdownCard module surface', () => {
 
 describe('home/LocationChip module surface', () => {
   test('exports the LocationChip component', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const mod = require('../src/screens/home/LocationChip');
     expect(mod).toHaveProperty('LocationChip');
     expect(mod.LocationChip).toBeTruthy();
@@ -160,7 +158,6 @@ describe('home/LocationChip module surface', () => {
 
 describe('home/TodaySummary module surface', () => {
   test('exports the TodaySummary component', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const mod = require('../src/screens/home/TodaySummary');
     expect(mod).toHaveProperty('TodaySummary');
     expect(mod.TodaySummary).toBeTruthy();
@@ -169,7 +166,6 @@ describe('home/TodaySummary module surface', () => {
 
 describe('ramadan locale keys exist on the English bundle (parity guards the rest)', () => {
   test('ramadan.title, ramadan.suhoor, ramadan.iftar are present', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const en = require('../src/i18n/locales/en.json');
     expect(en.ramadan).toBeDefined();
     expect(en.ramadan.title).toBeTruthy();

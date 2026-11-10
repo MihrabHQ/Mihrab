@@ -29,7 +29,6 @@ import { findPageForAyah, MUSHAF_PAGES } from '../src/quran/pages';
 
 // The raw layout, not the decoded one: this asks which ayahs a page
 // declares, which is exactly what the renderer tags its glyphs with.
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const layout = require('../src/quran/data/mushafLayoutV2.json') as Array<{
   p: number;
   l: Array<{ w?: number[][] }>;
@@ -118,7 +117,6 @@ describe('following the recitation is not switched off by starting it', () => {
   // tests: the behaviour needs a mounted reader with a live player to
   // exercise, and what regresses here is the wiring, not the arithmetic.
   const read = (p: string) =>
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('fs').readFileSync(require('path').join(__dirname, '..', p), 'utf8') as string;
   const core = read('src/quran/mushafReaderCore.tsx');
 
@@ -168,7 +166,6 @@ describe('following the recitation is not switched off by starting it', () => {
 
 describe('what the reporter suspected about memory', () => {
   const read = (p: string) =>
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('fs').readFileSync(require('path').join(__dirname, '..', p), 'utf8') as string;
 
   it('bounds the parsed word timings', () => {

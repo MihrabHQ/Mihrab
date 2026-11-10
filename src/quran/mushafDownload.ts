@@ -35,7 +35,6 @@ export async function mkdirDeep(path: string): Promise<void> {
   let cur = root;
   for (const seg of rel) {
     cur = `${cur}/${seg}`;
-    // eslint-disable-next-line no-await-in-loop
     await ReactNativeBlobUtil.fs.mkdir(cur).catch(() => undefined);
   }
 }

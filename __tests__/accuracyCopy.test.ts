@@ -11,14 +11,11 @@ import { readFileSync, readdirSync, existsSync } from 'fs';
 import path from 'path';
 
 const ROOT = path.join(__dirname, '..');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const site = require('../scripts/build-site') as { build: () => Map<string, string> };
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const copy = require('../scripts/build-copy') as {
   build: () => { out: Map<string, string>; problems: string[] };
   LIMITS: Record<string, Record<string, number>>;
 };
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const figures = require('../scripts/copy/figures') as {
   figures: (c: unknown) => { total: { times: number; off: number; checkedAt: string } };
   namedFigures: (c: unknown, lang?: string) => Record<string, string>;

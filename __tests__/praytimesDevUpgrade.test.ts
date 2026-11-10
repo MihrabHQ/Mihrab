@@ -13,7 +13,6 @@ import {
   getEffectiveDataProvider,
   resolveCoordsFromSettings,
 } from '../src/settings/effectiveProvider';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const Enc = require('react-native-encrypted-storage');
 
 const KEY = 'prayerapp.settings.v1';

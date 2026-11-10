@@ -306,7 +306,6 @@ export type SurahBandRowProps = {
  * measured over "سورة …" in Amiri Quran
  * (`scripts/mushaf/measure_surah_name_ink.py`).
  */
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const SURAH_NAME_INK = require('./data/surahNameInk.json') as Array<[number, number]>;
 
 /** Amiri Quran's vertical metrics, ems: what a line centres. */

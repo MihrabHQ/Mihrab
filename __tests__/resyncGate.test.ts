@@ -119,9 +119,7 @@ describe('the fingerprint', () => {
 });
 
 describe('the call sites are gated', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const fs = require('fs');
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const path = require('path');
   const read = (p: string) =>
     fs.readFileSync(path.join(__dirname, '..', p), 'utf-8') as string;
@@ -145,9 +143,7 @@ describe('the call sites are gated', () => {
 });
 
 describe('the opportunistic year-ahead fill can be stopped', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const fs = require('fs');
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const path = require('path');
   const src = fs.readFileSync(
     path.join(__dirname, '..', 'src/prayer/prayerStorage.ts'),

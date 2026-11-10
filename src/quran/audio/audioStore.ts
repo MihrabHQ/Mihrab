@@ -352,8 +352,6 @@ const B64 =
  * Only the prefix, because that is all anybody here wants and a whole
  * decode of forty kilobytes to look at four bytes is a waste on a phone.
  */
-/* eslint-disable no-bitwise -- base64 and MPEG frame syncs are bit work;
-   spelling them with arithmetic would be the same thing, less legibly. */
 export function base64Prefix(b64: string, count: number): number[] {
   const out: number[] = [];
   const chars = b64.replace(/[^A-Za-z0-9+/]/g, '');
@@ -396,7 +394,6 @@ export function looksLikeMp3(head: readonly number[]): boolean {
   }
   return head.length >= 2 && head[0] === 0xff && (head[1] & 0xe0) === 0xe0;
 }
-/* eslint-enable no-bitwise */
 
 /**
  * The first four bytes of a file — without reading the rest of it.

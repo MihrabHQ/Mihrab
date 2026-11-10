@@ -16,7 +16,6 @@ const mockCounts = { text: 0 };
 jest.mock('react/jsx-runtime', () => {
   const actual = jest.requireActual('react/jsx-runtime');
   const isText = (type: unknown) =>
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     type === require('react-native').Text;
   const wrap =
     (fn: (...a: unknown[]) => unknown) =>

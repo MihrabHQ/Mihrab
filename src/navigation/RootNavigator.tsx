@@ -190,13 +190,11 @@ export function RootNavigator() {
         // tablet held at arm's length, and Catalyst then scales the whole
         // canvas down ~23% for the Mac. The compounded result is a 13pt
         // title on a desktop display. See responsive/desktop.ts.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         headerTitleStyle: {
           color: theme.colors.text,
           writingDirection: titleWritingDirection,
           ...(IS_MAC_CATALYST ? { fontSize: desktopSize(17) } : null),
         } as any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         headerLargeTitleStyle: {
           color: theme.colors.text,
           writingDirection: titleWritingDirection,

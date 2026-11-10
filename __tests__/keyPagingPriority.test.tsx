@@ -22,7 +22,6 @@ const calls: boolean[] = [];
 
 // Imported AFTER the module is stubbed in — `useKeyPaging` reads
 // `NativeModules.MihrabKeyCommands` once, at import.
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { setPagingKeyPriority, suspendWhileTyping, usePagingKeySuspension, hasKeyPaging } =
   require('../src/quran/useKeyPaging') as typeof import('../src/quran/useKeyPaging');
 

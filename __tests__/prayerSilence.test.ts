@@ -287,9 +287,7 @@ describe('syncPrayerSilence', () => {
  * two sides agree on.
  */
 describe('the Android side is wired', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const fs = require('fs') as typeof import('fs');
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const path = require('path') as typeof import('path');
   const root = path.join(__dirname, '..');
   const read = (p: string) => fs.readFileSync(path.join(root, p), 'utf8');

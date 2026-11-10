@@ -9,7 +9,6 @@
  *
  * Seeded, so a failure reproduces.
  */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { mergeKhatmah } from '../src/sync/merge';
 import { coerceQuranState } from '../src/quran/quranState';
 import {

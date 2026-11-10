@@ -17,7 +17,6 @@ import {
   isRamadan,
   type HijriDate,
 } from '../hijri/events';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _: typeof isLaylatAlQadrCandidate = isLaylatAlQadrCandidate; // re-exported for callers via this module surface
 
 export type FastType = 'ramadan' | 'voluntary' | 'qadha';

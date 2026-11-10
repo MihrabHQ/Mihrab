@@ -15,7 +15,6 @@ import {
 } from '../src/settings/storage';
 import { applyLocationProviders } from '../src/settings/locationProviders';
 import type { LocationPreset } from '../src/settings/types';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const Enc = require('react-native-encrypted-storage');
 
 const KEY = 'prayerapp.settings.v1';

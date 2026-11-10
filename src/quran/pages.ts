@@ -24,7 +24,6 @@ import { ayahCount } from './ayahIndex';
 import { loadRiwayahPages } from './riwayahData';
 import { DEFAULT_RIWAYAH, readingOf as readingOfRiwayah, type RiwayahId } from './riwayat';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const data = require('./data/pages.json') as {
   pages: Array<{
     page: number;

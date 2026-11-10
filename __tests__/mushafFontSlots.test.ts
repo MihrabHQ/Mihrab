@@ -94,7 +94,6 @@ describe('mushaf font slots', () => {
 
   it('never holds more fonts than it has slots', async () => {
     for (let page = 1; page <= FONT_SLOT_COUNT * 3; page++) {
-      // eslint-disable-next-line no-await-in-loop
       await acquirePageFont(page, path(page));
     }
     const slots = _fontSlotDebug().slots;
@@ -111,7 +110,6 @@ describe('mushaf font slots', () => {
     pinPageFont(100);
     // Churn far more pages than there are slots.
     for (let page = 200; page < 200 + FONT_SLOT_COUNT * 2; page++) {
-      // eslint-disable-next-line no-await-in-loop
       await acquirePageFont(page, path(page));
     }
     expect(loadedPageFont(100)).toBe(family);
@@ -123,7 +121,6 @@ describe('mushaf font slots', () => {
     pinPageFont(300);
     unpinPageFont(300);
     for (let page = 400; page < 400 + FONT_SLOT_COUNT + 2; page++) {
-      // eslint-disable-next-line no-await-in-loop
       await acquirePageFont(page, path(page));
     }
     expect(loadedPageFont(300)).toBeNull();

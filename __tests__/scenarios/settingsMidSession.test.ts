@@ -34,7 +34,6 @@ import {
   until,
   type HookProbe,
 } from '../fixtures/scenarioHarness';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const EncryptedStorageMock = require('react-native-encrypted-storage');
 
 jest.setTimeout(30_000);

@@ -57,7 +57,6 @@ export function AdaptiveGrid({
       ]}>
       {items.map((child, i) => (
         <View
-          // eslint-disable-next-line react/no-array-index-key
           key={i}
           style={{
             width: itemWidth ?? '100%',

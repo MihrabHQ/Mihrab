@@ -263,7 +263,6 @@ function realFs(): Fs {
     isFile: p => stat(p)?.isFile() ?? false,
     isExecutable: p => {
       const s = stat(p);
-      // eslint-disable-next-line no-bitwise -- the execute bits of a file mode
       return !!s && s.isFile() && (s.mode & 0o111) !== 0;
     },
     isSymlink: p => {

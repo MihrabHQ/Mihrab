@@ -40,10 +40,8 @@ import {
   settle,
   toMin,
 } from '../fixtures/scenarioHarness';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const bundledSweden =
   require('../../src/providers/data/swedenCorrections.json') as Corrections;
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const bundledMorocco =
   require('../../src/providers/data/moroccoCorrections.json') as Corrections;
 

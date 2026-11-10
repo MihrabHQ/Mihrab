@@ -31,7 +31,6 @@ import {
   settle,
   until,
 } from '../fixtures/scenarioHarness';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const EncryptedStorageMock = require('react-native-encrypted-storage');
 
 jest.setTimeout(30_000);
@@ -353,7 +352,6 @@ describe('settings', () => {
 });
 
 it('"Show onboarding again" leaves no coordinates behind in the prayer cache or the city registry', async () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { resetAppData } = require('../../src/settings/storage');
   await prayerStorage.getOrFetchPrayerDay({
     provider: 'local_adhan',

@@ -81,7 +81,6 @@ function ShareBannerImpl({
 
       <View style={styles.right}>
         <Image
-          // eslint-disable-next-line @typescript-eslint/no-require-imports
           source={require('../../../assets/qr-code.png')}
           style={styles.qrCode}
           resizeMode="contain"
@@ -91,13 +90,11 @@ function ShareBannerImpl({
         </Text>
         <View style={styles.badges}>
           <Image
-            // eslint-disable-next-line @typescript-eslint/no-require-imports
             source={require('../../../assets/badge-appstore.png')}
             style={styles.badge}
             resizeMode="contain"
           />
           <Image
-            // eslint-disable-next-line @typescript-eslint/no-require-imports
             source={require('../../../assets/badge-googleplay.png')}
             style={styles.badge}
             resizeMode="contain"

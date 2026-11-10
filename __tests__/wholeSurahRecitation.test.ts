@@ -91,7 +91,6 @@ beforeAll(async () => {
 });
 const num = (t: Track, k: string) => (t as Record<string, unknown>)[k] as number | undefined;
 
-/* eslint-disable no-bitwise */
 function packed(values: number[]): string {
   const bytes: number[] = [];
   for (const v of values) {
@@ -105,7 +104,6 @@ function packed32(values: number[]): string {
   for (const v of values) bytes.push((v >>> 24) & 255, (v >>> 16) & 255, (v >>> 8) & 255, v & 255);
   return Buffer.from(bytes).toString('base64');
 }
-/* eslint-enable no-bitwise */
 
 /**
  * A table where surah s, ayah a starts at 1000·s + 10·a seconds — every
@@ -182,7 +180,6 @@ describe('the bundled boundaries', () => {
 });
 
 describe('the counts mapped onto each other, every surah', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { recordedAyahs } = require('../src/quran/audio/recordedAyahs');
   const pairs: Array<[string, string]> = [
     ['hafs', 'warsh'],
@@ -256,11 +253,9 @@ describe('reading a table', () => {
   function confirmedTable(counts: number[], unconfirmed: number[] = []) {
     const total = counts.reduce((a, n) => a + n + 1, 0);
     const bytes = new Uint8Array(Math.ceil(total / 8));
-    /* eslint-disable no-bitwise */
     for (let k = 0; k < total; k++) {
       if (!unconfirmed.includes(k)) bytes[k >> 3] |= 0x80 >> (k & 7);
     }
-    /* eslint-enable no-bitwise */
     return { ...syntheticTable(counts), v: 3, c: Buffer.from(bytes).toString('base64') };
   }
 
@@ -302,7 +297,6 @@ describe('reading a table', () => {
 
   it('has no report link and no best-effort note for an exact recitation', () => {
     _setSurahTableForTests('zahrani', confirmedTable(KUFAN));
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { ayahBoundaryReportUrl } = require('../src/quran/audio/ayahBoundaryReport');
     expect(ayahBoundaryReportUrl('zahrani', 2, 255, 'hafs')).toBeNull();
   });
@@ -320,7 +314,6 @@ describe('reading a table', () => {
     // Still readable: the table's boundaries for it are the shipped ones.
     expect(ayahClip('zahrani', 2, 3)).toEqual({ start: 2030, end: 2040 });
     // No report for a surah that is never played.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { ayahBoundaryReportUrl } = require('../src/quran/audio/ayahBoundaryReport');
     expect(ayahBoundaryReportUrl('zahrani', 2, 3, 'hafs')).toBeNull();
     // (That it is never fetched, streamed or counted: wholeSurahSafety.)
@@ -333,7 +326,6 @@ describe('reading a table', () => {
 
   it('keeps the report for the one surah that is still a best attempt', () => {
     _setSurahTableForTests('zahrani', confirmedTable(KUFAN, [42]));
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { ayahBoundaryReportUrl } = require('../src/quran/audio/ayahBoundaryReport');
     expect(ayahBoundaryReportUrl('zahrani', 2, 255, 'hafs')).not.toBeNull();
     expect(ayahBoundaryReportUrl('zahrani', 3, 1, 'hafs')).toBeNull();
@@ -345,7 +337,6 @@ describe('the bundled tables, as shipped', () => {
 
   /** The table's own `bytes`: the sum of every surah file, held or not. */
   function uint32Sum(id: string): number {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     return (require(`../src/quran/data/surahRecitations/${id}.json`) as { bytes: number }).bytes;
   }
 
@@ -504,7 +495,6 @@ describe('playing a whole-surah recitation', () => {
     const st = getPlaybackStatus();
     expect(st.reciterId).toBe('zahrani');
     expect(isPreviewing(st, 'zahrani')).toBe(true);
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     expect(require('../src/quran/quranState').getQuranState().prefs.reciterId).toBe('husary');
   });
 
@@ -663,9 +653,7 @@ describe('progress and scrubbing inside an ayah', () => {
 });
 
 describe('the reports and suggestions around it', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { ayahBoundaryReportUrl, clock } = require('../src/quran/audio/ayahBoundaryReport');
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { voicesFor } = require('../src/quran/audio/ReadingVoiceHint');
   beforeEach(() => _setSurahTableForTests('zahrani', syntheticTable(KUFAN)));
 

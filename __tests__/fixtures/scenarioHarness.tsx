@@ -26,7 +26,6 @@ import { markFirstPaint } from '../../src/boot/firstPaint';
  * `process.env.TZ` there moves nothing; the outer process's does, and Node
  * re-reads it on assignment (Dates and Intl alike).
  */
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const realProcess = require('vm').runInThisContext('process') as NodeJS.Process;
 const ZONE_BEFORE = realProcess.env.TZ;
 export function setZone(zone: string): void {
@@ -131,7 +130,6 @@ export function response(
 /** Let every promise chain that is ready to run, run — `rounds` times over. */
 export async function settle(rounds = 30): Promise<void> {
   for (let i = 0; i < rounds; i++) {
-    // eslint-disable-next-line no-await-in-loop
     await act(async () => {
       await new Promise(r => setImmediate(r));
     });
@@ -149,7 +147,6 @@ export async function until(
   while (!pred()) {
     if (performance.now() > end)
       throw new Error(`timed out waiting for: ${what}`);
-    // eslint-disable-next-line no-await-in-loop
     await settle(3);
   }
 }

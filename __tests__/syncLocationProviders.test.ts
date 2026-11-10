@@ -20,7 +20,6 @@ import {
 } from '../src/sync/snapshot';
 import { loadSettings } from '../src/settings/storage';
 import { providerChoiceForPreset } from '../src/settings/locationProviders';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const EncryptedStorageMock = require('react-native-encrypted-storage');
 
 const NOW = '2026-10-17T12:00:00.000Z';
