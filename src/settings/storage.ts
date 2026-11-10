@@ -61,6 +61,7 @@ import {
   type PrayerAppSettings,
   type WidgetHighlightId,
 } from './types';
+import { quiet } from '../utils/quiet';
 
 const KEY = 'prayerapp.settings.v1';
 
@@ -323,7 +324,8 @@ async function readPlaintextOnDisk(): Promise<Record<string, unknown> | null> {
     const raw = await launchRead(KEY);
     if (!raw) return {};
     return asRecord(JSON.parse(raw)) ?? {};
-  } catch {
+  } catch (quietError) {
+    quiet('settings/storage', quietError);
     return null;
   }
 }
@@ -986,7 +988,8 @@ export async function resetAppData(): Promise<void> {
     for (const k of secureKeys) {
       try {
         await EncryptedStorage.removeItem(k);
-      } catch {
+      } catch (quietError) {
+        quiet('settings/storage', quietError);
         // missing keys throw on some platforms — non-fatal
       }
     }

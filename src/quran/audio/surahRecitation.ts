@@ -1,3 +1,4 @@
+import { quiet } from '../../utils/quiet';
 /**
  * Where each ayah is inside a whole-surah recording.
  *
@@ -199,7 +200,8 @@ function tableOf(reciterId: string): Decoded | null {
         out = { bounds, lengths, sizes, bytes: table.bytes, confirmed, excluded };
       }
     }
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/surahRecitation', quietError);
     out = null;
   }
   decoded.set(reciterId, out);

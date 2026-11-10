@@ -38,6 +38,7 @@ import {
   surahRecitationBytes,
 } from './surahRecitation';
 import { freeDiskBytes, SPACE_MARGIN_BYTES, sizeLabel } from '../downloadSpace';
+import { quiet } from '../../utils/quiet';
 
 function audioDir(reciterId: string): string {
   return `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/quran/audio/${reciterId}`;
@@ -90,7 +91,8 @@ async function surahFileExact(
     if (!(await ReactNativeBlobUtil.fs.exists(path))) return false;
     const stat = await ReactNativeBlobUtil.fs.stat(path);
     return Number(stat.size) === want;
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     return false;
   }
 }
@@ -135,7 +137,8 @@ export async function surahChangedAtSource(
   if (surahExcluded(reciterId, surah)) return true;
   try {
     return await ReactNativeBlobUtil.fs.exists(changedMarkPath(reciterId, surah));
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     return false;
   }
 }
@@ -151,7 +154,8 @@ export async function surahsChangedAtSource(reciterId: string): Promise<number[]
         if (m) out.add(Number(m[1]));
       }
     }
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     // the marks could not be read: the excluded surahs still stand
   }
   return [...out].sort((a, b) => a - b);
@@ -179,7 +183,8 @@ export async function deleteSurahFile(reciterId: string, surah: number): Promise
     const there = await ReactNativeBlobUtil.fs.exists(path);
     if (there) await ReactNativeBlobUtil.fs.unlink(path);
     return there;
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     return false;
   }
 }
@@ -223,7 +228,8 @@ export function checkRemoteSurah(
       const size = Number(res.headers.get('content-length'));
       if (!Number.isFinite(size) || size <= 0) return 'unreachable';
       return size === want ? 'ok' : 'changed';
-    } catch {
+    } catch (quietError) {
+      quiet('quran/audio/audioStore', quietError);
       return 'unreachable';
     }
   })();
@@ -276,7 +282,8 @@ export function keepSurahQuietly(reciterId: string, surah: number): Promise<stri
       await mkdirDeep(audioDir(reciterId));
       await fetchSurahFile(findReciter(reciterId), surah, path, () => undefined, () => false);
       return (await localSurahFileIfAny(reciterId, surah)) ?? null;
-    } catch {
+    } catch (quietError) {
+      quiet('quran/audio/audioStore', quietError);
       return null;
     }
   })();
@@ -290,7 +297,8 @@ async function fileValid(path: string, minBytes = 1000): Promise<boolean> {
     if (!(await ReactNativeBlobUtil.fs.exists(path))) return false;
     const stat = await ReactNativeBlobUtil.fs.stat(path);
     return Number(stat.size) > minBytes;
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     return false;
   }
 }
@@ -419,7 +427,8 @@ async function verifyAudioFile(path: string, what: string): Promise<void> {
   let head: number[] = [];
   try {
     head = await headBytes(path);
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     // Unreadable is its own failure; fall through to the throw below.
   }
   if (looksLikeMp3(head)) return;
@@ -786,7 +795,8 @@ export async function surahAudioStatus(
         present.add(ref.ayah);
       }
     }
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     // An unreadable folder is an empty one: the answer is "download it".
   }
   const missing: number[] = [];
@@ -834,7 +844,8 @@ export async function deleteSurahAudio(
       await ReactNativeBlobUtil.fs.unlink(`${dir}/${name}`).catch(() => undefined);
       removed += 1;
     }
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     /* nothing readable is nothing to delete */
   }
   return removed;
@@ -1118,7 +1129,8 @@ async function clearLeftovers(reciterId: string): Promise<void> {
         await ReactNativeBlobUtil.fs.unlink(`${dir}/${n}`).catch(() => undefined);
       }
     }
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     /* nothing there is nothing to clear */
   }
 }
@@ -1297,7 +1309,8 @@ export async function prefetchAyahAudio(
     await mkdirDeep(audioDir(reciterId));
     await fetchAyahFile(findReciter(reciterId), surah, ayah, path);
     return path;
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     return null;
   }
 }
@@ -1397,7 +1410,8 @@ export async function reciterAudioStats(
       bytes += size;
     }
     return { files, bytes, complete: files + changed >= reciterFileTotal(reciterId) };
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     return empty;
   }
 }
@@ -1425,7 +1439,8 @@ export async function downloadedReciters(): Promise<
       // would be offering to delete nothing.
       if (stats.files > 0) out[id] = stats;
     }
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     /* an unreadable folder is an empty one, for this purpose */
   }
   return out;
@@ -1435,7 +1450,8 @@ export async function downloadedReciters(): Promise<
 export async function deleteReciterAudio(reciterId: string): Promise<void> {
   try {
     await ReactNativeBlobUtil.fs.unlink(audioDir(reciterId));
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     /* already gone */
   }
 }
@@ -1454,7 +1470,8 @@ export async function audioDiskUsage(): Promise<number> {
       for (const f of files) sum += Number(f.size) || 0;
     }
     return sum;
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/audioStore', quietError);
     return 0;
   }
 }

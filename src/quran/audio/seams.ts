@@ -32,6 +32,7 @@ import TrackPlayer, {
   State,
   type Track,
 } from 'react-native-track-player';
+import { quiet } from '../../utils/quiet';
 
 const IN_JS = Platform.OS !== 'android';
 
@@ -126,7 +127,8 @@ export async function watchSeam(): Promise<void> {
       () => void watchSeam(),
       Math.min(1000, Math.max(15, ms)),
     );
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/seams', quietError);
     // Best effort: the file plays to its end as recorded.
   }
 }
@@ -152,7 +154,8 @@ export async function onTrackChanged(e: {
       const { position } = await TrackPlayer.getProgress();
       if (position < trimStart - 0.05) await TrackPlayer.seekTo(trimStart);
     }
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/seams', quietError);
     /* best effort */
   }
   void watchSeam();

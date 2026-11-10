@@ -59,6 +59,7 @@ import {
 } from './notificationSounds';
 import { shownAlertMode } from '../settings/alertModes';
 import { formatHijriLabel } from '../hijri/formatHijriLabel';
+import { quiet } from '../utils/quiet';
 
 /** Hijri label for a "yyyy-MM-dd" day key (parsed in local time). */
 export function hijriLabelForDateKey(dateKey: string): string {
@@ -91,7 +92,8 @@ async function ensureChannel(): Promise<void> {
   for (const old of [CHANNEL_ID_LEGACY_V1, CHANNEL_ID_LEGACY_V2]) {
     try {
       await notifee.deleteChannel(old);
-    } catch {
+    } catch (quietError) {
+      quiet('notifications/liveActivity', quietError);
       // Non-fatal.
     }
   }
@@ -112,7 +114,8 @@ async function ensureChannel(): Promise<void> {
       vibration: false,
       badge: false,
     });
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/liveActivity', quietError);
     // Non-fatal.
   }
 }
@@ -179,7 +182,8 @@ export async function loadLiveActivityOptions(): Promise<LiveActivityOptions> {
       defaultChannelId: resolveSoundTargets('default').androidChannelId,
     };
     out.tinted = s.tintedSurfaces === true;
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/liveActivity', quietError);
     // Settings unreadable — the defaults above stand.
   }
   return out;
@@ -264,13 +268,15 @@ export async function stopLiveActivity(): Promise<void> {
   if (native) {
     try {
       await native.cancel();
-    } catch {
+    } catch (quietError) {
+      quiet('notifications/liveActivity', quietError);
       // Non-fatal.
     }
   }
   try {
     await notifee.cancelNotification(LIVE_ACTIVITY_NOTIFICATION_ID);
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/liveActivity', quietError);
     // Non-fatal.
   }
 }

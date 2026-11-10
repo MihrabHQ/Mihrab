@@ -38,6 +38,7 @@ import {
   type QuranTranslationId,
 } from '../quran/translations';
 import { loadTafsir, resolveTafsirEdition } from '../quran/tafsir';
+import { quiet } from '../utils/quiet';
 
 const AYAH_DAY_ID_PREFIX = 'ayah-day-';
 const AYAH_DAY_CHANNEL_ID = 'prayer_app_ayah_of_day';
@@ -110,7 +111,8 @@ async function ayahForDay(
   try {
     const loaded = await loadSurah(ref.surah);
     arabic = loaded?.arabic[ref.ayah - 1] ?? '';
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/ayahOfDay', quietError);
     // Arabic text unavailable — translation-only body still works.
   }
   const translation =
@@ -171,7 +173,8 @@ export async function rescheduleAyahOfDay(opts: {
       name: i18n.t('quran.ayahOfDayChannelName', 'Ayah of the day'),
       importance: AndroidImportance.DEFAULT,
     });
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/ayahOfDay', quietError);
     // Non-fatal.
   }
 
@@ -191,7 +194,8 @@ export async function rescheduleAyahOfDay(opts: {
       try {
         const tafsir = await loadTafsir(tafsirEdition.id, ref.surah, ref.ayah);
         if (tafsir) companion = tafsir;
-      } catch {
+      } catch (quietError) {
+        quiet('notifications/ayahOfDay', quietError);
         // Keep the translation fallback.
       }
     }

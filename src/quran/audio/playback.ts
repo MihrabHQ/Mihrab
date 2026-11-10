@@ -62,6 +62,7 @@ import { setNowPlayingState } from '../../native/NowPlayingState';
 import { noteListenPaused, recordListened } from './listenProgress';
 import { onAudioRouteLost } from '../../native/AudioRoute';
 import { onBeforeAdhanPlays } from '../../native/AdhanPlayer';
+import { quiet } from '../../utils/quiet';
 
 export type AyahRef = { surah: number; ayah: number };
 
@@ -513,7 +514,8 @@ async function snapshotQueue(): Promise<QueueSnapshot | null> {
       TrackPlayer.getActiveTrackIndex(),
     ]);
     return idx == null ? null : { queue, idx };
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/playback', quietError);
     return null;
   }
 }
@@ -551,7 +553,8 @@ async function prefetchUpcoming({ queue, idx }: QueueSnapshot): Promise<void> {
           inFlightPrefetch.delete(key);
         });
     }
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/playback', quietError);
     /* best effort */
   }
 }
@@ -585,7 +588,8 @@ async function keepUpcomingSurahs({ queue, idx }: QueueSnapshot): Promise<void> 
         }
       });
     }
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/playback', quietError);
     /* best effort: the stream keeps playing */
   }
 }
@@ -1111,7 +1115,8 @@ async function catchClipOverrun(position: number): Promise<void> {
     const next = snap.queue[snap.idx + 1];
     if (next) await skipToEntry(snap.idx + 1, next);
     else await TrackPlayer.stop();
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/playback', quietError);
     /* the next progress event looks again */
   } finally {
     overrunBusy = false;
@@ -1240,7 +1245,8 @@ async function restFor(
   try {
     const spoken = await spokenSeconds(reciter, surah, files);
     return spoken == null ? [] : restPieces(spoken * factor);
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/playback', quietError);
     return [];
   }
 }
@@ -1376,7 +1382,8 @@ async function reshapeListenTail(): Promise<void> {
     listenIndex += tracks.length;
     await TrackPlayer.add(tracks);
     armListenStop(String(queue[cut - 1]?.id ?? '') || null);
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/playback', quietError);
     // Best effort: the queue that was there keeps playing, and the next
     // top-up steps with the new flag.
   }
@@ -1453,7 +1460,8 @@ async function extendListening({ queue, idx }: QueueSnapshot): Promise<void> {
     listenIndex += tracks.length;
     await TrackPlayer.add(tracks);
     armListenStop(String(queue[queue.length - 1]?.id ?? '') || null);
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/playback', quietError);
     // A top-up that fails leaves what is queued playing. The next track
     // change tries again.
   }

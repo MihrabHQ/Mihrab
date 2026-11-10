@@ -533,6 +533,6 @@ describe('the channel it posts to has to be there', () => {
   });
 
   it('treats a throw from the lookup as absent', () => {
-    expect(ts).toMatch(/\} catch \{\s*\n\s*return fallback;/);
+    expect(ts).toMatch(/\} catch \(\w+\) \{\s*\n\s*quiet\([^\n]*\n\s*return fallback;/);
   });
 });

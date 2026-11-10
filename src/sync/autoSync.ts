@@ -35,6 +35,7 @@ import { ensureSyncFolder, runSyncNow, type SyncRunResult } from './runSync';
 import { getSyncSettings, syncFrequencyGapMs } from './syncSettings';
 import { afterRun } from '../boot/launchWarp';
 import { afterFirstPaint } from '../boot/firstPaint';
+import { quiet } from '../utils/quiet';
 
 /** Below the rate anyone's record changes, above the rate `active` fires. */
 export const AUTO_SYNC_MIN_GAP_MS = 2 * 60 * 1000;
@@ -107,7 +108,8 @@ export async function maybeAutoSync(
     // two minutes after the user finally chooses a folder.
     lastRunAt = now;
     return await runSyncNow();
-  } catch {
+  } catch (quietError) {
+    quiet('sync/autoSync', quietError);
     // runSyncNow already records the failure and the screen already shows
     // it. Throwing out of an AppState listener would be an unhandled
     // rejection for something the user did not ask for right now.

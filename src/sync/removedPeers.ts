@@ -40,6 +40,7 @@ import {
 } from '../storage/durableWrite';
 import { KEY_BYTES } from './pairingCode';
 import { fromBase64 } from './secureRandom';
+import { quiet } from '../utils/quiet';
 
 /** Beside the peer list, and for the same reason: not in a cloud backup. */
 const REMOVED_KEY = SYNC_REMOVED_KEY;
@@ -81,7 +82,8 @@ function coerce(value: unknown, now: number): PeerRemoval[] {
     // would put a permanently inert entry in every file we write.
     try {
       if (fromBase64(r.pk).length !== KEY_BYTES) continue;
-    } catch {
+    } catch (quietError) {
+      quiet('sync/removedPeers', quietError);
       continue;
     }
     const at = Date.parse(r.at);
@@ -100,7 +102,8 @@ async function read(now: number): Promise<PeerRemoval[]> {
   try {
     // Sensitive: never kept in plaintext — see `durableWrite.ts`.
     raw = await durableEncryptedGet(REMOVED_KEY, { sensitive: true });
-  } catch {
+  } catch (quietError) {
+    quiet('sync/removedPeers', quietError);
     // Same trade as the peer list: an unreadable Keychain degrades to "no
     // removals", which loses the announcement rather than the app.
     return [];
@@ -108,7 +111,8 @@ async function read(now: number): Promise<PeerRemoval[]> {
   if (!raw) return [];
   try {
     return coerce(JSON.parse(raw), now);
-  } catch {
+  } catch (quietError) {
+    quiet('sync/removedPeers', quietError);
     return [];
   }
 }
@@ -129,7 +133,8 @@ function mutate<T>(
     let before: PeerRemoval[] = [];
     try {
       before = strict ? coerce(JSON.parse(strict), Date.now()) : [];
-    } catch {
+    } catch (quietError) {
+      quiet('sync/removedPeers', quietError);
       before = [];
     }
     const { rows, result } = change(before);

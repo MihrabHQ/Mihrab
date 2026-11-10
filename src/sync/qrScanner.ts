@@ -15,6 +15,7 @@
  * someone tapping a button that silently does nothing.
  */
 import { NativeModules } from 'react-native';
+import { quiet } from '../utils/quiet';
 
 const Native = NativeModules.ScanQr as
   | {
@@ -53,7 +54,8 @@ export async function cameraIsAvailable(): Promise<boolean> {
   if (!Native?.isAvailable) return false;
   try {
     return await Native.isAvailable();
-  } catch {
+  } catch (quietError) {
+    quiet('sync/qrScanner', quietError);
     return false;
   }
 }

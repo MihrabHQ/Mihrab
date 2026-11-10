@@ -67,6 +67,7 @@ import {
   unprotectedRemove,
   unprotectedSet,
 } from './unprotectedStore';
+import { quiet } from '../utils/quiet';
 
 /**
  * Who wants to know that something was written.
@@ -96,7 +97,8 @@ function announceWrite(key: string): void {
   for (const listener of writeListeners) {
     try {
       listener(key);
-    } catch {
+    } catch (quietError) {
+      quiet('storage/durableWrite', quietError);
       /* a listener's problem is not the write's problem */
     }
   }
@@ -171,7 +173,8 @@ async function markWitnessed(key: string): Promise<void> {
   try {
     await AsyncStorage.setItem(witnessKey(key), '1');
     witnessed.add(key);
-  } catch {
+  } catch (quietError) {
+    quiet('storage/durableWrite', quietError);
     /* best effort: without the bit a failed read degrades to the old
        behaviour, which is no worse than before it existed */
   }
@@ -181,7 +184,8 @@ async function wasWitnessed(key: string): Promise<boolean> {
   if (witnessed.has(key)) return true;
   try {
     return (await AsyncStorage.getItem(witnessKey(key))) != null;
-  } catch {
+  } catch (quietError) {
+    quiet('storage/durableWrite', quietError);
     return false;
   }
 }
@@ -216,7 +220,8 @@ export function markEncryptedStoreDegraded(): void {
   for (const listener of degradedListeners) {
     try {
       listener();
-    } catch {
+    } catch (quietError) {
+      quiet('storage/durableWrite', quietError);
       /* a screen's problem is not the store's */
     }
   }
@@ -284,7 +289,8 @@ export async function durableEncryptedSet(
     // harder, not to go quiet.
     announceWrite(key);
     return;
-  } catch {
+  } catch (quietError) {
+    quiet('storage/durableWrite', quietError);
     /* fall through to the original error — that one is the real story */
   }
 
@@ -385,14 +391,16 @@ async function readFallback(key: string): Promise<string | null> {
   let legacy: string | null = null;
   try {
     legacy = await AsyncStorage.getItem(legacyFallbackKey(key));
-  } catch {
+  } catch (quietError) {
+    quiet('storage/durableWrite', quietError);
     return null;
   }
   if (legacy === null) return null;
   try {
     await unprotectedSet(key, legacy);
     await AsyncStorage.removeItem(legacyFallbackKey(key));
-  } catch {
+  } catch (quietError) {
+    quiet('storage/durableWrite', quietError);
     /* left where it was: better in a backup than gone */
   }
   return legacy;
@@ -403,7 +411,8 @@ async function dropPlaintext(key: string): Promise<void> {
   await unprotectedRemove(key);
   try {
     await AsyncStorage.removeItem(legacyFallbackKey(key));
-  } catch {
+  } catch (quietError) {
+    quiet('storage/durableWrite', quietError);
     /* stale; the encrypted value wins on read */
   }
 }
@@ -419,7 +428,8 @@ async function adoptPlaintext(key: string): Promise<string | null> {
   if (plain === null) {
     try {
       plain = await AsyncStorage.getItem(legacyFallbackKey(key));
-    } catch {
+    } catch (quietError) {
+      quiet('storage/durableWrite', quietError);
       plain = null;
     }
   }
@@ -429,7 +439,8 @@ async function adoptPlaintext(key: string): Promise<string | null> {
     await EncryptedStorage.setItem(key, plain);
     await markWitnessed(key);
     moved = true;
-  } catch {
+  } catch (quietError) {
+    quiet('storage/durableWrite', quietError);
     markEncryptedStoreDegraded();
   }
   await dropPlaintext(key);
@@ -447,7 +458,8 @@ export async function evictLegacyFallbacks(sensitive: ReadonlySet<string>): Prom
   let keys: readonly string[] = [];
   try {
     keys = await AsyncStorage.getAllKeys();
-  } catch {
+  } catch (quietError) {
+    quiet('storage/durableWrite', quietError);
     return;
   }
   for (const stored of keys) {
@@ -458,7 +470,8 @@ export async function evictLegacyFallbacks(sensitive: ReadonlySet<string>): Prom
         let present: string | null = null;
         try {
           present = await EncryptedStorage.getItem(key);
-        } catch {
+        } catch (quietError) {
+          quiet('storage/durableWrite', quietError);
           present = null;
         }
         if (present) await dropPlaintext(key);
@@ -466,7 +479,8 @@ export async function evictLegacyFallbacks(sensitive: ReadonlySet<string>): Prom
       } else {
         await readFallback(key);
       }
-    } catch {
+    } catch (quietError) {
+      quiet('storage/durableWrite', quietError);
       /* next launch tries again */
     }
   }

@@ -54,6 +54,7 @@ import {
   clampPrePrayerReminderMinutes,
   ymdLocal,
 } from './scheduling';
+import { quiet } from '../utils/quiet';
 
 // Re-exported: this was its home before the Live Activity's button became
 // a second writer of the same alerts and the primitives had to move
@@ -160,7 +161,8 @@ async function clearStaleDisplayedPrayerNotifications(
   let displayed;
   try {
     displayed = await notifee.getDisplayedNotifications();
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/prayerNotifications', quietError);
     return;
   }
   for (const d of displayed) {
@@ -308,7 +310,8 @@ async function cancelOwnedPrayerNotifications(
   let existing;
   try {
     existing = await notifee.getTriggerNotifications();
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/prayerNotifications', quietError);
     // Older notifee versions / flaky native module — fall back to bulk cancel
     // so we at least don't leak orphan notifications. Better than skipping.
     await notifee.cancelTriggerNotifications().catch(() => {});
@@ -1211,7 +1214,8 @@ async function syncPrayerNotificationsNow(params: {
           await dropDaruriAlertsForLogged(date, prayers);
         }
       }
-    } catch {
+    } catch (quietError) {
+      quiet('notifications/prayerNotifications', quietError);
       /* the alerts stand; the next journal write cancels them */
     }
   }

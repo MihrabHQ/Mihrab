@@ -20,6 +20,7 @@ import {
 } from './journal';
 import { durableEncryptedGet } from '../storage/durableWrite';
 import { JOURNAL_KEY } from '../practice/practiceStore';
+import { quiet } from '../utils/quiet';
 
 const PRAYERS: readonly JournalPrayer[] = [
   'Fajr',
@@ -64,7 +65,8 @@ export async function storedJournalEntries(): Promise<JournalEntry[]> {
   if (!raw) return [];
   try {
     return coerceJournalEntries(JSON.parse(raw));
-  } catch {
+  } catch (quietError) {
+    quiet('journal/loggedPrayers', quietError);
     return [];
   }
 }

@@ -39,6 +39,7 @@ import {
   prayerSyncsAsked,
   syncPrayerNotifications,
 } from './prayerNotifications';
+import { quiet } from '../utils/quiet';
 
 /** The installed version the alerts were last written for. */
 export const ALERTS_VERSION_KEY = 'mihrab.alertsWrittenForVersion';
@@ -160,7 +161,8 @@ export async function resyncPrayerAlertsFromStorage(
     });
     accentColor =
       typeof palette.accentSolid === 'string' ? palette.accentSolid : undefined;
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/afterUpdate', quietError);
     /* the notifications' own default; Today's next write puts the accent back */
   }
   if (prayerSyncsAsked() !== asked) return true;
@@ -243,7 +245,8 @@ async function run(now: Date): Promise<AfterUpdateResult> {
 export async function alertsResyncTask(): Promise<void> {
   try {
     await resyncAfterUpdate();
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/afterUpdate', quietError);
     /* the app's own start tries again */
   }
 }

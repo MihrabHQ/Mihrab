@@ -84,6 +84,7 @@ import {
 } from './downloadNotification';
 import { ROUTE_QURAN_DOWNLOADS } from '../notifications/notificationRoute';
 import i18n from '../i18n';
+import { quiet } from '../utils/quiet';
 
 /**
  * What is being fetched.
@@ -181,7 +182,8 @@ function publish(next: QuranDownloadState): void {
   for (const listener of listeners) {
     try {
       listener(state);
-    } catch {
+    } catch (quietError) {
+      quiet('quran/quranDownloadManager', quietError);
       // A subscriber that throws must not take the download with it.
     }
   }
@@ -601,7 +603,8 @@ function armWatchdog(run: Run): void {
     run.stalled = true;
     try {
       run.inner?.cancel();
-    } catch {
+    } catch (quietError) {
+      quiet('quran/quranDownloadManager', quietError);
       /* the grace timer below ends it either way */
     }
     run.watchdog = setTimeout(
@@ -781,7 +784,8 @@ async function checkSpace(run: Run): Promise<void> {
   let short = 0;
   try {
     short = await spaceShortfall(await bytesStillNeeded(run.job));
-  } catch {
+  } catch (quietError) {
+    quiet('quran/quranDownloadManager', quietError);
     return; // unknown is not a reason to refuse
   }
   if (short <= 0 || !isCurrent(run)) return;
@@ -792,7 +796,8 @@ async function checkSpace(run: Run): Promise<void> {
   };
   try {
     run.inner?.cancel();
-  } catch {
+  } catch (quietError) {
+    quiet('quran/quranDownloadManager', quietError);
     /* ended below either way */
   }
   // In place of the watchdog, so ending the run clears it.
@@ -963,7 +968,8 @@ async function rememberPendingJob(job: QuranDownloadJob): Promise<void> {
     const stored =
       job.kind === 'surah' ? { kind: job.kind, reciterId: job.reciterId, surah: job.surah } : job;
     await AsyncStorage.setItem(PENDING_KEY, JSON.stringify(stored));
-  } catch {
+  } catch (quietError) {
+    quiet('quran/quranDownloadManager', quietError);
     // The offer is then only as durable as the process, which is the
     // behaviour without this note at all — not a reason to fail a run.
   }
@@ -973,7 +979,8 @@ async function forgetPendingJob(): Promise<void> {
   pendingJob = null;
   try {
     await AsyncStorage.removeItem(PENDING_KEY);
-  } catch {
+  } catch (quietError) {
+    quiet('quran/quranDownloadManager', quietError);
     /* a note that will not go away is harmless: the job is startable */
   }
 }
@@ -1009,7 +1016,8 @@ export async function hydrateResumableJob(): Promise<QuranDownloadJob | null> {
     pendingJob = job;
     publish({ ...state });
     return job;
-  } catch {
+  } catch (quietError) {
+    quiet('quran/quranDownloadManager', quietError);
     return null;
   }
 }
@@ -1032,7 +1040,8 @@ export function cancelQuranDownload(): void {
   cancelledByUser = true;
   try {
     run.inner?.cancel();
-  } catch {
+  } catch (quietError) {
+    quiet('quran/quranDownloadManager', quietError);
     // A cancel that throws must still end the run; the watchdog would,
     // but a person who pressed Stop should not wait six minutes for it.
     finishRun(run, { complete: false, interrupted: false });

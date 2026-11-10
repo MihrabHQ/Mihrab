@@ -29,6 +29,7 @@
  */
 import { syncIsReady, runSyncNow } from '../sync/runSync';
 import { republishWidgetPayload } from './republishWidgetPayload';
+import { quiet } from '../utils/quiet';
 
 /**
  * Two presses in quick succession are one intent.
@@ -74,7 +75,8 @@ export async function widgetRefreshTask(): Promise<WidgetRefreshResult> {
       const result = await runSyncNow();
       synced = result.ok;
     }
-  } catch {
+  } catch (quietError) {
+    quiet('widget/widgetRefreshTask', quietError);
     // A round that failed is already recorded, and the Sync screen says so.
     // The republish below is still worth doing — the card should show the
     // right day even when the folder is unreachable.
@@ -85,7 +87,8 @@ export async function widgetRefreshTask(): Promise<WidgetRefreshResult> {
   let republished = false;
   try {
     republished = await republishWidgetPayload('widget-refresh');
-  } catch {
+  } catch (quietError) {
+    quiet('widget/widgetRefreshTask', quietError);
     // Leaves the previous payload in place, which is the honest fallback.
   }
   return { synced, republished };

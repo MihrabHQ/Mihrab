@@ -80,7 +80,7 @@ describe('the app can see an override it did not write', () => {
     // the reset button away while the override was still live.
     const ts = read('src/notifications/adhanMute.ts');
     expect(ts).toMatch(
-      /export async function refreshNextAlertOverride[\s\S]*?\} catch \{[\s\S]{0,400}?\n\s*\}\n\}/,
+      /export async function refreshNextAlertOverride[\s\S]*?\} catch \(\w+\) \{[\s\S]{0,400}?\n\s*\}\n\}/,
     );
     expect(ts).not.toMatch(
       /refreshNextAlertOverride[\s\S]{0,300}?catch \{\s*\n\s*publish\(null\)/,

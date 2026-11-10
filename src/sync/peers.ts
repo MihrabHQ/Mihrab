@@ -39,6 +39,7 @@ import { fingerprintOf, getDeviceIdentity } from './deviceIdentity';
 import { decode, KEY_BYTES } from './pairingCode';
 import { clearRemoval, noteRemoval, removalOf } from './removedPeers';
 import { fromBase64, toBase64 } from './secureRandom';
+import { quiet } from '../utils/quiet';
 
 /**
  * Kept beside the secret half, in the Keystore / Keychain rather than
@@ -190,7 +191,8 @@ async function read(): Promise<Peer[]> {
   try {
     // Sensitive: never kept in plaintext — see `durableWrite.ts`.
     raw = await durableEncryptedGet(PEERS_KEY, { sensitive: true });
-  } catch {
+  } catch (quietError) {
+    quiet('sync/peers', quietError);
     // An unreadable Keychain is a bad moment to throw: the caller is either
     // drawing a screen or sealing a file, and "no peers" degrades to "sync
     // does nothing" rather than to a crash. The write path does NOT do this
@@ -200,7 +202,8 @@ async function read(): Promise<Peer[]> {
   if (!raw) return [];
   try {
     return coerce(JSON.parse(raw));
-  } catch {
+  } catch (quietError) {
+    quiet('sync/peers', quietError);
     return [];
   }
 }
@@ -228,7 +231,8 @@ function mutate<T>(
     let before: Peer[] = [];
     try {
       before = strict ? coerce(JSON.parse(strict)) : [];
-    } catch {
+    } catch (quietError) {
+      quiet('sync/peers', quietError);
       before = [];
     }
     const { peers, result } = change(before);

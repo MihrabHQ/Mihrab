@@ -21,6 +21,7 @@ import {
   getNextPrayerDisplay,
   startOfLocalDay,
 } from '../utils/prayerTimes';
+import { quiet } from '../utils/quiet';
 
 export type WidgetPrayerRow = {
   key: string;
@@ -412,7 +413,8 @@ export function buildWidgetPayload(
         return (
           eventAt(key, yesterday, addDays(startOfLocalDay(now), -1)) > now
         );
-      } catch {
+      } catch (quietError) {
+        quiet('widget/buildWidgetPayload', quietError);
         return false;
       }
     });

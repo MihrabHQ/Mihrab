@@ -22,6 +22,7 @@
  */
 import { addDays, eventAt, startOfLocalDay } from '../utils/prayerTimes';
 import type { TimingsMap } from '../types/prayer';
+import { quiet } from '../utils/quiet';
 
 const MIN = 60_000;
 
@@ -137,7 +138,8 @@ export function windowEdges(
       if (!timings[name]) continue;
       try {
         out.push({ name, at: eventAt(name, timings, base).getTime() });
-      } catch {
+      } catch (quietError) {
+        quiet('notifications/snoozeWindow', quietError);
         /* an unreadable time is no edge */
       }
     }

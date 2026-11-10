@@ -65,6 +65,7 @@ import { getDeviceName } from './deviceName';
 import { forgetPeer, isTrustedPeer, listPeers, notePeerSeen, recipientKeys } from './peers';
 import { listRemovals } from './removedPeers';
 import { open, seal } from './envelope';
+import { quiet } from '../utils/quiet';
 
 /**
  * The folder, as this module needs it.
@@ -132,7 +133,8 @@ export async function forgetDeparted(
   ]) {
     try {
       if (await folder.remove(name)) removed.push(name);
-    } catch {
+    } catch (quietError) {
+      quiet('sync/folderSync', quietError);
       // Untidy, not broken. The peer is gone from the list regardless.
     }
   }
@@ -249,7 +251,8 @@ function removalsIn(json: string): Array<{ pk: string; at: number }> {
         return { pk: r.pk, at: Number.isFinite(at) ? at : 0 };
       })
       .filter((r): r is { pk: string; at: number } => r !== null);
-  } catch {
+  } catch (quietError) {
+    quiet('sync/folderSync', quietError);
     return [];
   }
 }
@@ -347,7 +350,8 @@ export async function syncWithFolder(
     let parsed: unknown;
     try {
       parsed = JSON.parse(await folder.read(name));
-    } catch {
+    } catch (quietError) {
+      quiet('sync/folderSync', quietError);
       // Unreadable or half-written. The writer will finish and we will see
       // it next round; there is nothing useful to do now and nothing to
       // tell the user, who did not put this file here by hand.
@@ -383,7 +387,8 @@ export async function syncWithFolder(
       let builtAt: string | undefined;
       try {
         builtAt = readSnapshot(JSON.parse(result.json))?.createdAt;
-      } catch {
+      } catch (quietError) {
+        quiet('sync/folderSync', quietError);
         builtAt = undefined;
       }
       const before = (await listPeers()).length;
@@ -441,7 +446,8 @@ export async function syncWithFolder(
           forgotten++;
           try {
             await forgetDeparted(folder, fromBase64(pk));
-          } catch {
+          } catch (quietError) {
+            quiet('sync/folderSync', quietError);
             // The file stays; the pairing is still gone. `alreadySeen`
             // keeps it inert either way.
           }
@@ -473,7 +479,8 @@ export async function syncWithFolder(
     let snapshot;
     try {
       snapshot = readSnapshot(JSON.parse(result.json));
-    } catch {
+    } catch (quietError) {
+      quiet('sync/folderSync', quietError);
       snapshot = null;
     }
 
@@ -579,7 +586,8 @@ export async function syncWithFolder(
         now,
       });
       await folder.write(inviteFileNameFor(key), JSON.stringify(notice));
-    } catch {
+    } catch (quietError) {
+      quiet('sync/folderSync', quietError);
       // A notice that cannot be written costs that device the news, not the
       // sync. It stops being a peer here either way, and the notice is
       // rewritten every round until the removal expires.
@@ -636,7 +644,8 @@ export async function syncWithFolder(
   for (const stranger of strangers) {
     try {
       await folder.write(inviteFileNameFor(fromBase64(stranger.pk)), body);
-    } catch {
+    } catch (quietError) {
+      quiet('sync/folderSync', quietError);
       // An invite that cannot be written costs the automatic introduction,
       // not the sync. The user can still carry the second code by hand.
     }

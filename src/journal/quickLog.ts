@@ -62,6 +62,7 @@ import {
 import { durableEncryptedSet } from '../storage/durableWrite';
 import { syncEndOfDayReminderForDay } from '../notifications/endOfDayLog';
 import { dropDaruriAlertsForLogged } from '../notifications/prayerNotifications';
+import { quiet } from '../utils/quiet';
 
 export const SALAH: readonly JournalPrayer[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
@@ -127,7 +128,8 @@ export function firstWindowEnd(
     // Ishāʾ's boundary can fall after midnight, and then belongs to the
     // next date — the same rule `daruriRowState` and the alerts apply.
     return onCard(`${prayer}Daruri`, timings, base, dayClock).getTime();
-  } catch {
+  } catch (quietError) {
+    quiet('journal/quickLog', quietError);
     return null;
   }
 }

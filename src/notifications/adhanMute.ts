@@ -69,6 +69,7 @@ import {
 } from './scheduling';
 import { modesFor, type PrayerAlertMode } from '../settings/alertModes';
 import { fullScreenAlarmAndroid, fullScreenAlarmData, setFullScreenAlarmSkyTheme } from './fullScreenAlarm';
+import { quiet } from '../utils/quiet';
 
 /**
  * AsyncStorage key holding the override.
@@ -158,7 +159,8 @@ export function parseNextAlertOverride(
       // working rather than lapsing into the adhan on the way through.
       const date = o.date ? String(o.date) : ymdLocal(new Date(epoch));
       return { epoch, name, date, mode: allowedMode(name, mode) };
-    } catch {
+    } catch (quietError) {
+      quiet('notifications/adhanMute', quietError);
       return null;
     }
   }
@@ -179,7 +181,8 @@ export async function getNextAlertOverride(): Promise<NextAlertOverride | null> 
     return parseNextAlertOverride(
       await AsyncStorage.getItem(MUTED_NEXT_ADHAN_KEY),
     );
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/adhanMute', quietError);
     return null;
   }
 }
@@ -237,7 +240,8 @@ function publish(raw: string | null): void {
 export async function refreshNextAlertOverride(): Promise<void> {
   try {
     publish(await AsyncStorage.getItem(MUTED_NEXT_ADHAN_KEY));
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/adhanMute', quietError);
     // Leave the last known answer standing rather than claiming there is
     // none: "no override" is a visible state, and flickering out of it on
     // a transient read error would take the way back with it.
@@ -453,7 +457,8 @@ export async function adhanMuteToggleTask(
     const usable = async (id: string, fallback: string) => {
       try {
         return (await notifee.getChannel(id)) ? id : fallback;
-      } catch {
+      } catch (quietError) {
+        quiet('notifications/adhanMute', quietError);
         return fallback;
       }
     };

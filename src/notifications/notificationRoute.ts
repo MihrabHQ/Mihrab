@@ -44,6 +44,7 @@ import { isDuaCategory } from '../duas/duas';
 import { hydrateTasbihState, setActiveTasbih } from '../tasbih/tasbihStore';
 import { getQuranState, hydrateQuranState } from '../quran/quranState';
 import { activeKhatmah } from '../quran/khatmahProgress';
+import { quiet } from '../utils/quiet';
 
 /** The value of `data.route` on a notification that has a destination. */
 export const ROUTE_KHATMAH = 'khatmah';
@@ -115,7 +116,8 @@ export async function notificationRoute(
         // `resolveOpenPage`.
         return readUrl(surah, `initialPage=${findPageForAyah(surah, 1)}&scrollToAyah=1`);
       }
-    } catch {
+    } catch (quietError) {
+      quiet('notifications/notificationRoute', quietError);
       // Fall through to the ayah form, which needs nothing loaded.
     }
     return readUrl(surah, 'scrollToAyah=1');
@@ -137,7 +139,8 @@ export async function notificationRoute(
       try {
         await hydrateTasbihState();
         setActiveTasbih(entry.tasbihPresetId);
-      } catch {
+      } catch (quietError) {
+        quiet('notifications/notificationRoute', quietError);
         // The counter opens on its last dhikr rather than not at all.
       }
     }
@@ -186,7 +189,8 @@ export async function notificationRoute(
         // The ayah with the page, for the same reason as the surah link.
         `${mushaf ? `initialPage=${target.page}&scrollToAyah=${target.ayah}` : `scrollToAyah=${target.ayah}`}&sessionKhatmah=1`,
       );
-    } catch {
+    } catch (quietError) {
+      quiet('notifications/notificationRoute', quietError);
       return `${MIHRAB_SCHEME}quran`;
     }
   }

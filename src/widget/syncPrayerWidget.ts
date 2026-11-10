@@ -14,6 +14,7 @@ import { widgetSinceAdhanMinutes } from './sinceAdhanSetting';
 import i18n from '../i18n';
 import { setGarminFahrenheit } from '../native/GarminWatch';
 import { usesFahrenheitAt } from '../utils/temperatureUnit';
+import { quiet } from '../utils/quiet';
 
 /**
  * Updates home-screen widget data (Android + iOS when native module is linked).
@@ -74,14 +75,16 @@ export async function syncPrayerWidget(
       // until the first write here replaces it.
       await mod.setDataV2('', JSON.stringify(v2));
       return;
-    } catch {
+    } catch (quietError) {
+      quiet('widget/syncPrayerWidget', quietError);
       // Whatever went wrong with v2, v1 alone still reaches the widgets —
       // and `setData` clears the v2 that would otherwise outrank it.
     }
   }
   try {
     await mod.setData(json);
-  } catch {
+  } catch (quietError) {
+    quiet('widget/syncPrayerWidget', quietError);
     /* widget is best-effort */
   }
 }

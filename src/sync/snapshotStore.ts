@@ -46,6 +46,7 @@ import { whileApplyingSnapshot } from './recordChanged';
 import { emptyData, type SnapshotData, type SyncSelection } from './snapshot';
 import { mergeData, mergeQuran, summarise, type MergeSummary } from './merge';
 import type { Snapshot } from './snapshot';
+import { quiet } from '../utils/quiet';
 
 /** Plaintext settings blob. Must match `KEY` in settings/storage.ts. */
 export const SETTINGS_KEY = 'prayerapp.settings.v1';
@@ -56,7 +57,8 @@ function parse<T>(raw: string | null, coerce: (v: unknown) => T, fallback: T): T
   if (!raw) return fallback;
   try {
     return coerce(JSON.parse(raw));
-  } catch {
+  } catch (quietError) {
+    quiet('sync/snapshotStore', quietError);
     return fallback;
   }
 }

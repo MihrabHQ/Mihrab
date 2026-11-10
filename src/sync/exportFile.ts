@@ -25,6 +25,7 @@ import RNShare from 'react-native-share';
 import { NativeModules, Platform } from 'react-native';
 import { buildSnapshot, readSnapshot, type Snapshot, type SyncSelection } from './snapshot';
 import { collectData } from './snapshotStore';
+import { quiet } from '../utils/quiet';
 
 /**
  * `mihrab-backup-2026-08-19.json`.
@@ -108,7 +109,8 @@ export async function shareExportFile(result: ExportResult): Promise<boolean> {
       failOnCancel: false,
     });
     return true;
-  } catch {
+  } catch (quietError) {
+    quiet('sync/exportFile', quietError);
     return false;
   }
 }
@@ -170,7 +172,8 @@ export async function saveExportToFiles(result: ExportResult): Promise<boolean> 
       failOnCancel: false,
     });
     return true;
-  } catch {
+  } catch (quietError) {
+    quiet('sync/exportFile', quietError);
     return false;
   }
 }
@@ -195,7 +198,8 @@ export async function discardExportFile(path: string): Promise<void> {
     if (await ReactNativeBlobUtil.fs.exists(path)) {
       await ReactNativeBlobUtil.fs.unlink(path);
     }
-  } catch {
+  } catch (quietError) {
+    quiet('sync/exportFile', quietError);
     // A leftover in the cache directory is the OS's problem to reclaim.
   }
 }

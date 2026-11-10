@@ -33,6 +33,7 @@
  */
 import { onDurableWrite } from '../storage/durableWrite';
 import { runSyncNow, syncIsReady } from './runSync';
+import { quiet } from '../utils/quiet';
 
 /**
  * The four stores that hold what the user has done.
@@ -76,7 +77,8 @@ export function resetRecordSync(): void {
 async function runRound(): Promise<void> {
   try {
     if (await syncIsReady()) await runSyncNow();
-  } catch {
+  } catch (quietError) {
+    quiet('sync/recordChanged', quietError);
     // The round records its own failure and the Sync screen says so. A
     // throw here would be an unhandled rejection from a timer nobody is
     // awaiting, which is a crash rather than a message.

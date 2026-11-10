@@ -32,6 +32,7 @@ import {
   buildTodayBlock,
   type WidgetExtras,
 } from './widgetBlocks';
+import { quiet } from '../utils/quiet';
 
 export async function collectWidgetExtras(input: {
   /** Today's timings — the Log Today block needs them to decide what is due. */
@@ -59,7 +60,8 @@ export async function collectWidgetExtras(input: {
   // disagreeing with itself. See `HomeScreen.getHijriDate`.
   try {
     extras.hijri = buildHijriBlock(now);
-  } catch {
+  } catch (quietError) {
+    quiet('widget/collectWidgetExtras', quietError);
     /* best-effort */
   }
 
@@ -78,7 +80,8 @@ export async function collectWidgetExtras(input: {
       timings: input.timings,
       now,
     });
-  } catch {
+  } catch (quietError) {
+    quiet('widget/collectWidgetExtras', quietError);
     /* best-effort */
   }
 
@@ -99,7 +102,8 @@ export async function collectWidgetExtras(input: {
       mushafDownloaded =
         riwayah.render !== 'glyph' ||
         (await fontStoreStats()).pages >= MUSHAF_TOTAL_PAGES;
-    } catch {
+    } catch (quietError) {
+      quiet('widget/collectWidgetExtras', quietError);
       /* treat as absent — the translation reader always works */
     }
     const reading = buildReadingBlock({
@@ -112,7 +116,8 @@ export async function collectWidgetExtras(input: {
       mushafDownloaded,
     });
     if (reading) extras.reading = reading;
-  } catch {
+  } catch (quietError) {
+    quiet('widget/collectWidgetExtras', quietError);
     /* best-effort */
   }
 
@@ -125,7 +130,8 @@ export async function collectWidgetExtras(input: {
       todayTotal: tasbih.todayTotal,
       todayRounds: tasbih.todayRounds,
     });
-  } catch {
+  } catch (quietError) {
+    quiet('widget/collectWidgetExtras', quietError);
     /* best-effort */
   }
 

@@ -25,6 +25,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getQuranState, hydrateQuranState } from '../quranState';
 import { DEFAULT_RIWAYAH, coerceRiwayahId, type RiwayahId } from '../riwayat';
 import { hafsSpan, riwayahAyahOf } from '../riwayahAudio';
+import { quiet } from '../../utils/quiet';
 
 export type ListenProgress = {
   surah: number;
@@ -148,7 +149,8 @@ export async function loadListenProgress(): Promise<void> {
       current = coerceListenProgress(JSON.parse(raw));
       emit();
     }
-  } catch {
+  } catch (quietError) {
+    quiet('quran/audio/listenProgress', quietError);
     /* nothing stored, or unreadable: no listening place yet */
   }
   // The place in the reader's count, before anyone resumes from it: one
@@ -162,7 +164,8 @@ export async function loadListenProgress(): Promise<void> {
       // would answer Ḥafṣ and stamp the place with it (riwayat.ts). The
       // count itself is bundled (riwayahAudio.ts).
       settleListenRiwayah(coerceRiwayahId(getQuranState().prefs.riwayah));
-    } catch {
+    } catch (quietError) {
+      quiet('quran/audio/listenProgress', quietError);
       /* best effort: the place stays where it was */
     }
   }

@@ -14,6 +14,7 @@
 import { NativeModules } from 'react-native';
 import type { SyncFolder } from './folderSync';
 import type { FolderHandle } from './syncSettings';
+import { quiet } from '../utils/quiet';
 
 /** What the native side returns for a folder. */
 type FolderPick = { handle: string; label: string; kind?: string };
@@ -64,7 +65,8 @@ export async function defaultSyncFolder(): Promise<FolderHandle | null> {
       label: found.label || found.handle,
       kind: found.kind === 'app' ? 'app' : 'picked',
     };
-  } catch {
+  } catch (quietError) {
+    quiet('sync/folderAccess', quietError);
     return null;
   }
 }
@@ -99,7 +101,8 @@ export async function folderStillReachable(handle: string): Promise<boolean> {
   if (!Native?.hasAccess) return false;
   try {
     return await Native.hasAccess(handle);
-  } catch {
+  } catch (quietError) {
+    quiet('sync/folderAccess', quietError);
     return false;
   }
 }
@@ -109,7 +112,8 @@ export async function forgetSyncFolder(handle: string): Promise<void> {
   if (!Native?.forget) return;
   try {
     await Native.forget(handle);
-  } catch {
+  } catch (quietError) {
+    quiet('sync/folderAccess', quietError);
     // Already released, or never held. The caller's intent is now true.
   }
 }

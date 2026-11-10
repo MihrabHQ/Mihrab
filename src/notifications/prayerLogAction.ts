@@ -62,6 +62,7 @@ import { syncEndOfDayReminderForDay } from './endOfDayLog';
 import { dropDaruriAlertsForLogged } from './prayerNotifications';
 import { flushRecordSync } from '../sync/recordChanged';
 import { statusForExternalLog } from '../journal/logTiming';
+import { quiet } from '../utils/quiet';
 
 /**
  * The action's id. Defined HERE and re-exported to `prayerNotifications`
@@ -205,7 +206,8 @@ export async function logPrayerOnTime(
   if (raw) {
     try {
       entries = coerceJournalEntries(JSON.parse(raw));
-    } catch {
+    } catch (quietError) {
+      quiet('notifications/prayerLogAction', quietError);
       entries = [];
     }
   }
@@ -246,7 +248,8 @@ export async function logSunnahFor(
   if (raw) {
     try {
       log = coerceSunnahLog(JSON.parse(raw));
-    } catch {
+    } catch (quietError) {
+      quiet('notifications/prayerLogAction', quietError);
       log = {};
     }
   }

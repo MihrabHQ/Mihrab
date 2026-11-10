@@ -18,6 +18,7 @@ import { ROUTE_HIFZ } from './notificationRoute';
 import { getQuranState, hydrateQuranState } from '../quran/quranState';
 import type { QuranState } from '../quran/quranTypes';
 import { budgetOf, dayOf, todaysRevision } from '../quran/hifz';
+import { quiet } from '../utils/quiet';
 
 const HIFZ_REM_ID_PREFIX = 'hifz-rem-';
 const HIFZ_CHANNEL_ID = 'prayer_app_hifz_reminder';
@@ -70,7 +71,8 @@ export async function rescheduleHifzReminder(opts: {
       name: i18n.t('hifz.reminderChannelName', 'Hifz reminder'),
       importance: AndroidImportance.DEFAULT,
     });
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/hifzReminder', quietError);
     // Non-fatal.
   }
 

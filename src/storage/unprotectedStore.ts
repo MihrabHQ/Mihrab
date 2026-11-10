@@ -27,6 +27,7 @@
  */
 import { Platform } from 'react-native';
 import ReactNativeBlobUtil from 'react-native-blob-util';
+import { quiet } from '../utils/quiet';
 
 function folder(): string {
   const dirs = ReactNativeBlobUtil.fs.dirs as { LibraryDir?: string; DocumentDir: string };
@@ -45,7 +46,8 @@ export async function unprotectedGet(key: string): Promise<string | null> {
     const path = pathFor(key);
     if (!(await ReactNativeBlobUtil.fs.exists(path))) return null;
     return await ReactNativeBlobUtil.fs.readFile(path, 'utf8');
-  } catch {
+  } catch (quietError) {
+    quiet('storage/unprotectedStore', quietError);
     return null;
   }
 }
@@ -62,7 +64,8 @@ export async function unprotectedSet(key: string, value: string): Promise<void> 
     const ios = (ReactNativeBlobUtil as { ios?: { excludeFromBackupKey?: (p: string) => Promise<void> } }).ios;
     try {
       await ios?.excludeFromBackupKey?.(path);
-    } catch {
+    } catch (quietError) {
+      quiet('storage/unprotectedStore', quietError);
       /* Library is the right place either way; the flag is belt and braces */
     }
   }
@@ -75,7 +78,8 @@ export async function unprotectedRemove(key: string): Promise<void> {
     if (await ReactNativeBlobUtil.fs.exists(path)) {
       await ReactNativeBlobUtil.fs.unlink(path);
     }
-  } catch {
+  } catch (quietError) {
+    quiet('storage/unprotectedStore', quietError);
     /* a copy that will not go is stale, not wrong: the real store wins on read */
   }
 }

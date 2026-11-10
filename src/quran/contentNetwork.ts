@@ -37,6 +37,7 @@
  * going through one of these.
  */
 import { fetchWithRetry } from '../utils/fetchWithRetry';
+import { quiet } from '../utils/quiet';
 
 /**
  * How long each kind of content may take before it is a failure.
@@ -205,7 +206,8 @@ export async function withDownloadDeadline<T>(
         watchdog = setTimeout(() => {
           try {
             task.cancel?.(() => undefined);
-          } catch {
+          } catch (quietError) {
+            quiet('quran/contentNetwork', quietError);
             // A task that is already settled has nothing to cancel, and
             // the rejection below is the answer either way.
           }
@@ -241,7 +243,8 @@ export function withStallDeadline<P extends CancellableTask<unknown>>(
   const abort = (e: Error) => {
     try {
       task.cancel?.(() => undefined);
-    } catch {
+    } catch (quietError) {
+      quiet('quran/contentNetwork', quietError);
       // Settled already; the rejection below is the answer either way.
     }
     stop?.(e);

@@ -34,6 +34,7 @@ import {
   SYNC_CATEGORIES,
   type SyncSelection,
 } from './snapshot';
+import { quiet } from '../utils/quiet';
 
 const SYNC_SETTINGS_KEY = 'prayerapp.sync.settings.v1';
 
@@ -211,7 +212,8 @@ async function read(): Promise<SyncSettings> {
   try {
     const raw = await AsyncStorage.getItem(SYNC_SETTINGS_KEY);
     return coerceSyncSettings(raw ? JSON.parse(raw) : null);
-  } catch {
+  } catch (quietError) {
+    quiet('sync/syncSettings', quietError);
     return defaultSyncSettings();
   }
 }
@@ -229,7 +231,8 @@ export async function updateSyncSettings(
   cached = Promise.resolve(next);
   try {
     await AsyncStorage.setItem(SYNC_SETTINGS_KEY, JSON.stringify(next));
-  } catch {
+  } catch (quietError) {
+    quiet('sync/syncSettings', quietError);
     // The setting holds for this run and is lost on the next launch. Worth
     // less than failing the action the user just took — and unlike the peer
     // list, nothing here is a record of anything.

@@ -71,6 +71,7 @@ import { filterOptionalTimes, injectNightTimes } from '../utils/nightTimes';
 import { collectWidgetExtras } from './collectWidgetExtras';
 import { syncPrayerWidget } from './syncPrayerWidget';
 import { afterRun } from '../boot/launchWarp';
+import { quiet } from '../utils/quiet';
 
 /** Why a republish was asked for. Kept for the warn line and for tests. */
 export type RepublishReason =
@@ -211,7 +212,8 @@ async function placeWindow(
         }),
       );
       local.push({ timings: day.timings, clock: day.clock });
-    } catch {
+    } catch (quietError) {
+      quiet('widget/republishWidgetPayload', quietError);
       break;
     }
   }
@@ -326,7 +328,8 @@ export async function republishWidgetPayload(
           ? eventAt('Maghrib', window[0], now)
           : null,
       );
-    } catch {
+    } catch (quietError) {
+      quiet('widget/republishWidgetPayload', quietError);
       // `extractClock` THROWS on a clock it cannot read, and this call sits
       // on the path that keeps every widget current. A day boundary is
       // worth having and not worth taking the widget down for: unknown

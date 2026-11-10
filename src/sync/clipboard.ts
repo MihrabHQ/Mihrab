@@ -8,6 +8,7 @@
  * on each platform and neither problem applies. See the module comments.
  */
 import { NativeModules } from 'react-native';
+import { quiet } from '../utils/quiet';
 
 const Native = NativeModules.MihrabClipboard as
   | {
@@ -46,7 +47,8 @@ export async function readClipboard(): Promise<string> {
   if (!Native?.getString) return '';
   try {
     return await Native.getString();
-  } catch {
+  } catch (quietError) {
+    quiet('sync/clipboard', quietError);
     return '';
   }
 }

@@ -35,6 +35,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeModules, Platform } from 'react-native';
 import { dayKeyOf, isDayKey } from './backfill';
+import { quiet } from '../utils/quiet';
 
 /** AsyncStorage key holding the ISO day this build first ran. */
 export const FIRST_SEEN_KEY = 'mihrab.first_seen_day';
@@ -62,7 +63,8 @@ export async function recordFirstSeen(now: Date = new Date()): Promise<void> {
     const existing = await AsyncStorage.getItem(FIRST_SEEN_KEY);
     if (existing) return;
     await AsyncStorage.setItem(FIRST_SEEN_KEY, dayKeyOf(now));
-  } catch {
+  } catch (quietError) {
+    quiet('journal/installDate', quietError);
     // A missing stamp costs the backfill button some reach; it is not worth
     // an error path of its own.
   }
@@ -73,7 +75,8 @@ export async function readFirstSeen(): Promise<string | null> {
   try {
     const v = await AsyncStorage.getItem(FIRST_SEEN_KEY);
     return v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null;
-  } catch {
+  } catch (quietError) {
+    quiet('journal/installDate', quietError);
     return null;
   }
 }

@@ -27,6 +27,7 @@
  * pocket, and from `seams.ts` elsewhere.
  */
 import { ayahIndexOf } from '../ayahIndex';
+import { quiet } from '../../utils/quiet';
 
 /** Silence kept before the first sound of an ayah, in seconds. */
 export const LEAD_KEEP = 0.1;
@@ -127,7 +128,8 @@ function tableOf(folder: string): Decoded | null {
           };
         }
       }
-    } catch {
+    } catch (quietError) {
+      quiet('quran/audio/recitationEdges', quietError);
       out = null;
     }
   }

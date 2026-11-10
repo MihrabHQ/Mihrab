@@ -52,6 +52,7 @@ import { JOURNAL_KEY, notifyPracticeChanged } from '../practice/practiceStore';
 import { flushRecordSync } from '../sync/recordChanged';
 import type { TimingsMap } from '../types/prayer';
 import { eventAt } from '../utils/prayerTimes';
+import { quiet } from '../utils/quiet';
 
 /** The action's id — also the iOS category, one action inside it. */
 export const END_OF_DAY_ACTION_ID = 'log-day-all';
@@ -180,7 +181,8 @@ async function storedEntries(): Promise<JournalEntry[]> {
   if (!raw) return [];
   try {
     return coerceJournalEntries(JSON.parse(raw));
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/endOfDayLog', quietError);
     return [];
   }
 }
@@ -294,7 +296,8 @@ export async function logAllPrayersOnTime(date: string): Promise<boolean> {
   if (raw) {
     try {
       entries = coerceJournalEntries(JSON.parse(raw));
-    } catch {
+    } catch (quietError) {
+      quiet('notifications/endOfDayLog', quietError);
       entries = [];
     }
   }

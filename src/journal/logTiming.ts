@@ -31,6 +31,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { JournalPrayer } from './journal';
+import { quiet } from '../utils/quiet';
 
 export const LOG_TIMING_KEY = '@mihrab/logTiming/v1';
 
@@ -118,7 +119,8 @@ async function readStored(): Promise<Stored | null> {
         )
       : [];
     return { on: v.on === true, windows };
-  } catch {
+  } catch (quietError) {
+    quiet('journal/logTiming', quietError);
     return null;
   }
 }

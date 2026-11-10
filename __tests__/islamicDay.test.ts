@@ -284,7 +284,7 @@ describe('the boundary can fail, and nothing else may fail with it', () => {
       'utf8',
     );
     expect(root).toMatch(
-      /try \{\s*setTodaysMaghrib\([\s\S]*?\} catch \{[\s\S]*?setTodaysMaghrib\(null\);/,
+      /try \{\s*setTodaysMaghrib\([\s\S]*?\} catch \(\w+\) \{[\s\S]*?setTodaysMaghrib\(null\);/,
     );
   });
 });

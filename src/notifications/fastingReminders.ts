@@ -20,6 +20,7 @@
 import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
 import i18n from '../i18n';
 import { gregorianToHijri } from '../hijri/convert';
+import { quiet } from '../utils/quiet';
 
 /** Stable prefix so we can cancel only fasting reminders without
  *  touching prayer notifications. */
@@ -164,7 +165,8 @@ export async function rescheduleFastingReminders(opts: {
       name: i18n.t('fasting.reminderChannelName', 'Fasting reminders'),
       importance: AndroidImportance.DEFAULT,
     });
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/fastingReminders', quietError);
     // Non-fatal.
   }
 

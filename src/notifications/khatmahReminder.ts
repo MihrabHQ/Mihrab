@@ -16,6 +16,7 @@ import { getQuranState, hydrateQuranState } from '../quran/quranState';
 import type { KhatmahPlan, QuranState } from '../quran/quranTypes';
 import { activeKhatmah, khatmahCurrentPage } from '../quran/khatmahProgress';
 import { khatmahDay, khatmahPages } from '../quran/khatmahStatus';
+import { quiet } from '../utils/quiet';
 
 const KHATMAH_REM_ID_PREFIX = 'khatmah-rem-';
 const KHATMAH_CHANNEL_ID = 'prayer_app_khatmah_reminder';
@@ -87,7 +88,8 @@ export async function rescheduleKhatmahReminder(opts: {
       name: i18n.t('quran.khatmahReminderChannelName', 'Khatmah reminder'),
       importance: AndroidImportance.DEFAULT,
     });
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/khatmahReminder', quietError);
     // Non-fatal.
   }
 

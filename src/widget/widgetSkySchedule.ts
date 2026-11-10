@@ -25,6 +25,7 @@ import {
   type SkyVariant,
 } from '../theme/skyMoods';
 import type { SkyThemeDay } from '../theme/skyTheme';
+import { quiet } from '../utils/quiet';
 
 /** From this minute of the local day (0–1439), this card and this accent, #RRGGBB. */
 export type WidgetSkySegment = [minuteOfDay: number, bg: string, accent: string];
@@ -59,7 +60,8 @@ export function widgetSkySchedule(day: SkyThemeDay, variant?: SkyVariant): Widge
         last = key;
       }
     }
-  } catch {
+  } catch (quietError) {
+    quiet('widget/widgetSkySchedule', quietError);
     return [];
   }
   return out;

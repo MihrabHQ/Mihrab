@@ -18,6 +18,7 @@
  */
 import { NativeModules, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { quiet } from '../utils/quiet';
 
 /**
  * Plaintext, unlike the identity and the peer list.
@@ -90,7 +91,8 @@ export async function getDeviceName(): Promise<string> {
     const stored = await AsyncStorage.getItem(DEVICE_NAME_KEY);
     const trimmed = stored?.trim();
     cached = trimmed ? trimmed : defaultDeviceName();
-  } catch {
+  } catch (quietError) {
+    quiet('sync/deviceName', quietError);
     cached = defaultDeviceName();
   }
   return cached;
@@ -106,7 +108,8 @@ export async function setDeviceName(name: string): Promise<string> {
   cached = next;
   try {
     await AsyncStorage.setItem(DEVICE_NAME_KEY, next);
-  } catch {
+  } catch (quietError) {
+    quiet('sync/deviceName', quietError);
     // A failed write costs the name on next launch and nothing else. It is
     // not worth failing a rename the user can see took effect.
   }

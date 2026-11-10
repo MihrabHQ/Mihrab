@@ -26,6 +26,7 @@ import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
 import { autoMethodForCoords } from '../providers/autoMethod';
 import { methodAuthorityFor, methodCurrencyReady } from '../providers/methodCurrency';
 import { correctionsKey } from '../providers/swedenCorrections';
+import { quiet } from '../utils/quiet';
 
 export type StoredPrayerData = {
   provider: PrayerDataProviderId;
@@ -449,7 +450,8 @@ function isCurrentSlot(storedKey: string, entry: CacheEntry): boolean {
   if (parts.length < 6) return false;
   try {
     return cacheKeyWith(entry, parts[5]) === storedKey;
-  } catch {
+  } catch (quietError) {
+    quiet('prayer/prayerStorage', quietError);
     return false;
   }
 }
@@ -507,7 +509,8 @@ async function sweepSlots(): Promise<void> {
         }
       }
       sweptRaw = handed;
-    } catch {
+    } catch (quietError) {
+      quiet('prayer/prayerStorage', quietError);
       /* the cache stands as it is; the next launch tries again */
     }
   }
@@ -524,7 +527,8 @@ async function sweepRetiredDatasets(): Promise<void> {
       else for (const k of retired) await AsyncStorage.removeItem(k);
     }
     await AsyncStorage.setItem(SCHEMA_KEY, String(CACHE_SCHEMA_VERSION));
-  } catch {
+  } catch (quietError) {
+    quiet('prayer/prayerStorage', quietError);
     /* the next launch tries again */
   }
 }
@@ -624,7 +628,8 @@ async function loadV2(): Promise<V2Shape> {
         }
       }
     }
-  } catch {
+  } catch (quietError) {
+    quiet('prayer/prayerStorage', quietError);
     // fall through to legacy migration
   }
 
@@ -646,13 +651,15 @@ async function loadV2(): Promise<V2Shape> {
           sweptRaw = undefined;
           await AsyncStorage.setItem(STORAGE_KEY_V2, JSON.stringify(v2));
           await AsyncStorage.removeItem(STORAGE_KEY_LEGACY);
-        } catch {
+        } catch (quietError) {
+          quiet('prayer/prayerStorage', quietError);
           // ignore — next call will retry
         }
         return v2;
       }
     }
-  } catch {
+  } catch (quietError) {
+    quiet('prayer/prayerStorage', quietError);
     // ignore — start fresh
   }
 
@@ -848,7 +855,8 @@ function noteAladhanZone(
         return;
       }
     }
-  } catch {
+  } catch (quietError) {
+    quiet('prayer/prayerStorage', quietError);
     /* no hint */
   }
 }
@@ -923,7 +931,8 @@ async function fetchWithLocalLastResort(
         offline: true,
       });
       return { ...offline, fellBack: true };
-    } catch {
+    } catch (quietError) {
+      quiet('prayer/prayerStorage', quietError);
       /* the bare calculation below */
     }
     return {
@@ -1057,7 +1066,8 @@ export async function getDatasetPrayerDayOrNull(
   try {
     const ds = await datasetTimesFor(params.provider, params, true);
     return { timings: ds.timings, clock: ds.clock ?? DEVICE_CLOCK };
-  } catch {
+  } catch (quietError) {
+    quiet('prayer/prayerStorage', quietError);
     /* dataset miss — the cache may still have it */
     return null;
   }
@@ -1089,7 +1099,8 @@ export async function getOrFetchPrayerDay(
       const ds = await datasetTimesFor(params.provider, params);
       if (ds.source) void recordDataSource(ds.source);
       return { timings: ds.timings, clock: ds.clock ?? DEVICE_CLOCK };
-    } catch {
+    } catch (quietError) {
+      quiet('prayer/prayerStorage', quietError);
       /* dataset miss — use the cache / fetch chain below */
     }
   }
@@ -1534,7 +1545,8 @@ async function refetchFallbackDaysOnce(
             school: params.school,
           });
           return { dayKey, timings: res.timings, clock: res.clock };
-        } catch {
+        } catch (quietError) {
+          quiet('prayer/prayerStorage', quietError);
           return null;
         }
       }),
@@ -1770,7 +1782,8 @@ const _lastFullSyncAttemptByKey = new Map<string, number>();
 function isAppBackgrounded(): boolean {
   try {
     return AppState.currentState === 'background';
-  } catch {
+  } catch (quietError) {
+    quiet('prayer/prayerStorage', quietError);
     return false;
   }
 }

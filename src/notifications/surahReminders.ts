@@ -31,6 +31,7 @@
 import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
 import i18n from '../i18n';
 import { ROUTE_SURAH } from './notificationRoute';
+import { quiet } from '../utils/quiet';
 
 /** Al-Kahf and Al-Mulk, by their numbers in the muṣḥaf. */
 export const KAHF = 18;
@@ -59,7 +60,8 @@ async function cancelWithPrefix(prefix: string): Promise<void> {
     const ids = await notifee.getTriggerNotificationIds();
     const mine = ids.filter(id => id.startsWith(prefix));
     if (mine.length > 0) await notifee.cancelTriggerNotifications(mine);
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/surahReminders', quietError);
     // Nothing scheduled, or the store is unavailable: either way there is
     // nothing to cancel and the schedule below is what matters.
   }
@@ -156,7 +158,8 @@ export async function rescheduleSurahReminders(opts: {
       name: i18n.t('settings.surahRemindersChannel', 'Surah reminders'),
       importance: AndroidImportance.DEFAULT,
     });
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/surahReminders', quietError);
     // Non-fatal: Android creates a default channel, iOS has none.
   }
 

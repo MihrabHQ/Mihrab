@@ -38,6 +38,7 @@ import {
   deviceEpochOf,
   liveActivityIosContent,
 } from './liveActivityV2';
+import { quiet } from '../utils/quiet';
 
 export type LiveActivityDisplayOptions = {
   enabled: boolean;
@@ -265,7 +266,8 @@ export async function stopLiveActivityCrossPlatform(): Promise<void> {
     if (!mod) return;
     try {
       await mod.stop();
-    } catch {
+    } catch (quietError) {
+      quiet('liveActivity/syncLiveActivity', quietError);
       // Non-fatal.
     }
   }

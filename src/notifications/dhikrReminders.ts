@@ -40,6 +40,7 @@ import {
   reminderOccurrences,
   type DhikrReminder,
 } from '../dhikr/dhikrReminders';
+import { quiet } from '../utils/quiet';
 
 const DHIKR_ID_PREFIX = 'dhikr-rem-';
 export const DHIKR_REMINDER_CHANNEL_ID = 'prayer_app_dhikr_reminders';
@@ -69,7 +70,8 @@ export async function cancelAllDhikrReminders(): Promise<void> {
     const ids = await notifee.getTriggerNotificationIds();
     const mine = ids.filter(id => id.startsWith(DHIKR_ID_PREFIX));
     if (mine.length > 0) await notifee.cancelTriggerNotifications(mine);
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/dhikrReminders', quietError);
     // Nothing scheduled, or the store is unavailable. Either way there is
     // nothing to cancel and what gets written below is what matters.
   }
@@ -192,7 +194,8 @@ export async function rescheduleDhikrReminders(opts: {
         sound: undefined,
       });
     }
-  } catch {
+  } catch (quietError) {
+    quiet('notifications/dhikrReminders', quietError);
     // Non-fatal: Android falls back to a default channel, iOS has none.
   }
 
