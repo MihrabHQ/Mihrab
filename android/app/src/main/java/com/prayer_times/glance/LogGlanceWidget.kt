@@ -32,7 +32,10 @@ import com.prayer_times.PrayerWidgetProvider
 import com.prayer_times.R
 import com.prayer_times.WidgetLogQueue
 import com.prayer_times.WidgetQueueEvents
+import com.prayer_times.cardfit.GraphRoom
 import com.prayer_times.cardfit.fitLogCard
+import com.prayer_times.cardfit.graphBoxDp
+import com.prayer_times.cardfit.graphRoom
 import com.prayer_times.contract.WallClock
 import com.prayer_times.contract.WidgetContract
 
@@ -232,16 +235,15 @@ internal class LogGlanceWidget(
     // The chrome over the graph is the card's own — its inset and padding,
     // the chip row, the footer, the rules — summed from the lines as they
     // will be drawn (`graphChromeDp`). What is left is the graph's.
-    val hasPractice = m.practice != null && h > 0
-    val fullChrome = if (hasPractice) Math.ceil(graphChromeDp(context, m, size, compact = false).toDouble()).toInt() else 0
-    val compactChrome = if (hasPractice && tall) Math.ceil(graphChromeDp(context, m, size, compact = true).toDouble()).toInt() else 0
-    val graphBox = h - fullChrome
+    //
     // THE TALL CARD IS ALWAYS 4×2 WITH ITS GRAPH (PrayerGlanceWidget's
     // `compact`): where two rows are short of the full card, the footer
-    // line goes before the graph does.
-    val compact = hasPractice && tall && graphBox < GRID_MIN_BOX_DP && h - compactChrome >= GRID_MIN_BOX_DP
-    val graphHeight = hasPractice && (graphBox >= GRID_MIN_BOX_DP || compact)
-    val chrome = if (compact) compactChrome else fullChrome
+    // line goes before the graph does. The decision is `cardfit.graphRoom`.
+    fun chromeOf(compact: Boolean) = Math.ceil(graphChromeDp(context, m, size, compact).toDouble()).toInt()
+    val room = if (m.practice == null || h <= 0) GraphRoom.NONE
+    else graphRoom(h, chromeOf(false), if (tall) chromeOf(true) else null, GRID_MIN_BOX_DP)
+    val compact = room.compact
+    val graphHeight = room.graph
     // Null when there is no block or no room for it: one value, no `!!`.
     val practice = m.practice?.takeIf { graphHeight }
     val showGrid = practice != null
@@ -353,8 +355,7 @@ internal class LogGlanceWidget(
         val boxW = size.widthDp - 2 * (CARD_INSET_DP + paddingFor(size))
         // The tall card's graph fills its room in the two-row band and
         // stops growing above it (GRAPH_BAND_TOP_DP).
-        val room = if (tall) minOf(h, GRAPH_BAND_TOP_DP) else h
-        val box = room - chrome
+        val box = graphBoxDp(h, room, capDp = if (tall) GRAPH_BAND_TOP_DP else null)
         val spread = tall && h < GRAPH_SPREAD_MAX_DP
         val grid = PracticeGridBitmap.layoutFor(boxW, box, density, MAX_GRID_DAYS)
         val bitmap = practiceGrid(pr, grid.rows, grid.columns, grid.cellWPx, grid.cellHPx, grid.gapPx, m.colors.accent, mirror = LocalDirection.current.rtl)

@@ -31,6 +31,9 @@ import androidx.glance.semantics.semantics
 import androidx.glance.text.TextAlign
 import androidx.glance.visibility
 import com.prayer_times.PracticeGridBitmap
+import com.prayer_times.cardfit.GraphRoom
+import com.prayer_times.cardfit.graphBoxDp
+import com.prayer_times.cardfit.graphRoom
 import com.prayer_times.PrayerWidgetDisplay
 import com.prayer_times.PrayerWidgetProvider
 import com.prayer_times.R
@@ -266,20 +269,17 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     // The graph wherever there is room for it — the tall card as placed,
     // and either card stretched (STRETCHABLE_SIZES) — and not where there
     // is not: a tall card squeezed short drew it as a line of dots.
-    val full = Math.ceil(stripChromeDp(context, m, size, timeSp, compact = false).toDouble()).toInt()
-    if (h - full >= GRID_MIN_BOX_DP) return plan(graph = true, compact = false, chrome = full)
+    //
     // THE TALL CARD KEEPS ITS TOP AND MAKES ROOM FOR ITS GRAPH. Where the
     // card is short of the full layout (two short rows, or Nova's row and a
     // half), the next-prayer line moves up into the header, centred between
     // the dates — with the prayer's name where the card is wide enough —
     // and the graph takes the line's place and its rule, on tighter ends
     // and a tighter rule (`compact`): down to its smallest, and below that
-    // it goes.
-    if (d.showTable && entry == Entry.TALL) {
-      val tight = Math.ceil(stripChromeDp(context, m, size, timeSp, compact = true).toDouble()).toInt()
-      if (h - tight >= GRID_MIN_BOX_DP) return plan(graph = true, compact = true, chrome = tight)
-    }
-    return plan(graph = false, compact = false, chrome = 0)
+    // it goes. The decision itself is `cardfit.graphRoom`.
+    fun chrome(compact: Boolean) = Math.ceil(stripChromeDp(context, m, size, timeSp, compact).toDouble()).toInt()
+    val room = graphRoom(h, chrome(false), if (d.showTable && entry == Entry.TALL) chrome(true) else null, GRID_MIN_BOX_DP)
+    return plan(room.graph, room.compact, room.chromeDp)
   }
 
   private fun sideDp(d: Design) = when (d) {
@@ -705,10 +705,14 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         // The tall card's graph fills its room in the two-row band and
         // stops growing above it (GRAPH_BAND_TOP_DP).
         val tall = entry == Entry.TALL
-        val room = if (tall) minOf(size.heightDp, GRAPH_BAND_TOP_DP) else size.heightDp
         // The room is the card's height less everything else on it, summed
         // from the lines as they will be drawn (`stripChromeDp`).
-        val box = room - plan.chromeDp - (if (showFoot) plan.footDp else 0)
+        val box = graphBoxDp(
+          size.heightDp,
+          GraphRoom(plan.graph, plan.compact, plan.chromeDp),
+          capDp = if (tall) GRAPH_BAND_TOP_DP else null,
+          footDp = if (showFoot) plan.footDp else 0,
+        )
         PracticeImage(context, pr.block, size.widthDp - insetDp(context, size), box, MAX_GRID_DAYS, m.colors.accent,
           GlanceModifier.fillMaxWidth().defaultWeight(), spread = tall && size.heightDp < GRAPH_SPREAD_MAX_DP)
         if (showFoot) Foot(pr, top = 7, d)

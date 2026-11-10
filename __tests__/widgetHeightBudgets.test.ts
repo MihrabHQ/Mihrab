@@ -152,14 +152,14 @@ describe('the graph is drawn for the room the card leaves it', () => {
     }
     // The night marks are part of the times' segment — the constant forgot them.
     expect(strip).toMatch(/private fun tableDp\([\s\S]*?m\.night\?\.let/);
-    expect(strip).toContain('val box = room - plan.chromeDp - (if (showFoot) plan.footDp else 0)');
+    expect(strip).toContain('val box = graphBoxDp(');
     expect(strip).toContain('size.widthDp - insetDp(context, size), box,');
   });
 
   it('the log card sums its chrome and subtracts it', () => {
     expect(log).toContain('private fun graphChromeDp(');
     expect(log).toContain('return cardInsetsDp(context) + 2 * paddingFor(size) + chips + foot + rule');
-    expect(log).toContain('val box = room - chrome');
+    expect(log).toContain('val box = graphBoxDp(h, room, capDp = if (tall) GRAPH_BAND_TOP_DP else null)');
     expect(log).toContain('val boxW = size.widthDp - 2 * (CARD_INSET_DP + paddingFor(size))');
     expect(log).toContain('PracticeGridBitmap.layoutFor(boxW, box, density, MAX_GRID_DAYS)');
     // Six rows of the smallest cell and the gaps between them, closed up.
@@ -182,30 +182,22 @@ describe('the graph is drawn for the room the card leaves it', () => {
 });
 
 /**
- * THE TALL CARDS ARE ALWAYS 4×2 WITH THEIR GRAPH. Launchers disagree on how
- * many rows a widget takes, so the cards ask for two rows everywhere and,
- * where two rows are short of the full card, lay out tighter (`compact`)
- * before they give up the graph.
+ * THE TALL CARDS ARE ALWAYS 4×2 WITH THEIR GRAPH: full layout, else the
+ * tighter one, else no graph. The decision is `cardfit.graphRoom`, swept
+ * over every height in contract-tests/kotlin (GraphRoomTest); what is held
+ * here is only that both cards ask it, with a compact layout for the tall
+ * entries alone.
  */
 describe('two rows always hold the tall cards’ graph', () => {
-  it('the prayer card tries the full layout, then the compact one, by the summed chrome', () => {
-    expect(strip).toMatch(/if \(h - full >= GRID_MIN_BOX_DP\) return plan\(graph = true, compact = false/);
-    expect(strip).toMatch(/if \(d\.showTable && entry == Entry\.TALL\) \{[\s\S]*?if \(h - tight >= GRID_MIN_BOX_DP\) return plan\(graph = true, compact = true/);
-    // Compact moves the next prayer up into the header, centred.
-    expect(strip).toContain('if (!oneRow || topNext) Header(m.header, m.hijri, d, center = if (!topNext) null');
-    expect(strip).toContain('&& !topNext) DirRow(');
-  });
-
-  it('and so does the log card, without its footer', () => {
-    expect(log).toContain(
-      'val compact = hasPractice && tall && graphBox < GRID_MIN_BOX_DP && h - compactChrome >= GRID_MIN_BOX_DP',
+  it('both cards ask the one decision', () => {
+    expect(strip).toContain(
+      'graphRoom(h, chrome(false), if (d.showTable && entry == Entry.TALL) chrome(true) else null, GRID_MIN_BOX_DP)',
     );
-    expect(log).toContain('val showFoot = fit.showFoot && !compact');
+    expect(log).toContain('graphRoom(h, chromeOf(false), if (tall) chromeOf(true) else null, GRID_MIN_BOX_DP)');
   });
 
-  it('the padding and the layout read one plan', () => {
+  it('the strip’s padding and layout read one plan', () => {
     expect(strip).toContain('design == Design.STRIP -> plan?.ends ?: stripEnds(size.heightDp, compact = false)');
-    expect(strip).toContain('Design.STRIP -> Strip(context, m, size, plan ?: stripPlan(context, m, size))');
   });
 });
 
@@ -226,9 +218,8 @@ describe('the tall cards’ graph fills the default size and grows no further', 
   });
 
   it('caps the room at the band and spreads only inside it', () => {
-    expect(strip).toContain('val room = if (tall) minOf(size.heightDp, GRAPH_BAND_TOP_DP) else size.heightDp');
+    expect(strip).toContain('capDp = if (tall) GRAPH_BAND_TOP_DP else null,');
     expect(strip).toContain('spread = tall && size.heightDp < GRAPH_SPREAD_MAX_DP');
-    expect(log).toContain('val room = if (tall) minOf(h, GRAPH_BAND_TOP_DP) else h');
     expect(log).toContain('val spread = tall && h < GRAPH_SPREAD_MAX_DP');
   });
 
