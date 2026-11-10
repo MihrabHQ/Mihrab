@@ -229,16 +229,19 @@ internal class LogGlanceWidget(
     // An unmeasured card (0) is the roomy one and draws no graph.
     val tight = h in 1 until LOG_ROOMY_CONTENT_DP
     val bare = h in 1 until LOG_TIGHT_CONTENT_DP
-    // The chrome over the graph is the card's own: its inset and padding,
-    // the chip row, the footer, the rules — 8dp of padding, 8dp of chip and
-    // a 15dp rule less once the card is tight. What is left is the graph's.
-    val chrome = if (tight) LOG_CHROME_TIGHT_DP else LOG_CHROME_ROOMY_DP
-    val graphBox = h - chrome
+    // The chrome over the graph is the card's own — its inset and padding,
+    // the chip row, the footer, the rules — summed from the lines as they
+    // will be drawn (`graphChromeDp`). What is left is the graph's.
+    val hasPractice = m.practice != null && h > 0
+    val fullChrome = if (hasPractice) Math.ceil(graphChromeDp(context, m, size, compact = false).toDouble()).toInt() else 0
+    val compactChrome = if (hasPractice && tall) Math.ceil(graphChromeDp(context, m, size, compact = true).toDouble()).toInt() else 0
+    val graphBox = h - fullChrome
     // THE TALL CARD IS ALWAYS 4×2 WITH ITS GRAPH (PrayerGlanceWidget's
     // `compact`): where two rows are short of the full card, the footer
     // line goes before the graph does.
-    val compact = tall && h > 0 && graphBox < GRID_MIN_BOX_DP && h - LOG_CHROME_COMPACT_DP >= GRID_MIN_BOX_DP
-    val graphHeight = h > 0 && (graphBox >= GRID_MIN_BOX_DP || compact)
+    val compact = hasPractice && tall && graphBox < GRID_MIN_BOX_DP && h - compactChrome >= GRID_MIN_BOX_DP
+    val graphHeight = hasPractice && (graphBox >= GRID_MIN_BOX_DP || compact)
+    val chrome = if (compact) compactChrome else fullChrome
     // Null when there is no block or no room for it: one value, no `!!`.
     val practice = m.practice?.takeIf { graphHeight }
     val showGrid = practice != null
@@ -248,13 +251,14 @@ internal class LogGlanceWidget(
     // The budgets are reckoned in the widgets' Latin face. A chip's name in
     // a script whose lines are taller (Arabic) takes the difference out of
     // the chip, not off the bottom of the card (#118).
-    val nameSurplus = m.chips.maxOfOrNull { textHeightDp(context, it.name, 11f, medium = false) - textLineDp(context, 11f, medium = false) } ?: 0f
+    val nameSurplus = nameSurplusDp(context, m)
     // THE 4×1 CARD HAS NO FOOTER: the next prayer's countdown is the prayer
     // times widgets', and "Tap ✓ to log Asr on time" says what the chips
     // already show. Its line (and the rule over it) go to the chips.
     val foot = tall
     val footRoom = if (foot || h <= 0) 0 else LOG_FOOT_ROOM_DP + (if (!tight) 15 else 0)
-    var chipHeight = ((if (tight) 30 else 38) + footRoom - (if (h > 0) Math.ceil(nameSurplus.toDouble()).toInt() else 0))
+    var chipHeight = if (graphHeight) graphChipDp(context, m, tight)
+    else ((if (tight) 30 else 38) + footRoom - (if (h > 0) Math.ceil(nameSurplus.toDouble()).toInt() else 0))
       .coerceIn(CHIP_MIN_HEIGHT_DP, CHIP_MAX_HEIGHT_DP)
 
     // ── A CARD SHORTER THAN ITS BUDGET ─────────────────────────────────
@@ -350,7 +354,7 @@ internal class LogGlanceWidget(
         // The tall card's graph fills its room in the two-row band and
         // stops growing above it (GRAPH_BAND_TOP_DP).
         val room = if (tall) minOf(h, GRAPH_BAND_TOP_DP) else h
-        val box = room - (if (compact) LOG_CHROME_COMPACT_DP else chrome)
+        val box = room - chrome
         val spread = tall && h < GRAPH_SPREAD_MAX_DP
         val grid = PracticeGridBitmap.layoutFor(boxW, box, density, MAX_GRID_DAYS)
         val bitmap = practiceGrid(pr, grid.rows, grid.columns, grid.cellWPx, grid.cellHPx, grid.gapPx, m.colors.accent, mirror = LocalDirection.current.rtl)
@@ -362,6 +366,32 @@ internal class LogGlanceWidget(
         )
       }
     }
+  }
+
+  /** How much taller the chips' names are drawn than the widgets' Latin line (Arabic and the like, #118). */
+  private fun nameSurplusDp(context: Context, m: Model): Float =
+    m.chips.maxOfOrNull { textHeightDp(context, it.name, 11f, medium = false) - textLineDp(context, 11f, medium = false) } ?: 0f
+
+  /** The chip's height on a card that draws its graph: the budget's, less a taller script's surplus. */
+  private fun graphChipDp(context: Context, m: Model, tight: Boolean): Int =
+    ((if (tight) 30 else 38) - Math.ceil(nameSurplusDp(context, m).toDouble()).toInt()).coerceIn(CHIP_MIN_HEIGHT_DP, CHIP_MAX_HEIGHT_DP)
+
+  /**
+   * Everything on the card but the graph, summed as `Card` lays it out with
+   * the graph on (`fitLogCard`'s defaults: 6dp over the chips, a 4dp gap,
+   * 11sp names, 15sp times): the inset and padding, the chips with their
+   * name and time, the tall card's footer and its rule (not when compact),
+   * the graph's rule.
+   */
+  private fun graphChromeDp(context: Context, m: Model, size: CardSize, compact: Boolean): Float {
+    val tight = size.heightDp in 1 until LOG_ROOMY_CONTENT_DP
+    val chips = 6 + graphChipDp(context, m, tight) + 4 +
+      rowDp(context, 11f, false, *m.chips.map { it.name }.toTypedArray()) + rowDp(context, 15f, true, "00:00")
+    val foot = if (!tall || compact) 0f else
+      (if (tight) 0f else ruleDp(6, 8)) +
+        rowDp(context, 11f, false, m.next?.first, m.practice?.let { practiceLine(context, it) }, "0:00:00")
+    val rule = if (compact) ruleDp(4, 4) else ruleDp(8, 8)
+    return cardInsetsDp(context) + 2 * paddingFor(size) + chips + foot + rule
   }
 
   /** "0  day streak · Best 92 · 3 of 5 today · 1 to make up" — the prayer card's words. */
@@ -465,28 +495,8 @@ internal class LogGlanceWidget(
     private const val LOG_TIGHT_CONTENT_DP = 134
     private const val LOG_BARE_CONTENT_DP = 112
     private const val LOG_SLACK_CAP_DP = 56
-    /**
-     * The 4×2's chrome over the graph: the inset and padding, the chips and
-     * their padding, the footer row, two rules. Measured, not summed: on a
-     * 201dp card the strip the image drew was 41dp tall, so the chrome is
-     * 160dp; the tight card has 8dp less padding, 8dp less chip and no
-     * 15dp rule. A couple of dp over the measure:
-     * a box reckoned too tall draws a strip the image then has to shrink,
-     * and a shrunk strip is a strip that stops short of the card's edges;
-     * a box a few dp short leaves that much air, which nobody sees.
-     */
-    private const val LOG_CHROME_ROOMY_DP = 162
-    private const val LOG_CHROME_TIGHT_DP = 131
     /** Under this much room the graph is left out rather than squashed. */
     private const val GRID_MIN_BOX_DP = 36
-    /**
-     * The compact tall card's chrome: the tight card's less the footer line
-     * and 8dp of the rule over the graph. Measured on Nova at a row and a
-     * half (Pixel 10 Pro): a 190dp card, a 67dp graph — 123dp of chrome.
-     * Reckoned at 110 it drew the graph for 80dp, and stretched into 67 its
-     * days came out a third wider than tall.
-     */
-    private const val LOG_CHROME_COMPACT_DP = 125
     private const val CARD_INSET_DP = 6
     private const val MAX_GRID_DAYS = 210
   }

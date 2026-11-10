@@ -133,10 +133,11 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     // margins); above and below, 10 on the compact line, 14 elsewhere, and 6
     // on a strip shorter than its roomy budget.
     val side = sideDp(design)
+    // What the strip draws at this size, decided once: the padding here and
+    // the layout in `Strip` read the same plan.
+    val plan = result.getOrNull()?.takeIf { design == Design.STRIP }?.let { stripPlan(context, it, size) }
     val ends = when {
-      design == Design.STRIP && size.heightDp in 1 until STRIP_ROOMY_CONTENT_DP -> 6
-      // The compact tall card (Strip's `compact`) spends its room on the graph.
-      design == Design.STRIP && entry == Entry.TALL && !graphFits(size.heightDp) && compactGraphFits(size.heightDp) -> 6
+      design == Design.STRIP -> plan?.ends ?: stripEnds(size.heightDp, compact = false)
       design == Design.SMALL -> 10
       else -> 14
     }
@@ -154,7 +155,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           } else {
             when (design) {
               Design.SMALL -> Small(m, size)
-              Design.STRIP -> Strip(context, m, size)
+              Design.STRIP -> Strip(context, m, size, plan ?: stripPlan(context, m, size))
               Design.LIST -> ListCard(context, m, size)
             }
           }
@@ -185,11 +186,101 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     }
   }
 
-  /** Room for the practice graph under the strip's chrome: a box of at least GRID_MIN_BOX_DP. */
-  private fun graphFits(h: Int) = h > 0 && h - STRIP_TALL_CHROME_DP >= GRID_MIN_BOX_DP
+  /**
+   * What the strip draws at a size: the time's type, whether the practice
+   * graph is on it and in which layout, and what everything but the graph
+   * costs in height (`chromeDp`) — so the graph is drawn for the room it
+   * will be given.
+   */
+  private class StripPlan(
+    val timeSp: Float,
+    /** The practice graph is drawn. */
+    val graph: Boolean,
+    /** …in the compact layout: the next prayer in the header, tighter ends and rule. */
+    val compact: Boolean,
+    val showFoot: Boolean,
+    /** The card's top and bottom padding. */
+    val ends: Int,
+    /** The card's height less the graph's room (and less the foot line, `footDp`). */
+    val chromeDp: Int,
+    val footDp: Int,
+  )
 
-  /** …and under the compact tall card's: the next prayer in the header, on tighter ends and rule. */
-  private fun compactGraphFits(h: Int) = h > 0 && h - STRIP_COMPACT_CHROME_DP >= GRID_MIN_BOX_DP
+  /** The strip's top and bottom padding: 6 once it is shorter than its roomy budget, or compact. */
+  private fun stripEnds(h: Int, compact: Boolean) = if (compact || h in 1 until STRIP_ROOMY_CONTENT_DP) 6 else 14
+
+  /** The next prayer rides in the header: the 4×1 card always, the tall card when compact. */
+  private fun topNext(d: PrayerWidgetDisplay, h: Int, compact: Boolean) =
+    d.showTable && h !in 1 until STRIP_MIN_HEIGHT_DP && (compact || entry == Entry.STRIP)
+
+  /** The times' segment: the row of six and the night marks under it (`slack` above and below the row). */
+  private fun tableDp(context: Context, m: Model, timeSp: Float, slack: Int, top: Int = 8): Float =
+    (top + slack) + 4 + rowDp(context, 9f, true, *m.rows.take(STRIP_COLUMNS).map { rowLabel(it) }.toTypedArray()) +
+      rowDp(context, timeSp, true, "00:00") + 4 + slack +
+      (m.night?.let { 4 + rowDp(context, 11f, false, it.left, it.mid, it.right) } ?: 0f)
+
+  /**
+   * Everything on the strip but the graph, summed as `Strip` lays it out:
+   * the card's inset and ends, the header, the times (or the next prayer
+   * in their place), the next-prayer line and its rule, the graph's rule.
+   */
+  private fun stripChromeDp(context: Context, m: Model, size: CardSize, timeSp: Float, compact: Boolean): Float {
+    val d = m.display
+    val h = size.heightDp
+    val onTop = topNext(d, h, compact)
+    val header = maxOf(
+      rowDp(context, 10f, true, m.header, m.hijri),
+      rowDp(context, 14f, false, "↻"),
+      if (onTop) rowDp(context, 11f, false, m.nextName, "0:00:00") else 0f,
+    )
+    val table = if (d.showTable) tableDp(context, m, timeSp, slack = 0) else noTableDp(context, m, size, timeSp, slack = 0).first
+    val next = if (onTop) 0f else
+      (if (h in 1 until STRIP_ROOMY_CONTENT_DP) 0f else ruleDp(6, 8)) +
+        rowDp(context, 11f, false, m.nextName, m.practice?.let { "${it.streakText} · ${it.second}" }, "0:00:00")
+    val rule = if (compact) ruleDp(4, 4) else ruleDp(8, 8)
+    return cardInsetsDp(context) + 2 * stripEnds(h, compact) + header + table + next + rule
+  }
+
+  /** With the table hidden: the segment the next prayer stands in — as tall as the table's — and its name's size. */
+  private fun noTableDp(context: Context, m: Model, size: CardSize, timeSp: Float, slack: Int): Pair<Float, Float> {
+    val table = tableDp(context, m, timeSp, slack)
+    // …and as large as that segment lets it be.
+    val nameSp = nextNameSp(context, m, size, table)
+    val next = rowDp(context, 9f, true) + rowDp(context, nameSp, true, m.nextName)
+    return maxOf(table, next) to nameSp
+  }
+
+  private fun stripPlan(context: Context, m: Model, size: CardSize): StripPlan {
+    val d = m.display
+    val h = size.heightDp
+    val columns = m.rows.take(STRIP_COLUMNS)
+    val columnDp = (size.widthDp - insetDp(context, size)).toFloat() / columns.size.coerceAtLeast(1) - TIME_GUTTER_DP
+    val baseSp = fitTimesSp(context, columns.map { it.minutes }, m.clock, columnDp, TIME_MAX_SP, TIME_MIN_SP)
+    val timeSp = scaledClockSp(context, columns.map { it.minutes }, m.clock, baseSp, d.timeScale, if (size.widthDp > 0) columnDp else 0f)
+    fun plan(graph: Boolean, compact: Boolean, chrome: Int): StripPlan {
+      val foot = graph && !compact && h >= PRACTICE_MIN_HEIGHT_DP
+      return StripPlan(timeSp, graph, compact, foot, stripEnds(h, compact), chrome,
+        Math.ceil((7 + rowDp(context, 11f, false, m.practice?.sunnah, m.practice?.fasts)).toDouble()).toInt())
+    }
+    if (m.practice == null || h <= 0) return plan(graph = false, compact = false, chrome = 0)
+    // The graph wherever there is room for it — the tall card as placed,
+    // and either card stretched (STRETCHABLE_SIZES) — and not where there
+    // is not: a tall card squeezed short drew it as a line of dots.
+    val full = Math.ceil(stripChromeDp(context, m, size, timeSp, compact = false).toDouble()).toInt()
+    if (h - full >= GRID_MIN_BOX_DP) return plan(graph = true, compact = false, chrome = full)
+    // THE TALL CARD KEEPS ITS TOP AND MAKES ROOM FOR ITS GRAPH. Where the
+    // card is short of the full layout (two short rows, or Nova's row and a
+    // half), the next-prayer line moves up into the header, centred between
+    // the dates — with the prayer's name where the card is wide enough —
+    // and the graph takes the line's place and its rule, on tighter ends
+    // and a tighter rule (`compact`): down to its smallest, and below that
+    // it goes.
+    if (d.showTable && entry == Entry.TALL) {
+      val tight = Math.ceil(stripChromeDp(context, m, size, timeSp, compact = true).toDouble()).toInt()
+      if (h - tight >= GRID_MIN_BOX_DP) return plan(graph = true, compact = true, chrome = tight)
+    }
+    return plan(graph = false, compact = false, chrome = 0)
+  }
 
   private fun sideDp(d: Design) = when (d) {
     Design.SMALL -> 10
@@ -496,7 +587,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   // ── The strip ─────────────────────────────────────────────────────────
 
   @Composable
-  private fun Strip(context: Context, m: Model, size: CardSize) {
+  private fun Strip(context: Context, m: Model, size: CardSize, plan: StripPlan) {
     val d = m.display
     val h = size.heightDp
     // An unmeasured card (0) keeps the header and the roomy padding.
@@ -509,20 +600,9 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val timesOnly = h in 1 until STRIP_MIN_HEIGHT_DP
     val tight = h in 1 until STRIP_ROOMY_CONTENT_DP
     val budget = if (oneRow) STRIP_BARE_CONTENT_DP else if (tight) STRIP_TIGHT_CONTENT_DP else STRIP_ROOMY_CONTENT_DP
-    // The same with the table hidden: its segment is the table's, as tall.
-    // The graph wherever there is room for it — the tall card as placed,
-    // and either card stretched (STRETCHABLE_SIZES) — and not where there
-    // is not: a tall card squeezed short drew it as a line of dots.
-    //
-    // THE TALL CARD KEEPS ITS TOP AND MAKES ROOM FOR ITS GRAPH. Where the
-    // card is short of the full layout (two short rows, or Nova's row and a
-    // half), the next-prayer line moves up into the header, centred between
-    // the dates — with the prayer's name where the card is wide enough —
-    // and the graph takes the line's place and its rule, on tighter ends
-    // and a tighter rule (`compact`): down to its smallest, and below that
-    // it goes.
-    val compact = m.practice != null && d.showTable && entry == Entry.TALL && !graphFits(h) && compactGraphFits(h)
-    val practice = m.practice?.takeIf { graphFits(h) || compact }
+    // Whether the graph is drawn, and how: `stripPlan`.
+    val compact = plan.compact
+    val practice = m.practice?.takeIf { plan.graph }
     // With nothing under the times — no graph, and the next prayer on top —
     // the times sit in the middle of the room under the header: equal
     // weighted spacers above and below them take the spare height.
@@ -530,16 +610,14 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val centreTimes = practice == null && h > 0 && d.showTable && !timesOnly && (compact || entry == Entry.STRIP)
     val slack = if (h <= 0 || practice != null || centreTimes) 0
     else ((h - budget) / 2).coerceIn(0, STRIP_SLACK_CAP_DP)
-    val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP && !compact
+    val showFoot = plan.showFoot
     val columns = m.rows.take(STRIP_COLUMNS)
-    val columnDp = (size.widthDp - insetDp(context, size)).toFloat() / columns.size.coerceAtLeast(1) - TIME_GUTTER_DP
-    val baseSp = fitTimesSp(context, columns.map { it.minutes }, m.clock, columnDp, TIME_MAX_SP, TIME_MIN_SP)
-    val timeSp = scaledClockSp(context, columns.map { it.minutes }, m.clock, baseSp, d.timeScale, if (size.widthDp > 0) columnDp else 0f)
+    val timeSp = plan.timeSp
 
     // THE NEXT PRAYER ON TOP: the 4×1 card always, and the tall card when it
     // is compact, centre the next prayer in the header between the dates,
     // and give its line below the times (and the rule over it) to the room.
-    val topNext = d.showTable && !timesOnly && (compact || entry == Entry.STRIP)
+    val topNext = topNext(d, h, compact)
 
     DirColumn(modifier = GlanceModifier.fillMaxSize()) {
       if (!oneRow || topNext) Header(m.header, m.hijri, d, center = if (!topNext) null else ({
@@ -587,13 +665,9 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         // would be, so the rule and the line under it (the logged count)
         // sit where they do with the table on, and the two layouts read as
         // one card with and without its times.
-        val tableDp = (8 + slack) + 4 + textLineDp(context, 9f, medium = true) + textLineDp(context, timeSp, medium = false) + 4 + slack +
-          (m.night?.let { 4 + textLineDp(context, 11f, medium = false) } ?: 0f)
-        // …and as large as that segment lets it be.
-        val nameSp = nextNameSp(context, m, size, tableDp)
-        val nextDp = textLineDp(context, 9f, medium = true) + textLineDp(context, nameSp, medium = true)
+        val (segmentDp, nameSp) = noTableDp(context, m, size, timeSp, slack)
         DirBox(
-          modifier = GlanceModifier.fillMaxWidth().height(maxOf(tableDp, nextDp).dp),
+          modifier = GlanceModifier.fillMaxWidth().height(segmentDp.dp),
           contentAlignment = Alignment.CenterStart,
         ) {
           DirColumn(modifier = GlanceModifier.fillMaxWidth()) { NextBlock(context, m, size, top = 0, nameSp = nameSp) }
@@ -632,7 +706,9 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         // stops growing above it (GRAPH_BAND_TOP_DP).
         val tall = entry == Entry.TALL
         val room = if (tall) minOf(size.heightDp, GRAPH_BAND_TOP_DP) else size.heightDp
-        val box = room - (if (compact) STRIP_COMPACT_CHROME_DP else STRIP_TALL_CHROME_DP) - (if (showFoot) STRIP_FOOT_DP else 0)
+        // The room is the card's height less everything else on it, summed
+        // from the lines as they will be drawn (`stripChromeDp`).
+        val box = room - plan.chromeDp - (if (showFoot) plan.footDp else 0)
         PracticeImage(context, pr.block, size.widthDp - insetDp(context, size), box, MAX_GRID_DAYS, m.colors.accent,
           GlanceModifier.fillMaxWidth().defaultWeight(), spread = tall && size.heightDp < GRAPH_SPREAD_MAX_DP)
         if (showFoot) Foot(pr, top = 7, d)
@@ -733,7 +809,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   private fun ListCard(context: Context, m: Model, size: CardSize) {
     val d = m.display
     val h = size.heightDp
-    val practice = m.practice?.takeIf { graphFits(h) }
+    val practice = m.practice?.takeIf { h > 0 && h - LIST_GRAPH_CHROME_DP >= GRID_MIN_BOX_DP }
     val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP
     val shown = m.rows.take(LIST_SLOTS)
     // The provider sizes every layout's times by the same measure.
@@ -830,28 +906,10 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     private const val STRIP_SLACK_CAP_DP = 64
     private const val STRIP_CHROME_DP = 184
     /**
-     * The tall card's chrome over the graph: the ends, the header, the
-     * times, the next-prayer row, the rules. Measured from the view tree
-     * (`dumpsys activity`) on a Pixel 10 Pro: the Pixel launcher's 223dp
-     * card gives the graph 64dp (159dp of chrome), Nova's 259dp card 99dp
-     * (160dp). Reckoned 2 over.
-     *
-     * It was 167, reckoned well over when the graph was fitted and a box
-     * too short only left air. In the two-row band the graph is stretched
-     * to its room (`spreadScale`), so a box reckoned short is a graph drawn
-     * squat and pulled tall: 167 drew the Pixel launcher's for 55dp and
-     * stretched it to 64.
+     * The list card's height under which its graph is left out. (The
+     * strip's room is summed, not kept: `stripChromeDp`.)
      */
-    private const val STRIP_TALL_CHROME_DP = 161
-    private const val STRIP_FOOT_DP = 19
-    /**
-     * The compact tall card's chrome: the tall card's less the next-prayer
-     * line (15dp, moved into the header) and the rule over it (15dp), on
-     * the short strip's 6dp ends (16dp less) and a rule over the graph of
-     * 4dp a side (8dp less). Measured on Nova at a row and a half (Pixel 10
-     * Pro): a 190dp card, an 84dp graph — 106dp of chrome, reckoned 2 over.
-     */
-    private const val STRIP_COMPACT_CHROME_DP = 108
+    private const val LIST_GRAPH_CHROME_DP = 161
 
     /**
      * The compact card's header names the next prayer ("Asr in 07:56") from

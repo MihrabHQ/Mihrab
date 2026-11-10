@@ -756,6 +756,30 @@ internal fun Rule(color: Int, top: Int, bottom: Int) {
   }
 }
 
+/**
+ * How tall a row of labels is drawn, in dp: the tallest of `texts` at
+ * `sp`, as a TextView lays each out (fallback fonts and the system's font
+ * size included), or the face's own line when there is no text.
+ *
+ * THE CARDS' HEIGHTS ARE SUMMED FROM THESE, NOT MEASURED ONCE AND KEPT.
+ * The room a card has for its graph is its height less everything else on
+ * it, and "everything else" used to be a constant read off one phone's
+ * view tree (161dp, 108dp, 125dp…): right there, and wrong wherever a line
+ * came out another height — a larger font size, Arabic names, the night
+ * marks switched on, a bigger time. A graph drawn for the wrong room is
+ * stretched or left floating. `rule` is the rule's own dp, for the sums.
+ */
+internal fun rowDp(context: Context, sp: Float, medium: Boolean, vararg texts: String?): Float =
+  texts.filterNotNull().filter { it.isNotEmpty() }.maxOfOrNull { textHeightDp(context, it, sp, medium) }
+    ?: textLineDp(context, sp, medium)
+
+/** A `Rule(top, bottom)`'s height: its margins and its 1dp line. */
+internal fun ruleDp(top: Int, bottom: Int): Float = top + 1f + bottom
+
+/** The card's inset from the host view (R.dimen.widget_card_inset), both sides, in dp. */
+internal fun cardInsetsDp(context: Context): Float =
+  2 * context.resources.getDimension(R.dimen.widget_card_inset) / context.resources.displayMetrics.density
+
 /** The one-line message a card shows in place of its content. */
 @Composable
 internal fun Placeholder(text: String, sp: Float = 12f, color: Int = Palette.MUTED) {

@@ -83,10 +83,10 @@ describe('one composition per size the launcher can show', () => {
     expect(count).toBeLessThanOrEqual(16);
     expect(glance('PrayerGlanceWidget')).toMatch(/if \(entry == Entry\.SMALL\) SizeMode\.Exact else SizeMode\.Responsive\(STRETCHABLE_SIZES\)/);
     expect(glance('LogGlanceWidget')).toMatch(/override val sizeMode: SizeMode = SizeMode\.Responsive\(STRETCHABLE_SIZES\)/);
-    // The graph by the room, not the entry: the tall entry only lays out
-    // tighter (`compact`), and that too is gated on the room.
-    expect(glance('PrayerGlanceWidget')).toMatch(/val practice = m\.practice\?\.takeIf \{ graphFits\(h\) \|\| compact \}/);
-    expect(glance('PrayerGlanceWidget')).toMatch(/val compact = [^\n]*entry == Entry\.TALL[^\n]*compactGraphFits\(h\)/);
+    // The graph by the room, not the entry: `stripPlan` decides it from
+    // the card's height and its summed chrome; the tall entry only gets
+    // the tighter layout to fall back on.
+    expect(glance('PrayerGlanceWidget')).toContain('val practice = m.practice?.takeIf { plan.graph }');
   });
 
   it.each(widgets)('%s draws through it', name => {
