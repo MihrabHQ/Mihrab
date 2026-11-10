@@ -25,7 +25,7 @@ import { findSurah } from '../quran';
 import { findReciter } from './reciters';
 import { ReciterPickerSheet } from './ReciterPickerSheet';
 import { WholeSurahNotice } from './WholeSurahNotice';
-import { useQuranState } from '../quranState';
+import { useQuranPrefs } from '../quranState';
 import {
   pausePlayback,
   resumePlayback,
@@ -56,7 +56,7 @@ export function MiniPlayer({
   const { palette } = useAppPalette();
   const { active, playing, loading, reciterId, gap, looping, needsDownload } =
     usePlaybackStatus();
-  const { prefs } = useQuranState();
+  const prefs = useQuranPrefs();
   // Only while someone is looking — see the hook. Listening from the
   // reader with the screen off used to keep this polling for the whole
   // recitation, to move a hairline in a pocket.

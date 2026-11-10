@@ -522,10 +522,10 @@ describe('wiring', () => {
     const card = todayCardSource();
     expect(card).toMatch(/publishSkyTheme\(\s*\{ top: liveSky\.top, bottom: liveSky\.bottom, passage: liveSky\.passage, t: liveSky\.t, light: liveSky\.light \},\s*\{\s*day: skyDayKey\(new Date\(liveMinuteKey \* 60_000\)\),\s*times: skyToday \?\? today,\s*tomorrowFajr,\s*where:/);
     // The hour decides light or dark: the hooks take it off the palette.
-    expect(read('src/hooks/useAppPalette.ts')).toMatch(/isDark: palette\.isDark/);
+    expect(read('src/theme/appPaletteContext.tsx')).toMatch(/isDark: palette\.isDark/);
     expect(read('src/AppNavigationRoot.tsx')).toMatch(/const isDark = palette\.isDark;/);
     expect(card).toMatch(/if \(posed\) return;[\s\S]{0,200}publishSkyTheme\(/);
-    for (const p of ['src/hooks/useAppPalette.ts', 'src/AppNavigationRoot.tsx', 'src/quran/useScrubberChrome.ts']) {
+    for (const p of ['src/theme/appPaletteContext.tsx', 'src/AppNavigationRoot.tsx', 'src/quran/useScrubberChrome.ts']) {
       expect(read(p)).toMatch(/useSkyTheme\((settings\.)?appearance === 'sky'\)/);
     }
     const appearance = read('src/screens/settings/AppearanceCard.tsx');

@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { SPACING, RADIUS } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
-import { setQuranPrefs, useQuranState } from '../quranState';
+import { setQuranPrefs, useQuranPrefs } from '../quranState';
 import { readingOf, resolveRiwayah, riwayahById, type RiwayahId } from '../riwayat';
 import { findReciter, playableReciters, reciterRiwayah, sortedReciters } from './reciters';
 
@@ -32,7 +32,7 @@ export function voicesFor(reading: RiwayahId) {
 export function ReadingVoiceHint() {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
-  const { prefs } = useQuranState();
+  const prefs = useQuranPrefs();
   const [dismissed, setDismissed] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {

@@ -51,6 +51,7 @@ import {
   setQuranPrefs,
   useQuranState,
   useQuranHydrated,
+  useQuranPrefs,
 } from './quranState';
 import type { QuranBookmark, QuranState } from './quranTypes';
 import { activeKhatmah } from './khatmahProgress';
@@ -903,7 +904,7 @@ export function MushafPageHeader({
   const pageProgress = usePageProgress(page, riwayah);
   const meta = pageMetaIn(page, riwayah) ?? pagesForRiwayah(riwayah)[0];
   // The pill cycles the CHOICE (auto included), whatever `tone` is drawn.
-  const nextChoice = nextMushafTone(mushafToneChoice(useQuranState().prefs));
+  const nextChoice = nextMushafTone(mushafToneChoice(useQuranPrefs()));
   return (
     <View
       style={[
@@ -1212,7 +1213,7 @@ export function MushafLockButton({
  * band is the way out once the header is hidden.
  */
 export function MushafLockHeaderButton({ color, size }: { color: ColorValue; size: number }) {
-  const { touchLock: locked, lockButton } = useQuranState().prefs;
+  const { touchLock: locked, lockButton } = useQuranPrefs();
   const onLock = useCallback(() => setQuranPrefs({ touchLock: true }), []);
   const onUnlock = useCallback(() => setQuranPrefs({ touchLock: false }), []);
   const noop = useCallback(() => undefined, []);
@@ -1250,7 +1251,7 @@ export function MushafToneHeaderButton({
   const { t } = useTranslation();
   // The choice, not the drawn tone: the cycle runs over what the reader
   // chose, auto included.
-  const choice = mushafToneChoice(useQuranState().prefs);
+  const choice = mushafToneChoice(useQuranPrefs());
   const next = nextMushafTone(choice);
   return (
     <Pressable

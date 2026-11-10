@@ -49,7 +49,7 @@ import {
   type WarshTajweedWord,
 } from './tajweed/warshTajweed';
 import { tajweedInk } from './tajweed/rules';
-import { useQuranState } from './quranState';
+import { useQuranPrefs } from './quranState';
 import {
   Platform,
   StyleSheet,
@@ -763,7 +763,7 @@ function inkIsLight(ink: string): boolean {
  * page redraws in colour when they arrive.
  */
 function useWarshTajweed(riwayah: RiwayahId, surahs: readonly number[]): WarshTajweedLookup {
-  const { prefs } = useQuranState();
+  const prefs = useQuranPrefs();
   const on = prefs.tajweedColours && riwayah === 'warsh';
   const [, setLoaded] = useState(0);
   const key = surahs.join(',');

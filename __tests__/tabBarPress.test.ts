@@ -84,7 +84,7 @@ describe('the icon under a sliding finger', () => {
 describe('the wiring', () => {
   it('draws nothing over the bar: no bubble, no halo, no ripple', () => {
     const tabs = read('src/navigation/MainTabs.tsx');
-    expect(tabs).toContain('tabBarButton: props => <TabBarButton {...props} name={route.name} />');
+    expect(tabs).toMatch(/tabBarButton: props => \(\s*<TabBarButton\s+\{\.\.\.props\}\s+name=\{route\.name\}/);
     expect(tabs).not.toMatch(/tabBarBackground|TabBarBubble/);
     expect(read('src/navigation/tabIcons.tsx')).not.toMatch(/Halo|IconAnchor/);
     expect(read('src/navigation/TabBarButton.tsx')).toContain('android_ripple={undefined}');

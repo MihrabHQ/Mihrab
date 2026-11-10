@@ -64,6 +64,9 @@ const mockPrefs = {
 
 jest.mock('../src/quran/quranState', () => ({
   useQuranState: () => ({ prefs: mockPrefs, khatmah: [] }),
+  // The parts, as the components that read one part ask for them.
+  useQuranPrefs: () => mockPrefs,
+  useQuranSelector: (select: (s: unknown) => unknown) => select({ prefs: mockPrefs, khatmah: [] }),
   setQuranPrefs: jest.fn(),
 }));
 // The card also shows how the live khatmah is paced. This suite has no

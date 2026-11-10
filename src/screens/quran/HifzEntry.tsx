@@ -41,7 +41,7 @@ import {
   type HifzPortion,
 } from '../../quran/hifz';
 import { hifzDueLabel, hifzPortionName, hifzStockLine, hifzSurahName } from '../../quran/hifzLabels';
-import { updateHifz, useQuranState } from '../../quran/quranState';
+import { updateHifz, useQuranHifz } from '../../quran/quranState';
 import { CheckIcon, HifzIcon } from '../../theme/icons';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { RADIUS, SPACING } from '../../theme/tokens';
@@ -55,7 +55,7 @@ import { TYPE } from '../../theme/typography';
  */
 export function useHifzGradeChoices(onGrade: (grade: HifzGrade) => void, portion?: HifzPortion | null) {
   const { t } = useTranslation();
-  const hifz = useQuranState().hifz;
+  const hifz = useQuranHifz();
   const cap = capOf(hifz ?? EMPTY_HIFZ);
   const after = (grade: HifzGrade) => {
     if (!portion) return undefined;
@@ -101,7 +101,7 @@ function DrillOffer() {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const drill = useLastDrill();
-  const hifz = useQuranState().hifz;
+  const hifz = useQuranHifz();
   // Marked meanwhile, by the sheet or the grid: nothing left to offer.
   const kept =
     drill != null &&
@@ -149,7 +149,7 @@ export function HifzEntry() {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const hifz = useQuranState().hifz ?? EMPTY_HIFZ;
+  const hifz = useQuranHifz() ?? EMPTY_HIFZ;
   const ink = hifzInk(Boolean(palette.isDark));
   const [grading, setGrading] = useState<HifzPortion | null>(null);
   const gradeChoices = useHifzGradeChoices(grade => {

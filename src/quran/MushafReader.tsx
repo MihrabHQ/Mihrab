@@ -62,7 +62,7 @@ import { QuranFeaturesOfferSheet, useQuranFeaturesOffer } from './QuranFeaturesO
 import { useDeviceClass } from '../responsive/deviceClass';
 import { MushafPhoneReader } from './MushafPhoneReader';
 import { MushafSpreadReader } from './MushafSpreadReader';
-import { useQuranState } from './quranState';
+import { useQuranPrefs } from './quranState';
 import { type MushafReaderProps } from './mushafReaderCore';
 import { useKeyPaging, type PageTurner } from './useKeyPaging';
 import { RADIUS, SPACING } from '../theme/tokens';
@@ -78,7 +78,7 @@ const FONT_SET_MB = 180;
 export function MushafReader(props: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
-  const quran = useQuranState();
+  const quranPrefs = useQuranPrefs();
   /**
    * Whatever the app is downloading, if anything.
    *
@@ -142,7 +142,7 @@ export function MushafReader(props: Props) {
    * the build (docs/design/riwayat-plan.md §2). So it walks past the gate
    * rather than being asked for 180 MB it would never use.
    */
-  const riwayah = resolveRiwayah(quran.prefs.riwayah);
+  const riwayah = resolveRiwayah(quranPrefs.riwayah);
   const bundledRiwayah = riwayahById(riwayah).render !== 'glyph';
 
   // ── The gate ────────────────────────────────────────────────────────

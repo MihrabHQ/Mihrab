@@ -76,6 +76,43 @@ export function tabAt(pageX: number): string | null {
   return null;
 }
 
+/**
+ * WARMING A TAB UNDER THE FINGER.
+ *
+ * A tab's page is built the first time it is opened (the navigator is
+ * lazy, so a launch pays for Today alone), and that first build is the
+ * slowest thing a tap on the bar ever does. It used to begin when the
+ * finger LIFTED. A tap is a finger down for a tenth of a second or more
+ * first, and for all of that time it is already known which tab is
+ * meant — so the page is built from touch down (`warmTab`, the
+ * navigator's own `preload`), off screen, and is there or nearly there
+ * when the lift opens it.
+ *
+ * It costs nothing a tap would not have cost: no page is built for a tab
+ * nobody touched, and a tab is warmed once — `opened` holds the ones that
+ * have a page, whether by being opened or by being warmed. A finger that
+ * comes down on one tab and slides to another leaves the first one built,
+ * which is the page it will most likely want next.
+ */
+const opened = new Set<string>();
+
+/** This tab has its page: it has been shown. */
+export function noteTabOpened(name: string): void {
+  opened.add(name);
+}
+
+/** A finger came down on a tab: build its page now if it has none. */
+export function warmTab(name: string, build: (() => void) | undefined): void {
+  if (!build || opened.has(name)) return;
+  opened.add(name);
+  build();
+}
+
+/** A new set of tabs (the navigator was built again): none of them has a page yet. */
+export function forgetOpenedTabs(): void {
+  opened.clear();
+}
+
 /** Press the named tab as its button would. */
 export function activateTab(name: string): void {
   activations.get(name)?.();
@@ -142,6 +179,7 @@ export function useTabHoverTint(name: string, color: string, focused: boolean): 
 export function _resetTabBarPress(): void {
   frames.clear();
   activations.clear();
+  opened.clear();
   state = IDLE;
   listeners.clear();
   hoverTint = null;

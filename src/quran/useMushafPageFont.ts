@@ -27,7 +27,7 @@ import {
   type MushafFontSet,
 } from './mushafFontStore';
 import { setMushafGlyphSet } from './mushafLayout';
-import { useQuranState } from './quranState';
+import { useQuranPrefs } from './quranState';
 
 /**
  * Which page fonts this reader draws with, from the preference and the
@@ -40,7 +40,7 @@ import { useQuranState } from './quranState';
  * would switch it a frame after the pages had been laid out for the other.
  */
 export function useMushafFontSet(nightMode: boolean): MushafFontSet {
-  const { prefs } = useQuranState();
+  const prefs = useQuranPrefs();
   // Plain fonts where the colour fonts would draw in one colour anyway
   // (tajweed/tajweedSupport.ts): the V4 shapes, uncoloured, are not the page.
   const set: MushafFontSet =

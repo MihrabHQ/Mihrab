@@ -803,9 +803,54 @@ export function subscribeQuranState(listener: () => void): () => void {
   };
 }
 
-/** React hook — subscribes narrowly via useSyncExternalStore. */
+/**
+ * React hook — the WHOLE state. The component renders again on every
+ * write, and there is one on every page turn (`setLastRead`), so this is
+ * for a screen that shows the position itself. Anything that reads one
+ * part — the preferences, the bookmarks, the Hifz — takes that part with
+ * `useQuranSelector` or `useQuranPrefs` below and sleeps through the rest.
+ */
 export function useQuranState(): QuranState {
   return useSyncExternalStore(subscribeQuranState, getQuranState, getQuranState);
+}
+
+/**
+ * One part of the state: the component renders again only when what
+ * `select` returns is a different value.
+ *
+ * The reader's own pages were the reason. Each muṣḥaf page asked for the
+ * whole state to read two preferences off it, so every page turn — which
+ * writes the last-read position — rendered every mounted page again, in
+ * the middle of the turn's animation, to arrive at the same picture.
+ *
+ * `select` must return something that stays identical while it has not
+ * changed: a field of the state (writes spread the state, so an untouched
+ * field keeps its identity) or a primitive worked out from it. Never a
+ * fresh object or array — that reads as a change on every look, and React
+ * will say so loudly.
+ */
+export function useQuranSelector<T>(select: (s: QuranState) => T): T {
+  const snapshot = () => select(state);
+  return useSyncExternalStore(subscribeQuranState, snapshot, snapshot);
+}
+
+const selectPrefs = (s: QuranState) => s.prefs;
+const selectHifz = (s: QuranState) => s.hifz;
+const selectBookmarks = (s: QuranState) => s.bookmarks;
+
+/** The reader's preferences alone: unmoved by a page turn, a bookmark or a khatmah's progress. */
+export function useQuranPrefs(): QuranState['prefs'] {
+  return useQuranSelector(selectPrefs);
+}
+
+/** The Hifz alone (`hifz.ts`); undefined when nothing is being kept. */
+export function useQuranHifz(): QuranState['hifz'] {
+  return useQuranSelector(selectHifz);
+}
+
+/** The bookmarks alone. */
+export function useQuranBookmarks(): QuranState['bookmarks'] {
+  return useQuranSelector(selectBookmarks);
 }
 
 /**

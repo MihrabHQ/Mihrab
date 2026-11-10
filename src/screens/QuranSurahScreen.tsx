@@ -34,7 +34,7 @@ import {
   riwayahDataHydrated,
   useRiwayahAvailability,
 } from '../quran/riwayahData';
-import { getQuranState, hydrateQuranState, useQuranHydrated, useQuranState } from '../quran/quranState';
+import { getQuranState, hydrateQuranState, useQuranHydrated, useQuranPrefs } from '../quran/quranState';
 import { portionSpan } from '../quran/hifz';
 import { ayahCount } from '../quran/ayahIndex';
 import { coerceRiwayahId, DEFAULT_RIWAYAH, resolveRiwayah } from '../quran/riwayat';
@@ -207,13 +207,13 @@ export function QuranSurahScreen() {
    * both are read; it is a few milliseconds of an empty screen against a
    * page of the wrong muṣḥaf.
    */
-  const quran = useQuranState();
+  const quranPrefs = useQuranPrefs();
   const quranReady = useQuranHydrated();
   useRiwayahAvailability();
-  const storedRiwayah = coerceRiwayahId(quran.prefs.riwayah);
+  const storedRiwayah = coerceRiwayahId(quranPrefs.riwayah);
   const waitingForMushaf =
     isMushaf && (!quranReady || (storedRiwayah !== DEFAULT_RIWAYAH && !riwayahDataHydrated()));
-  const riwayah = resolveRiwayah(quran.prefs.riwayah);
+  const riwayah = resolveRiwayah(quranPrefs.riwayah);
 
   /**
    * The page to open at, in the muṣḥaf on screen — see `resolveOpenPage`.

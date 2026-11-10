@@ -18,7 +18,7 @@
  */
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useQuranState } from './quranState';
+import { useQuranSelector } from './quranState';
 import type { QuranState } from './quranTypes';
 import {
   activeKhatmah,
@@ -81,7 +81,9 @@ export function usePageProgress(
   riwayah: RiwayahId = DEFAULT_RIWAYAH,
 ): PageProgress {
   const isKhatmahVisit = useKhatmahSession();
-  const progress = pageProgressOf(useQuranState(), page, riwayah);
+  // A word or nothing, so it is taken as one: the page's mark renders
+  // again when ITS answer changes, not at every page turn's write.
+  const progress = useQuranSelector(s => pageProgressOf(s, page, riwayah));
   return isKhatmahVisit ? progress : null;
 }
 

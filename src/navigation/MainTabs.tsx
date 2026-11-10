@@ -26,6 +26,7 @@
  * it: the mushaf is pushed onto the root stack ON TOP of the tabs.
  */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { CommonActions } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Animated, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useWindowSize } from '../responsive/windowSize';
@@ -47,7 +48,7 @@ import {
 import { TabBarScrim } from './TabBarScrim';
 import { StatusBarBand } from './StatusBarBand';
 import { TabBarButton } from './TabBarButton';
-import { setHoverTint } from './tabBarPress';
+import { forgetOpenedTabs, setHoverTint } from './tabBarPress';
 import { showTabBar, useTabBarHidden } from './tabBarVisibility';
 import { HomeScreen } from '../screens/HomeScreen';
 import { HomeHeaderControls } from './HomeHeaderControls';
@@ -88,6 +89,8 @@ export function MainTabs() {
   useEffect(() => {
     setHoverTint(palette.textSolid);
   }, [palette.textSolid]);
+  // These tabs' pages go with this navigator: the next one's are not built.
+  useEffect(() => () => forgetOpenedTabs(), []);
   const windowWidth = useWindowSize().width;
   const isDashboardWidth = windowWidth >= HOME_DASHBOARD_MIN_WIDTH;
   // Today's header survives only on the wide dashboard; see its options.
@@ -232,7 +235,7 @@ export function MainTabs() {
           {vbar ? null : <TabBarScrim bg={palette.bg} slide={slide} />}
         </View>
       )}
-      screenOptions={({ route }) => ({
+      screenOptions={({ route, navigation }) => ({
         /**
          * Minimal: the pages slide a page's width, the way a pager's do —
          * the old one out, the new one in from the side the finger (or
@@ -271,7 +274,19 @@ export function MainTabs() {
          * on the glyph (`tabIcons`) — and a hold-and-slide along the bar
          * that opens the tab the finger ends on (`TabBarButton`).
          */
-        tabBarButton: props => <TabBarButton {...props} name={route.name} />,
+        tabBarButton: props => (
+          <TabBarButton
+            {...props}
+            name={route.name}
+            // Built from touch down, not from the lift (tabBarPress.ts).
+            // With the route's own params: a preload replaces them, and a
+            // tab may have been handed some before it was ever opened.
+            // Minimal builds every page at once, so has nothing to warm.
+            onWarm={
+              minimal ? undefined : () => navigation.dispatch(CommonActions.preload(route.name, route.params))
+            }
+          />
+        ),
         headerShown: false,
         /**
          * Quran, Tasbih, Duas, Log and Settings centre their titles on

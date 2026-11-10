@@ -29,7 +29,7 @@
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ConfirmModal } from '../components/ConfirmModal';
-import { setQuranPrefs, useQuranState } from './quranState';
+import { setQuranPrefs, useQuranPrefs } from './quranState';
 import { riwayahById, type RiwayahId } from './riwayat';
 
 type Notice = { title: string; message: string };
@@ -41,9 +41,9 @@ export function useSwitchRiwayah(): {
   notice: React.ReactElement;
 } {
   const { t } = useTranslation();
-  const quran = useQuranState();
-  const seen = quran.prefs.riwayahNoticeSeen;
-  const indopakSeen = quran.prefs.indopakNoticeSeen;
+  const quranPrefs = useQuranPrefs();
+  const seen = quranPrefs.riwayahNoticeSeen;
+  const indopakSeen = quranPrefs.indopakNoticeSeen;
   const [shown, setShown] = useState<Notice | null>(null);
 
   const switchRiwayah = useCallback(

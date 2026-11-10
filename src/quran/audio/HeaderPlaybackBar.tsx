@@ -53,7 +53,7 @@ import {
   TilawahIcon,
 } from './PlaybackIcons';
 import { findPageForAyah } from '../pages';
-import { useQuranState } from '../quranState';
+import { useQuranPrefs } from '../quranState';
 import {
   pausePlayback,
   resumePlayback,
@@ -170,7 +170,7 @@ function LiveBar({
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { active, playing, loading } = usePlaybackStatus();
   const { position, duration } = useProgressWhileActive(500);
-  const riwayah = useQuranState().prefs.riwayah;
+  const riwayah = useQuranPrefs().riwayah;
   // The context rather than `useHeaderHeight()`: the hook throws where no
   // header is mounted, and this component renders on every screen.
   const headerHeight = useContext(HeaderHeightContext) ?? 0;

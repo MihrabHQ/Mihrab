@@ -39,7 +39,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { useAppPalette } from '../../hooks/useAppPalette';
-import { setQuranPrefs, useQuranState } from '../quranState';
+import { setQuranPrefs, useQuranPrefs } from '../quranState';
 import {
   isPreviewing,
   previewReciter,
@@ -109,7 +109,7 @@ export function ReciterPickerSheet({ visible, onClose }: Props) {
   // not resize for the keyboard. `bottom` rather than padding: this
   // sheet is absolutely positioned, so lifting it IS moving `bottom`.
   const keyboardInset = useKeyboardInset();
-  const { prefs } = useQuranState();
+  const prefs = useQuranPrefs();
   const playback = usePlaybackStatus();
   const [query, setQuery] = useState('');
   const [onDisk, setOnDisk] = useState<Record<string, ReciterAudioStats>>({});

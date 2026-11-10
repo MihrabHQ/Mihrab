@@ -213,7 +213,7 @@ describe('the readers', () => {
 
   it('takes the back swipe with the page swipe, so a locked page stays', () => {
     const screen = read('src/screens/quran/MushafSurahScreen.tsx');
-    expect(screen).toMatch(/const gestureEnabled = !isMacCatalyst && !quran\.prefs\.touchLock;/);
+    expect(screen).toMatch(/const gestureEnabled = !isMacCatalyst && !quranPrefs\.touchLock;/);
   });
 
   it('locks the rail too — the strip under the thumb', () => {

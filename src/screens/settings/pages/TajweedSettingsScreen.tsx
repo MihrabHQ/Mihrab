@@ -35,7 +35,7 @@ import {
   quranDownloadState,
   subscribeQuranDownload,
 } from '../../../quran/quranDownloadManager';
-import { setQuranPrefs, useQuranState } from '../../../quran/quranState';
+import { setQuranPrefs, useQuranPrefs } from '../../../quran/quranState';
 import { resolveRiwayah, riwayahById } from '../../../quran/riwayat';
 import { SettingsGroup, SettingsLinkRow, SettingsToggleRow } from '../SettingsGroup';
 import { SettingsPage } from '../SettingsPage';
@@ -47,7 +47,7 @@ export function TajweedSettingsScreen() {
   const { t } = useTranslation();
   const { palette, isDark } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { prefs } = useQuranState();
+  const prefs = useQuranPrefs();
   // The riwayah the muṣḥaf draws — Ḥafṣ where the stored one is not on this device (`resolveRiwayah`).
   const riwayah = resolveRiwayah(prefs.riwayah);
   const hafs = riwayahById(riwayah).render === 'glyph';

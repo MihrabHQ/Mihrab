@@ -10,7 +10,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../../hooks/useAppPalette';
-import { setQuranPrefs, useQuranState } from '../../../quran/quranState';
+import { setQuranPrefs, useQuranPrefs } from '../../../quran/quranState';
 import { timedReciters, wordReaderReciterId } from '../../../quran/audio/wordReader';
 import { SettingsGroup, SettingsToggleRow } from '../SettingsGroup';
 import { SettingsPage } from '../SettingsPage';
@@ -20,7 +20,7 @@ import { SPACING } from '../../../theme/tokens';
 export function WordReaderSettingsScreen() {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
-  const { prefs } = useQuranState();
+  const prefs = useQuranPrefs();
   const chosen = wordReaderReciterId(prefs);
 
   return (

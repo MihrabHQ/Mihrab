@@ -13,6 +13,7 @@ import { setActiveClockFormat } from '../utils/activeClock';
 import { setWidgetSinceAdhanMinutes } from '../widget/sinceAdhanSetting';
 import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
 import { restoreSkyTheme, setSkyVariant } from '../theme/skyTheme';
+import { AppPaletteProvider } from '../theme/appPaletteContext';
 import { primeTimezoneShift } from '../prayer/timezoneShift';
 import { primeLaunchReads } from '../boot/launchReads';
 import { primeTodayLayout } from '../screens/home/todayLayoutMemory';
@@ -565,7 +566,9 @@ export function PrayerSettingsProvider({
             <DataSourceContext.Provider value={dataSourceCtx}>
               <WidgetContext.Provider value={widgetCtx}>
                 <LiveActivityContext.Provider value={liveActivityCtx}>
-                  {children}
+                  {/* The palette, resolved once for every consumer below
+                      (theme/appPaletteContext.tsx). */}
+                  <AppPaletteProvider settings={settings}>{children}</AppPaletteProvider>
                 </LiveActivityContext.Provider>
               </WidgetContext.Provider>
             </DataSourceContext.Provider>

@@ -20,7 +20,7 @@ import { FONTS, TYPE, arabicTextStyle } from '../../theme/typography';
 import { SPACING } from '../../theme/tokens';
 import { useReadingText } from '../../hooks/useReadingText';
 import { hold, release } from '../audio/wordReader';
-import { setQuranPrefs, useQuranState } from '../quranState';
+import { setQuranPrefs, useQuranPrefs } from '../quranState';
 import { resolveRiwayah, riwayahById } from '../riwayat';
 import { riwayahAyahText } from '../riwayahData';
 import { loadTajweedAyah, type TajweedAyah } from './tajweedData';
@@ -58,7 +58,7 @@ export function TajweedAyahSection({
   const { palette } = useAppPalette();
   const readingText = useReadingText();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { prefs } = useQuranState();
+  const prefs = useQuranPrefs();
   // The riwayah the muṣḥaf draws — Ḥafṣ where the stored one is not on this device (`resolveRiwayah`).
   const riwayah = resolveRiwayah(prefs.riwayah);
   const open = true;

@@ -19,7 +19,7 @@ import {
   BOOKMARK_COLORS,
   KHATMAH_COLOR,
   READING_COLOR,
-  useQuranState,
+  useQuranBookmarks,
 } from './quranState';
 import type { QuranBookmark } from './quranTypes';
 import {
@@ -31,9 +31,9 @@ import {
 /** The bookmark that owns the open visit, if one does. */
 export function useSessionBookmark(): QuranBookmark | null {
   const { owner } = useReadingSession();
-  const quran = useQuranState();
+  const quranBookmarks = useQuranBookmarks();
   if (owner?.kind !== 'bookmark') return null;
-  const b = quran.bookmarks.find(x => x.id === owner.id);
+  const b = quranBookmarks.find(x => x.id === owner.id);
   return b?.follows ? b : null;
 }
 
@@ -110,7 +110,7 @@ export function sessionColorOf(
 
 export function useSessionColor(reader: ReaderKind = 'mushaf'): string | null {
   const { owner } = useReadingSession();
-  return sessionColorOf(owner, useQuranState().bookmarks, reader);
+  return sessionColorOf(owner, useQuranBookmarks(), reader);
 }
 
 export function SessionDot({ color, size = 8 }: { color: string; size?: number }) {

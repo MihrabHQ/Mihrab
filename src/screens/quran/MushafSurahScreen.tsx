@@ -50,8 +50,8 @@ import { useSwitchRiwayah } from '../../quran/useSwitchRiwayah';
 import { mushafTone, toneIsDark } from '../../quran/mushafTone';
 import { usePageGround } from '../../quran/useScrubberChrome';
 import {
-  useQuranState,
   useQuranHydrated,
+  useQuranPrefs,
 } from '../../quran/quranState';
 import type { RootStackParamList } from '../../navigation/types';
 import {
@@ -103,12 +103,12 @@ export function MushafSurahScreen({
   const { palette } = useAppPalette();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const quran = useQuranState();
+  const quranPrefs = useQuranPrefs();
   const quranHydrated = useQuranHydrated();
   // Paper, sepia or night — the header's tint and the content colour
   // follow the PAGE, not the app theme (on "auto" the page itself follows
   // the theme, which is the one place the two agree by construction).
-  const tone = mushafTone(quran.prefs, palette.isDark);
+  const tone = mushafTone(quranPrefs, palette.isDark);
   const ground = usePageGround(tone);
   const columnInk = toneIsDark(tone) ? '#f2f2f2' : '#1a1a1a'; // tokens-ok-line: the header's page ink
 
@@ -130,7 +130,7 @@ export function MushafSurahScreen({
   // Manage downloads. Without the subscription the toggle would stay
   // hidden until the screen happened to re-render for some other reason.
   useRiwayahAvailability();
-  const riwayah = resolveRiwayah(quran.prefs.riwayah);
+  const riwayah = resolveRiwayah(quranPrefs.riwayah);
 
   // Shared with Settings → Qur'an, which can switch muṣḥaf too — the
   // one-time reflow notice belongs to the ACT, not to this screen.
@@ -463,7 +463,7 @@ export function MushafSurahScreen({
      * gesture goes with the page turn, and the header's arrow — reached
      * by the deliberate hold that brings the chrome back — stays.
      */
-    const gestureEnabled = !isMacCatalyst && !quran.prefs.touchLock;
+    const gestureEnabled = !isMacCatalyst && !quranPrefs.touchLock;
 
     if (isFullscreen) {
       navigation.setOptions({
@@ -735,7 +735,7 @@ export function MushafSurahScreen({
     switchRiwayah,
     t,
     onToggleMode,
-    quran.prefs.touchLock,
+    quranPrefs.touchLock,
     toggleFullscreen,
     // The window's size, so a resize re-issues the header rather than
     // leaving UIKit holding a subview RN laid out for a different width.

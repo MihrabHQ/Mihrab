@@ -23,7 +23,7 @@ import { resolveRiwayah } from '../riwayat';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE, arabicTextStyle } from '../../theme/typography';
 import { findPageForAyah } from '../pages';
-import { setQuranPrefs, useQuranState } from '../quranState';
+import { setQuranPrefs, useQuranPrefs } from '../quranState';
 import {
   rulesOfFamily,
   tajweedInk,
@@ -55,7 +55,7 @@ export function TajweedGuideScreen() {
   // bottom safe area, so the system band is Android's alone.
   const systemNav = useSystemNavigationReserve();
   const systemBottom = Platform.OS === 'android' ? systemNav : 0;
-  const { prefs } = useQuranState();
+  const prefs = useQuranPrefs();
   // The riwayah the muṣḥaf draws — Ḥafṣ where the stored one is not on this device (`resolveRiwayah`).
   const riwayah = resolveRiwayah(prefs.riwayah);
   // Warsh has colours of its own (issue #58) and rules Ḥafṣ does not.

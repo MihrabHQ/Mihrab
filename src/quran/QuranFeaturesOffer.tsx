@@ -32,7 +32,7 @@ import { useAppPalette } from '../hooks/useAppPalette';
 import { ResponsiveModal } from '../responsive/ResponsiveModal';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { typeStyle } from '../theme/typography';
-import { setQuranPrefs, useQuranState } from './quranState';
+import { setQuranPrefs, useQuranPrefs } from './quranState';
 import { resolveRiwayah, riwayahById } from './riwayat';
 
 export type QuranFeature = 'tajweedColours' | 'wordReader';
@@ -69,7 +69,7 @@ export function useQuranFeaturesOffer(ready: boolean): {
   visible: boolean;
   close: () => void;
 } {
-  const { prefs } = useQuranState();
+  const prefs = useQuranPrefs();
   const [features, setFeatures] = useState<QuranFeature[]>([]);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -121,7 +121,7 @@ export function QuranFeaturesOfferSheet({
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
-  const { prefs } = useQuranState();
+  const prefs = useQuranPrefs();
   // The switches start ON: the question is "want these?", and the
   // expected answer is yes. Unticking one and pressing Turn on is a no
   // for that one only.

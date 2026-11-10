@@ -26,7 +26,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import { useAppPalette } from '../hooks/useAppPalette';
-import { useQuranState, setQuranPrefs } from './quranState';
+import { setQuranPrefs, useQuranPrefs } from './quranState';
 import { QURAN_TRANSLATIONS } from './translations';
 import { useActiveEdition } from './useActiveEdition';
 import { TAFSIR_EDITIONS, resolveTafsirEdition } from './tafsir';
@@ -44,14 +44,14 @@ export function useCompanionChoice(): {
   editionLabel: string;
 } {
   const { settings } = usePrayerSettings();
-  const state = useQuranState();
+  const quranPrefs = useQuranPrefs();
   const translationEdition = useActiveEdition();
-  const mode = state.prefs.companionMode;
+  const mode = quranPrefs.companionMode;
   if (mode === 'tafsir') {
     return {
       mode,
       editionLabel: resolveTafsirEdition(
-        state.prefs.tafsirEditionId,
+        quranPrefs.tafsirEditionId,
         settings.language,
       ).label,
     };
@@ -76,11 +76,11 @@ export function CompanionTextControls({
   const { t } = useTranslation();
   const { settings, updateSettings } = usePrayerSettings();
   const { palette } = useAppPalette();
-  const state = useQuranState();
-  const mode = state.prefs.companionMode;
+  const quranPrefs = useQuranPrefs();
+  const mode = quranPrefs.companionMode;
   const translationEdition = useActiveEdition();
   const activeTafsir = resolveTafsirEdition(
-    state.prefs.tafsirEditionId,
+    quranPrefs.tafsirEditionId,
     settings.language,
   );
 

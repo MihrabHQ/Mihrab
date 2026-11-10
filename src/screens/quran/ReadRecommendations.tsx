@@ -34,7 +34,7 @@ import { SparkIcon } from '../../quran/audio/PlaybackIcons';
 import type { ListenSuggestion } from '../../quran/audio/listenSuggestions';
 import { dayOf, EMPTY_HIFZ, hifzInk, neededHelpLast, practiseAhead, type HifzPortion } from '../../quran/hifz';
 import { hifzDueLabel, hifzPortionName, hifzSurahName } from '../../quran/hifzLabels';
-import { setQuranPrefs, useQuranState } from '../../quran/quranState';
+import { setQuranPrefs, useQuranPrefs, useQuranHifz } from '../../quran/quranState';
 import { readSuggestions } from '../../quran/readSuggestions';
 import { HifzIcon } from '../../theme/icons';
 import { RADIUS, SPACING } from '../../theme/tokens';
@@ -50,10 +50,11 @@ type Props = {
 function ReadRecommendationsImpl({ onRead, onPractise }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
-  const quran = useQuranState();
-  const hifz = quran.hifz ?? EMPTY_HIFZ;
-  const recommendedOpen = quran.prefs.recommendedOpen;
-  const practiseOpen = quran.prefs.practiseOpen;
+  const quranPrefs = useQuranPrefs();
+  const quranHifz = useQuranHifz();
+  const hifz = quranHifz ?? EMPTY_HIFZ;
+  const recommendedOpen = quranPrefs.recommendedOpen;
+  const practiseOpen = quranPrefs.practiseOpen;
   // Worked out when the header is drawn — arriving on the tab, which is
   // when the hour matters.
   const now = new Date();

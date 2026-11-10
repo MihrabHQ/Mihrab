@@ -11,7 +11,7 @@ import { useProgressWhileActive } from './useProgressWhileActive';
 import { loadReciterTimings } from './audioStore';
 import { findReciter } from './reciters';
 import { usePlaybackStatus } from './playback';
-import { useQuranState } from '../quranState';
+import { useQuranPrefs } from '../quranState';
 import { DEFAULT_RIWAYAH, resolveRiwayah } from '../riwayat';
 
 type TimingsMap = { [key: string]: number[][] };
@@ -134,7 +134,7 @@ export function useActiveWordIndex(): {
   wordIndex: number;
 } | null {
   const { active, playing, reciterId, resting } = usePlaybackStatus();
-  const riwayah = resolveRiwayah(useQuranState().prefs.riwayah);
+  const riwayah = resolveRiwayah(useQuranPrefs().riwayah);
   // Four times a second, and only while a human can see the word it
   // lights. The probes that mount this are gated the same way, so this
   // is belt and braces — but the hook is exported, and the next caller

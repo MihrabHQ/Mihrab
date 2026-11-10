@@ -16,22 +16,29 @@ import {
   activateTab,
   holdTab,
   hoveredTab,
+  noteTabOpened,
   pressTab,
   registerTabActivation,
   registerTabFrame,
   releaseTab,
   slideTo,
   tabBarPress,
+  warmTab,
 } from './tabBarPress';
 
 /** A finger that stays this long is holding, and may slide. */
 const HOLD_MS = 180;
 
-type Props = BottomTabBarButtonProps & { name: string };
+type Props = BottomTabBarButtonProps & {
+  name: string;
+  /** Builds this tab's page off screen — see `warmTab`. Absent where every page is already built. */
+  onWarm?: () => void;
+};
 
 export function TabBarButton({
   name,
   onPress,
+  onWarm,
   // Dropped: every slide is a hold, so the navigator's long press
   // (`tabLongPress`) would fire half a second into each one. Nothing
   // listens for it, and a slide is not a long press.
@@ -58,6 +65,12 @@ export function TabBarButton({
     registerTabActivation(name, () => press());
     return () => registerTabActivation(name, null);
   }, [name, press]);
+
+  // The tab on show has its page; a touch on it has nothing to warm.
+  const selected = rest['aria-selected'] === true;
+  useEffect(() => {
+    if (selected) noteTabOpened(name);
+  }, [name, selected]);
 
   const measure = useCallback(() => {
     ref.current?.measureInWindow((x, y, width, height) => {
@@ -96,6 +109,9 @@ export function TabBarButton({
         measure();
         wasHeld.current = false;
         pressTab(name);
+        // The page, from the moment the finger is down — it is there
+        // when the lift opens it (tabBarPress.ts, "Warming a tab").
+        warmTab(name, onWarm);
         clearHold();
         holdTimer.current = setTimeout(() => {
           holdTab();

@@ -31,7 +31,7 @@ import {
   type QuranDownloadState,
 } from '../quranDownloadManager';
 import { playRange, setPlaybackRate } from './playback';
-import { setQuranPrefs, useQuranState } from '../quranState';
+import { setQuranPrefs, useQuranPrefs } from '../quranState';
 import { RowAction, SectionHead, Segments, Stepper } from '../../components/controls';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
@@ -64,7 +64,7 @@ export function RecitationControls({
 }: Props) {
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
-  const { prefs } = useQuranState();
+  const prefs = useQuranPrefs();
   const meta = findSurah(surahNumber);
   // The range is typed in the reader's numbering — Warsh's al-Māʾidah runs
   // to 122 — and the player turns it into files (issue #83).

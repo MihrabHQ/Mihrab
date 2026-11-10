@@ -94,7 +94,7 @@ import { WholeSurahNotice } from '../../quran/audio/WholeSurahNotice';
 import { ReadingVoiceHint } from '../../quran/audio/ReadingVoiceHint';
 import {
 } from '../../quran/audio/audioStore';
-import { setQuranPrefs, useQuranState } from '../../quran/quranState';
+import { setQuranPrefs, useQuranPrefs } from '../../quran/quranState';
 import { useBreakpoint } from '../../responsive/breakpoints';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
@@ -552,8 +552,8 @@ export function TilawahScreen() {
    */
   const active = useIsActive();
   const progress = useProgressWhileActive(400);
-  const quran = useQuranState();
-  const reciterId = quran.prefs.reciterId;
+  const quranPrefs = useQuranPrefs();
+  const reciterId = quranPrefs.reciterId;
   const reciter = findReciter(reciterId);
 
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -637,7 +637,7 @@ export function TilawahScreen() {
   const shownAyah = status.active?.ayah ?? listened?.ayah ?? 1;
   // Counted as the queue counts: the reader's riwayah (issue #83).
   const shownAyahCount = ayahCountForRiwayah(
-    resolveRiwayah(quran.prefs.riwayah),
+    resolveRiwayah(quranPrefs.riwayah),
     shownSurah.number,
   );
 
@@ -674,7 +674,7 @@ export function TilawahScreen() {
     setShuffleSurahs(true);
     void listenFrom(1 + Math.floor(Math.random() * SURAHS.length), 1);
   }, []);
-  const riwayah = resolveRiwayah(quran.prefs.riwayah);
+  const riwayah = resolveRiwayah(quranPrefs.riwayah);
   const playSuggestion = useCallback(
     (sg: ListenSuggestion) => {
       // Suggestions are written in the Ḥafṣ count; the queue speaks the
@@ -738,7 +738,7 @@ export function TilawahScreen() {
    * resumed from the notification after a restart has to shuffle if that
    * is what the user last chose.
    */
-  const shuffleOn = quran.prefs.shuffleSurahs;
+  const shuffleOn = quranPrefs.shuffleSurahs;
   useEffect(() => {
     setShuffleSurahs(shuffleOn);
   }, [shuffleOn]);
@@ -759,7 +759,7 @@ export function TilawahScreen() {
    * Released on unmount whatever the preference says: a lock held by a
    * screen that is gone is a flat battery nobody can explain.
    */
-  const keepAwake = quran.prefs.keepAwake;
+  const keepAwake = quranPrefs.keepAwake;
   // Through the counted lock, not the library: the reader holds the same
   // lock, and the two are mounted together whenever this page opens it.
   useKeepAwake(keepAwake);
@@ -777,7 +777,7 @@ export function TilawahScreen() {
    * follows the APP here, which is why night and paper are chosen from
    * the palette rather than read from the muṣḥaf preference.
    */
-  const showPage = quran.prefs.tilawahShowPage;
+  const showPage = quranPrefs.tilawahShowPage;
   const [pageWidth, setPageWidth] = useState(0);
   // The RESOLVED riwayah, never the stored one. A preference can name a
   // muṣḥaf this device does not carry — set on another device, or its
@@ -932,9 +932,9 @@ export function TilawahScreen() {
   // One chip each for speed and sleep, cycling through the same choices
   // the two rows of chips offered — see the options row in the header.
   const cycleRate = useCallback(() => {
-    const i = RATES.findIndex(r => Math.abs(quran.prefs.playbackRate - r) < 0.01);
+    const i = RATES.findIndex(r => Math.abs(quranPrefs.playbackRate - r) < 0.01);
     setRate(RATES[(i + 1) % RATES.length]);
-  }, [quran.prefs.playbackRate, setRate]);
+  }, [quranPrefs.playbackRate, setRate]);
   const cycleSleep = useCallback(() => {
     const i = SLEEP_CHOICES.indexOf(sleepMinutes as (typeof SLEEP_CHOICES)[number]);
     chooseSleep(SLEEP_CHOICES[(i + 1) % SLEEP_CHOICES.length]);
@@ -1251,7 +1251,7 @@ export function TilawahScreen() {
               they are on. */}
           <View style={styles.optionsRow}>
             <OptionChip
-              label={`${quran.prefs.playbackRate}×`}
+              label={`${quranPrefs.playbackRate}×`}
               a11y={t('quran.listenSpeed', { defaultValue: 'Speed' })}
               onPress={cycleRate}
               palette={palette}
