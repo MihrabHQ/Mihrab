@@ -196,11 +196,11 @@ another. Read "A SWIPE'S TURN" in `minimalPager.ts` before touching it.
   (`MinimalScreens` keeps its `pointerEvents`): each scene is the whole
   screen, and one that takes touches lies over every page before it.
 - **Direction is the app's** (`useLayoutRtl`), never `I18nManager.isRTL`.
-- **A page that has come up stays laid out.** No `display: none` for a
-  page off the strip: under Fabric that takes its native views down, and
-  a reach that moved with every turn built and tore down a screen of
-  views on the UI thread, which is the thread the swipe is drawn on.
-  Reach and the warm-up decide when a page first MOUNTS, nothing after.
+- **Only the pages in reach are laid out** (the one on show and its
+  neighbours; the rest `display: none`). Keeping all six laid out was
+  tried and measured on a 120 Hz phone: the renderer walks the whole tree
+  every frame, and a swipe's frames went from 6 ms to 10–11 ms, with
+  frames missed. The note at the top of `MinimalSwipe.tsx` has the numbers.
 - **Nothing under a finger goes through JavaScript**: the pages' swipe,
   the drag up on Today and the drag down on its sheet are each a native
   `Animated.event`; JS hears at the lift.

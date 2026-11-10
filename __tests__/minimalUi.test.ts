@@ -122,7 +122,7 @@ describe('the swipe', () => {
     expect(read('src/navigation/tabBarInset.ts')).toContain('return useAppearanceSettings().hydrated;');
   });
 
-  it('mounts the pages as they come within reach or the warm-up comes to them, and keeps them laid out', () => {
+  it('keeps only the pages in reach laid out, and mounts the rest as the warm-up comes to them', () => {
     // The page on show alone until its first paint and launch run are over.
     // A swipe brings in only the neighbours; a turn from the dots, every page
     // — laying out all of them as a finger starts to swipe stalled the swipe.
@@ -133,12 +133,12 @@ describe('the swipe', () => {
     expect(read('src/navigation/MinimalTabBar.tsx')).toContain('if (!swiped && !pagerHeldByFinger()) engagePagerFor(PAGER_TRANSITION_MS + 60);');
     expect(swipe).toMatch(/void afterRun\(\)\.then\(\(\) => \{\s*if \(cancelled\) return;\s*setSettled\(true\);\s*startPagerWarmup\(\);/);
     expect(read('src/navigation/minimalPager.ts')).toContain('let warmth = 0;');
-    // A page that has come up stays laid out: a view out of layout is taken
-    // down natively under Fabric, so a reach that moved with every turn
-    // built and tore down a screen of views on the thread the swipe is
-    // drawn on. Reach decides when a page MOUNTS, and nothing after.
-    expect(swipe).not.toContain('styles.away');
-    expect(swipe.slice(swipe.indexOf('StyleSheet.create'))).not.toMatch(/display:/);
+    // Out of reach is out of layout. Measured on a 120 Hz phone: with all
+    // six pages laid out every frame of a swipe took 10 ms and frames were
+    // missed; with three, 6 ms and none (the note in MinimalSwipe).
+    expect(swipe).toContain('inReach ? null : styles.away');
+    expect(swipe).toContain("away: { display: 'none' },");
+    expect(swipe).not.toContain('renderToHardwareTextureAndroid');
     expect(swipe).toContain('{mounted ? children : null}');
     expect(swipe).toContain('if (enabled && !mounted && (inReach || distance <= warmth)) setMounted(true);');
     const pager = read('src/navigation/minimalPager.ts');
@@ -147,13 +147,13 @@ describe('the swipe', () => {
   });
 
   it("never takes the swipe's own view out of the tree, so iOS keeps each page's swipe on its page", () => {
-    // The handler's view always carries the offset, and the page inside it
-    // stays in the tree once it has come up.
+    // The handler's view always carries the offset and never `away`; the
+    // page inside it is what leaves the tree out of reach.
     expect(swipe).toContain(
       '<Animated.View style={[styles.fill, { transform: [{ translateX: offset }] }]} collapsable={false}>',
     );
     expect(swipe).toMatch(
-      /<Animated\.View style=\{\[styles\.fill, \{ transform[^\n]*\n\s*<View style=\{styles\.fill\} collapsable=\{false\}>\s*\{mounted \? children : null\}/,
+      /<Animated\.View style=\{\[styles\.fill, \{ transform[^\n]*\n\s*<View style=\{\[styles\.fill, inReach \? null : styles\.away\]\} collapsable=\{false\}>/,
     );
   });
 

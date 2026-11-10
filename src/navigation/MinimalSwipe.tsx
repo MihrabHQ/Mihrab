@@ -57,25 +57,22 @@ import {
  * back. Mirrored in a right-to-left language: the next page is on the
  * left.
  *
- * The pages come up in turn — the one on show, its neighbours once the
- * launch run is over, the rest one at a time in the seconds after
- * (minimalPager.ts, `pagerWarmth`) — and A PAGE THAT HAS COME UP STAYS
- * UP: laid out and drawn where it stands on the strip, whichever tab is
- * on show.
+ * And only the pages a finger could reveal are in the tree: the one on
+ * show and its neighbours, the rest kept mounted but out of layout and
+ * drawing (`display: none`) until a hold on the dots could slide to
+ * them — and a page far from the first one is not even mounted until
+ * the warm-up reaches it (minimalPager.ts, `pagerWarmth`).
  *
- * It used not to. A page more than one tab from the one on show was
- * kept mounted but taken out of layout (`display: none`), and under
- * Fabric a view out of layout is taken down natively: so every turn
- * tore one page's views down and built another's — a whole screen of
- * them, on the UI thread, which is the thread the swipe is drawn on.
- * It was timed to fall after the slide had landed, and brought forward
- * to the moment a finger came down if one did first; so turning page
- * after page, each swipe began under the build the last one had put
- * off, and the page caught under the finger. Nothing is built or torn
- * down on a turn now. A page off the strip's visible part costs a frame
- * nothing — it is outside the window and is not drawn — and what it
- * keeps is its views in memory, which is what the full page keeps for
- * every tab that has been opened.
+ * MEASURED, AND NOT TO BE "SIMPLIFIED" (Pixel 10 Pro, 120 Hz, 2026-11-10).
+ * Keeping every page laid out once it had come up was tried, to spare a
+ * turn the building of the page two along. It made every frame of every
+ * swipe slower instead: the renderer walks the whole tree each frame,
+ * whether a page is in the window or not, and with six pages in it a
+ * frame took 10–11 ms at the median (sync 2.5, draw 4) and 6–13 frames
+ * in 120 missed their deadline; with three, 6 ms (sync 0.7, draw 2.2)
+ * and none missed — under the 8.3 ms a 120 Hz frame has. A hardware
+ * layer on the moving pages bought half a millisecond and a screen of
+ * memory each, and was left out.
  */
 const TURN_FRACTION = 0.3;
 const TURN_VELOCITY = 600;
@@ -201,8 +198,6 @@ export function MinimalSwipe({
     [myIndex, count, width, rtl],
   );
 
-  // WHEN A PAGE FIRST COMES UP — and only that: once up it stays (the
-  // note at the top), so after the warm-up none of this builds anything.
   // In reach: the page on show, its neighbours, and every page while a
   // hold on the dots or a slide across the row could reveal any of them
   // (`usePagerReachAll`) — not on a swipe, which reveals a neighbour at
@@ -215,8 +210,7 @@ export function MinimalSwipe({
   const reachAll = usePagerReachAll();
   const painted = useAfterFirstPaint();
   const [settled, setSettled] = useState(false);
-  // The tab the reach is measured from: the tab on show, a slide behind
-  // (for a page not yet up; in the first seconds of a launch).
+  // The tab the reach is measured from: the tab on show, a slide behind.
   // The navigator hears of a swipe's turn as the finger lifts — it has to,
   // so the next swipe lands on the page that is coming in — but laying
   // out the page two along at that moment (`display: 'none'` to drawn)
@@ -238,8 +232,7 @@ export function MinimalSwipe({
   const distance = Math.abs(myIndex - reachIndex);
   const inReach = reachAll || myIndex === index || distance <= (settled || engaged ? 1 : 0);
   // Mounted once in reach, or once the warm-up has come this far — and
-  // then kept, laid out and all (see the note at the top): a page keeps
-  // its scroll and its state across turns, and no turn builds a page.
+  // then kept, so a page keeps its scroll and its state across turns.
   const warmth = usePagerWarmth();
   const [mounted, setMounted] = useState(enabled && (inReach || distance <= warmth));
   useEffect(() => {
@@ -290,14 +283,14 @@ export function MinimalSwipe({
           brought back into reach came up on a recycled view with another
           page's swipe on it — the swipe on Today turned the Settings
           page, or nothing, and a flick across Today opened its times.
-          And the page inside, once it has come up, stays too. */}
+          What leaves the tree out of reach is the page inside. */}
       {/* An Animated.View, though nothing on it moves: the handler hands
           its child `onGestureEvent`, and the drag's is a native
           Animated.event — a plain View is given the event object as a
           listener, and the first swipe crashed the app. */}
       <Animated.View style={styles.fill} collapsable={false}>
         <Animated.View style={[styles.fill, { transform: [{ translateX: offset }] }]} collapsable={false}>
-          <View style={styles.fill} collapsable={false}>
+          <View style={[styles.fill, inReach ? null : styles.away]} collapsable={false}>
             {mounted ? children : null}
           </View>
         </Animated.View>
@@ -308,4 +301,6 @@ export function MinimalSwipe({
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
+  // Out of reach: mounted, but neither laid out nor drawn.
+  away: { display: 'none' },
 });
