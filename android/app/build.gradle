@@ -211,6 +211,13 @@ android {
      * never app content in the first place.
      */
     androidResources {
+        // The thirteen languages the app is written in (src/i18n/locales,
+        // res/values-*). Without this the libraries' own strings came along
+        // in all 86 of theirs — AppCompat's and Material's "Navigate up" in
+        // Zulu — which is most of resources.arsc and nothing a reader of
+        // this app is ever shown in a language the app itself does not have.
+        // Indonesian twice: `id` is the tag, `in` the name its folder keeps.
+        localeFilters.addAll(["en", "sv", "ar", "bn", "de", "es", "fr", "hi", "id", "in", "ru", "tr", "ur", "zh"])
         // `addAll`, not `+=`: the property is read-only in the AGP DSL, so
         // assigning to it fails at configuration time. Adding is what we
         // want anyway — AGP's own defaults (.git, .DS_Store, thumbs.db…)
