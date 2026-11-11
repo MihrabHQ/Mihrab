@@ -8,7 +8,7 @@
  */
 export const METHOD_REVISION = {
   sweden: 1,
-  diyanet: 1,
+  diyanet: 2,
   morocco: 2,
   algeria: 1,
   indonesia: 2,

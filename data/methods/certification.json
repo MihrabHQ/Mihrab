@@ -46,7 +46,7 @@
         "places": 8318,
         "times": 71630078,
         "off": 0,
-        "offWithoutCorrections": 9368,
+        "offWithoutCorrections": 9112,
         "from": "2024-01-01",
         "to": "2027-12-31"
       }
@@ -54,10 +54,10 @@
     "corrections": {
       "from": "2024-01-01",
       "to": "2027-12-31",
-      "entries": 9357,
-      "sha256": "a8c6a7305611f8dcedc04a64efb8dd150d9a588c2b3ac3391bfb776d70a2ec83"
+      "entries": 9101,
+      "sha256": "3b8fabadcd4f2098984daf5105c4223f526c5046f46748fab200dd990ce4a042"
     },
-    "revision": 1
+    "revision": 2
   },
   "morocco": {
     "certified": true,
