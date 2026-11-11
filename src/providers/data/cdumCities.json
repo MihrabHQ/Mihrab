@@ -1,0 +1,20 @@
+[
+ {"id":1,"name":"Moscow","ru":"Москва","lat":55.756,"lon":37.618,"tz":"Europe/Moscow"},
+ {"id":2,"name":"Saint Petersburg","ru":"Санкт-Петербург","lat":59.939,"lon":30.316,"tz":"Europe/Moscow"},
+ {"id":3,"name":"Astrakhan","ru":"Астрахань","lat":46.348,"lon":48.034,"tz":"Europe/Astrakhan"},
+ {"id":4,"name":"Volgograd","ru":"Волгоград","lat":48.707,"lon":44.517,"tz":"Europe/Volgograd"},
+ {"id":5,"name":"Kirov","ru":"Киров","lat":58.603,"lon":49.668,"tz":"Europe/Kirov"},
+ {"id":6,"name":"Yekaterinburg","ru":"Екатеринбург","lat":56.839,"lon":60.605,"tz":"Asia/Yekaterinburg"},
+ {"id":7,"name":"Izhevsk","ru":"Ижевск","lat":56.853,"lon":53.212,"tz":"Europe/Samara"},
+ {"id":8,"name":"Yoshkar-Ola","ru":"Йошкар-Ола","lat":56.634,"lon":47.9,"tz":"Europe/Moscow"},
+ {"id":9,"name":"Chelyabinsk","ru":"Челябинск","lat":55.16,"lon":61.403,"tz":"Asia/Yekaterinburg"},
+ {"id":10,"name":"Kurgan","ru":"Курган","lat":55.441,"lon":65.344,"tz":"Asia/Yekaterinburg"},
+ {"id":11,"name":"Orenburg","ru":"Оренбург","lat":51.768,"lon":55.097,"tz":"Asia/Yekaterinburg"},
+ {"id":12,"name":"Penza","ru":"Пенза","lat":53.195,"lon":45.018,"tz":"Europe/Moscow"},
+ {"id":13,"name":"Perm","ru":"Пермь","lat":58.01,"lon":56.229,"tz":"Asia/Yekaterinburg"},
+ {"id":14,"name":"Rostov-on-Don","ru":"Ростов-на-Дону","lat":47.223,"lon":39.719,"tz":"Europe/Moscow"},
+ {"id":15,"name":"Samara","ru":"Самара","lat":53.196,"lon":50.101,"tz":"Europe/Samara"},
+ {"id":16,"name":"Ulyanovsk","ru":"Ульяновск","lat":54.312,"lon":48.396,"tz":"Europe/Ulyanovsk"},
+ {"id":17,"name":"Khabarovsk","ru":"Хабаровск","lat":48.481,"lon":135.072,"tz":"Asia/Vladivostok"},
+ {"id":18,"name":"Cheboksary","ru":"Чебоксары","lat":56.139,"lon":47.24,"tz":"Europe/Moscow"}
+]

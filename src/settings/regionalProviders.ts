@@ -25,6 +25,8 @@ import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInTajikistan } from '../utils/tajikistanRegion';
 import { isCoordinateInDagestan } from '../utils/dagestanRegion';
 import { isCoordinateInBashkortostan } from '../utils/bashkortostanRegion';
+import { isCoordinateInTatarstan } from '../utils/tatarstanRegion';
+import { isNearCdumCity } from '../providers/russiaPlaces';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import {
@@ -72,6 +74,11 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   { id: 'shuro', covers: isCoordinateInTajikistan, yieldsToChosenMethod: true },
   { id: 'dagestan', covers: isCoordinateInDagestan, yieldsToChosenMethod: true },
   { id: 'bashkortostan', covers: isCoordinateInBashkortostan, yieldsToChosenMethod: true },
+  // Tatarstan's own Administration inside the republic; then the Central
+  // Muftiate's eighteen cities, each with its near suburbs. Elsewhere in
+  // Russia Automatic stays the calculated 16° / 15°.
+  { id: 'dumrt', covers: isCoordinateInTatarstan, yieldsToChosenMethod: true },
+  { id: 'cdum', covers: isNearCdumCity, yieldsToChosenMethod: true },
 ];
 
 /**

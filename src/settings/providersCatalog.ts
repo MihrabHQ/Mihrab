@@ -79,6 +79,22 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.habous.desc',
   },
   {
+    id: 'dumrt',
+    name: 'Tatarstan',
+    description:
+      'The timetable of the Spiritual Administration of Muslims of Tatarstan, calculated on your device by its own method for the town or district seat nearest you in its list — it matches the published times to the minute. Fajr is the dawn (the end of sahur) and Dhuhr the sun’s zenith; its one Asr is the Hanafi one.',
+    nameKey: 'providers.dumrt.name',
+    descriptionKey: 'providers.dumrt.desc',
+  },
+  {
+    id: 'cdum',
+    name: 'Russia (Central Muftiate)',
+    description:
+      'The timetable of the Central Spiritual Administration of Muslims of Russia, calculated on your device by its own method for its city you are in — Moscow, Saint Petersburg and sixteen more — and matching the published times to the minute. Its one Asr is the Hanafi one.',
+    nameKey: 'providers.cdum.name',
+    descriptionKey: 'providers.cdum.desc',
+  },
+  {
     id: 'marw',
     name: 'Algeria',
     description:

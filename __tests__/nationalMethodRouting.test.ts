@@ -40,7 +40,8 @@ const NATIONAL: [string, number, number, string][] = [
   ['Lahore', 31.5204, 74.3587, 'PK'],
   ['Delhi', 28.6139, 77.209, 'IN'],
   ['Dhaka', 23.8103, 90.4125, 'BD'],
-  ['Moscow', 55.7558, 37.6173, 'RU'],
+  // not Moscow: the Central Muftiate's own timetable is Automatic's there (`russiaMuftiates.test.ts`)
+  ['Vladivostok', 43.1155, 131.8855, 'RU'],
   ['Cairo', 30.0444, 31.2357, 'EG'],
   ['Tunis', 36.8065, 10.1815, 'TN'],
   ['Lisbon', 38.7223, -9.1393, 'PT'],

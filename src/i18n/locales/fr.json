@@ -670,6 +670,14 @@
     "bashkortostan": {
       "name": "Bachkortostan",
       "desc": "L’horaire de l’Administration spirituelle des musulmans du Bachkortostan pour la ville ou le chef-lieu de district de sa liste le plus proche de vous, tel que le donne son propre site (dumrb.com). Le Dhuhr est son heure fixe, et son seul Asr est le hanafite."
+    },
+    "dumrt": {
+      "name": "Tatarstan",
+      "desc": "L’horaire de l’Administration spirituelle des musulmans du Tatarstan, calculé sur votre appareil selon sa propre méthode pour la ville ou le chef-lieu de district de sa liste le plus proche de vous ; il correspond à la minute près aux horaires publiés. Le Fajr est l’aube (la fin du sahur) et le Dhuhr le zénith du soleil ; son seul Asr est le hanafite."
+    },
+    "cdum": {
+      "name": "Russie (Muftiat central)",
+      "desc": "L’horaire de l’Administration spirituelle centrale des musulmans de Russie, calculé sur votre appareil selon sa propre méthode pour celle de ses villes où vous êtes — Moscou, Saint-Pétersbourg et seize autres —, et correspondant à la minute près aux horaires publiés. Son seul Asr est le hanafite."
     }
   },
   "compass": {

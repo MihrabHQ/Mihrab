@@ -670,6 +670,14 @@
     "bashkortostan": {
       "name": "Baskortostán",
       "desc": "El horario de la Administración Espiritual de los Musulmanes de Baskortostán para la ciudad o cabecera de distrito de su lista más cercana a ti, tal como lo da su propio sitio (dumrb.com). El Dhuhr es su hora fija de reloj, y su único Asr es el hanafí."
+    },
+    "dumrt": {
+      "name": "Tartaristán",
+      "desc": "El horario de la Administración Espiritual de los Musulmanes de Tartaristán, calculado en tu dispositivo con su propio método para la ciudad o cabecera de distrito de su lista más cercana a ti; coincide al minuto con los horarios publicados. El Fajr es el alba (el fin del suhur) y el Dhuhr el cenit del sol; su único Asr es el hanafí."
+    },
+    "cdum": {
+      "name": "Rusia (Muftiato Central)",
+      "desc": "El horario de la Administración Espiritual Central de los Musulmanes de Rusia, calculado en tu dispositivo con su propio método para aquella de sus ciudades en la que estás —Moscú, San Petersburgo y dieciséis más—, y coincide al minuto con los horarios publicados. Su único Asr es el hanafí."
     }
   },
   "compass": {

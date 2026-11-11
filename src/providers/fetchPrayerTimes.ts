@@ -3,6 +3,7 @@ import { fetchAladhanCalendar, fetchAladhanTimes } from './aladhan';
 import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
 import { getMarwDatasetTimes } from './marwDataset';
+import { getCdumTimes, getTatarstanTimes } from './russiaMuftiates';
 import {
   computeNamazvaktiMethodTimes,
   getNamazvaktiTimes,
@@ -367,6 +368,27 @@ export async function fetchPrayerTimesUnified(
       // AlAdhan writes a place's times on the place's clock (`meta.timezone`).
       result.clock = result.timezone ?? DEVICE_CLOCK;
       break;
+    }
+    case 'dumrt':
+    case 'cdum': {
+      // Tatarstan's Administration's method and the Central Muftiate of
+      // Russia's, computed on the phone for the nearest listed place at the
+      // point its authority computes it, with its correction list
+      // (`russiaMuftiates.ts`). Outside Tatarstan's places, or further from
+      // every one of the Central Muftiate's cities than its timetable
+      // reaches, the general source answers as it does for the rest of
+      // Russia.
+      try {
+        result = await (p.provider === 'dumrt' ? getTatarstanTimes : getCdumTimes)({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+        });
+        break;
+      } catch {
+        /* outside coverage */
+      }
+      return fetchPrayerTimesUnified({ ...p, provider: 'aladhan' });
     }
     case 'marw': {
       // The Ministry of Religious Affairs and Wakfs's method, computed on

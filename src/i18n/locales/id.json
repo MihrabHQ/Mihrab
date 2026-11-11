@@ -669,6 +669,14 @@
     "bashkortostan": {
       "name": "Bashkortostan",
       "desc": "Jadwal Administrasi Spiritual Muslim Bashkortostan untuk kota atau pusat distrik terdekat dengan Anda dalam daftarnya, sebagaimana diberikan situsnya sendiri (dumrb.com). Zuhur adalah waktu jam tetapnya, dan satu-satunya Asarnya adalah Asar Hanafi."
+    },
+    "dumrt": {
+      "name": "Tatarstan",
+      "desc": "Jadwal Administrasi Spiritual Muslim Tatarstan, dihitung di perangkat Anda dengan metodenya sendiri untuk kota atau pusat distrik terdekat dengan Anda dalam daftarnya — cocok dengan jadwal yang diterbitkan hingga ke menitnya. Subuh adalah fajar (akhir sahur) dan Zuhur adalah zenit matahari; satu-satunya Asarnya adalah Asar Hanafi."
+    },
+    "cdum": {
+      "name": "Rusia (Muftiat Pusat)",
+      "desc": "Jadwal Administrasi Spiritual Pusat Muslim Rusia, dihitung di perangkat Anda dengan metodenya sendiri untuk kotanya tempat Anda berada — Moskow, Sankt Peterburg, dan enam belas lainnya — dan cocok dengan jadwal yang diterbitkan hingga ke menitnya. Satu-satunya Asarnya adalah Asar Hanafi."
     }
   },
   "compass": {

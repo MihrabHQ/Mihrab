@@ -669,6 +669,14 @@
     "bashkortostan": {
       "name": "Başkurdistan",
       "desc": "Başkurdistan Müslümanları Dinî İdaresi’nin vakit çizelgesi; listesindeki size en yakın şehir veya ilçe merkezi için, kendi sitesinin (dumrb.com) verdiği gibi. Öğle onun sabit saatidir, tek ikindisi de Hanefî ikindisidir."
+    },
+    "dumrt": {
+      "name": "Tataristan",
+      "desc": "Tataristan Müslümanları Dinî İdaresi’nin vakit çizelgesi; cihazınızda kendi yöntemiyle, listesindeki size en yakın şehir veya ilçe merkezi için hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür. İmsak şafaktır (sahurun sonu), öğle ise güneşin zeval vaktidir; tek ikindisi Hanefî ikindisidir."
+    },
+    "cdum": {
+      "name": "Rusya (Merkezî Müftülük)",
+      "desc": "Rusya Müslümanları Merkezî Dinî İdaresi’nin vakit çizelgesi; cihazınızda kendi yöntemiyle, şehirlerinden bulunduğunuz şehir için — Moskova, Sankt-Peterburg ve on altı şehir daha — hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür. Tek ikindisi Hanefî ikindisidir."
     }
   },
   "compass": {

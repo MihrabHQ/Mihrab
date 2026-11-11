@@ -76,6 +76,9 @@ describe('the builder', () => {
 describe('where it is the source', () => {
   it.each([
     ['Makhachkala', 42.9831, 47.5047, true],
+    // the seafront, which the outline's simplified coast leaves a few hundred metres out
+    ['Makhachkala, the centre by the sea', 42.9849, 47.5047, true],
+    ['Derbent, the harbour', 42.062, 48.305, true],
     ['Derbent', 42.0578, 48.2889, true],
     ['Khasavyurt', 43.2509, 46.5876, true],
     ['Kizlyar', 43.8484, 46.7141, true],

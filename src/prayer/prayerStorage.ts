@@ -4,6 +4,7 @@ import { asksAladhan, fetchAladhanMonth, fetchPrayerTimesUnified } from '../prov
 import { getIslamiskaForbundetDatasetTimes } from '../providers/islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from '../providers/habousDataset';
 import { getMarwDatasetTimes } from '../providers/marwDataset';
+import { getCdumTimes, getTatarstanTimes } from '../providers/russiaMuftiates';
 import { nationalTableFor, nationalTablePlaceId } from '../providers/nationalTables';
 import { getNamazvaktiTimes } from '../providers/namazvakti';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
@@ -822,6 +823,8 @@ function hasPreparedDataset(provider: PrayerDataProviderId): boolean {
     provider === 'islamiska_forbundet' ||
     provider === 'habous' ||
     provider === 'marw' ||
+    provider === 'dumrt' ||
+    provider === 'cdum' ||
     nationalTableFor(provider) != null ||
     // Not a dataset of times but the same arrangement: a published year
     // held on the phone that overtakes any day cached from a fallback.
@@ -880,6 +883,8 @@ function rawDatasetTimesFor(
     return isCoordinateInAlgeria(q.latitude, q.longitude) ? getMarwDatasetTimes(q) : getHabousDatasetTimes(q);
   }
   if (provider === 'marw') return getMarwDatasetTimes(q);
+  if (provider === 'dumrt') return getTatarstanTimes(q);
+  if (provider === 'cdum') return getCdumTimes(q);
   const table = nationalTableFor(provider);
   if (table) return table.getTimes({ ...q, placeId: nationalTablePlaceId(provider, params.school) });
   return getIslamiskaForbundetDatasetTimes(q);

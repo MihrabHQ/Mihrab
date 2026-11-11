@@ -669,6 +669,14 @@
     "bashkortostan": {
       "name": "Baschkortostan",
       "desc": "Der Zeitplan der Geistlichen Verwaltung der Muslime Baschkortostans für die Stadt oder den Bezirkssitz ihrer Liste, der dir am nächsten liegt, wie ihn ihre eigene Website (dumrb.com) angibt. Dhuhr ist ihre feste Uhrzeit, und ihr einziger Asr ist der hanafitische."
+    },
+    "dumrt": {
+      "name": "Tatarstan",
+      "desc": "Der Zeitplan der Geistlichen Verwaltung der Muslime Tatarstans, auf deinem Gerät nach ihrer eigenen Methode berechnet, für die Stadt oder den Bezirkssitz ihrer Liste, der dir am nächsten liegt – er stimmt auf die Minute mit den veröffentlichten Zeiten überein. Fajr ist die Morgendämmerung (das Ende des Sahur) und Dhuhr der Sonnenhöchststand; ihr einziger Asr ist der hanafitische."
+    },
+    "cdum": {
+      "name": "Russland (Zentrales Muftiat)",
+      "desc": "Der Zeitplan der Zentralen Geistlichen Verwaltung der Muslime Russlands, auf deinem Gerät nach ihrer eigenen Methode berechnet, für diejenige ihrer Städte, in der du bist – Moskau, Sankt Petersburg und sechzehn weitere –, auf die Minute übereinstimmend mit den veröffentlichten Zeiten. Ihr einziger Asr ist der hanafitische."
     }
   },
   "compass": {

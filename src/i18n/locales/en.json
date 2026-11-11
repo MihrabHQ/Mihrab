@@ -669,6 +669,14 @@
     "bashkortostan": {
       "name": "Bashkortostan",
       "desc": "The timetable of the Spiritual Administration of Muslims of Bashkortostan for the town or district seat nearest you in its list, as its own site (dumrb.com) gives it. Dhuhr is its fixed clock time, and its one Asr is the Hanafi one."
+    },
+    "dumrt": {
+      "name": "Tatarstan",
+      "desc": "The timetable of the Spiritual Administration of Muslims of Tatarstan, calculated on your device by its own method for the town or district seat nearest you in its list — it matches the published times to the minute. Fajr is the dawn (the end of sahur) and Dhuhr the sun’s zenith; its one Asr is the Hanafi one."
+    },
+    "cdum": {
+      "name": "Russia (Central Muftiate)",
+      "desc": "The timetable of the Central Spiritual Administration of Muslims of Russia, calculated on your device by its own method for its city you are in — Moscow, Saint Petersburg and sixteen more — and matching the published times to the minute. Its one Asr is the Hanafi one."
     }
   },
   "compass": {

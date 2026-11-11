@@ -15,7 +15,7 @@ const fs = require('fs');
 const path = require('path');
 
 const DATA = path.join(__dirname, '../src/providers/data');
-const AUTHORITIES = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia'];
+const AUTHORITIES = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia', 'tatarstan', 'cdum'];
 const out = {};
 for (const a of AUTHORITIES) {
   const list = JSON.parse(fs.readFileSync(path.join(DATA, `${a}Corrections.json`), 'utf8'));

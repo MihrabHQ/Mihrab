@@ -1,7 +1,8 @@
 /**
  * IS THE CALCULATION CURRENT?
  *
- * Sweden's, Diyanet's, Morocco's, Algeria's and Indonesia's times are the
+ * Sweden's, Diyanet's, Morocco's, Algeria's, Indonesia's, Tatarstan's and
+ * Russia's Central Muftiate's times are the
  * authority's method computed on the phone, with a correction list that puts
  * the method's few rounding differences back on the printed minute. The
  * list covers the dates the authority's tables did when it was made. Three
@@ -306,6 +307,10 @@ export function methodAuthorityFor(
       return isCoordinateInAlgeria(latitude, longitude) ? 'algeria' : 'morocco';
     case 'marw':
       return 'algeria';
+    case 'dumrt':
+      return 'tatarstan';
+    case 'cdum':
+      return 'cdum';
     case 'kemenag':
       return 'indonesia';
     case 'aladhan': {

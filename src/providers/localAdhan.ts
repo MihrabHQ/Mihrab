@@ -31,13 +31,18 @@ import { SWEDEN_METHOD_ID } from './swedenMethodId';
 import { congressTimes } from './congressMethod';
 import {
   algeriaCorrection,
+  cdumCorrection,
   indonesiaCorrection,
   moroccoCorrection,
   swedenCorrection,
+  tatarstanCorrection,
 } from './swedenCorrections';
 import { DIYANET_METHOD_ID } from './diyanetMethodId';
 import { diyanetInstants } from './diyanetMethod';
 import { algeriaTimes } from './algeriaMethod';
+import { tatarstanTimes } from './tatarstanMethod';
+import { cdumTimes } from './cdumMethod';
+import { CDUM_METHOD_ID, TATARSTAN_METHOD_ID, tatarstanDipAt } from './russiaPlaces';
 import { moroccoTimes, moroccoDipEast, moroccoDipWest } from './moroccoMethod';
 import { kemenagTimes } from './indonesiaMethod';
 import { jakimTimes } from './malaysiaMethod';
@@ -594,6 +599,37 @@ export function computeLocalAdhanInstants(
         at,
         algeriaCorrection(params.latitude, params.longitude, y, m, day),
         params.school,
+      );
+  }
+  if (methodId === TATARSTAN_METHOD_ID) {
+    // Tatarstan's Administration's method (`tatarstanMethod.ts`), on the
+    // minute as it prints, with the place's own small horizon allowance.
+    const at = tatarstanTimes(
+      params.latitude,
+      params.longitude,
+      y,
+      m,
+      day,
+      tatarstanDipAt(params.latitude, params.longitude),
+    );
+    // at a place's own point, the few times on the other side of a minute
+    // (`tatarstanCorrections.json`); the Asr it prints is the Hanafi one,
+    // and the list is for that Asr
+    if (at)
+      return corrected(
+        at,
+        tatarstanCorrection(params.latitude, params.longitude, y, m, day),
+        0,
+      );
+  }
+  if (methodId === CDUM_METHOD_ID) {
+    // The Central Muftiate of Russia's method (`cdumMethod.ts`), likewise.
+    const at = cdumTimes(params.latitude, params.longitude, y, m, day);
+    if (at)
+      return corrected(
+        at,
+        cdumCorrection(params.latitude, params.longitude, y, m, day),
+        0,
       );
   }
   if (!(horizonMinutes > 0) && !signedShadowAsr) {

@@ -669,6 +669,14 @@
     "bashkortostan": {
       "name": "Basjkirien",
       "desc": "Tidtabellen från Basjkiriens muslimska andliga styrelse för den stad eller distriktsort i dess lista som ligger närmast dig, så som dess egen webbplats (dumrb.com) ger den. Dhuhr är dess fasta klockslag, och dess enda Asr är den hanafitiska."
+    },
+    "dumrt": {
+      "name": "Tatarstan",
+      "desc": "Tidtabellen från Tatarstans muslimska andliga styrelse, beräknad på din enhet med dess egen metod för den stad eller distriktsort i dess lista som ligger närmast dig – den stämmer med de publicerade tiderna på minuten. Fajr är gryningen (slutet på sahur) och Dhuhr solens zenit; dess enda Asr är den hanafitiska."
+    },
+    "cdum": {
+      "name": "Ryssland (Centrala muftiatet)",
+      "desc": "Tidtabellen från Rysslands centrala muslimska andliga styrelse, beräknad på din enhet med dess egen metod för den av dess städer du är i – Moskva, Sankt Petersburg och sexton till – och den stämmer med de publicerade tiderna på minuten. Dess enda Asr är den hanafitiska."
     }
   },
   "compass": {

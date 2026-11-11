@@ -139,10 +139,13 @@ if (process.env.ROUTING_MATRIX) {
   );
 }
 
+/** Russia's places with a timetable of their own; Grozny, Vladivostok and Kaliningrad have none. */
+const RUSSIA_OWN: Record<string, string> = { Moscow: 'cdum', Kazan: 'dumrt', Makhachkala: 'dagestan' };
+
 describe('the routing matrix', () => {
   it.each(ROUTING_PLACES.map((p, i) => [p[0], p[3], i] as const))(
     '%s (%s)',
-    (_name, country, i) => {
+    (name, country, i) => {
       const [, latitude, longitude] = ROUTING_PLACES[i];
       const row = rows[i];
       const own = OWN_SOURCE[country];
@@ -160,6 +163,12 @@ describe('the routing matrix', () => {
         // however near Northern Cyprus's districts (CHANGELOG).
         expect(row.auto).toBe('aladhan');
         expect(row.method).toBe(3);
+        expect(row.chosen3).toBe('aladhan');
+      } else if (country === 'RU' && name in RUSSIA_OWN) {
+        // A republic's or the Central Muftiate's own timetable, inside
+        // Russia; the rest of the country is the next branch (CHANGELOG).
+        expect(row.auto).toBe(RUSSIA_OWN[name]);
+        expect(row.method).toBe(NATIONAL_METHOD.RU);
         expect(row.chosen3).toBe('aladhan');
       } else if (country in NATIONAL_METHOD) {
         // Its own method, by AlAdhan: never Diyanet for a listed place nearby.
@@ -183,7 +192,7 @@ describe('the routing matrix', () => {
       // The Hanafi switch is offered wherever the source computes or serves
       // a Hanafi Asr; the national tables that print one Asr say so instead.
       expect(row.hanafi).toBe(
-        !['islamiska_forbundet', 'habous', 'marw', 'muis', 'jakim'].includes(
+        !['islamiska_forbundet', 'habous', 'marw', 'muis', 'jakim', 'dagestan', 'dumrt', 'cdum'].includes(
           row.auto,
         ),
       );
