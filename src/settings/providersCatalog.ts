@@ -103,6 +103,14 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.london.desc',
   },
   {
+    id: 'dagestan',
+    name: 'Dagestan',
+    description:
+      'The Muftiate of Dagestan’s timetable for the town or district seat nearest you in its list, as its own site (islamdag.ru) gives it. One Asr, the first.',
+    nameKey: 'providers.dagestan.name',
+    descriptionKey: 'providers.dagestan.desc',
+  },
+  {
     id: 'shuro',
     name: 'Tajikistan',
     description:

@@ -662,6 +662,10 @@
     "shuro": {
       "name": "Tadjikistan",
       "desc": "Les horaires du Centre islamique du Tadjikistan : sa table pour Douchanbé et, pour les autres villes qu’il nomme, les minutes avant ou après elle. Un seul Asr, le hanafite."
+    },
+    "dagestan": {
+      "name": "Daghestan",
+      "desc": "L’horaire du Muftiat du Daghestan pour la ville ou le chef-lieu de district de sa liste le plus proche de vous, tel que le donne son propre site (islamdag.ru). Un seul Asr, le premier."
     }
   },
   "compass": {
@@ -2050,6 +2054,7 @@
     "serverLondon": "Londres · Unified Prayer Timetable",
     "serverKyrgyzstan": "Kirghizistan · Administration spirituelle",
     "serverTajikistan": "Tadjikistan · Centre islamique",
+    "serverDagestan": "Daghestan · Muftiat",
     "jakimWindow": "Le JAKIM ne publie que l’année en cours : cette fenêtre se termine le 31 décembre et reprend lorsque la nouvelle année est publiée dans les premiers jours de janvier.",
     "londonWindow": "L’horaire est publié une année à la fois : cette fenêtre se termine le 31 décembre et reprend lorsque la nouvelle année est publiée.",
     "shuroWindow": "Le Centre fixe sa table année par année et publie tard les derniers mois : cette fenêtre peut être courte vers la fin d’une année.",

@@ -7,6 +7,7 @@
  *   • London — the London Unified Prayer Timetable, one for the city (`london`)
  *   • Kyrgyzstan — the Spiritual Administration, 115 places (`kmdb`)
  *   • Tajikistan — the Islamic Centre, Dushanbe and eighteen towns (`shuro`)
+ *   • Dagestan — the Muftiate, 27 towns and district seats (`dagestan`)
  *   • Indonesia — Kemenag (Bimas Islam), 517 regencies and cities (`kemenag`),
  *     computed on the phone (its method and correction list)
  *
@@ -18,6 +19,7 @@ import {
   JAKIM_DATASET_BASE_URL,
   KMDB_DATASET_BASE_URL,
   SHURO_DATASET_BASE_URL,
+  DAGESTAN_DATASET_BASE_URL,
   LONDON_DATASET_BASE_URL,
   MUIS_DATASET_BASE_URL,
   NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
@@ -262,6 +264,49 @@ export const shuroTable = createNationalTable({
   }),
 });
 
+/** Dagestan's clock: Moscow time, no summer time. */
+export const DAGESTAN_CLOCK: PlaceClock = { zone: 'Europe/Moscow' };
+/**
+ * What stands in past the window: the Muslim World League's angles with the
+ * first Asr the table prints. The Muftiate's table is the same every year
+ * and is mirrored four months ahead, so this is only for a phone that has
+ * not reached the mirror in that long.
+ */
+export const DAGESTAN_STAND_IN_METHOD = 3;
+
+/**
+ * Dagestan: the nearest of the Muftiate's 27 towns and district seats. The
+ * cap allows for the Nogai steppe in the north, where Yuzhno-Sukhokumsk and
+ * Kizlyar stand for a wide plain.
+ */
+export const dagestanTable = createNationalTable({
+  id: 'dagestan',
+  dataset: 'dagestan',
+  baseUrl: DAGESTAN_DATASET_BASE_URL,
+  timezone: 'Europe/Moscow',
+  get places() {
+    return placesOf(() => require('./data/dagestanPlaces.json'));
+  },
+  maxPlaceKm: 120,
+  get seed() {
+    return seedOf(() => require('./data/dagestanSeed.json'));
+  },
+  refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
+  indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
+  calculate: (place, date) => ({
+    ...computeLocalAdhanTimes({
+      latitude: place.lat,
+      longitude: place.lon,
+      date,
+      calculationMethod: DAGESTAN_STAND_IN_METHOD,
+      // the one Asr the table prints
+      school: 0,
+      placeClock: DAGESTAN_CLOCK,
+    }),
+    source: 'local',
+  }),
+});
+
 /**
  * Indonesia: the ministry publishes per regency, and a regency's seat
  * stands for it. Regencies in Papua and Kalimantan are large.
@@ -323,6 +368,7 @@ export const NATIONAL_TABLES: Partial<Record<PrayerDataProviderId, NationalTable
   london: londonTable,
   kmdb: kmdbTable,
   shuro: shuroTable,
+  dagestan: dagestanTable,
 };
 
 /**

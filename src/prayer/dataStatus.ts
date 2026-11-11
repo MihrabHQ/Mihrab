@@ -25,7 +25,7 @@ const KEY = 'mihrab.dataStatus.v1';
 export type ServerStatus = 'ok' | 'warning' | 'unknown';
 
 /** The prepared datasets that publish an `index.json`. */
-export const SERVER_DATASETS = ['habous', 'marw', 'namazvakti', 'muis', 'jakim', 'kemenag', 'london', 'kmdb', 'shuro'] as const;
+export const SERVER_DATASETS = ['habous', 'marw', 'namazvakti', 'muis', 'jakim', 'kemenag', 'london', 'kmdb', 'shuro', 'dagestan'] as const;
 export type ServerDatasetId = (typeof SERVER_DATASETS)[number];
 
 export type ServerIndexStatus = {
@@ -69,6 +69,7 @@ function emptyServers(): Record<ServerDatasetId, ServerIndexStatus> {
     london: { ...EMPTY_SERVER },
     kmdb: { ...EMPTY_SERVER },
     shuro: { ...EMPTY_SERVER },
+    dagestan: { ...EMPTY_SERVER },
   };
 }
 

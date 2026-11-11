@@ -1,0 +1,191 @@
+[
+ {
+  "id": 1,
+  "name": "Махачкала",
+  "nameEn": "Makhachkala",
+  "lat": 42.983,
+  "lon": 47.504
+ },
+ {
+  "id": 2,
+  "name": "Агул",
+  "nameEn": "Agul",
+  "lat": 41.787,
+  "lon": 47.596
+ },
+ {
+  "id": 3,
+  "name": "Ахты",
+  "nameEn": "Akhty",
+  "lat": 41.464,
+  "lon": 47.74
+ },
+ {
+  "id": 4,
+  "name": "Ахвах",
+  "nameEn": "Akhvakh",
+  "lat": 42.594,
+  "lon": 46.342
+ },
+ {
+  "id": 5,
+  "name": "Бабаюрт",
+  "nameEn": "Babayurt",
+  "lat": 43.6,
+  "lon": 46.779
+ },
+ {
+  "id": 6,
+  "name": "Ботлих",
+  "nameEn": "Botlikh",
+  "lat": 42.665,
+  "lon": 46.22
+ },
+ {
+  "id": 7,
+  "name": "Буйнакск",
+  "nameEn": "Buynaksk",
+  "lat": 42.819,
+  "lon": 47.119
+ },
+ {
+  "id": 8,
+  "name": "Цумада",
+  "nameEn": "Tsumada",
+  "lat": 42.54,
+  "lon": 46.122
+ },
+ {
+  "id": 9,
+  "name": "Даг-Огни",
+  "nameEn": "Dagestanskiye Ogni",
+  "lat": 42.115,
+  "lon": 48.194
+ },
+ {
+  "id": 10,
+  "name": "Дербент",
+  "nameEn": "Derbent",
+  "lat": 42.058,
+  "lon": 48.289
+ },
+ {
+  "id": 11,
+  "name": "Гергебиль",
+  "nameEn": "Gergebil",
+  "lat": 42.502,
+  "lon": 47.066
+ },
+ {
+  "id": 12,
+  "name": "Гумбет",
+  "nameEn": "Gumbet",
+  "lat": 42.777,
+  "lon": 46.493
+ },
+ {
+  "id": 13,
+  "name": "Хасавюрт",
+  "nameEn": "Khasavyurt",
+  "lat": 43.251,
+  "lon": 46.588
+ },
+ {
+  "id": 14,
+  "name": "Хунзах",
+  "nameEn": "Khunzakh",
+  "lat": 42.541,
+  "lon": 46.705
+ },
+ {
+  "id": 15,
+  "name": "Избербаш",
+  "nameEn": "Izberbash",
+  "lat": 42.565,
+  "lon": 47.864
+ },
+ {
+  "id": 16,
+  "name": "Каспийск",
+  "nameEn": "Kaspiysk",
+  "lat": 42.881,
+  "lon": 47.638
+ },
+ {
+  "id": 17,
+  "name": "Дылым",
+  "nameEn": "Dylym",
+  "lat": 43.073,
+  "lon": 46.635
+ },
+ {
+  "id": 18,
+  "name": "Кизилюрт",
+  "nameEn": "Kizilyurt",
+  "lat": 43.204,
+  "lon": 46.867
+ },
+ {
+  "id": 19,
+  "name": "Кизляр",
+  "nameEn": "Kizlyar",
+  "lat": 43.848,
+  "lon": 46.714
+ },
+ {
+  "id": 20,
+  "name": "Курах",
+  "nameEn": "Kurakh",
+  "lat": 41.585,
+  "lon": 47.782
+ },
+ {
+  "id": 21,
+  "name": "Леваши",
+  "nameEn": "Levashi",
+  "lat": 42.431,
+  "lon": 47.323
+ },
+ {
+  "id": 22,
+  "name": "Рутул",
+  "nameEn": "Rutul",
+  "lat": 41.535,
+  "lon": 47.424
+ },
+ {
+  "id": 23,
+  "name": "Шамилькала",
+  "nameEn": "Shamilkala",
+  "lat": 42.688,
+  "lon": 46.866
+ },
+ {
+  "id": 24,
+  "name": "Чарода",
+  "nameEn": "Charoda",
+  "lat": 42.238,
+  "lon": 46.836
+ },
+ {
+  "id": 25,
+  "name": "Южно-Сухокумск",
+  "nameEn": "Yuzhno-Sukhokumsk",
+  "lat": 44.66,
+  "lon": 45.65
+ },
+ {
+  "id": 26,
+  "name": "Тлярата",
+  "nameEn": "Tlyarata",
+  "lat": 42.106,
+  "lon": 46.354
+ },
+ {
+  "id": 27,
+  "name": "Унцукуль",
+  "nameEn": "Untsukul",
+  "lat": 42.711,
+  "lon": 46.786
+ }
+]

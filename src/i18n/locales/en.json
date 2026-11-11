@@ -661,6 +661,10 @@
     "shuro": {
       "name": "Tajikistan",
       "desc": "The Islamic Centre of Tajikistan’s timetable: its table for Dushanbe, and for the other towns it names the minutes before or after it. One Asr, the Hanafi one."
+    },
+    "dagestan": {
+      "name": "Dagestan",
+      "desc": "The Muftiate of Dagestan’s timetable for the town or district seat nearest you in its list, as its own site (islamdag.ru) gives it. One Asr, the first."
     }
   },
   "compass": {
@@ -2049,6 +2053,7 @@
     "serverLondon": "London · Unified Prayer Timetable",
     "serverKyrgyzstan": "Kyrgyzstan · Spiritual Administration",
     "serverTajikistan": "Tajikistan · Islamic Centre",
+    "serverDagestan": "Dagestan · Muftiate",
     "jakimWindow": "JAKIM publishes the current year only, so this window ends on 31 December and starts again when the new year is published in the first days of January.",
     "londonWindow": "The timetable is published a year at a time, so this window ends on 31 December and starts again when the new year is published.",
     "shuroWindow": "The Centre sets its table year by year and publishes the last months late, so this window can be short near the end of a year.",

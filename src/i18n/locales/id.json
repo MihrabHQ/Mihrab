@@ -661,6 +661,10 @@
     "shuro": {
       "name": "Tajikistan",
       "desc": "Jadwal Pusat Islam Tajikistan: tabelnya untuk Dushanbe, dan untuk kota-kota lain yang disebutnya, selisih menit sebelum atau sesudahnya. Satu Asar, yang Hanafi."
+    },
+    "dagestan": {
+      "name": "Dagestan",
+      "desc": "Jadwal Muftiat Dagestan untuk kota atau pusat distrik terdekat dengan Anda dalam daftarnya, sebagaimana diberikan situsnya sendiri (islamdag.ru). Satu Asar, yang pertama."
     }
   },
   "compass": {
@@ -2049,6 +2053,7 @@
     "serverLondon": "London · Unified Prayer Timetable",
     "serverKyrgyzstan": "Kirgizstan · Administrasi Spiritual",
     "serverTajikistan": "Tajikistan · Pusat Islam",
+    "serverDagestan": "Dagestan · Muftiat",
     "jakimWindow": "JAKIM hanya menerbitkan tahun berjalan, jadi jendela ini berakhir 31 Desember dan dimulai lagi saat tahun baru diterbitkan pada hari-hari pertama Januari.",
     "londonWindow": "Jadwal ini diterbitkan per tahun, jadi jendela ini berakhir 31 Desember dan dimulai lagi saat tahun baru diterbitkan.",
     "shuroWindow": "Pusat menetapkan tabelnya tahun demi tahun dan menerbitkan bulan-bulan terakhir belakangan, jadi jendela ini bisa pendek menjelang akhir tahun.",

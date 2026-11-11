@@ -23,6 +23,7 @@ export function providerHidesCalculationMethod(
     id === 'london' ||
     id === 'kmdb' ||
     id === 'shuro' ||
+    id === 'dagestan' ||
     // The calendar is its own method; the Hanafi Asr toggle still applies
     // (it picks the calendar's Asr-ı sânî).
     id === 'namazvakti' ||
@@ -53,7 +54,9 @@ export function providerHidesHanafiAsr(id: PrayerDataProviderId): boolean {
     id === 'jakim' ||
     // Kyrgyzstan's and Tajikistan's print one Asr too — the Hanafi one (`providerPrintsHanafiAsrOnly`).
     id === 'kmdb' ||
-    id === 'shuro'
+    id === 'shuro' ||
+    // Dagestan's prints one Asr, the first.
+    id === 'dagestan'
   );
 }
 

@@ -662,6 +662,10 @@
     "shuro": {
       "name": "Tayikistán",
       "desc": "El horario del Centro Islámico de Tayikistán: su tabla para Dusambé y, para las demás ciudades que nombra, los minutos antes o después de ella. Un solo Asr, el hanafí."
+    },
+    "dagestan": {
+      "name": "Daguestán",
+      "desc": "El horario del Muftiato de Daguestán para la ciudad o cabecera de distrito de su lista más cercana a ti, tal como lo da su propio sitio (islamdag.ru). Un Asr, el primero."
     }
   },
   "compass": {
@@ -2050,6 +2054,7 @@
     "serverLondon": "Londres · Unified Prayer Timetable",
     "serverKyrgyzstan": "Kirguistán · Administración Espiritual",
     "serverTajikistan": "Tayikistán · Centro Islámico",
+    "serverDagestan": "Daguestán · Muftiato",
     "jakimWindow": "JAKIM publica solo el año en curso, así que esta ventana termina el 31 de diciembre y vuelve a empezar cuando se publica el nuevo año en los primeros días de enero.",
     "londonWindow": "El horario se publica año a año, así que esta ventana termina el 31 de diciembre y vuelve a empezar cuando se publica el nuevo año.",
     "shuroWindow": "El Centro fija su tabla año a año y publica tarde los últimos meses, así que esta ventana puede ser corta hacia el final del año.",

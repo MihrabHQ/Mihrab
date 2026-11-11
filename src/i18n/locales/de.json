@@ -661,6 +661,10 @@
     "shuro": {
       "name": "Tadschikistan",
       "desc": "Der Zeitplan des Islamischen Zentrums Tadschikistans: seine Tabelle für Duschanbe und für die übrigen genannten Orte die Minuten davor oder danach. Ein Asr, der hanafitische."
+    },
+    "dagestan": {
+      "name": "Dagestan",
+      "desc": "Der Zeitplan des Muftiats von Dagestan für die Stadt oder den Bezirkssitz seiner Liste, der dir am nächsten liegt, wie ihn seine eigene Website (islamdag.ru) angibt. Ein Asr, der erste."
     }
   },
   "compass": {
@@ -2049,6 +2053,7 @@
     "serverLondon": "London · Unified Prayer Timetable",
     "serverKyrgyzstan": "Kirgisistan · Geistliche Verwaltung",
     "serverTajikistan": "Tadschikistan · Islamisches Zentrum",
+    "serverDagestan": "Dagestan · Muftiat",
     "jakimWindow": "JAKIM veröffentlicht nur das laufende Jahr, daher endet dieses Fenster am 31. Dezember und beginnt neu, sobald das neue Jahr in den ersten Januartagen veröffentlicht ist.",
     "londonWindow": "Der Zeitplan wird jeweils für ein Jahr veröffentlicht, daher endet dieses Fenster am 31. Dezember und beginnt neu, sobald das neue Jahr veröffentlicht ist.",
     "shuroWindow": "Das Zentrum legt seine Tabelle Jahr für Jahr fest und veröffentlicht die letzten Monate spät, daher kann dieses Fenster gegen Jahresende kurz sein.",

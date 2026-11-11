@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "builtAt": "2026-11-11T22:12:38.892Z",
+  "timezone": "Europe/Moscow",
+  "source": "https://islamdag.ru/vremya-namaza/mahachkala",
+  "serverStatus": "ok",
+  "firstDate": "2026-11-04",
+  "lastDate": "2027-03-11",
+  "minCoverageDays": 120,
+  "deadCities": [],
+  "cities": [
+    {
+      "id": 1,
+      "city": "Махачкала",
+      "cityEn": "Makhachkala"
+    },
+    {
+      "id": 2,
+      "city": "Агул",
+      "cityEn": "Agul"
+    },
+    {
+      "id": 3,
+      "city": "Ахты",
+      "cityEn": "Akhty"
+    },
+    {
+      "id": 4,
+      "city": "Ахвах",
+      "cityEn": "Akhvakh"
+    },
+    {
+      "id": 5,
+      "city": "Бабаюрт",
+      "cityEn": "Babayurt"
+    },
+    {
+      "id": 6,
+      "city": "Ботлих",
+      "cityEn": "Botlikh"
+    },
+    {
+      "id": 7,
+      "city": "Буйнакск",
+      "cityEn": "Buynaksk"
+    },
+    {
+      "id": 8,
+      "city": "Цумада",
+      "cityEn": "Tsumada"
+    },
+    {
+      "id": 9,
+      "city": "Даг-Огни",
+      "cityEn": "Dagestanskiye Ogni"
+    },
+    {
+      "id": 10,
+      "city": "Дербент",
+      "cityEn": "Derbent"
+    },
+    {
+      "id": 11,
+      "city": "Гергебиль",
+      "cityEn": "Gergebil"
+    },
+    {
+      "id": 12,
+      "city": "Гумбет",
+      "cityEn": "Gumbet"
+    },
+    {
+      "id": 13,
+      "city": "Хасавюрт",
+      "cityEn": "Khasavyurt"
+    },
+    {
+      "id": 14,
+      "city": "Хунзах",
+      "cityEn": "Khunzakh"
+    },
+    {
+      "id": 15,
+      "city": "Избербаш",
+      "cityEn": "Izberbash"
+    },
+    {
+      "id": 16,
+      "city": "Каспийск",
+      "cityEn": "Kaspiysk"
+    },
+    {
+      "id": 17,
+      "city": "Дылым",
+      "cityEn": "Dylym"
+    },
+    {
+      "id": 18,
+      "city": "Кизилюрт",
+      "cityEn": "Kizilyurt"
+    },
+    {
+      "id": 19,
+      "city": "Кизляр",
+      "cityEn": "Kizlyar"
+    },
+    {
+      "id": 20,
+      "city": "Курах",
+      "cityEn": "Kurakh"
+    },
+    {
+      "id": 21,
+      "city": "Леваши",
+      "cityEn": "Levashi"
+    },
+    {
+      "id": 22,
+      "city": "Рутул",
+      "cityEn": "Rutul"
+    },
+    {
+      "id": 23,
+      "city": "Шамилькала",
+      "cityEn": "Shamilkala"
+    },
+    {
+      "id": 24,
+      "city": "Чарода",
+      "cityEn": "Charoda"
+    },
+    {
+      "id": 25,
+      "city": "Южно-Сухокумск",
+      "cityEn": "Yuzhno-Sukhokumsk"
+    },
+    {
+      "id": 26,
+      "city": "Тлярата",
+      "cityEn": "Tlyarata"
+    },
+    {
+      "id": 27,
+      "city": "Унцукуль",
+      "cityEn": "Untsukul"
+    }
+  ]
+}

@@ -15,7 +15,7 @@ import {
   type DataStatus,
   type ServerDatasetId,
 } from '../../prayer/dataStatus';
-import { jakimTable, kmdbTable, londonTable, muisTable, shuroTable } from '../../providers/nationalTables';
+import { dagestanTable, jakimTable, kmdbTable, londonTable, muisTable, shuroTable } from '../../providers/nationalTables';
 import {
   getNamazvaktiTimes,
   namazvaktiHeld,
@@ -86,6 +86,13 @@ const SERVERS: {
     coverageNoteKey: 'dataStats.shuroWindow',
     coverageNoteDefault:
       'The Centre sets its table year by year and publishes the last months late, so this window can be short near the end of a year.',
+  },
+  {
+    id: 'dagestan',
+    provider: 'dagestan',
+    labelKey: 'dataStats.serverDagestan',
+    labelDefault: 'Dagestan · Muftiate',
+    nextRun: nextNationalTableServerRunAfter,
   },
   {
     id: 'london',
@@ -160,6 +167,7 @@ function DataStatsPanelImpl() {
           londonTable.pollServerIndexNow(),
           kmdbTable.pollServerIndexNow(),
           shuroTable.pollServerIndexNow(),
+          dagestanTable.pollServerIndexNow(),
         ].map(p =>
           p.catch(() => {
             /* offline — keep whatever was recorded before */

@@ -63,6 +63,8 @@ const PLACES: [string, number, number, string | null][] = [
   ['Dushanbe', 38.5598, 68.787, 'shuro'],
   ['Khujand', 40.2833, 69.6167, 'shuro'],
   ['Murghob', 38.171, 73.965, 'shuro'],
+  ['Makhachkala', 42.9831, 47.5047, 'dagestan'],
+  ['Derbent', 42.0578, 48.2889, 'dagestan'],
   ['Termez', 37.2242, 67.2783, 'diyanet'], // Uzbekistan, across the Amu Darya's bend
   ['Andijan', 40.7821, 72.3442, 'diyanet'], // Uzbekistan, across the border from Osh
   ['Almaty', 43.2389, 76.8897, 'diyanet'],
@@ -88,6 +90,7 @@ describe('each national table is recommended where it covers, and nowhere else',
 describe('the table', () => {
   it('covers every country that has a published source', () => {
     expect(REGIONAL_PROVIDER_REGIONS.map(r => r.id).sort()).toEqual([
+      'dagestan',
       'habous',
       'islamiska_forbundet',
       'jakim',
