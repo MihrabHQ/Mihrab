@@ -113,29 +113,39 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // the clip a partial update is charged for is no taller than what it
     // draws (clockfont.py has the arithmetic).
     private var _countFontIds as Array<ResourceId> = [
-        Rez.Fonts.Count20, Rez.Fonts.Count24, Rez.Fonts.Count28
+        Rez.Fonts.Count18, Rez.Fonts.Count20, Rez.Fonts.Count24, Rez.Fonts.Count28
     ] as Array<ResourceId>;
     private var _fSeconds as Graphics.FontType = Graphics.FONT_XTINY;
-    // The small rows' fonts, smallest first, and the arrangements tried,
-    // best first: which of them the date, the weather, the next prayer
-    // and the foot row (steps, battery) take, and which of the
-    // countdown's sizes goes with them. Whatever arrangement fits is then
-    // grown row by row as far as the dial has room (`layout`), up to
-    // these caps. The side text — am/pm, the high and low — is the
-    // smallest font throughout: it is read second.
+    // THE SIZES ARE FOUR, AND EVERY ROW IS ONE OF THEM.
+    //
+    //   1  the time                                  the clock's figures
+    //   2  the next prayer and the countdown to it   one size, both rows
+    //   3  the date, the weather, steps, battery     one size, all four
+    //   4  am/pm, the seconds, the high and low      the smallest font
+    //
+    // The face once chose each row's font by what fitted, and the rows
+    // came out at whatever size each could get: the date larger than the
+    // prayer's line, the countdown half as big again as the line above
+    // it. Now a row cannot grow without its rank: rank 2 is always
+    // larger than rank 3 and both move as one, the countdown's figures
+    // are the size that goes with the prayer's font, and nothing is as
+    // large as the time.
     private var _rowFonts as Array<Graphics.FontType> = [
         Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_SMALL, Graphics.FONT_MEDIUM
     ] as Array<Graphics.FontType>;
+    // The countdown's size (into _countFontIds) beside each of the
+    // prayer's fonts: figures as tall as that font's own, as near as the
+    // simulator's copies of Garmin's fonts measure (18, 20, 24 and 28
+    // pixels for the four).
+    private var _countFor as Array<Number> = [0, 1, 2, 3] as Array<Number>;
+    // [rank 2, rank 3] as indices into _rowFonts, best first. Whichever
+    // fits is then grown, rank 2 first, as far as the dial has room.
     private var _sets as Array<Array<Number>> = [
-        [1, 1, 2, 1, 2],
-        [1, 1, 2, 1, 1],
-        [0, 0, 1, 0, 1],
-        [0, 0, 0, 0, 0]
+        [2, 1],
+        [1, 0],
+        [0, 0]
     ] as Array<Array<Number>>;
-    private var _caps as Array<Number> = [2, 2, 3, 2, 2] as Array<Number>;
-    // The order rows are grown in: the next prayer, the date, the
-    // countdown, the foot, the weather.
-    private var _growOrder as Array<Number> = [2, 0, 4, 3, 1] as Array<Number>;
+    private const RANK2_MAX = 3;
     private const F_SIDE = Graphics.FONT_XTINY;
 
     // What the face shows this minute.
@@ -482,25 +492,30 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // An arrangement fits; now the rest of the dial. What stopped the
     // fonts growing was the widest row — the clock, across the middle —
     // not the height, and a stack sized for it leaves a round dial empty
-    // at the top and the foot. So, with the clock as it is: each small
-    // row is grown a size at a time while everything still fits (the next
-    // prayer first, then the date, the countdown, the foot, the weather);
-    // and then the gaps are opened, above the clock and below it each as
-    // far as its own end row still clears the ring.
+    // at the top and the foot. So, with the clock as it is: the two
+    // ranks are grown a size at a time while everything still fits —
+    // rank 2 first, rank 3 only ever to the size below it — and then the
+    // gaps are opened, above the clock and below it each as far as its
+    // own end row still clears the ring.
     private function fill(dc as Dc, c as Number, clock as Array<Number>, set as Array<Number>, counts as Array<Graphics.FontType>) as Void {
-        var pick = [set[0], set[1], set[2], set[3], set[4]] as Array<Number>;
+        var pick = [set[0], set[1]] as Array<Number>;
         var grew = true;
         while (grew) {
             grew = false;
-            for (var g = 0; g < _growOrder.size(); g++) {
-                var row = _growOrder[g];
-                if (pick[row] < _caps[row]) {
-                    pick[row] += 1;
-                    if (place(dc, c, clock, pick, counts, 0, 0, false)) {
-                        grew = true;
-                    } else {
-                        pick[row] -= 1;
-                    }
+            if (pick[0] < RANK2_MAX) {
+                pick[0] += 1;
+                if (place(dc, c, clock, pick, counts, 0, 0, false)) {
+                    grew = true;
+                } else {
+                    pick[0] -= 1;
+                }
+            }
+            if (pick[1] < pick[0] - 1) {
+                pick[1] += 1;
+                if (place(dc, c, clock, pick, counts, 0, 0, false)) {
+                    grew = true;
+                } else {
+                    pick[1] -= 1;
                 }
             }
         }
@@ -525,11 +540,11 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // above and below the clock opened by that much, and keeps the
     // arrangement if every row fits (or, forced, regardless).
     private function place(dc as Dc, c as Number, clock as Array<Number>, pick as Array<Number>, counts as Array<Graphics.FontType>, above as Number, below as Number, force as Boolean) as Boolean {
-        var fDate = _rowFonts[pick[0]];
-        var fWeather = _rowFonts[pick[1]];
-        var fPrayer = _rowFonts[pick[2]];
-        var fFoot = _rowFonts[pick[3]];
-        var fCount = counts[pick[4]];
+        var fPrayer = _rowFonts[pick[0]];
+        var fCount = counts[_countFor[pick[0]]];
+        var fDate = _rowFonts[pick[1]];
+        var fWeather = fDate;
+        var fFoot = fDate;
         var full = 2 * (_w / 2 - INSET);
         _lo = -10000;
         _hi = 10000;

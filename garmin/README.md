@@ -36,10 +36,15 @@ Three Connect IQ apps, fed by the Android app through
   a minute. The face is laid out, not placed: it picks each row's font and
   stacks the rows so that every row's ink — measured for the widest thing
   that row can show — lies inside the ring, trying arrangements from the
-  best down; then, with the clock settled, it grows each small row a size
-  at a time while everything still fits and opens the gaps above and below
-  the clock, so the stack reaches from the top of the dial to its foot
-  instead of sitting in the middle of it. After days without the phone the weather's row says the
+  best down; then, with the clock settled, it grows the rows while
+  everything still fits and opens the gaps above and below the clock, so
+  the stack reaches from the top of the dial to its foot instead of
+  sitting in the middle of it. The sizes are four and every row is one of
+  them: the time; the next prayer and its countdown, one size (the
+  countdown's Roboto figures as tall as the prayer line's own); the date,
+  the weather, the steps and the battery, one size below that; and am/pm,
+  the seconds and the day's high and low, the smallest. A row grows only
+  with its rank, and nothing is as large as the time. After days without the phone the weather's row says the
   times may be out of date. Temperatures are in °F where the app's place
   reads Fahrenheit and °C elsewhere; the weather is the watch's own, which
   Gadgetbridge fills from the phone's weather app (Breezy Weather, say);

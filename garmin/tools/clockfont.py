@@ -33,7 +33,7 @@ HEIGHTS = [76, 70, 64, 60, 56, 53, 50, 47, 44, 40]
 # next, so the clip had to cover all of it. These have no room above or
 # below the figures — the clip is the ink, and the second-by-second draw
 # stays well inside the 30 ms a watch face is allowed.
-COUNT_HEIGHTS = [28, 24, 20]
+COUNT_HEIGHTS = [28, 24, 20, 18]
 SECONDS_HEIGHTS = [15]
 
 

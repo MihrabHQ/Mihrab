@@ -13,5 +13,6 @@
     <font id="Count28" filename="count28.fnt" antialias="false" filter="0123456789:"/>
     <font id="Count24" filename="count24.fnt" antialias="false" filter="0123456789:"/>
     <font id="Count20" filename="count20.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Count18" filename="count18.fnt" antialias="false" filter="0123456789:"/>
     <font id="Seconds15" filename="seconds15.fnt" antialias="false" filter="0123456789:"/>
 </fonts>
