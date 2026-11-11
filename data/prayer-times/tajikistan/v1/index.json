@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "builtAt": "2026-11-11T19:10:45.934Z",
+  "timezone": "Asia/Dushanbe",
+  "source": "https://shuroiulamo.tj/tj/namaz",
+  "serverStatus": "ok",
+  "firstDate": "2026-11-04",
+  "lastDate": "2026-11-30",
+  "minCoverageDays": 19,
+  "deadCities": [],
+  "cities": [
+    {
+      "id": 1,
+      "city": "Душанбе",
+      "cityEn": "Dushanbe"
+    },
+    {
+      "id": 2,
+      "city": "Истаравшан",
+      "cityEn": "Istaravshan"
+    },
+    {
+      "id": 3,
+      "city": "Кӯлоб",
+      "cityEn": "Kulob"
+    },
+    {
+      "id": 4,
+      "city": "Хуҷанд",
+      "cityEn": "Khujand"
+    },
+    {
+      "id": 5,
+      "city": "Рашт",
+      "cityEn": "Rasht"
+    },
+    {
+      "id": 6,
+      "city": "Конибодом",
+      "cityEn": "Konibodom"
+    },
+    {
+      "id": 7,
+      "city": "Исфара",
+      "cityEn": "Isfara"
+    },
+    {
+      "id": 8,
+      "city": "Ашт",
+      "cityEn": "Asht"
+    },
+    {
+      "id": 9,
+      "city": "Хоруғ",
+      "cityEn": "Khorugh"
+    },
+    {
+      "id": 10,
+      "city": "Мурғоб",
+      "cityEn": "Murghob"
+    },
+    {
+      "id": 11,
+      "city": "Ҳамадонӣ",
+      "cityEn": "Hamadoni"
+    },
+    {
+      "id": 12,
+      "city": "Ш. Шоҳин",
+      "cityEn": "Shamsiddin Shohin"
+    },
+    {
+      "id": 13,
+      "city": "Муминобод",
+      "cityEn": "Muminobod"
+    },
+    {
+      "id": 14,
+      "city": "Бохтар",
+      "cityEn": "Bokhtar"
+    },
+    {
+      "id": 15,
+      "city": "Панҷакент",
+      "cityEn": "Panjakent"
+    },
+    {
+      "id": 16,
+      "city": "Шаҳритус",
+      "cityEn": "Shahritus"
+    },
+    {
+      "id": 17,
+      "city": "Айнӣ",
+      "cityEn": "Ayni"
+    },
+    {
+      "id": 18,
+      "city": "Н. Хусрав",
+      "cityEn": "Nosiri Khusrav"
+    },
+    {
+      "id": 19,
+      "city": "Турсунзода",
+      "cityEn": "Tursunzoda"
+    }
+  ]
+}

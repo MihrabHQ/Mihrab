@@ -1,0 +1,135 @@
+[
+ {
+  "id": 1,
+  "name": "Душанбе",
+  "nameEn": "Dushanbe",
+  "lat": 38.56,
+  "lon": 68.774
+ },
+ {
+  "id": 2,
+  "name": "Истаравшан",
+  "nameEn": "Istaravshan",
+  "lat": 39.911,
+  "lon": 69.006
+ },
+ {
+  "id": 3,
+  "name": "Кӯлоб",
+  "nameEn": "Kulob",
+  "lat": 37.912,
+  "lon": 69.781
+ },
+ {
+  "id": 4,
+  "name": "Хуҷанд",
+  "nameEn": "Khujand",
+  "lat": 40.283,
+  "lon": 69.622
+ },
+ {
+  "id": 5,
+  "name": "Рашт",
+  "nameEn": "Rasht",
+  "lat": 39.027,
+  "lon": 70.376
+ },
+ {
+  "id": 6,
+  "name": "Конибодом",
+  "nameEn": "Konibodom",
+  "lat": 40.294,
+  "lon": 70.431
+ },
+ {
+  "id": 7,
+  "name": "Исфара",
+  "nameEn": "Isfara",
+  "lat": 40.126,
+  "lon": 70.625
+ },
+ {
+  "id": 8,
+  "name": "Ашт",
+  "nameEn": "Asht",
+  "lat": 40.668,
+  "lon": 70.35
+ },
+ {
+  "id": 9,
+  "name": "Хоруғ",
+  "nameEn": "Khorugh",
+  "lat": 37.489,
+  "lon": 71.553
+ },
+ {
+  "id": 10,
+  "name": "Мурғоб",
+  "nameEn": "Murghob",
+  "lat": 38.171,
+  "lon": 73.965
+ },
+ {
+  "id": 11,
+  "name": "Ҳамадонӣ",
+  "nameEn": "Hamadoni",
+  "lat": 37.613,
+  "lon": 69.631
+ },
+ {
+  "id": 12,
+  "name": "Ш. Шоҳин",
+  "nameEn": "Shamsiddin Shohin",
+  "lat": 37.843,
+  "lon": 70.043
+ },
+ {
+  "id": 13,
+  "name": "Муминобод",
+  "nameEn": "Muminobod",
+  "lat": 38.108,
+  "lon": 70.029
+ },
+ {
+  "id": 14,
+  "name": "Бохтар",
+  "nameEn": "Bokhtar",
+  "lat": 37.836,
+  "lon": 68.78
+ },
+ {
+  "id": 15,
+  "name": "Панҷакент",
+  "nameEn": "Panjakent",
+  "lat": 39.495,
+  "lon": 67.609
+ },
+ {
+  "id": 16,
+  "name": "Шаҳритус",
+  "nameEn": "Shahritus",
+  "lat": 37.262,
+  "lon": 68.138
+ },
+ {
+  "id": 17,
+  "name": "Айнӣ",
+  "nameEn": "Ayni",
+  "lat": 39.393,
+  "lon": 68.541
+ },
+ {
+  "id": 18,
+  "name": "Н. Хусрав",
+  "nameEn": "Nosiri Khusrav",
+  "lat": 37.21,
+  "lon": 68
+ },
+ {
+  "id": 19,
+  "name": "Турсунзода",
+  "nameEn": "Tursunzoda",
+  "lat": 38.511,
+  "lon": 68.231
+ }
+]
