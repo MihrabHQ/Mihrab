@@ -25,6 +25,16 @@ TTF = os.path.join(ROOT, 'android', 'app', 'src', 'main', 'res', 'font', 'roboto
 OUT = os.path.join(HERE, '..', 'watchface', 'resources', 'fonts')
 CHARS = '0123456789:'
 HEIGHTS = [76, 70, 64, 60, 56, 53, 50, 47, 44, 40]
+# The two things redrawn every second, in the same figures: the countdown
+# (largest first) and the seconds beside the clock. Not for looks alone. A
+# MIP panel is refreshed a line at a time, and a partial update is charged
+# for every line its clip covers; a system font's box is a third taller
+# than its figures, and how much taller differs from one firmware to the
+# next, so the clip had to cover all of it. These have no room above or
+# below the figures — the clip is the ink, and the second-by-second draw
+# stays well inside the 30 ms a watch face is allowed.
+COUNT_HEIGHTS = [28, 24, 20]
+SECONDS_HEIGHTS = [15]
 
 
 def font_for(height):
@@ -91,8 +101,13 @@ def main():
         name, base, adv = build(h)
         entries.append(f'    <font id="Clock{h}" filename="{name}.fnt" antialias="false" filter="{CHARS}"/>')
         print(name, 'base', base, 'digit advance', adv)
+    for prefix, heights in (('Count', COUNT_HEIGHTS), ('Seconds', SECONDS_HEIGHTS)):
+        for h in heights:
+            name, base, adv = build(h, name=f'{prefix.lower()}{h}')
+            entries.append(f'    <font id="{prefix}{h}" filename="{name}.fnt" antialias="false" filter="{CHARS}"/>')
+            print(name, 'base', base, 'digit advance', adv)
     with open(os.path.join(OUT, 'fonts.xml'), 'w') as out:
-        out.write('<!-- garmin/tools/clockfont.py: the clock figures in the app\'s Roboto. -->\n<fonts>\n')
+        out.write('<!-- garmin/tools/clockfont.py: the clock, countdown and seconds figures in the app\'s Roboto. -->\n<fonts>\n')
         out.write('\n'.join(entries) + '\n</fonts>\n')
 
 

@@ -3,38 +3,42 @@
 Three Connect IQ apps, fed by the Android app through
 [Gadgetbridge](https://gadgetbridge.org):
 
-- a **watch face**, drawn for a MIP screen (solid ink on black in the
-  screen's own 64 colours, nothing dithered, nothing animating but what
-  must) and wearing the app's accent, which the phone sends (each preset
-  matched by eye to a colour the screen shows; a custom colour snapped to
-  the nearest): a ring round the edge filling, in the accent, from the
-  last prayer to the next, with a white bead where it has got to; the date, and under it today's steps as six
-  figures, "004532" — the figures the count uses white, the unused
-  leading zeros grey; the time as large as the dial allows, in the app's
-  own Roboto at whichever of a ladder of sizes fits (40 to 76 pixels
-  tall, one bit deep so the screen has nothing to dither;
-  garmin/tools/clockfont.py), with the weather to its left — an icon
-  drawn for the condition (sun or moon, partly cloudy, cloud, rain, snow,
-  sleet, storm, fog, wind) and the temperature now, today's high and low
-  under them — or, where that would make the clock smaller, on the steps'
-  row before the footprint; and the seconds small and grey to its right, the colon and a rule under the figures in
-  the accent; the next prayer, its name in the accent and its time in
-  white, and the countdown to it in full, "05:49:12", ticking by the
-  second, its colons in the accent;
-  and at the foot, only after days without the phone, a word about that.
-  Temperatures are in °F where the app's place reads Fahrenheit (the
-  United States, Liberia and a few more) and °C elsewhere. The seconds
-  and the countdown are redrawn every second inside their own clips
-  (a partial update); everything else once a minute. The face is laid
-  out, not placed: it picks each row's font and stacks the rows so that
-  every row's ink — measured for the widest thing that row can show (any
-  minute, any prayer's name in the watch's language, "88h 88m", six-figure
-  steps; the weather and date as they are) — lies inside the round dial,
-  giving the clock the largest font first, then the prayer and its
-  countdown, then the rest. Messages wrap onto a second line rather than
-  run off the edge. The weather is the
-  watch's own, which Gadgetbridge fills from the phone's weather app
-  (Breezy Weather, say);
+- a **watch face**, drawn for a MIP screen — always on, 64 colours and
+  nothing in between, read at a glance in daylight and by a dim backlight
+  at night. So: white on black for everything that is read, the app's
+  accent (which the phone sends, snapped to a colour the screen shows) for
+  the next prayer and the way to it, grey only for what is read second,
+  nothing anti-aliased, and nothing moving but the seconds and the
+  countdown. Top to bottom: the date (or the Hijri date, or both); the
+  weather — an icon drawn for the condition, the temperature now, the
+  day's high and low; the time as large as the dial allows, in the app's
+  Roboto at whichever of a ladder of sizes fits, its colon in the accent,
+  with am/pm and the seconds small to its right; the next prayer, its name
+  in the accent and its time in white; the countdown to it in full,
+  "05:49:12", in the same Roboto; and at the foot, as Garmin's own faces
+  write theirs, a footprint with today's steps and a battery with what is
+  left of it.
+  **Round the edge runs the day** — the app's Track bent into the bezel:
+  the twenty-four hours once round, midnight at the foot and noon at the
+  top; the night a thin grey line and the day (sunrise to Maghrib) a white
+  one; a tick at each prayer; the next prayer a ring in the accent; the
+  stretch from now to it thick in the accent, shortening as it nears; and
+  a bead for the time now, yellow by day and white by night.
+  The seconds and the countdown are redrawn every second inside their own
+  clips (a partial update), from values kept since the minute's draw and
+  in fonts whose box is exactly their figures (`garmin/tools/clockfont.py`),
+  so the lines the screen refreshes are no more than the ink: about 25 ms
+  a second in the simulator's diagnostics against the 30 a face is
+  allowed. If the watch says the budget was passed all the same, the face
+  drops the seconds and counts down to the minute rather than leave
+  figures the system has stopped redrawing. Everything else is drawn once
+  a minute. The face is laid out, not placed: it picks each row's font and
+  stacks the rows so that every row's ink — measured for the widest thing
+  that row can show — lies inside the ring, trying arrangements from the
+  best down. After days without the phone the weather's row says the
+  times may be out of date. Temperatures are in °F where the app's place
+  reads Fahrenheit and °C elsewhere; the weather is the watch's own, which
+  Gadgetbridge fills from the phone's weather app (Breezy Weather, say);
 - a **data field**: "Asr 1h 23m" in any activity screen, or a watch face's
   data-field slot, in the largest font the field's box takes — the name
   over the countdown in a box too narrow for one line;

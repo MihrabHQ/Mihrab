@@ -1,4 +1,4 @@
-<!-- garmin/tools/clockfont.py: the clock figures in the app's Roboto. -->
+<!-- garmin/tools/clockfont.py: the clock, countdown and seconds figures in the app's Roboto. -->
 <fonts>
     <font id="Clock76" filename="clock76.fnt" antialias="false" filter="0123456789:"/>
     <font id="Clock70" filename="clock70.fnt" antialias="false" filter="0123456789:"/>
@@ -10,4 +10,8 @@
     <font id="Clock47" filename="clock47.fnt" antialias="false" filter="0123456789:"/>
     <font id="Clock44" filename="clock44.fnt" antialias="false" filter="0123456789:"/>
     <font id="Clock40" filename="clock40.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Count28" filename="count28.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Count24" filename="count24.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Count20" filename="count20.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Seconds15" filename="seconds15.fnt" antialias="false" filter="0123456789:"/>
 </fonts>

@@ -25,8 +25,9 @@ class MihrabFaceApp extends Application.AppBase {
         if (Background has :registerForPhoneAppMessageEvent) {
             Background.registerForPhoneAppMessageEvent();
         }
-        _view = new MihrabFaceView();
-        return [_view];
+        var view = new MihrabFaceView();
+        _view = view;
+        return [view, new MihrabFaceDelegate(view)];
     }
 
     function getServiceDelegate() as [ServiceDelegate] {
