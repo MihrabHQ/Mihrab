@@ -16,6 +16,7 @@
  * see below.
  */
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
+import { isCoordinateInKyrgyzstan } from '../utils/kyrgyzstanRegion';
 import { isCoordinateInLondon } from '../utils/londonRegion';
 import { isCoordinateInIndonesia } from '../utils/indonesiaRegion';
 import { isCoordinateInMalaysia } from '../utils/malaysiaRegion';
@@ -64,6 +65,7 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   // London's mosques pray by one agreed timetable; within the city it comes
   // before Diyanet's London, which Automatic would otherwise take.
   { id: 'london', covers: isCoordinateInLondon, yieldsToChosenMethod: true },
+  { id: 'kmdb', covers: isCoordinateInKyrgyzstan, yieldsToChosenMethod: true },
 ];
 
 /**

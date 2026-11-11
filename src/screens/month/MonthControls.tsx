@@ -17,6 +17,7 @@ import { getMethodLabel } from '../../settings/methods';
 import {
   providerHidesCalculationMethod,
   providerHidesHanafiAsr,
+  providerPrintsHanafiAsrOnly,
 } from '../../settings/providerUi';
 import { getProviderLabel } from '../../settings/providersCatalog';
 import type { PrayerDataProviderId } from '../../settings/types';
@@ -99,7 +100,7 @@ function MonthControlsImpl({
           // Not `!== 'islamiska_forbundet'`: Morocco publishes a single
           // schedule too, so a stored Hanafi setting must not caption a
           // table that does not vary by madhab.
-          (!providerHidesHanafiAsr(effectiveProvider) && school === 1
+          (providerPrintsHanafiAsrOnly(effectiveProvider) || (!providerHidesHanafiAsr(effectiveProvider) && school === 1)
             ? ` · ${t('home.hanafiSuffix')}`
             : '') +
           // `month.monthsStored` has been translated into all thirteen

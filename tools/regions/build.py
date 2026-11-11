@@ -22,7 +22,7 @@ from shapely.ops import unary_union
 # code the app uses); parts that belong together are merged: Western Sahara
 # with Morocco (the Habous ministry lists its cities), Northern Cyprus with
 # Türkiye (Diyanet's districts take it in).
-TARGETS = {'SWE': 'SE', 'MAR': 'MA', 'SAH': 'MA', 'DZA': 'DZ', 'SGP': 'SG', 'MYS': 'MY', 'IDN': 'ID', 'TUR': 'TR', 'CYN': 'TR'}
+TARGETS = {'SWE': 'SE', 'MAR': 'MA', 'SAH': 'MA', 'DZA': 'DZ', 'SGP': 'SG', 'MYS': 'MY', 'IDN': 'ID', 'TUR': 'TR', 'CYN': 'TR', 'KGZ': 'KG'}
 # Neighbours a point near a target could be in.
 NEIGHBOURS = {
     'NOR': 'NO', 'FIN': 'FI', 'ALD': 'AX', 'DNK': 'DK', 'EST': 'EE', 'LVA': 'LV', 'LTU': 'LT', 'DEU': 'DE', 'POL': 'PL', 'RUS': 'RU',
@@ -30,6 +30,7 @@ NEIGHBOURS = {
     'BRN': 'BN', 'TLS': 'TL', 'PHL': 'PH', 'THA': 'TH', 'PNG': 'PG', 'AUS': 'AU', 'VNM': 'VN', 'KHM': 'KH', 'IND': 'IN',
     'CYP': 'CY', 'CNM': 'CY', 'ESB': 'CY', 'WSB': 'CY', 'GRC': 'GR', 'BGR': 'BG', 'SYR': 'SY', 'IRQ': 'IQ', 'IRN': 'IR',
     'GEO': 'GE', 'ARM': 'AM', 'AZE': 'AZ',
+    'KAZ': 'KZ', 'UZB': 'UZ', 'TJK': 'TJ', 'CHN': 'CN',
 }
 # Countries with a calculation method of their own, which AlAdhan's Automatic
 # picks there and the app lists (Umm al-Qura, Egypt, Karachi, Tehran, Gulf,

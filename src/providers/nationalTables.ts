@@ -5,6 +5,7 @@
  *   • Singapore — MUIS, one table for the whole country (`muis`)
  *   • Malaysia — JAKIM e-Solat, 59 zones (`jakim`)
  *   • London — the London Unified Prayer Timetable, one for the city (`london`)
+ *   • Kyrgyzstan — the Spiritual Administration, 115 places (`kmdb`)
  *   • Indonesia — Kemenag (Bimas Islam), 517 regencies and cities (`kemenag`),
  *     computed on the phone (its method and correction list)
  *
@@ -14,6 +15,7 @@
  */
 import {
   JAKIM_DATASET_BASE_URL,
+  KMDB_DATASET_BASE_URL,
   LONDON_DATASET_BASE_URL,
   MUIS_DATASET_BASE_URL,
   NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
@@ -175,6 +177,47 @@ export const londonTable = createNationalTable({
   }),
 });
 
+/** Kyrgyzstan's clock: UTC+6, no summer time. */
+export const KMDB_CLOCK: PlaceClock = { zone: 'Asia/Bishkek' };
+/**
+ * What stands in past the published window or off the list: the Muslim
+ * World League's angles (Fajr 18°, as the Administration's; Isha 17°) with
+ * the Hanafi Asr its timetable prints. A stand-in, not its method.
+ */
+export const KMDB_STAND_IN_METHOD = 3;
+
+/**
+ * Kyrgyzstan: the nearest of the Administration's listed places. The
+ * valleys are well covered; the cap allows for the high east and south.
+ */
+export const kmdbTable = createNationalTable({
+  id: 'kmdb',
+  dataset: 'kmdb',
+  baseUrl: KMDB_DATASET_BASE_URL,
+  timezone: 'Asia/Bishkek',
+  get places() {
+    return placesOf(() => require('./data/kmdbPlaces.json'));
+  },
+  maxPlaceKm: 150,
+  get seed() {
+    return seedOf(() => require('./data/kmdbSeed.json'));
+  },
+  refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
+  indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
+  calculate: (place, date) => ({
+    ...computeLocalAdhanTimes({
+      latitude: place.lat,
+      longitude: place.lon,
+      date,
+      calculationMethod: KMDB_STAND_IN_METHOD,
+      // the one Asr the timetable prints
+      school: 1,
+      placeClock: KMDB_CLOCK,
+    }),
+    source: 'local',
+  }),
+});
+
 /**
  * Indonesia: the ministry publishes per regency, and a regency's seat
  * stands for it. Regencies in Papua and Kalimantan are large.
@@ -234,6 +277,7 @@ export const NATIONAL_TABLES: Partial<Record<PrayerDataProviderId, NationalTable
   jakim: jakimTable,
   kemenag: kemenagTable,
   london: londonTable,
+  kmdb: kmdbTable,
 };
 
 /**

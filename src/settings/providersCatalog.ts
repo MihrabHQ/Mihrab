@@ -103,6 +103,14 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.london.desc',
   },
   {
+    id: 'kmdb',
+    name: 'Kyrgyzstan',
+    description:
+      'The Spiritual Administration of Muslims of Kyrgyzstan’s timetable for the place nearest you in its list, as its own public service gives it. One Asr, the Hanafi one.',
+    nameKey: 'providers.kmdb.name',
+    descriptionKey: 'providers.kmdb.desc',
+  },
+  {
     id: 'jakim',
     name: 'Malaysia',
     description:

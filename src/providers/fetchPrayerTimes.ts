@@ -14,6 +14,8 @@ import {
   kemenagTimesNear,
   MUIS_CLOCK,
   LONDON_CLOCK,
+  KMDB_CLOCK,
+  KMDB_STAND_IN_METHOD,
   LONDON_STAND_IN_METHOD,
   nationalTableFor,
   nationalTablePlaceId,
@@ -394,6 +396,7 @@ export async function fetchPrayerTimesUnified(
     case 'muis':
     case 'jakim':
     case 'london':
+    case 'kmdb':
     case 'kemenag': {
       // A national source (Singapore's MUIS, Malaysia's JAKIM, Indonesia's
       // Kemenag): the authority's day for the nearest listed place — the
@@ -452,6 +455,8 @@ export async function fetchPrayerTimesUnified(
             ? JAKIM_CLOCK
             : p.provider === 'london'
             ? LONDON_CLOCK
+            : p.provider === 'kmdb'
+            ? KMDB_CLOCK
             : indonesiaClock(place.nameEn),
           date: p.date,
           calculationMethod:
@@ -461,10 +466,13 @@ export async function fetchPrayerTimesUnified(
               ? 17
               : p.provider === 'london'
               ? LONDON_STAND_IN_METHOD
+              : p.provider === 'kmdb'
+              ? KMDB_STAND_IN_METHOD
               : 20,
           // MUIS and JAKIM: the table's Shafi'i Asr, the same on a computed day as a printed one.
           // London: the reader's school, as its timetable's two Asr times.
-          school: hanafiKemenag || (p.provider === 'london' && p.school === 1) ? 1 : 0,
+          // Kyrgyzstan: the Hanafi Asr its timetable prints, whatever the setting.
+          school: hanafiKemenag || (p.provider === 'london' && p.school === 1) || p.provider === 'kmdb' ? 1 : 0,
         }),
         source: 'local',
       };

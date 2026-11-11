@@ -21,6 +21,7 @@ export function providerHidesCalculationMethod(
     id === 'kemenag' ||
     // London's timetable is its own; the Hanafi toggle picks its second Asr.
     id === 'london' ||
+    id === 'kmdb' ||
     // The calendar is its own method; the Hanafi Asr toggle still applies
     // (it picks the calendar's Asr-ı sânî).
     id === 'namazvakti' ||
@@ -48,6 +49,17 @@ export function providerHidesHanafiAsr(id: PrayerDataProviderId): boolean {
     id === 'habous' ||
     id === 'marw' ||
     id === 'muis' ||
-    id === 'jakim'
+    id === 'jakim' ||
+    // Kyrgyzstan's prints one Asr too — the Hanafi one (`providerPrintsHanafiAsrOnly`).
+    id === 'kmdb'
   );
+}
+
+/**
+ * The one Asr the source prints is the Hanafi one (two shadow lengths):
+ * Kyrgyzstan's. The screens then say "Hanafi Asr" whatever the reader's
+ * school is set to, and Settings tells a reader of another school so.
+ */
+export function providerPrintsHanafiAsrOnly(id: PrayerDataProviderId | null | undefined): boolean {
+  return id === 'kmdb';
 }

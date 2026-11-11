@@ -230,6 +230,7 @@
     "hanafiAsr": "Hanefi Asr",
     "hanafiAsrHelp": "İkindi için daha büyük gölge uzunluğu (okul = 1)",
     "hanafiAsrPublished": "Bu kaynak tek bir ikindi vakti yayımlar, Şafiî (bir gölge boyu); Hanefî ikindi gösterilmez.",
+    "hanafiAsrOnlyPublished": "Bu kaynak tek bir ikindi vakti yayımlar: Hanefî olanı (iki gölge boyu); Şâfiî ikindisi gösterilmez.",
     "notifications": "Bildirimler",
     "prayerAlerts": "Namaz uyarıları",
     "prayerAlertsHelp": "Beş vakit namaz (Sabah-Yatsı) için planlanmıştır. Android, güvenilir zamanlama için tam alarm erişimi gerektirebilir.",
@@ -652,6 +653,10 @@
     "london": {
       "name": "Londra",
       "desc": "Londra Birleşik Namaz Vakitleri Cetveli; şehrin büyük camilerinin üzerinde anlaştığı tek cetvel, londonprayertimes.com’un (Doğu Londra Camii) yayımladığı haliyle. Büyük Londra içinde."
+    },
+    "kmdb": {
+      "name": "Kırgızistan",
+      "desc": "Kırgızistan Müslümanları Dinî İdaresi’nin, listesindeki size en yakın yer için cetveli; kendi açık hizmetinin verdiği haliyle. Tek ikindi, Hanefî olanı."
     }
   },
   "compass": {
@@ -2038,6 +2043,7 @@
     "serverSingapore": "Singapur · MUIS",
     "serverMalaysia": "Malezya · JAKIM e-Solat",
     "serverLondon": "Londra · Birleşik Vakit Cetveli",
+    "serverKyrgyzstan": "Kırgızistan · Dinî İdare",
     "jakimWindow": "JAKIM yalnızca içinde bulunulan yılı yayımlar; bu yüzden bu pencere 31 Aralık’ta biter ve yeni yıl Ocak’ın ilk günlerinde yayımlanınca yeniden başlar.",
     "londonWindow": "Cetvel yıldan yıla yayımlanır; bu yüzden bu pencere 31 Aralık’ta biter ve yeni yıl yayımlanınca yeniden başlar.",
     "serverIndonesia": "Endonezya · Kemenag",

@@ -16,6 +16,7 @@ import {
   providerHidesCalculationMethod,
   providerHidesHanafiAsr,
   isDiyanetSource,
+  providerPrintsHanafiAsrOnly,
 } from '../../settings/providerUi';
 import { getMethodLabel } from '../../settings/methods';
 import { madhabMatches, selectedMadhab } from '../../prayer/madhab';
@@ -165,10 +166,10 @@ function CalculationCardImpl({
       {providerHidesHanafiAsr(effectiveProvider) ? (
         // The source prints one Asr: say so to a reader who asked for the
         // Hanafi one, rather than leave the school row unexplained.
-        settings.school === 1 ? (
+        (providerPrintsHanafiAsrOnly(effectiveProvider) ? settings.school !== 1 : settings.school === 1) ? (
           <SettingsBlock>
             <Text style={[s.help, { color: palette.muted }]}>
-              {t('settings.hanafiAsrPublished')}
+              {t(providerPrintsHanafiAsrOnly(effectiveProvider) ? 'settings.hanafiAsrOnlyPublished' : 'settings.hanafiAsrPublished')}
             </Text>
           </SettingsBlock>
         ) : null

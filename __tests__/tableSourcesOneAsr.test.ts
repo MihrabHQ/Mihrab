@@ -45,7 +45,7 @@ describe('one printed Asr: toggle hidden, note shown', () => {
   it('Settings shows the note to a Hanafi reader of such a source', () => {
     const card = read('src', 'screens', 'settings', 'CalculationCard.tsx');
     expect(card).toMatch(
-      /providerHidesHanafiAsr\(effectiveProvider\) \?[\s\S]{0,200}settings\.school === 1[\s\S]{0,200}settings\.hanafiAsrPublished/,
+      /providerHidesHanafiAsr\(effectiveProvider\) \?[\s\S]{0,300}settings\.school === 1[\s\S]{0,400}settings\.hanafiAsrPublished/,
     );
   });
 });

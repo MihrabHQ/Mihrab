@@ -49,7 +49,7 @@ import {
   type PlaceClock,
   withZoneRule,
 } from './locationClock';
-import { JAKIM_CLOCK, kemenagTable, MUIS_CLOCK } from './nationalTables';
+import { JAKIM_CLOCK, kemenagTable, KMDB_CLOCK, MUIS_CLOCK } from './nationalTables';
 
 /**
  * Countries with one zone, by `countryAt`'s code (and the national-method
@@ -121,6 +121,8 @@ function countryClock(
       return MUIS_CLOCK;
     case 'MY':
       return JAKIM_CLOCK;
+    case 'KG':
+      return KMDB_CLOCK;
     case 'ID': {
       const place = kemenagTable.nearest(latitude, longitude);
       return place ? indonesiaClock(place.nameEn) : undefined;

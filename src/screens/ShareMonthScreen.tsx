@@ -34,6 +34,7 @@ import { getProviderLabel } from '../settings/providersCatalog';
 import {
   providerHidesCalculationMethod,
   providerHidesHanafiAsr,
+  providerPrintsHanafiAsrOnly,
 } from '../settings/providerUi';
 import type { AppLanguage } from '../settings/types';
 import { isRtlLanguage } from '../i18n/layoutDirection';
@@ -404,9 +405,9 @@ export function ShareMonthScreen({ route, navigation, embedded }: Props & { navi
     if (!providerHidesCalculationMethod(effectiveProvider)) {
       parts.push(getMethodLabel(settings.calculationMethod, tr));
     }
-    if (!providerHidesHanafiAsr(effectiveProvider)) {
+    if (providerPrintsHanafiAsrOnly(effectiveProvider) || !providerHidesHanafiAsr(effectiveProvider)) {
       parts.push(
-        settings.school === 1
+        providerPrintsHanafiAsrOnly(effectiveProvider) || settings.school === 1
           ? st('share.asrHanafi', { defaultValue: 'Asr: Hanafi' })
           : st('share.asrStandard', { defaultValue: 'Asr: standard' }),
       );

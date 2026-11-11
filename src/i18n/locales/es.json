@@ -230,6 +230,7 @@
     "hanafiAsr": "Hanafi Asr",
     "hanafiAsrHelp": "Mayor longitud de sombra para Asr (escuela = 1)",
     "hanafiAsrPublished": "Esta fuente publica una sola hora de Asr, la shafi'í (una longitud de sombra); el Asr hanafí no se muestra.",
+    "hanafiAsrOnlyPublished": "Esta fuente publica una sola hora de Asr, la hanafí (dos longitudes de sombra); el Asr shafií no se muestra.",
     "notifications": "Notificaciones",
     "prayerAlerts": "Alertas de oración",
     "prayerAlertsHelp": "Programado para las cinco oraciones diarias (Fajr-Isha). Es posible que Android requiera acceso exacto a la alarma para una sincronización confiable.",
@@ -653,6 +654,10 @@
     "london": {
       "name": "Londres",
       "desc": "El London Unified Prayer Timetable, el horario único que acordaron las principales mezquitas de la ciudad, tal como lo publica londonprayertimes.com (East London Mosque). Dentro del Gran Londres."
+    },
+    "kmdb": {
+      "name": "Kirguistán",
+      "desc": "El horario de la Administración Espiritual de los Musulmanes de Kirguistán para el lugar de su lista más cercano a ti, tal como lo ofrece su propio servicio público. Un solo Asr, el hanafí."
     }
   },
   "compass": {
@@ -2039,6 +2044,7 @@
     "serverSingapore": "Singapur · MUIS",
     "serverMalaysia": "Malasia · JAKIM e-Solat",
     "serverLondon": "Londres · Unified Prayer Timetable",
+    "serverKyrgyzstan": "Kirguistán · Administración Espiritual",
     "jakimWindow": "JAKIM publica solo el año en curso, así que esta ventana termina el 31 de diciembre y vuelve a empezar cuando se publica el nuevo año en los primeros días de enero.",
     "londonWindow": "El horario se publica año a año, así que esta ventana termina el 31 de diciembre y vuelve a empezar cuando se publica el nuevo año.",
     "serverIndonesia": "Indonesia · Kemenag",

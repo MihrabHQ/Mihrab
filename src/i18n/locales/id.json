@@ -230,6 +230,7 @@
     "hanafiAsr": "Hanafi Ashar",
     "hanafiAsrHelp": "Panjang bayangan Ashar lebih besar (sekolah = 1)",
     "hanafiAsrPublished": "Sumber ini menerbitkan satu waktu Ashar, yaitu Syafi'i (satu panjang bayangan); Ashar Hanafi tidak ditampilkan.",
+    "hanafiAsrOnlyPublished": "Sumber ini menerbitkan satu waktu Asar, yang Hanafi (dua panjang bayangan); Asar Syafi’i tidak ditampilkan.",
     "notifications": "Pemberitahuan",
     "prayerAlerts": "Peringatan doa",
     "prayerAlertsHelp": "Dijadwalkan untuk shalat lima waktu (Fajr – Isya). Android mungkin memerlukan akses alarm yang tepat agar pengaturan waktu dapat diandalkan.",
@@ -652,6 +653,10 @@
     "london": {
       "name": "London",
       "desc": "London Unified Prayer Timetable, satu jadwal yang disepakati masjid-masjid utama kota itu, sebagaimana diterbitkan londonprayertimes.com (East London Mosque). Di dalam London Raya."
+    },
+    "kmdb": {
+      "name": "Kirgizstan",
+      "desc": "Jadwal Administrasi Spiritual Muslim Kirgizstan untuk tempat terdekat dengan Anda dalam daftarnya, sebagaimana diberikan layanan publiknya sendiri. Satu Asar, yang Hanafi."
     }
   },
   "compass": {
@@ -2038,6 +2043,7 @@
     "serverSingapore": "Singapura · MUIS",
     "serverMalaysia": "Malaysia · JAKIM e-Solat",
     "serverLondon": "London · Unified Prayer Timetable",
+    "serverKyrgyzstan": "Kirgizstan · Administrasi Spiritual",
     "jakimWindow": "JAKIM hanya menerbitkan tahun berjalan, jadi jendela ini berakhir 31 Desember dan dimulai lagi saat tahun baru diterbitkan pada hari-hari pertama Januari.",
     "londonWindow": "Jadwal ini diterbitkan per tahun, jadi jendela ini berakhir 31 Desember dan dimulai lagi saat tahun baru diterbitkan.",
     "serverIndonesia": "Indonesia · Kemenag",

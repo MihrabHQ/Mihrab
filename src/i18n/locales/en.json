@@ -230,6 +230,7 @@
     "hanafiAsr": "Hanafi Asr",
     "hanafiAsrHelp": "Larger shadow length for Asr (school = 1)",
     "hanafiAsrPublished": "This source publishes one Asr time, the Shafi'i (one shadow length); the Hanafi Asr is not shown.",
+    "hanafiAsrOnlyPublished": "This source publishes one Asr time, the Hanafi (two shadow lengths); the Shafi'i Asr is not shown.",
     "notifications": "Notifications",
     "prayerAlerts": "Prayer alerts",
     "prayerAlertsHelp": "Scheduled for the five daily prayers (Fajr–Isha). Android may require exact-alarm access for reliable timing.",
@@ -652,6 +653,10 @@
     "london": {
       "name": "London",
       "desc": "The London Unified Prayer Timetable, the one timetable the city’s main mosques agreed on, as londonprayertimes.com (the East London Mosque) publishes it. Within Greater London."
+    },
+    "kmdb": {
+      "name": "Kyrgyzstan",
+      "desc": "The Spiritual Administration of Muslims of Kyrgyzstan’s timetable for the place nearest you in its list, as its own public service gives it. One Asr, the Hanafi one."
     }
   },
   "compass": {
@@ -2038,6 +2043,7 @@
     "serverSingapore": "Singapore · MUIS",
     "serverMalaysia": "Malaysia · JAKIM e-Solat",
     "serverLondon": "London · Unified Prayer Timetable",
+    "serverKyrgyzstan": "Kyrgyzstan · Spiritual Administration",
     "jakimWindow": "JAKIM publishes the current year only, so this window ends on 31 December and starts again when the new year is published in the first days of January.",
     "londonWindow": "The timetable is published a year at a time, so this window ends on 31 December and starts again when the new year is published.",
     "serverIndonesia": "Indonesia · Kemenag",

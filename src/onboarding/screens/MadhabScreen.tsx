@@ -42,7 +42,7 @@ import { typeStyle } from '../../theme/typography';
 import { tabularNumeralStyle } from '../../theme/textScale';
 import { previewAsrByMadhab, previewCoords } from '../previewTimes';
 import { effectiveProviderFor, useSourceDay } from '../sourceDay';
-import { providerHidesHanafiAsr } from '../../settings/providerUi';
+import { providerHidesHanafiAsr, providerPrintsHanafiAsrOnly } from '../../settings/providerUi';
 import {
   OnboardingFrame,
   OnboardingHeading,
@@ -288,7 +288,7 @@ export function MadhabScreen({
           the fact it is. */}
       <Text style={[typeStyle('footnote'), styles.note, { color: palette.muted }]}>
         {oneAsr
-          ? t('settings.hanafiAsrPublished')
+          ? t(providerPrintsHanafiAsrOnly(effectiveProviderFor(settings)) ? 'settings.hanafiAsrOnlyPublished' : 'settings.hanafiAsrPublished')
           : t(
               'onboarding.madhab.note',
               'Only the Hanafi reckoning moves \u02bfa\u1e63r \u2014 the other schools share the majority time.',

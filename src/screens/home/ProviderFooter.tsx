@@ -13,6 +13,7 @@ import { getMethodLabel } from '../../settings/methods';
 import {
   providerHidesCalculationMethod,
   providerHidesHanafiAsr,
+  providerPrintsHanafiAsrOnly,
 } from '../../settings/providerUi';
 import { getProviderLabel } from '../../settings/providersCatalog';
 import type { PrayerDataProviderId } from '../../settings/types';
@@ -72,7 +73,7 @@ function ProviderFooterImpl({
             : ''}
           {/* Every regional source that publishes a single schedule, not
               just Sweden — Morocco's ministry does too. */}
-          {!providerHidesHanafiAsr(effectiveProvider) && school === 1
+          {providerPrintsHanafiAsrOnly(effectiveProvider) || (!providerHidesHanafiAsr(effectiveProvider) && school === 1)
             ? ` · ${t('home.hanafiSuffix')}`
             : ''}
         </Text>

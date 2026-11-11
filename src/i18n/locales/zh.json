@@ -230,6 +230,7 @@
     "hanafiAsr": "哈乃斐晡礼",
     "hanafiAsrHelp": "Asr 的阴影长度更大（学校 = 1）",
     "hanafiAsrPublished": "此来源只公布一个晡礼时间，即沙斐仪派的（一倍影长）；不显示哈乃斐派的晡礼时间。",
+    "hanafiAsrOnlyPublished": "此来源只发布一个晡礼时间，即哈乃斐派的（两倍影长）；不显示沙斐仪派的晡礼。",
     "notifications": "通知",
     "prayerAlerts": "祷告提醒",
     "prayerAlertsHelp": "安排每日五次祈祷（Fajr-Isha）。 Android 可能需要精确的警报访问才能实现可靠的计时。",
@@ -652,6 +653,10 @@
     "london": {
       "name": "伦敦",
       "desc": "伦敦统一礼拜时间表（London Unified Prayer Timetable），即该市各大清真寺共同采用的时间表，取自 londonprayertimes.com（东伦敦清真寺）。适用于大伦敦范围内。"
+    },
+    "kmdb": {
+      "name": "吉尔吉斯斯坦",
+      "desc": "吉尔吉斯斯坦穆斯林宗教管理局的时间表，取其名单中离您最近的地点，由其自有的公开服务提供。仅一个晡礼时间，即哈乃斐派的。"
     }
   },
   "compass": {
@@ -2038,6 +2043,7 @@
     "serverSingapore": "新加坡 · MUIS",
     "serverMalaysia": "马来西亚 · JAKIM e-Solat",
     "serverLondon": "伦敦 · 统一礼拜时间表",
+    "serverKyrgyzstan": "吉尔吉斯斯坦 · 宗教管理局",
     "jakimWindow": "JAKIM 仅发布当年的时间表，因此此窗口在 12 月 31 日结束，并在 1 月初新一年发布后重新开始。",
     "londonWindow": "该时间表按年发布，因此此窗口在 12 月 31 日结束，并在新一年发布后重新开始。",
     "serverIndonesia": "印度尼西亚 · Kemenag",

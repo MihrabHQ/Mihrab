@@ -230,6 +230,7 @@
     "hanafiAsr": "Hanafi Asr",
     "hanafiAsrHelp": "Plus grande longueur d’ombre pour Asr (école = 1)",
     "hanafiAsrPublished": "Cette source publie une seule heure d’Asr, la chaféite (une longueur d’ombre) ; l’Asr hanafite n’est pas affiché.",
+    "hanafiAsrOnlyPublished": "Cette source publie une seule heure d’Asr, la hanafite (deux longueurs d’ombre) ; l’Asr chaféite n’est pas affiché.",
     "notifications": "Notifications",
     "prayerAlerts": "Alertes de prière",
     "prayerAlertsHelp": "Prévu pour les cinq prières quotidiennes (Fajr-Isha). Android peut nécessiter un accès à l'alarme exacte pour une synchronisation fiable.",
@@ -653,6 +654,10 @@
     "london": {
       "name": "Londres",
       "desc": "Le London Unified Prayer Timetable, l’horaire unique sur lequel les grandes mosquées de la ville se sont accordées, tel que le publie londonprayertimes.com (East London Mosque). Dans le Grand Londres."
+    },
+    "kmdb": {
+      "name": "Kirghizistan",
+      "desc": "Les horaires de l’Administration spirituelle des musulmans du Kirghizistan pour le lieu de sa liste le plus proche de vous, tels que les donne son propre service public. Un seul Asr, le hanafite."
     }
   },
   "compass": {
@@ -2039,6 +2044,7 @@
     "serverSingapore": "Singapour · MUIS",
     "serverMalaysia": "Malaisie · JAKIM e-Solat",
     "serverLondon": "Londres · Unified Prayer Timetable",
+    "serverKyrgyzstan": "Kirghizistan · Administration spirituelle",
     "jakimWindow": "Le JAKIM ne publie que l’année en cours : cette fenêtre se termine le 31 décembre et reprend lorsque la nouvelle année est publiée dans les premiers jours de janvier.",
     "londonWindow": "L’horaire est publié une année à la fois : cette fenêtre se termine le 31 décembre et reprend lorsque la nouvelle année est publiée.",
     "serverIndonesia": "Indonésie · Kemenag",

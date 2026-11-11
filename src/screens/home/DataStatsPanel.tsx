@@ -15,7 +15,7 @@ import {
   type DataStatus,
   type ServerDatasetId,
 } from '../../prayer/dataStatus';
-import { jakimTable, londonTable, muisTable } from '../../providers/nationalTables';
+import { jakimTable, kmdbTable, londonTable, muisTable } from '../../providers/nationalTables';
 import {
   getNamazvaktiTimes,
   namazvaktiHeld,
@@ -69,6 +69,13 @@ const SERVERS: {
     coverageNoteKey: 'dataStats.jakimWindow',
     coverageNoteDefault:
       'JAKIM publishes the current year only, so this window ends on 31 December and starts again when the new year is published in the first days of January.',
+  },
+  {
+    id: 'kmdb',
+    provider: 'kmdb',
+    labelKey: 'dataStats.serverKyrgyzstan',
+    labelDefault: 'Kyrgyzstan · Spiritual Administration',
+    nextRun: nextNationalTableServerRunAfter,
   },
   {
     id: 'london',
@@ -141,6 +148,7 @@ function DataStatsPanelImpl() {
           muisTable.pollServerIndexNow(),
           jakimTable.pollServerIndexNow(),
           londonTable.pollServerIndexNow(),
+          kmdbTable.pollServerIndexNow(),
         ].map(p =>
           p.catch(() => {
             /* offline — keep whatever was recorded before */
