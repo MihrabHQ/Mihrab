@@ -39,12 +39,21 @@ describe('the first screen gets the app onto a device', () => {
   });
 
   it.each(codes)('%s shows the app in the hero, described in its own language', code => {
-    const img = /<figure class="hero-shot">\s*<img[^>]*>/.exec(heroOf(code));
+    const img = /<figure class="hero-shot">[\s\S]*?<img[^>]*>/.exec(heroOf(code));
     expect(img).not.toBeNull();
     expect(img![0]).toMatch(/alt="[^"]{20,}"/);
     // The first picture on the page is not left for the browser to fetch late.
     expect(img![0]).not.toContain('loading="lazy"');
     expect(existsSync(path.join(DOCS, 'assets', 'img', 'hero-home.jpg'))).toBe(true);
+  });
+
+  it('does not show the hero’s phone on a phone, where it was cut in half, nor download it there', () => {
+    const css = readFileSync(path.join(DOCS, 'assets', 'site.css'), 'utf-8');
+    expect(css).toMatch(/\n\.hero-shot \{ display: none; \}/);
+    expect(css).toMatch(/@media \(min-width: 900px\) \{[^@]*\.hero-shot \{ display: block;/);
+    for (const code of codes) {
+      expect(heroOf(code)).toMatch(/<source media="\(max-width: 899px\)" srcset="data:image\/gif;base64,/);
+    }
   });
 
   it.each(codes)('%s names every platform the page offers, in the hero and the structured data', code => {

@@ -666,9 +666,8 @@ footer code { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255,
  * The hero was words alone: the store badges began a screen further down
  * and the first picture of the app two screens after that. So the two
  * stores most visitors want stand under the opening lines, with a link to
- * every other channel, and the Today screen stands beside them — on a wide
- * screen in the arch, on a phone under the words, its top showing and the
- * rest fading into the page so the hero stays one screen tall.
+ * every other channel, and on a wide screen the Today screen stands beside
+ * them, in the arch. A phone has no room beside, and shows the words alone.
  */
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 56px; }
 .cta { margin: 24px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
@@ -679,10 +678,7 @@ footer code { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255,
   padding: 10px 0;
 }
 .cta .more:hover { color: #fff; }
-.hero-shot { margin: 34px auto -40px; width: min(260px, 72%); height: 250px; overflow: hidden;
-  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent);
-          mask-image: linear-gradient(180deg, #000 55%, transparent);
-}
+.hero-shot { display: none; }
 .hero-shot img {
   width: 100%; height: auto; border-radius: 30px; border: 5px solid #0A0F26;
   box-shadow: 0 2px 4px rgba(0,0,0,.3), 0 30px 60px -22px rgba(0,0,0,.7);
@@ -690,8 +686,7 @@ footer code { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255,
 }
 @media (min-width: 900px) {
   .hero-grid { grid-template-columns: minmax(0, 1fr) 250px; align-items: start; }
-  .hero-shot { margin: 30px 0 -150px; width: 250px; height: auto; overflow: visible;
-    -webkit-mask-image: none; mask-image: none; }
+  .hero-shot { display: block; margin: 30px 0 -150px; width: 250px; }
 }
 @media print { .hero-shot, .cta, .jump { display: none; } }
 

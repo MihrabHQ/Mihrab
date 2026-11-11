@@ -431,13 +431,23 @@ ${badgeList(['appstore', 'googleplay'], imgBase, '      ')}
     </div>`;
 }
 
-/** The hero's phone: the Today screen itself, beside the words about it. */
+/**
+ * The hero's phone: the Today screen itself, beside the words about it — on
+ * a wide screen. On a phone there is no "beside": it stood under the words
+ * with its lower half cut off, which looked like a mistake, so it is not
+ * shown there (site.css), and the <source> hands a narrow screen a
+ * one-pixel picture so the real one is not downloaded to stay hidden.
+ */
+const NO_PICTURE = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 function heroShot(code, t, at) {
   const alt = t.shots && t.shots.items && t.shots.items.home && t.shots.items.home.alt;
   if (!alt) throw new Error(`${code}: no words for the hero's screenshot`);
   return `    <figure class="hero-shot">
+      <picture>
+      <source media="(max-width: 899px)" srcset="${NO_PICTURE}">
       <img src="${at}/img/hero-home.jpg${SHOT_V}" width="540" height="1200" decoding="async"
         alt="${esc(alt)}">
+      </picture>
     </figure>`;
 }
 
