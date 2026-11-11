@@ -109,7 +109,7 @@ it('a regional source picked where it does not answer is not kept', () => {
 it('Automatic outside a pinned source’s country picks what fits best there, not the global default', () => {
   expect(getEffectiveDataProvider(false, 'islamiska_forbundet', RABAT, 'auto')).toBe('habous');
   expect(getEffectiveDataProvider(false, 'islamiska_forbundet', LONDON, 'auto')).toBe('diyanet'); // a place Diyanet lists
-  expect(getEffectiveDataProvider(false, 'islamiska_forbundet', { latitude: -23.7, longitude: 133.88 }, 'auto')).toBe('aladhan');
+  expect(getEffectiveDataProvider(false, 'islamiska_forbundet', { latitude: -29.0135, longitude: 134.7544 }, 'auto')).toBe('aladhan'); // Coober Pedy: no place Diyanet lists within reach
 });
 
 it('a deleted saved location takes its choice with it', () => {

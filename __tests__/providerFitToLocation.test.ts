@@ -21,7 +21,7 @@ const read = (p: string) => fs.readFileSync(path.join(REPO, p), 'utf-8');
 
 const STOCKHOLM = { latitude: 59.33, longitude: 18.07 };
 const CAIRO = { latitude: 30.04, longitude: 31.24 };
-const ALICE_SPRINGS = { latitude: -23.7, longitude: 133.88 }; // no place Diyanet lists within reach
+const ALICE_SPRINGS = { latitude: -29.0135, longitude: 134.7544 }; // Coober Pedy: no place Diyanet lists within reach (Alice Springs itself is listed)
 
 describe('a national source picked from outside its country', () => {
   it('is redirected to what Automatic picks there', () => {

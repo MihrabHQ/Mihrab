@@ -38,15 +38,15 @@
   },
   "diyanet": {
     "certified": true,
-    "checkedAt": "2026-11-09",
-    "places": 8132,
+    "checkedAt": "2026-11-11",
+    "places": 8318,
     "checks": [
       {
         "tables": "Diyanet — its tables worldwide",
-        "places": 8132,
-        "times": 69999603,
+        "places": 8318,
+        "times": 71630078,
         "off": 0,
-        "offWithoutCorrections": 9129,
+        "offWithoutCorrections": 9368,
         "from": "2024-01-01",
         "to": "2027-12-31"
       }
@@ -54,8 +54,8 @@
     "corrections": {
       "from": "2024-01-01",
       "to": "2027-12-31",
-      "entries": 9118,
-      "sha256": "47997767e178ce48babd80f0e4a53460c5d379eb098bff1e7ebbba1e6afdf605"
+      "entries": 9357,
+      "sha256": "a8c6a7305611f8dcedc04a64efb8dd150d9a588c2b3ac3391bfb776d70a2ec83"
     },
     "revision": 1
   },

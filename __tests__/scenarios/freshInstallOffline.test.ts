@@ -117,10 +117,10 @@ const CITIES: City[] = [
     source: 'diyanet',
   },
   {
-    name: 'Tromsø',
+    name: 'Hammerfest',
     zone: 'Europe/Oslo',
-    lat: 69.6492,
-    lng: 18.9553,
+    lat: 70.6634,
+    lng: 23.6821,
     source: 'aladhan',
   },
 ];
