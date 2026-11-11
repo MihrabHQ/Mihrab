@@ -151,7 +151,7 @@
     },
     "labels": {
       "lang": "Language",
-      "allDownloads": "Windows, Linux, F-Droid and the web"
+      "allDownloads": "Windows, Linux and F-Droid"
     }
   },
   "sv": {
@@ -333,7 +333,7 @@
     },
     "labels": {
       "lang": "Språk",
-      "allDownloads": "Windows, Linux, F-Droid och webben"
+      "allDownloads": "Windows, Linux och F-Droid"
     },
     "navInstall": "#ladda-ner"
   },
@@ -492,7 +492,7 @@
       "built": "محراب {v}، من تطوير حسن الغمري.",
       "banner": "وقفة مع فلسطين.",
       "bannerMore": "أين تتبرّع، وماذا تقاطع، وكيف تتابع.",
-      "allDownloads": "ويندوز ولينكس وF-Droid والويب"
+      "allDownloads": "ويندوز ولينكس وF-Droid"
     },
     "shots": {
       "eyebrow": "لقطات الشاشة",
@@ -866,7 +866,7 @@
       "built": "Mihrab {v}, Hassan El Ghamri tarafından.",
       "banner": "Filistin'in yanındayız.",
       "bannerMore": "Nereye bağış yapılır, ne boykot edilir, nasıl takip edilir.",
-      "allDownloads": "Windows, Linux, F-Droid ve web"
+      "allDownloads": "Windows, Linux ve F-Droid"
     },
     "shots": {
       "eyebrow": "Ekran görüntüleri",
@@ -1233,7 +1233,7 @@
       "built": "محراب {v}، حسن الغمری کی تیار کردہ۔",
       "banner": "فلسطین کے ساتھ۔",
       "bannerMore": "کہاں عطیہ کریں، کس کا بائیکاٹ کریں، اور باخبر کیسے رہیں۔",
-      "allDownloads": "ونڈوز، لینکس، F-Droid اور ویب"
+      "allDownloads": "ونڈوز، لینکس اور F-Droid"
     },
     "shots": {
       "eyebrow": "اسکرین شاٹس",
@@ -1581,7 +1581,7 @@
       "built": "Mihrab {v}, dibuat oleh Hassan El Ghamri.",
       "banner": "Bersama Palestina.",
       "bannerMore": "Ke mana berdonasi, apa yang diboikot, dan cara mengikuti kabarnya.",
-      "allDownloads": "Windows, Linux, F-Droid, dan web"
+      "allDownloads": "Windows, Linux, dan F-Droid"
     },
     "shots": {
       "eyebrow": "Tangkapan layar",
@@ -1948,7 +1948,7 @@
       "built": "Mihrab {v}, gebaut von Hassan El Ghamri.",
       "banner": "Solidarität mit Palästina.",
       "bannerMore": "Wohin spenden, was boykottieren, wie informiert bleiben.",
-      "allDownloads": "Windows, Linux, F-Droid und im Browser"
+      "allDownloads": "Windows, Linux und F-Droid"
     },
     "shots": {
       "eyebrow": "Bildschirmfotos",
@@ -2296,7 +2296,7 @@
       "built": "Mihrab {v}, réalisé par Hassan El Ghamri.",
       "banner": "Solidarité avec la Palestine.",
       "bannerMore": "Où faire un don, quoi boycotter, comment rester informé.",
-      "allDownloads": "Windows, Linux, F-Droid et le web"
+      "allDownloads": "Windows, Linux et F-Droid"
     },
     "shots": {
       "eyebrow": "Captures d’écran",
@@ -2670,7 +2670,7 @@
       "built": "Mihrab {v}, creada por Hassan El Ghamri.",
       "banner": "Con Palestina.",
       "bannerMore": "Dónde donar, qué boicotear y cómo mantenerse informado.",
-      "allDownloads": "Windows, Linux, F-Droid y la web"
+      "allDownloads": "Windows, Linux y F-Droid"
     },
     "shots": {
       "eyebrow": "Capturas de pantalla",
@@ -3018,7 +3018,7 @@
       "built": "Mihrab {v}, разработчик — Hassan El Ghamri.",
       "banner": "Вместе с Палестиной.",
       "bannerMore": "Куда пожертвовать, что бойкотировать и как следить за новостями.",
-      "allDownloads": "Windows, Linux, F-Droid и веб-версия"
+      "allDownloads": "Windows, Linux и F-Droid"
     },
     "shots": {
       "eyebrow": "Скриншоты",
@@ -3366,7 +3366,7 @@
       "built": "Mihrab {v}, নির্মাতা Hassan El Ghamri।",
       "banner": "ফিলিস্তিনের পাশে।",
       "bannerMore": "কোথায় দান করবেন, কী বর্জন করবেন, কীভাবে খবর রাখবেন।",
-      "allDownloads": "Windows, Linux, F-Droid ও ওয়েব"
+      "allDownloads": "Windows, Linux ও F-Droid"
     },
     "shots": {
       "eyebrow": "স্ক্রিনশট",
@@ -3714,7 +3714,7 @@
       "built": "Mihrab {v}, निर्माता Hassan El Ghamri।",
       "banner": "फ़िलिस्तीन के साथ।",
       "bannerMore": "कहाँ दान करें, किसका बहिष्कार करें, और ख़बर कैसे रखें।",
-      "allDownloads": "Windows, Linux, F-Droid और वेब"
+      "allDownloads": "Windows, Linux और F-Droid"
     },
     "shots": {
       "eyebrow": "स्क्रीनशॉट",
@@ -4062,7 +4062,7 @@
       "built": "Mihrab {v}，由 Hassan El Ghamri 开发。",
       "banner": "声援巴勒斯坦。",
       "bannerMore": "去哪里捐助、抵制什么、如何持续关注。",
-      "allDownloads": "Windows、Linux、F-Droid 和网页版"
+      "allDownloads": "Windows、Linux 和 F-Droid"
     },
     "shots": {
       "eyebrow": "应用截图",
