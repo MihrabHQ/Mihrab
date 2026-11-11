@@ -10,9 +10,34 @@ on:
   pull_request:
     branches: [main]
 
+# NO `cancel-in-progress` HERE, unlike the build workflows. The release
+# reads this workflow's last COMPLETED run on main and stops on anything
+# but success (scripts/release/preflight.ts, P10) — and a run cancelled
+# because a newer push replaced it is a completed run that is not a
+# success. Each push's run is short enough to be left to finish.
+
 jobs:
+  # EVERY JOB HAS A TIME LIMIT. Without one a job runs until GitHub's own
+  # six hours, and on 2026-11-10 a test that never finished did exactly
+  # that on every push for a day — twenty runners held, every other
+  # workflow queueing behind them, and "cancelled" where a red X should
+  # have been (see __tests__/todayMinimal.test.tsx).
   test:
+    name: test (${{ matrix.tz }})
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        # The runner is UTC, which has no daylight saving — so a date
+        # counted in multiples of 24 hours looks right there and is a day
+        # off in most of the places Mihrab is used. Three khatmah dates
+        # were (2026-09-29, __tests__/khatmahClockChange.test.ts). So the
+        # suite runs where the clocks do move as well — beside the UTC
+        # run, not after it: one after the other they took 24 minutes.
+        tz: [UTC, Europe/Stockholm]
+    env:
+      TZ: ${{ matrix.tz }}
     steps:
       - uses: actions/checkout@v5
 
@@ -31,18 +56,10 @@ jobs:
       - name: Lint (errors)
         run: npm run lint:errors
 
+      # The runner's cores, not one of them: `--runInBand` took sixteen
+      # minutes for what the same machine does in a third of that.
       - name: Jest
-        run: npx jest --ci --runInBand
-
-      # The runner is UTC, which has no daylight saving — so a date counted
-      # in multiples of 24 hours looks right here and is a day off in most
-      # of the places Mihrab is used. Three khatmah dates were (2026-09-29,
-      # __tests__/khatmahClockChange.test.ts). Run the suite again where the
-      # clocks do move.
-      - name: Jest in a zone with daylight saving
-        run: npx jest --ci --runInBand
-        env:
-          TZ: Europe/Stockholm
+        run: npx jest --ci --maxWorkers=100%
 
   # The widget contract (docs/rewrite-plan.md, Phase 1): the readers the
   # widgets and Live Activities compile, run over the golden fixtures the
@@ -53,6 +70,7 @@ jobs:
   # Apple's Foundation, the one the widgets link, rather than Linux's.
   contract-swift:
     runs-on: macos-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
 
@@ -61,6 +79,7 @@ jobs:
 
   contract-kotlin:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
 

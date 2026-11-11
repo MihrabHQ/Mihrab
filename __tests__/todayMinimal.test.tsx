@@ -97,6 +97,8 @@ const TIMINGS = {
 const ASR = new Date(2026, 7, 23, 15, 0, 0);
 const at = (h: number, m: number, s = 0) => new Date(2026, 7, 23, h, m, s);
 
+const mounted: ReactTestRenderer[] = [];
+
 function renderCard(minimal: boolean): ReactTestRenderer {
   let tree!: ReactTestRenderer;
   act(() => {
@@ -114,6 +116,7 @@ function renderCard(minimal: boolean): ReactTestRenderer {
       />,
     );
   });
+  mounted.push(tree);
   return tree;
 }
 
@@ -135,7 +138,26 @@ const rows = (tree: ReactTestRenderer) => tree.root.findAll(n => typeof n.props.
 
 describe('Minimal’s Today', () => {
   beforeEach(() => jest.useFakeTimers());
-  afterEach(() => jest.useRealTimers());
+  // EVERY CARD COMES DOWN BEFORE THE REAL CLOCK COMES BACK.
+  //
+  // This file used to leave its cards mounted and only restore the real
+  // timers. On Linux, with the whole suite in one process (`--runInBand`,
+  // as CI ran it), the file that ran next never finished: the process
+  // sat polling with nothing to run, jest waiting on it, until GitHub
+  // cancelled the job at six hours — on every push from 2026-11-10
+  // (c9902103, which added this file) for a day. Reproduced with this
+  // file and androidUiFont.test.tsx alone, in that order; unmounting
+  // first is what cured it. The likeliest mechanism, not proved: a card
+  // left mounted keeps handles it took from the fake clock and gives
+  // them to the real `clearImmediate` later, which does not check what
+  // it is handed and miscounts the real immediates from then on.
+  afterEach(() => {
+    act(() => {
+      for (const tree of mounted.splice(0)) tree.unmount();
+    });
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
 
   it('is the hero and nothing under it: no table, no eyebrow, the next prayer named once', () => {
     jest.setSystemTime(at(13, 0));
