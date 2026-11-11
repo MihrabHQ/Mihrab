@@ -95,7 +95,7 @@ describe('the places Diyanet lists', () => {
     expect(all).toHaveLength(8477);
     expect(all.filter(p => p.years)).toHaveLength(880);
     expect(all.filter(p => p.list === 'sweden')).toHaveLength(159);
-    expect(all.filter(p => p.clock)).toHaveLength(254);
+    expect(all.filter(p => p.clock)).toHaveLength(268);
   });
 
   it('read a table’s own clock where it keeps one, and the phone’s elsewhere', () => {
