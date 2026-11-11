@@ -271,6 +271,9 @@ const WEB_APP_URL = 'https://mihrabhq.github.io/';
  * still loads nothing from anywhere else, and embeds nothing).
  */
 const WEB_SHOT = { width: 1600, height: 1076 };
+// A visitor on a phone is shown it in a phone's browser instead: the same
+// page as it opens for them, and the figure drawn as a phone (site.css).
+const WEB_SHOT_PHONE = { width: 780, height: 1400 };
 function webSection(code, t, at) {
   const w = t.install && t.install.web;
   if (!w || !w.h2 || !w.note || !w.alt) throw new Error(`${code}: no strings for the Mihrab Web section`);
@@ -287,10 +290,13 @@ function webSection(code, t, at) {
       <figure class="browser">
         <div class="browser-bar" dir="ltr" aria-hidden="true"><i></i><i></i><i></i><span>mihrabhq.github.io</span></div>
         <a href="${WEB_APP_URL}" tabindex="-1" aria-hidden="true">
+          <picture>
+          <source media="(max-width: 899px)" srcset="${at}/img/web-app-phone.jpg${SHOT_V}" width="${WEB_SHOT_PHONE.width}" height="${WEB_SHOT_PHONE.height}">
           <img src="${at}/img/web-app.jpg${SHOT_V}" width="${WEB_SHOT.width}" height="${WEB_SHOT.height}" loading="lazy" decoding="async"
             srcset="${at}/img/web-app-800.jpg${SHOT_V} 800w, ${at}/img/web-app.jpg${SHOT_V} 1600w"
             sizes="(max-width: 899px) calc(100vw - 48px), 560px"
             alt="${esc(w.alt)}">
+          </picture>
         </a>
       </figure>
     </div>

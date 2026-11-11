@@ -131,8 +131,13 @@ describe('Mihrab Web is shown as the app in a browser, not as one more download'
     expect(page).not.toMatch(/<iframe/);
   });
 
+  it.each(codes)('%s shows a phone its own picture: the app in a phone’s browser', code => {
+    const section = /<section class="webapp" id="web">[\s\S]*?<\/section>/.exec(pageOf(code))![0];
+    expect(section).toMatch(/<source media="\(max-width: 899px\)" srcset="[^"]*web-app-phone\.jpg[^"]*" width="\d+" height="\d+">/);
+  });
+
   it('ships the picture at both widths', () => {
-    for (const f of ['web-app.jpg', 'web-app-800.jpg']) {
+    for (const f of ['web-app.jpg', 'web-app-800.jpg', 'web-app-phone.jpg']) {
       expect(existsSync(path.join(DOCS, 'assets', 'img', f))).toBe(true);
     }
   });

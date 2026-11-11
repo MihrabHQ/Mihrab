@@ -782,3 +782,13 @@ footer code { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255,
   .webapp-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
 }
 @media (max-width: 420px) { .cta .open-web { height: 46px; } }
+/* On a phone the picture is the app in a phone's browser (the <source> in
+   webSection()), and the window round it is drawn as a phone: the address
+   alone in its bar, the corners a handset's. */
+@media (max-width: 899px) {
+  .browser { width: min(290px, 78%); margin-inline: auto; border: 6px solid #0A0F26; border-radius: 34px; background: #0A0F26; }
+  .browser-bar { justify-content: center; padding: 9px 14px 8px; border-bottom: 0; border-radius: 28px 28px 0 0; }
+  .browser-bar i { display: none; }
+  .browser-bar span { margin: 0; max-width: none; text-align: center; }
+  .browser img { border-radius: 0 0 28px 28px; }
+}
