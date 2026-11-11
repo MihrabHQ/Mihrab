@@ -157,10 +157,13 @@ describe('Mihrab Web is shown as the app in a browser, not as one more download'
     expect(blocks[0]['@type']).toBe('MobileApplication');
   });
 
-  it('keeps one line for it under Get Mihrab, so every channel is still listed there', () => {
+  it('offers it once below the hero: in its own section, not again under Get Mihrab', () => {
+    // Both at once put "In your browser" on the page twice.
     for (const code of codes) {
       const install = /<section class="install"[\s\S]*?<\/section>/.exec(pageOf(code))![0];
-      expect(install).toContain(`<a class="button" href="${WEB_APP_URL}">`);
+      // (The Linux commands under it name the same host's /packages.)
+      expect(install).not.toContain(`href="${WEB_APP_URL}"`);
+      expect(install).not.toContain('class="platform web"');
     }
   });
 });

@@ -240,10 +240,6 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .platform .flag { margin: 14px 0 0; font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--ink); }
 .platform .flag a { font-weight: 500; color: var(--accent); margin-inline-start: 4px; }
 .platform .note code { font-size: 12.5px; white-space: nowrap; display: inline-block; margin-top: 4px; }
-/* Mihrab Web: the width of the row, what it is beside the link out. */
-.platform.web { flex: 1 1 100%; min-width: 0; }
-.platform .web-link { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
-.platform .web-link code { font-size: 12px; }
 .button {
   display: inline-block; padding: 10px 18px; border-radius: 10px; font-weight: 600;
   background: var(--accent); color: var(--accent-ink); text-decoration: none;
@@ -275,7 +271,6 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
   .platform, .platform:first-child, .platform.windows, .platform.linux { flex: 1 1 100%; }
   .platform .badges { justify-content: center; }
   .platform .flag, .platform .note { text-align: center; }
-  .platform .web-link { justify-content: center; text-align: center; }
   .platform .note code { white-space: normal; }
 }
 .note {

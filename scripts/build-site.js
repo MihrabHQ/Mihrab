@@ -260,18 +260,11 @@ ${list.map(v => card(v, true)).join('\n')}
  */
 const WEB_APP_URL = 'https://mihrabhq.github.io/';
 
-function webCard(code, t) {
-  const w = t.install && t.install.web;
-  if (!w) throw new Error(`${code}: no strings for the Mihrab Web card`);
-  return `      <div class="platform web">
-        <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg>${esc(w.h3)}</h3>
-        <p class="web-link"><a class="button" href="${WEB_APP_URL}">${esc(w.link)}</a> <code>mihrabhq.github.io</code></p>
-      </div>`;
-}
-
 /**
- * Mihrab Web's own section, first on the page. It was the last card under
- * "Get Mihrab", one more download channel — when it is the one way to use
+ * Mihrab Web's own section, first on the page, and the only place it is
+ * offered below the hero: it was the last card under "Get Mihrab", one
+ * more download channel — and for a while both, which said "In your
+ * browser" twice on one page — when it is the one way to use
  * Mihrab with nothing to install, and the only button on the page that a
  * visitor at a computer can press and be in the app. So: what it is, the
  * way in, and the app itself in a browser window (a picture; the page
@@ -721,7 +714,6 @@ ${badgeList(['obtainium', 'googleplay', 'fdroid', 'github'], '../assets/img/badg
         <p class="flag">${esc(t.install.flag)} <a href="https://github.com/ImranR98/Obtainium">${esc(t.install.getObtainium)}</a></p>
       </div>
 ${desktopCard(code, t, '../assets/img/badges')}
-${webCard(code, t)}
     </div>
   </div>
 </section>
@@ -867,7 +859,6 @@ function build() {
       text = patchBlock(text, 'webapp-ld', webLd(code, l));
       text = patchBlock(text, 'gallery', gallery(code, l));
       text = patchBlock(text, 'reviews', reviews(code, l));
-      text = patchBlock(text, 'web', webCard(code, l));
       text = patchBlock(
         text,
         'desktop',
@@ -911,4 +902,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { build, WEB_APP_URL, webSection, webLd, PLATFORMS, OPERATING_SYSTEMS, heroCta, heroShot, jumpNav, accuracy, picker, hreflang, gallery, webCard, desktopCard, ORIGIN, SHOT_V, PHONE_PANELS, WIDE_PANELS, panelWords, plain };
+module.exports = { build, WEB_APP_URL, webSection, webLd, PLATFORMS, OPERATING_SYSTEMS, heroCta, heroShot, jumpNav, accuracy, picker, hreflang, gallery, desktopCard, ORIGIN, SHOT_V, PHONE_PANELS, WIDE_PANELS, panelWords, plain };

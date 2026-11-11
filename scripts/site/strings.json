@@ -126,7 +126,7 @@
       },
       "web": {
         "h3": "In your browser",
-        "body": "Prayer times for where you are, notifications at each prayer, and the whole Qur’an — nothing to install.",
+        "body": "Prayer times for where you are, notifications at each prayer, and the whole Qur’an.",
         "link": "Open Mihrab Web",
         "h2": "Try it now — nothing to install",
         "note": "Your settings and bookmarks stay in this browser. Add it to your home screen to keep it close.",
@@ -281,7 +281,7 @@
       },
       "web": {
         "h3": "I webbläsaren",
-        "body": "Bönetider för där du är, aviseringar vid varje bön och hela Koranen — inget att installera.",
+        "body": "Bönetider för där du är, aviseringar vid varje bön och hela Koranen.",
         "link": "Öppna Mihrab Web",
         "h2": "Prova nu — inget att installera",
         "note": "Dina inställningar och bokmärken stannar i den här webbläsaren. Lägg till den på hemskärmen för att ha den nära.",
@@ -371,7 +371,7 @@
       },
       "web": {
         "h3": "في متصفحك",
-        "body": "مواقيت الصلاة لمكانك، وإشعار عند كل صلاة، والقرآن كاملًا — دون أي تثبيت.",
+        "body": "مواقيت الصلاة لمكانك، وإشعار عند كل صلاة، والقرآن كاملًا.",
         "link": "افتح محراب على الويب",
         "h2": "جرّبه الآن — دون أي تثبيت",
         "note": "تبقى إعداداتك وعلاماتك في هذا المتصفح. أضفه إلى الشاشة الرئيسية ليبقى قريبًا منك.",
@@ -745,7 +745,7 @@
       },
       "web": {
         "h3": "Tarayıcınızda",
-        "body": "Bulunduğunuz yerin namaz vakitleri, her vakitte bildirim ve Kur’an’ın tamamı — kurulum gerekmez.",
+        "body": "Bulunduğunuz yerin namaz vakitleri, her vakitte bildirim ve Kur’an’ın tamamı.",
         "link": "Mihrab Web’i aç",
         "h2": "Hemen deneyin — kurulum yok",
         "note": "Ayarlarınız ve yer imleriniz bu tarayıcıda kalır. Elinizin altında olması için ana ekranınıza ekleyin.",
@@ -1112,7 +1112,7 @@
       },
       "web": {
         "h3": "اپنے براؤزر میں",
-        "body": "آپ کے مقام کے نماز کے اوقات، ہر نماز پر اطلاع، اور پورا قرآن — کچھ انسٹال کرنے کی ضرورت نہیں۔",
+        "body": "آپ کے مقام کے نماز کے اوقات، ہر نماز پر اطلاع، اور پورا قرآن۔",
         "link": "محراب ویب کھولیں",
         "h2": "ابھی آزمائیں — کچھ انسٹال کیے بغیر",
         "note": "آپ کی ترتیبات اور بک مارکس اسی براؤزر میں رہتے ہیں۔ اسے قریب رکھنے کے لیے ہوم اسکرین پر شامل کر لیں۔",
@@ -1460,7 +1460,7 @@
       },
       "web": {
         "h3": "Di peramban Anda",
-        "body": "Waktu salat untuk tempat Anda, notifikasi di setiap waktu salat, dan seluruh Al-Qur’an — tanpa perlu memasang apa pun.",
+        "body": "Waktu salat untuk tempat Anda, notifikasi di setiap waktu salat, dan seluruh Al-Qur’an.",
         "link": "Buka Mihrab Web",
         "h2": "Coba sekarang — tanpa memasang apa pun",
         "note": "Pengaturan dan penanda Anda tetap di peramban ini. Tambahkan ke layar utama agar selalu dekat.",
@@ -1827,7 +1827,7 @@
       },
       "web": {
         "h3": "Im Browser",
-        "body": "Gebetszeiten für deinen Ort, eine Benachrichtigung zu jedem Gebet und der ganze Koran – ohne Installation.",
+        "body": "Gebetszeiten für deinen Ort, eine Benachrichtigung zu jedem Gebet und der ganze Koran.",
         "link": "Mihrab Web öffnen",
         "h2": "Jetzt ausprobieren — ohne Installation",
         "note": "Ihre Einstellungen und Lesezeichen bleiben in diesem Browser. Legen Sie die Seite auf den Startbildschirm, um sie griffbereit zu haben.",
@@ -2175,7 +2175,7 @@
       },
       "web": {
         "h3": "Dans votre navigateur",
-        "body": "Les horaires de prière de votre ville, une notification à chaque prière et le Coran entier — rien à installer.",
+        "body": "Les horaires de prière de votre ville, une notification à chaque prière et le Coran entier.",
         "link": "Ouvrir Mihrab Web",
         "h2": "Essayez maintenant — rien à installer",
         "note": "Vos réglages et vos signets restent dans ce navigateur. Ajoutez-la à votre écran d’accueil pour la garder sous la main.",
@@ -2549,7 +2549,7 @@
       },
       "web": {
         "h3": "En tu navegador",
-        "body": "Horarios de oración para donde estés, un aviso en cada oración y el Corán completo, sin instalar nada.",
+        "body": "Horarios de oración para donde estés, un aviso en cada oración y el Corán completo.",
         "link": "Abrir Mihrab Web",
         "h2": "Pruébala ahora — sin instalar nada",
         "note": "Tus ajustes y marcadores se quedan en este navegador. Añádela a la pantalla de inicio para tenerla a mano.",
@@ -2897,7 +2897,7 @@
       },
       "web": {
         "h3": "В браузере",
-        "body": "Время намаза для вашего места, уведомление к каждому намазу и весь Коран — ничего не нужно устанавливать.",
+        "body": "Время намаза для вашего места, уведомление к каждому намазу и весь Коран.",
         "link": "Открыть Mihrab Web",
         "h2": "Попробуйте сейчас — без установки",
         "note": "Ваши настройки и закладки остаются в этом браузере. Добавьте страницу на главный экран, чтобы она была под рукой.",
@@ -3245,7 +3245,7 @@
       },
       "web": {
         "h3": "আপনার ব্রাউজারে",
-        "body": "আপনার জায়গার নামাজের সময়, প্রতি ওয়াক্তে বিজ্ঞপ্তি, আর পুরো কুরআন — কিছুই ইনস্টল করতে হবে না।",
+        "body": "আপনার জায়গার নামাজের সময়, প্রতি ওয়াক্তে বিজ্ঞপ্তি, আর পুরো কুরআন।",
         "link": "মিহরাব ওয়েব খুলুন",
         "h2": "এখনই দেখে নিন — কিছু ইনস্টল করতে হবে না",
         "note": "আপনার সেটিংস ও বুকমার্ক এই ব্রাউজারেই থাকে। হাতের কাছে রাখতে হোম স্ক্রিনে যোগ করে নিন।",
@@ -3593,7 +3593,7 @@
       },
       "web": {
         "h3": "आपके ब्राउज़र में",
-        "body": "आपकी जगह के नमाज़ के समय, हर नमाज़ पर सूचना, और पूरा क़ुरआन — कुछ भी इंस्टॉल नहीं करना।",
+        "body": "आपकी जगह के नमाज़ के समय, हर नमाज़ पर सूचना, और पूरा क़ुरआन।",
         "link": "मिहराब वेब खोलें",
         "h2": "अभी आज़माएँ — कुछ इंस्टॉल किए बिना",
         "note": "आपकी सेटिंग और बुकमार्क इसी ब्राउज़र में रहते हैं। इसे पास रखने के लिए होम स्क्रीन पर जोड़ लें।",
@@ -3941,7 +3941,7 @@
       },
       "web": {
         "h3": "在浏览器中",
-        "body": "你所在地的礼拜时间、每次礼拜的通知，以及完整的《古兰经》——无需安装。",
+        "body": "你所在地的礼拜时间、每次礼拜的通知，以及完整的《古兰经》。",
         "link": "打开 Mihrab Web",
         "h2": "现在就试试——无需安装",
         "note": "你的设置和书签保存在这个浏览器中。把它添加到主屏幕，随手可用。",
