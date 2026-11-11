@@ -2,13 +2,14 @@
  * Indonesia — the Ministry of Religious Affairs' (Kemenag) method, as its
  * timetable is computed.
  *
- * Read off its table for all 517 regencies and cities (October–December
- * 2026):
+ * Read off its table for all 517 regencies and cities:
  *
  *   • the precise apparent Sun (`preciseApparentSun`, as JPL's to a tenth
  *     of a second), taken at each prayer's own moment, iterated — Meeus's
  *     shorter series drifts by a second and left a minute in two hundred
- *     off;
+ *     off — with the clock's time taken for the ephemeris' own: no ΔT, so
+ *     the Sun stands 70 seconds behind and every time comes a fifth of a
+ *     second early;
  *   • Fajr 20°, Isha 18°; sunrise and Maghrib at −1°, and at −2° in the
  *     regencies the ministry classes as highland — in six highland
  *     regencies of Papua the degree is taken off Fajr and Isha too;
@@ -18,11 +19,16 @@
  *   • every time rounded up, after a margin of two minutes (three for
  *     Dhuhr, minus three for sunrise).
  *
- * At each regency's own point (fitted to the table; Karawang's afternoon
- * at a second one) this gives the ministry's minute for 99.969 % of its
- * times, and never a minute further; the rest are within about a second
- * of a minute's edge, with no pattern a model could take
- * (`data/corrections/indonesia.json` has them).
+ * At the coordinates the ministry itself gives for each regency this is
+ * the ministry's minute for 99.94 % of its times, and never a minute
+ * further, with nothing fitted to the table: the rest are within a
+ * fraction of a second of a minute's edge (`data/corrections/indonesia.json`
+ * has them).
+ *
+ * Until revision 2 each regency was computed at a point fitted to three
+ * months of its table, and the Sun took ΔT. The fitted points hid the
+ * missing ΔT inside those months — a tenth of a per cent off there, three
+ * times that on any month the fit had not seen.
  */
 import { preciseApparentSun } from './preciseSun';
 
@@ -39,8 +45,8 @@ export type KemenagPlaceOptions = {
   twilightDip?: boolean;
   asrShadow?: number;
   /**
-   * Where the ministry computes the regency's Asr, Maghrib and Isha, when not
-   * at its point (Karawang's afternoon is computed about 2 km north-east).
+   * A second point for the regency's Asr, Maghrib and Isha. No regency has
+   * one since revision 2 (Karawang's was an artefact of its fitted point).
    */
   afternoon?: readonly [number, number];
 };
@@ -58,7 +64,8 @@ export function kemenagRawMinutes(
   opts: KemenagPlaceOptions = {},
 ): { fajr: number; sunrise: number; dhuhr: number; asr: number; maghrib: number; isha: number } {
   const d0 = (Date.UTC(year, month, day) - Date.UTC(2000, 0, 1)) / DAY_MS - 0.5;
-  const at = (t: number) => preciseApparentSun(d0 + t / 1440);
+  // The ministry's program takes Universal Time for the ephemeris' time (no ΔT).
+  const at = (t: number) => preciseApparentSun(d0 + t / 1440, 0);
   let noon = 720 - 4 * longitude;
   for (let i = 0; i < ITERATIONS; i++) noon = 720 - 4 * longitude - at(noon).eot;
   const sp = Math.sin(latitude * RAD);

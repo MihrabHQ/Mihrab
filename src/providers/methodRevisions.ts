@@ -11,5 +11,5 @@ export const METHOD_REVISION = {
   diyanet: 1,
   morocco: 2,
   algeria: 1,
-  indonesia: 1,
+  indonesia: 2,
 } as const;

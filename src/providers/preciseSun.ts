@@ -169,9 +169,14 @@ function nutate(v: V3, oblm: number, oblt: number, psi: number): V3 {
  * The apparent Sun at `d` days from J2000.0 (UT): declination (rad) and
  * equation of time (minutes), such that the transit at longitude λ (east) is
  * 720 − 4λ − eot minutes UT. Same contract as `meeusApparentSun`.
+ *
+ * `deltaTSeconds` is what is added to UT for the ephemeris' own time (TT):
+ * ΔT as it is (about 70 s in the 2020s) unless given. A program that takes
+ * its clock time for the ephemeris' time is 0 here — the Sun 70 seconds
+ * behind where it is, a fifth of a second on every time of the day.
  */
-export function preciseApparentSun(d: number): { dec: number; eot: number } {
-  const tt = d + deltaT(d) / 86400;
+export function preciseApparentSun(d: number, deltaTSeconds: number = deltaT(d)): { dec: number; eot: number } {
+  const tt = d + deltaTSeconds / 86400;
   const e = earthJ2000(tt - 1 / C_AUDAY);
   const nut = nutation(tt);
   const mobl = meanObliquity(tt);

@@ -115,7 +115,7 @@
         "places": 517,
         "times": 362934,
         "off": 0,
-        "offWithoutCorrections": 405,
+        "offWithoutCorrections": 234,
         "from": "2026-10-07",
         "to": "2027-01-31"
       }
@@ -123,9 +123,9 @@
     "corrections": {
       "from": "2026-10-07",
       "to": "2027-01-31",
-      "entries": 405,
-      "sha256": "5d9dc4703832e0ae850aff0af79a6d2436e013f5e1e2203ace41c6e05b36978d"
+      "entries": 234,
+      "sha256": "a3f1c30576ddddbfda6cadabe442e1bcf3fb476b018b269d7d4783edd4e39d03"
     },
-    "revision": 1
+    "revision": 2
   }
 }
