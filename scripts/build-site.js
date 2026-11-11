@@ -113,6 +113,19 @@ function badgeList(names, imgBase, indent = '      ', flags = {}) {
  * retaken twice on 2026-09-06.
  */
 const SHOT_V = '?v=2026-11-05p';
+/**
+ * The stylesheet's address carries a stamp of its contents. Pages are cached
+ * for ten minutes and so is the stylesheet, separately: a phone that had
+ * the old sheet and fetched the new page drew the new markup with the old
+ * rules — the hero's picture, removed for phones, showed as an empty dark
+ * frame. A stamp that changes with the sheet means a page always asks for
+ * the sheet it was written for.
+ */
+const CSS_V = `?v=${require('crypto')
+  .createHash('sha256')
+  .update(fs.readFileSync(path.join(DOCS, 'assets', 'site.css')))
+  .digest('hex')
+  .slice(0, 10)}`;
 /** Pages written by hand, which the generator only patches between markers. */
 const HAND_WRITTEN = {
   en: path.join(DOCS, 'index.html'),
@@ -644,7 +657,7 @@ ${ld(faq)}
 <!-- webapp-ld:start -->
 ${webLd(code, t)}
 <!-- webapp-ld:end -->
-<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/site.css${CSS_V}">
 </head>
 <body>
 <a class="skip" href="#main">${esc(t.labels.skip)}</a>
@@ -865,6 +878,8 @@ function build() {
     if (HAND_WRITTEN[code]) {
       const file = HAND_WRITTEN[code];
       let text = fs.readFileSync(file, 'utf-8');
+      if (!/assets\/site\.css(\?v=\w+)?"/.test(text)) throw new Error(`${code}: no stylesheet link to stamp`);
+      text = text.replace(/(assets\/site\.css)(\?v=\w+)?"/, `$1${CSS_V}"`);
       text = patchBlock(text, 'hreflang', hreflang(langs));
       text = patchBlock(text, 'langpicker', picker(langs, code));
       const assets = code === 'en' ? 'assets' : '../assets';
@@ -918,4 +933,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { build, WEB_APP_URL, webSection, webLd, PLATFORMS, OPERATING_SYSTEMS, heroCta, heroShot, jumpNav, accuracy, picker, hreflang, gallery, desktopCard, ORIGIN, SHOT_V, PHONE_PANELS, WIDE_PANELS, panelWords, plain };
+module.exports = { build, CSS_V, WEB_APP_URL, webSection, webLd, PLATFORMS, OPERATING_SYSTEMS, heroCta, heroShot, jumpNav, accuracy, picker, hreflang, gallery, desktopCard, ORIGIN, SHOT_V, PHONE_PANELS, WIDE_PANELS, panelWords, plain };

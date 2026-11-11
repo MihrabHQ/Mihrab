@@ -18,7 +18,7 @@ const DOCS = path.join(ROOT, 'docs');
 const LANGS = JSON.parse(
   readFileSync(path.join(ROOT, 'scripts', 'site', 'strings.json'), 'utf-8'),
 ) as Record<string, { path: string; accuracy?: { table?: unknown } }>;
-const { PLATFORMS, OPERATING_SYSTEMS, WEB_APP_URL } = require('../scripts/build-site.js');
+const { PLATFORMS, OPERATING_SYSTEMS, WEB_APP_URL, CSS_V } = require('../scripts/build-site.js');
 
 const codes = Object.keys(LANGS);
 const pageOf = (code: string) =>
@@ -179,5 +179,14 @@ describe('Mihrab Web is shown as the app in a browser, not as one more download'
       expect(install).not.toContain(`href="${WEB_APP_URL}"`);
       expect(install).not.toContain('class="platform web"');
     }
+  });
+});
+
+describe('a page asks for the stylesheet it was written for', () => {
+  // Page and stylesheet are cached separately; unstamped, a phone drew new
+  // markup with an old sheet and showed an empty frame in the hero.
+  it.each(codes)('%s stamps the stylesheet link with the sheet’s contents', code => {
+    expect(CSS_V).toMatch(/^\?v=[0-9a-f]{10}$/);
+    expect(pageOf(code)).toContain(`assets/site.css${CSS_V}"`);
   });
 });
