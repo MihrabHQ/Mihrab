@@ -18,6 +18,24 @@
 // 260 bytes once encoded and encrypted), which is why it is numbers and
 // nothing else: names, and the zone, are the watch's.
 //
+// THE SECOND MESSAGE. Everything else the watch is told rides in a message
+// of its own, sent after the first to the same apps:
+//
+//   { "v": 2, "x": 1, "o": 0, "hj": [ noon, d, m, y, d, m, y, ... ],
+//     "n": [ epoch + kind, ... ] }
+//
+// `o` is what to show (the OPT_ bits below; 0, and a watch never told,
+// is the face as it always was). `hj` is the Hijri date of each day the
+// times cover: local noon of the first day in epoch seconds, then day,
+// month and year for it and each day after. `n` is the night marks the
+// app has turned on (Islamic midnight, the last third, the first third)
+// as epoch seconds — whole minutes, so the seconds' place carries which
+// one it is (the NIGHT_ kinds). A second message rather than more keys in
+// the first: that one is near Gadgetbridge's limit already, and a watch
+// app from before this one reads the first exactly as it did and drops
+// the second ("t" is missing), where a new shape for the first would
+// have left it with no times at all.
+//
 // The watch keeps the times in Storage and counts down on its own; the
 // phone sends again whenever it rebuilds its own schedule (daily, and on
 // any change of place or method), so a watch that missed a message is at
@@ -42,12 +60,35 @@ module MihrabStore {
     const KEY_HOUR12 = "h12";
     const KEY_FAHRENHEIT = "f";
     const KEY_ACCENT = "a";
+    const KEY_OPTIONS = "o";
+    const KEY_HIJRI = "hj";
+    const KEY_NIGHT = "n";
+
+    // What to show, as the phone says (Settings → Devices → Garmin watch).
+    // Set bits take away or add to the face as it was before there was a
+    // choice, so 0 — and a watch that was never told — is that face.
+    const OPT_NO_STEPS = 1;
+    const OPT_NO_WEATHER = 2;
+    const OPT_NO_SECONDS = 4;
+    // The date row: 0 the calendar's, 1 the Hijri date, 2 both.
+    const OPT_DATE_SHIFT = 3;
+    const OPT_DATE_MASK = 3;
+    // The data field: a bar from the last prayer to the next.
+    const OPT_FIELD_PROGRESS = 32;
+
+    // Which night mark an entry of `n` is: its seconds' place.
+    const NIGHT_MIDNIGHT = 1;
+    const NIGHT_LAST_THIRD = 2;
+    const NIGHT_FIRST_THIRD = 3;
 
     // Takes the phone's message (the data of a PhoneAppMessage) and keeps
     // it. Returns whether it was a message this version reads.
     function store(data as Object?) as Boolean {
         if (!(data instanceof Dictionary)) {
             return false;
+        }
+        if (data.get("x") != null) {
+            return storeExtras(data);
         }
         var version = data.get("v");
         var times = data.get("t");
@@ -78,6 +119,91 @@ module MihrabStore {
             Storage.setValue(KEY_ACCENT, accent);
         }
         return true;
+    }
+
+    // The second message: what to show, the Hijri dates, the night marks.
+    // Each is kept only when it is there and whole, so a part the phone
+    // left out leaves what the watch already has.
+    function storeExtras(data as Dictionary) as Boolean {
+        var options = whole(data.get("o") as Object?);
+        if (options != null && options >= 0) {
+            Storage.setValue(KEY_OPTIONS, options);
+        }
+        var hijri = wholes(data.get("hj") as Object?);
+        if (hijri != null && hijri.size() >= 4 && (hijri.size() - 1) % 3 == 0) {
+            Storage.setValue(KEY_HIJRI, hijri as Array<Storage.ValueType>);
+        }
+        var night = wholes(data.get("n") as Object?);
+        if (night != null) {
+            Storage.setValue(KEY_NIGHT, night as Array<Storage.ValueType>);
+        }
+        return true;
+    }
+
+    // An array of whole numbers, or null when it is not one.
+    function wholes(v as Object?) as Array<Number>? {
+        if (!(v instanceof Array)) {
+            return null;
+        }
+        var out = [] as Array<Number>;
+        for (var i = 0; i < v.size(); i++) {
+            var n = whole(v[i] as Object?);
+            if (n == null) {
+                return null;
+            }
+            out.add(n);
+        }
+        return out;
+    }
+
+    // What to show: the OPT_ bits, 0 until the phone says.
+    function options() as Number {
+        var o = Storage.getValue(KEY_OPTIONS);
+        return o instanceof Number ? o : 0;
+    }
+
+    // The Hijri date at `now`: [day, month, year], or null when the phone
+    // has sent none for that day.
+    function hijri(now as Number) as [Number, Number, Number]? {
+        var h = Storage.getValue(KEY_HIJRI);
+        if (!(h instanceof Array) || h.size() < 4) {
+            return null;
+        }
+        var noon = h[0] as Number;
+        var sinceMidnight = now - (noon - 12 * 3600);
+        if (sinceMidnight < 0) {
+            return null;
+        }
+        var at = 1 + 3 * (sinceMidnight / (24 * 3600));
+        if (at + 2 >= h.size()) {
+            return null;
+        }
+        return [h[at] as Number, h[at + 1] as Number, h[at + 2] as Number];
+    }
+
+    // The night marks still ahead at `now` and within a day of it, soonest
+    // first: [[kind, epoch], ...]. Empty when the app has none turned on.
+    function nightMarks(now as Number) as Array<[Number, Number]> {
+        var out = [] as Array<[Number, Number]>;
+        var n = Storage.getValue(KEY_NIGHT);
+        if (!(n instanceof Array)) {
+            return out;
+        }
+        for (var i = 0; i < n.size(); i++) {
+            var v = n[i] as Number;
+            var kind = v % 60;
+            var at = v - kind;
+            if (kind >= NIGHT_MIDNIGHT && kind <= NIGHT_FIRST_THIRD && at > now && at - now <= 24 * 3600) {
+                var j = out.size();
+                out.add([kind, at]);
+                while (j > 0 && out[j - 1][1] > at) {
+                    out[j] = out[j - 1];
+                    j--;
+                }
+                out[j] = [kind, at];
+            }
+        }
+        return out;
     }
 
     // A whole number as the message carries it — Gadgetbridge may hand a
@@ -170,6 +296,29 @@ module Mihrab {
             }
         }
         return found;
+    }
+
+    // How far `now` is from the last time to the next, in thousandths: 0
+    // at the one, 1000 at the other, and 0 with nothing to measure from.
+    function progress(now as Number) as Number {
+        var from = current(now);
+        var to = next(now);
+        if (from == null || to == null || to[1] <= from[1]) {
+            return 0;
+        }
+        var p = ((now - from[1]).toLong() * 1000 / (to[1] - from[1])).toNumber();
+        return p < 0 ? 0 : (p > 1000 ? 1000 : p);
+    }
+
+    // Whether the phone has asked for a thing to be left out or put in.
+    function option(bit as Number) as Boolean {
+        return (MihrabStore.options() & bit) != 0;
+    }
+
+    // The date row of the face: 0 the calendar's, 1 the Hijri, 2 both.
+    function dateStyle() as Number {
+        var style = (MihrabStore.options() >> MihrabStore.OPT_DATE_SHIFT) & MihrabStore.OPT_DATE_MASK;
+        return style > 2 ? 0 : style;
     }
 
     // The index of sunrise within a day.

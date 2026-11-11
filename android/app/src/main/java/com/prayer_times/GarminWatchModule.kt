@@ -59,6 +59,27 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
   }
 
   /** Sends now, whatever was sent before; resolves to the outcome word. */
+  /** "face", "widget" or "field": that watch app, handed to Gadgetbridge's installer. */
+  @ReactMethod
+  fun installApp(kind: String, promise: Promise) {
+    try {
+      promise.resolve(GarminWatch.install(reactContext.currentActivity ?: reactContext, kind))
+    } catch (e: Exception) {
+      promise.reject("E_GARMIN", e.message, e)
+    }
+  }
+
+  /** What the watch shows: the `OPT_` bits (garmin/shared/source/Mihrab.mc). */
+  @ReactMethod
+  fun setOptions(flags: Int, promise: Promise) {
+    try {
+      GarminWatch.setOptions(reactContext, flags)
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject("E_GARMIN", e.message, e)
+    }
+  }
+
   @ReactMethod
   fun sendNow(promise: Promise) {
     try {
@@ -76,6 +97,11 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
       map.putString("address", GarminWatch.address(reactContext))
       map.putString("gadgetbridge", GarminWatch.gadgetbridgePackage(reactContext))
       map.putBoolean("bundledFace", GarminWatch.hasBundledFace(reactContext))
+      map.putBoolean("bundledWidget", GarminWatch.hasBundled(reactContext, "widget"))
+      map.putBoolean("bundledField", GarminWatch.hasBundled(reactContext, "field"))
+      map.putString("lastResult", GarminWatch.lastResult(reactContext))
+      // A double: a timestamp does not fit the bridge's int.
+      map.putDouble("lastResultAt", GarminWatch.lastResultAt(reactContext).toDouble())
       promise.resolve(map)
     } catch (e: Exception) {
       promise.reject("E_GARMIN", e.message, e)

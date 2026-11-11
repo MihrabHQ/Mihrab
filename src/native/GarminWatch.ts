@@ -24,7 +24,16 @@ export type GarminWatchStatus = {
   gadgetbridge: string | null;
   /** Whether this build carries a watch face to install (absent on older builds). */
   bundledFace?: boolean;
+  bundledWidget?: boolean;
+  bundledField?: boolean;
+  /** The last answer a send gave that was not "unchanged"; null before any. */
+  lastResult?: GarminSendResult | null;
+  /** When that was, epoch milliseconds; 0 before any. */
+  lastResultAt?: number;
 };
+
+/** The three watch apps a build can carry. */
+export type GarminAppKind = 'face' | 'widget' | 'field';
 
 /** What handing the watch face to Gadgetbridge did. */
 export type GarminInstallResult = 'opened' | 'no-face' | 'no-gadgetbridge' | 'failed';
@@ -40,6 +49,8 @@ type GarminWatchNative = {
   setFahrenheit?(fahrenheit: boolean): Promise<void>;
   setAccent?(hex: string): Promise<void>;
   installFace?(): Promise<GarminInstallResult>;
+  installApp?(kind: GarminAppKind): Promise<GarminInstallResult>;
+  setOptions?(flags: number): Promise<void>;
 };
 
 const native: GarminWatchNative | undefined =
@@ -100,6 +111,27 @@ export async function installGarminFace(): Promise<GarminInstallResult> {
     return await native.installFace();
   } catch {
     return 'failed';
+  }
+}
+
+/** Hands one of the watch apps this build carries to Gadgetbridge's installer. */
+export async function installGarminApp(kind: GarminAppKind): Promise<GarminInstallResult> {
+  if (kind === 'face' && !native?.installApp) return installGarminFace();
+  if (!native?.installApp) return 'no-face';
+  try {
+    return await native.installApp(kind);
+  } catch {
+    return 'failed';
+  }
+}
+
+/** What the watch shows (`garminOptionFlags`); a change is sent at once. */
+export async function setGarminOptions(flags: number): Promise<void> {
+  if (!native?.setOptions) return;
+  try {
+    await native.setOptions(flags);
+  } catch {
+    // The watch keeps what it was last told.
   }
 }
 

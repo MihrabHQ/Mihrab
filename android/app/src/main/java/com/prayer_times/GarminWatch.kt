@@ -49,6 +49,9 @@ object GarminWatch {
   private const val PREFS_FAHRENHEIT = "fahrenheit"
   /** The face's accent, 0xRRGGBB on the watch screen's palette. */
   private const val PREFS_ACCENT = "accent"
+  private const val PREFS_OPTIONS = "options"
+  private const val PREFS_LAST_RESULT = "last_result"
+  private const val PREFS_LAST_RESULT_AT = "last_result_at"
   /** The app's green as the watch screen shows it (garminWatch.ts). */
   const val DEFAULT_ACCENT = 0x00AA55
 
@@ -154,6 +157,22 @@ object GarminWatch {
     return best
   }
 
+  /**
+   * What the watch is to show — the `OPT_` bits of garmin/shared/source/
+   * Mihrab.mc, worked out in JS from Settings → Devices → Garmin watch
+   * (`garminOptionFlags`). Sent in the second message; a change is sent at
+   * once.
+   */
+  fun setOptions(context: Context, flags: Int) {
+    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    if (prefs.getInt(PREFS_OPTIONS, 0) == flags && prefs.contains(PREFS_OPTIONS)) return
+    prefs.edit().putInt(PREFS_OPTIONS, flags).apply()
+    if (enabled(context)) send(context)
+  }
+
+  private fun options(context: Context): Int =
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getInt(PREFS_OPTIONS, 0)
+
   private fun accent(context: Context): Int =
     context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getInt(PREFS_ACCENT, DEFAULT_ACCENT)
 
@@ -212,37 +231,124 @@ object GarminWatch {
       .toString()
   }
 
+  /** Which night mark a row is, as the watch counts them (`NIGHT_` in Mihrab.mc). */
+  private val NIGHT_KINDS = mapOf("Midnight" to 1, "Lastthird" to 2, "Firstthird" to 3)
+
+  /** The most night marks sent: three a night for the three days. */
+  private const val MAX_NIGHT = 9
+
+  /**
+   * THE SECOND MESSAGE (garmin/shared/source/Mihrab.mc): what to show, the
+   * Hijri date of each day the times cover, and the night marks the app
+   * has turned on.
+   *
+   *   {"v":2,"x":1,"o":…,"hj":[noon, d,m,y, …],"n":[epoch+kind, …]}
+   *
+   * Its own message, not more keys in the first: that one is near
+   * Gadgetbridge's limit, and a watch app from before this one reads the
+   * first as it always did and drops this ("t" is missing).
+   *
+   * `hj` starts with local noon of the first day, in epoch seconds, which
+   * is how the watch tells which day it is in; the days after it must
+   * follow without a gap, so it stops at the first day the payload has no
+   * Hijri date for. `n` is whole minutes with the kind in the seconds'
+   * place — a time the app sends is never anything but a whole minute.
+   */
+  fun extras(payload: WidgetContract.Payload, nowMs: Long, options: Int = 0): String? {
+    val today = WallClock.dateKey(nowMs)
+    val days = payload.days.dropWhile { it.dateKey < today }.take(DAYS)
+    if (days.isEmpty()) return null
+    val out = JSONObject().put("v", 2).put("x", 1).put("o", options)
+
+    val byDate = payload.hijriDays.associateBy { it.dateKey }
+    val noon = WallClock.epochMs(days.first().dateKey, 12 * 60)
+    if (noon != null) {
+      val hj = JSONArray().put((noon / 1000).toInt())
+      for ((i, day) in days.withIndex()) {
+        val h = byDate[day.dateKey] ?: payload.hijri?.takeIf { i == 0 && (it.dateKey.isEmpty() || it.dateKey == day.dateKey) } ?: break
+        hj.put(h.day).put(h.month).put(h.year)
+      }
+      if (hj.length() > 1) out.put("hj", hj)
+    }
+
+    val night = ArrayList<Int>()
+    for (day in days) {
+      for (row in day.extras) {
+        val kind = NIGHT_KINDS[row.key] ?: continue
+        val minutes = row.minutes ?: continue
+        val ms = WallClock.epochMs(day.dateKey, minutes) ?: continue
+        if (ms > nowMs) night.add(((ms / 60_000) * 60).toInt() + kind)
+      }
+    }
+    night.sort()
+    out.put("n", JSONArray().apply { night.take(MAX_NIGHT).forEach { put(it) } })
+    return out.toString()
+  }
+
+  fun extras(context: Context, nowMs: Long = System.currentTimeMillis()): String? {
+    val prefs = context.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
+    val payload = WidgetContract.Payload.parse(prefs.getString(WidgetPayloadSource.PREFS_KEY_V2, null))
+      ?.takeIf { it.schemaVersion == WidgetContract.VERSION } ?: return null
+    return extras(payload, nowMs, options(context))
+  }
+
   /**
    * Sends the current schedule to each of the watch apps. Returns what happened,
    * for the log and for Settings: "sent", "unchanged", "disabled",
    * "no-address", "no-gadgetbridge", "no-times".
    */
   fun send(context: Context, force: Boolean = false): String {
+    val result = sendOnce(context, force)
+    // What Settings shows under the watch: the last answer that was not
+    // "nothing new to send", and when.
+    if (result != "unchanged") {
+      context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+        .putString(PREFS_LAST_RESULT, result)
+        .putLong(PREFS_LAST_RESULT_AT, System.currentTimeMillis())
+        .apply()
+    }
+    return result
+  }
+
+  /** The last answer `send` gave that was not "unchanged", or null before any. */
+  fun lastResult(context: Context): String? =
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getString(PREFS_LAST_RESULT, null)
+
+  /** When that was, epoch milliseconds; 0 before any. */
+  fun lastResultAt(context: Context): Long =
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getLong(PREFS_LAST_RESULT_AT, 0L)
+
+  private fun sendOnce(context: Context, force: Boolean): String {
     if (!enabled(context)) return "disabled"
     val address = normalizeAddress(address(context)) ?: return "no-address"
     val pkg = gadgetbridgePackage(context) ?: return "no-gadgetbridge"
     val message = message(context) ?: return "no-times"
+    val extras = extras(context)
     val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     val now = System.currentTimeMillis()
     // The app list is part of what was sent: a build that adds a watch app
     // sends again, or the new app waits for the next change of schedule.
-    val sent = APP_IDS.joinToString(",") + "|" + message
+    val sent = APP_IDS.joinToString(",") + "|" + message + "|" + (extras ?: "")
     if (!force &&
       sent == prefs.getString(PREFS_LAST_SENT, null) &&
       now - prefs.getLong(PREFS_LAST_SENT_AT, 0L) in 0..RESEND_AFTER_MS
     ) {
       return "unchanged"
     }
-    for (appId in APP_IDS) {
-      val intent = Intent(ACTION)
-        .setPackage(pkg)
-        .putExtra("device", address)
-        .putExtra("appId", appId)
-        .putExtra("payload", message)
-      context.sendBroadcast(intent)
+    // The times first, to every app; then the second message. An app that
+    // misses the second still has the times.
+    for (payload in listOfNotNull(message, extras)) {
+      for (appId in APP_IDS) {
+        val intent = Intent(ACTION)
+          .setPackage(pkg)
+          .putExtra("device", address)
+          .putExtra("appId", appId)
+          .putExtra("payload", payload)
+        context.sendBroadcast(intent)
+      }
     }
     prefs.edit().putString(PREFS_LAST_SENT, sent).putLong(PREFS_LAST_SENT_AT, now).apply()
-    Log.i(TAG, "sent ${message.length} bytes to $pkg for $address")
+    Log.i(TAG, "sent ${message.length} + ${extras?.length ?: 0} bytes to $pkg for $address")
     return "sent"
   }
 
@@ -276,31 +382,44 @@ object GarminWatch {
     }
   }
 
-  /** The watch face built with this APK (app/build.gradle, copyGarminFace). */
-  private const val FACE_ASSET = "garmin/mihrab-face.prg"
+  /**
+   * The watch apps built with this APK (app/build.gradle, copyGarminApps):
+   * the face, the widget with its glance, the data field.
+   */
+  private val APP_ASSETS = mapOf(
+    "face" to "mihrab-face.prg",
+    "widget" to "mihrab-widget.prg",
+    "field" to "mihrab-field.prg",
+  )
 
-  /** Whether this build carries a watch face to install. */
-  fun hasBundledFace(context: Context): Boolean =
-    try {
-      context.assets.open(FACE_ASSET).close()
+  /** Whether this build carries that watch app to install. */
+  fun hasBundled(context: Context, kind: String): Boolean {
+    val name = APP_ASSETS[kind] ?: return false
+    return try {
+      context.assets.open("garmin/$name").close()
       true
     } catch (e: Exception) {
       false
     }
+  }
+
+  /** Whether this build carries a watch face to install. */
+  fun hasBundledFace(context: Context): Boolean = hasBundled(context, "face")
 
   /**
-   * Hands the watch face that came with this build to Gadgetbridge's
+   * Hands a watch app that came with this build to Gadgetbridge's
    * installer, which asks before it installs — the same screen as opening
-   * the .prg from a file manager. Returns "opened", "no-face",
-   * "no-gadgetbridge" or "failed".
+   * the .prg from a file manager. Returns "opened", "no-face" (this build
+   * has none of that kind), "no-gadgetbridge" or "failed".
    */
-  fun installFace(context: Context): String {
+  fun install(context: Context, kind: String): String {
     val pkg = gadgetbridgePackage(context) ?: return "no-gadgetbridge"
-    if (!hasBundledFace(context)) return "no-face"
+    val name = APP_ASSETS[kind]
+    if (name == null || !hasBundled(context, kind)) return "no-face"
     return try {
       val dir = File(context.filesDir, "garmin").apply { mkdirs() }
-      val file = File(dir, "mihrab-face.prg")
-      context.assets.open(FACE_ASSET).use { input -> file.outputStream().use { input.copyTo(it) } }
+      val file = File(dir, name)
+      context.assets.open("garmin/$name").use { input -> file.outputStream().use { input.copyTo(it) } }
       val uri = FileProvider.getUriForFile(context, "${context.packageName}.adhan", file)
       val intent = Intent(Intent.ACTION_VIEW)
         .setDataAndType(uri, "application/octet-stream")
@@ -313,6 +432,8 @@ object GarminWatch {
       "failed"
     }
   }
+
+  fun installFace(context: Context): String = install(context, "face")
 
   /** After the app wrote its widget payload: send if it is on, quietly. */
   fun onPayloadWritten(context: Context) {

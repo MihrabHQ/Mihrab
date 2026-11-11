@@ -10,6 +10,9 @@ import Toybox.WatchUi;
 // and its time alone.
 (:glance)
 class MihrabGlance extends WatchUi.GlanceView {
+    // The progress bar's height, at the foot.
+    private const BAR = 2;
+
     function initialize() {
         GlanceView.initialize();
     }
@@ -28,6 +31,8 @@ class MihrabGlance extends WatchUi.GlanceView {
         if (next == null) {
             lines.add(WatchUi.loadResource(Rez.Strings.OpenMihrab) as String);
         } else {
+            drawProgress(dc, now);
+            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             var prayer = Mihrab.name(next[0]) + " " + Mihrab.clock(next[1]);
             lines.add(prayer + " · " + Mihrab.countdown(next[1] - now));
             lines.add(prayer);
@@ -44,6 +49,20 @@ class MihrabGlance extends WatchUi.GlanceView {
         }
         var last = lines[lines.size() - 1];
         dc.drawText(0, 3 * h / 4, Graphics.FONT_XTINY, last, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+    }
+
+    // How far from the last prayer to the next, along the foot of the
+    // glance: a grey track, the part gone by in the app's accent.
+    private function drawProgress(dc as Dc, now as Number) as Void {
+        var w = dc.getWidth();
+        var y = dc.getHeight() - BAR;
+        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.fillRectangle(0, y, w, BAR);
+        var done = w * Mihrab.progress(now) / 1000;
+        if (done > 0) {
+            dc.setColor(Mihrab.accent(), Graphics.COLOR_TRANSPARENT);
+            dc.fillRectangle(0, y, done, BAR);
+        }
     }
 
     // The first font in which every text fits the width (else the last).
@@ -69,6 +88,8 @@ class MihrabWidgetView extends WatchUi.View {
     private const EDGE = 4;
     private const COLUMN_GAP = 12;
     private const MARK = "› ";
+    // 0 the day's table; 1 the night marks, when the app has any on.
+    private var _page as Number = 0;
 
     function initialize() {
         View.initialize();
@@ -90,6 +111,7 @@ class MihrabWidgetView extends WatchUi.View {
 
         // The day the next prayer belongs to: Fajr to Isha with sunrise,
         // unless the app is set not to show sunrise (its time is 0).
+        var page = _page;
         var day = next[0] / Mihrab.PER_DAY;
         var names = [] as Array<String>;
         var clocks = [] as Array<String>;
@@ -104,8 +126,29 @@ class MihrabWidgetView extends WatchUi.View {
             clocks.add(at > 0 ? Mihrab.clock(at) : "—");
             indices.add(index);
         }
-        var rows = names.size();
+        // The second page: the night marks the app has turned on that are
+        // still ahead — Islamic midnight, the last third, the first third
+        // — named with their times, in place of the day's table. A page of
+        // their own because the table already fills the dial: two more
+        // rows fit in no font (tried on the Enduro 3's 280 pixels).
+        var marks = MihrabStore.nightMarks(now);
+        if (marks.size() == 0) {
+            page = 0;
+        }
         var countdown = Mihrab.countdown(next[1] - now);
+        if (page == 1) {
+            names = [] as Array<String>;
+            clocks = [] as Array<String>;
+            indices = [] as Array<Number>;
+            for (var i = 0; i < marks.size() && i < 3; i++) {
+                names.add(MihrabHijri.night(marks[i][0]));
+                clocks.add(Mihrab.clock(marks[i][1]));
+                indices.add(-1);
+            }
+            countdown = "";
+        }
+        var rows = names.size();
+        var accent = Mihrab.accent();
 
         var rowFonts = [Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_XTINY] as Array<Graphics.FontDefinition>;
         var countFonts = [Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_XTINY] as Array<Graphics.FontDefinition>;
@@ -129,16 +172,43 @@ class MihrabWidgetView extends WatchUi.View {
         var x0 = w / 2 - table[3] / 2;
         for (var i = 0; i < rows; i++) {
             var isNext = indices[i] == next[0];
-            dc.setColor(isNext ? Graphics.COLOR_WHITE : Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             var y = top + i * rowH;
+            // The next prayer: its mark and its name in the app's accent,
+            // as the face writes it; its time white. The rest grey, the
+            // night marks a shade further back.
             if (isNext) {
+                dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
                 dc.drawText(x0, y, rowFont, MARK, Graphics.TEXT_JUSTIFY_LEFT);
+                dc.drawText(x0 + table[0], y, rowFont, names[i], Graphics.TEXT_JUSTIFY_LEFT);
+                dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(x0 + table[3], y, rowFont, clocks[i], Graphics.TEXT_JUSTIFY_RIGHT);
+                continue;
             }
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(x0 + table[0], y, rowFont, names[i], Graphics.TEXT_JUSTIFY_LEFT);
             dc.drawText(x0 + table[3], y, rowFont, clocks[i], Graphics.TEXT_JUSTIFY_RIGHT);
         }
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(w / 2, top + rows * rowH + rowH / 2, countFont, countdown, Graphics.TEXT_JUSTIFY_CENTER);
+        // Two dots at the left edge while there is a second page: which
+        // of the two this is.
+        if (marks.size() > 0) {
+            for (var i = 0; i < 2; i++) {
+                dc.setColor(i == page ? Graphics.COLOR_WHITE : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+                dc.fillCircle(EDGE + 8, h / 2 - 6 + i * 12, 3);
+            }
+        }
+    }
+
+    // The other page, when there is one: the day's table, or the night
+    // marks. Whether it turned.
+    function turnPage() as Boolean {
+        if (MihrabStore.nightMarks(Time.now().value()).size() == 0) {
+            return false;
+        }
+        _page = 1 - _page;
+        WatchUi.requestUpdate();
+        return true;
     }
 
     // [marker width, longest name, widest time, whole table] in a font.
@@ -257,5 +327,23 @@ class MihrabWidgetView extends WatchUi.View {
             lines.add(line);
         }
         return lines.size() <= maxLines ? lines : null;
+    }
+}
+
+// Up, down or a swipe: the other page, while there is one.
+class MihrabWidgetDelegate extends WatchUi.BehaviorDelegate {
+    private var _view as MihrabWidgetView;
+
+    function initialize(view as MihrabWidgetView) {
+        BehaviorDelegate.initialize();
+        _view = view;
+    }
+
+    function onNextPage() as Boolean {
+        return _view.turnPage();
+    }
+
+    function onPreviousPage() as Boolean {
+        return _view.turnPage();
     }
 }

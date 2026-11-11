@@ -446,8 +446,12 @@ dependencies {
  * was built last next to it — or none, where nothing was built.
  */
 tasks.register('copyGarminFace', Copy) {
+    // The face, and since 2026-11 the widget (with its glance) and the data
+    // field too: each has its own "Install" in Settings → Devices.
     from("$rootDir/../garmin/build") {
         include 'mihrab-face.prg'
+        include 'mihrab-widget.prg'
+        include 'mihrab-field.prg'
     }
     into "$buildDir/generated/garminAssets/garmin"
 }

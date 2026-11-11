@@ -114,6 +114,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private var _weather as Array = [-1, "--", "", 0];
     private var _next as [Number, Number]? = null;
     private var _reasonText as String? = null;
+    // What the phone has asked to be left off (Mihrab.mc, OPT_).
+    private var _showSteps as Boolean = true;
+    private var _showSeconds as Boolean = true;
 
     // The layout, and what it was made for.
     private var _key as String = "";
@@ -188,6 +191,17 @@ class MihrabFaceView extends WatchUi.WatchFace {
         // What to show.
         var date = Gregorian.info(nowMoment, Time.FORMAT_MEDIUM);
         _dateText = date.day_of_week + " " + date.day.format("%d") + " " + date.month;
+        // The Hijri date in its place, or beside it without the weekday —
+        // as the phone asks, and only once it has sent one for today.
+        var dateStyle = Mihrab.dateStyle();
+        if (dateStyle != 0) {
+            var hijri = MihrabHijri.text(now, dateStyle == 2);
+            if (hijri != null) {
+                _dateText = dateStyle == 1 ? hijri : date.day.format("%d") + " " + date.month + " · " + hijri;
+            }
+        }
+        _showSteps = !Mihrab.option(MihrabStore.OPT_NO_STEPS);
+        _showSeconds = !Mihrab.option(MihrabStore.OPT_NO_SECONDS);
         _staleText = Mihrab.stale(now) ? WatchUi.loadResource(Rez.Strings.Stale) as String : null;
         _hour12 = Mihrab.hour12();
         var hour = clock.hour;
@@ -200,7 +214,8 @@ class MihrabFaceView extends WatchUi.WatchFace {
             }
         }
         _hourText = hour.format("%d");
-        _weather = weatherParts(nowMoment);
+        // Left off: nothing to draw and nothing to make room for.
+        _weather = Mihrab.option(MihrabStore.OPT_NO_WEATHER) ? [-1, "", "", 0] : weatherParts(nowMoment);
         _next = Mihrab.next(now);
         _reasonText = null;
         if (_next == null) {
@@ -859,9 +874,13 @@ class MihrabFaceView extends WatchUi.WatchFace {
         // Right: the seconds on the baseline, am/pm above.
         var secX = x + timeW + SIDE_GAP;
         var secUp = figuresUp(_fSeconds);
-        _secondsBox = [secX, b - secUp - 1, textW(dc, "88", _fSeconds) + 2, secUp + 2];
         dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(secX, b - Graphics.getFontAscent(_fSeconds), _fSeconds, seconds.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);
+        // Without the seconds there is no box for the partial update to
+        // redraw; their place stays, so the figures do not move.
+        if (_showSeconds) {
+            _secondsBox = [secX, b - secUp - 1, textW(dc, "88", _fSeconds) + 2, secUp + 2];
+            dc.drawText(secX, b - Graphics.getFontAscent(_fSeconds), _fSeconds, seconds.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);
+        }
         if (suffix != null) {
             dc.drawText(secX, b - _suffixOff - Graphics.getFontAscent(_fSide), _fSide, suffix, Graphics.TEXT_JUSTIFY_LEFT);
         }
@@ -976,12 +995,17 @@ class MihrabFaceView extends WatchUi.WatchFace {
         while (lead < text.length() - 1 && (text.substring(lead, lead + 1) as String).equals("0")) {
             lead++;
         }
-        var stepsW = ICON + 4 + textW(dc, text, f);
+        var stepsW = _showSteps ? ICON + 4 + textW(dc, text, f) : 0;
         var weatherW = _weatherBeside ? 0 : inlineWeatherW(dc);
         var x = _w / 2 - (weatherW + stepsW) / 2;
         if (!_weatherBeside) {
             drawInlineWeather(dc, x, b);
             x += weatherW;
+        }
+        // The steps left off: the row keeps its place (and the weather,
+        // when it shares it), so nothing else on the face moves.
+        if (!_showSteps) {
+            return;
         }
         dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
         drawFootprints(dc, x, b - figuresUp(f) / 2 - ICON / 2);

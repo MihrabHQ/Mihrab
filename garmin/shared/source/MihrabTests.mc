@@ -159,6 +159,75 @@ module MihrabTests {
         Test.assert(Mihrab.stale(now + 4 * 24 * 3600));
         return true;
     }
+
+    // The second message (Mihrab.mc): what to show, the Hijri dates, the
+    // night marks — and that it leaves the times of the first alone.
+    (:test)
+    function extrasAreKeptBesideTheTimes(logger as Logger) as Boolean {
+        Storage.clearValues();
+        // A whole minute, as every time the phone sends is: a night mark's
+        // kind rides in the seconds' place.
+        var base = 999960;
+        Test.assert(MihrabStore.store(sample(base)));
+        Test.assertEqual(0, MihrabStore.options());
+        Test.assertEqual(0, Mihrab.dateStyle());
+        var noon = base + 12 * 3600;
+        // Hide the steps, both dates, the field's bar; three days of Hijri
+        // dates across a month's end; midnight and the last third tonight.
+        var x = {
+            "v" => 2, "x" => 1,
+            "o" => MihrabStore.OPT_NO_STEPS | (2 << MihrabStore.OPT_DATE_SHIFT) | MihrabStore.OPT_FIELD_PROGRESS,
+            "hj" => [noon, 29, 6, 1448, 30, 6, 1448, 1, 7, 1448],
+            "n" => [base + 26 * 3600 + MihrabStore.NIGHT_LAST_THIRD, base + 23 * 3600 + MihrabStore.NIGHT_MIDNIGHT],
+        };
+        Test.assert(MihrabStore.store(x));
+        Test.assertEqual(12, (MihrabStore.times() as Array<Number>).size());
+        Test.assert(Mihrab.option(MihrabStore.OPT_NO_STEPS));
+        Test.assert(!Mihrab.option(MihrabStore.OPT_NO_WEATHER));
+        Test.assert(Mihrab.option(MihrabStore.OPT_FIELD_PROGRESS));
+        Test.assertEqual(2, Mihrab.dateStyle());
+
+        var h = MihrabStore.hijri(base + 10 * 3600) as [Number, Number, Number];
+        Test.assertEqual(29, h[0]);
+        h = MihrabStore.hijri(base + 30 * 3600) as [Number, Number, Number];
+        Test.assertEqual(30, h[0]);
+        h = MihrabStore.hijri(base + 50 * 3600) as [Number, Number, Number];
+        Test.assertEqual(1, h[0]);
+        Test.assertEqual(7, h[1]);
+        // Past the days sent, and before them: none, not the nearest.
+        Test.assert(MihrabStore.hijri(base + 80 * 3600) == null);
+        Test.assert(MihrabStore.hijri(base - 3600) == null);
+        Test.assert((MihrabHijri.text(base + 10 * 3600, false) as String).find("29") != null);
+
+        // Soonest first, whatever order they came in; past ones dropped.
+        var marks = MihrabStore.nightMarks(base + 20 * 3600);
+        Test.assertEqual(2, marks.size());
+        Test.assertEqual(MihrabStore.NIGHT_MIDNIGHT, marks[0][0]);
+        Test.assertEqual(base + 23 * 3600, marks[0][1]);
+        Test.assertEqual(MihrabStore.NIGHT_LAST_THIRD, marks[1][0]);
+        Test.assertEqual(1, MihrabStore.nightMarks(base + 24 * 3600).size());
+        Test.assertEqual(0, MihrabStore.nightMarks(base + 27 * 3600).size());
+
+        // A second message with only the options leaves the rest.
+        Test.assert(MihrabStore.store({ "v" => 2, "x" => 1, "o" => 0 }));
+        Test.assertEqual(0, MihrabStore.options());
+        Test.assert(MihrabStore.hijri(base + 10 * 3600) != null);
+        return true;
+    }
+
+    (:test)
+    function progressRunsFromTheLastTimeToTheNext(logger as Logger) as Boolean {
+        Storage.clearValues();
+        var base = 1000000;
+        MihrabStore.store(sample(base));
+        // Before the first time there is nothing to measure from.
+        Test.assertEqual(0, Mihrab.progress(base));
+        // Dhuhr at +12h, Asr at +15h.
+        Test.assertEqual(0, Mihrab.progress(base + 12 * 3600));
+        Test.assertEqual(500, Mihrab.progress(base + 13 * 3600 + 1800));
+        Test.assertEqual(999, Mihrab.progress(base + 15 * 3600 - 10));
+        return true;
+    }
 }
 
 // Leaves today's times in Storage (Stockholm, early November), so the face

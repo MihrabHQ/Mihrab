@@ -9,15 +9,34 @@
 import type { AppAccentId } from './types';
 import { legibleAccent } from './accentColors';
 
+/** The watch face's date row: the calendar's date, the Hijri date, or both. */
+export type GarminFaceDate = 'gregorian' | 'hijri' | 'both';
+
 export type GarminWatchSettings = {
   enabled: boolean;
   /** `AA:BB:CC:DD:EE:FF`, as Gadgetbridge shows it; empty until typed. */
   address: string;
+  /**
+   * What the watch shows. The defaults are the face as it was before
+   * there was a choice, which is also what a watch app older than the
+   * choice goes on showing whatever these say.
+   */
+  faceDate: GarminFaceDate;
+  faceSteps: boolean;
+  faceWeather: boolean;
+  faceSeconds: boolean;
+  /** The data field: a bar from the last prayer to the next. */
+  fieldProgress: boolean;
 };
 
 export const DEFAULT_GARMIN_WATCH: GarminWatchSettings = {
   enabled: false,
   address: '',
+  faceDate: 'gregorian',
+  faceSteps: true,
+  faceWeather: true,
+  faceSeconds: true,
+  fieldProgress: false,
 };
 
 const ADDRESS = /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/;
@@ -34,7 +53,38 @@ export function coerceGarminWatch(value: unknown): GarminWatchSettings {
   return {
     enabled: raw.enabled === true,
     address: typeof raw.address === 'string' ? raw.address : '',
+    faceDate: raw.faceDate === 'hijri' || raw.faceDate === 'both' ? raw.faceDate : 'gregorian',
+    // On unless turned off: a blob from before the choice has none of these.
+    faceSteps: raw.faceSteps !== false,
+    faceWeather: raw.faceWeather !== false,
+    faceSeconds: raw.faceSeconds !== false,
+    fieldProgress: raw.fieldProgress === true,
   };
+}
+
+/**
+ * The same choices as the watch reads them: the `OPT_` bits of
+ * garmin/shared/source/Mihrab.mc. Set bits take away from, or add to, the
+ * face as it was before there was a choice, so the defaults are 0 — what
+ * a watch that was never told shows.
+ */
+export const GARMIN_OPT = {
+  noSteps: 1,
+  noWeather: 2,
+  noSeconds: 4,
+  dateShift: 3,
+  fieldProgress: 32,
+} as const;
+
+export function garminOptionFlags(watch: GarminWatchSettings): number {
+  const date = watch.faceDate === 'hijri' ? 1 : watch.faceDate === 'both' ? 2 : 0;
+  return (
+    (watch.faceSteps ? 0 : GARMIN_OPT.noSteps) |
+    (watch.faceWeather ? 0 : GARMIN_OPT.noWeather) |
+    (watch.faceSeconds ? 0 : GARMIN_OPT.noSeconds) |
+    (date << GARMIN_OPT.dateShift) |
+    (watch.fieldProgress ? GARMIN_OPT.fieldProgress : 0)
+  );
 }
 
 /**

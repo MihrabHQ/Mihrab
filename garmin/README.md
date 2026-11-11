@@ -83,6 +83,26 @@ Connect IQ store — the apps are side-loaded through Gadgetbridge.
    face and the field read Storage; after three days without a message
    the face says the times may be out of date.
 
+After the times, to the same apps, goes a second message with everything
+else the watch is told — `{"v":2,"x":1,"o":…,"hj":[…],"n":[…]}`
+(`GarminWatch.extras`; the comment at the head of `shared/source/Mihrab.mc`
+has each part):
+
+- `o`, what to show, from Settings → Devices → Garmin watch: the face's
+  date row (the calendar's date, the Hijri date, or both), its steps,
+  weather and seconds, and a bar from the last prayer to the next in the
+  data field. 0 — and a watch never told — is everything as it was.
+- `hj`, the Hijri date of each day the times cover, which the face writes
+  in the watch's language when asked to.
+- `n`, the night marks the app has turned on (Islamic midnight, the last
+  third, the first third), which the widget lists on a second page (up,
+  down or a swipe; two dots at the left edge while there is one).
+
+It is a message of its own because the first is near Gadgetbridge's limit,
+and because a watch app from before it reads the first exactly as it did
+and drops the second — where a new shape for the first would have left it
+with no times.
+
 The phone sends again whenever its schedule is rebuilt (daily, on a
 change of place or method), and from Settings ("Send now"). The same
 message is not repeated within six hours.
@@ -90,8 +110,9 @@ message is not repeated within six hours.
 ## Installing from the phone
 
 An Android build made on a machine where `garmin/build.sh` has run carries
-the watch face (`android/app/build.gradle`, `copyGarminFace`: whatever
-`garmin/build/mihrab-face.prg` is at build time). Settings → Devices →
+the three watch apps (`android/app/build.gradle`, `copyGarminFace`: whatever
+`garmin/build/mihrab-face.prg`, `mihrab-widget.prg` and `mihrab-field.prg`
+are at build time), and Settings has an install for each it carries. Settings → Devices →
 Garmin watch → **Install or reinstall watch face** (beside Find the watch) sends the times
 again, then hands that face to Gadgetbridge's installer
 (`GarminWatch.installFace`), which asks before installing. A build without
@@ -142,6 +163,7 @@ and a look at the face on that screen.
 
 ```
 shared/source/Mihrab.mc         the store, the next prayer, the words
+shared/source/MihrabHijri.mc    the Hijri months and night marks, by name
 shared/source/MihrabService.mc  the background service: receives the message
 shared/source/MihrabTests.mc    tests (compiled in with -t only)
 watchface/                      the face (manifest, resources, view)

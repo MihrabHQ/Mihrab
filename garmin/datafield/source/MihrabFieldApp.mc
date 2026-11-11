@@ -47,6 +47,10 @@ class MihrabFieldApp extends Application.AppBase {
 class MihrabField extends WatchUi.DataField {
     private var _label as String = "";
     private var _value as Array<String> = ["--"] as Array<String>;
+    // Thousandths of the way from the last prayer to the next, or -1 for
+    // no bar: the phone asks for it (Mihrab.mc, OPT_FIELD_PROGRESS).
+    private var _progress as Number = -1;
+    private const BAR = 3;
 
     function initialize() {
         DataField.initialize();
@@ -59,6 +63,7 @@ class MihrabField extends WatchUi.DataField {
         _value = next == null
             ? ["--"] as Array<String>
             : [Mihrab.name(next[0]), Mihrab.countdown(next[1] - now)] as Array<String>;
+        _progress = next != null && Mihrab.option(MihrabStore.OPT_FIELD_PROGRESS) ? Mihrab.progress(now) : -1;
     }
 
     function onUpdate(dc as Dc) as Void {
@@ -77,7 +82,11 @@ class MihrabField extends WatchUi.DataField {
         if (showLabel) {
             dc.drawText(w / 2, 0, labelFont, _label, Graphics.TEXT_JUSTIFY_CENTER);
         }
-        var room = h - top;
+        // The bar, when asked for and the field is tall enough to give it
+        // the room: straight under the words and as wide as they are — a
+        // field's own foot is off the dial on a round watch.
+        var bar = _progress >= 0 && h >= top + Graphics.getFontHeight(Graphics.FONT_XTINY) + BAR + 3 ? BAR + 3 : 0;
+        var room = h - top - bar;
         var oneLine = _value.size() == 1 ? _value[0] : _value[0] + " " + _value[1];
         var fonts = [Graphics.FONT_NUMBER_MEDIUM, Graphics.FONT_LARGE, Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_XTINY] as Array<Graphics.FontDefinition>;
         // One line in the largest font that fits; the number fonts only
@@ -90,6 +99,7 @@ class MihrabField extends WatchUi.DataField {
             var lineH = Graphics.getFontAscent(f) + Graphics.getFontDescent(f);
             if (lineH <= room && dc.getTextWidthInPixels(oneLine, f) <= w - 2 * pad) {
                 dc.drawText(w / 2, top + (room - lineH) / 2, f, oneLine, Graphics.TEXT_JUSTIFY_CENTER);
+                drawBar(dc, bar, top + (room - lineH) / 2 + lineH, dc.getTextWidthInPixels(oneLine, f), fg, bg);
                 return;
             }
         }
@@ -102,6 +112,9 @@ class MihrabField extends WatchUi.DataField {
                     var y = top + (room - 2 * lineH) / 2;
                     dc.drawText(w / 2, y, f, _value[0], Graphics.TEXT_JUSTIFY_CENTER);
                     dc.drawText(w / 2, y + lineH, f, _value[1], Graphics.TEXT_JUSTIFY_CENTER);
+                    var w0 = dc.getTextWidthInPixels(_value[0], f);
+                    var w1 = dc.getTextWidthInPixels(_value[1], f);
+                    drawBar(dc, bar, y + 2 * lineH, w0 > w1 ? w0 : w1, fg, bg);
                     return;
                 }
             }
@@ -109,5 +122,20 @@ class MihrabField extends WatchUi.DataField {
         // The smallest box of all: the countdown alone, which is the point.
         var last = _value[_value.size() - 1];
         dc.drawText(w / 2, top + room / 2, Graphics.FONT_XTINY, last, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+    }
+
+    // A grey track `width` wide, centred, its top at `y`; what is gone of
+    // the way to the next prayer in the app's accent (the ink, on a white
+    // field, where the accent may not show).
+    private function drawBar(dc as Dc, bar as Number, y as Number, width as Number, fg as Number, bg as Number) as Void {
+        if (bar <= 0 || width <= 0) {
+            return;
+        }
+        var x = dc.getWidth() / 2 - width / 2;
+        dc.setColor(Graphics.COLOR_LT_GRAY, bg);
+        dc.fillRectangle(x, y + 1, width, BAR);
+        dc.setColor(bg == Graphics.COLOR_BLACK ? Mihrab.accent() : fg, bg);
+        dc.fillRectangle(x, y + 1, width * _progress / 1000, BAR);
+        dc.setColor(fg, bg);
     }
 }

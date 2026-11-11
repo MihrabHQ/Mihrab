@@ -6,15 +6,18 @@ import { usePrayerSettings } from '../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import {
   normalizeWatchAddress,
+  type GarminFaceDate,
   type GarminWatchSettings,
 } from '../../settings/garminWatch';
+import { useClockFormatter } from '../../hooks/useClockFormatter';
 import {
   configureGarminWatch,
   garminWatchAvailable,
   garminWatchStatus,
-  installGarminFace,
+  installGarminApp,
   pairedWatches,
   sendToGarminWatch,
+  type GarminAppKind,
   type GarminInstallResult,
   type GarminSendResult,
   type PairedDevice,
@@ -40,7 +43,8 @@ import { TYPE } from '../../theme/typography';
  * the rest.
  */
 function GarminWatchCardImpl() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const clock = useClockFormatter();
   const { settings, updateSettings } = usePrayerSettings();
   const { palette } = useAppPalette();
   const watch = settings.garminWatch;
@@ -49,34 +53,62 @@ function GarminWatchCardImpl() {
   const [outcome, setOutcome] = useState<GarminSendResult | null>(null);
   // Whether this build carries a watch face to install, and what the
   // last refresh did.
-  const [bundledFace, setBundledFace] = useState(false);
+  // Which of the three watch apps this build carries (app/build.gradle).
+  const [bundled, setBundled] = useState<Record<GarminAppKind, boolean>>({
+    face: false,
+    widget: false,
+    field: false,
+  });
   const [refreshed, setRefreshed] = useState<
     { sent: GarminSendResult; installed: GarminInstallResult | null } | null
   >(null);
+  // The last send that had something to say, and when: what the page shows
+  // on opening, before anything is pressed.
+  const [last, setLast] = useState<{ result: GarminSendResult; at: number } | null>(null);
   // The paired devices offered for picking: null until asked, [] when
   // the permission was refused or nothing is paired.
   const [choices, setChoices] = useState<PairedDevice[] | null>(null);
   const [choicesNote, setChoicesNote] = useState<'refused' | 'none' | null>(null);
 
+  const readStatus = useCallback((alive: () => boolean = () => true) => {
+    void garminWatchStatus().then(st => {
+      if (!alive() || !st) return;
+      setGadgetbridge(st.gadgetbridge != null);
+      setBundled({
+        face: st.bundledFace === true,
+        widget: st.bundledWidget === true,
+        field: st.bundledField === true,
+      });
+      setLast(st.lastResult && st.lastResultAt ? { result: st.lastResult, at: st.lastResultAt } : null);
+    });
+  }, []);
+
   useEffect(() => {
     let alive = true;
-    void garminWatchStatus().then(st => {
-      if (alive && st) {
-        setGadgetbridge(st.gadgetbridge != null);
-        setBundledFace(st.bundledFace === true);
-      }
-    });
+    readStatus(() => alive);
     return () => {
       alive = false;
     };
-  }, [watch.enabled]);
+  }, [readStatus, watch.enabled]);
 
   const apply = useCallback(
     (next: GarminWatchSettings) => {
       updateSettings({ garminWatch: next });
-      void configureGarminWatch(next.enabled, next.address).then(setOutcome);
+      void configureGarminWatch(next.enabled, next.address).then(result => {
+        setOutcome(result);
+        readStatus();
+      });
     },
-    [updateSettings],
+    [readStatus, updateSettings],
+  );
+
+  // What the watch shows. Saved here; `useSyncGarminAccent` hands it to the
+  // native side, which sends it — the same road a restored backup takes.
+  const show = useCallback(
+    (patch: Partial<GarminWatchSettings>) => {
+      updateSettings({ garminWatch: { ...watch, ...patch } });
+    },
+    [updateSettings, watch],
   );
 
   const onToggle = useCallback(
@@ -127,23 +159,50 @@ function GarminWatchCardImpl() {
 
   const onSend = useCallback(() => {
     setOutcome(null);
-    void sendToGarminWatch().then(setOutcome);
-  }, []);
+    void sendToGarminWatch().then(result => {
+      setOutcome(result);
+      readStatus();
+    });
+  }, [readStatus]);
 
   // Install or reinstall: the times again, whatever was sent before; then
-  // Gadgetbridge's installer on the face this build carries — installed
-  // after a yes there.
-  const onInstall = useCallback(() => {
-    setRefreshed(null);
-    void sendToGarminWatch().then(async sent => {
-      const installed = sent === 'sent' ? await installGarminFace() : null;
-      setRefreshed({ sent, installed });
-    });
-  }, []);
+  // Gadgetbridge's installer on the watch app this build carries —
+  // installed after a yes there.
+  const onInstall = useCallback(
+    (kind: GarminAppKind) => {
+      setRefreshed(null);
+      void sendToGarminWatch().then(async sent => {
+        const installed = sent === 'sent' ? await installGarminApp(kind) : null;
+        setRefreshed({ sent, installed });
+        readStatus();
+      });
+    },
+    [readStatus],
+  );
 
   if (Platform.OS !== 'android' || !garminWatchAvailable) return null;
 
   const addressOk = normalizeWatchAddress(draft) != null;
+  const anyBundled = bundled.face || bundled.widget || bundled.field;
+  const INSTALL: { kind: GarminAppKind; label: string; testID: string }[] = [
+    { kind: 'face', label: t('settings.garminInstallFace'), testID: 'settings-garmin-install-face' },
+    { kind: 'widget', label: t('settings.garminInstallWidget'), testID: 'settings-garmin-install-widget' },
+    { kind: 'field', label: t('settings.garminInstallField'), testID: 'settings-garmin-install-field' },
+  ];
+  const DATES: { id: GarminFaceDate; label: string }[] = [
+    { id: 'gregorian', label: t('settings.garminDateGregorian') },
+    { id: 'hijri', label: t('settings.garminDateHijri') },
+    { id: 'both', label: t('settings.garminDateBoth') },
+  ];
+  // "14:05" today, "9 Nov 14:05" before: when the watch was last sent to.
+  const lastWhen = (() => {
+    if (!last) return null;
+    const d = new Date(last.at);
+    const time = clock.fromDate(d);
+    return d.toDateString() === new Date().toDateString()
+      ? time
+      : `${d.toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' })} ${time}`;
+  })();
 
   return (
     <SettingsGroup
@@ -158,11 +217,38 @@ function GarminWatchCardImpl() {
       />
       {watch.enabled ? (
         <SettingsBlock>
-          {gadgetbridge === false ? (
-            <Text style={[s.help, styles.warn, { color: palette.danger }]}>
-              {t('settings.garminNoGadgetbridge')}
+          {/* Where things stand, before anything is pressed: each line is
+              one thing the watch needs, and the last is what the last send
+              said. The one setting Mihrab cannot see is named as that. */}
+          <View style={styles.checks} testID="settings-garmin-status">
+            {gadgetbridge != null ? (
+              <Text style={[s.help, { color: gadgetbridge ? palette.muted : palette.danger }]}>
+                {gadgetbridge ? '✓ ' : '✗ '}
+                {t(gadgetbridge ? 'settings.garminCheckGadgetbridge' : 'settings.garminNoGadgetbridge')}
+              </Text>
+            ) : null}
+            <Text style={[s.help, { color: watch.address ? palette.muted : palette.danger }]}>
+              {watch.address ? '✓ ' : '✗ '}
+              {t(watch.address ? 'settings.garminCheckWatch' : 'settings.garminCheckNoWatch')}
             </Text>
-          ) : null}
+            <Text style={[s.help, { color: palette.muted }]}>
+              {'• '}
+              {t('settings.garminCheckAllow')}
+            </Text>
+            <Text
+              style={[
+                s.help,
+                { color: !last || last.result === 'sent' ? palette.muted : palette.danger },
+              ]}>
+              {/* "Last sent" only of a send that went: an attempt that did
+                  not is its time and what stopped it. */}
+              {last && lastWhen
+                ? last.result === 'sent'
+                  ? `✓ ${t('settings.garminLastSent', { when: lastWhen })}`
+                  : `✗ ${lastWhen} — ${t(`settings.garminResult.${last.result}`)}`
+                : `• ${t('settings.garminNeverSent')}`}
+            </Text>
+          </View>
           <Text style={[s.label, { color: palette.muted }]}>
             {t('settings.garminAddress')}
           </Text>
@@ -216,23 +302,26 @@ function GarminWatchCardImpl() {
               {t(choicesNote === 'refused' ? 'settings.garminFindRefused' : 'settings.garminFindNone')}
             </Text>
           ) : null}
-          {/* Only on a build that carries the face (app/build.gradle). */}
-          {bundledFace ? (
+          {/* Only on a build that carries them (app/build.gradle): the face,
+              the widget with its glance, the data field — each handed to
+              Gadgetbridge's installer, which asks before it installs. */}
+          {anyBundled ? (
             <>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('settings.garminInstallFace')}
-                accessibilityHint={t('settings.garminInstallFaceHelp')}
-                onPress={onInstall}
-                disabled={!addressOk}
-                testID="settings-garmin-install-face"
-                style={[styles.send, !addressOk ? styles.disabled : null]}>
-                <Text style={[s.changeLink, { color: palette.accent }]}>
-                  {t('settings.garminInstallFace')}
-                </Text>
-              </Pressable>
+              {INSTALL.filter(a => bundled[a.kind]).map(a => (
+                <Pressable
+                  key={a.kind}
+                  accessibilityRole="button"
+                  accessibilityLabel={a.label}
+                  accessibilityHint={t('settings.garminInstallHelp')}
+                  onPress={() => onInstall(a.kind)}
+                  disabled={!addressOk}
+                  testID={a.testID}
+                  style={[styles.send, !addressOk ? styles.disabled : null]}>
+                  <Text style={[s.changeLink, { color: palette.accent }]}>{a.label}</Text>
+                </Pressable>
+              ))}
               <Text style={[s.help, { color: palette.muted }]}>
-                {t('settings.garminInstallFaceHelp')}
+                {t('settings.garminInstallHelp')}
               </Text>
               {refreshed ? (
                 <Text
@@ -274,6 +363,67 @@ function GarminWatchCardImpl() {
           ) : null}
         </SettingsBlock>
       ) : null}
+      {/* What the watch shows. Saved with the settings and sent at once;
+          a watch app older than these goes on showing everything. */}
+      {watch.enabled ? (
+        <>
+          <SettingsBlock>
+            <Text style={[s.label, { color: palette.muted }]}>{t('settings.garminDate')}</Text>
+            <View style={styles.dates} accessibilityRole="radiogroup">
+              {DATES.map(d => {
+                const selected = watch.faceDate === d.id;
+                return (
+                  <Pressable
+                    key={d.id}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected }}
+                    accessibilityLabel={d.label}
+                    testID={`settings-garmin-date-${d.id}`}
+                    onPress={() => show({ faceDate: d.id })}
+                    style={[
+                      styles.date,
+                      selected ? styles.dateSelected : null,
+                      {
+                        borderColor: selected ? palette.accent : palette.border,
+                        backgroundColor: selected ? palette.accentBg : 'transparent',
+                      },
+                    ]}>
+                    <Text style={[s.valueText, { color: selected ? palette.accent : palette.text }]}>
+                      {d.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <Text style={[s.help, { color: palette.muted }]}>{t('settings.garminShowHelp')}</Text>
+          </SettingsBlock>
+          <SettingsToggleRow
+            title={t('settings.garminSteps')}
+            value={watch.faceSteps}
+            onValueChange={v => show({ faceSteps: v })}
+            testID="settings-garmin-steps"
+          />
+          <SettingsToggleRow
+            title={t('settings.garminWeather')}
+            value={watch.faceWeather}
+            onValueChange={v => show({ faceWeather: v })}
+            testID="settings-garmin-weather"
+          />
+          <SettingsToggleRow
+            title={t('settings.garminSeconds')}
+            value={watch.faceSeconds}
+            onValueChange={v => show({ faceSeconds: v })}
+            testID="settings-garmin-seconds"
+          />
+          <SettingsToggleRow
+            title={t('settings.garminFieldProgress')}
+            help={t('settings.garminFieldProgressHelp')}
+            value={watch.fieldProgress}
+            onValueChange={v => show({ fieldProgress: v })}
+            testID="settings-garmin-field-progress"
+          />
+        </>
+      ) : null}
     </SettingsGroup>
   );
 }
@@ -288,7 +438,17 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
     fontSize: TYPE.body.fontSize,
   },
-  warn: { marginBottom: SPACING.sm },
+  checks: { marginBottom: SPACING.sm, gap: SPACING.xs },
+  dates: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.xs, marginBottom: SPACING.xs },
+  date: {
+    flex: 1,
+    alignItems: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: RADIUS.sm,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.xs,
+  },
+  dateSelected: { borderWidth: 2 },
   choices: { marginVertical: SPACING.xs },
   choice: {
     borderWidth: StyleSheet.hairlineWidth,

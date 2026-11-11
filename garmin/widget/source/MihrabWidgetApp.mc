@@ -83,7 +83,8 @@ class MihrabWidgetApp extends Application.AppBase {
     function getInitialView() as [Views] or [Views, InputDelegates] {
         register();
         MihrabPublish.publish(Time.now().value());
-        return [new MihrabWidgetView()];
+        var view = new MihrabWidgetView();
+        return [view, new MihrabWidgetDelegate(view)];
     }
 
     (:typecheck(disableBackgroundCheck))
