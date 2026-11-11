@@ -12,13 +12,12 @@
 //
 //                 ·  ╷  ·                    the twelve hours ahead (below)
 //               Wed 11 Nov                   the date (or the Hijri date)
-//             ☁ 8°  16°/7°                   the weather
+//           ☁ 8°  16°/7°  (87)             the weather · the battery
 //                              am
 //            9:41              07            the time · the seconds
 //            Asr  16:42                      the next prayer
 //             05:49:12                       the countdown
 //              👣 4532                       today's steps
-//               ▭ 87%                        the battery
 //
 // After days without the phone the weather's row says the times may be
 // out of date (the weather is the phone's too); with no times at all the
@@ -65,9 +64,10 @@ class MihrabFaceView extends WatchUi.WatchFace {
 
     // The weather and footprint icons' box, square.
     private const ICON = 16;
-    // The battery glyph: its body, and the nub at its end.
-    private const CELL_W = 20;
-    private const CELL_H = 10;
+    // The battery: a circle that fills round with the charge, the
+    // percentage inside it. It is as tall as the line it stands in and
+    // no taller (`cellR`); this is what it stands off the weather.
+    private const CELL_GAP = 8;
 
     // The ring: its radius in from the dial's edge, the pens of its line
     // and of the stretch ahead, a prayer's tick, the bead and the ring at
@@ -120,6 +120,8 @@ class MihrabFaceView extends WatchUi.WatchFace {
         Rez.Fonts.Count18, Rez.Fonts.Count20, Rez.Fonts.Count24, Rez.Fonts.Count28
     ] as Array<ResourceId>;
     private var _fSeconds as Graphics.FontType = Graphics.FONT_XTINY;
+    // The figure inside the battery's circle.
+    private var _fCell as Graphics.FontType = Graphics.FONT_XTINY;
     // THE SIZES ARE FOUR, AND EVERY ROW IS ONE OF THEM.
     //
     //   1  the time                                  the clock's figures
@@ -184,7 +186,6 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private var _bClock as Number = 0;
     private var _bPrayer as Number = 0;
     private var _bCount as Number = 0;
-    private var _bSteps as Number = 0;
     private var _bFoot as Number = 0;
     // The column right of the figures (am/pm, the seconds): its width.
     private var _rightW as Number = 0;
@@ -211,6 +212,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
     function initialize() {
         WatchFace.initialize();
         _fSeconds = WatchUi.loadResource(Rez.Fonts.Seconds15) as Graphics.FontReference;
+        _fCell = WatchUi.loadResource(Rez.Fonts.Battery7) as Graphics.FontReference;
     }
 
     function onLayout(dc as Dc) as Void {
@@ -580,10 +582,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
             bWeather = y + up(fWeather);
             ok = fit(widest(dc, staleLines, fWeather) / 2, y, y + staleLines.size() * staleH) && ok;
             y += staleLines.size() * staleH - Graphics.getFontDescent(fWeather);
-        } else if (weatherW > 0) {
+        } else {
+            // The weather and, beside it, the battery's circle, which is
+            // the line's own height.
             y += GAP_SMALL + above / 2;
             bWeather = y + up(fWeather);
-            ok = fit(weatherW / 2, y, bWeather + 2) && ok;
+            ok = fit((weatherW + (weatherW > 0 ? CELL_GAP : 0) + 2 * cellR(fWeather) + 1) / 2, y, bWeather + 2) && ok;
             y = bWeather;
         }
 
@@ -631,22 +635,18 @@ class MihrabFaceView extends WatchUi.WatchFace {
             y += reasonLines.size() * lineH - Graphics.getFontDescent(fPrayer);
         }
 
-        // The foot: the steps, and under them the battery — two short
-        // rows, not one long one. The dial narrows towards its foot, and
-        // a row as wide as both together has to stop well short of it;
-        // each alone can go nearly to the ring.
-        var bSteps = y;
-        if (_showSteps) {
+        // The foot: the steps. (After days without the phone the word
+        // about that has the weather's row, and the battery's circle
+        // stands here beside the steps instead.)
+        var bFoot = y;
+        var footW = (_showSteps ? stepsWidth(dc, fFoot) : 0)
+            + (stale != null ? (_showSteps ? CELL_GAP : 0) + 2 * cellR(fFoot) + 1 : 0);
+        if (footW > 0) {
             y += GAP_FOOT + below;
-            bSteps = y + up(fFoot);
-            ok = fit(stepsWidth(dc, fFoot) / 2, y, bSteps + 1) && ok;
-            y = bSteps + GAP_SMALL + below / 2;
-        } else {
-            y += GAP_FOOT + below;
+            bFoot = y + up(fFoot);
+            ok = fit(footW / 2, y, bFoot + 2) && ok;
+            y = bFoot;
         }
-        var bFoot = y + up(fFoot);
-        ok = fit(batteryWidth(dc, fFoot) / 2, y, bFoot + 1) && ok;
-        y = bFoot;
 
         if (!ok && !force) {
             return false;
@@ -670,7 +670,6 @@ class MihrabFaceView extends WatchUi.WatchFace {
         _bClock = start + bClock;
         _bPrayer = start + bPrayer;
         _bCount = start + bCount;
-        _bSteps = start + bSteps;
         _bFoot = start + bFoot;
         _rightW = rightW;
         _reasonLines = reasonLines;
@@ -696,13 +695,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
         return w;
     }
 
-    // The foot rows' widths in font f, each for the most it can show.
+    // The steps' width in font f, for the most they can show.
     private function stepsWidth(dc as Dc, f as Graphics.FontType) as Number {
         return ICON + 3 + textW(dc, "88888", f);
-    }
-
-    private function batteryWidth(dc as Dc, f as Graphics.FontType) as Number {
-        return CELL_W + 2 + 4 + textW(dc, "100%", f);
     }
 
     // ---- Drawing ----
@@ -720,30 +715,76 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
     }
 
-    // The weather: the icon, the temperature now in white, the day's high
-    // and low after it in grey, centred together.
+    // The weather — the icon, the temperature now in white, the day's
+    // high and low after it in grey — and beside it the battery's circle,
+    // centred together.
     private function drawWeather(dc as Dc) as Void {
         var f = _fWeather;
-        var total = weatherWidth(dc, f);
-        if (total <= 0) {
-            return;
-        }
+        var weatherW = weatherWidth(dc, f);
+        var r = cellR(f);
+        var total = weatherW + (weatherW > 0 ? CELL_GAP : 0) + 2 * r + 1;
         var b = _bWeather;
         var x = _w / 2 - total / 2;
-        var kind = _weather[0] as Number;
-        var nowText = _weather[1] as String;
-        var range = _weather[2] as String;
-        if (kind >= 0) {
-            drawWeatherIcon(dc, kind, (_weather[3] as Number) == 1, x, b - up(f) / 2 - ICON / 2 + 2);
-            x += ICON + 3;
+        var mid = b - up(f) / 2 + 2;
+        if (weatherW > 0) {
+            var kind = _weather[0] as Number;
+            var nowText = _weather[1] as String;
+            var range = _weather[2] as String;
+            if (kind >= 0) {
+                drawWeatherIcon(dc, kind, (_weather[3] as Number) == 1, x, mid - ICON / 2);
+                x += ICON + 3;
+            }
+            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(x, b - up(f), f, nowText, Graphics.TEXT_JUSTIFY_LEFT);
+            x += textW(dc, nowText, f);
+            if (range.length() > 0) {
+                dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(x + 8, b - up(F_SIDE), F_SIDE, range, Graphics.TEXT_JUSTIFY_LEFT);
+                x += 8 + textW(dc, range, F_SIDE);
+            }
+            x += CELL_GAP;
         }
+        drawBattery(dc, x + r, mid, r);
+    }
+
+    // The battery's radius in a line of font f: the circle is as tall as
+    // the line itself — the font's ascent — and within what a figure can
+    // be read inside.
+    private function cellR(f as Graphics.FontType) as Number {
+        var r = up(f) / 2;
+        return r < 10 ? 10 : (r > 14 ? 14 : r);
+    }
+
+    // The battery, as CyanogenMod drew it: a circle that fills round from
+    // the top with the charge — green, then yellow, orange and red as it
+    // runs down, over a grey track — and the percentage inside it, in
+    // white; full, there is no room for three figures and no need of
+    // them, and the circle is simply whole. Centred on (cx, cy).
+    private function drawBattery(dc as Dc, cx as Number, cy as Number, radius as Number) as Void {
+        var pct = System.getSystemStats().battery;
+        pct = pct < 0.0 ? 0.0 : (pct > 100.0 ? 100.0 : pct);
+        var whole = (pct + 0.5).toNumber();
+        var pen = radius >= 14 ? 3 : 2;
+        var r = radius - pen / 2;
+        dc.setPenWidth(pen);
+        dc.setColor(TRACK, Graphics.COLOR_TRANSPARENT);
+        dc.drawCircle(cx, cy, r);
+        dc.setColor(batteryColor(pct), Graphics.COLOR_TRANSPARENT);
+        if (whole >= 100) {
+            dc.drawCircle(cx, cy, r);
+            dc.fillCircle(cx, cy, r - pen - 2);
+            dc.setPenWidth(1);
+            return;
+        }
+        if (whole > 0) {
+            var sweep = 360 * whole / 100;
+            dc.drawArc(cx, cy, r, Graphics.ARC_CLOCKWISE, 90, sweep >= 90 ? 450 - sweep : 90 - sweep);
+        }
+        dc.setPenWidth(1);
+        // Small figures, to sit in the ring with air all round them.
+        var f = _fCell;
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x, b - up(f), f, nowText, Graphics.TEXT_JUSTIFY_LEFT);
-        x += textW(dc, nowText, f);
-        if (range.length() > 0) {
-            dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x + 8, b - up(F_SIDE), F_SIDE, range, Graphics.TEXT_JUSTIFY_LEFT);
-        }
+        dc.drawText(cx, cy - up(f) / 2, f, whole.format("%d"), Graphics.TEXT_JUSTIFY_CENTER);
     }
 
     // The clock's figures with the colon in the accent, and to their
@@ -817,39 +858,32 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
     }
 
-    // The foot: a footprint and today's steps, and under them a battery
-    // and what is left of it — each an icon and a figure, as Garmin's own
-    // faces write theirs, each centred on its own row. The battery's fill
-    // is green, then yellow, orange and red as it runs down; the figure
-    // stays white.
+    // The foot: a footprint and today's steps, an icon and a figure as
+    // Garmin's own faces write theirs — and, when the word about old
+    // times has the weather's row, the battery's circle beside them.
     private function drawFoot(dc as Dc) as Void {
         var f = _fFoot;
-        if (_showSteps) {
-            var steps = stepCount().format("%d");
-            var sx = _w / 2 - (ICON + 3 + textW(dc, steps, f)) / 2;
-            dc.setColor(_accent, Graphics.COLOR_TRANSPARENT);
-            drawFootprints(dc, sx, _bSteps - up(f) / 2 + 2 - ICON / 2);
-            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(sx + ICON + 3, _bSteps - up(f), f, steps, Graphics.TEXT_JUSTIFY_LEFT);
+        var cell = _staleText != null;
+        var steps = _showSteps ? stepCount().format("%d") : "";
+        var stepsW = _showSteps ? ICON + 3 + textW(dc, steps, f) : 0;
+        var r = cellR(f);
+        var total = stepsW + (cell ? (_showSteps ? CELL_GAP : 0) + 2 * r + 1 : 0);
+        if (total <= 0) {
+            return;
         }
         var b = _bFoot;
-        var pct = System.getSystemStats().battery;
-        pct = pct < 0.0 ? 0.0 : (pct > 100.0 ? 100.0 : pct);
-        var pctText = (pct + 0.5).toNumber().format("%d") + "%";
-        var x = _w / 2 - (CELL_W + 2 + 4 + textW(dc, pctText, f)) / 2;
-        // The cell: a white outline, a nub, and the charge inside it.
-        var cy = b - up(f) / 2 + 2 - CELL_H / 2;
-        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-        dc.setPenWidth(1);
-        dc.drawRectangle(x, cy, CELL_W, CELL_H);
-        dc.fillRectangle(x + CELL_W, cy + 3, 2, CELL_H - 6);
-        var inner = ((CELL_W - 4) * pct / 100.0 + 0.5).toNumber();
-        if (inner > 0) {
-            dc.setColor(batteryColor(pct), Graphics.COLOR_TRANSPARENT);
-            dc.fillRectangle(x + 2, cy + 2, inner, CELL_H - 4);
+        var x = _w / 2 - total / 2;
+        var mid = b - up(f) / 2 + 2;
+        if (_showSteps) {
+            dc.setColor(_accent, Graphics.COLOR_TRANSPARENT);
+            drawFootprints(dc, x, mid - ICON / 2);
+            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(x + ICON + 3, b - up(f), f, steps, Graphics.TEXT_JUSTIFY_LEFT);
+            x += stepsW + CELL_GAP;
         }
-        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + CELL_W + 2 + 4, b - up(f), f, pctText, Graphics.TEXT_JUSTIFY_LEFT);
+        if (cell) {
+            drawBattery(dc, x + r, mid, r);
+        }
     }
 
     private function batteryColor(pct as Float) as Number {

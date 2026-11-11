@@ -35,6 +35,9 @@ HEIGHTS = [76, 70, 64, 60, 56, 53, 50, 47, 44, 40]
 # stays well inside the 30 ms a watch face is allowed.
 COUNT_HEIGHTS = [28, 24, 20, 18]
 SECONDS_HEIGHTS = [15]
+# The figure inside the battery's circle: small, to sit in the ring with air
+# all round it (the circle is as tall as the line it stands in).
+BATTERY_HEIGHTS = [7]
 
 
 def font_for(height):
@@ -101,7 +104,7 @@ def main():
         name, base, adv = build(h)
         entries.append(f'    <font id="Clock{h}" filename="{name}.fnt" antialias="false" filter="{CHARS}"/>')
         print(name, 'base', base, 'digit advance', adv)
-    for prefix, heights in (('Count', COUNT_HEIGHTS), ('Seconds', SECONDS_HEIGHTS)):
+    for prefix, heights in (('Count', COUNT_HEIGHTS), ('Seconds', SECONDS_HEIGHTS), ('Battery', BATTERY_HEIGHTS)):
         for h in heights:
             name, base, adv = build(h, name=f'{prefix.lower()}{h}')
             entries.append(f'    <font id="{prefix}{h}" filename="{name}.fnt" antialias="false" filter="{CHARS}"/>')

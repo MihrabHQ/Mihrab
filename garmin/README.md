@@ -11,14 +11,14 @@ Three Connect IQ apps, fed by the Android app through
   nothing anti-aliased, and nothing moving but the seconds and the
   countdown. Top to bottom: the date (or the Hijri date, or both); the
   weather — an icon drawn for the condition, the temperature now, the
-  day's high and low; the time as large as the dial allows, in the app's
+  day's high and low — and beside it the battery as CyanogenMod drew it,
+  a circle that fills round with the charge and has the percentage
+  inside; the time as large as the dial allows, in the app's
   Roboto at whichever of a ladder of sizes fits, its colon in the accent,
   with am/pm and the seconds small to its right; the next prayer, its name
   in the accent and its time in white; the countdown to it in full,
   "05:49:12", in the same Roboto; and at the foot, as Garmin's own faces
-  write theirs, a footprint with today's steps and under it a battery with
-  what is left of it — two short rows rather than one long one, because
-  the dial narrows there and a short row can go nearly to the ring.
+  write theirs, a footprint with today's steps.
   **Round the edge are the twelve hours ahead**, read as a clock is read
   — the app's Track bent into the bezel: a bead where the hour hand would
   be is the time now (yellow by day, white by night); from it, clockwise,
