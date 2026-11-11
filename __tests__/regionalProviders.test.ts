@@ -18,7 +18,7 @@ import {
 const STOCKHOLM = { latitude: 59.3293, longitude: 18.0686 };
 const CASABLANCA = { latitude: 33.5731, longitude: -7.5898 };
 const LONDON = { latitude: 51.5072, longitude: -0.1276 };
-const ALICE_SPRINGS = { latitude: -23.7, longitude: 133.88 }; // no place Diyanet lists within reach
+const ALICE_SPRINGS = { latitude: -29.0135, longitude: 134.7544 }; // Coober Pedy: no place Diyanet lists within reach (Alice Springs itself is listed)
 
 /**
  * Where each national table is recommended, and where it is not: the

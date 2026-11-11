@@ -61,8 +61,8 @@ describe('where Diyanet is recommended', () => {
       'aladhan',
     );
     expect(
-      getEffectiveDataProvider(true, 'aladhan', at(-23.7, 133.88), 'auto'),
-    ).toBe('aladhan'); // Alice Springs
+      getEffectiveDataProvider(true, 'aladhan', at(-29.0135, 134.7544), 'auto'),
+    ).toBe('aladhan'); // Coober Pedy
     expect(
       getEffectiveDataProvider(true, 'aladhan', at(7.0, 100.47), 'auto'),
     ).toBe('aladhan'); // Hat Yai
@@ -114,14 +114,17 @@ describe('where Diyanet is recommended', () => {
   });
 
   it('takes the table of the listed place nearest, and says when there is none', () => {
-    // Stockholm is on a Diyanet point; Tromsø and the open sea are not near one
+    // Stockholm is on a Diyanet point; Hammerfest and the open sea are not near one
     expect(diyanetCoverage(STOCKHOLM.latitude, STOCKHOLM.longitude)).toBe(
       'place',
     );
     expect(
       nearestDiyanetPlace(STOCKHOLM.latitude, STOCKHOLM.longitude)?.list,
     ).toBe('sweden');
-    expect(diyanetCoverage(69.65, 18.96)).toBe('own');
+    expect(diyanetCoverage(70.6634, 23.6821)).toBe('own');
+    // Tromsø and Alice Springs are places Diyanet lists
+    expect(diyanetCoverage(69.65, 18.96)).toBe('place');
+    expect(diyanetCoverage(-23.7, 133.88)).toBe('place');
     expect(diyanetCoverage(0, -30)).toBe('own');
   });
 });

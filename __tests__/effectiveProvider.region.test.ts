@@ -9,7 +9,7 @@ import { getEffectiveDataProvider } from '../src/settings/effectiveProvider';
 
 const STOCKHOLM = { latitude: 59.3251, longitude: 18.0711 };
 const LONDON = { latitude: 51.5074, longitude: -0.1278 };
-const ALICE_SPRINGS = { latitude: -23.7, longitude: 133.88 }; // no place Diyanet lists within reach
+const ALICE_SPRINGS = { latitude: -29.0135, longitude: 134.7544 }; // Coober Pedy: no place Diyanet lists within reach (Alice Springs itself is listed)
 
 describe('getEffectiveDataProvider — region awareness', () => {
   describe('automatic mode', () => {
