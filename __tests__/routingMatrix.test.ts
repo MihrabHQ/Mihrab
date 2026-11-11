@@ -25,6 +25,7 @@
  *
  * `ROUTING_MATRIX=1 npx jest __tests__/routingMatrix.test.ts` prints the table.
  */
+import { isCoordinateInLondon } from '../src/utils/londonRegion';
 import { ROUTING_PLACES } from './fixtures/routingPlaces';
 import { getEffectiveDataProvider } from '../src/settings/effectiveProvider';
 import { autoMethodForCoords } from '../src/providers/autoMethod';
@@ -149,6 +150,11 @@ describe('the routing matrix', () => {
         expect(row.auto).toBe(own.source);
         expect(row.method).toBe(own.method);
         expect(row.chosen3).toBe(own.yields ? 'aladhan' : own.source);
+      } else if (isCoordinateInLondon(latitude, longitude)) {
+        // London's own agreed timetable, before Diyanet's London (CHANGELOG).
+        expect(row.auto).toBe('london');
+        expect(row.method).toBe(3);
+        expect(row.chosen3).toBe('aladhan');
       } else if (country === 'CY') {
         // The Republic of Cyprus: no source of its own and not Diyanet's,
         // however near Northern Cyprus's districts (CHANGELOG).

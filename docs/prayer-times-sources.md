@@ -65,6 +65,7 @@ does).
 |---|---|---|---|
 | **Malaysia** — JAKIM e-Solat, 59 zones | `tools/national-tables/jakim.ts` (weekly; daily in early January) | e-Solat's JSON for the zone (`nationalLive.ts`) | `malaysiaMethod.ts`, the zone's extreme over a few fitted points: 95 % on the minute, 99.9 % within one |
 | **Singapore** — MUIS | `tools/national-tables/muis.ts` (weekly) | data.gov.sg's CSV (`nationalLive.ts`) | method 11 (fitted angles): within a minute, ~70 % on it |
+| **London** — the London Unified Prayer Timetable (londonprayertimes.com, the East London Mosque) | `tools/national-tables/london.ts` (weekly; daily in early January), with the API key in the `LONDON_PRAYER_TIMES_KEY` secret | none: the API takes a key the phone does not carry | the Moonsighting Committee's method (15) as a stand-in past the published year — the timetable's Fajr and Isha are from observation and are no formula |
 | **Türkiye Takvimi** — namazvakti.com | `tools/namazvakti-dataset/`: the city index into git (`build.ts`), every city's year into the `data-namazvakti-<year>` release (`years.ts`, daily) | the city's XML from the site | `namazvakti.ts`, at the city's point fitted from its year: 99.86 % on the minute |
 
 Malaysia, Singapore and Türkiye Takvimi stay on their free sources while

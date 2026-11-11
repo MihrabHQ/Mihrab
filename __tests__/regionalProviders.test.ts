@@ -18,6 +18,7 @@ import {
 const STOCKHOLM = { latitude: 59.3293, longitude: 18.0686 };
 const CASABLANCA = { latitude: 33.5731, longitude: -7.5898 };
 const LONDON = { latitude: 51.5072, longitude: -0.1276 };
+const MANCHESTER = { latitude: 53.4808, longitude: -2.2426 };
 const ALICE_SPRINGS = { latitude: -29.0135, longitude: 134.7544 }; // Coober Pedy: no place Diyanet lists within reach (Alice Springs itself is listed)
 
 /**
@@ -55,7 +56,10 @@ const PLACES: [string, number, number, string | null][] = [
   ['Stockholm', 59.3293, 18.0686, 'islamiska_forbundet'],
   ['Casablanca', 33.5731, -7.5898, 'habous'],
   ['Algiers', 36.75, 3.06, 'marw'],
-  ['London', 51.5072, -0.1276, 'diyanet'],
+  ['London', 51.5072, -0.1276, 'london'],
+  ['Watford', 51.6565, -0.3903, 'london'],
+  ['Luton', 51.8787, -0.42, 'diyanet'],
+  ['Manchester', 53.4808, -2.2426, 'diyanet'],
 ];
 
 describe('each national table is recommended where it covers, and nowhere else', () => {
@@ -79,6 +83,7 @@ describe('the table', () => {
       'islamiska_forbundet',
       'jakim',
       'kemenag',
+      'london',
       'marw',
       'muis',
     ]);
@@ -87,7 +92,8 @@ describe('the table', () => {
   it('names the source for a coordinate, or nothing', () => {
     expect(regionalProviderForCoords(STOCKHOLM)).toBe('islamiska_forbundet');
     expect(regionalProviderForCoords(CASABLANCA)).toBe('habous');
-    expect(regionalProviderForCoords(LONDON)).toBe('diyanet'); // near a place Diyanet lists
+    expect(regionalProviderForCoords(LONDON)).toBe('london');
+    expect(regionalProviderForCoords(MANCHESTER)).toBe('diyanet'); // near a place Diyanet lists
     expect(regionalProviderForCoords(ALICE_SPRINGS)).toBeNull();
     // Singapore sits inside the peninsula's box and must win there.
     expect(regionalProviderForCoords({ latitude: 1.3521, longitude: 103.8198 })).toBe('muis');
@@ -122,7 +128,8 @@ describe('automatic mode follows the user', () => {
   it.each([
     ['Sweden', STOCKHOLM, 'islamiska_forbundet'],
     ['Morocco', CASABLANCA, 'habous'],
-    ['a place Diyanet lists', LONDON, 'diyanet'],
+    ['London', LONDON, 'london'],
+    ['a place Diyanet lists', MANCHESTER, 'diyanet'],
     ['anywhere else', ALICE_SPRINGS, 'aladhan'],
   ])('in %s', (_where, coords, expected) => {
     expect(getEffectiveDataProvider(true, 'aladhan', coords, 'auto')).toBe(expected);
@@ -149,7 +156,8 @@ describe('a manual pick is honoured, with one guard', () => {
     expect(getEffectiveDataProvider(false, 'islamiska_forbundet', CASABLANCA, 'auto')).toBe(
       'habous',
     );
-    expect(getEffectiveDataProvider(false, 'habous', LONDON, 'auto')).toBe('diyanet');
+    expect(getEffectiveDataProvider(false, 'habous', LONDON, 'auto')).toBe('london');
+    expect(getEffectiveDataProvider(false, 'habous', MANCHESTER, 'auto')).toBe('diyanet');
     expect(getEffectiveDataProvider(false, 'habous', ALICE_SPRINGS, 'auto')).toBe('aladhan');
   });
 

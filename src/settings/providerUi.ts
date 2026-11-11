@@ -11,6 +11,8 @@ export function providerHidesCalculationMethod(
     id === 'muis' ||
     id === 'jakim' ||
     id === 'kemenag' ||
+    // London's timetable is its own; the Hanafi toggle picks its second Asr.
+    id === 'london' ||
     // The calendar is its own method; the Hanafi Asr toggle still applies
     // (it picks the calendar's Asr-ı sânî).
     id === 'namazvakti' ||
@@ -27,7 +29,8 @@ export function providerHidesCalculationMethod(
  * every path of those sources (the listed city, and the stand-in beyond it)
  * keeps the printed, standard Asr on purpose. Kemenag is not among them: its
  * times are the ministry's method computed on the phone, which takes the
- * Hanafi shadow as Diyanet's does.
+ * Hanafi shadow as Diyanet's does. Nor London's: its timetable prints both
+ * Asr times, and the toggle picks the second.
  */
 export function providerHidesHanafiAsr(id: PrayerDataProviderId): boolean {
   return (

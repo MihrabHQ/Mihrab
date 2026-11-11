@@ -87,6 +87,14 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.muis.desc',
   },
   {
+    id: 'london',
+    name: 'London',
+    description:
+      'The London Unified Prayer Timetable, the one timetable the city’s main mosques agreed on, as londonprayertimes.com (the East London Mosque) publishes it. Within Greater London.',
+    nameKey: 'providers.london.name',
+    descriptionKey: 'providers.london.desc',
+  },
+  {
     id: 'jakim',
     name: 'Malaysia',
     description:

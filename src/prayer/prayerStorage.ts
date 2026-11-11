@@ -4,7 +4,7 @@ import { asksAladhan, fetchAladhanMonth, fetchPrayerTimesUnified } from '../prov
 import { getIslamiskaForbundetDatasetTimes } from '../providers/islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from '../providers/habousDataset';
 import { getMarwDatasetTimes } from '../providers/marwDataset';
-import { nationalTableFor } from '../providers/nationalTables';
+import { nationalTableFor, nationalTablePlaceId } from '../providers/nationalTables';
 import { getNamazvaktiTimes } from '../providers/namazvakti';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
 import { placeCivilDay } from '../providers/locationClock';
@@ -881,7 +881,7 @@ function rawDatasetTimesFor(
   }
   if (provider === 'marw') return getMarwDatasetTimes(q);
   const table = nationalTableFor(provider);
-  if (table) return table.getTimes(q);
+  if (table) return table.getTimes({ ...q, placeId: nationalTablePlaceId(provider, params.school) });
   return getIslamiskaForbundetDatasetTimes(q);
 }
 

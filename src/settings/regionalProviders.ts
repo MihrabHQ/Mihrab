@@ -16,6 +16,7 @@
  * see below.
  */
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
+import { isCoordinateInLondon } from '../utils/londonRegion';
 import { isCoordinateInIndonesia } from '../utils/indonesiaRegion';
 import { isCoordinateInMalaysia } from '../utils/malaysiaRegion';
 import { isCoordinateInSingapore } from '../utils/singaporeRegion';
@@ -60,6 +61,9 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
     covers: isCoordinateInIndonesia,
     yieldsToChosenMethod: true,
   },
+  // London's mosques pray by one agreed timetable; within the city it comes
+  // before Diyanet's London, which Automatic would otherwise take.
+  { id: 'london', covers: isCoordinateInLondon, yieldsToChosenMethod: true },
 ];
 
 /**
@@ -123,7 +127,7 @@ const firstRegionAt = memoByCoordinate(
  * default. `methodIsAutomatic`: false when the reader has chosen a
  * calculation method of their own; then the sources with a fixed method of
  * their own (`yieldsToChosenMethod`: Diyanet, near a listed place or in
- * Türkiye, and MUIS, JAKIM and Kemenag) are passed over, since they would set
+ * Türkiye, and MUIS, JAKIM, Kemenag and London's) are passed over, since they would set
  * the chosen method aside without a word.
  */
 export function regionalProviderForCoords(

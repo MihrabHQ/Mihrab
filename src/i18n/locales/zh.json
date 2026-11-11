@@ -644,6 +644,10 @@
     "kemenag": {
       "name": "印度尼西亚",
       "desc": "印度尼西亚宗教部（Kemenag）的算法，在您的手机上为您所在的县或市计算——与该部公布的时间表精确到分钟一致。"
+    },
+    "london": {
+      "name": "伦敦",
+      "desc": "伦敦统一礼拜时间表（London Unified Prayer Timetable），即该市各大清真寺共同采用的时间表，取自 londonprayertimes.com（东伦敦清真寺）。适用于大伦敦范围内。"
     }
   },
   "compass": {
@@ -2029,7 +2033,9 @@
     "yearFetched": "年度数据下载于",
     "serverSingapore": "新加坡 · MUIS",
     "serverMalaysia": "马来西亚 · JAKIM e-Solat",
+    "serverLondon": "伦敦 · 统一礼拜时间表",
     "jakimWindow": "JAKIM 仅发布当年的时间表，因此此窗口在 12 月 31 日结束，并在 1 月初新一年发布后重新开始。",
+    "londonWindow": "该时间表按年发布，因此此窗口在 12 月 31 日结束，并在新一年发布后重新开始。",
     "serverIndonesia": "印度尼西亚 · Kemenag",
     "kemenagWindow": "每次获取一个季度——本月及之后两个月——并每周延长。"
   },

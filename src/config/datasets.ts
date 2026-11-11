@@ -1,4 +1,4 @@
-// ── NATIONAL TABLES (SINGAPORE, MALAYSIA) ─────────────────────────
+// ── NATIONAL TABLES (SINGAPORE, MALAYSIA, LONDON) ─────────────────────────
 //
 // Published per place by the country's own authority and mirrored by
 // `tools/national-tables/`, read through `providers/nationalTable.ts`.
@@ -7,6 +7,9 @@ export const MUIS_DATASET_BASE_URL =
   'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/prayer-times/singapore/v1';
 export const JAKIM_DATASET_BASE_URL =
   'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/prayer-times/malaysia/v1';
+
+export const LONDON_DATASET_BASE_URL =
+  'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/prayer-times/london/v1';
 
 /** Fallback refresh when the index poll cannot reach the server. */
 export const NATIONAL_TABLE_REFRESH_TTL_MS = 3 * 24 * 60 * 60 * 1000; // 3 days

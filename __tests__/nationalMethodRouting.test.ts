@@ -48,7 +48,7 @@ const NATIONAL: [string, number, number, string][] = [
 
 /** Places Diyanet lists nearby, in a country with no method of its own. */
 const NEAR_LISTED: [string, number, number][] = [
-  ['London', 51.5072, -0.1276],
+  ['Manchester', 53.4808, -2.2426],
   ['Paris', 48.8566, 2.3522],
   ['Berlin', 52.52, 13.405],
   ['New York', 40.7128, -74.006],
@@ -190,18 +190,19 @@ describe('a method chosen by hand, in a country whose own source has a fixed met
 });
 
 describe('the method picker under Diyanet by proximity', () => {
-  const LONDON = at(51.5072, -0.1276);
+  // Not London: the city has its own agreed timetable (`londonRegion.ts`).
+  const MANCHESTER = at(53.4808, -2.2426);
   const ISTANBUL = at(41.0082, 28.9784);
 
   it('is offered when Diyanet is only Automatic’s pick for a place nearby', () => {
-    expect(isDiyanetByProximity(true, 'aladhan', LONDON, 'auto')).toBe(true);
+    expect(isDiyanetByProximity(true, 'aladhan', MANCHESTER, 'auto')).toBe(true);
     // A national source pinned out of its country, redirected to Diyanet nearby.
-    expect(isDiyanetByProximity(false, 'habous', LONDON, 'auto')).toBe(true);
+    expect(isDiyanetByProximity(false, 'habous', MANCHESTER, 'auto')).toBe(true);
   });
 
   it('is not offered for Türkiye’s own, a pinned Diyanet, or another source', () => {
     expect(isDiyanetByProximity(true, 'aladhan', ISTANBUL, 'auto')).toBe(false);
-    expect(isDiyanetByProximity(false, 'diyanet', LONDON, 'auto')).toBe(false);
+    expect(isDiyanetByProximity(false, 'diyanet', MANCHESTER, 'auto')).toBe(false);
     expect(
       isDiyanetByProximity(true, 'aladhan', at(21.4225, 39.8262), 'auto'),
     ).toBe(false); // Mecca: AlAdhan
@@ -209,16 +210,16 @@ describe('the method picker under Diyanet by proximity', () => {
   });
 
   it('choosing a method there takes Automatic to AlAdhan with it, and back with Automatic', () => {
-    expect(getEffectiveDataProvider(true, 'aladhan', LONDON, 'auto')).toBe(
+    expect(getEffectiveDataProvider(true, 'aladhan', MANCHESTER, 'auto')).toBe(
       'diyanet',
     );
     // The reader picks Muslim World League in the now-visible picker.
-    expect(getEffectiveDataProvider(true, 'aladhan', LONDON, 3)).toBe(
+    expect(getEffectiveDataProvider(true, 'aladhan', MANCHESTER, 3)).toBe(
       'aladhan',
     );
-    expect(isDiyanetByProximity(true, 'aladhan', LONDON, 3)).toBe(false);
+    expect(isDiyanetByProximity(true, 'aladhan', MANCHESTER, 3)).toBe(false);
     // And Automatic again under Calculation method.
-    expect(getEffectiveDataProvider(true, 'aladhan', LONDON, 'auto')).toBe(
+    expect(getEffectiveDataProvider(true, 'aladhan', MANCHESTER, 'auto')).toBe(
       'diyanet',
     );
   });

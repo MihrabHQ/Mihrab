@@ -644,6 +644,10 @@
     "kemenag": {
       "name": "Indonesia",
       "desc": "Metode Kementerian Agama (Kemenag), dihitung di ponsel Anda untuk kabupaten atau kota Anda — sama persis hingga menit dengan jadwal yang diterbitkan Kemenag."
+    },
+    "london": {
+      "name": "London",
+      "desc": "London Unified Prayer Timetable, satu jadwal yang disepakati masjid-masjid utama kota itu, sebagaimana diterbitkan londonprayertimes.com (East London Mosque). Di dalam London Raya."
     }
   },
   "compass": {
@@ -2029,7 +2033,9 @@
     "yearFetched": "Tahun diunduh",
     "serverSingapore": "Singapura · MUIS",
     "serverMalaysia": "Malaysia · JAKIM e-Solat",
+    "serverLondon": "London · Unified Prayer Timetable",
     "jakimWindow": "JAKIM hanya menerbitkan tahun berjalan, jadi jendela ini berakhir 31 Desember dan dimulai lagi saat tahun baru diterbitkan pada hari-hari pertama Januari.",
+    "londonWindow": "Jadwal ini diterbitkan per tahun, jadi jendela ini berakhir 31 Desember dan dimulai lagi saat tahun baru diterbitkan.",
     "serverIndonesia": "Indonesia · Kemenag",
     "kemenagWindow": "Diambil satu musim sekaligus — bulan ini dan dua bulan berikutnya — dan diperpanjang setiap minggu."
   },

@@ -10,6 +10,7 @@ correction list, from MihrabHQ/mihrab-methods); its places list,
 | Country | Source | Builder | Places |
 |---|---|---|---|
 | Singapore | MUIS's timetable on [data.gov.sg](https://data.gov.sg/datasets/d_a6a206cba471fe04b62dd886ef5eaf22/view) (Open Data Licence) | `muis.ts` | 1 |
+| London | The London Unified Prayer Timetable, from [londonprayertimes.com](https://www.londonprayertimes.com)'s API (a free key, in the `LONDON_PRAYER_TIMES_KEY` secret) | `london.ts` | 1 point, listed twice: with the first Asr and with the second (Hanafi) |
 | Malaysia | JAKIM's [e-Solat](https://www.e-solat.gov.my) JSON endpoint, per zone | `jakim.ts` | 59 zones, 178 towns (`jakim-zones.ts`) |
 
 ## What a builder produces
@@ -41,5 +42,12 @@ January, because e-Solat serves the current year only — the window ends on
 days until the January run lands. MUIS publishes a year ahead, around the
 same time.
 
-Run locally: `npx tsx tools/national-tables/muis.ts`, `… /jakim.ts`.
+London's API also serves the current year only, and its table is written
+as two places at one point because the timetable prints two Asr times and
+a table holds one; the app serves the second to the Hanafi school
+(`nationalTablePlaceId`). Its midwinter Maghrib is before four, which the
+day check allows for this table alone (`minMaghrib`).
+
+Run locally: `npx tsx tools/national-tables/muis.ts`, `… /jakim.ts`,
+`LONDON_PRAYER_TIMES_KEY=… npx tsx tools/national-tables/london.ts`.
 `TABLE_TODAY=YYYY-MM-DD` fixes "today" for a reproducible build.

@@ -645,6 +645,10 @@
     "kemenag": {
       "name": "Indonésie",
       "desc": "La méthode du ministère des Affaires religieuses (Kemenag), calculée sur votre téléphone pour votre régence ou ville — elle correspond à la minute près au calendrier publié par le ministère."
+    },
+    "london": {
+      "name": "Londres",
+      "desc": "Le London Unified Prayer Timetable, l’horaire unique sur lequel les grandes mosquées de la ville se sont accordées, tel que le publie londonprayertimes.com (East London Mosque). Dans le Grand Londres."
     }
   },
   "compass": {
@@ -2030,7 +2034,9 @@
     "yearFetched": "Année téléchargée",
     "serverSingapore": "Singapour · MUIS",
     "serverMalaysia": "Malaisie · JAKIM e-Solat",
+    "serverLondon": "Londres · Unified Prayer Timetable",
     "jakimWindow": "Le JAKIM ne publie que l’année en cours : cette fenêtre se termine le 31 décembre et reprend lorsque la nouvelle année est publiée dans les premiers jours de janvier.",
+    "londonWindow": "L’horaire est publié une année à la fois : cette fenêtre se termine le 31 décembre et reprend lorsque la nouvelle année est publiée.",
     "serverIndonesia": "Indonésie · Kemenag",
     "kemenagWindow": "Récupérés une saison à la fois — ce mois-ci et les deux suivants — et prolongés chaque semaine."
   },

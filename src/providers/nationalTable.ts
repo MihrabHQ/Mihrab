@@ -172,7 +172,12 @@ export type NationalTable = {
   nearest(latitude: number, longitude: number): NearestPlace | null;
   /** Is this point within the table's reach — near enough to a listed place? */
   covers(latitude: number, longitude: number): boolean;
-  getTimes(params: { latitude: number; longitude: number; date: Date }): Promise<PrayerTimesResult>;
+  /**
+   * `placeId`: serve this listed place rather than the nearest, where a
+   * table lists one point twice (London's two Asr times); the reach is
+   * still measured to the nearest.
+   */
+  getTimes(params: { latitude: number; longitude: number; date: Date; placeId?: number }): Promise<PrayerTimesResult>;
   pollServerIndexNow(): Promise<void>;
   refetchNow(latitude: number, longitude: number): Promise<void>;
   _resetForTests(): void;
@@ -347,7 +352,9 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
       return n != null && n.distanceKm <= config.maxPlaceKm;
     },
     async getTimes(params) {
-      const near = nearest(params.latitude, params.longitude);
+      const closest = nearest(params.latitude, params.longitude);
+      const asked = params.placeId == null ? undefined : config.places.find(p => p.id === params.placeId);
+      const near = closest && asked ? { ...asked, distanceKm: closest.distanceKm } : closest;
       if (!near) {
         throw new ProviderError(config.id, 'shape', `No ${config.id} place list is bundled.`);
       }
@@ -402,14 +409,19 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
     async refetchNow(latitude, longitude) {
       const near = nearest(latitude, longitude);
       if (!near || near.distanceKm > config.maxPlaceKm) return;
-      memCity.delete(near.id);
+      // Every place listed at that point (London's two), each id once.
+      const ids = new Set([near.id]);
+      for (const p of config.places) if (p.lat === near.lat && p.lon === near.lon) ids.add(p.id);
       nextIndexPollAt = 0;
-      try {
-        await AsyncStorage.removeItem(`${cachePrefix}${near.id}`);
-      } catch {
-        // Superseded by the download below either way.
+      for (const id of ids) {
+        memCity.delete(id);
+        try {
+          await AsyncStorage.removeItem(`${cachePrefix}${id}`);
+        } catch {
+          // Superseded by the download below either way.
+        }
+        await downloadCity(id);
       }
-      await downloadCity(near.id);
     },
     _resetForTests() {
       memCity.clear();

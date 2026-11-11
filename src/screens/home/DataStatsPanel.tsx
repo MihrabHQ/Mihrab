@@ -15,7 +15,7 @@ import {
   type DataStatus,
   type ServerDatasetId,
 } from '../../prayer/dataStatus';
-import { jakimTable, muisTable } from '../../providers/nationalTables';
+import { jakimTable, londonTable, muisTable } from '../../providers/nationalTables';
 import {
   getNamazvaktiTimes,
   namazvaktiHeld,
@@ -69,6 +69,16 @@ const SERVERS: {
     coverageNoteKey: 'dataStats.jakimWindow',
     coverageNoteDefault:
       'JAKIM publishes the current year only, so this window ends on 31 December and starts again when the new year is published in the first days of January.',
+  },
+  {
+    id: 'london',
+    provider: 'london',
+    labelKey: 'dataStats.serverLondon',
+    labelDefault: 'London · Unified Prayer Timetable',
+    nextRun: nextNationalTableServerRunAfter,
+    coverageNoteKey: 'dataStats.londonWindow',
+    coverageNoteDefault:
+      'The timetable is published a year at a time, so this window ends on 31 December and starts again when the new year is published.',
   },
   {
     // Not a mirror of times but an index of the site's cities: its coverage
@@ -130,6 +140,7 @@ function DataStatsPanelImpl() {
           pollNamazvaktiIndexNow(),
           muisTable.pollServerIndexNow(),
           jakimTable.pollServerIndexNow(),
+          londonTable.pollServerIndexNow(),
         ].map(p =>
           p.catch(() => {
             /* offline — keep whatever was recorded before */

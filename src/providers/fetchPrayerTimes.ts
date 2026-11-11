@@ -13,7 +13,10 @@ import {
   JAKIM_CLOCK,
   kemenagTimesNear,
   MUIS_CLOCK,
+  LONDON_CLOCK,
+  LONDON_STAND_IN_METHOD,
   nationalTableFor,
+  nationalTablePlaceId,
 } from './nationalTables';
 import { computeLocalAdhanTimes } from './localAdhan';
 import {
@@ -390,6 +393,7 @@ export async function fetchPrayerTimesUnified(
     }
     case 'muis':
     case 'jakim':
+    case 'london':
     case 'kemenag': {
       // A national source (Singapore's MUIS, Malaysia's JAKIM, Indonesia's
       // Kemenag): the authority's day for the nearest listed place — the
@@ -419,6 +423,8 @@ export async function fetchPrayerTimesUnified(
             latitude: p.latitude,
             longitude: p.longitude,
             date: p.date,
+            // London's timetable prints both Asr times; the Hanafi school takes the second.
+            placeId: nationalTablePlaceId(p.provider, p.school),
           });
         }
         break;
@@ -444,12 +450,21 @@ export async function fetchPrayerTimesUnified(
             ? MUIS_CLOCK
             : p.provider === 'jakim'
             ? JAKIM_CLOCK
+            : p.provider === 'london'
+            ? LONDON_CLOCK
             : indonesiaClock(place.nameEn),
           date: p.date,
           calculationMethod:
-            p.provider === 'muis' ? 11 : p.provider === 'jakim' ? 17 : 20,
+            p.provider === 'muis'
+              ? 11
+              : p.provider === 'jakim'
+              ? 17
+              : p.provider === 'london'
+              ? LONDON_STAND_IN_METHOD
+              : 20,
           // MUIS and JAKIM: the table's Shafi'i Asr, the same on a computed day as a printed one.
-          school: hanafiKemenag ? 1 : 0,
+          // London: the reader's school, as its timetable's two Asr times.
+          school: hanafiKemenag || (p.provider === 'london' && p.school === 1) ? 1 : 0,
         }),
         source: 'local',
       };

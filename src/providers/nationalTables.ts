@@ -4,15 +4,17 @@
  *
  *   • Singapore — MUIS, one table for the whole country (`muis`)
  *   • Malaysia — JAKIM e-Solat, 59 zones (`jakim`)
+ *   • London — the London Unified Prayer Timetable, one for the city (`london`)
  *   • Indonesia — Kemenag (Bimas Islam), 517 regencies and cities (`kemenag`),
  *     computed on the phone (its method and correction list)
  *
- * Singapore and Malaysia have a bundled seed (`data/<id>Seed.json`, the
+ * Singapore, Malaysia and London have a bundled seed (`data/<id>Seed.json`, the
  * published window at the last app build) and a place list
  * (`data/<id>Places.json`), both written by `tools/national-tables/`.
  */
 import {
   JAKIM_DATASET_BASE_URL,
+  LONDON_DATASET_BASE_URL,
   MUIS_DATASET_BASE_URL,
   NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
   NATIONAL_TABLE_REFRESH_TTL_MS,
@@ -22,6 +24,7 @@ import { createNationalTable, type NationalTable, type NationalTableSeed, type N
 import type { PrayerTimesResult } from './types';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { indonesiaClock, type PlaceClock } from './locationClock';
+import { LONDON_REACH_KM } from '../utils/londonRegion';
 import { fetchJakimLive, fetchMuisLive, jakimZoneCode } from './nationalLive';
 
 /** Each regency's point as Kemenag computes it, and its class (1 highland, 2 the degree on Fajr and Isha too). Read at the first Indonesian day, not at load. */
@@ -130,6 +133,48 @@ export const jakimTable = createNationalTable({
   }),
 });
 
+/** London's clock, summer time and all, as the timetable prints it. */
+export const LONDON_CLOCK: PlaceClock = { zone: 'Europe/London' };
+/** The timetable is listed twice at one point: 1 with the first Asr, 2 with the second (Hanafi). */
+export const LONDON_FIRST_ASR_PLACE = 1;
+export const LONDON_SECOND_ASR_PLACE = 2;
+/**
+ * What stands in past the published year: the Moonsighting Committee's
+ * method (AlAdhan's 15), the general one nearest the timetable's seasonal
+ * Fajr and Isha. The timetable's own Fajr and Isha are from observation and
+ * are not a formula; this is a stand-in, and the app says "calculated".
+ */
+export const LONDON_STAND_IN_METHOD = 15;
+
+/** London: the city, about as far as the M25 (`londonRegion.ts`). */
+export const londonTable = createNationalTable({
+  id: 'london',
+  dataset: 'london',
+  baseUrl: LONDON_DATASET_BASE_URL,
+  timezone: 'Europe/London',
+  get places() {
+    return placesOf(() => require('./data/londonPlaces.json'));
+  },
+  maxPlaceKm: LONDON_REACH_KM,
+  get seed() {
+    return seedOf(() => require('./data/londonSeed.json'));
+  },
+  refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
+  indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
+  // No live backup: the source's API takes a key, which the phone does not carry.
+  calculate: (place, date) => ({
+    ...computeLocalAdhanTimes({
+      latitude: place.lat,
+      longitude: place.lon,
+      date,
+      calculationMethod: LONDON_STAND_IN_METHOD,
+      school: place.id === LONDON_SECOND_ASR_PLACE ? 1 : 0,
+      placeClock: LONDON_CLOCK,
+    }),
+    source: 'local',
+  }),
+});
+
 /**
  * Indonesia: the ministry publishes per regency, and a regency's seat
  * stands for it. Regencies in Papua and Kalimantan are large.
@@ -188,7 +233,18 @@ export const NATIONAL_TABLES: Partial<Record<PrayerDataProviderId, NationalTable
   muis: muisTable,
   jakim: jakimTable,
   kemenag: kemenagTable,
+  london: londonTable,
 };
+
+/**
+ * The listed place a reader's school asks for, where a table lists one
+ * point twice: London's second Asr for the Hanafi school. Undefined for the
+ * nearest place, as everywhere else.
+ */
+export function nationalTablePlaceId(id: PrayerDataProviderId, school: number): number | undefined {
+  if (id !== 'london') return undefined;
+  return school === 1 ? LONDON_SECOND_ASR_PLACE : LONDON_FIRST_ASR_PLACE;
+}
 
 /** The national table behind a provider id, or null for the providers that are not one. */
 export function nationalTableFor(id: PrayerDataProviderId): NationalTable | null {

@@ -69,7 +69,7 @@ export function getEffectiveDataProvider(
   coords: { latitude: number; longitude: number } | null,
   /**
    * The calculation method setting. Automatic takes Diyanet — near a place
-   * it lists or in Türkiye — and MUIS, JAKIM and Kemenag only while this is
+   * it lists or in Türkiye — and MUIS, JAKIM, Kemenag and London's only while this is
    * Automatic too: a method the reader chose is theirs, and the source's own
    * would set it aside without a word.
    */
