@@ -41,6 +41,8 @@ export type WriteOptions = {
   warnDays: number;
   /** Days before today to keep, so a phone a few days behind still has them. */
   keepPastDays: number;
+  /** The earliest Maghrib the check accepts, minutes; 16:00 unless a northern table needs less. */
+  minMaghrib?: number;
   today: string;
 };
 
@@ -68,15 +70,16 @@ export function daysBetween(a: string, b: string): number {
 }
 
 /** Every time in order and within the day — a table with a typo is refused, not published. */
-export function checkDay(place: string, date: string, m: DayMinutes): void {
+export function checkDay(place: string, date: string, m: DayMinutes, minMaghrib = 960): void {
   for (let i = 1; i < m.length; i++) {
     if (!(m[i] > m[i - 1])) {
       throw new BuildError(`${place} ${date}: times out of order (${m.map(clock).join(' ')})`);
     }
   }
   if (m[0] < 0 || m[6] >= 1440) throw new BuildError(`${place} ${date}: outside the day`);
-  // Dhuhr near midday and Maghrib after 16:00, anywhere these tables cover.
-  if (m[3] < 600 || m[3] > 900 || m[5] < 960) {
+  // Dhuhr near midday and Maghrib after 16:00 — earlier only where the
+  // builder says so (London's midwinter).
+  if (m[3] < 600 || m[3] > 900 || m[5] < minMaghrib) {
     throw new BuildError(`${place} ${date}: implausible (${m.map(clock).join(' ')})`);
   }
 }
@@ -119,7 +122,7 @@ export function writeTable(places: PlaceTable[], opt: WriteOptions) {
     for (let d = first; d <= last; d = addDays(d, 1)) {
       const m = p.days[d];
       if (!m) throw new BuildError(`${p.nameEn ?? p.name}: no entry for ${d}`);
-      checkDay(p.nameEn ?? p.name, d, m);
+      checkDay(p.nameEn ?? p.name, d, m, opt.minMaghrib);
       file[d] = m.map(clock);
       flat.push(...m);
     }
