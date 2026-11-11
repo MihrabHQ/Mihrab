@@ -2,7 +2,7 @@
 <iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="3">
     <!-- The UUID is what Mihrab on the phone addresses the message to
          (android/.../GarminWatch.kt, WIDGET_APP_ID). Never change it. -->
-    <iq:application entry="MihrabWidgetApp" id="ff148f06923b45ec9afe542d6779a952" launcherIcon="@Drawables.LauncherIcon" minApiLevel="4.2.0" name="@Strings.AppName" type="widget" version="1.0.0">
+    <iq:application entry="MihrabWidgetApp" id="ff148f06923b45ec9afe542d6779a952" launcherIcon="@Drawables.LauncherIcon" minApiLevel="4.2.0" name="@Strings.AppName" type="widget" version="1.1.0">
         <iq:products>
             <iq:product id="enduro3"/>
         </iq:products>
