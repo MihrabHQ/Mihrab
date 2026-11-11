@@ -139,7 +139,12 @@ if (wantsFdroid && (wantsPlayAny || wantsGithubAny)) {
         "then `./gradlew assembleFdroidRelease`."
     )
 }
-def enableProguardInReleaseBuilds = !wantsFdroid
+// `-PprofileBuild`: the release with R8 off, for recording the Baseline
+// Profile (tools/baseline-profile/README.md) — the phone then names the
+// classes and methods as the source does, which is what
+// `src/main/baseline-prof.txt` is written in. Never a build to ship.
+def profileBuild = project.hasProperty("profileBuild")
+def enableProguardInReleaseBuilds = !wantsFdroid && !profileBuild
 if ((wantsPlayRelease || wantsGithubRelease) && !hasReleaseSigningConfig) {
     throw new GradleException(
         "Play and GitHub release/beta builds require android/keystore.properties with storeFile/storePassword/keyAlias/keyPassword. " +
@@ -375,6 +380,16 @@ dependencies {
      * so R8 strips them.
      */
     implementation("com.google.android.material:material:1.12.0")
+    /**
+     * What writes the Baseline Profile (src/main/baseline-prof.txt) into
+     * place on an APK installed from a file — GitHub, Obtainium, F-Droid;
+     * Play delivers it itself. The libraries brought 1.3.1 in, which knows
+     * Android up to 14 and on anything newer answers
+     * RESULT_UNSUPPORTED_ART_VERSION (seen on an API 37 emulator,
+     * 2026-11-11) and installs nothing. 1.4.0 is the first that does not
+     * need a release per Android version.
+     */
+    implementation("androidx.profileinstaller:profileinstaller:1.4.1")
 
     /**
      * Scanning a pairing code off another phone's screen.
