@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "builtAt": "2026-11-09T09:56:00.676Z",
+  "builtAt": "2026-11-11T16:43:51.925Z",
   "timezone": "Asia/Singapore",
   "source": "https://data.gov.sg/datasets/d_a6a206cba471fe04b62dd886ef5eaf22/view",
   "serverStatus": "ok",
-  "firstDate": "2026-11-02",
+  "firstDate": "2026-11-04",
   "lastDate": "2026-12-31",
-  "minCoverageDays": 52,
+  "minCoverageDays": 50,
   "deadCities": [],
   "cities": [
     {

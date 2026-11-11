@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "builtAt": "2026-11-11T16:44:56.935Z",
+  "timezone": "Europe/London",
+  "source": "https://www.londonprayertimes.com",
+  "serverStatus": "ok",
+  "firstDate": "2026-11-04",
+  "lastDate": "2026-12-31",
+  "minCoverageDays": 50,
+  "deadCities": [],
+  "cities": [
+    {
+      "id": 1,
+      "city": "London",
+      "cityEn": "London"
+    },
+    {
+      "id": 2,
+      "city": "London",
+      "cityEn": "London"
+    }
+  ]
+}
