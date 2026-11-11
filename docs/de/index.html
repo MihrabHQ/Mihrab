@@ -47,7 +47,7 @@
   "name": "Mihrab: The Muslim Companion",
   "alternateName": "Mihrab",
   "applicationCategory": "LifestyleApplication",
-  "operatingSystem": "Android, iOS, iPadOS, macOS",
+  "operatingSystem": "Android, iOS, iPadOS, macOS, Windows, Linux",
   "softwareVersion": "2.37.0",
   "url": "https://mihrab.elghamri.se/de/",
   "inLanguage": "de",
@@ -110,6 +110,46 @@
         "@type": "Answer",
         "text": "iPhone, iPad, Android und Mac. Auf dem Mac per Homebrew installieren."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "Warum weichen die Zeiten in Mihrab von anderen Apps ab?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Die meisten Apps nutzen eine allgemeine Methode und liegen eine Minute oder mehr neben dem Zeitplan, dem Ihre Moschee folgt. Wo der Zeitplan der Diyanet, der Ministerien Marokkos und Algeriens, von Kemenag oder der schwedische Zeitplan gilt, gibt Mihrab die gedruckte Minute an: die eigene Methode der Behörde, Tag für Tag gegen ihren veröffentlichten Zeitplan geprüft. Anderswo nutzt die App AlAdhan oder die Methode Ihrer Wahl."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Was passiert nach dem letzten veröffentlichten Datum eines Zeitplans?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Die Methode rechnet allein weiter, ohne ihre Korrekturliste. Über die geprüften Zeiten trifft die Methode allein die gedruckte Minute bis auf einen kleinen Bruchteil, und dieser weicht um eine Minute ab, nie mehr; die App weist auf „Heute“ darauf hin. Sobald die nächsten Monate veröffentlicht und geprüft sind, erreicht die neue Liste die App ohne Update."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Wie kann ich die Zeiten selbst prüfen?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Vergleichen Sie eine Woche der Monatsansicht von Mihrab mit dem gedruckten Zeitplan Ihrer Behörde. Die Methoden, das Skript, das jede Zeit prüft, und sein Protokoll sind öffentlich im Repository mihrab-methods auf GitHub."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Ist Mihrab mit der Diyanet oder einem Ministerium verbunden?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nein. Mihrab ist unabhängig und mit keiner Behörde verbunden, mit deren Zeitplan die App übereinstimmt, und wird von keiner unterstützt. Für alles, was die Zeiten selbst betrifft, ist die Veröffentlichung der Behörde maßgeblich."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Verfolgt Mihrab meinen Standort?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nein. Es gibt keine Analytik, kein Werbenetzwerk und kein Konto. Koordinaten verlassen das Telefon nur in zwei Anfragen, keine davon an den Entwickler: an AlAdhan, wo es die Quelle Ihrer Zeiten ist, und bei automatischem Standort an OpenStreetMap, um Ihren Ort zu benennen, auf etwa einen Kilometer gerundet. Wählen Sie die Berechnung auf dem Gerät und geben Sie Ihren Ort von Hand ein, entfällt beides."
+      }
     }
   ]
 }
@@ -147,6 +187,18 @@
     <div class="brandline">
       <img src="../assets/img/icon.png" width="62" height="62" alt="Mihrab">
       <span class="wordmark">Mihrab</span>
+<!-- jump:start -->
+<nav class="jump" aria-label="Abschnitte">
+  <ul>
+    <li><a href="#install">Installieren</a></li>
+    <li><a href="#accuracy">Genauigkeit</a></li>
+    <li><a href="#screenshots">Screenshots</a></li>
+    <li><a href="#features">Funktionen</a></li>
+    <li><a href="#privacy">Datenschutz</a></li>
+    <li><a href="#faq">Fragen</a></li>
+  </ul>
+</nav>
+<!-- jump:end -->
 <!-- langpicker:start -->
 <details class="langpicker">
   <summary>
@@ -171,8 +223,19 @@
 </details>
 <!-- langpicker:end -->
     </div>
+    <div class="hero-grid">
+    <div class="hero-text">
     <h1>Für jedes Gebet – und alles dazwischen.</h1>
     <p class="sub">Mihrab ist ein ruhiger Begleiter durch den Tag eines Muslims: Gebetszeiten und Adhan, der Medina-Mushaf mit Rezitation, Tajwid-Farben und einem Wortvorleser, und die Duas und das Gedenken dazwischen — ohne Konto, ohne Werbung, ohne Analytik. Sobald Ihr Standort gesetzt ist, funktioniert der Tag auch ohne Netz.</p>
+<!-- cta:start -->
+    <div class="cta">
+      <ul class="badges">
+        <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="../assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="../assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
+      </ul>
+      <a class="more" href="#install">Windows, Linux, F-Droid und im Browser <span aria-hidden="true">&darr;</span></a>
+    </div>
+<!-- cta:end -->
     <ul class="trust">
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Keine Werbung, kein Tracking, kein Konto</li>
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Funktioniert ohne Netz</li>
@@ -180,15 +243,23 @@
     </ul>
     <p class="meta">
       <span>Version 2.37.0 (296)</span> <span class="dot" aria-hidden="true">•</span>
-      <span>iOS, Android, macOS</span> <span class="dot" aria-hidden="true">•</span>
+      <span>iOS, Android, macOS, Windows, Linux, web</span> <span class="dot" aria-hidden="true">•</span>
       <span>AGPL-3.0-or-later</span> <span class="dot" aria-hidden="true">•</span>
       <a href="https://github.com/MihrabHQ/Mihrab">Quellcode auf GitHub</a>
     </p>
+    </div>
+<!-- heroshot:start -->
+    <figure class="hero-shot">
+      <img src="../assets/img/hero-home.jpg?v=2026-11-05p" width="540" height="1200" decoding="async"
+        alt="Startseite im Thema Himmel bei Sonnenuntergang: die tiefe Sonne an einem rosa-violetten Himmel hinter einem lebendigen Countdown bis Maghrib, das Datum über den Zeiten und ein Häkchen neben jedem verrichteten Gebet.">
+    </figure>
+<!-- heroshot:end -->
+    </div>
   </div>
 </header>
 
 <main id="main">
-<section class="install">
+<section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">Installieren</p>
     <h2>Mihrab holen</h2>
@@ -267,6 +338,51 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
+<section class="accuracy-section" id="accuracy" data-review="native">
+<!-- DRAFT: needs review by a native de speaker before it is relied on -->
+  <div class="wrap">
+    <p class="eyebrow">Genauigkeit</p>
+    <h2>Auf die gedruckte Minute</h2>
+    <p class="lede">Die meisten Gebets-Apps berechnen die Zeiten mit einer allgemeinen Methode und liegen eine Minute oder mehr neben dem Zeitplan, dem Ihre Moschee folgt. Am Ende von Fajr, zum Maghrib und zu Beginn eines Fastentags ist es genau diese Minute, auf die es ankommt.</p>
+    <p class="lede">Deshalb bildet Mihrab die eigene Methode jeder Behörde nach — ihre Winkel, Sicherheitsabstände und Rundung —, berechnet sie auf Ihrem Telefon und prüft jede Zeit gegen den veröffentlichten Zeitplan: jeden Ort, jeden Tag. Eine Methode wird nur verwendet, wenn keine Zeit abweicht.</p>
+<!-- accuracy-table:start -->
+      <div class="table-scroll">
+        <table class="accuracy">
+          <caption>Jede Zeit, gegen die jede Methode geprüft wurde</caption>
+          <thead><tr><th scope="col"></th><th scope="col">Stimmt überein mit dem veröffentlichten Zeitplan von</th><th scope="col">Orte</th><th scope="col">Geprüfte Zeiten</th><th scope="col">Neben der gedruckten Minute</th><th scope="col">Geprüfter Zeitraum</th></tr></thead>
+          <tbody>
+          <tr><th scope="row">Schweden</th><td>Tabellen des Islamischen Verbands in Schweden</td><td>107</td><td>63.114</td><td><strong>0</strong></td><td>11. Okt. 2026 → 14. Dez. 2027</td></tr>
+          <tr class="cont"><th scope="row"></th><td>Tabellen der Diyanet für Schweden</td><td>159</td><td>1.393.794</td><td><strong>0</strong></td><td>1. Jan. 2024 → 31. Dez. 2027</td></tr>
+          <tr><th scope="row">Diyanet</th><td>Tabellen der Diyanet, Türkei und weltweit</td><td>8.132</td><td>69.999.603</td><td><strong>0</strong></td><td>1. Jan. 2024 → 31. Dez. 2027</td></tr>
+          <tr><th scope="row">Marokko</th><td>Ministerium für Habous und islamische Angelegenheiten</td><td>164</td><td>94.350</td><td><strong>0</strong></td><td>27. Aug. 2026 → 30. Nov. 2026</td></tr>
+          <tr><th scope="row">Algerien</th><td>Ministerium für religiöse Angelegenheiten und Wakf</td><td>68</td><td>101.184</td><td><strong>0</strong></td><td>1. Okt. 2026 → 5. Juni 2027</td></tr>
+          <tr><th scope="row">Indonesien</th><td>Kemenag</td><td>517</td><td>362.934</td><td><strong>0</strong></td><td>7. Okt. 2026 → 31. Jan. 2027</td></tr>
+          </tbody>
+          <tfoot><tr><th scope="row">Gesamt</th><td>Zuletzt geprüft 9. November 2026</td><td></td><td>72.014.979</td><td><strong>0</strong></td><td></td></tr></tfoot>
+        </table>
+      </div>
+<!-- accuracy-table:end -->
+    <div class="cols">
+      <article class="card">
+        <h3>Selbst nachprüfen</h3>
+        <p>Die Methoden, die Prüfung und ihr Protokoll sind öffentlich in <a href="https://github.com/MihrabHQ/mihrab-methods">mihrab-methods</a>. Zuletzt geprüft am <!--fig:total.checkedAtLong-->9. November 2026<!--/fig-->.</p>
+      </article>
+      <article class="card">
+        <h3>Eine Zeit weicht von Ihrer Moschee ab?</h3>
+        <p>Nennen Sie Stadt, Datum, Gebet und die gedruckte Zeit im <a href="https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml">Meldeformular</a>. Führt Ihre Moschee eigene Zeiten, gleicht ein Versatz je Gebet in der App sie an.</p>
+      </article>
+      <article class="card">
+        <h3>Veröffentlichte Tabellen, wie gedruckt</h3>
+        <p>Singapur (MUIS), Malaysia (JAKIM) und Türkiye Takvimi werden nicht berechnet: Mihrab zeigt deren eigene veröffentlichte Tabellen, Minute für Minute. Sie sind nicht Teil der Prüfung oben. Überall sonst kommen die Zeiten von AlAdhan oder aus einer Berechnungsmethode Ihrer Wahl.</p>
+      </article>
+      <article class="card">
+        <h3>Unabhängig</h3>
+        <p>Mihrab ist mit keiner der hier genannten Behörden verbunden und wird von keiner unterstützt. Die App stimmt mit ihren veröffentlichten Zeitplänen überein; sie spricht nicht für sie.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="shots" id="screenshots">
   <div class="wrap">
     <p class="eyebrow">Bildschirmfotos</p>
@@ -274,6 +390,8 @@ sudo pacman -Syu mihrab</code></pre>
     <p class="lede">Jede Funktion auf dem Gerät, für das sie gemacht ist: erst die Telefone, dann iPad, Mac, Windows und Chromebook, im Thema Himmel durch die Stunden eines Tages. Der Mushaf ist die gedruckte Medina-Seite selbst, kein Bild davon. Die App auf den Bildschirmen ist englisch; sie spricht auch Deutsch.</p>
     <figure class="xplat">
       <img src="../assets/img/panels/xplat.jpg?v=2026-11-05p" width="2400" height="1200" loading="lazy" decoding="async"
+        srcset="../assets/img/panels/xplat-1200.jpg?v=2026-11-05p 1200w, ../assets/img/panels/xplat.jpg?v=2026-11-05p 2400w"
+        sizes="(max-width: 1128px) calc(100vw - 48px), 1032px"
         alt="Auf jedem deiner Geräte. Android-Handys, -Tablets und Foldables, iPhone, iPad, Mac, Windows, Linux und das Web – per Sync im Gleichklang, ohne Konto und ohne einen Server von uns.">
     </figure>
     <ul class="panels">
@@ -469,7 +587,7 @@ sudo pacman -Syu mihrab</code></pre>
 </section>
 <!-- reviews:end -->
 
-<section class="features">
+<section class="features" id="features">
   <div class="wrap">
     <p class="eyebrow">Funktionen</p>
     <h2>Ein Begleiter, vom Morgen- bis zum Nachtgebet</h2>
@@ -498,7 +616,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="privacy">
+<section class="privacy" id="privacy">
   <div class="wrap">
     <p class="eyebrow">Privatsphäre</p>
     <h2>Kein Konto, kein Tracking — und jede Anfrage aufgeschrieben</h2>
@@ -520,7 +638,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="faq">
+<section class="faq" id="faq">
   <div class="wrap">
     <p class="eyebrow">Häufige Fragen</p>
     <h2>Was zuerst gefragt wird</h2>
@@ -540,6 +658,26 @@ sudo pacman -Syu mihrab</code></pre>
       <article class="card">
         <h3>Welche Geräte werden unterstützt?</h3>
         <p>iPhone, iPad, Android und Mac. Auf dem Mac per Homebrew installieren.</p>
+      </article>
+      <article class="card">
+        <h3>Warum weichen die Zeiten in Mihrab von anderen Apps ab?</h3>
+        <p>Die meisten Apps nutzen eine allgemeine Methode und liegen eine Minute oder mehr neben dem Zeitplan, dem Ihre Moschee folgt. Wo der Zeitplan der Diyanet, der Ministerien Marokkos und Algeriens, von Kemenag oder der schwedische Zeitplan gilt, gibt Mihrab die gedruckte Minute an: die eigene Methode der Behörde, Tag für Tag gegen ihren veröffentlichten Zeitplan geprüft. Anderswo nutzt die App AlAdhan oder die Methode Ihrer Wahl.</p>
+      </article>
+      <article class="card">
+        <h3>Was passiert nach dem letzten veröffentlichten Datum eines Zeitplans?</h3>
+        <p>Die Methode rechnet allein weiter, ohne ihre Korrekturliste. Über die geprüften Zeiten trifft die Methode allein die gedruckte Minute bis auf einen kleinen Bruchteil, und dieser weicht um eine Minute ab, nie mehr; die App weist auf „Heute“ darauf hin. Sobald die nächsten Monate veröffentlicht und geprüft sind, erreicht die neue Liste die App ohne Update.</p>
+      </article>
+      <article class="card">
+        <h3>Wie kann ich die Zeiten selbst prüfen?</h3>
+        <p>Vergleichen Sie eine Woche der Monatsansicht von Mihrab mit dem gedruckten Zeitplan Ihrer Behörde. Die Methoden, das Skript, das jede Zeit prüft, und sein Protokoll sind öffentlich im Repository mihrab-methods auf GitHub.</p>
+      </article>
+      <article class="card">
+        <h3>Ist Mihrab mit der Diyanet oder einem Ministerium verbunden?</h3>
+        <p>Nein. Mihrab ist unabhängig und mit keiner Behörde verbunden, mit deren Zeitplan die App übereinstimmt, und wird von keiner unterstützt. Für alles, was die Zeiten selbst betrifft, ist die Veröffentlichung der Behörde maßgeblich.</p>
+      </article>
+      <article class="card">
+        <h3>Verfolgt Mihrab meinen Standort?</h3>
+        <p>Nein. Es gibt keine Analytik, kein Werbenetzwerk und kein Konto. Koordinaten verlassen das Telefon nur in zwei Anfragen, keine davon an den Entwickler: an AlAdhan, wo es die Quelle Ihrer Zeiten ist, und bei automatischem Standort an OpenStreetMap, um Ihren Ort zu benennen, auf etwa einen Kilometer gerundet. Wählen Sie die Berechnung auf dem Gerät und geben Sie Ihren Ort von Hand ein, entfällt beides.</p>
       </article>
     </div>
   </div>

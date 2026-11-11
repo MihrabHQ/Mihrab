@@ -201,6 +201,8 @@ function gallery(code, t) {
   ).join('\n');
   return `    <figure class="xplat">
       <img src="${at}/img/panels/xplat.jpg${SHOT_V}" width="2400" height="1200" loading="lazy" decoding="async"
+        srcset="${at}/img/panels/xplat-1200.jpg${SHOT_V} 1200w, ${at}/img/panels/xplat.jpg${SHOT_V} 2400w"
+        sizes="(max-width: 1128px) calc(100vw - 48px), 1032px"
         alt="${esc(`${plain(w['devices.title'])} ${plain(w['devices.sub'])}`)}">
     </figure>
     <ul class="panels">
@@ -347,6 +349,95 @@ ${distros}
       </div>`;
 }
 
+/**
+ * Where the app runs, as the hero and the structured data say it: one list,
+ * because the hero went on saying three platforms after the page offered six.
+ */
+const PLATFORMS = 'iOS, Android, macOS, Windows, Linux, web';
+const OPERATING_SYSTEMS = 'Android, iOS, iPadOS, macOS, Windows, Linux';
+
+/**
+ * The first screen's way in: the two stores most visitors want, and a link
+ * down to every other channel. The hero used to be words only, with the
+ * badges a screen further down — and a page whose job is to get the app
+ * onto a device should not make the reader scroll to find out how.
+ */
+function heroCta(code, t, imgBase) {
+  const more = t.labels && t.labels.allDownloads;
+  const to = t.navInstall || '#install';
+  if (!more) throw new Error(`${code}: no label for the hero's link to every download`);
+  return `    <div class="cta">
+${badgeList(['appstore', 'googleplay'], imgBase, '      ')}
+      <a class="more" href="${to}">${esc(more)} <span aria-hidden="true">&darr;</span></a>
+    </div>`;
+}
+
+/** The hero's phone: the Today screen itself, beside the words about it. */
+function heroShot(code, t, at) {
+  const alt = t.shots && t.shots.items && t.shots.items.home && t.shots.items.home.alt;
+  if (!alt) throw new Error(`${code}: no words for the hero's screenshot`);
+  return `    <figure class="hero-shot">
+      <img src="${at}/img/hero-home.jpg${SHOT_V}" width="540" height="1200" decoding="async"
+        alt="${esc(alt)}">
+    </figure>`;
+}
+
+/**
+ * The way round a long page: one row of links to its sections, in the brand
+ * row. Links, not a script — and each must land on an id the page has
+ * (__tests__/siteFirstScreen.test.ts).
+ */
+function jumpNav(code, t) {
+  if (!t.nav) throw new Error(`${code}: no strings for the section links`);
+  const items = Array.isArray(t.nav.items)
+    ? t.nav.items
+    : ['install', 'accuracy', 'screenshots', 'features', 'privacy', 'faq'].map(id => [`#${id}`, t.nav[id]]);
+  for (const [href, label] of items) if (!href || !label) throw new Error(`${code}: a section link has no label`);
+  return `<nav class="jump" aria-label="${esc(t.nav.label)}">
+  <ul>
+${items.map(([href, label]) => `    <li><a href="${href}">${esc(label)}</a></li>`).join('\n')}
+  </ul>
+</nav>`;
+}
+
+/** **bold**, [text](https://…) and {fig:KEY} — all the markup a drafted text needs. */
+const rich = s =>
+  figTokens(esc(s))
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+|#[\w-]+)\)/g, '<a href="$2">$1</a>');
+
+/**
+ * Accuracy, on the translated pages: what the English page says, shorter —
+ * why a minute matters, how each method is checked, the table of every
+ * check (scripts/copy/site.js fills it from the certification record), and
+ * the four things beside it. It was on the English page alone, which left
+ * eleven languages without the one claim the app leads with. Drafts are
+ * marked for review by a native speaker until one has signed them off.
+ */
+function accuracy(code, t) {
+  const a = t.accuracy;
+  if (!a) throw new Error(`${code}: no strings for the accuracy section`);
+  return `<section class="accuracy-section" id="accuracy"${a.review ? ` data-review="${a.review}"` : ''}>
+${a.review ? `<!-- DRAFT: needs review by a native ${code} speaker before it is relied on -->\n` : ''}  <div class="wrap">
+    <p class="eyebrow">${esc(a.eyebrow)}</p>
+    <h2>${esc(a.h2)}</h2>
+${a.lede.map(l => `    <p class="lede">${rich(l)}</p>`).join('\n')}
+<!-- accuracy-table:start -->
+<!-- accuracy-table:end -->
+    <div class="cols">
+${a.cards
+  .map(
+    c => `      <article class="card">
+        <h3>${esc(c.h3)}</h3>
+        <p>${rich(c.p)}</p>
+      </article>`,
+  )
+  .join('\n')}
+    </div>
+  </div>
+</section>`;
+}
+
 /** Reciprocal hreflang: a page that names only itself is ignored. */
 function hreflang(langs) {
   const lines = Object.entries(langs).map(
@@ -374,11 +465,7 @@ function patchBlock(text, name, body) {
  * until someone who reads the language has signed them off.
  */
 function country(c, code) {
-  // **bold** and [text](https://…) — all the markup a drafted section needs
-  const body = s =>
-    figTokens(esc(s))
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+|#[\w-]+)\)/g, '<a href="$2">$1</a>');
+  const body = rich;
   return `<section class="sweden" id="${c.id}"${c.lang ? ` lang="${c.lang}"` : ''}${c.review ? ` data-review="${c.review}"` : ''}>
 ${c.review ? `<!-- DRAFT: needs review by a native ${code} speaker before it is relied on -->\n` : ''}  <div class="wrap">
     <p class="eyebrow">${esc(c.eyebrow)}</p>
@@ -416,7 +503,7 @@ function renderPage(code, langs, version) {
     name: 'Mihrab: The Muslim Companion',
     alternateName: 'Mihrab',
     applicationCategory: 'LifestyleApplication',
-    operatingSystem: 'Android, iOS, iPadOS, macOS',
+    operatingSystem: OPERATING_SYSTEMS,
     softwareVersion: version.versionName,
     url: `${ORIGIN}${t.path}`,
     inLanguage: code,
@@ -518,26 +605,39 @@ ${ld(faq)}
     <div class="brandline">
       <img src="../assets/img/icon.png" width="62" height="62" alt="Mihrab">
       <span class="wordmark">Mihrab</span>
+<!-- jump:start -->
+${jumpNav(code, t)}
+<!-- jump:end -->
 <!-- langpicker:start -->
 ${picker(langs, code)}
 <!-- langpicker:end -->
     </div>
+    <div class="hero-grid">
+    <div class="hero-text">
     <h1>${esc(t.h1)}</h1>
     <p class="sub">${esc(t.sub)}</p>
+<!-- cta:start -->
+${heroCta(code, t, '../assets/img/badges')}
+<!-- cta:end -->
     <ul class="trust">
 ${t.chips.map(c => `      <li>${check}${esc(c)}</li>`).join('\n')}
     </ul>
     <p class="meta">
       <span>${esc(t.labels.version)} ${v}</span> <span class="dot" aria-hidden="true">•</span>
-      <span>iOS, Android, macOS</span> <span class="dot" aria-hidden="true">•</span>
+      <span>${PLATFORMS}</span> <span class="dot" aria-hidden="true">•</span>
       <span>AGPL-3.0-or-later</span> <span class="dot" aria-hidden="true">•</span>
       <a href="https://github.com/MihrabHQ/Mihrab">${esc(t.labels.source)}</a>
     </p>
+    </div>
+<!-- heroshot:start -->
+${heroShot(code, t, '../assets')}
+<!-- heroshot:end -->
+    </div>
   </div>
 </header>
 
 <main id="main">
-<section class="install">
+<section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">${esc(t.install.eyebrow)}</p>
     <h2>${esc(t.install.h2)}</h2>
@@ -559,6 +659,8 @@ ${webCard(code, t)}
   </div>
 </section>
 
+${accuracy(code, t)}
+
 <section class="shots" id="screenshots">
   <div class="wrap">
     <p class="eyebrow">${esc(t.shots.eyebrow)}</p>
@@ -572,7 +674,7 @@ ${gallery(code, t)}
 ${reviews(code, t)}
 <!-- reviews:end -->
 
-<section class="features">
+<section class="features" id="features">
   <div class="wrap">
     <p class="eyebrow">${esc(t.features.eyebrow)}</p>
     <h2>${esc(t.features.h2)}</h2>
@@ -589,7 +691,7 @@ ${t.features.cards
   </div>
 </section>
 
-${t.country ? country(t.country, code) : ''}<section class="privacy">
+${t.country ? country(t.country, code) : ''}<section class="privacy" id="privacy">
   <div class="wrap">
     <p class="eyebrow">${esc(t.privacy.eyebrow)}</p>
     <h2>${esc(t.privacy.h2)}</h2>
@@ -607,7 +709,7 @@ ${t.privacy.cards
   </div>
 </section>
 
-<section class="faq">
+<section class="faq" id="faq">
   <div class="wrap">
     <p class="eyebrow">${esc(t.faq.eyebrow)}</p>
     <h2>${esc(t.faq.h2)}</h2>
@@ -690,6 +792,10 @@ function build() {
       let text = fs.readFileSync(file, 'utf-8');
       text = patchBlock(text, 'hreflang', hreflang(langs));
       text = patchBlock(text, 'langpicker', picker(langs, code));
+      const assets = code === 'en' ? 'assets' : '../assets';
+      text = patchBlock(text, 'jump', jumpNav(code, l));
+      text = patchBlock(text, 'cta', heroCta(code, l, `${assets}/img/badges`));
+      text = patchBlock(text, 'heroshot', heroShot(code, l, assets));
       text = patchBlock(text, 'gallery', gallery(code, l));
       text = patchBlock(text, 'reviews', reviews(code, l));
       text = patchBlock(text, 'web', webCard(code, l));
@@ -736,4 +842,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { build, picker, hreflang, gallery, webCard, desktopCard, ORIGIN, SHOT_V, PHONE_PANELS, WIDE_PANELS, panelWords, plain };
+module.exports = { build, PLATFORMS, OPERATING_SYSTEMS, heroCta, heroShot, jumpNav, accuracy, picker, hreflang, gallery, webCard, desktopCard, ORIGIN, SHOT_V, PHONE_PANELS, WIDE_PANELS, panelWords, plain };

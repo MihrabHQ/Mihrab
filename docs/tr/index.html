@@ -47,7 +47,7 @@
   "name": "Mihrab: The Muslim Companion",
   "alternateName": "Mihrab",
   "applicationCategory": "LifestyleApplication",
-  "operatingSystem": "Android, iOS, iPadOS, macOS",
+  "operatingSystem": "Android, iOS, iPadOS, macOS, Windows, Linux",
   "softwareVersion": "2.37.0",
   "url": "https://mihrab.elghamri.se/tr/",
   "inLanguage": "tr",
@@ -110,6 +110,46 @@
         "@type": "Answer",
         "text": "iPhone, iPad, Android ve Mac. Mac'te Homebrew ile kurulur."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "Mihrab’ın vakitleri neden diğer uygulamalardan farklı?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Çoğu uygulama genel bir yöntem kullanır ve caminizin izlediği takvimden bir dakika ya da daha fazla sapar. Diyanet’in, Fas ve Cezayir bakanlıklarının, Kemenag’ın ya da İsveç’in takviminin geçerli olduğu yerlerde Mihrab basılı dakikayı verir: kurumun kendi yöntemi, yayımlanan takvimiyle gün gün karşılaştırılmıştır. Başka yerlerde AlAdhan’ı ya da seçtiğiniz yöntemi kullanır."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Bir takvimin yayımlanan son tarihinden sonra ne olur?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yöntem, düzeltme listesi olmadan tek başına devam eder. Kontrol edilen vakitlerde yöntem tek başına, küçük bir bölüm dışında basılı dakikayı tutturur; o bölüm de bir dakika sapar, asla daha fazla değil; uygulama bunu Bugün sayfasında belirtir. Sonraki aylar yayımlanıp kontrol edildiğinde yeni liste uygulamaya güncelleme gerekmeden ulaşır."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Vakitleri kendim nasıl kontrol edebilirim?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mihrab’ın ay görünümünün bir haftasını kurumunuzun basılı takvimiyle karşılaştırın. Yöntemler, her vakti kontrol eden betik ve yazdığı kayıt GitHub’daki mihrab-methods deposunda herkese açıktır."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mihrab Diyanet’e ya da bir bakanlığa bağlı mı?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Hayır. Mihrab bağımsızdır; takvimiyle örtüştüğü hiçbir kuruma bağlı değildir ve hiçbiri tarafından onaylanmamıştır. Vakitlerin kendisiyle ilgili her konuda kurumun kendi yayını esastır."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mihrab konumumu izliyor mu?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Hayır. Analitik yok, reklam ağı yok, hesap yok. Koordinatlar telefondan yalnızca iki istekte çıkar, hiçbiri geliştiriciye gitmez: vakitlerinizin kaynağı olduğunda AlAdhan’a ve otomatik konumda, şehrinizin adını bulmak için yaklaşık bir kilometreye yuvarlanmış olarak OpenStreetMap’e. Cihazda hesaplamayı seçip şehrinizi elle girerseniz ikisi de yapılmaz."
+      }
     }
   ]
 }
@@ -147,6 +187,18 @@
     <div class="brandline">
       <img src="../assets/img/icon.png" width="62" height="62" alt="Mihrab">
       <span class="wordmark">Mihrab</span>
+<!-- jump:start -->
+<nav class="jump" aria-label="Bölümler">
+  <ul>
+    <li><a href="#install">Kurulum</a></li>
+    <li><a href="#accuracy">Doğruluk</a></li>
+    <li><a href="#screenshots">Ekran görüntüleri</a></li>
+    <li><a href="#features">Özellikler</a></li>
+    <li><a href="#privacy">Gizlilik</a></li>
+    <li><a href="#faq">Sorular</a></li>
+  </ul>
+</nav>
+<!-- jump:end -->
 <!-- langpicker:start -->
 <details class="langpicker">
   <summary>
@@ -171,8 +223,19 @@
 </details>
 <!-- langpicker:end -->
     </div>
+    <div class="hero-grid">
+    <div class="hero-text">
     <h1>Her namaz için, ve aradaki her şey için.</h1>
     <p class="sub">Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namaz vakitleri ve ezan; tilavet, renkli tecvid ve kelime okuyucuyla Medine mushafı; ve namazlar arasındaki dualar ve zikir — hesap yok, reklam yok, analiz yok. Konumunuz ayarlandıktan sonra gün internetsiz de işler.</p>
+<!-- cta:start -->
+    <div class="cta">
+      <ul class="badges">
+        <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="../assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="../assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
+      </ul>
+      <a class="more" href="#install">Windows, Linux, F-Droid ve web <span aria-hidden="true">&darr;</span></a>
+    </div>
+<!-- cta:end -->
     <ul class="trust">
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Reklam, takipçi ve hesap yok</li>
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>İnternetsiz çalışır</li>
@@ -180,15 +243,23 @@
     </ul>
     <p class="meta">
       <span>Sürüm 2.37.0 (296)</span> <span class="dot" aria-hidden="true">•</span>
-      <span>iOS, Android, macOS</span> <span class="dot" aria-hidden="true">•</span>
+      <span>iOS, Android, macOS, Windows, Linux, web</span> <span class="dot" aria-hidden="true">•</span>
       <span>AGPL-3.0-or-later</span> <span class="dot" aria-hidden="true">•</span>
       <a href="https://github.com/MihrabHQ/Mihrab">GitHub'da kaynak kodu</a>
     </p>
+    </div>
+<!-- heroshot:start -->
+    <figure class="hero-shot">
+      <img src="../assets/img/hero-home.jpg?v=2026-11-05p" width="540" height="1200" decoding="async"
+        alt="Gün batımında Gökyüzü temasıyla Bugün ekranı: pembe ve mor bir gökyüzünde alçalan güneş, akşama canlı geri sayım, vakitlerin üstünde gün ve kılınan her namazın yanında bir işaret.">
+    </figure>
+<!-- heroshot:end -->
+    </div>
   </div>
 </header>
 
 <main id="main">
-<section class="install">
+<section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">Kurulum</p>
     <h2>Mihrab'ı edinin</h2>
@@ -267,6 +338,51 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
+<section class="accuracy-section" id="accuracy" data-review="native">
+<!-- DRAFT: needs review by a native tr speaker before it is relied on -->
+  <div class="wrap">
+    <p class="eyebrow">Doğruluk</p>
+    <h2>Basılı dakikaya kadar</h2>
+    <p class="lede">Çoğu namaz uygulaması vakitleri genel bir yöntemle hesaplar ve caminizin izlediği takvimden bir dakika ya da daha fazla sapar. İmsakta, akşam namazında ve oruca başlarken önemli olan tam da o dakikadır.</p>
+    <p class="lede">Bu yüzden Mihrab her kurumun kendi yöntemini — açılarını, temkin paylarını ve yuvarlamasını — yeniden kurar, telefonunuzda hesaplar ve her vakti yayımlanan takvimle karşılaştırır: her yer, her gün. Bir yöntem ancak hiçbir vakit sapmadığında kullanılır.</p>
+<!-- accuracy-table:start -->
+      <div class="table-scroll">
+        <table class="accuracy">
+          <caption>Her yöntemin karşılaştırıldığı bütün vakitler</caption>
+          <thead><tr><th scope="col"></th><th scope="col">Yayımlanan takvimiyle örtüştüğü kurum</th><th scope="col">Yer</th><th scope="col">Kontrol edilen vakit</th><th scope="col">Basılı dakikadan sapan</th><th scope="col">Kontrol dönemi</th></tr></thead>
+          <tbody>
+          <tr><th scope="row">İsveç</th><td>İsveç İslam Birliği’nin tabloları</td><td>107</td><td>63.114</td><td><strong>0</strong></td><td>11 Eki 2026 → 14 Ara 2027</td></tr>
+          <tr class="cont"><th scope="row"></th><td>Diyanet’in İsveç tabloları</td><td>159</td><td>1.393.794</td><td><strong>0</strong></td><td>1 Oca 2024 → 31 Ara 2027</td></tr>
+          <tr><th scope="row">Diyanet</th><td>Diyanet’in tabloları, Türkiye ve dünya</td><td>8.132</td><td>69.999.603</td><td><strong>0</strong></td><td>1 Oca 2024 → 31 Ara 2027</td></tr>
+          <tr><th scope="row">Fas</th><td>Habous ve İslam İşleri Bakanlığı</td><td>164</td><td>94.350</td><td><strong>0</strong></td><td>27 Ağu 2026 → 30 Kas 2026</td></tr>
+          <tr><th scope="row">Cezayir</th><td>Din İşleri ve Vakıflar Bakanlığı</td><td>68</td><td>101.184</td><td><strong>0</strong></td><td>1 Eki 2026 → 5 Haz 2027</td></tr>
+          <tr><th scope="row">Endonezya</th><td>Kemenag</td><td>517</td><td>362.934</td><td><strong>0</strong></td><td>7 Eki 2026 → 31 Oca 2027</td></tr>
+          </tbody>
+          <tfoot><tr><th scope="row">Toplam</th><td>Son kontrol 9 Kasım 2026</td><td></td><td>72.014.979</td><td><strong>0</strong></td><td></td></tr></tfoot>
+        </table>
+      </div>
+<!-- accuracy-table:end -->
+    <div class="cols">
+      <article class="card">
+        <h3>Kendiniz kontrol edin</h3>
+        <p>Yöntemler, kontrol ve kaydı <a href="https://github.com/MihrabHQ/mihrab-methods">mihrab-methods</a> deposunda herkese açıktır. Son kontrol: <!--fig:total.checkedAtLong-->9 Kasım 2026<!--/fig-->.</p>
+      </article>
+      <article class="card">
+        <h3>Bir vakit caminizinkinden farklı mı?</h3>
+        <p>Şehri, tarihi, namazı ve basılı vakti <a href="https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml">bildirim formunda</a> yazın. Caminiz kendi vakitlerini kullanıyorsa, uygulamadaki namaz başına düzeltme onlara uyar.</p>
+      </article>
+      <article class="card">
+        <h3>Yayımlanan tablolar, basıldığı gibi</h3>
+        <p>Singapur (MUIS), Malezya (JAKIM) ve Türkiye Takvimi hesaplanmaz: Mihrab onların kendi yayımladığı tabloları dakikası dakikasına gösterir. Bunlar yukarıdaki kontrolün parçası değildir. Başka her yerde vakitler AlAdhan’dan ya da seçtiğiniz bir hesaplama yönteminden gelir.</p>
+      </article>
+      <article class="card">
+        <h3>Bağımsız</h3>
+        <p>Mihrab burada adı geçen kurumların hiçbirine bağlı değildir ve hiçbiri tarafından onaylanmamıştır. Yayımladıkları takvimlerle örtüşür; onlar adına konuşmaz.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="shots" id="screenshots">
   <div class="wrap">
     <p class="eyebrow">Ekran görüntüleri</p>
@@ -274,6 +390,8 @@ sudo pacman -Syu mihrab</code></pre>
     <p class="lede">Her özellik, yapıldığı cihazda: önce telefonlar, sonra iPad, Mac, Windows ve Chromebook; Gökyüzü temasıyla bir günün saatleri boyunca. Mushaf, basılı Medine sayfasının kendisi; onun bir fotoğrafı değil. Ekranlardaki uygulama İngilizce; Türkçe de konuşuyor.</p>
     <figure class="xplat">
       <img src="../assets/img/panels/xplat.jpg?v=2026-11-05p" width="2400" height="1200" loading="lazy" decoding="async"
+        srcset="../assets/img/panels/xplat-1200.jpg?v=2026-11-05p 1200w, ../assets/img/panels/xplat.jpg?v=2026-11-05p 2400w"
+        sizes="(max-width: 1128px) calc(100vw - 48px), 1032px"
         alt="Sahip olduğunuz her cihazda. Android telefon, tablet ve katlanabilirler, iPhone, iPad, Mac, Windows, Linux ve web — hesapsız ve bize ait hiçbir sunucu olmadan senkronize.">
     </figure>
     <ul class="panels">
@@ -469,7 +587,7 @@ sudo pacman -Syu mihrab</code></pre>
 </section>
 <!-- reviews:end -->
 
-<section class="features">
+<section class="features" id="features">
   <div class="wrap">
     <p class="eyebrow">Özellikler</p>
     <h2>Sabahtan yatsıya tek bir yoldaş</h2>
@@ -519,7 +637,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="privacy">
+<section class="privacy" id="privacy">
   <div class="wrap">
     <p class="eyebrow">Gizlilik</p>
     <h2>Hesap yok, takip yok — ve her istek yazılı</h2>
@@ -541,7 +659,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="faq">
+<section class="faq" id="faq">
   <div class="wrap">
     <p class="eyebrow">Sık sorulanlar</p>
     <h2>İlk sorulan sorular</h2>
@@ -561,6 +679,26 @@ sudo pacman -Syu mihrab</code></pre>
       <article class="card">
         <h3>Hangi cihazlarda çalışır?</h3>
         <p>iPhone, iPad, Android ve Mac. Mac'te Homebrew ile kurulur.</p>
+      </article>
+      <article class="card">
+        <h3>Mihrab’ın vakitleri neden diğer uygulamalardan farklı?</h3>
+        <p>Çoğu uygulama genel bir yöntem kullanır ve caminizin izlediği takvimden bir dakika ya da daha fazla sapar. Diyanet’in, Fas ve Cezayir bakanlıklarının, Kemenag’ın ya da İsveç’in takviminin geçerli olduğu yerlerde Mihrab basılı dakikayı verir: kurumun kendi yöntemi, yayımlanan takvimiyle gün gün karşılaştırılmıştır. Başka yerlerde AlAdhan’ı ya da seçtiğiniz yöntemi kullanır.</p>
+      </article>
+      <article class="card">
+        <h3>Bir takvimin yayımlanan son tarihinden sonra ne olur?</h3>
+        <p>Yöntem, düzeltme listesi olmadan tek başına devam eder. Kontrol edilen vakitlerde yöntem tek başına, küçük bir bölüm dışında basılı dakikayı tutturur; o bölüm de bir dakika sapar, asla daha fazla değil; uygulama bunu Bugün sayfasında belirtir. Sonraki aylar yayımlanıp kontrol edildiğinde yeni liste uygulamaya güncelleme gerekmeden ulaşır.</p>
+      </article>
+      <article class="card">
+        <h3>Vakitleri kendim nasıl kontrol edebilirim?</h3>
+        <p>Mihrab’ın ay görünümünün bir haftasını kurumunuzun basılı takvimiyle karşılaştırın. Yöntemler, her vakti kontrol eden betik ve yazdığı kayıt GitHub’daki mihrab-methods deposunda herkese açıktır.</p>
+      </article>
+      <article class="card">
+        <h3>Mihrab Diyanet’e ya da bir bakanlığa bağlı mı?</h3>
+        <p>Hayır. Mihrab bağımsızdır; takvimiyle örtüştüğü hiçbir kuruma bağlı değildir ve hiçbiri tarafından onaylanmamıştır. Vakitlerin kendisiyle ilgili her konuda kurumun kendi yayını esastır.</p>
+      </article>
+      <article class="card">
+        <h3>Mihrab konumumu izliyor mu?</h3>
+        <p>Hayır. Analitik yok, reklam ağı yok, hesap yok. Koordinatlar telefondan yalnızca iki istekte çıkar, hiçbiri geliştiriciye gitmez: vakitlerinizin kaynağı olduğunda AlAdhan’a ve otomatik konumda, şehrinizin adını bulmak için yaklaşık bir kilometreye yuvarlanmış olarak OpenStreetMap’e. Cihazda hesaplamayı seçip şehrinizi elle girerseniz ikisi de yapılmaz.</p>
       </article>
     </div>
   </div>

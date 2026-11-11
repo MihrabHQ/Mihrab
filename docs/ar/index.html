@@ -47,7 +47,7 @@
   "name": "Mihrab: The Muslim Companion",
   "alternateName": "Mihrab",
   "applicationCategory": "LifestyleApplication",
-  "operatingSystem": "Android, iOS, iPadOS, macOS",
+  "operatingSystem": "Android, iOS, iPadOS, macOS, Windows, Linux",
   "softwareVersion": "2.37.0",
   "url": "https://mihrab.elghamri.se/ar/",
   "inLanguage": "ar",
@@ -110,6 +110,46 @@
         "@type": "Answer",
         "text": "آيفون وآيباد وأندرويد وماك. على الماك يمكن التثبيت عبر Homebrew."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "لماذا تختلف مواقيت محراب عن التطبيقات الأخرى؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "تستعمل معظم التطبيقات طريقة عامة، فتبتعد دقيقة أو أكثر عن الجدول الذي يتبعه مسجدك. وحيث يُعمل بجدول وزارتي المغرب والجزائر أو ديانت أو Kemenag أو جدول السويد، يعطيك محراب الدقيقة المطبوعة: طريقة الجهة نفسها، مقارَنة يومًا بيوم بجدولها المنشور. وفي غير ذلك يستعمل AlAdhan أو الطريقة التي تختارها."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "ماذا يحدث بعد آخر تاريخ منشور في الجدول؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "تستمر الطريقة وحدها، دون قائمة تصحيحاتها. وفي الأوقات التي قورنت بها، تصيب الطريقة وحدها الدقيقة المطبوعة إلا في جزء يسير، وهذا الجزء يبتعد دقيقة واحدة لا أكثر؛ وينبّه التطبيق على ذلك في صفحة «اليوم». وعند نشر الأشهر التالية ومقارنتها، تصل القائمة الجديدة إلى التطبيق دون تحديث."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "كيف أتحقق من المواقيت بنفسي؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "قارن أسبوعًا من عرض الشهر في محراب بالجدول المطبوع للجهة التي تتبعها. والطرق والبرنامج الذي يقارن كل وقت والسجل الذي يكتبه منشورة للجميع في مستودع mihrab-methods على GitHub."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "هل محراب تابع لوزارة أو لديانت؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "لا. محراب مستقل، غير تابع لأي جهة يطابق جدولها ولا معتمد منها. وفي كل ما يخص المواقيت نفسها، المرجع هو ما تنشره الجهة."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "هل يتتبّع محراب موقعي؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "لا. لا تحليلات ولا شبكة إعلانات ولا حساب. ولا تغادر الإحداثيات الهاتف إلا في طلبين، ليس أحدهما إلى المطوّر: إلى AlAdhan حين يكون مصدر مواقيتك، وإلى OpenStreetMap عند تحديد الموقع تلقائيًا لمعرفة اسم بلدتك، مقرَّبة إلى نحو كيلومتر. اختر الحساب على الجهاز وأدخل بلدتك يدويًا، فلا يُرسل أيٌّ منهما."
+      }
     }
   ]
 }
@@ -147,6 +187,18 @@
     <div class="brandline">
       <img src="../assets/img/icon.png" width="62" height="62" alt="Mihrab">
       <span class="wordmark">Mihrab</span>
+<!-- jump:start -->
+<nav class="jump" aria-label="أقسام الصفحة">
+  <ul>
+    <li><a href="#install">التثبيت</a></li>
+    <li><a href="#accuracy">الدقة</a></li>
+    <li><a href="#screenshots">لقطات</a></li>
+    <li><a href="#features">المزايا</a></li>
+    <li><a href="#privacy">الخصوصية</a></li>
+    <li><a href="#faq">أسئلة</a></li>
+  </ul>
+</nav>
+<!-- jump:end -->
 <!-- langpicker:start -->
 <details class="langpicker">
   <summary>
@@ -171,8 +223,19 @@
 </details>
 <!-- langpicker:end -->
     </div>
+    <div class="hero-grid">
+    <div class="hero-text">
     <h1>لكل صلاة، ولكل ما بينها.</h1>
     <p class="sub">محراب رفيقٌ هادئ في يوم المسلم: مواقيت الصلاة والأذان، والمصحف المدني بالتلاوة وألوان التجويد وقارئ الكلمات، والأدعية والأذكار بين الصلوات — بلا حساب وبلا إعلانات وبلا تحليلات. وبمجرد تحديد موقعك يعمل اليوم كله دون اتصال.</p>
+<!-- cta:start -->
+    <div class="cta">
+      <ul class="badges">
+        <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="../assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="../assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
+      </ul>
+      <a class="more" href="#install">ويندوز ولينكس وF-Droid والويب <span aria-hidden="true">&darr;</span></a>
+    </div>
+<!-- cta:end -->
     <ul class="trust">
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>بلا إعلانات ولا تتبّع ولا حساب</li>
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>يعمل دون اتصال بالإنترنت</li>
@@ -180,15 +243,23 @@
     </ul>
     <p class="meta">
       <span>الإصدار 2.37.0 (296)</span> <span class="dot" aria-hidden="true">•</span>
-      <span>iOS, Android, macOS</span> <span class="dot" aria-hidden="true">•</span>
+      <span>iOS, Android, macOS, Windows, Linux, web</span> <span class="dot" aria-hidden="true">•</span>
       <span>AGPL-3.0-or-later</span> <span class="dot" aria-hidden="true">•</span>
       <a href="https://github.com/MihrabHQ/Mihrab">الشيفرة على GitHub</a>
     </p>
+    </div>
+<!-- heroshot:start -->
+    <figure class="hero-shot">
+      <img src="../assets/img/hero-home.jpg?v=2026-11-05p" width="540" height="1200" decoding="async"
+        alt="شاشة اليوم تحت مظهر «السماء» عند الغروب: الشمس المنخفضة في سماء وردية وبنفسجية خلف عدّ تنازلي حيّ إلى المغرب، والتاريخ فوق الأوقات، وعلامة إلى جانب كل صلاة أُدّيت.">
+    </figure>
+<!-- heroshot:end -->
+    </div>
   </div>
 </header>
 
 <main id="main">
-<section class="install">
+<section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">التثبيت</p>
     <h2>احصل على محراب</h2>
@@ -267,6 +338,51 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
+<section class="accuracy-section" id="accuracy" data-review="native">
+<!-- DRAFT: needs review by a native ar speaker before it is relied on -->
+  <div class="wrap">
+    <p class="eyebrow">الدقة</p>
+    <h2>حتى الدقيقة المطبوعة</h2>
+    <p class="lede">تحسب معظم تطبيقات الصلاة المواقيت بطريقة عامة، فتبتعد دقيقة أو أكثر عن الجدول الذي يتبعه مسجدك. وعند آخر وقت الفجر، وعند المغرب، وعند بدء الصيام، تلك الدقيقة هي التي يُعوَّل عليها.</p>
+    <p class="lede">لذلك يعيد محراب بناء طريقة كل جهة نفسها — زواياها واحتياطها وتقريبها — ويحسبها على هاتفك، ثم يقارن كل وقت بالجدول المنشور: كل مكان وكل يوم. ولا تُستعمل طريقة إلا إذا لم يخرج عنها وقت واحد.</p>
+<!-- accuracy-table:start -->
+      <div class="table-scroll">
+        <table class="accuracy">
+          <caption>كل وقت قورنت به كل طريقة</caption>
+          <thead><tr><th scope="col"></th><th scope="col">مطابق للجدول المنشور من</th><th scope="col">الأماكن</th><th scope="col">الأوقات المقارَنة</th><th scope="col">خارج الدقيقة المطبوعة</th><th scope="col">فترة المقارنة</th></tr></thead>
+          <tbody>
+          <tr><th scope="row">السويد</th><td>جداول رابطة الإسلام في السويد</td><td>107</td><td>63,114</td><td><strong>0</strong></td><td>11 أكتوبر 2026 → 14 ديسمبر 2027</td></tr>
+          <tr class="cont"><th scope="row"></th><td>جداول ديانت للسويد</td><td>159</td><td>1,393,794</td><td><strong>0</strong></td><td>1 يناير 2024 → 31 ديسمبر 2027</td></tr>
+          <tr><th scope="row">ديانت</th><td>جداول ديانت، تركيا والعالم</td><td>8,132</td><td>69,999,603</td><td><strong>0</strong></td><td>1 يناير 2024 → 31 ديسمبر 2027</td></tr>
+          <tr><th scope="row">المغرب</th><td>وزارة الأوقاف والشؤون الإسلامية</td><td>164</td><td>94,350</td><td><strong>0</strong></td><td>27 أغسطس 2026 → 30 نوفمبر 2026</td></tr>
+          <tr><th scope="row">الجزائر</th><td>وزارة الشؤون الدينية والأوقاف</td><td>68</td><td>101,184</td><td><strong>0</strong></td><td>1 أكتوبر 2026 → 5 يونيو 2027</td></tr>
+          <tr><th scope="row">إندونيسيا</th><td>Kemenag</td><td>517</td><td>362,934</td><td><strong>0</strong></td><td>7 أكتوبر 2026 → 31 يناير 2027</td></tr>
+          </tbody>
+          <tfoot><tr><th scope="row">المجموع</th><td>آخر مقارنة 9 نوفمبر 2026</td><td></td><td>72,014,979</td><td><strong>0</strong></td><td></td></tr></tfoot>
+        </table>
+      </div>
+<!-- accuracy-table:end -->
+    <div class="cols">
+      <article class="card">
+        <h3>تحقّق بنفسك</h3>
+        <p>الطرق والمقارنة وسجلّها منشورة للجميع في <a href="https://github.com/MihrabHQ/mihrab-methods">mihrab-methods</a>. آخر مقارنة: <!--fig:total.checkedAtLong-->9 نوفمبر 2026<!--/fig-->.</p>
+      </article>
+      <article class="card">
+        <h3>وقت يخالف وقت مسجدك؟</h3>
+        <p>اذكر المدينة والتاريخ والصلاة والوقت المطبوع في <a href="https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml">نموذج الإبلاغ</a>. وإن كان لمسجدك مواقيته الخاصة، فتعديل لكل صلاة داخل التطبيق يطابقها.</p>
+      </article>
+      <article class="card">
+        <h3>جداول منشورة، كما طُبعت</h3>
+        <p>سنغافورة (MUIS) وماليزيا (JAKIM) وTürkiye Takvimi لا تُحسب: يعرض محراب جداولها المنشورة نفسها، دقيقة بدقيقة. وهي ليست جزءًا من المقارنة أعلاه. وفي سائر الأماكن تأتي المواقيت من AlAdhan أو من طريقة حساب تختارها.</p>
+      </article>
+      <article class="card">
+        <h3>مستقل</h3>
+        <p>محراب غير تابع لأي جهة من الجهات المذكورة هنا ولا معتمد منها. يطابق جداولها المنشورة، ولا يتحدث باسمها.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="shots" id="screenshots">
   <div class="wrap">
     <p class="eyebrow">لقطات الشاشة</p>
@@ -274,6 +390,8 @@ sudo pacman -Syu mihrab</code></pre>
     <p class="lede">كل ميزة على الجهاز الذي صُنعت له: الهواتف أولًا، ثم iPad وMac وWindows وChromebook، بمظهر «السماء» عبر ساعات يوم واحد. المصحف هو صفحة المدينة المطبوعة نفسها لا صورة عنها. التطبيق على الشاشات بالإنجليزية، ويتحدث العربية كذلك.</p>
     <figure class="xplat">
       <img src="../assets/img/panels/xplat.jpg?v=2026-11-05p" width="2400" height="1200" loading="lazy" decoding="async"
+        srcset="../assets/img/panels/xplat-1200.jpg?v=2026-11-05p 1200w, ../assets/img/panels/xplat.jpg?v=2026-11-05p 2400w"
+        sizes="(max-width: 1128px) calc(100vw - 48px), 1032px"
         alt="على كل جهاز تملكه. هواتف أندرويد وأجهزته اللوحية والقابلة للطي، وآيفون وآيباد وماك وويندوز ولينكس والويب — متزامنة دون حساب ودون أي خادم لنا.">
     </figure>
     <ul class="panels">
@@ -469,7 +587,7 @@ sudo pacman -Syu mihrab</code></pre>
 </section>
 <!-- reviews:end -->
 
-<section class="features">
+<section class="features" id="features">
   <div class="wrap">
     <p class="eyebrow">المزايا</p>
     <h2>رفيق واحد، من الفجر إلى العشاء</h2>
@@ -526,7 +644,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="privacy">
+<section class="privacy" id="privacy">
   <div class="wrap">
     <p class="eyebrow">الخصوصية</p>
     <h2>لا حساب ولا تتبّع، وكل طلب مكتوب</h2>
@@ -548,7 +666,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="faq">
+<section class="faq" id="faq">
   <div class="wrap">
     <p class="eyebrow">أسئلة شائعة</p>
     <h2>الأسئلة التي تُسأل أولاً</h2>
@@ -568,6 +686,26 @@ sudo pacman -Syu mihrab</code></pre>
       <article class="card">
         <h3>ما الأجهزة المدعومة؟</h3>
         <p>آيفون وآيباد وأندرويد وماك. على الماك يمكن التثبيت عبر Homebrew.</p>
+      </article>
+      <article class="card">
+        <h3>لماذا تختلف مواقيت محراب عن التطبيقات الأخرى؟</h3>
+        <p>تستعمل معظم التطبيقات طريقة عامة، فتبتعد دقيقة أو أكثر عن الجدول الذي يتبعه مسجدك. وحيث يُعمل بجدول وزارتي المغرب والجزائر أو ديانت أو Kemenag أو جدول السويد، يعطيك محراب الدقيقة المطبوعة: طريقة الجهة نفسها، مقارَنة يومًا بيوم بجدولها المنشور. وفي غير ذلك يستعمل AlAdhan أو الطريقة التي تختارها.</p>
+      </article>
+      <article class="card">
+        <h3>ماذا يحدث بعد آخر تاريخ منشور في الجدول؟</h3>
+        <p>تستمر الطريقة وحدها، دون قائمة تصحيحاتها. وفي الأوقات التي قورنت بها، تصيب الطريقة وحدها الدقيقة المطبوعة إلا في جزء يسير، وهذا الجزء يبتعد دقيقة واحدة لا أكثر؛ وينبّه التطبيق على ذلك في صفحة «اليوم». وعند نشر الأشهر التالية ومقارنتها، تصل القائمة الجديدة إلى التطبيق دون تحديث.</p>
+      </article>
+      <article class="card">
+        <h3>كيف أتحقق من المواقيت بنفسي؟</h3>
+        <p>قارن أسبوعًا من عرض الشهر في محراب بالجدول المطبوع للجهة التي تتبعها. والطرق والبرنامج الذي يقارن كل وقت والسجل الذي يكتبه منشورة للجميع في مستودع mihrab-methods على GitHub.</p>
+      </article>
+      <article class="card">
+        <h3>هل محراب تابع لوزارة أو لديانت؟</h3>
+        <p>لا. محراب مستقل، غير تابع لأي جهة يطابق جدولها ولا معتمد منها. وفي كل ما يخص المواقيت نفسها، المرجع هو ما تنشره الجهة.</p>
+      </article>
+      <article class="card">
+        <h3>هل يتتبّع محراب موقعي؟</h3>
+        <p>لا. لا تحليلات ولا شبكة إعلانات ولا حساب. ولا تغادر الإحداثيات الهاتف إلا في طلبين، ليس أحدهما إلى المطوّر: إلى AlAdhan حين يكون مصدر مواقيتك، وإلى OpenStreetMap عند تحديد الموقع تلقائيًا لمعرفة اسم بلدتك، مقرَّبة إلى نحو كيلومتر. اختر الحساب على الجهاز وأدخل بلدتك يدويًا، فلا يُرسل أيٌّ منهما.</p>
       </article>
     </div>
   </div>

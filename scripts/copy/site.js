@@ -52,9 +52,23 @@ const TABLE_WORDS = {
   },
 };
 
+/**
+ * The table's words in the eleven generated languages: with the rest of
+ * each page's strings (scripts/site/strings.json, `accuracy.table`), so a
+ * translator finds a page's words in one place. A page whose language has
+ * none falls back to English — which names an authority the translated
+ * pages must not (the Swedish answer stays on the Swedish page), so every
+ * page that carries the table has its own.
+ */
+function siteTableWords(lang) {
+  const file = path.join(__dirname, '..', 'site', 'strings.json');
+  const t = JSON.parse(fs.readFileSync(file, 'utf-8'))[lang];
+  return (t && t.accuracy && t.accuracy.table) || null;
+}
+
 /** The accuracy table, in a language the table has words for. */
 function accuracyTable(cert, lang = 'en') {
-  const w = TABLE_WORDS[lang] ?? TABLE_WORDS.en;
+  const w = TABLE_WORDS[lang] ?? siteTableWords(lang) ?? TABLE_WORDS.en;
   const { by, total } = figures(cert);
   const rows = [];
   for (const id of AUTHORITY_ORDER) {

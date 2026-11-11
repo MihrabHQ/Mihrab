@@ -135,6 +135,19 @@
       "h2": "What people write",
       "note": "Five stars, in their words — as they wrote them on Google Play and the App Store.",
       "translated": "Translated"
+    },
+    "nav": {
+      "label": "Sections",
+      "install": "Install",
+      "accuracy": "Accuracy",
+      "screenshots": "Screenshots",
+      "features": "Features",
+      "privacy": "Privacy",
+      "faq": "Questions"
+    },
+    "labels": {
+      "lang": "Language",
+      "allDownloads": "Windows, Linux, F-Droid and the web"
     }
   },
   "sv": {
@@ -273,7 +286,45 @@
       "h2": "Vad folk skriver",
       "note": "Fem stjärnor, med deras egna ord — så som de skrev dem på Google Play och App Store.",
       "translated": "Översatt"
-    }
+    },
+    "nav": {
+      "label": "Avsnitt",
+      "items": [
+        [
+          "#ladda-ner",
+          "Ladda ner"
+        ],
+        [
+          "#skarmbilder",
+          "Skärmbilder"
+        ],
+        [
+          "#islamiska-forbundet",
+          "Tidtabellen"
+        ],
+        [
+          "#orter",
+          "Orter"
+        ],
+        [
+          "#funktioner",
+          "Funktioner"
+        ],
+        [
+          "#fragor",
+          "Frågor"
+        ],
+        [
+          "#integritet",
+          "Integritet"
+        ]
+      ]
+    },
+    "labels": {
+      "lang": "Språk",
+      "allDownloads": "Windows, Linux, F-Droid och webben"
+    },
+    "navInstall": "#ladda-ner"
   },
   "ar": {
     "name": "العربية",
@@ -377,6 +428,26 @@
         {
           "q": "ما الأجهزة المدعومة؟",
           "a": "آيفون وآيباد وأندرويد وماك. على الماك يمكن التثبيت عبر Homebrew."
+        },
+        {
+          "q": "لماذا تختلف مواقيت محراب عن التطبيقات الأخرى؟",
+          "a": "تستعمل معظم التطبيقات طريقة عامة، فتبتعد دقيقة أو أكثر عن الجدول الذي يتبعه مسجدك. وحيث يُعمل بجدول وزارتي المغرب والجزائر أو ديانت أو Kemenag أو جدول السويد، يعطيك محراب الدقيقة المطبوعة: طريقة الجهة نفسها، مقارَنة يومًا بيوم بجدولها المنشور. وفي غير ذلك يستعمل AlAdhan أو الطريقة التي تختارها."
+        },
+        {
+          "q": "ماذا يحدث بعد آخر تاريخ منشور في الجدول؟",
+          "a": "تستمر الطريقة وحدها، دون قائمة تصحيحاتها. وفي الأوقات التي قورنت بها، تصيب الطريقة وحدها الدقيقة المطبوعة إلا في جزء يسير، وهذا الجزء يبتعد دقيقة واحدة لا أكثر؛ وينبّه التطبيق على ذلك في صفحة «اليوم». وعند نشر الأشهر التالية ومقارنتها، تصل القائمة الجديدة إلى التطبيق دون تحديث."
+        },
+        {
+          "q": "كيف أتحقق من المواقيت بنفسي؟",
+          "a": "قارن أسبوعًا من عرض الشهر في محراب بالجدول المطبوع للجهة التي تتبعها. والطرق والبرنامج الذي يقارن كل وقت والسجل الذي يكتبه منشورة للجميع في مستودع mihrab-methods على GitHub."
+        },
+        {
+          "q": "هل محراب تابع لوزارة أو لديانت؟",
+          "a": "لا. محراب مستقل، غير تابع لأي جهة يطابق جدولها ولا معتمد منها. وفي كل ما يخص المواقيت نفسها، المرجع هو ما تنشره الجهة."
+        },
+        {
+          "q": "هل يتتبّع محراب موقعي؟",
+          "a": "لا. لا تحليلات ولا شبكة إعلانات ولا حساب. ولا تغادر الإحداثيات الهاتف إلا في طلبين، ليس أحدهما إلى المطوّر: إلى AlAdhan حين يكون مصدر مواقيتك، وإلى OpenStreetMap عند تحديد الموقع تلقائيًا لمعرفة اسم بلدتك، مقرَّبة إلى نحو كيلومتر. اختر الحساب على الجهاز وأدخل بلدتك يدويًا، فلا يُرسل أيٌّ منهما."
         }
       ]
     },
@@ -402,7 +473,8 @@
       "source": "الشيفرة على GitHub",
       "built": "محراب {v}، من تطوير حسن الغمري.",
       "banner": "وقفة مع فلسطين.",
-      "bannerMore": "أين تتبرّع، وماذا تقاطع، وكيف تتابع."
+      "bannerMore": "أين تتبرّع، وماذا تقاطع، وكيف تتابع.",
+      "allDownloads": "ويندوز ولينكس وF-Droid والويب"
     },
     "shots": {
       "eyebrow": "لقطات الشاشة",
@@ -544,6 +616,80 @@
       "h2": "ماذا يكتب الناس",
       "note": "خمس نجوم، بكلماتهم كما كتبوها على Google Play وApp Store.",
       "translated": "مترجم"
+    },
+    "nav": {
+      "label": "أقسام الصفحة",
+      "install": "التثبيت",
+      "accuracy": "الدقة",
+      "screenshots": "لقطات",
+      "features": "المزايا",
+      "privacy": "الخصوصية",
+      "faq": "أسئلة"
+    },
+    "accuracy": {
+      "review": "native",
+      "eyebrow": "الدقة",
+      "h2": "حتى الدقيقة المطبوعة",
+      "lede": [
+        "تحسب معظم تطبيقات الصلاة المواقيت بطريقة عامة، فتبتعد دقيقة أو أكثر عن الجدول الذي يتبعه مسجدك. وعند آخر وقت الفجر، وعند المغرب، وعند بدء الصيام، تلك الدقيقة هي التي يُعوَّل عليها.",
+        "لذلك يعيد محراب بناء طريقة كل جهة نفسها — زواياها واحتياطها وتقريبها — ويحسبها على هاتفك، ثم يقارن كل وقت بالجدول المنشور: كل مكان وكل يوم. ولا تُستعمل طريقة إلا إذا لم يخرج عنها وقت واحد."
+      ],
+      "cards": [
+        {
+          "h3": "تحقّق بنفسك",
+          "p": "الطرق والمقارنة وسجلّها منشورة للجميع في [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods). آخر مقارنة: {fig:total.checkedAtLong}."
+        },
+        {
+          "h3": "وقت يخالف وقت مسجدك؟",
+          "p": "اذكر المدينة والتاريخ والصلاة والوقت المطبوع في [نموذج الإبلاغ](https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml). وإن كان لمسجدك مواقيته الخاصة، فتعديل لكل صلاة داخل التطبيق يطابقها."
+        },
+        {
+          "h3": "جداول منشورة، كما طُبعت",
+          "p": "سنغافورة (MUIS) وماليزيا (JAKIM) وTürkiye Takvimi لا تُحسب: يعرض محراب جداولها المنشورة نفسها، دقيقة بدقيقة. وهي ليست جزءًا من المقارنة أعلاه. وفي سائر الأماكن تأتي المواقيت من AlAdhan أو من طريقة حساب تختارها."
+        },
+        {
+          "h3": "مستقل",
+          "p": "محراب غير تابع لأي جهة من الجهات المذكورة هنا ولا معتمد منها. يطابق جداولها المنشورة، ولا يتحدث باسمها."
+        }
+      ],
+      "table": {
+        "head": [
+          "مطابق للجدول المنشور من",
+          "الأماكن",
+          "الأوقات المقارَنة",
+          "خارج الدقيقة المطبوعة",
+          "فترة المقارنة"
+        ],
+        "caption": "كل وقت قورنت به كل طريقة",
+        "total": "المجموع",
+        "checked": "آخر مقارنة",
+        "names": {
+          "sweden": [
+            "السويد",
+            "جداول رابطة الإسلام في السويد"
+          ],
+          "sweden-diyanet": [
+            "",
+            "جداول ديانت للسويد"
+          ],
+          "diyanet": [
+            "ديانت",
+            "جداول ديانت، تركيا والعالم"
+          ],
+          "morocco": [
+            "المغرب",
+            "وزارة الأوقاف والشؤون الإسلامية"
+          ],
+          "algeria": [
+            "الجزائر",
+            "وزارة الشؤون الدينية والأوقاف"
+          ],
+          "indonesia": [
+            "إندونيسيا",
+            "Kemenag"
+          ]
+        }
+      }
     }
   },
   "tr": {
@@ -648,6 +794,26 @@
         {
           "q": "Hangi cihazlarda çalışır?",
           "a": "iPhone, iPad, Android ve Mac. Mac'te Homebrew ile kurulur."
+        },
+        {
+          "q": "Mihrab’ın vakitleri neden diğer uygulamalardan farklı?",
+          "a": "Çoğu uygulama genel bir yöntem kullanır ve caminizin izlediği takvimden bir dakika ya da daha fazla sapar. Diyanet’in, Fas ve Cezayir bakanlıklarının, Kemenag’ın ya da İsveç’in takviminin geçerli olduğu yerlerde Mihrab basılı dakikayı verir: kurumun kendi yöntemi, yayımlanan takvimiyle gün gün karşılaştırılmıştır. Başka yerlerde AlAdhan’ı ya da seçtiğiniz yöntemi kullanır."
+        },
+        {
+          "q": "Bir takvimin yayımlanan son tarihinden sonra ne olur?",
+          "a": "Yöntem, düzeltme listesi olmadan tek başına devam eder. Kontrol edilen vakitlerde yöntem tek başına, küçük bir bölüm dışında basılı dakikayı tutturur; o bölüm de bir dakika sapar, asla daha fazla değil; uygulama bunu Bugün sayfasında belirtir. Sonraki aylar yayımlanıp kontrol edildiğinde yeni liste uygulamaya güncelleme gerekmeden ulaşır."
+        },
+        {
+          "q": "Vakitleri kendim nasıl kontrol edebilirim?",
+          "a": "Mihrab’ın ay görünümünün bir haftasını kurumunuzun basılı takvimiyle karşılaştırın. Yöntemler, her vakti kontrol eden betik ve yazdığı kayıt GitHub’daki mihrab-methods deposunda herkese açıktır."
+        },
+        {
+          "q": "Mihrab Diyanet’e ya da bir bakanlığa bağlı mı?",
+          "a": "Hayır. Mihrab bağımsızdır; takvimiyle örtüştüğü hiçbir kuruma bağlı değildir ve hiçbiri tarafından onaylanmamıştır. Vakitlerin kendisiyle ilgili her konuda kurumun kendi yayını esastır."
+        },
+        {
+          "q": "Mihrab konumumu izliyor mu?",
+          "a": "Hayır. Analitik yok, reklam ağı yok, hesap yok. Koordinatlar telefondan yalnızca iki istekte çıkar, hiçbiri geliştiriciye gitmez: vakitlerinizin kaynağı olduğunda AlAdhan’a ve otomatik konumda, şehrinizin adını bulmak için yaklaşık bir kilometreye yuvarlanmış olarak OpenStreetMap’e. Cihazda hesaplamayı seçip şehrinizi elle girerseniz ikisi de yapılmaz."
         }
       ]
     },
@@ -673,7 +839,8 @@
       "source": "GitHub'da kaynak kodu",
       "built": "Mihrab {v}, Hassan El Ghamri tarafından.",
       "banner": "Filistin'in yanındayız.",
-      "bannerMore": "Nereye bağış yapılır, ne boykot edilir, nasıl takip edilir."
+      "bannerMore": "Nereye bağış yapılır, ne boykot edilir, nasıl takip edilir.",
+      "allDownloads": "Windows, Linux, F-Droid ve web"
     },
     "shots": {
       "eyebrow": "Ekran görüntüleri",
@@ -808,6 +975,80 @@
       "h2": "İnsanlar ne yazıyor",
       "note": "Beş yıldız, kendi sözleriyle — Google Play ve App Store'da yazdıkları gibi.",
       "translated": "Çeviri"
+    },
+    "nav": {
+      "label": "Bölümler",
+      "install": "Kurulum",
+      "accuracy": "Doğruluk",
+      "screenshots": "Ekran görüntüleri",
+      "features": "Özellikler",
+      "privacy": "Gizlilik",
+      "faq": "Sorular"
+    },
+    "accuracy": {
+      "review": "native",
+      "eyebrow": "Doğruluk",
+      "h2": "Basılı dakikaya kadar",
+      "lede": [
+        "Çoğu namaz uygulaması vakitleri genel bir yöntemle hesaplar ve caminizin izlediği takvimden bir dakika ya da daha fazla sapar. İmsakta, akşam namazında ve oruca başlarken önemli olan tam da o dakikadır.",
+        "Bu yüzden Mihrab her kurumun kendi yöntemini — açılarını, temkin paylarını ve yuvarlamasını — yeniden kurar, telefonunuzda hesaplar ve her vakti yayımlanan takvimle karşılaştırır: her yer, her gün. Bir yöntem ancak hiçbir vakit sapmadığında kullanılır."
+      ],
+      "cards": [
+        {
+          "h3": "Kendiniz kontrol edin",
+          "p": "Yöntemler, kontrol ve kaydı [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods) deposunda herkese açıktır. Son kontrol: {fig:total.checkedAtLong}."
+        },
+        {
+          "h3": "Bir vakit caminizinkinden farklı mı?",
+          "p": "Şehri, tarihi, namazı ve basılı vakti [bildirim formunda](https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml) yazın. Caminiz kendi vakitlerini kullanıyorsa, uygulamadaki namaz başına düzeltme onlara uyar."
+        },
+        {
+          "h3": "Yayımlanan tablolar, basıldığı gibi",
+          "p": "Singapur (MUIS), Malezya (JAKIM) ve Türkiye Takvimi hesaplanmaz: Mihrab onların kendi yayımladığı tabloları dakikası dakikasına gösterir. Bunlar yukarıdaki kontrolün parçası değildir. Başka her yerde vakitler AlAdhan’dan ya da seçtiğiniz bir hesaplama yönteminden gelir."
+        },
+        {
+          "h3": "Bağımsız",
+          "p": "Mihrab burada adı geçen kurumların hiçbirine bağlı değildir ve hiçbiri tarafından onaylanmamıştır. Yayımladıkları takvimlerle örtüşür; onlar adına konuşmaz."
+        }
+      ],
+      "table": {
+        "head": [
+          "Yayımlanan takvimiyle örtüştüğü kurum",
+          "Yer",
+          "Kontrol edilen vakit",
+          "Basılı dakikadan sapan",
+          "Kontrol dönemi"
+        ],
+        "caption": "Her yöntemin karşılaştırıldığı bütün vakitler",
+        "total": "Toplam",
+        "checked": "Son kontrol",
+        "names": {
+          "sweden": [
+            "İsveç",
+            "İsveç İslam Birliği’nin tabloları"
+          ],
+          "sweden-diyanet": [
+            "",
+            "Diyanet’in İsveç tabloları"
+          ],
+          "diyanet": [
+            "Diyanet",
+            "Diyanet’in tabloları, Türkiye ve dünya"
+          ],
+          "morocco": [
+            "Fas",
+            "Habous ve İslam İşleri Bakanlığı"
+          ],
+          "algeria": [
+            "Cezayir",
+            "Din İşleri ve Vakıflar Bakanlığı"
+          ],
+          "indonesia": [
+            "Endonezya",
+            "Kemenag"
+          ]
+        }
+      }
     }
   },
   "ur": {
@@ -912,6 +1153,26 @@
         {
           "q": "کن آلات پر چلتی ہے؟",
           "a": "آئی فون، آئی پیڈ، اینڈرائیڈ اور میک۔ میک پر Homebrew سے انسٹال کریں۔"
+        },
+        {
+          "q": "محراب کے اوقات دوسری ایپس سے مختلف کیوں ہیں؟",
+          "a": "زیادہ تر ایپس ایک عمومی طریقہ استعمال کرتی ہیں اور اس جدول سے ایک منٹ یا زیادہ ہٹ جاتی ہیں جس پر آپ کی مسجد چلتی ہے۔ جہاں دیانت، مراکش اور الجزائر کی وزارتوں، Kemenag یا سویڈن کا جدول رائج ہے، وہاں محراب چھپا ہوا منٹ دیتا ہے: ادارے کا اپنا طریقہ، جو دن بہ دن اس کے شائع شدہ جدول سے ملایا گیا ہے۔ باقی جگہوں پر یہ AlAdhan یا آپ کا منتخب کردہ طریقہ استعمال کرتا ہے۔"
+        },
+        {
+          "q": "جدول کی آخری شائع شدہ تاریخ کے بعد کیا ہوتا ہے؟",
+          "a": "طریقہ اپنی تصحیحی فہرست کے بغیر اکیلا چلتا رہتا ہے۔ جن اوقات سے اسے ملایا گیا، ان میں طریقہ اکیلا بھی ایک چھوٹے سے حصے کے سوا چھپے ہوئے منٹ پر ہوتا ہے، اور وہ حصہ ایک منٹ ہٹتا ہے، اس سے زیادہ کبھی نہیں؛ ایپ «آج» کے صفحے پر یہ بتا دیتی ہے۔ جب اگلے مہینے شائع ہو کر جانچ لیے جاتے ہیں تو نئی فہرست بغیر اپ ڈیٹ کے ایپ تک پہنچ جاتی ہے۔"
+        },
+        {
+          "q": "میں اوقات خود کیسے جانچ سکتا ہوں؟",
+          "a": "محراب کے ماہانہ منظر کا ایک ہفتہ اپنے ادارے کے چھپے ہوئے جدول سے ملائیں۔ طریقے، ہر وقت کو جانچنے والا اسکرپٹ اور اس کا لکھا ہوا ریکارڈ GitHub پر mihrab-methods کے ذخیرے میں سب کے لیے کھلے ہیں۔"
+        },
+        {
+          "q": "کیا محراب دیانت یا کسی وزارت سے وابستہ ہے؟",
+          "a": "نہیں۔ محراب آزاد ہے اور جس ادارے کے جدول سے مطابقت رکھتا ہے اس سے نہ وابستہ ہے نہ اس کا توثیق یافتہ۔ اوقات سے متعلق ہر بات میں ادارے کی اپنی اشاعت ہی مرجع ہے۔"
+        },
+        {
+          "q": "کیا محراب میرے مقام کا سراغ رکھتا ہے؟",
+          "a": "نہیں۔ نہ کوئی اینالیٹکس ہے، نہ اشتہاری نیٹ ورک، نہ اکاؤنٹ۔ کوآرڈینیٹس فون سے صرف دو درخواستوں میں باہر جاتے ہیں، اور کوئی بھی ڈویلپر کو نہیں جاتی: AlAdhan کو، جب وہ آپ کے اوقات کا ماخذ ہو، اور خودکار مقام کی صورت میں OpenStreetMap کو، آپ کے قصبے کا نام جاننے کے لیے، تقریباً ایک کلومیٹر تک گول کر کے۔ آلے پر حساب منتخب کریں اور اپنا قصبہ خود درج کریں تو دونوں میں سے کوئی درخواست نہیں بھیجی جاتی۔"
         }
       ]
     },
@@ -937,7 +1198,8 @@
       "source": "GitHub پر سورس",
       "built": "محراب {v}، حسن الغمری کی تیار کردہ۔",
       "banner": "فلسطین کے ساتھ۔",
-      "bannerMore": "کہاں عطیہ کریں، کس کا بائیکاٹ کریں، اور باخبر کیسے رہیں۔"
+      "bannerMore": "کہاں عطیہ کریں، کس کا بائیکاٹ کریں، اور باخبر کیسے رہیں۔",
+      "allDownloads": "ونڈوز، لینکس، F-Droid اور ویب"
     },
     "shots": {
       "eyebrow": "اسکرین شاٹس",
@@ -1053,6 +1315,80 @@
       "h2": "لوگ کیا لکھتے ہیں",
       "note": "پانچ ستارے، اُن کے اپنے الفاظ میں — جیسے انہوں نے Google Play اور App Store پر لکھے۔",
       "translated": "ترجمہ"
+    },
+    "nav": {
+      "label": "صفحے کے حصے",
+      "install": "انسٹال",
+      "accuracy": "درستگی",
+      "screenshots": "اسکرین شاٹس",
+      "features": "خصوصیات",
+      "privacy": "رازداری",
+      "faq": "سوالات"
+    },
+    "accuracy": {
+      "review": "native",
+      "eyebrow": "درستگی",
+      "h2": "چھپے ہوئے منٹ تک",
+      "lede": [
+        "زیادہ تر نماز ایپس اوقات ایک عمومی طریقے سے نکالتی ہیں اور اس جدول سے ایک منٹ یا زیادہ ہٹ جاتی ہیں جس پر آپ کی مسجد چلتی ہے۔ فجر کے آخر میں، مغرب کے وقت اور روزے کے آغاز پر یہی ایک منٹ اہم ہوتا ہے۔",
+        "اس لیے محراب ہر ادارے کا اپنا طریقہ — اس کے زاویے، احتیاطی وقفے اور گول کرنے کا اصول — دوبارہ بناتا ہے، اسے آپ کے فون پر شمار کرتا ہے اور ہر وقت کو شائع شدہ جدول سے ملاتا ہے: ہر جگہ، ہر دن۔ کوئی طریقہ تبھی استعمال ہوتا ہے جب ایک بھی وقت نہ ہٹے۔"
+      ],
+      "cards": [
+        {
+          "h3": "خود جانچیں",
+          "p": "طریقے، جانچ اور اس کا ریکارڈ [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods) میں سب کے لیے کھلے ہیں۔ آخری جانچ: {fig:total.checkedAtLong}۔"
+        },
+        {
+          "h3": "کوئی وقت آپ کی مسجد سے مختلف ہے؟",
+          "p": "شہر، تاریخ، نماز اور چھپا ہوا وقت [رپورٹ فارم](https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml) میں لکھیں۔ اگر آپ کی مسجد اپنے اوقات رکھتی ہے تو ایپ میں ہر نماز کا الگ فرق انہیں ملا دیتا ہے۔"
+        },
+        {
+          "h3": "شائع شدہ جدول، جیسے چھپے ہیں",
+          "p": "سنگاپور (MUIS)، ملائیشیا (JAKIM) اور Türkiye Takvimi شمار نہیں کیے جاتے: محراب ان کے اپنے شائع شدہ جدول منٹ بہ منٹ دکھاتا ہے۔ یہ اوپر کی جانچ کا حصہ نہیں ہیں۔ باقی ہر جگہ اوقات AlAdhan سے یا آپ کے منتخب کردہ حسابی طریقے سے آتے ہیں۔"
+        },
+        {
+          "h3": "آزاد",
+          "p": "محراب یہاں مذکور کسی ادارے سے وابستہ نہیں اور نہ کسی کا توثیق یافتہ ہے۔ یہ ان کے شائع شدہ جدولوں سے مطابقت رکھتا ہے؛ ان کی طرف سے بات نہیں کرتا۔"
+        }
+      ],
+      "table": {
+        "head": [
+          "جس کے شائع شدہ جدول سے مطابقت ہے",
+          "مقامات",
+          "جانچے گئے اوقات",
+          "چھپے ہوئے منٹ سے ہٹے ہوئے",
+          "جانچ کی مدت"
+        ],
+        "caption": "ہر وہ وقت جس سے ہر طریقہ ملایا گیا ہے",
+        "total": "کل",
+        "checked": "آخری جانچ",
+        "names": {
+          "sweden": [
+            "سویڈن",
+            "سویڈن کی اسلامی انجمن کے جدول"
+          ],
+          "sweden-diyanet": [
+            "",
+            "سویڈن کے لیے دیانت کے جدول"
+          ],
+          "diyanet": [
+            "دیانت",
+            "دیانت کے جدول، ترکی اور دنیا بھر"
+          ],
+          "morocco": [
+            "مراکش",
+            "وزارتِ اوقاف و اسلامی امور"
+          ],
+          "algeria": [
+            "الجزائر",
+            "وزارتِ مذہبی امور و اوقاف"
+          ],
+          "indonesia": [
+            "انڈونیشیا",
+            "Kemenag"
+          ]
+        }
+      }
     }
   },
   "id": {
@@ -1157,6 +1493,26 @@
         {
           "q": "Perangkat apa saja yang didukung?",
           "a": "iPhone, iPad, Android, dan Mac. Di Mac, pasang melalui Homebrew."
+        },
+        {
+          "q": "Mengapa waktu di Mihrab berbeda dari aplikasi lain?",
+          "a": "Kebanyakan aplikasi memakai metode umum dan meleset satu menit atau lebih dari jadwal yang diikuti masjid Anda. Di tempat berlakunya jadwal Kemenag, Diyanet, kementerian Maroko dan Aljazair, atau jadwal Swedia, Mihrab memberi menit yang tercetak: metode milik otoritas itu sendiri, diperiksa hari demi hari terhadap jadwal yang diterbitkannya. Di tempat lain Mihrab memakai AlAdhan atau metode yang Anda pilih."
+        },
+        {
+          "q": "Apa yang terjadi setelah tanggal terakhir jadwal yang diterbitkan?",
+          "a": "Metode berjalan sendiri, tanpa daftar koreksinya. Pada waktu-waktu yang telah diperiksa, metode saja sudah tepat pada menit yang tercetak kecuali untuk sebagian kecil, dan bagian itu meleset satu menit, tidak pernah lebih; aplikasi memberitahukannya di halaman Hari Ini. Begitu bulan-bulan berikutnya diterbitkan dan diperiksa, daftar baru sampai ke aplikasi tanpa pembaruan."
+        },
+        {
+          "q": "Bagaimana saya memeriksa waktunya sendiri?",
+          "a": "Bandingkan satu pekan tampilan bulanan Mihrab dengan jadwal tercetak dari otoritas Anda. Metode, skrip yang memeriksa setiap waktu, dan catatan yang dihasilkannya terbuka untuk umum di repositori mihrab-methods di GitHub."
+        },
+        {
+          "q": "Apakah Mihrab berafiliasi dengan Kemenag atau kementerian lain?",
+          "a": "Tidak. Mihrab independen dan tidak berafiliasi dengan maupun didukung oleh otoritas mana pun yang jadwalnya dicocokkan. Untuk segala hal tentang waktunya sendiri, terbitan otoritas itulah rujukannya."
+        },
+        {
+          "q": "Apakah Mihrab melacak lokasi saya?",
+          "a": "Tidak. Tidak ada analitik, jaringan iklan, maupun akun. Koordinat hanya keluar dari ponsel dalam dua permintaan, tidak satu pun ke pengembang: ke AlAdhan bila itu sumber waktu Anda, dan, dengan lokasi otomatis, ke OpenStreetMap untuk menamai kota Anda, dibulatkan sekitar satu kilometer. Pilih perhitungan di perangkat dan masukkan kota Anda secara manual, maka kedua permintaan itu tidak dilakukan."
         }
       ]
     },
@@ -1182,7 +1538,8 @@
       "source": "Kode sumber di GitHub",
       "built": "Mihrab {v}, dibuat oleh Hassan El Ghamri.",
       "banner": "Bersama Palestina.",
-      "bannerMore": "Ke mana berdonasi, apa yang diboikot, dan cara mengikuti kabarnya."
+      "bannerMore": "Ke mana berdonasi, apa yang diboikot, dan cara mengikuti kabarnya.",
+      "allDownloads": "Windows, Linux, F-Droid, dan web"
     },
     "shots": {
       "eyebrow": "Tangkapan layar",
@@ -1317,6 +1674,80 @@
       "h2": "Apa kata mereka",
       "note": "Lima bintang, dengan kata-kata mereka sendiri — seperti yang mereka tulis di Google Play dan App Store.",
       "translated": "Terjemahan"
+    },
+    "nav": {
+      "label": "Bagian",
+      "install": "Pasang",
+      "accuracy": "Akurasi",
+      "screenshots": "Tangkapan layar",
+      "features": "Fitur",
+      "privacy": "Privasi",
+      "faq": "Pertanyaan"
+    },
+    "accuracy": {
+      "review": "native",
+      "eyebrow": "Akurasi",
+      "h2": "Tepat sampai menit yang tercetak",
+      "lede": [
+        "Kebanyakan aplikasi salat menghitung waktu dengan metode umum dan meleset satu menit atau lebih dari jadwal yang diikuti masjid Anda. Di akhir Subuh, saat Magrib, dan di awal puasa, menit itulah yang menentukan.",
+        "Karena itu Mihrab mereproduksi metode milik tiap otoritas — sudut, ihtiyat, dan pembulatannya —, menghitungnya di ponsel Anda, dan memeriksa setiap waktu terhadap jadwal yang diterbitkan: setiap tempat, setiap hari. Sebuah metode hanya dipakai bila tidak ada satu waktu pun yang meleset."
+      ],
+      "cards": [
+        {
+          "h3": "Periksa sendiri",
+          "p": "Metode, pemeriksaan, dan catatannya terbuka untuk umum di [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods). Terakhir diperiksa {fig:total.checkedAtLong}."
+        },
+        {
+          "h3": "Ada waktu yang berbeda dari masjid Anda?",
+          "p": "Sebutkan kota, tanggal, salat, dan waktu yang tercetak di [formulir laporan](https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml). Jika masjid Anda memakai waktunya sendiri, penyesuaian per salat di aplikasi dapat menyamakannya."
+        },
+        {
+          "h3": "Tabel yang diterbitkan, dipakai apa adanya",
+          "p": "Singapura (MUIS), Malaysia (JAKIM), dan Türkiye Takvimi tidak dihitung: Mihrab menampilkan tabel yang mereka terbitkan sendiri, menit demi menit. Ketiganya bukan bagian dari pemeriksaan di atas. Di tempat lain, waktu berasal dari AlAdhan atau metode perhitungan yang Anda pilih."
+        },
+        {
+          "h3": "Independen",
+          "p": "Mihrab tidak berafiliasi dengan dan tidak didukung oleh otoritas mana pun yang disebut di sini. Mihrab cocok dengan jadwal yang mereka terbitkan; Mihrab tidak berbicara atas nama mereka."
+        }
+      ],
+      "table": {
+        "head": [
+          "Cocok dengan jadwal yang diterbitkan oleh",
+          "Tempat",
+          "Waktu diperiksa",
+          "Meleset dari menit tercetak",
+          "Rentang pemeriksaan"
+        ],
+        "caption": "Semua waktu yang telah dibandingkan dengan tiap metode",
+        "total": "Total",
+        "checked": "Terakhir diperiksa",
+        "names": {
+          "sweden": [
+            "Swedia",
+            "tabel Asosiasi Islam Swedia"
+          ],
+          "sweden-diyanet": [
+            "",
+            "tabel Diyanet untuk Swedia"
+          ],
+          "diyanet": [
+            "Diyanet",
+            "tabel Diyanet, Turki dan seluruh dunia"
+          ],
+          "morocco": [
+            "Maroko",
+            "Kementerian Habous dan Urusan Islam"
+          ],
+          "algeria": [
+            "Aljazair",
+            "Kementerian Urusan Agama dan Wakaf"
+          ],
+          "indonesia": [
+            "Indonesia",
+            "Kemenag"
+          ]
+        }
+      }
     }
   },
   "de": {
@@ -1421,6 +1852,26 @@
         {
           "q": "Welche Geräte werden unterstützt?",
           "a": "iPhone, iPad, Android und Mac. Auf dem Mac per Homebrew installieren."
+        },
+        {
+          "q": "Warum weichen die Zeiten in Mihrab von anderen Apps ab?",
+          "a": "Die meisten Apps nutzen eine allgemeine Methode und liegen eine Minute oder mehr neben dem Zeitplan, dem Ihre Moschee folgt. Wo der Zeitplan der Diyanet, der Ministerien Marokkos und Algeriens, von Kemenag oder der schwedische Zeitplan gilt, gibt Mihrab die gedruckte Minute an: die eigene Methode der Behörde, Tag für Tag gegen ihren veröffentlichten Zeitplan geprüft. Anderswo nutzt die App AlAdhan oder die Methode Ihrer Wahl."
+        },
+        {
+          "q": "Was passiert nach dem letzten veröffentlichten Datum eines Zeitplans?",
+          "a": "Die Methode rechnet allein weiter, ohne ihre Korrekturliste. Über die geprüften Zeiten trifft die Methode allein die gedruckte Minute bis auf einen kleinen Bruchteil, und dieser weicht um eine Minute ab, nie mehr; die App weist auf „Heute“ darauf hin. Sobald die nächsten Monate veröffentlicht und geprüft sind, erreicht die neue Liste die App ohne Update."
+        },
+        {
+          "q": "Wie kann ich die Zeiten selbst prüfen?",
+          "a": "Vergleichen Sie eine Woche der Monatsansicht von Mihrab mit dem gedruckten Zeitplan Ihrer Behörde. Die Methoden, das Skript, das jede Zeit prüft, und sein Protokoll sind öffentlich im Repository mihrab-methods auf GitHub."
+        },
+        {
+          "q": "Ist Mihrab mit der Diyanet oder einem Ministerium verbunden?",
+          "a": "Nein. Mihrab ist unabhängig und mit keiner Behörde verbunden, mit deren Zeitplan die App übereinstimmt, und wird von keiner unterstützt. Für alles, was die Zeiten selbst betrifft, ist die Veröffentlichung der Behörde maßgeblich."
+        },
+        {
+          "q": "Verfolgt Mihrab meinen Standort?",
+          "a": "Nein. Es gibt keine Analytik, kein Werbenetzwerk und kein Konto. Koordinaten verlassen das Telefon nur in zwei Anfragen, keine davon an den Entwickler: an AlAdhan, wo es die Quelle Ihrer Zeiten ist, und bei automatischem Standort an OpenStreetMap, um Ihren Ort zu benennen, auf etwa einen Kilometer gerundet. Wählen Sie die Berechnung auf dem Gerät und geben Sie Ihren Ort von Hand ein, entfällt beides."
         }
       ]
     },
@@ -1446,7 +1897,8 @@
       "source": "Quellcode auf GitHub",
       "built": "Mihrab {v}, gebaut von Hassan El Ghamri.",
       "banner": "Solidarität mit Palästina.",
-      "bannerMore": "Wohin spenden, was boykottieren, wie informiert bleiben."
+      "bannerMore": "Wohin spenden, was boykottieren, wie informiert bleiben.",
+      "allDownloads": "Windows, Linux, F-Droid und im Browser"
     },
     "shots": {
       "eyebrow": "Bildschirmfotos",
@@ -1562,6 +2014,80 @@
       "h2": "Was Nutzer schreiben",
       "note": "Fünf Sterne, in ihren eigenen Worten — so, wie sie sie bei Google Play und im App Store geschrieben haben.",
       "translated": "Übersetzt"
+    },
+    "nav": {
+      "label": "Abschnitte",
+      "install": "Installieren",
+      "accuracy": "Genauigkeit",
+      "screenshots": "Screenshots",
+      "features": "Funktionen",
+      "privacy": "Datenschutz",
+      "faq": "Fragen"
+    },
+    "accuracy": {
+      "review": "native",
+      "eyebrow": "Genauigkeit",
+      "h2": "Auf die gedruckte Minute",
+      "lede": [
+        "Die meisten Gebets-Apps berechnen die Zeiten mit einer allgemeinen Methode und liegen eine Minute oder mehr neben dem Zeitplan, dem Ihre Moschee folgt. Am Ende von Fajr, zum Maghrib und zu Beginn eines Fastentags ist es genau diese Minute, auf die es ankommt.",
+        "Deshalb bildet Mihrab die eigene Methode jeder Behörde nach — ihre Winkel, Sicherheitsabstände und Rundung —, berechnet sie auf Ihrem Telefon und prüft jede Zeit gegen den veröffentlichten Zeitplan: jeden Ort, jeden Tag. Eine Methode wird nur verwendet, wenn keine Zeit abweicht."
+      ],
+      "cards": [
+        {
+          "h3": "Selbst nachprüfen",
+          "p": "Die Methoden, die Prüfung und ihr Protokoll sind öffentlich in [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods). Zuletzt geprüft am {fig:total.checkedAtLong}."
+        },
+        {
+          "h3": "Eine Zeit weicht von Ihrer Moschee ab?",
+          "p": "Nennen Sie Stadt, Datum, Gebet und die gedruckte Zeit im [Meldeformular](https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml). Führt Ihre Moschee eigene Zeiten, gleicht ein Versatz je Gebet in der App sie an."
+        },
+        {
+          "h3": "Veröffentlichte Tabellen, wie gedruckt",
+          "p": "Singapur (MUIS), Malaysia (JAKIM) und Türkiye Takvimi werden nicht berechnet: Mihrab zeigt deren eigene veröffentlichte Tabellen, Minute für Minute. Sie sind nicht Teil der Prüfung oben. Überall sonst kommen die Zeiten von AlAdhan oder aus einer Berechnungsmethode Ihrer Wahl."
+        },
+        {
+          "h3": "Unabhängig",
+          "p": "Mihrab ist mit keiner der hier genannten Behörden verbunden und wird von keiner unterstützt. Die App stimmt mit ihren veröffentlichten Zeitplänen überein; sie spricht nicht für sie."
+        }
+      ],
+      "table": {
+        "head": [
+          "Stimmt überein mit dem veröffentlichten Zeitplan von",
+          "Orte",
+          "Geprüfte Zeiten",
+          "Neben der gedruckten Minute",
+          "Geprüfter Zeitraum"
+        ],
+        "caption": "Jede Zeit, gegen die jede Methode geprüft wurde",
+        "total": "Gesamt",
+        "checked": "Zuletzt geprüft",
+        "names": {
+          "sweden": [
+            "Schweden",
+            "Tabellen des Islamischen Verbands in Schweden"
+          ],
+          "sweden-diyanet": [
+            "",
+            "Tabellen der Diyanet für Schweden"
+          ],
+          "diyanet": [
+            "Diyanet",
+            "Tabellen der Diyanet, Türkei und weltweit"
+          ],
+          "morocco": [
+            "Marokko",
+            "Ministerium für Habous und islamische Angelegenheiten"
+          ],
+          "algeria": [
+            "Algerien",
+            "Ministerium für religiöse Angelegenheiten und Wakf"
+          ],
+          "indonesia": [
+            "Indonesien",
+            "Kemenag"
+          ]
+        }
+      }
     }
   },
   "fr": {
@@ -1666,6 +2192,26 @@
         {
           "q": "Quels appareils sont pris en charge ?",
           "a": "iPhone, iPad, Android et Mac. Sur Mac, l'installation se fait avec Homebrew."
+        },
+        {
+          "q": "Pourquoi les horaires de Mihrab diffèrent-ils de ceux d’autres applications ?",
+          "a": "La plupart des applications utilisent une méthode générale et tombent à une minute ou plus du calendrier que suit votre mosquée. Là où s’applique le calendrier de la Diyanet, des ministères du Maroc et de l’Algérie, du Kemenag ou celui de la Suède, Mihrab donne la minute imprimée : la méthode propre à l’autorité, vérifiée jour après jour par rapport à son calendrier publié. Ailleurs, l’application utilise AlAdhan ou la méthode de votre choix."
+        },
+        {
+          "q": "Que se passe-t-il après la dernière date publiée d’un calendrier ?",
+          "a": "La méthode continue seule, sans sa liste de corrections. Sur les horaires vérifiés, la méthode seule tombe sur la minute imprimée, à une petite fraction près, et celle-ci s’écarte d’une minute, jamais plus ; l’application le signale dans « Aujourd’hui ». Dès que les mois suivants sont publiés et vérifiés, la nouvelle liste arrive dans l’application sans mise à jour."
+        },
+        {
+          "q": "Comment vérifier les horaires moi-même ?",
+          "a": "Comparez une semaine de la vue mensuelle de Mihrab avec le calendrier imprimé de votre autorité. Les méthodes, le script qui vérifie chaque horaire et le relevé qu’il produit sont publics dans le dépôt mihrab-methods sur GitHub."
+        },
+        {
+          "q": "Mihrab est-il affilié à la Diyanet ou à un ministère ?",
+          "a": "Non. Mihrab est indépendant : il n’est affilié à aucune autorité dont il suit le calendrier, ni approuvé par elle. Pour tout ce qui concerne les horaires eux-mêmes, la publication de l’autorité fait foi."
+        },
+        {
+          "q": "Mihrab suit-il ma position ?",
+          "a": "Non. Il n’y a ni statistiques, ni réseau publicitaire, ni compte. Les coordonnées ne quittent le téléphone que dans deux requêtes, aucune vers le développeur : vers AlAdhan lorsqu’il est la source de vos horaires, et, avec la position automatique, vers OpenStreetMap pour nommer votre ville, arrondies à environ un kilomètre. Choisissez le calcul sur l’appareil et saisissez votre ville à la main : aucune des deux requêtes n’est faite."
         }
       ]
     },
@@ -1691,7 +2237,8 @@
       "source": "Code source sur GitHub",
       "built": "Mihrab {v}, réalisé par Hassan El Ghamri.",
       "banner": "Solidarité avec la Palestine.",
-      "bannerMore": "Où faire un don, quoi boycotter, comment rester informé."
+      "bannerMore": "Où faire un don, quoi boycotter, comment rester informé.",
+      "allDownloads": "Windows, Linux, F-Droid et le web"
     },
     "shots": {
       "eyebrow": "Captures d’écran",
@@ -1833,6 +2380,80 @@
       "h2": "Ce qu’en disent les utilisateurs",
       "note": "Cinq étoiles, dans leurs mots — tels qu’ils les ont écrits sur Google Play et l’App Store.",
       "translated": "Traduit"
+    },
+    "nav": {
+      "label": "Sections",
+      "install": "Installer",
+      "accuracy": "Précision",
+      "screenshots": "Captures",
+      "features": "Fonctions",
+      "privacy": "Vie privée",
+      "faq": "Questions"
+    },
+    "accuracy": {
+      "review": "native",
+      "eyebrow": "Précision",
+      "h2": "À la minute imprimée",
+      "lede": [
+        "La plupart des applications de prière calculent les horaires avec une méthode générale et tombent à une minute ou plus du calendrier que suit votre mosquée. À la fin du Fajr, au Maghrib et au début d’un jour de jeûne, c’est cette minute qui compte.",
+        "Mihrab reproduit donc la méthode propre à chaque autorité — ses angles, ses marges et son arrondi —, la calcule sur votre téléphone et vérifie chaque horaire par rapport au calendrier publié : chaque lieu, chaque jour. Une méthode n’est utilisée que si aucun horaire ne s’en écarte."
+      ],
+      "cards": [
+        {
+          "h3": "Vérifiez vous-même",
+          "p": "Les méthodes, la vérification et son relevé sont publics dans [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods). Dernière vérification : {fig:total.checkedAtLong}."
+        },
+        {
+          "h3": "Un horaire diffère de celui de votre mosquée ?",
+          "p": "Indiquez la ville, la date, la prière et l’horaire imprimé dans [le formulaire de signalement](https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml). Si votre mosquée a ses propres horaires, un décalage par prière dans l’application permet de les suivre."
+        },
+        {
+          "h3": "Tables publiées, reprises telles quelles",
+          "p": "Singapour (MUIS), la Malaisie (JAKIM) et Türkiye Takvimi ne sont pas calculés : Mihrab affiche leurs propres tables publiées, minute pour minute. Elles ne font pas partie de la vérification ci-dessus. Partout ailleurs, les horaires viennent d’AlAdhan ou d’une méthode de calcul de votre choix."
+        },
+        {
+          "h3": "Indépendant",
+          "p": "Mihrab n’est affilié à aucune des autorités citées ici, ni approuvé par elles. L’application concorde avec leurs calendriers publiés ; elle ne parle pas en leur nom."
+        }
+      ],
+      "table": {
+        "head": [
+          "Concorde avec le calendrier publié par",
+          "Lieux",
+          "Horaires vérifiés",
+          "Hors de la minute imprimée",
+          "Période vérifiée"
+        ],
+        "caption": "Tous les horaires auxquels chaque méthode a été comparée",
+        "total": "Total",
+        "checked": "Dernière vérification",
+        "names": {
+          "sweden": [
+            "Suède",
+            "les tables de l’Association islamique de Suède"
+          ],
+          "sweden-diyanet": [
+            "",
+            "les tables de la Diyanet pour la Suède"
+          ],
+          "diyanet": [
+            "Diyanet",
+            "les tables de la Diyanet, Turquie et monde"
+          ],
+          "morocco": [
+            "Maroc",
+            "le ministère des Habous et des Affaires islamiques"
+          ],
+          "algeria": [
+            "Algérie",
+            "le ministère des Affaires religieuses et des Wakfs"
+          ],
+          "indonesia": [
+            "Indonésie",
+            "Kemenag"
+          ]
+        }
+      }
     }
   },
   "es": {
@@ -1937,6 +2558,26 @@
         {
           "q": "¿Qué dispositivos admite?",
           "a": "iPhone, iPad, Android y Mac. En Mac se instala con Homebrew."
+        },
+        {
+          "q": "¿Por qué los horarios de Mihrab difieren de los de otras aplicaciones?",
+          "a": "La mayoría de las aplicaciones usan un método general y quedan a un minuto o más del calendario que sigue tu mezquita. Donde rige el calendario de la Diyanet, de los ministerios de Marruecos y Argelia, de Kemenag o el de Suecia, Mihrab da el minuto impreso: el método propio de la autoridad, comprobado día a día con su calendario publicado. En otros lugares usa AlAdhan o el método que elijas."
+        },
+        {
+          "q": "¿Qué pasa después de la última fecha publicada de un calendario?",
+          "a": "El método sigue solo, sin su lista de correcciones. En los horarios comprobados, el método por sí solo da el minuto impreso salvo en una pequeña fracción, y esta se desvía un minuto, nunca más; la aplicación lo indica en «Hoy». Cuando se publican y comprueban los meses siguientes, la nueva lista llega a la aplicación sin actualizarla."
+        },
+        {
+          "q": "¿Cómo puedo comprobar los horarios yo mismo?",
+          "a": "Compara una semana de la vista mensual de Mihrab con el calendario impreso de tu autoridad. Los métodos, el script que comprueba cada horario y el registro que escribe son públicos en el repositorio mihrab-methods en GitHub."
+        },
+        {
+          "q": "¿Está Mihrab afiliado a la Diyanet o a algún ministerio?",
+          "a": "No. Mihrab es independiente y no está afiliado a ninguna autoridad con cuyo calendario coincide, ni cuenta con su respaldo. Para todo lo relativo a los horarios en sí, la referencia es la publicación de la propia autoridad."
+        },
+        {
+          "q": "¿Mihrab rastrea mi ubicación?",
+          "a": "No. No hay analítica, ni red publicitaria, ni cuenta. Las coordenadas salen del teléfono solo en dos peticiones, ninguna al desarrollador: a AlAdhan cuando es la fuente de tus horarios y, con la ubicación automática, a OpenStreetMap para nombrar tu ciudad, redondeadas a un kilómetro aproximadamente. Elige el cálculo en el dispositivo e introduce tu ciudad a mano, y no se hace ninguna de las dos."
         }
       ]
     },
@@ -1962,7 +2603,8 @@
       "source": "Código en GitHub",
       "built": "Mihrab {v}, creada por Hassan El Ghamri.",
       "banner": "Con Palestina.",
-      "bannerMore": "Dónde donar, qué boicotear y cómo mantenerse informado."
+      "bannerMore": "Dónde donar, qué boicotear y cómo mantenerse informado.",
+      "allDownloads": "Windows, Linux, F-Droid y la web"
     },
     "shots": {
       "eyebrow": "Capturas de pantalla",
@@ -2078,6 +2720,80 @@
       "h2": "Lo que escribe la gente",
       "note": "Cinco estrellas, con sus palabras — tal como las escribieron en Google Play y en la App Store.",
       "translated": "Traducido"
+    },
+    "nav": {
+      "label": "Secciones",
+      "install": "Instalar",
+      "accuracy": "Precisión",
+      "screenshots": "Capturas",
+      "features": "Funciones",
+      "privacy": "Privacidad",
+      "faq": "Preguntas"
+    },
+    "accuracy": {
+      "review": "native",
+      "eyebrow": "Precisión",
+      "h2": "Al minuto impreso",
+      "lede": [
+        "La mayoría de las aplicaciones de oración calculan los horarios con un método general y quedan a un minuto o más del calendario que sigue tu mezquita. Al final del Fajr, en el Magrib y al empezar un día de ayuno, ese minuto es el que cuenta.",
+        "Por eso Mihrab reproduce el método propio de cada autoridad — sus ángulos, márgenes y redondeo —, lo calcula en tu teléfono y comprueba cada horario con el calendario publicado: cada lugar, cada día. Un método solo se usa cuando ningún horario se desvía."
+      ],
+      "cards": [
+        {
+          "h3": "Compruébalo tú mismo",
+          "p": "Los métodos, la comprobación y su registro son públicos en [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods). Última comprobación: {fig:total.checkedAtLong}."
+        },
+        {
+          "h3": "¿Un horario difiere del de tu mezquita?",
+          "p": "Indica la ciudad, la fecha, la oración y lo que estaba impreso en [el formulario de aviso](https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml). Si tu mezquita tiene sus propios horarios, un ajuste por oración en la aplicación los iguala."
+        },
+        {
+          "h3": "Tablas publicadas, tal como se imprimen",
+          "p": "Singapur (MUIS), Malasia (JAKIM) y Türkiye Takvimi no se calculan: Mihrab muestra sus propias tablas publicadas, minuto a minuto. No forman parte de la comprobación de arriba. En el resto del mundo, los horarios vienen de AlAdhan o de un método de cálculo que elijas."
+        },
+        {
+          "h3": "Independiente",
+          "p": "Mihrab no está afiliado a ninguna de las autoridades nombradas aquí ni cuenta con su respaldo. Coincide con sus calendarios publicados; no habla en su nombre."
+        }
+      ],
+      "table": {
+        "head": [
+          "Coincide con el calendario publicado por",
+          "Lugares",
+          "Horarios comprobados",
+          "Fuera del minuto impreso",
+          "Periodo comprobado"
+        ],
+        "caption": "Todos los horarios con los que se ha comprobado cada método",
+        "total": "Total",
+        "checked": "Última comprobación",
+        "names": {
+          "sweden": [
+            "Suecia",
+            "las tablas de la Asociación Islámica de Suecia"
+          ],
+          "sweden-diyanet": [
+            "",
+            "las tablas de la Diyanet para Suecia"
+          ],
+          "diyanet": [
+            "Diyanet",
+            "las tablas de la Diyanet, Turquía y el mundo"
+          ],
+          "morocco": [
+            "Marruecos",
+            "el Ministerio de Habices y Asuntos Islámicos"
+          ],
+          "algeria": [
+            "Argelia",
+            "el Ministerio de Asuntos Religiosos y Wakfs"
+          ],
+          "indonesia": [
+            "Indonesia",
+            "Kemenag"
+          ]
+        }
+      }
     }
   },
   "ru": {
@@ -2182,6 +2898,26 @@
         {
           "q": "Какие устройства поддерживаются?",
           "a": "iPhone, iPad, Android и Mac. На Mac устанавливается через Homebrew."
+        },
+        {
+          "q": "Почему время в Mihrab отличается от других приложений?",
+          "a": "Большинство приложений используют общий метод и расходятся на минуту и больше с расписанием, которому следует ваша мечеть. Там, где действует расписание Диянета, министерств Марокко и Алжира, Kemenag или расписание Швеции, Mihrab даёт напечатанную минуту: собственный метод ведомства, день за днём сверенный с его опубликованным расписанием. В остальных местах используется AlAdhan или выбранный вами метод."
+        },
+        {
+          "q": "Что происходит после последней опубликованной даты расписания?",
+          "a": "Метод продолжает работать сам, без списка поправок. На проверенных значениях метод сам по себе попадает в напечатанную минуту, кроме небольшой доли, и она расходится на одну минуту, не больше; приложение сообщает об этом на экране «Сегодня». Когда следующие месяцы опубликованы и проверены, новый список приходит в приложение без обновления."
+        },
+        {
+          "q": "Как проверить время самостоятельно?",
+          "a": "Сравните неделю из месячного вида Mihrab с напечатанным расписанием вашего ведомства. Методы, скрипт, проверяющий каждое время, и его протокол открыты в репозитории mihrab-methods на GitHub."
+        },
+        {
+          "q": "Связан ли Mihrab с Диянетом или каким-либо министерством?",
+          "a": "Нет. Mihrab независим: он не связан ни с одним ведомством, с расписанием которого совпадает, и не одобрен им. Во всём, что касается самого времени, ориентиром служит публикация ведомства."
+        },
+        {
+          "q": "Отслеживает ли Mihrab моё местоположение?",
+          "a": "Нет. Нет ни аналитики, ни рекламной сети, ни учётной записи. Координаты покидают телефон только в двух запросах, и ни один не идёт разработчику: в AlAdhan, когда он служит источником времени, и, при автоматическом определении места, в OpenStreetMap, чтобы назвать ваш город, с округлением примерно до километра. Выберите расчёт на устройстве и введите город вручную — и ни один запрос не отправляется."
         }
       ]
     },
@@ -2207,7 +2943,8 @@
       "source": "Исходный код на GitHub",
       "built": "Mihrab {v}, разработчик — Hassan El Ghamri.",
       "banner": "Вместе с Палестиной.",
-      "bannerMore": "Куда пожертвовать, что бойкотировать и как следить за новостями."
+      "bannerMore": "Куда пожертвовать, что бойкотировать и как следить за новостями.",
+      "allDownloads": "Windows, Linux, F-Droid и веб-версия"
     },
     "shots": {
       "eyebrow": "Скриншоты",
@@ -2323,6 +3060,80 @@
       "h2": "Что пишут люди",
       "note": "Пять звёзд, их собственными словами — так, как они написали в Google Play и App Store.",
       "translated": "Перевод"
+    },
+    "nav": {
+      "label": "Разделы",
+      "install": "Установка",
+      "accuracy": "Точность",
+      "screenshots": "Скриншоты",
+      "features": "Возможности",
+      "privacy": "Приватность",
+      "faq": "Вопросы"
+    },
+    "accuracy": {
+      "review": "native",
+      "eyebrow": "Точность",
+      "h2": "До напечатанной минуты",
+      "lede": [
+        "Большинство приложений рассчитывают время намаза общим методом и расходятся на минуту и больше с расписанием, которому следует ваша мечеть. В конце фаджра, во время магриба и в начале поста важна именно эта минута.",
+        "Поэтому Mihrab воспроизводит собственный метод каждого ведомства — его углы, запасы и округление, — считает его на вашем телефоне и сверяет каждое время с опубликованным расписанием: каждое место, каждый день. Метод используется только тогда, когда не расходится ни одно время."
+      ],
+      "cards": [
+        {
+          "h3": "Проверьте сами",
+          "p": "Методы, проверка и её протокол открыты в [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods). Последняя проверка: {fig:total.checkedAtLong}."
+        },
+        {
+          "h3": "Время отличается от времени в вашей мечети?",
+          "p": "Укажите город, дату, намаз и напечатанное время в [форме сообщения](https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml). Если у вашей мечети своё расписание, поправка для каждого намаза в приложении подстроит время под него."
+        },
+        {
+          "h3": "Опубликованные таблицы — как напечатано",
+          "p": "Сингапур (MUIS), Малайзия (JAKIM) и Türkiye Takvimi не рассчитываются: Mihrab показывает их собственные опубликованные таблицы, минута в минуту. Они не входят в проверку выше. В остальных местах время берётся из AlAdhan или рассчитывается выбранным вами методом."
+        },
+        {
+          "h3": "Независимость",
+          "p": "Mihrab не связан ни с одним из названных здесь ведомств и не одобрен ими. Приложение совпадает с их опубликованными расписаниями; оно не говорит от их имени."
+        }
+      ],
+      "table": {
+        "head": [
+          "Совпадает с опубликованным расписанием",
+          "Места",
+          "Проверено значений",
+          "Мимо напечатанной минуты",
+          "Проверенный период"
+        ],
+        "caption": "Все значения, с которыми сверен каждый метод",
+        "total": "Всего",
+        "checked": "Последняя проверка",
+        "names": {
+          "sweden": [
+            "Швеция",
+            "таблицы Исламского союза Швеции"
+          ],
+          "sweden-diyanet": [
+            "",
+            "таблицы Диянета для Швеции"
+          ],
+          "diyanet": [
+            "Диянет",
+            "таблицы Диянета, Турция и мир"
+          ],
+          "morocco": [
+            "Марокко",
+            "Министерство хабусов и исламских дел"
+          ],
+          "algeria": [
+            "Алжир",
+            "Министерство по делам религий и вакуфов"
+          ],
+          "indonesia": [
+            "Индонезия",
+            "Kemenag"
+          ]
+        }
+      }
     }
   },
   "bn": {
@@ -2427,6 +3238,26 @@
         {
           "q": "কোন ডিভাইসে চলে?",
           "a": "আইফোন, আইপ্যাড, অ্যান্ড্রয়েড ও ম্যাক। ম্যাকে Homebrew দিয়ে ইনস্টল করুন।"
+        },
+        {
+          "q": "মিহরাবের সময় অন্য অ্যাপের থেকে আলাদা কেন?",
+          "a": "বেশিরভাগ অ্যাপ একটি সাধারণ পদ্ধতি ব্যবহার করে এবং আপনার মসজিদ যে সময়সূচি মানে তার থেকে এক মিনিট বা তার বেশি সরে যায়। যেখানে দিয়ানেত, মরক্কো ও আলজেরিয়ার মন্ত্রণালয়, Kemenag বা সুইডেনের সময়সূচি চলে, সেখানে মিহরাব ছাপা মিনিটটিই দেয়: কর্তৃপক্ষের নিজস্ব পদ্ধতি, যা দিন ধরে ধরে তার প্রকাশিত সময়সূচির সঙ্গে মিলিয়ে দেখা হয়েছে। অন্যত্র এটি AlAdhan বা আপনার বেছে নেওয়া পদ্ধতি ব্যবহার করে।"
+        },
+        {
+          "q": "সময়সূচির শেষ প্রকাশিত তারিখের পরে কী হয়?",
+          "a": "পদ্ধতিটি তার সংশোধন তালিকা ছাড়া একাই চলতে থাকে। যে সময়গুলোর সঙ্গে এটি মেলানো হয়েছে, সেখানে পদ্ধতিটি একাই সামান্য একটি অংশ বাদে ছাপা মিনিটে থাকে, আর সেই অংশ এক মিনিট সরে, তার বেশি কখনো নয়; অ্যাপ «আজ» পাতায় তা জানিয়ে দেয়। পরের মাসগুলো প্রকাশিত ও যাচাই হলে নতুন তালিকা আপডেট ছাড়াই অ্যাপে পৌঁছে যায়।"
+        },
+        {
+          "q": "আমি নিজে কীভাবে সময় যাচাই করব?",
+          "a": "মিহরাবের মাসের দৃশ্যের এক সপ্তাহ আপনার কর্তৃপক্ষের ছাপা সময়সূচির সঙ্গে মিলিয়ে দেখুন। পদ্ধতি, প্রতিটি সময় যাচাই করার স্ক্রিপ্ট এবং তার লেখা নথি GitHub-এ mihrab-methods ভাণ্ডারে সবার জন্য উন্মুক্ত।"
+        },
+        {
+          "q": "মিহরাব কি দিয়ানেত বা কোনো মন্ত্রণালয়ের সঙ্গে যুক্ত?",
+          "a": "না। মিহরাব স্বাধীন; যে কর্তৃপক্ষের সময়সূচির সঙ্গে এটি মেলে তার সঙ্গে এর সম্পর্ক নেই এবং সে একে অনুমোদনও করেনি। সময় নিয়ে যেকোনো বিষয়ে কর্তৃপক্ষের নিজস্ব প্রকাশনাই প্রামাণ্য।"
+        },
+        {
+          "q": "মিহরাব কি আমার অবস্থান অনুসরণ করে?",
+          "a": "না। কোনো অ্যানালিটিক্স, বিজ্ঞাপন নেটওয়ার্ক বা অ্যাকাউন্ট নেই। স্থানাঙ্ক ফোন থেকে বের হয় মাত্র দুটি অনুরোধে, যার কোনোটিই ডেভেলপারের কাছে যায় না: AlAdhan-এ, যখন সেটিই আপনার সময়ের উৎস, এবং স্বয়ংক্রিয় অবস্থান চালু থাকলে আপনার শহরের নাম জানতে OpenStreetMap-এ, প্রায় এক কিলোমিটারে গোল করে। ডিভাইসে হিসাব বেছে নিন এবং শহরের নাম নিজে লিখুন, তাহলে কোনো অনুরোধই পাঠানো হয় না।"
         }
       ]
     },
@@ -2452,7 +3283,8 @@
       "source": "GitHub-এ সোর্স",
       "built": "Mihrab {v}, নির্মাতা Hassan El Ghamri।",
       "banner": "ফিলিস্তিনের পাশে।",
-      "bannerMore": "কোথায় দান করবেন, কী বর্জন করবেন, কীভাবে খবর রাখবেন।"
+      "bannerMore": "কোথায় দান করবেন, কী বর্জন করবেন, কীভাবে খবর রাখবেন।",
+      "allDownloads": "Windows, Linux, F-Droid ও ওয়েব"
     },
     "shots": {
       "eyebrow": "স্ক্রিনশট",
@@ -2568,6 +3400,80 @@
       "h2": "মানুষ কী লেখেন",
       "note": "পাঁচ তারা, তাঁদের নিজের ভাষায় — যেমনটি তাঁরা Google Play ও App Store-এ লিখেছেন।",
       "translated": "অনুবাদ"
+    },
+    "nav": {
+      "label": "পাতার অংশ",
+      "install": "ইনস্টল",
+      "accuracy": "নির্ভুলতা",
+      "screenshots": "স্ক্রিনশট",
+      "features": "বৈশিষ্ট্য",
+      "privacy": "গোপনীয়তা",
+      "faq": "প্রশ্ন"
+    },
+    "accuracy": {
+      "review": "native",
+      "eyebrow": "নির্ভুলতা",
+      "h2": "ছাপা মিনিট পর্যন্ত",
+      "lede": [
+        "বেশিরভাগ নামাজের অ্যাপ একটি সাধারণ পদ্ধতিতে সময় হিসাব করে এবং আপনার মসজিদ যে সময়সূচি মানে তার থেকে এক মিনিট বা তার বেশি সরে যায়। ফজরের শেষে, মাগরিবে এবং রোজার শুরুতে ওই এক মিনিটই আসল।",
+        "তাই মিহরাব প্রতিটি কর্তৃপক্ষের নিজস্ব পদ্ধতি — তার কোণ, সতর্কতার ব্যবধান ও পূর্ণসংখ্যায় আনার নিয়ম — নতুন করে তৈরি করে, আপনার ফোনেই হিসাব করে এবং প্রতিটি সময় প্রকাশিত সময়সূচির সঙ্গে মিলিয়ে দেখে: প্রতিটি জায়গা, প্রতিটি দিন। একটি সময়ও না সরলে তবেই কোনো পদ্ধতি ব্যবহার করা হয়।"
+      ],
+      "cards": [
+        {
+          "h3": "নিজেই যাচাই করুন",
+          "p": "পদ্ধতি, যাচাই ও তার নথি [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)-এ সবার জন্য উন্মুক্ত। সর্বশেষ যাচাই: {fig:total.checkedAtLong}।"
+        },
+        {
+          "h3": "কোনো সময় আপনার মসজিদের সঙ্গে মিলছে না?",
+          "p": "শহর, তারিখ, নামাজ ও ছাপা সময়টি [রিপোর্ট ফর্মে](https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml) জানান। আপনার মসজিদ নিজস্ব সময় মানলে অ্যাপে প্রতিটি নামাজের আলাদা সমন্বয় তা মিলিয়ে দেয়।"
+        },
+        {
+          "h3": "প্রকাশিত সারণি, যেমন ছাপা আছে",
+          "p": "সিঙ্গাপুর (MUIS), মালয়েশিয়া (JAKIM) ও Türkiye Takvimi হিসাব করা হয় না: মিহরাব তাদের নিজেদের প্রকাশিত সারণিই মিনিট ধরে দেখায়। এগুলো উপরের যাচাইয়ের অংশ নয়। অন্য সব জায়গায় সময় আসে AlAdhan থেকে অথবা আপনার বেছে নেওয়া হিসাব পদ্ধতি থেকে।"
+        },
+        {
+          "h3": "স্বাধীন",
+          "p": "এখানে উল্লেখ করা কোনো কর্তৃপক্ষের সঙ্গে মিহরাবের সম্পর্ক নেই এবং কেউ একে অনুমোদনও করেনি। এটি তাদের প্রকাশিত সময়সূচির সঙ্গে মেলে; তাদের হয়ে কথা বলে না।"
+        }
+      ],
+      "table": {
+        "head": [
+          "যার প্রকাশিত সময়সূচির সঙ্গে মেলে",
+          "স্থান",
+          "যাচাই করা সময়",
+          "ছাপা মিনিটের বাইরে",
+          "যাচাইয়ের সময়কাল"
+        ],
+        "caption": "প্রতিটি পদ্ধতি যে সব সময়ের সঙ্গে মেলানো হয়েছে",
+        "total": "মোট",
+        "checked": "সর্বশেষ যাচাই",
+        "names": {
+          "sweden": [
+            "সুইডেন",
+            "সুইডেনের ইসলামি সংঘের সারণি"
+          ],
+          "sweden-diyanet": [
+            "",
+            "সুইডেনের জন্য দিয়ানেতের সারণি"
+          ],
+          "diyanet": [
+            "দিয়ানেত",
+            "দিয়ানেতের সারণি, তুরস্ক ও বিশ্বজুড়ে"
+          ],
+          "morocco": [
+            "মরক্কো",
+            "হাবুস ও ইসলাম বিষয়ক মন্ত্রণালয়"
+          ],
+          "algeria": [
+            "আলজেরিয়া",
+            "ধর্ম বিষয়ক ও ওয়াকফ মন্ত্রণালয়"
+          ],
+          "indonesia": [
+            "ইন্দোনেশিয়া",
+            "Kemenag"
+          ]
+        }
+      }
     }
   },
   "hi": {
@@ -2672,6 +3578,26 @@
         {
           "q": "किन उपकरणों पर चलता है?",
           "a": "आईफ़ोन, आईपैड, एंड्रॉइड और मैक। मैक पर Homebrew से इंस्टॉल करें।"
+        },
+        {
+          "q": "मिहराब के समय दूसरे ऐप से अलग क्यों हैं?",
+          "a": "ज़्यादातर ऐप एक सामान्य तरीक़ा इस्तेमाल करते हैं और उस समय-सारणी से एक मिनट या ज़्यादा हट जाते हैं जिस पर आपकी मस्जिद चलती है। जहाँ दियानेत, मोरक्को और अल्जीरिया के मंत्रालयों, Kemenag या स्वीडन की समय-सारणी चलती है, वहाँ मिहराब छपा हुआ मिनट देता है: संस्था का अपना तरीक़ा, जिसे दिन-ब-दिन उसकी प्रकाशित समय-सारणी से मिलाया गया है। बाक़ी जगह यह AlAdhan या आपका चुना हुआ तरीक़ा इस्तेमाल करता है।"
+        },
+        {
+          "q": "समय-सारणी की आख़िरी प्रकाशित तारीख़ के बाद क्या होता है?",
+          "a": "तरीक़ा अपनी सुधार-सूची के बिना अकेला चलता रहता है। जिन समयों से इसे मिलाया गया, उनमें तरीक़ा अकेला भी एक छोटे हिस्से को छोड़कर छपे हुए मिनट पर रहता है, और वह हिस्सा एक मिनट हटता है, उससे ज़्यादा कभी नहीं; ऐप «आज» पृष्ठ पर यह बता देता है। जब अगले महीने प्रकाशित होकर जाँच लिए जाते हैं, तो नई सूची बिना अपडेट के ऐप तक पहुँच जाती है।"
+        },
+        {
+          "q": "मैं समय ख़ुद कैसे जाँचूँ?",
+          "a": "मिहराब के महीने के दृश्य का एक हफ़्ता अपनी संस्था की छपी हुई समय-सारणी से मिलाएँ। तरीक़े, हर समय को जाँचने वाली स्क्रिप्ट और उसका लिखा रिकॉर्ड GitHub पर mihrab-methods रिपॉज़िटरी में सबके लिए खुले हैं।"
+        },
+        {
+          "q": "क्या मिहराब दियानेत या किसी मंत्रालय से जुड़ा है?",
+          "a": "नहीं। मिहराब स्वतंत्र है; जिस संस्था की समय-सारणी से यह मेल खाता है, उससे न जुड़ा है और न उसने इसे मान्यता दी है। समय से जुड़ी हर बात में संस्था का अपना प्रकाशन ही आधार है।"
+        },
+        {
+          "q": "क्या मिहराब मेरी लोकेशन पर नज़र रखता है?",
+          "a": "नहीं। न कोई एनालिटिक्स है, न विज्ञापन नेटवर्क, न खाता। निर्देशांक फ़ोन से सिर्फ़ दो अनुरोधों में बाहर जाते हैं, और कोई भी डेवलपर को नहीं जाता: AlAdhan को, जब वही आपके समय का स्रोत हो, और स्वचालित लोकेशन के साथ, आपके शहर का नाम जानने के लिए OpenStreetMap को, लगभग एक किलोमीटर तक पूर्णांकित करके। डिवाइस पर गणना चुनें और अपना शहर हाथ से लिखें, तो दोनों में से कोई अनुरोध नहीं भेजा जाता।"
         }
       ]
     },
@@ -2697,7 +3623,8 @@
       "source": "GitHub पर स्रोत",
       "built": "Mihrab {v}, निर्माता Hassan El Ghamri।",
       "banner": "फ़िलिस्तीन के साथ।",
-      "bannerMore": "कहाँ दान करें, किसका बहिष्कार करें, और ख़बर कैसे रखें।"
+      "bannerMore": "कहाँ दान करें, किसका बहिष्कार करें, और ख़बर कैसे रखें।",
+      "allDownloads": "Windows, Linux, F-Droid और वेब"
     },
     "shots": {
       "eyebrow": "स्क्रीनशॉट",
@@ -2813,6 +3740,80 @@
       "h2": "लोग क्या लिखते हैं",
       "note": "पाँच सितारे, उनके अपने शब्दों में — जैसा उन्होंने Google Play और App Store पर लिखा।",
       "translated": "अनुवाद"
+    },
+    "nav": {
+      "label": "पृष्ठ के भाग",
+      "install": "इंस्टॉल",
+      "accuracy": "सटीकता",
+      "screenshots": "स्क्रीनशॉट",
+      "features": "सुविधाएँ",
+      "privacy": "निजता",
+      "faq": "सवाल"
+    },
+    "accuracy": {
+      "review": "native",
+      "eyebrow": "सटीकता",
+      "h2": "छपे हुए मिनट तक",
+      "lede": [
+        "ज़्यादातर नमाज़ ऐप समय एक सामान्य तरीक़े से निकालते हैं और उस समय-सारणी से एक मिनट या ज़्यादा हट जाते हैं जिस पर आपकी मस्जिद चलती है। फ़ज्र के आख़िर में, मग़रिब पर और रोज़े की शुरुआत में वही एक मिनट मायने रखता है।",
+        "इसलिए मिहराब हर संस्था का अपना तरीक़ा — उसके कोण, एहतियाती अंतर और पूर्णांकन — फिर से बनाता है, उसे आपके फ़ोन पर गिनता है और हर समय को प्रकाशित समय-सारणी से मिलाता है: हर जगह, हर दिन। कोई तरीक़ा तभी इस्तेमाल होता है जब एक भी समय न हटे।"
+      ],
+      "cards": [
+        {
+          "h3": "ख़ुद जाँचें",
+          "p": "तरीक़े, जाँच और उसका रिकॉर्ड [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods) में सबके लिए खुले हैं। पिछली जाँच: {fig:total.checkedAtLong}।"
+        },
+        {
+          "h3": "कोई समय आपकी मस्जिद से अलग है?",
+          "p": "शहर, तारीख़, नमाज़ और छपा हुआ समय [रिपोर्ट फ़ॉर्म](https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml) में बताएँ। अगर आपकी मस्जिद अपने समय रखती है, तो ऐप में हर नमाज़ का अलग अंतर उन्हें मिला देता है।"
+        },
+        {
+          "h3": "प्रकाशित सारणियाँ, जैसी छपी हैं",
+          "p": "सिंगापुर (MUIS), मलेशिया (JAKIM) और Türkiye Takvimi की गणना नहीं की जाती: मिहराब उनकी अपनी प्रकाशित सारणियाँ मिनट-दर-मिनट दिखाता है। ये ऊपर की जाँच का हिस्सा नहीं हैं। बाक़ी हर जगह समय AlAdhan से या आपके चुने हुए गणना तरीक़े से आते हैं।"
+        },
+        {
+          "h3": "स्वतंत्र",
+          "p": "मिहराब यहाँ बताई गई किसी भी संस्था से जुड़ा नहीं है और न किसी ने इसे मान्यता दी है। यह उनकी प्रकाशित समय-सारणियों से मेल खाता है; उनकी ओर से नहीं बोलता।"
+        }
+      ],
+      "table": {
+        "head": [
+          "जिसकी प्रकाशित समय-सारणी से मेल है",
+          "जगहें",
+          "जाँचे गए समय",
+          "छपे हुए मिनट से हटे",
+          "जाँच की अवधि"
+        ],
+        "caption": "हर वह समय जिससे हर तरीक़ा मिलाया गया है",
+        "total": "कुल",
+        "checked": "पिछली जाँच",
+        "names": {
+          "sweden": [
+            "स्वीडन",
+            "स्वीडन के इस्लामी संघ की सारणियाँ"
+          ],
+          "sweden-diyanet": [
+            "",
+            "स्वीडन के लिए दियानेत की सारणियाँ"
+          ],
+          "diyanet": [
+            "दियानेत",
+            "दियानेत की सारणियाँ, तुर्किये और दुनिया भर"
+          ],
+          "morocco": [
+            "मोरक्को",
+            "हबूस और इस्लामी मामलों का मंत्रालय"
+          ],
+          "algeria": [
+            "अल्जीरिया",
+            "धार्मिक मामलों और वक़्फ़ का मंत्रालय"
+          ],
+          "indonesia": [
+            "इंडोनेशिया",
+            "Kemenag"
+          ]
+        }
+      }
     }
   },
   "zh": {
@@ -2917,6 +3918,26 @@
         {
           "q": "支持哪些设备？",
           "a": "iPhone、iPad、Android 和 Mac。Mac 上可用 Homebrew 安装。"
+        },
+        {
+          "q": "为什么 Mihrab 的时间与其他应用不同？",
+          "a": "多数应用使用一种通用方法，结果与你的清真寺所依据的时间表相差一分钟或更多。在适用 Diyanet、摩洛哥和阿尔及利亚的部委、Kemenag 或瑞典时间表的地方，Mihrab 给出的就是印出的那一分钟：采用机构自己的方法，并逐日与其公布的时间表核对。其他地方则使用 AlAdhan 或你选择的方法。"
+        },
+        {
+          "q": "时间表最后公布的日期之后会怎样？",
+          "a": "方法会在没有修正表的情况下继续单独计算。在已核对的时间里，方法本身除极小一部分外都落在印出的那一分钟上，而这一小部分只差一分钟，绝不会更多；应用会在“今日”页面上说明这一点。下一批月份公布并核对后，新的修正表无需更新应用即可送达。"
+        },
+        {
+          "q": "我怎样自己核对时间？",
+          "a": "把 Mihrab 月视图中的一周与你所依据机构印出的时间表对照。这些方法、核对每个时间的脚本以及它写下的记录，都公开在 GitHub 上的 mihrab-methods 仓库中。"
+        },
+        {
+          "q": "Mihrab 隶属于 Diyanet 或某个部委吗？",
+          "a": "不。Mihrab 是独立的，与其时间表相符的任何机构都没有隶属关系，也未获其认可。凡涉及时间本身的问题，都以该机构自己的公布为准。"
+        },
+        {
+          "q": "Mihrab 会追踪我的位置吗？",
+          "a": "不会。没有统计分析，没有广告网络，也没有账号。坐标只在两种请求中离开手机，且都不发给开发者：当 AlAdhan 是你的时间来源时发给 AlAdhan；使用自动定位时发给 OpenStreetMap 以查出你所在城镇的名称，并取整到约一公里。选择在设备上计算并手动输入城镇，这两种请求都不会发出。"
         }
       ]
     },
@@ -2942,7 +3963,8 @@
       "source": "GitHub 上的源码",
       "built": "Mihrab {v}，由 Hassan El Ghamri 开发。",
       "banner": "声援巴勒斯坦。",
-      "bannerMore": "去哪里捐助、抵制什么、如何持续关注。"
+      "bannerMore": "去哪里捐助、抵制什么、如何持续关注。",
+      "allDownloads": "Windows、Linux、F-Droid 和网页版"
     },
     "shots": {
       "eyebrow": "应用截图",
@@ -3058,6 +4080,80 @@
       "h2": "用户怎么说",
       "note": "五星评价，原话照录——来自 Google Play 和 App Store。",
       "translated": "译文"
+    },
+    "nav": {
+      "label": "页面导航",
+      "install": "安装",
+      "accuracy": "准确度",
+      "screenshots": "截图",
+      "features": "功能",
+      "privacy": "隐私",
+      "faq": "常见问题"
+    },
+    "accuracy": {
+      "review": "native",
+      "eyebrow": "准确度",
+      "h2": "精确到印出的那一分钟",
+      "lede": [
+        "多数礼拜应用用一种通用方法计算时间，结果与你的清真寺所依据的时间表相差一分钟或更多。在晨礼结束时、昏礼时和封斋开始时，要紧的正是这一分钟。",
+        "因此 Mihrab 重建每个机构自己的方法——它的角度、预留量和取整方式——在你的手机上计算，并把每一个时间与公布的时间表逐一核对：每个地点，每一天。只有没有任何时间出现偏差时，才会使用这种方法。"
+      ],
+      "cards": [
+        {
+          "h3": "自己核对",
+          "p": "这些方法、核对过程及其记录都公开在 [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)。最近一次核对：{fig:total.checkedAtLong}。"
+        },
+        {
+          "h3": "某个时间与你的清真寺不同？",
+          "p": "请在[报告表单](https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml)中写明城市、日期、哪一番礼拜以及印出的时间。如果你的清真寺有自己的时间，可以在应用中为每番礼拜单独设置偏移来对齐。"
+        },
+        {
+          "h3": "公布的时间表，照原样使用",
+          "p": "新加坡（MUIS）、马来西亚（JAKIM）和 Türkiye Takvimi 不经计算：Mihrab 逐分钟显示它们自己公布的时间表。它们不在上面的核对范围内。其他地区的时间来自 AlAdhan 或你选择的计算方法。"
+        },
+        {
+          "h3": "独立",
+          "p": "Mihrab 与这里提到的任何机构都没有隶属关系，也未获其认可。它与这些机构公布的时间表一致，但不代表它们发言。"
+        }
+      ],
+      "table": {
+        "head": [
+          "与其公布的时间表一致",
+          "地点",
+          "已核对的时间",
+          "偏离印出分钟的",
+          "核对范围"
+        ],
+        "caption": "每种方法核对过的全部时间",
+        "total": "合计",
+        "checked": "最近核对",
+        "names": {
+          "sweden": [
+            "瑞典",
+            "瑞典伊斯兰协会的时间表"
+          ],
+          "sweden-diyanet": [
+            "",
+            "Diyanet 的瑞典时间表"
+          ],
+          "diyanet": [
+            "Diyanet",
+            "Diyanet 的时间表，土耳其及全球"
+          ],
+          "morocco": [
+            "摩洛哥",
+            "宗教基金与伊斯兰事务部"
+          ],
+          "algeria": [
+            "阿尔及利亚",
+            "宗教事务与基金部"
+          ],
+          "indonesia": [
+            "印度尼西亚",
+            "Kemenag"
+          ]
+        }
+      }
     }
   }
 }

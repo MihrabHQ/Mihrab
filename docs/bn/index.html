@@ -47,7 +47,7 @@
   "name": "Mihrab: The Muslim Companion",
   "alternateName": "Mihrab",
   "applicationCategory": "LifestyleApplication",
-  "operatingSystem": "Android, iOS, iPadOS, macOS",
+  "operatingSystem": "Android, iOS, iPadOS, macOS, Windows, Linux",
   "softwareVersion": "2.37.0",
   "url": "https://mihrab.elghamri.se/bn/",
   "inLanguage": "bn",
@@ -110,6 +110,46 @@
         "@type": "Answer",
         "text": "আইফোন, আইপ্যাড, অ্যান্ড্রয়েড ও ম্যাক। ম্যাকে Homebrew দিয়ে ইনস্টল করুন।"
       }
+    },
+    {
+      "@type": "Question",
+      "name": "মিহরাবের সময় অন্য অ্যাপের থেকে আলাদা কেন?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "বেশিরভাগ অ্যাপ একটি সাধারণ পদ্ধতি ব্যবহার করে এবং আপনার মসজিদ যে সময়সূচি মানে তার থেকে এক মিনিট বা তার বেশি সরে যায়। যেখানে দিয়ানেত, মরক্কো ও আলজেরিয়ার মন্ত্রণালয়, Kemenag বা সুইডেনের সময়সূচি চলে, সেখানে মিহরাব ছাপা মিনিটটিই দেয়: কর্তৃপক্ষের নিজস্ব পদ্ধতি, যা দিন ধরে ধরে তার প্রকাশিত সময়সূচির সঙ্গে মিলিয়ে দেখা হয়েছে। অন্যত্র এটি AlAdhan বা আপনার বেছে নেওয়া পদ্ধতি ব্যবহার করে।"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "সময়সূচির শেষ প্রকাশিত তারিখের পরে কী হয়?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "পদ্ধতিটি তার সংশোধন তালিকা ছাড়া একাই চলতে থাকে। যে সময়গুলোর সঙ্গে এটি মেলানো হয়েছে, সেখানে পদ্ধতিটি একাই সামান্য একটি অংশ বাদে ছাপা মিনিটে থাকে, আর সেই অংশ এক মিনিট সরে, তার বেশি কখনো নয়; অ্যাপ «আজ» পাতায় তা জানিয়ে দেয়। পরের মাসগুলো প্রকাশিত ও যাচাই হলে নতুন তালিকা আপডেট ছাড়াই অ্যাপে পৌঁছে যায়।"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "আমি নিজে কীভাবে সময় যাচাই করব?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "মিহরাবের মাসের দৃশ্যের এক সপ্তাহ আপনার কর্তৃপক্ষের ছাপা সময়সূচির সঙ্গে মিলিয়ে দেখুন। পদ্ধতি, প্রতিটি সময় যাচাই করার স্ক্রিপ্ট এবং তার লেখা নথি GitHub-এ mihrab-methods ভাণ্ডারে সবার জন্য উন্মুক্ত।"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "মিহরাব কি দিয়ানেত বা কোনো মন্ত্রণালয়ের সঙ্গে যুক্ত?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "না। মিহরাব স্বাধীন; যে কর্তৃপক্ষের সময়সূচির সঙ্গে এটি মেলে তার সঙ্গে এর সম্পর্ক নেই এবং সে একে অনুমোদনও করেনি। সময় নিয়ে যেকোনো বিষয়ে কর্তৃপক্ষের নিজস্ব প্রকাশনাই প্রামাণ্য।"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "মিহরাব কি আমার অবস্থান অনুসরণ করে?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "না। কোনো অ্যানালিটিক্স, বিজ্ঞাপন নেটওয়ার্ক বা অ্যাকাউন্ট নেই। স্থানাঙ্ক ফোন থেকে বের হয় মাত্র দুটি অনুরোধে, যার কোনোটিই ডেভেলপারের কাছে যায় না: AlAdhan-এ, যখন সেটিই আপনার সময়ের উৎস, এবং স্বয়ংক্রিয় অবস্থান চালু থাকলে আপনার শহরের নাম জানতে OpenStreetMap-এ, প্রায় এক কিলোমিটারে গোল করে। ডিভাইসে হিসাব বেছে নিন এবং শহরের নাম নিজে লিখুন, তাহলে কোনো অনুরোধই পাঠানো হয় না।"
+      }
     }
   ]
 }
@@ -147,6 +187,18 @@
     <div class="brandline">
       <img src="../assets/img/icon.png" width="62" height="62" alt="Mihrab">
       <span class="wordmark">Mihrab</span>
+<!-- jump:start -->
+<nav class="jump" aria-label="পাতার অংশ">
+  <ul>
+    <li><a href="#install">ইনস্টল</a></li>
+    <li><a href="#accuracy">নির্ভুলতা</a></li>
+    <li><a href="#screenshots">স্ক্রিনশট</a></li>
+    <li><a href="#features">বৈশিষ্ট্য</a></li>
+    <li><a href="#privacy">গোপনীয়তা</a></li>
+    <li><a href="#faq">প্রশ্ন</a></li>
+  </ul>
+</nav>
+<!-- jump:end -->
 <!-- langpicker:start -->
 <details class="langpicker">
   <summary>
@@ -171,8 +223,19 @@
 </details>
 <!-- langpicker:end -->
     </div>
+    <div class="hero-grid">
+    <div class="hero-text">
     <h1>প্রতিটি নামাজের জন্য, আর মাঝের সবকিছুর জন্য।</h1>
     <p class="sub">মিহরাব একজন মুসলিমের দিনের শান্ত সঙ্গী: নামাজের সময় ও আজান, তিলাওয়াত, রঙিন তাজবিদ ও শব্দ-পাঠকসহ মদিনা মুসহাফ, আর নামাজের মাঝের দোয়া ও জিকির — কোনো অ্যাকাউন্ট নেই, বিজ্ঞাপন নেই, বিশ্লেষণ নেই। অবস্থান ঠিক করা হলে পুরো দিন নেটওয়ার্ক ছাড়াই চলে।</p>
+<!-- cta:start -->
+    <div class="cta">
+      <ul class="badges">
+        <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="../assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="../assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
+      </ul>
+      <a class="more" href="#install">Windows, Linux, F-Droid ও ওয়েব <span aria-hidden="true">&darr;</span></a>
+    </div>
+<!-- cta:end -->
     <ul class="trust">
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>বিজ্ঞাপন, ট্র্যাকার বা অ্যাকাউন্ট নেই</li>
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>ইন্টারনেট ছাড়াই চলে</li>
@@ -180,15 +243,23 @@
     </ul>
     <p class="meta">
       <span>সংস্করণ 2.37.0 (296)</span> <span class="dot" aria-hidden="true">•</span>
-      <span>iOS, Android, macOS</span> <span class="dot" aria-hidden="true">•</span>
+      <span>iOS, Android, macOS, Windows, Linux, web</span> <span class="dot" aria-hidden="true">•</span>
       <span>AGPL-3.0-or-later</span> <span class="dot" aria-hidden="true">•</span>
       <a href="https://github.com/MihrabHQ/Mihrab">GitHub-এ সোর্স</a>
     </p>
+    </div>
+<!-- heroshot:start -->
+    <figure class="hero-shot">
+      <img src="../assets/img/hero-home.jpg?v=2026-11-05p" width="540" height="1200" decoding="async"
+        alt="সূর্যাস্তে আকাশ থিমে হোম স্ক্রিন: গোলাপি-বেগুনি আকাশে নিচু সূর্য, মাগরিব পর্যন্ত চলমান কাউন্টডাউন, সময়ের উপরে দিন, আর আদায় করা প্রতিটি নামাজের পাশে টিক।">
+    </figure>
+<!-- heroshot:end -->
+    </div>
   </div>
 </header>
 
 <main id="main">
-<section class="install">
+<section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">ইনস্টল</p>
     <h2>Mihrab নিন</h2>
@@ -267,6 +338,51 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
+<section class="accuracy-section" id="accuracy" data-review="native">
+<!-- DRAFT: needs review by a native bn speaker before it is relied on -->
+  <div class="wrap">
+    <p class="eyebrow">নির্ভুলতা</p>
+    <h2>ছাপা মিনিট পর্যন্ত</h2>
+    <p class="lede">বেশিরভাগ নামাজের অ্যাপ একটি সাধারণ পদ্ধতিতে সময় হিসাব করে এবং আপনার মসজিদ যে সময়সূচি মানে তার থেকে এক মিনিট বা তার বেশি সরে যায়। ফজরের শেষে, মাগরিবে এবং রোজার শুরুতে ওই এক মিনিটই আসল।</p>
+    <p class="lede">তাই মিহরাব প্রতিটি কর্তৃপক্ষের নিজস্ব পদ্ধতি — তার কোণ, সতর্কতার ব্যবধান ও পূর্ণসংখ্যায় আনার নিয়ম — নতুন করে তৈরি করে, আপনার ফোনেই হিসাব করে এবং প্রতিটি সময় প্রকাশিত সময়সূচির সঙ্গে মিলিয়ে দেখে: প্রতিটি জায়গা, প্রতিটি দিন। একটি সময়ও না সরলে তবেই কোনো পদ্ধতি ব্যবহার করা হয়।</p>
+<!-- accuracy-table:start -->
+      <div class="table-scroll">
+        <table class="accuracy">
+          <caption>প্রতিটি পদ্ধতি যে সব সময়ের সঙ্গে মেলানো হয়েছে</caption>
+          <thead><tr><th scope="col"></th><th scope="col">যার প্রকাশিত সময়সূচির সঙ্গে মেলে</th><th scope="col">স্থান</th><th scope="col">যাচাই করা সময়</th><th scope="col">ছাপা মিনিটের বাইরে</th><th scope="col">যাচাইয়ের সময়কাল</th></tr></thead>
+          <tbody>
+          <tr><th scope="row">সুইডেন</th><td>সুইডেনের ইসলামি সংঘের সারণি</td><td>107</td><td>63,114</td><td><strong>0</strong></td><td>11 অক্টো, 2026 → 14 ডিসে, 2027</td></tr>
+          <tr class="cont"><th scope="row"></th><td>সুইডেনের জন্য দিয়ানেতের সারণি</td><td>159</td><td>13,93,794</td><td><strong>0</strong></td><td>1 জানু, 2024 → 31 ডিসে, 2027</td></tr>
+          <tr><th scope="row">দিয়ানেত</th><td>দিয়ানেতের সারণি, তুরস্ক ও বিশ্বজুড়ে</td><td>8,132</td><td>6,99,99,603</td><td><strong>0</strong></td><td>1 জানু, 2024 → 31 ডিসে, 2027</td></tr>
+          <tr><th scope="row">মরক্কো</th><td>হাবুস ও ইসলাম বিষয়ক মন্ত্রণালয়</td><td>164</td><td>94,350</td><td><strong>0</strong></td><td>27 আগ, 2026 → 30 নভে, 2026</td></tr>
+          <tr><th scope="row">আলজেরিয়া</th><td>ধর্ম বিষয়ক ও ওয়াকফ মন্ত্রণালয়</td><td>68</td><td>1,01,184</td><td><strong>0</strong></td><td>1 অক্টো, 2026 → 5 জুন, 2027</td></tr>
+          <tr><th scope="row">ইন্দোনেশিয়া</th><td>Kemenag</td><td>517</td><td>3,62,934</td><td><strong>0</strong></td><td>7 অক্টো, 2026 → 31 জানু, 2027</td></tr>
+          </tbody>
+          <tfoot><tr><th scope="row">মোট</th><td>সর্বশেষ যাচাই 9 নভেম্বর, 2026</td><td></td><td>7,20,14,979</td><td><strong>0</strong></td><td></td></tr></tfoot>
+        </table>
+      </div>
+<!-- accuracy-table:end -->
+    <div class="cols">
+      <article class="card">
+        <h3>নিজেই যাচাই করুন</h3>
+        <p>পদ্ধতি, যাচাই ও তার নথি <a href="https://github.com/MihrabHQ/mihrab-methods">mihrab-methods</a>-এ সবার জন্য উন্মুক্ত। সর্বশেষ যাচাই: <!--fig:total.checkedAtLong-->9 নভেম্বর, 2026<!--/fig-->।</p>
+      </article>
+      <article class="card">
+        <h3>কোনো সময় আপনার মসজিদের সঙ্গে মিলছে না?</h3>
+        <p>শহর, তারিখ, নামাজ ও ছাপা সময়টি <a href="https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml">রিপোর্ট ফর্মে</a> জানান। আপনার মসজিদ নিজস্ব সময় মানলে অ্যাপে প্রতিটি নামাজের আলাদা সমন্বয় তা মিলিয়ে দেয়।</p>
+      </article>
+      <article class="card">
+        <h3>প্রকাশিত সারণি, যেমন ছাপা আছে</h3>
+        <p>সিঙ্গাপুর (MUIS), মালয়েশিয়া (JAKIM) ও Türkiye Takvimi হিসাব করা হয় না: মিহরাব তাদের নিজেদের প্রকাশিত সারণিই মিনিট ধরে দেখায়। এগুলো উপরের যাচাইয়ের অংশ নয়। অন্য সব জায়গায় সময় আসে AlAdhan থেকে অথবা আপনার বেছে নেওয়া হিসাব পদ্ধতি থেকে।</p>
+      </article>
+      <article class="card">
+        <h3>স্বাধীন</h3>
+        <p>এখানে উল্লেখ করা কোনো কর্তৃপক্ষের সঙ্গে মিহরাবের সম্পর্ক নেই এবং কেউ একে অনুমোদনও করেনি। এটি তাদের প্রকাশিত সময়সূচির সঙ্গে মেলে; তাদের হয়ে কথা বলে না।</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="shots" id="screenshots">
   <div class="wrap">
     <p class="eyebrow">স্ক্রিনশট</p>
@@ -274,6 +390,8 @@ sudo pacman -Syu mihrab</code></pre>
     <p class="lede">প্রতিটি সুবিধা সেই ডিভাইসে, যার জন্য তা তৈরি: আগে ফোন, তারপর iPad, Mac, Windows ও Chromebook, আকাশ থিমে একটি দিনের প্রহর জুড়ে। মুসহাফ হলো ছাপা মদিনা পৃষ্ঠাটিই, তার ছবি নয়। স্ক্রিনে অ্যাপটি ইংরেজিতে; বাংলাও সে বলে।</p>
     <figure class="xplat">
       <img src="../assets/img/panels/xplat.jpg?v=2026-11-05p" width="2400" height="1200" loading="lazy" decoding="async"
+        srcset="../assets/img/panels/xplat-1200.jpg?v=2026-11-05p 1200w, ../assets/img/panels/xplat.jpg?v=2026-11-05p 2400w"
+        sizes="(max-width: 1128px) calc(100vw - 48px), 1032px"
         alt="আপনার প্রতিটি ডিভাইসে। অ্যান্ড্রয়েড ফোন, ট্যাবলেট ও ফোল্ডেবল, আইফোন, আইপ্যাড, ম্যাক, উইন্ডোজ, লিনাক্স আর ওয়েব — সিঙ্কে মেলানো, অ্যাকাউন্ট ছাড়া, আমাদের কোনো সার্ভার ছাড়া।">
     </figure>
     <ul class="panels">
@@ -469,7 +587,7 @@ sudo pacman -Syu mihrab</code></pre>
 </section>
 <!-- reviews:end -->
 
-<section class="features">
+<section class="features" id="features">
   <div class="wrap">
     <p class="eyebrow">বৈশিষ্ট্য</p>
     <h2>ফজর থেকে এশা পর্যন্ত একজন সঙ্গী</h2>
@@ -498,7 +616,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="privacy">
+<section class="privacy" id="privacy">
   <div class="wrap">
     <p class="eyebrow">গোপনীয়তা</p>
     <h2>কোনো অ্যাকাউন্ট নেই, ট্র্যাকিং নেই — আর প্রতিটি অনুরোধ লেখা আছে</h2>
@@ -520,7 +638,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="faq">
+<section class="faq" id="faq">
   <div class="wrap">
     <p class="eyebrow">সাধারণ প্রশ্ন</p>
     <h2>প্রথমেই যা জিজ্ঞাসা করা হয়</h2>
@@ -540,6 +658,26 @@ sudo pacman -Syu mihrab</code></pre>
       <article class="card">
         <h3>কোন ডিভাইসে চলে?</h3>
         <p>আইফোন, আইপ্যাড, অ্যান্ড্রয়েড ও ম্যাক। ম্যাকে Homebrew দিয়ে ইনস্টল করুন।</p>
+      </article>
+      <article class="card">
+        <h3>মিহরাবের সময় অন্য অ্যাপের থেকে আলাদা কেন?</h3>
+        <p>বেশিরভাগ অ্যাপ একটি সাধারণ পদ্ধতি ব্যবহার করে এবং আপনার মসজিদ যে সময়সূচি মানে তার থেকে এক মিনিট বা তার বেশি সরে যায়। যেখানে দিয়ানেত, মরক্কো ও আলজেরিয়ার মন্ত্রণালয়, Kemenag বা সুইডেনের সময়সূচি চলে, সেখানে মিহরাব ছাপা মিনিটটিই দেয়: কর্তৃপক্ষের নিজস্ব পদ্ধতি, যা দিন ধরে ধরে তার প্রকাশিত সময়সূচির সঙ্গে মিলিয়ে দেখা হয়েছে। অন্যত্র এটি AlAdhan বা আপনার বেছে নেওয়া পদ্ধতি ব্যবহার করে।</p>
+      </article>
+      <article class="card">
+        <h3>সময়সূচির শেষ প্রকাশিত তারিখের পরে কী হয়?</h3>
+        <p>পদ্ধতিটি তার সংশোধন তালিকা ছাড়া একাই চলতে থাকে। যে সময়গুলোর সঙ্গে এটি মেলানো হয়েছে, সেখানে পদ্ধতিটি একাই সামান্য একটি অংশ বাদে ছাপা মিনিটে থাকে, আর সেই অংশ এক মিনিট সরে, তার বেশি কখনো নয়; অ্যাপ «আজ» পাতায় তা জানিয়ে দেয়। পরের মাসগুলো প্রকাশিত ও যাচাই হলে নতুন তালিকা আপডেট ছাড়াই অ্যাপে পৌঁছে যায়।</p>
+      </article>
+      <article class="card">
+        <h3>আমি নিজে কীভাবে সময় যাচাই করব?</h3>
+        <p>মিহরাবের মাসের দৃশ্যের এক সপ্তাহ আপনার কর্তৃপক্ষের ছাপা সময়সূচির সঙ্গে মিলিয়ে দেখুন। পদ্ধতি, প্রতিটি সময় যাচাই করার স্ক্রিপ্ট এবং তার লেখা নথি GitHub-এ mihrab-methods ভাণ্ডারে সবার জন্য উন্মুক্ত।</p>
+      </article>
+      <article class="card">
+        <h3>মিহরাব কি দিয়ানেত বা কোনো মন্ত্রণালয়ের সঙ্গে যুক্ত?</h3>
+        <p>না। মিহরাব স্বাধীন; যে কর্তৃপক্ষের সময়সূচির সঙ্গে এটি মেলে তার সঙ্গে এর সম্পর্ক নেই এবং সে একে অনুমোদনও করেনি। সময় নিয়ে যেকোনো বিষয়ে কর্তৃপক্ষের নিজস্ব প্রকাশনাই প্রামাণ্য।</p>
+      </article>
+      <article class="card">
+        <h3>মিহরাব কি আমার অবস্থান অনুসরণ করে?</h3>
+        <p>না। কোনো অ্যানালিটিক্স, বিজ্ঞাপন নেটওয়ার্ক বা অ্যাকাউন্ট নেই। স্থানাঙ্ক ফোন থেকে বের হয় মাত্র দুটি অনুরোধে, যার কোনোটিই ডেভেলপারের কাছে যায় না: AlAdhan-এ, যখন সেটিই আপনার সময়ের উৎস, এবং স্বয়ংক্রিয় অবস্থান চালু থাকলে আপনার শহরের নাম জানতে OpenStreetMap-এ, প্রায় এক কিলোমিটারে গোল করে। ডিভাইসে হিসাব বেছে নিন এবং শহরের নাম নিজে লিখুন, তাহলে কোনো অনুরোধই পাঠানো হয় না।</p>
       </article>
     </div>
   </div>

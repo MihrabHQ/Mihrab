@@ -239,7 +239,7 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .platform .note { margin: 14px 0 0; }
 .platform .flag { margin: 14px 0 0; font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--ink); }
 .platform .flag a { font-weight: 500; color: var(--accent); margin-inline-start: 4px; }
-.platform .note code { font-size: 11.5px; white-space: nowrap; display: inline-block; margin-top: 4px; }
+.platform .note code { font-size: 12.5px; white-space: nowrap; display: inline-block; margin-top: 4px; }
 /* Mihrab Web: the width of the row, what it is beside the link out. */
 .platform.web { flex: 1 1 100%; min-width: 0; }
 .platform .web-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
@@ -264,7 +264,7 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .platform details.distro { border-top: 1px solid var(--line); }
 .platform details.distro:last-of-type { border-bottom: 1px solid var(--line); }
 .platform details.distro summary {
-  cursor: pointer; padding: 10px 0; font-size: 14.5px; font-weight: 600; color: var(--ink);
+  cursor: pointer; padding: 12px 0; font-size: 14.5px; font-weight: 600; color: var(--ink);
 }
 .platform details.distro[open] { padding-bottom: 12px; }
 .platform .cmd-label { margin: 8px 0 4px; font-size: 13px; color: var(--ink-soft); }
@@ -320,7 +320,7 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
   display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
 }
 .review-tr span {
-  font-size: 11px; letter-spacing: .06em; text-transform: uppercase; margin-right: 4px; opacity: .8;
+  font-size: 12px; letter-spacing: .06em; text-transform: uppercase; margin-right: 4px; opacity: .8;
 }
 .review figcaption { margin-top: auto; font-size: 13px; color: var(--ink-soft); }
 .review .who { color: var(--ink); font-weight: 600; }
@@ -437,7 +437,8 @@ footer .foot-grid {
   grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
 }
 footer ul { list-style: none; margin: 0; padding: 0; }
-footer li { margin-bottom: 7px; }
+footer li { margin-bottom: 2px; }
+footer li a { display: inline-block; padding: 5px 0; }
 footer .colophon {
   margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 14px;
 }
@@ -536,7 +537,7 @@ footer .colophon {
 @media (max-width: 620px) {
   /* The globe alone. A wordmark and a full label do not share a phone. */
   .langpicker .lang-label { display: none; }
-  .langpicker summary { padding: 9px 11px; }
+  .langpicker summary { padding: 12px; }
   .langpicker ul { min-width: 168px; }
 }
 
@@ -666,3 +667,87 @@ footer code { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255,
   .panels { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .panels.wide { grid-template-columns: 1fr; }
 }
+
+/* ---- the first screen: a way in, and the app itself ----
+ *
+ * The hero was words alone: the store badges began a screen further down
+ * and the first picture of the app two screens after that. So the two
+ * stores most visitors want stand under the opening lines, with a link to
+ * every other channel, and the Today screen stands beside them — on a wide
+ * screen in the arch, on a phone under the words, its top showing and the
+ * rest fading into the page so the hero stays one screen tall.
+ */
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 56px; }
+.cta { margin: 24px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+.cta .badges { margin: 0; gap: 10px 12px; justify-content: flex-start; }
+.cta .badges img { height: 48px; }
+.cta .more {
+  font-size: 14.5px; color: rgba(238,228,212,.94); text-decoration-color: rgba(238,228,212,.45);
+  padding: 10px 0;
+}
+.cta .more:hover { color: #fff; }
+.hero-shot { margin: 34px auto -40px; width: min(260px, 72%); height: 250px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent);
+          mask-image: linear-gradient(180deg, #000 55%, transparent);
+}
+.hero-shot img {
+  width: 100%; height: auto; border-radius: 30px; border: 5px solid #0A0F26;
+  box-shadow: 0 2px 4px rgba(0,0,0,.3), 0 30px 60px -22px rgba(0,0,0,.7);
+  background: #0A0F26;
+}
+@media (min-width: 900px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr) 250px; align-items: start; }
+  .hero-shot { margin: 30px 0 -150px; width: 250px; height: auto; overflow: visible;
+    -webkit-mask-image: none; mask-image: none; }
+}
+@media print { .hero-shot, .cta, .jump { display: none; } }
+
+/* ---- the way round the page ----
+ *
+ * Links to the sections, in the brand row: between the wordmark and the
+ * language button on a wide screen, a row of their own under them on a
+ * narrow one, scrolling sideways rather than wrapping into a block.
+ */
+.brandline { flex-wrap: wrap; }
+.jump { margin-inline-start: auto; min-width: 0; }
+.jump ul { display: flex; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.jump a {
+  display: block; padding: 9px 11px; border-radius: 999px; white-space: nowrap;
+  font-size: 14.5px; color: rgba(238,228,212,.9); text-decoration: none;
+}
+.jump a:hover { background: rgba(238,228,212,.14); color: #fff; }
+.brandline .jump + .langpicker { margin-inline-start: 6px; }
+@media (max-width: 1040px) {
+  .jump { order: 3; flex: 1 0 100%; margin: 6px -8px 0; overflow-x: auto; scrollbar-width: none; }
+  .jump::-webkit-scrollbar { display: none; }
+  .jump a { padding: 11px 10px; }
+  .brandline .jump + .langpicker { margin-inline-start: auto; }
+}
+
+/* ---- the feature list, folded ----
+ *
+ * Fifty features written out in full were a third of the page on a phone.
+ * Each is now its name, and opens to its sentence — a <details>, so it
+ * needs no script, and every word is still in the page for a reader who
+ * searches it and for a search engine that reads it. Open, the line reads
+ * as it always did: the name, then the sentence after it.
+ */
+.fold-hint { margin-top: 6px; font-size: 14.5px; }
+.group .fold li { margin-bottom: 0; }
+.group .fold li::before { content: none; }
+.fold summary {
+  display: block; position: relative; list-style: none; cursor: pointer;
+  margin-inline-start: -20px; padding: 7px 0; padding-inline-start: 20px;
+}
+.fold summary::-webkit-details-marker { display: none; }
+.fold summary::before {
+  content: ""; position: absolute; inset-inline-start: 2px; top: 1.02em;
+  width: 6px; height: 6px; border: solid var(--accent); border-width: 0 1.8px 1.8px 0;
+  transform: rotate(-45deg); transition: transform .15s ease; opacity: .8;
+}
+[dir="rtl"] .fold summary::before { transform: rotate(135deg); }
+.fold details[open] > summary::before { transform: rotate(45deg); }
+.fold summary:hover b { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.fold details > span { display: block; padding: 0 0 10px; }
+@media (prefers-reduced-motion: reduce) { .fold summary::before { transition: none; } }
+@media print { .fold details > span { display: block; } }

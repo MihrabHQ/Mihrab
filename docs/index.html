@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mihrab: The Muslim Companion — prayer times, Quran and dua, no ads</title>
-<meta name="description" content="Prayer times that match the published timetables of Diyanet, Islamiska Förbundet, Morocco, Algeria and Kemenag to the printed minute, with the adhan, the Madinah mushaf with recitation and tajweed, duas and a prayer journal. Open source, no ads, no account — on Android, iPhone, iPad and Mac.">
+<meta name="description" content="Prayer times that match the published timetables of Diyanet, Islamiska Förbundet, Morocco, Algeria and Kemenag to the printed minute, with the adhan, the Madinah mushaf with recitation and tajweed, duas and a prayer journal. Open source, no ads, no account — on Android, iPhone, iPad, Mac, Windows and Linux.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#070F33" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F162F" media="(prefers-color-scheme: dark)">
@@ -49,7 +49,7 @@
   "name": "Mihrab: The Muslim Companion",
   "alternateName": "Mihrab",
   "applicationCategory": "LifestyleApplication",
-  "operatingSystem": "Android, iOS, iPadOS, macOS",
+  "operatingSystem": "Android, iOS, iPadOS, macOS, Windows, Linux",
   "softwareVersion": "2.37.0",
   "url": "https://mihrab.elghamri.se/",
   "image": "https://mihrab.elghamri.se/assets/img/og-hero.png?v=2026-11-05",
@@ -208,6 +208,18 @@
     <div class="brandline">
       <img src="assets/img/icon.png" width="62" height="62" alt="Mihrab app icon">
       <span class="wordmark">Mihrab</span>
+<!-- jump:start -->
+<nav class="jump" aria-label="Sections">
+  <ul>
+    <li><a href="#install">Install</a></li>
+    <li><a href="#accuracy">Accuracy</a></li>
+    <li><a href="#screenshots">Screenshots</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#privacy">Privacy</a></li>
+    <li><a href="#faq">Questions</a></li>
+  </ul>
+</nav>
+<!-- jump:end -->
 <!-- langpicker:start -->
 <details class="langpicker">
   <summary>
@@ -232,12 +244,22 @@
 </details>
 <!-- langpicker:end -->
     </div>
+    <div class="hero-grid">
+    <div class="hero-text">
     <h1>For every prayer, and everything between.</h1>
     <p class="sub">Prayer times that match the published timetables of Diyanet, Islamiska Förbundet,
-      Morocco’s and Algeria’s ministries and Indonesia’s Kemenag to the printed minute — checked, day
-      by day, against the times they publish. Around them, a calm companion for a Muslim’s day: the
-      Madinah muṣḥaf with recitation, tajweed colours and a word reader, a hifz tracker that brings
-      each portion round again before you lose it, and the duas and dhikr in between.</p>
+      Morocco, Algeria and Kemenag to the printed minute. Around them, a calm companion for a
+      Muslim’s day: the Madinah muṣḥaf with recitation and tajweed, a hifz tracker, duas and
+      dhikr.</p>
+<!-- cta:start -->
+    <div class="cta">
+      <ul class="badges">
+        <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
+      </ul>
+      <a class="more" href="#install">Windows, Linux, F-Droid and the web <span aria-hidden="true">&darr;</span></a>
+    </div>
+<!-- cta:end -->
     <ul class="trust">
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><!--fig:total.off-->0<!--/fig--> of <!--fig:total.timesCompact-->72 million<!--/fig--> times off the printed minute</span></li>
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Works offline once set up</li>
@@ -245,10 +267,18 @@
     </ul>
     <p class="meta">
       <span>Version 2.37.0 (296)</span> <span class="dot" aria-hidden="true">•</span>
-      <span>iOS, Android, macOS</span> <span class="dot" aria-hidden="true">•</span>
+      <span>iOS, Android, macOS, Windows, Linux, web</span> <span class="dot" aria-hidden="true">•</span>
       <span>AGPL-3.0-or-later</span> <span class="dot" aria-hidden="true">•</span>
       <a href="https://github.com/MihrabHQ/Mihrab">Source on GitHub</a>
     </p>
+    </div>
+<!-- heroshot:start -->
+    <figure class="hero-shot">
+      <img src="assets/img/hero-home.jpg?v=2026-11-05p" width="540" height="1200" decoding="async"
+        alt="Home screen under the Sky theme at sunset: the low sun in a rose and violet sky behind a live countdown to Maghrib, the day above the times, and a check beside each prayer prayed.">
+    </figure>
+<!-- heroshot:end -->
+    </div>
   </div>
 </header>
 
@@ -413,6 +443,8 @@ sudo pacman -Syu mihrab</code></pre>
 <!-- gallery:start -->
     <figure class="xplat">
       <img src="assets/img/panels/xplat.jpg?v=2026-11-05p" width="2400" height="1200" loading="lazy" decoding="async"
+        srcset="assets/img/panels/xplat-1200.jpg?v=2026-11-05p 1200w, assets/img/panels/xplat.jpg?v=2026-11-05p 2400w"
+        sizes="(max-width: 1128px) calc(100vw - 48px), 1032px"
         alt="On every device you own. Android phones, tablets and foldables, iPhone, iPad, Mac, Windows, Linux and the web — kept in step by sync, with no account and no server of ours.">
     </figure>
     <ul class="panels">
@@ -614,116 +646,145 @@ sudo pacman -Syu mihrab</code></pre>
     <h2>One companion, from Fajr to Isha</h2>
     <p class="lede">Everything below works on iOS, Android and Mac, in 13 languages — Arabic and Urdu
       fully right-to-left, on every screen and every notification.</p>
+    <p class="lede fold-hint">Each line opens to say how it works.</p>
     <div class="groups">
       <article class="group">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V11a7 7 0 0 1 14 0v10"/><path d="M3 21h18"/><path d="M12 8v3"/></svg>Pray</h3>
-        <ul>
-          <li><b>Times for today, the week, and a full month</b> <span>— up to a year ahead, cached on
-            device so the app opens instantly without a connection.</span></li>
-          <li><b>The day’s own sky</b> <span>— behind the countdown, one scene drawn from the clock:
+        <ul class="fold">
+          <li><details><summary><b>Times for today, the week, and a full month</b></summary>
+            <span>— up to a year ahead, cached on
+            device so the app opens instantly without a connection.</span></details></li>
+          <li><details><summary><b>The day’s own sky</b></summary>
+            <span>— behind the countdown, one scene drawn from the clock:
             the moon in its actual phase, dawn’s rose horizon, the sun climbing to its height about
             Ẓuhr, sunset and the afterglow — in every look, light, dark or Sky, running into the page
-            rather than stopping at an edge.</span></li>
-          <li><b>Minimal</b> <span>— a switch under Appearance, and a choice in the first-run
+            rather than stopping at an edge.</span></details></li>
+          <li><details><summary><b>Minimal</b></summary>
+            <span>— a switch under Appearance, and a choice in the first-run
             walkthrough: Today becomes the sky, the countdown with the prayer’s name and time under it,
             and one line saying where and which day. A drag up brings the day’s times as a sheet — a
             check beside each salāh, the month, the Qibla and the place — that swipes from day to day
             as the full page’s table does, and the tabs become a row of dots whose pages turn side by
-            side. On the phone and the iPad; the full page is a switch away.</span></li>
-          <li><b>Adhan and reminders</b> <span>— seventeen built-in adhan recordings or one of your own,
+            side. On the phone and the iPad; the full page is a switch away.</span></details></li>
+          <li><details><summary><b>Adhan and reminders</b></summary>
+            <span>— seventeen built-in adhan recordings or one of your own,
             a pre-prayer reminder window, and exact-alarm scheduling so the call lands on time even
             under aggressive battery managers. Each prayer decides how it speaks — adhan, a plain
             alert or silent — and can be changed for just the next one from Today. On Android the
-            adhan can play as an alarm, so it is heard with the phone on silent.</span></li>
-          <li><b>Snooze that knows when the prayer ends</b> <span>— 10 minutes at a tap, or 5, 15, 30
+            adhan can play as an alarm, so it is heard with the phone on silent.</span></details></li>
+          <li><details><summary><b>Snooze that knows when the prayer ends</b></summary>
+            <span>— 10 minutes at a tap, or 5, 15, 30
             or 60, from the notification or the full-screen alert. Only lengths that leave at least
             15 minutes of the prayer are offered; when none does, the button becomes “Last chance to
-            pray”, which comes back 15 or 5 minutes before the time runs out.</span></li>
-          <li><b>A full-screen prayer alert</b> <span>— like an alarm clock, over the lock screen: the
+            pray”, which comes back 15 or 5 minutes before the time runs out.</span></details></li>
+          <li><details><summary><b>A full-screen prayer alert</b></summary>
+            <span>— like an alarm clock, over the lock screen: the
             prayer, the next one under it, Stop, Snooze and Log prayer. On Android its own screen,
             painted in that prayer’s sky; on iOS 26 and later an AlarmKit alarm that rings through
-            silent mode and Focus. Offered in the first-run walkthrough, off until you say so.</span></li>
-          <li><b>Times that match your authority’s timetable</b> <span>— Diyanet, Islamiska Förbundet,
+            silent mode and Focus. Offered in the first-run walkthrough, off until you say so.</span></details></li>
+          <li><details><summary><b>Times that match your authority’s timetable</b></summary>
+            <span>— Diyanet, Islamiska Förbundet,
             Morocco, Algeria and Kemenag to the printed minute; MUIS, JAKIM and Türkiye Takvimi as
-            printed; AlAdhan everywhere else. <a href="#accuracy">How it is checked</a>.</span></li>
-          <li><b>24 calculation methods, or your own angles</b> <span>— the AlAdhan methods plus Dubai,
+            printed; AlAdhan everywhere else. <a href="#accuracy">How it is checked</a>.</span></details></li>
+          <li><details><summary><b>24 calculation methods, or your own angles</b></summary>
+            <span>— the AlAdhan methods plus Dubai,
             JAKIM, Kemenag, Tunisia, Portugal, Jordan and Sweden (the Istanbul congress method behind Islamiska Förbundet’s tables, <a href="https://github.com/MihrabHQ/mihrab-methods">published on its own</a>),
             each checked against its authority’s tables every week; Umm al-Qura’s Isha moves to two
-            hours in Ramadan. Far north or south, choose how the short summer nights are shared out.</span></li>
-          <li><b>Tuned to your mosque</b> <span>— per-prayer minute offsets, Hanafi or standard Asr, and
+            hours in Ramadan. Far north or south, choose how the short summer nights are shared out.</span></details></li>
+          <li><details><summary><b>Tuned to your mosque</b></summary>
+            <span>— per-prayer minute offsets, Hanafi or standard Asr, and
             the extra marks when you want them: sunrise, Islamic midnight, the last third of the night,
-            the first third after Isha.</span></li>
-          <li><b>Your madhhab</b> <span>— Hanafi, Maliki, Shafiʿi or Hanbali: the Asr shadow and the
+            the first third after Isha.</span></details></li>
+          <li><details><summary><b>Your madhhab</b></summary>
+            <span>— Hanafi, Maliki, Shafiʿi or Hanbali: the Asr shadow and the
             prayer names follow it, and the first-run walkthrough shows each answer in your own
             times. The Mālikī second times — when each prayer’s preferred time closes — are a
-            switch of their own.</span></li>
-          <li><b>Quiet for the prayer itself</b> <span>— on Android, the phone goes into Do Not
+            switch of their own.</span></details></li>
+          <li><details><summary><b>Quiet for the prayer itself</b></summary>
+            <span>— on Android, the phone goes into Do Not
             Disturb around the prayers you pick, from the adhan or a few minutes before, and comes back
             on its own; Jumuʿah has its own length. Alarms and whatever you already let through still
-            come through.</span></li>
-          <li><b>More to remember, if you ask</b> <span>— dhikr reminders in your own words at any
+            come through.</span></details></li>
+          <li><details><summary><b>More to remember, if you ask</b></summary>
+            <span>— dhikr reminders in your own words at any
             hour, fully offline; Surah Al-Kahf on Friday, Al-Mulk at night, the morning and evening
             adhkār; a khatmah reminder carrying the day’s portion. The Notifications page shows what is
-            scheduled to fire.</span></li>
-          <li><b>A qibla compass</b> <span>— a live dial with signal strength, a hold-still prompt when
-            the sensors need one, and a cross-check against the sun.</span></li>
-          <li><b>Saved places</b> <span>— keep the cities you check on and switch between them without
-            giving up automatic location.</span></li>
-          <li><b>A month you can hand over</b> <span>— the whole month as a sheet, Hijri and Gregorian
-            side by side, exported as an image or a PDF in any of the app’s languages.</span></li>
-          <li><b>A pinned countdown</b> <span>— Live Activity on the iOS Lock Screen and Dynamic Island;
+            scheduled to fire.</span></details></li>
+          <li><details><summary><b>A qibla compass</b></summary>
+            <span>— a live dial with signal strength, a hold-still prompt when
+            the sensors need one, and a cross-check against the sun.</span></details></li>
+          <li><details><summary><b>Saved places</b></summary>
+            <span>— keep the cities you check on and switch between them without
+            giving up automatic location.</span></details></li>
+          <li><details><summary><b>A month you can hand over</b></summary>
+            <span>— the whole month as a sheet, Hijri and Gregorian
+            side by side, exported as an image or a PDF in any of the app’s languages.</span></details></li>
+          <li><details><summary><b>A pinned countdown</b></summary>
+            <span>— Live Activity on the iOS Lock Screen and Dynamic Island;
             on Android 16+ a status-bar chip and always-on notification in three designs, down to a
-            proportional bar for the next three events.</span></li>
-          <li><b>Home-screen widgets</b> <span>— prayer times in three sizes, plus today’s log, the
+            proportional bar for the next three events.</span></details></li>
+          <li><details><summary><b>Home-screen widgets</b></summary>
+            <span>— prayer times in three sizes, plus today’s log, the
             Hijri date, streak, tasbih and reading — on iPhone, Android and the Mac. Per-prayer accents,
             dynamic colour, adjustable background, a text colour of your own; on Android the
             prayer-times widget shows or hides the city, the countdown and the day’s times. For a while
-            after each adhan, if you ask, they count up from it — “12:34 since Dhuhr”.</span></li>
-          <li><b>Opens where you left it</b> <span>— the last Today screen is the first frame of a
+            after each adhan, if you ask, they count up from it — “12:34 since Dhuhr”.</span></details></li>
+          <li><details><summary><b>Opens where you left it</b></summary>
+            <span>— the last Today screen is the first frame of a
             launch, and the countdown — to the second, and to any prayer you tap — the sky and the
             day’s progress sweep up to now. Pull down on
             Today to refresh the times; when the clocks change where you are, they refresh on their
-            own.</span></li>
+            own.</span></details></li>
         </ul>
       </article>
       <article class="group">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H20v15H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20v-3"/><path d="M9 8h6"/></svg>Read and listen</h3>
-        <ul>
-          <li><b>The Madinah mushaf, drawn as text</b> <span>— all 604 pages render from the official
+        <ul class="fold">
+          <li><details><summary><b>The Madinah mushaf, drawn as text</b></summary>
+            <span>— all 604 pages render from the official
             KFGQPC page fonts, one glyph per word, page-for-page and line-for-line with the print. Sharp
             at any zoom, and a page costs a fraction of what an image would. Reading starts the moment
-            the download does: pages arrive as their fonts do, about 300 KB each.</span></li>
-          <li><b>Paper, sepia or night</b> <span>— with a page rail, a go-to-page jump, and fullscreen
+            the download does: pages arrive as their fonts do, about 300 KB each.</span></details></li>
+          <li><details><summary><b>Paper, sepia or night</b></summary>
+            <span>— with a page rail, a go-to-page jump, and fullscreen
             from the margins. The volume buttons turn the pages if you ask, a reading lock — on every
             platform, with a lock button on the page when you want one — keeps the page from turning
             under your hand while a tap on a word still opens its āyah, the screen
             stays awake while you read, the translation and tafsir take the size you set, and
-            bookmarks come in colours you choose.</span></li>
-          <li><b>Four riwāyāt</b> <span>— Ḥafṣ from the page fonts, and Warsh, Qālūn and Shuʿbah
+            bookmarks come in colours you choose.</span></details></li>
+          <li><details><summary><b>Four riwāyāt</b></summary>
+            <span>— Ḥafṣ from the page fonts, and Warsh, Qālūn and Shuʿbah
             downloaded on request. Switching keeps your place: the ayah is the coordinate, not the page
-            number.</span></li>
-          <li><b>The IndoPak muṣḥaf</b> <span>— a second way to read Ḥafṣ: the 15-line IndoPak print,
+            number.</span></details></li>
+          <li><details><summary><b>The IndoPak muṣḥaf</b></summary>
+            <span>— a second way to read Ḥafṣ: the 15-line IndoPak print,
             610 pages line for line as the Taj Company sets it, in the Indo-Pakistani script with its
             own stop signs and rukūʿ marks — about 2.2 MB, checked against the app’s text at every one of
-            the 6,236 ayahs before a word is drawn.</span></li>
-          <li><b>Tajweed colours</b> <span>— every letter in the ink of the rule it falls under,
+            the 6,236 ayahs before a word is drawn.</span></details></li>
+          <li><details><summary><b>Tajweed colours</b></summary>
+            <span>— every letter in the ink of the rule it falls under,
             on Ḥafṣ from the King Fahd Complex’s own colour fonts and on Warsh with its own rules —
-            naql, tashīl, taqlīl — each explained in a guide, in all thirteen languages.</span></li>
-          <li><b>The word reader</b> <span>— hold a word in the muṣḥaf and, when you lift your
+            naql, tashīl, taqlīl — each explained in a guide, in all thirteen languages.</span></details></li>
+          <li><details><summary><b>The word reader</b></summary>
+            <span>— hold a word in the muṣḥaf and, when you lift your
             finger, that one word is read out. Slide to another word before lifting to pick it
-            instead.</span></li>
-          <li><b>A facing-page spread on iPad and Mac</b> <span>— the pair of pages is the thing that
-            turns, with the keyboard and a surah sidebar.</span></li>
-          <li><b>A tap on a word opens its ayah</b> <span>— 14 translations plus Ibn Kathir,
+            instead.</span></details></li>
+          <li><details><summary><b>A facing-page spread on iPad and Mac</b></summary>
+            <span>— the pair of pages is the thing that
+            turns, with the keyboard and a surah sidebar.</span></details></li>
+          <li><details><summary><b>A tap on a word opens its ayah</b></summary>
+            <span>— 14 translations plus Ibn Kathir,
             Maarif-ul-Quran, al-Muyassar and others, and the Arabic meanings of the harder words, all
             downloadable for offline reading; the tajweed rules in the ayah, coloured bookmarks, a
-            share card, and the recitation controls.</span></li>
-          <li><b>59 reciters</b> <span>— 44 streamed per ayah or downloaded per surah, and 15
+            share card, and the recitation controls.</span></details></li>
+          <li><details><summary><b>59 reciters</b></summary>
+            <span>— 44 streamed per ayah or downloaded per surah, and 15
             whole-surah recitations played from a full download, among them Warsh, Qālūn and Shuʿbah
             readings, cut ayah by ayah with every cut checked. For nine of them the
             recited word lights up on the page itself, and in landscape the column follows the reciter
-            down it. Every voice can be heard before you choose it.</span></li>
-          <li><b>Tilāwah — listening, as its own page</b> <span>— pick a reciter and it runs surah
+            down it. Every voice can be heard before you choose it.</span></details></li>
+          <li><details><summary><b>Tilāwah — listening, as its own page</b></summary>
+            <span>— pick a reciter and it runs surah
             into surah with the screen off, from the lock screen, without the app open. Scrub by
             ayah or by whole surah, shuffle, set a speed or a sleep timer, and follow along on a
             live muṣḥaf page with the recited word lit. It downloads into the reader's own folder,
@@ -731,93 +792,115 @@ sudo pacman -Syu mihrab</code></pre>
             under the title bar carries it to every other screen. It keeps its own place, apart
             from where you are reading, and when you come back to it it offers to carry on, to
             shuffle, or what the sunnah recommends at that hour — Al-Kahf from Thursday’s maghrib,
-            Al-Mulk and the end of Al-Baqarah at night.</span></li>
-          <li><b>Memorisation tools</b> <span>— repeat an ayah or a range, pause between repeats, hide
+            Al-Mulk and the end of Al-Baqarah at night.</span></details></li>
+          <li><details><summary><b>Memorisation tools</b></summary>
+            <span>— repeat an ayah or a range, pause between repeats, hide
             and reveal the Arabic or the translation. What you learn this way is kept by the hifz
-            tracker below.</span></li>
-          <li><b>Khatmah plans</b> <span>— 30, 60 or 90 days, your own length from the page you are
+            tracker below.</span></details></li>
+          <li><details><summary><b>Khatmah plans</b></summary>
+            <span>— 30, 60 or 90 days, your own length from the page you are
             on, or a finishing date with each day’s portion worked out from what is left — with
             automatic page tracking and an optional daily reminder carrying the day’s
-            portion.</span></li>
+            portion.</span></details></li>
         </ul>
       </article>
       <article class="group">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 12a8.5 8.5 0 1 1-2.49-6.01"/><path d="M20.5 4v4.5H16"/><path d="M12 7.5V12l3 1.8"/></svg>Memorise</h3>
-        <ul>
-          <li><b>A record of what you know by heart</b> <span>— tap the surahs you have memorised on a
+        <ul class="fold">
+          <li><details><summary><b>A record of what you know by heart</b></summary>
+            <span>— tap the surahs you have memorised on a
             grid of all 114, with Juz’ 30 and Juz’ 29 a single tap each, or mark any stretch from the
             reader itself: “Memorised up to here”. Each portion keeps its own place in the
-            cycle.</span></li>
-          <li><b>Revision on the hifz cycle</b> <span>— a portion comes round a day after you learn
+            cycle.</span></details></li>
+          <li><details><summary><b>Revision on the hifz cycle</b></summary>
+            <span>— a portion comes round a day after you learn
             it, then after three, seven, fourteen and thirty — and never waits longer than the limit
             you set, whether that is a week, a fortnight or a month. A spaced-repetition app will let
             a card sleep for a year; no hafiz leaves a surah that long, so this does not
-            either.</span></li>
-          <li><b>Say how it went</b> <span>— <i>Needed help</i> puts a portion back to daily,
+            either.</span></details></li>
+          <li><details><summary><b>Say how it went</b></summary>
+            <span>— <i>Needed help</i> puts a portion back to daily,
             <i>Fine</i> moves it on a step, <i>Fluent</i> skips one. The schedule answers to how the
-            recitation actually went, not to a calendar.</span></li>
-          <li><b>A day’s revision, the size you asked for</b> <span>— today’s portions in a list, as
+            recitation actually went, not to a calendar.</span></details></li>
+          <li><details><summary><b>A day’s revision, the size you asked for</b></summary>
+            <span>— today’s portions in a list, as
             many as you set, the rest waiting for tomorrow, and a daily reminder that says how many
-            are due. Recite from memory and check each ayah off as it comes.</span></li>
-          <li><b>Thirty juz’, thirty cells</b> <span>— how much of each juz’ is by heart, counted in
-            ayahs, on the muṣḥaf’s own juz’ boundaries.</span></li>
-          <li><b>The drill hands over to the tracker</b> <span>— finish repeating a range in the
+            are due. Recite from memory and check each ayah off as it comes.</span></details></li>
+          <li><details><summary><b>Thirty juz’, thirty cells</b></summary>
+            <span>— how much of each juz’ is by heart, counted in
+            ayahs, on the muṣḥaf’s own juz’ boundaries.</span></details></li>
+          <li><details><summary><b>The drill hands over to the tracker</b></summary>
+            <span>— finish repeating a range in the
             reader and it offers to mark it memorised, so the thing you just learnt is in the cycle
-            before you put the phone down.</span></li>
-          <li><b>It goes where your reading goes</b> <span>— inside the backup and the folder sync
-            with the khatmah and the bookmarks, so a new phone knows what you know.</span></li>
+            before you put the phone down.</span></details></li>
+          <li><details><summary><b>It goes where your reading goes</b></summary>
+            <span>— inside the backup and the folder sync
+            with the khatmah and the bookmarks, so a new phone knows what you know.</span></details></li>
         </ul>
       </article>
       <article class="group">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l2.6 6.9 6.9 2.6-6.9 2.6-2.6 6.9-2.6-6.9L2.5 12l6.9-2.6z"/></svg>Remember</h3>
-        <ul>
-          <li><b>Dua library</b> <span>— 100+ duas across 19 categories with Arabic, transliteration,
-            translation, and Hisn al-Muslim sources.</span></li>
-          <li><b>Tasbih counter</b> <span>— the post-prayer dhikr plus open-ended istighfar and salah on
-            the Prophet ﷺ, with tabular numerals so the digits don’t shimmer on tick.</span></li>
-          <li><b>Fasting log</b> <span>— Ramadan and the Sunnah fasts (Mondays, Thursdays, Ayyam al-Bidh,
-            Arafah, Ashura, Six of Shawwal), with day-before reminders.</span></li>
-          <li><b>Prayer journal</b> <span>— on time, late, missed or qadha, with private notes, a
+        <ul class="fold">
+          <li><details><summary><b>Dua library</b></summary>
+            <span>— 100+ duas across 19 categories with Arabic, transliteration,
+            translation, and Hisn al-Muslim sources.</span></details></li>
+          <li><details><summary><b>Tasbih counter</b></summary>
+            <span>— the post-prayer dhikr plus open-ended istighfar and salah on
+            the Prophet ﷺ, with tabular numerals so the digits don’t shimmer on tick.</span></details></li>
+          <li><details><summary><b>Fasting log</b></summary>
+            <span>— Ramadan and the Sunnah fasts (Mondays, Thursdays, Ayyam al-Bidh,
+            Arafah, Ashura, Six of Shawwal), with day-before reminders.</span></details></li>
+          <li><details><summary><b>Prayer journal</b></summary>
+            <span>— on time, late, missed or qadha, with private notes, a
             practice graph — a row for each prayer, a column a day — streaks and what is owed. Loggable straight from the notification, with an
             end-of-day nudge, tools to fill in whole months at once, and a reset for a day, a month, a
-            year or everything.</span></li>
-          <li><b>Sunnah prayers</b> <span>— the rawātib beside each fard prayer, Witr and the night
+            year or everything.</span></details></li>
+          <li><details><summary><b>Sunnah prayers</b></summary>
+            <span>— the rawātib beside each fard prayer, Witr and the night
             prayer, logged on the same day and drawn in their own gold on the practice
-            graph.</span></li>
-          <li><b>Hijri calendar</b> <span>— with Ramadan, Eid and Jumu'ah treatments, and a Ramadan
+            graph.</span></details></li>
+          <li><details><summary><b>Hijri calendar</b></summary>
+            <span>— with Ramadan, Eid and Jumu'ah treatments, and a Ramadan
             countdown on Home. The standard calendar or Indonesia’s (Government &amp; NU, or
             Muhammadiyah), with a day adjustment that moves only the Hijri date — and, if you ask,
             the day can begin at maghrib. When Indonesia’s sidang isbat announces a different date, the
-            correction reaches phones within hours.</span></li>
+            correction reaches phones within hours.</span></details></li>
         </ul>
       </article>
       <article class="group">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h7"/><path d="M15 7h5"/><path d="M4 17h5"/><path d="M13 17h7"/><circle cx="13" cy="7" r="2"/><circle cx="11" cy="17" r="2"/></svg>Yours</h3>
-        <ul>
-          <li><b>Sync between your own devices</b> <span>— pair by scanning a code, and the journal,
+        <ul class="fold">
+          <li><details><summary><b>Sync between your own devices</b></summary>
+            <span>— pair by scanning a code, and the journal,
             streaks, fasts, notes and settings stay in step. No account and no server of ours: the
             devices write sealed files into a folder you already keep in sync, and each holds a key that
-            never leaves it.</span></li>
-          <li><b>Backup and restore</b> <span>— export everything as a file you keep, and import it back
+            never leaves it.</span></details></li>
+          <li><details><summary><b>Backup and restore</b></summary>
+            <span>— export everything as a file you keep, and import it back
             on any platform. Settings, journal, bookmarks and khatmah also ride Android Auto Backup and
-            device-to-device transfer, and a Manage-downloads screen shows what is on disk.</span></li>
-          <li><b>13 languages</b> <span>— English, Arabic, Swedish, Bengali, Urdu, Hindi, French,
+            device-to-device transfer, and a Manage-downloads screen shows what is on disk.</span></details></li>
+          <li><details><summary><b>13 languages</b></summary>
+            <span>— English, Arabic, Swedish, Bengali, Urdu, Hindi, French,
             Spanish, German, Turkish, Indonesian, Russian and Chinese — the widgets and notifications
-            too.</span></li>
-          <li><b>Real Arabic typography</b> <span>— Amiri Quran for ayah text with correctly stacked
-            diacritics, Amiri Naskh for duas, on both platforms.</span></li>
-          <li><b>Yours to look at</b> <span>— light, dark or system, pure black for OLED, six colour
+            too.</span></details></li>
+          <li><details><summary><b>Real Arabic typography</b></summary>
+            <span>— Amiri Quran for ayah text with correctly stacked
+            diacritics, Amiri Naskh for duas, on both platforms.</span></details></li>
+          <li><details><summary><b>Yours to look at</b></summary>
+            <span>— light, dark or system, pure black for OLED, six colour
             themes or your own colour, and the platform’s own palette when you want it: Material You on Android,
             Liquid Glass on iOS. Or Sky, the look a new install starts in, which paints the whole app
             from the sky over the countdown and follows the sun — its height by day, its depth by
             night, so a low winter sun keeps its gold — in Realistic colours, the sky
-            as it looks over a nearly neutral page, or Vibrant ones, bold for each hour.</span></li>
-          <li><b>It tells you what it is doing</b> <span>— a data panel names the source in use, when
+            as it looks over a nearly neutral page, or Vibrant ones, bold for each hour.</span></details></li>
+          <li><details><summary><b>It tells you what it is doing</b></summary>
+            <span>— a data panel names the source in use, when
             each dataset was last rebuilt, how far ahead it reaches and when the next check is
             due — and what changed: the first launch after an update opens What’s new, with every
-            release before it underneath.</span></li>
-          <li><b>Open source</b> <span>— AGPL-3.0-or-later. The F-Droid flavour ships without Play
-            Billing or Google Play Services.</span></li>
+            release before it underneath.</span></details></li>
+          <li><details><summary><b>Open source</b></summary>
+            <span>— AGPL-3.0-or-later. The F-Droid flavour ships without Play
+            Billing or Google Play Services.</span></details></li>
         </ul>
       </article>
     </div>

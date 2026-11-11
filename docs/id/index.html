@@ -47,7 +47,7 @@
   "name": "Mihrab: The Muslim Companion",
   "alternateName": "Mihrab",
   "applicationCategory": "LifestyleApplication",
-  "operatingSystem": "Android, iOS, iPadOS, macOS",
+  "operatingSystem": "Android, iOS, iPadOS, macOS, Windows, Linux",
   "softwareVersion": "2.37.0",
   "url": "https://mihrab.elghamri.se/id/",
   "inLanguage": "id",
@@ -110,6 +110,46 @@
         "@type": "Answer",
         "text": "iPhone, iPad, Android, dan Mac. Di Mac, pasang melalui Homebrew."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "Mengapa waktu di Mihrab berbeda dari aplikasi lain?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Kebanyakan aplikasi memakai metode umum dan meleset satu menit atau lebih dari jadwal yang diikuti masjid Anda. Di tempat berlakunya jadwal Kemenag, Diyanet, kementerian Maroko dan Aljazair, atau jadwal Swedia, Mihrab memberi menit yang tercetak: metode milik otoritas itu sendiri, diperiksa hari demi hari terhadap jadwal yang diterbitkannya. Di tempat lain Mihrab memakai AlAdhan atau metode yang Anda pilih."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Apa yang terjadi setelah tanggal terakhir jadwal yang diterbitkan?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Metode berjalan sendiri, tanpa daftar koreksinya. Pada waktu-waktu yang telah diperiksa, metode saja sudah tepat pada menit yang tercetak kecuali untuk sebagian kecil, dan bagian itu meleset satu menit, tidak pernah lebih; aplikasi memberitahukannya di halaman Hari Ini. Begitu bulan-bulan berikutnya diterbitkan dan diperiksa, daftar baru sampai ke aplikasi tanpa pembaruan."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Bagaimana saya memeriksa waktunya sendiri?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Bandingkan satu pekan tampilan bulanan Mihrab dengan jadwal tercetak dari otoritas Anda. Metode, skrip yang memeriksa setiap waktu, dan catatan yang dihasilkannya terbuka untuk umum di repositori mihrab-methods di GitHub."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Apakah Mihrab berafiliasi dengan Kemenag atau kementerian lain?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tidak. Mihrab independen dan tidak berafiliasi dengan maupun didukung oleh otoritas mana pun yang jadwalnya dicocokkan. Untuk segala hal tentang waktunya sendiri, terbitan otoritas itulah rujukannya."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Apakah Mihrab melacak lokasi saya?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tidak. Tidak ada analitik, jaringan iklan, maupun akun. Koordinat hanya keluar dari ponsel dalam dua permintaan, tidak satu pun ke pengembang: ke AlAdhan bila itu sumber waktu Anda, dan, dengan lokasi otomatis, ke OpenStreetMap untuk menamai kota Anda, dibulatkan sekitar satu kilometer. Pilih perhitungan di perangkat dan masukkan kota Anda secara manual, maka kedua permintaan itu tidak dilakukan."
+      }
     }
   ]
 }
@@ -147,6 +187,18 @@
     <div class="brandline">
       <img src="../assets/img/icon.png" width="62" height="62" alt="Mihrab">
       <span class="wordmark">Mihrab</span>
+<!-- jump:start -->
+<nav class="jump" aria-label="Bagian">
+  <ul>
+    <li><a href="#install">Pasang</a></li>
+    <li><a href="#accuracy">Akurasi</a></li>
+    <li><a href="#screenshots">Tangkapan layar</a></li>
+    <li><a href="#features">Fitur</a></li>
+    <li><a href="#privacy">Privasi</a></li>
+    <li><a href="#faq">Pertanyaan</a></li>
+  </ul>
+</nav>
+<!-- jump:end -->
 <!-- langpicker:start -->
 <details class="langpicker">
   <summary>
@@ -171,8 +223,19 @@
 </details>
 <!-- langpicker:end -->
     </div>
+    <div class="hero-grid">
+    <div class="hero-text">
     <h1>Untuk setiap sholat, dan semua yang ada di antaranya.</h1>
     <p class="sub">Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: jadwal sholat dan adzan, mushaf Madinah dengan tilawah, warna tajwid dan pembaca kata, serta doa dan dzikir di antara sholat — tanpa akun, tanpa iklan, tanpa analitik. Setelah lokasi Anda diatur, hari tetap berjalan tanpa jaringan.</p>
+<!-- cta:start -->
+    <div class="cta">
+      <ul class="badges">
+        <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="../assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="../assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
+      </ul>
+      <a class="more" href="#install">Windows, Linux, F-Droid, dan web <span aria-hidden="true">&darr;</span></a>
+    </div>
+<!-- cta:end -->
     <ul class="trust">
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Tanpa iklan, pelacak, atau akun</li>
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Berfungsi tanpa internet</li>
@@ -180,15 +243,23 @@
     </ul>
     <p class="meta">
       <span>Versi 2.37.0 (296)</span> <span class="dot" aria-hidden="true">•</span>
-      <span>iOS, Android, macOS</span> <span class="dot" aria-hidden="true">•</span>
+      <span>iOS, Android, macOS, Windows, Linux, web</span> <span class="dot" aria-hidden="true">•</span>
       <span>AGPL-3.0-or-later</span> <span class="dot" aria-hidden="true">•</span>
       <a href="https://github.com/MihrabHQ/Mihrab">Kode sumber di GitHub</a>
     </p>
+    </div>
+<!-- heroshot:start -->
+    <figure class="hero-shot">
+      <img src="../assets/img/hero-home.jpg?v=2026-11-05p" width="540" height="1200" decoding="async"
+        alt="Layar Hari Ini dengan tema Langit saat matahari terbenam: matahari rendah di langit merah muda dan ungu di belakang hitung mundur ke Magrib, tanggal di atas jadwal, dan tanda centang di samping setiap salat yang ditunaikan.">
+    </figure>
+<!-- heroshot:end -->
+    </div>
   </div>
 </header>
 
 <main id="main">
-<section class="install">
+<section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">Pasang</p>
     <h2>Dapatkan Mihrab</h2>
@@ -267,6 +338,51 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
+<section class="accuracy-section" id="accuracy" data-review="native">
+<!-- DRAFT: needs review by a native id speaker before it is relied on -->
+  <div class="wrap">
+    <p class="eyebrow">Akurasi</p>
+    <h2>Tepat sampai menit yang tercetak</h2>
+    <p class="lede">Kebanyakan aplikasi salat menghitung waktu dengan metode umum dan meleset satu menit atau lebih dari jadwal yang diikuti masjid Anda. Di akhir Subuh, saat Magrib, dan di awal puasa, menit itulah yang menentukan.</p>
+    <p class="lede">Karena itu Mihrab mereproduksi metode milik tiap otoritas — sudut, ihtiyat, dan pembulatannya —, menghitungnya di ponsel Anda, dan memeriksa setiap waktu terhadap jadwal yang diterbitkan: setiap tempat, setiap hari. Sebuah metode hanya dipakai bila tidak ada satu waktu pun yang meleset.</p>
+<!-- accuracy-table:start -->
+      <div class="table-scroll">
+        <table class="accuracy">
+          <caption>Semua waktu yang telah dibandingkan dengan tiap metode</caption>
+          <thead><tr><th scope="col"></th><th scope="col">Cocok dengan jadwal yang diterbitkan oleh</th><th scope="col">Tempat</th><th scope="col">Waktu diperiksa</th><th scope="col">Meleset dari menit tercetak</th><th scope="col">Rentang pemeriksaan</th></tr></thead>
+          <tbody>
+          <tr><th scope="row">Swedia</th><td>tabel Asosiasi Islam Swedia</td><td>107</td><td>63.114</td><td><strong>0</strong></td><td>11 Okt 2026 → 14 Des 2027</td></tr>
+          <tr class="cont"><th scope="row"></th><td>tabel Diyanet untuk Swedia</td><td>159</td><td>1.393.794</td><td><strong>0</strong></td><td>1 Jan 2024 → 31 Des 2027</td></tr>
+          <tr><th scope="row">Diyanet</th><td>tabel Diyanet, Turki dan seluruh dunia</td><td>8.132</td><td>69.999.603</td><td><strong>0</strong></td><td>1 Jan 2024 → 31 Des 2027</td></tr>
+          <tr><th scope="row">Maroko</th><td>Kementerian Habous dan Urusan Islam</td><td>164</td><td>94.350</td><td><strong>0</strong></td><td>27 Agu 2026 → 30 Nov 2026</td></tr>
+          <tr><th scope="row">Aljazair</th><td>Kementerian Urusan Agama dan Wakaf</td><td>68</td><td>101.184</td><td><strong>0</strong></td><td>1 Okt 2026 → 5 Jun 2027</td></tr>
+          <tr><th scope="row">Indonesia</th><td>Kemenag</td><td>517</td><td>362.934</td><td><strong>0</strong></td><td>7 Okt 2026 → 31 Jan 2027</td></tr>
+          </tbody>
+          <tfoot><tr><th scope="row">Total</th><td>Terakhir diperiksa 9 November 2026</td><td></td><td>72.014.979</td><td><strong>0</strong></td><td></td></tr></tfoot>
+        </table>
+      </div>
+<!-- accuracy-table:end -->
+    <div class="cols">
+      <article class="card">
+        <h3>Periksa sendiri</h3>
+        <p>Metode, pemeriksaan, dan catatannya terbuka untuk umum di <a href="https://github.com/MihrabHQ/mihrab-methods">mihrab-methods</a>. Terakhir diperiksa <!--fig:total.checkedAtLong-->9 November 2026<!--/fig-->.</p>
+      </article>
+      <article class="card">
+        <h3>Ada waktu yang berbeda dari masjid Anda?</h3>
+        <p>Sebutkan kota, tanggal, salat, dan waktu yang tercetak di <a href="https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml">formulir laporan</a>. Jika masjid Anda memakai waktunya sendiri, penyesuaian per salat di aplikasi dapat menyamakannya.</p>
+      </article>
+      <article class="card">
+        <h3>Tabel yang diterbitkan, dipakai apa adanya</h3>
+        <p>Singapura (MUIS), Malaysia (JAKIM), dan Türkiye Takvimi tidak dihitung: Mihrab menampilkan tabel yang mereka terbitkan sendiri, menit demi menit. Ketiganya bukan bagian dari pemeriksaan di atas. Di tempat lain, waktu berasal dari AlAdhan atau metode perhitungan yang Anda pilih.</p>
+      </article>
+      <article class="card">
+        <h3>Independen</h3>
+        <p>Mihrab tidak berafiliasi dengan dan tidak didukung oleh otoritas mana pun yang disebut di sini. Mihrab cocok dengan jadwal yang mereka terbitkan; Mihrab tidak berbicara atas nama mereka.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="shots" id="screenshots">
   <div class="wrap">
     <p class="eyebrow">Tangkapan layar</p>
@@ -274,6 +390,8 @@ sudo pacman -Syu mihrab</code></pre>
     <p class="lede">Setiap fitur di perangkat yang dibuat untuknya: ponsel dulu, lalu iPad, Mac, Windows, dan Chromebook, dengan tema Langit sepanjang jam-jam satu hari. Mushafnya adalah halaman Madinah cetakan itu sendiri, bukan fotonya. Aplikasi di layar berbahasa Inggris; aplikasinya berbahasa Indonesia juga.</p>
     <figure class="xplat">
       <img src="../assets/img/panels/xplat.jpg?v=2026-11-05p" width="2400" height="1200" loading="lazy" decoding="async"
+        srcset="../assets/img/panels/xplat-1200.jpg?v=2026-11-05p 1200w, ../assets/img/panels/xplat.jpg?v=2026-11-05p 2400w"
+        sizes="(max-width: 1128px) calc(100vw - 48px), 1032px"
         alt="Di setiap perangkat Anda. Ponsel, tablet, dan perangkat lipat Android, iPhone, iPad, Mac, Windows, Linux, dan web — selaras lewat sinkronisasi, tanpa akun dan tanpa server kami.">
     </figure>
     <ul class="panels">
@@ -469,7 +587,7 @@ sudo pacman -Syu mihrab</code></pre>
 </section>
 <!-- reviews:end -->
 
-<section class="features">
+<section class="features" id="features">
   <div class="wrap">
     <p class="eyebrow">Fitur</p>
     <h2>Satu pendamping, dari Subuh hingga Isya</h2>
@@ -519,7 +637,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="privacy">
+<section class="privacy" id="privacy">
   <div class="wrap">
     <p class="eyebrow">Privasi</p>
     <h2>Tanpa akun, tanpa pelacakan — dan setiap permintaan tercatat</h2>
@@ -541,7 +659,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="faq">
+<section class="faq" id="faq">
   <div class="wrap">
     <p class="eyebrow">Pertanyaan umum</p>
     <h2>Yang pertama ditanyakan</h2>
@@ -561,6 +679,26 @@ sudo pacman -Syu mihrab</code></pre>
       <article class="card">
         <h3>Perangkat apa saja yang didukung?</h3>
         <p>iPhone, iPad, Android, dan Mac. Di Mac, pasang melalui Homebrew.</p>
+      </article>
+      <article class="card">
+        <h3>Mengapa waktu di Mihrab berbeda dari aplikasi lain?</h3>
+        <p>Kebanyakan aplikasi memakai metode umum dan meleset satu menit atau lebih dari jadwal yang diikuti masjid Anda. Di tempat berlakunya jadwal Kemenag, Diyanet, kementerian Maroko dan Aljazair, atau jadwal Swedia, Mihrab memberi menit yang tercetak: metode milik otoritas itu sendiri, diperiksa hari demi hari terhadap jadwal yang diterbitkannya. Di tempat lain Mihrab memakai AlAdhan atau metode yang Anda pilih.</p>
+      </article>
+      <article class="card">
+        <h3>Apa yang terjadi setelah tanggal terakhir jadwal yang diterbitkan?</h3>
+        <p>Metode berjalan sendiri, tanpa daftar koreksinya. Pada waktu-waktu yang telah diperiksa, metode saja sudah tepat pada menit yang tercetak kecuali untuk sebagian kecil, dan bagian itu meleset satu menit, tidak pernah lebih; aplikasi memberitahukannya di halaman Hari Ini. Begitu bulan-bulan berikutnya diterbitkan dan diperiksa, daftar baru sampai ke aplikasi tanpa pembaruan.</p>
+      </article>
+      <article class="card">
+        <h3>Bagaimana saya memeriksa waktunya sendiri?</h3>
+        <p>Bandingkan satu pekan tampilan bulanan Mihrab dengan jadwal tercetak dari otoritas Anda. Metode, skrip yang memeriksa setiap waktu, dan catatan yang dihasilkannya terbuka untuk umum di repositori mihrab-methods di GitHub.</p>
+      </article>
+      <article class="card">
+        <h3>Apakah Mihrab berafiliasi dengan Kemenag atau kementerian lain?</h3>
+        <p>Tidak. Mihrab independen dan tidak berafiliasi dengan maupun didukung oleh otoritas mana pun yang jadwalnya dicocokkan. Untuk segala hal tentang waktunya sendiri, terbitan otoritas itulah rujukannya.</p>
+      </article>
+      <article class="card">
+        <h3>Apakah Mihrab melacak lokasi saya?</h3>
+        <p>Tidak. Tidak ada analitik, jaringan iklan, maupun akun. Koordinat hanya keluar dari ponsel dalam dua permintaan, tidak satu pun ke pengembang: ke AlAdhan bila itu sumber waktu Anda, dan, dengan lokasi otomatis, ke OpenStreetMap untuk menamai kota Anda, dibulatkan sekitar satu kilometer. Pilih perhitungan di perangkat dan masukkan kota Anda secara manual, maka kedua permintaan itu tidak dilakukan.</p>
       </article>
     </div>
   </div>

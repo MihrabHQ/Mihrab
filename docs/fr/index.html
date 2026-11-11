@@ -47,7 +47,7 @@
   "name": "Mihrab: The Muslim Companion",
   "alternateName": "Mihrab",
   "applicationCategory": "LifestyleApplication",
-  "operatingSystem": "Android, iOS, iPadOS, macOS",
+  "operatingSystem": "Android, iOS, iPadOS, macOS, Windows, Linux",
   "softwareVersion": "2.37.0",
   "url": "https://mihrab.elghamri.se/fr/",
   "inLanguage": "fr",
@@ -110,6 +110,46 @@
         "@type": "Answer",
         "text": "iPhone, iPad, Android et Mac. Sur Mac, l'installation se fait avec Homebrew."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "Pourquoi les horaires de Mihrab diffèrent-ils de ceux d’autres applications ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "La plupart des applications utilisent une méthode générale et tombent à une minute ou plus du calendrier que suit votre mosquée. Là où s’applique le calendrier de la Diyanet, des ministères du Maroc et de l’Algérie, du Kemenag ou celui de la Suède, Mihrab donne la minute imprimée : la méthode propre à l’autorité, vérifiée jour après jour par rapport à son calendrier publié. Ailleurs, l’application utilise AlAdhan ou la méthode de votre choix."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Que se passe-t-il après la dernière date publiée d’un calendrier ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "La méthode continue seule, sans sa liste de corrections. Sur les horaires vérifiés, la méthode seule tombe sur la minute imprimée, à une petite fraction près, et celle-ci s’écarte d’une minute, jamais plus ; l’application le signale dans « Aujourd’hui ». Dès que les mois suivants sont publiés et vérifiés, la nouvelle liste arrive dans l’application sans mise à jour."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment vérifier les horaires moi-même ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Comparez une semaine de la vue mensuelle de Mihrab avec le calendrier imprimé de votre autorité. Les méthodes, le script qui vérifie chaque horaire et le relevé qu’il produit sont publics dans le dépôt mihrab-methods sur GitHub."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mihrab est-il affilié à la Diyanet ou à un ministère ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Non. Mihrab est indépendant : il n’est affilié à aucune autorité dont il suit le calendrier, ni approuvé par elle. Pour tout ce qui concerne les horaires eux-mêmes, la publication de l’autorité fait foi."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mihrab suit-il ma position ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Non. Il n’y a ni statistiques, ni réseau publicitaire, ni compte. Les coordonnées ne quittent le téléphone que dans deux requêtes, aucune vers le développeur : vers AlAdhan lorsqu’il est la source de vos horaires, et, avec la position automatique, vers OpenStreetMap pour nommer votre ville, arrondies à environ un kilomètre. Choisissez le calcul sur l’appareil et saisissez votre ville à la main : aucune des deux requêtes n’est faite."
+      }
     }
   ]
 }
@@ -147,6 +187,18 @@
     <div class="brandline">
       <img src="../assets/img/icon.png" width="62" height="62" alt="Mihrab">
       <span class="wordmark">Mihrab</span>
+<!-- jump:start -->
+<nav class="jump" aria-label="Sections">
+  <ul>
+    <li><a href="#install">Installer</a></li>
+    <li><a href="#accuracy">Précision</a></li>
+    <li><a href="#screenshots">Captures</a></li>
+    <li><a href="#features">Fonctions</a></li>
+    <li><a href="#privacy">Vie privée</a></li>
+    <li><a href="#faq">Questions</a></li>
+  </ul>
+</nav>
+<!-- jump:end -->
 <!-- langpicker:start -->
 <details class="langpicker">
   <summary>
@@ -171,8 +223,19 @@
 </details>
 <!-- langpicker:end -->
     </div>
+    <div class="hero-grid">
+    <div class="hero-text">
     <h1>Pour chaque prière, et tout ce qui les sépare.</h1>
     <p class="sub">Mihrab est un compagnon serein pour la journée d'un musulman : les heures de prière et l'adhan, le mushaf de Médine avec récitation, couleurs du tajwid et lecteur de mots, et les douas et le rappel entre les prières — sans compte, sans publicité, sans statistiques. Une fois votre position définie, la journée fonctionne même hors ligne.</p>
+<!-- cta:start -->
+    <div class="cta">
+      <ul class="badges">
+        <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="../assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="../assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
+      </ul>
+      <a class="more" href="#install">Windows, Linux, F-Droid et le web <span aria-hidden="true">&darr;</span></a>
+    </div>
+<!-- cta:end -->
     <ul class="trust">
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Ni publicité, ni traceurs, ni compte</li>
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Fonctionne sans réseau</li>
@@ -180,15 +243,23 @@
     </ul>
     <p class="meta">
       <span>Version 2.37.0 (296)</span> <span class="dot" aria-hidden="true">•</span>
-      <span>iOS, Android, macOS</span> <span class="dot" aria-hidden="true">•</span>
+      <span>iOS, Android, macOS, Windows, Linux, web</span> <span class="dot" aria-hidden="true">•</span>
       <span>AGPL-3.0-or-later</span> <span class="dot" aria-hidden="true">•</span>
       <a href="https://github.com/MihrabHQ/Mihrab">Code source sur GitHub</a>
     </p>
+    </div>
+<!-- heroshot:start -->
+    <figure class="hero-shot">
+      <img src="../assets/img/hero-home.jpg?v=2026-11-05p" width="540" height="1200" decoding="async"
+        alt="Écran d’accueil sous le thème Ciel au coucher du soleil : le soleil bas dans un ciel rose et violet derrière un compte à rebours vivant jusqu’à Maghrib, la date au-dessus des horaires, et une coche près de chaque prière accomplie.">
+    </figure>
+<!-- heroshot:end -->
+    </div>
   </div>
 </header>
 
 <main id="main">
-<section class="install">
+<section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">Installation</p>
     <h2>Obtenir Mihrab</h2>
@@ -267,6 +338,51 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
+<section class="accuracy-section" id="accuracy" data-review="native">
+<!-- DRAFT: needs review by a native fr speaker before it is relied on -->
+  <div class="wrap">
+    <p class="eyebrow">Précision</p>
+    <h2>À la minute imprimée</h2>
+    <p class="lede">La plupart des applications de prière calculent les horaires avec une méthode générale et tombent à une minute ou plus du calendrier que suit votre mosquée. À la fin du Fajr, au Maghrib et au début d’un jour de jeûne, c’est cette minute qui compte.</p>
+    <p class="lede">Mihrab reproduit donc la méthode propre à chaque autorité — ses angles, ses marges et son arrondi —, la calcule sur votre téléphone et vérifie chaque horaire par rapport au calendrier publié : chaque lieu, chaque jour. Une méthode n’est utilisée que si aucun horaire ne s’en écarte.</p>
+<!-- accuracy-table:start -->
+      <div class="table-scroll">
+        <table class="accuracy">
+          <caption>Tous les horaires auxquels chaque méthode a été comparée</caption>
+          <thead><tr><th scope="col"></th><th scope="col">Concorde avec le calendrier publié par</th><th scope="col">Lieux</th><th scope="col">Horaires vérifiés</th><th scope="col">Hors de la minute imprimée</th><th scope="col">Période vérifiée</th></tr></thead>
+          <tbody>
+          <tr><th scope="row">Suède</th><td>les tables de l’Association islamique de Suède</td><td>107</td><td>63 114</td><td><strong>0</strong></td><td>11 oct. 2026 → 14 déc. 2027</td></tr>
+          <tr class="cont"><th scope="row"></th><td>les tables de la Diyanet pour la Suède</td><td>159</td><td>1 393 794</td><td><strong>0</strong></td><td>1 janv. 2024 → 31 déc. 2027</td></tr>
+          <tr><th scope="row">Diyanet</th><td>les tables de la Diyanet, Turquie et monde</td><td>8 132</td><td>69 999 603</td><td><strong>0</strong></td><td>1 janv. 2024 → 31 déc. 2027</td></tr>
+          <tr><th scope="row">Maroc</th><td>le ministère des Habous et des Affaires islamiques</td><td>164</td><td>94 350</td><td><strong>0</strong></td><td>27 août 2026 → 30 nov. 2026</td></tr>
+          <tr><th scope="row">Algérie</th><td>le ministère des Affaires religieuses et des Wakfs</td><td>68</td><td>101 184</td><td><strong>0</strong></td><td>1 oct. 2026 → 5 juin 2027</td></tr>
+          <tr><th scope="row">Indonésie</th><td>Kemenag</td><td>517</td><td>362 934</td><td><strong>0</strong></td><td>7 oct. 2026 → 31 janv. 2027</td></tr>
+          </tbody>
+          <tfoot><tr><th scope="row">Total</th><td>Dernière vérification 9 novembre 2026</td><td></td><td>72 014 979</td><td><strong>0</strong></td><td></td></tr></tfoot>
+        </table>
+      </div>
+<!-- accuracy-table:end -->
+    <div class="cols">
+      <article class="card">
+        <h3>Vérifiez vous-même</h3>
+        <p>Les méthodes, la vérification et son relevé sont publics dans <a href="https://github.com/MihrabHQ/mihrab-methods">mihrab-methods</a>. Dernière vérification : <!--fig:total.checkedAtLong-->9 novembre 2026<!--/fig-->.</p>
+      </article>
+      <article class="card">
+        <h3>Un horaire diffère de celui de votre mosquée ?</h3>
+        <p>Indiquez la ville, la date, la prière et l’horaire imprimé dans <a href="https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml">le formulaire de signalement</a>. Si votre mosquée a ses propres horaires, un décalage par prière dans l’application permet de les suivre.</p>
+      </article>
+      <article class="card">
+        <h3>Tables publiées, reprises telles quelles</h3>
+        <p>Singapour (MUIS), la Malaisie (JAKIM) et Türkiye Takvimi ne sont pas calculés : Mihrab affiche leurs propres tables publiées, minute pour minute. Elles ne font pas partie de la vérification ci-dessus. Partout ailleurs, les horaires viennent d’AlAdhan ou d’une méthode de calcul de votre choix.</p>
+      </article>
+      <article class="card">
+        <h3>Indépendant</h3>
+        <p>Mihrab n’est affilié à aucune des autorités citées ici, ni approuvé par elles. L’application concorde avec leurs calendriers publiés ; elle ne parle pas en leur nom.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="shots" id="screenshots">
   <div class="wrap">
     <p class="eyebrow">Captures d’écran</p>
@@ -274,6 +390,8 @@ sudo pacman -Syu mihrab</code></pre>
     <p class="lede">Chaque fonction sur l’appareil pour lequel elle est faite : d’abord les téléphones, puis iPad, Mac, Windows et Chromebook, sous le thème Ciel au fil des heures d’une journée. Le mushaf est la page de Médine imprimée elle-même, pas une image de celle-ci. L’application à l’écran est en anglais ; elle parle aussi français.</p>
     <figure class="xplat">
       <img src="../assets/img/panels/xplat.jpg?v=2026-11-05p" width="2400" height="1200" loading="lazy" decoding="async"
+        srcset="../assets/img/panels/xplat-1200.jpg?v=2026-11-05p 1200w, ../assets/img/panels/xplat.jpg?v=2026-11-05p 2400w"
+        sizes="(max-width: 1128px) calc(100vw - 48px), 1032px"
         alt="Sur tous vos appareils. Téléphones, tablettes et pliables Android, iPhone, iPad, Mac, Windows, Linux et le web — synchronisés sans compte et sans aucun serveur à nous.">
     </figure>
     <ul class="panels">
@@ -469,7 +587,7 @@ sudo pacman -Syu mihrab</code></pre>
 </section>
 <!-- reviews:end -->
 
-<section class="features">
+<section class="features" id="features">
   <div class="wrap">
     <p class="eyebrow">Fonctions</p>
     <h2>Un compagnon, du Fajr à l'Isha</h2>
@@ -526,7 +644,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="privacy">
+<section class="privacy" id="privacy">
   <div class="wrap">
     <p class="eyebrow">Vie privée</p>
     <h2>Pas de compte, pas de pistage — et chaque requête écrite noir sur blanc</h2>
@@ -548,7 +666,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="faq">
+<section class="faq" id="faq">
   <div class="wrap">
     <p class="eyebrow">Questions fréquentes</p>
     <h2>Les questions que l'on pose d'abord</h2>
@@ -568,6 +686,26 @@ sudo pacman -Syu mihrab</code></pre>
       <article class="card">
         <h3>Quels appareils sont pris en charge ?</h3>
         <p>iPhone, iPad, Android et Mac. Sur Mac, l'installation se fait avec Homebrew.</p>
+      </article>
+      <article class="card">
+        <h3>Pourquoi les horaires de Mihrab diffèrent-ils de ceux d’autres applications ?</h3>
+        <p>La plupart des applications utilisent une méthode générale et tombent à une minute ou plus du calendrier que suit votre mosquée. Là où s’applique le calendrier de la Diyanet, des ministères du Maroc et de l’Algérie, du Kemenag ou celui de la Suède, Mihrab donne la minute imprimée : la méthode propre à l’autorité, vérifiée jour après jour par rapport à son calendrier publié. Ailleurs, l’application utilise AlAdhan ou la méthode de votre choix.</p>
+      </article>
+      <article class="card">
+        <h3>Que se passe-t-il après la dernière date publiée d’un calendrier ?</h3>
+        <p>La méthode continue seule, sans sa liste de corrections. Sur les horaires vérifiés, la méthode seule tombe sur la minute imprimée, à une petite fraction près, et celle-ci s’écarte d’une minute, jamais plus ; l’application le signale dans « Aujourd’hui ». Dès que les mois suivants sont publiés et vérifiés, la nouvelle liste arrive dans l’application sans mise à jour.</p>
+      </article>
+      <article class="card">
+        <h3>Comment vérifier les horaires moi-même ?</h3>
+        <p>Comparez une semaine de la vue mensuelle de Mihrab avec le calendrier imprimé de votre autorité. Les méthodes, le script qui vérifie chaque horaire et le relevé qu’il produit sont publics dans le dépôt mihrab-methods sur GitHub.</p>
+      </article>
+      <article class="card">
+        <h3>Mihrab est-il affilié à la Diyanet ou à un ministère ?</h3>
+        <p>Non. Mihrab est indépendant : il n’est affilié à aucune autorité dont il suit le calendrier, ni approuvé par elle. Pour tout ce qui concerne les horaires eux-mêmes, la publication de l’autorité fait foi.</p>
+      </article>
+      <article class="card">
+        <h3>Mihrab suit-il ma position ?</h3>
+        <p>Non. Il n’y a ni statistiques, ni réseau publicitaire, ni compte. Les coordonnées ne quittent le téléphone que dans deux requêtes, aucune vers le développeur : vers AlAdhan lorsqu’il est la source de vos horaires, et, avec la position automatique, vers OpenStreetMap pour nommer votre ville, arrondies à environ un kilomètre. Choisissez le calcul sur l’appareil et saisissez votre ville à la main : aucune des deux requêtes n’est faite.</p>
       </article>
     </div>
   </div>

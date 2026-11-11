@@ -168,6 +168,12 @@ def main():
     print('site gallery:')
     for src, dst in GALLERY:
         phone(src, os.path.join(SITE, dst + '.png'))
+    # The hero's phone (scripts/build-site.js, heroShot): the home shot at
+    # the width the page draws it, twice over for a dense screen.
+    hero = Image.open(os.path.join(SITE, 'shot-home.png')).convert('RGB')
+    hero = hero.resize((540, round(hero.height * 540 / hero.width)), Image.LANCZOS)
+    hero.save(os.path.join(SITE, 'hero-home.jpg'), quality=84, optimize=True)
+    print('  ', 'docs/assets/img/hero-home.jpg', hero.size)
     print('the spread:')
     wide('tab-spread', os.path.join(SITE, 'shot-spread.png'))
     print('readme:')

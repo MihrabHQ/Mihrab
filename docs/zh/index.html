@@ -47,7 +47,7 @@
   "name": "Mihrab: The Muslim Companion",
   "alternateName": "Mihrab",
   "applicationCategory": "LifestyleApplication",
-  "operatingSystem": "Android, iOS, iPadOS, macOS",
+  "operatingSystem": "Android, iOS, iPadOS, macOS, Windows, Linux",
   "softwareVersion": "2.37.0",
   "url": "https://mihrab.elghamri.se/zh/",
   "inLanguage": "zh",
@@ -110,6 +110,46 @@
         "@type": "Answer",
         "text": "iPhone、iPad、Android 和 Mac。Mac 上可用 Homebrew 安装。"
       }
+    },
+    {
+      "@type": "Question",
+      "name": "为什么 Mihrab 的时间与其他应用不同？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "多数应用使用一种通用方法，结果与你的清真寺所依据的时间表相差一分钟或更多。在适用 Diyanet、摩洛哥和阿尔及利亚的部委、Kemenag 或瑞典时间表的地方，Mihrab 给出的就是印出的那一分钟：采用机构自己的方法，并逐日与其公布的时间表核对。其他地方则使用 AlAdhan 或你选择的方法。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "时间表最后公布的日期之后会怎样？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "方法会在没有修正表的情况下继续单独计算。在已核对的时间里，方法本身除极小一部分外都落在印出的那一分钟上，而这一小部分只差一分钟，绝不会更多；应用会在“今日”页面上说明这一点。下一批月份公布并核对后，新的修正表无需更新应用即可送达。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "我怎样自己核对时间？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "把 Mihrab 月视图中的一周与你所依据机构印出的时间表对照。这些方法、核对每个时间的脚本以及它写下的记录，都公开在 GitHub 上的 mihrab-methods 仓库中。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mihrab 隶属于 Diyanet 或某个部委吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不。Mihrab 是独立的，与其时间表相符的任何机构都没有隶属关系，也未获其认可。凡涉及时间本身的问题，都以该机构自己的公布为准。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mihrab 会追踪我的位置吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不会。没有统计分析，没有广告网络，也没有账号。坐标只在两种请求中离开手机，且都不发给开发者：当 AlAdhan 是你的时间来源时发给 AlAdhan；使用自动定位时发给 OpenStreetMap 以查出你所在城镇的名称，并取整到约一公里。选择在设备上计算并手动输入城镇，这两种请求都不会发出。"
+      }
     }
   ]
 }
@@ -147,6 +187,18 @@
     <div class="brandline">
       <img src="../assets/img/icon.png" width="62" height="62" alt="Mihrab">
       <span class="wordmark">Mihrab</span>
+<!-- jump:start -->
+<nav class="jump" aria-label="页面导航">
+  <ul>
+    <li><a href="#install">安装</a></li>
+    <li><a href="#accuracy">准确度</a></li>
+    <li><a href="#screenshots">截图</a></li>
+    <li><a href="#features">功能</a></li>
+    <li><a href="#privacy">隐私</a></li>
+    <li><a href="#faq">常见问题</a></li>
+  </ul>
+</nav>
+<!-- jump:end -->
 <!-- langpicker:start -->
 <details class="langpicker">
   <summary>
@@ -171,8 +223,19 @@
 </details>
 <!-- langpicker:end -->
     </div>
+    <div class="hero-grid">
+    <div class="hero-text">
     <h1>为每一次礼拜，也为礼拜之间的一切。</h1>
     <p class="sub">Mihrab 是穆斯林一天中安静的伴侣：礼拜时间与宣礼，带诵读、泰吉威德着色和逐词朗读的麦地那穆斯哈夫，以及礼拜之间的祈祷词与记念——无需账号，没有广告，没有统计。设定位置后，整天都能离线使用。</p>
+<!-- cta:start -->
+    <div class="cta">
+      <ul class="badges">
+        <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="../assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="../assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
+      </ul>
+      <a class="more" href="#install">Windows、Linux、F-Droid 和网页版 <span aria-hidden="true">&darr;</span></a>
+    </div>
+<!-- cta:end -->
     <ul class="trust">
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>无广告、无追踪、无账号</li>
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>断网也能用</li>
@@ -180,15 +243,23 @@
     </ul>
     <p class="meta">
       <span>版本 2.37.0 (296)</span> <span class="dot" aria-hidden="true">•</span>
-      <span>iOS, Android, macOS</span> <span class="dot" aria-hidden="true">•</span>
+      <span>iOS, Android, macOS, Windows, Linux, web</span> <span class="dot" aria-hidden="true">•</span>
       <span>AGPL-3.0-or-later</span> <span class="dot" aria-hidden="true">•</span>
       <a href="https://github.com/MihrabHQ/Mihrab">GitHub 上的源码</a>
     </p>
+    </div>
+<!-- heroshot:start -->
+    <figure class="hero-shot">
+      <img src="../assets/img/hero-home.jpg?v=2026-11-05p" width="540" height="1200" decoding="async"
+        alt="日落时“天空”主题下的主屏幕：粉紫色天空中低垂的太阳，背后是到昏礼的实时倒计时，时刻表上方是日期，已完成的每次礼拜旁有勾选。">
+    </figure>
+<!-- heroshot:end -->
+    </div>
   </div>
 </header>
 
 <main id="main">
-<section class="install">
+<section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">安装</p>
     <h2>获取 Mihrab</h2>
@@ -267,6 +338,51 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
+<section class="accuracy-section" id="accuracy" data-review="native">
+<!-- DRAFT: needs review by a native zh speaker before it is relied on -->
+  <div class="wrap">
+    <p class="eyebrow">准确度</p>
+    <h2>精确到印出的那一分钟</h2>
+    <p class="lede">多数礼拜应用用一种通用方法计算时间，结果与你的清真寺所依据的时间表相差一分钟或更多。在晨礼结束时、昏礼时和封斋开始时，要紧的正是这一分钟。</p>
+    <p class="lede">因此 Mihrab 重建每个机构自己的方法——它的角度、预留量和取整方式——在你的手机上计算，并把每一个时间与公布的时间表逐一核对：每个地点，每一天。只有没有任何时间出现偏差时，才会使用这种方法。</p>
+<!-- accuracy-table:start -->
+      <div class="table-scroll">
+        <table class="accuracy">
+          <caption>每种方法核对过的全部时间</caption>
+          <thead><tr><th scope="col"></th><th scope="col">与其公布的时间表一致</th><th scope="col">地点</th><th scope="col">已核对的时间</th><th scope="col">偏离印出分钟的</th><th scope="col">核对范围</th></tr></thead>
+          <tbody>
+          <tr><th scope="row">瑞典</th><td>瑞典伊斯兰协会的时间表</td><td>107</td><td>63,114</td><td><strong>0</strong></td><td>2026年10月11日 → 2027年12月14日</td></tr>
+          <tr class="cont"><th scope="row"></th><td>Diyanet 的瑞典时间表</td><td>159</td><td>1,393,794</td><td><strong>0</strong></td><td>2024年1月1日 → 2027年12月31日</td></tr>
+          <tr><th scope="row">Diyanet</th><td>Diyanet 的时间表，土耳其及全球</td><td>8,132</td><td>69,999,603</td><td><strong>0</strong></td><td>2024年1月1日 → 2027年12月31日</td></tr>
+          <tr><th scope="row">摩洛哥</th><td>宗教基金与伊斯兰事务部</td><td>164</td><td>94,350</td><td><strong>0</strong></td><td>2026年8月27日 → 2026年11月30日</td></tr>
+          <tr><th scope="row">阿尔及利亚</th><td>宗教事务与基金部</td><td>68</td><td>101,184</td><td><strong>0</strong></td><td>2026年10月1日 → 2027年6月5日</td></tr>
+          <tr><th scope="row">印度尼西亚</th><td>Kemenag</td><td>517</td><td>362,934</td><td><strong>0</strong></td><td>2026年10月7日 → 2027年1月31日</td></tr>
+          </tbody>
+          <tfoot><tr><th scope="row">合计</th><td>最近核对 2026年11月9日</td><td></td><td>72,014,979</td><td><strong>0</strong></td><td></td></tr></tfoot>
+        </table>
+      </div>
+<!-- accuracy-table:end -->
+    <div class="cols">
+      <article class="card">
+        <h3>自己核对</h3>
+        <p>这些方法、核对过程及其记录都公开在 <a href="https://github.com/MihrabHQ/mihrab-methods">mihrab-methods</a>。最近一次核对：<!--fig:total.checkedAtLong-->2026年11月9日<!--/fig-->。</p>
+      </article>
+      <article class="card">
+        <h3>某个时间与你的清真寺不同？</h3>
+        <p>请在<a href="https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml">报告表单</a>中写明城市、日期、哪一番礼拜以及印出的时间。如果你的清真寺有自己的时间，可以在应用中为每番礼拜单独设置偏移来对齐。</p>
+      </article>
+      <article class="card">
+        <h3>公布的时间表，照原样使用</h3>
+        <p>新加坡（MUIS）、马来西亚（JAKIM）和 Türkiye Takvimi 不经计算：Mihrab 逐分钟显示它们自己公布的时间表。它们不在上面的核对范围内。其他地区的时间来自 AlAdhan 或你选择的计算方法。</p>
+      </article>
+      <article class="card">
+        <h3>独立</h3>
+        <p>Mihrab 与这里提到的任何机构都没有隶属关系，也未获其认可。它与这些机构公布的时间表一致，但不代表它们发言。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="shots" id="screenshots">
   <div class="wrap">
     <p class="eyebrow">应用截图</p>
@@ -274,6 +390,8 @@ sudo pacman -Syu mihrab</code></pre>
     <p class="lede">每项功能都在它所针对的设备上展示：先是手机，再是 iPad、Mac、Windows 和 Chromebook，以“天空”主题贯穿一天的各个时辰。穆斯哈夫就是印刷的麦地那版页面本身，而不是它的图片。屏幕上的应用是英文的；它同样说中文。</p>
     <figure class="xplat">
       <img src="../assets/img/panels/xplat.jpg?v=2026-11-05p" width="2400" height="1200" loading="lazy" decoding="async"
+        srcset="../assets/img/panels/xplat-1200.jpg?v=2026-11-05p 1200w, ../assets/img/panels/xplat.jpg?v=2026-11-05p 2400w"
+        sizes="(max-width: 1128px) calc(100vw - 48px), 1032px"
         alt="在你的每一台设备上。 安卓手机、平板与折叠屏，iPhone、iPad、Mac、Windows、Linux 和网页——同步保持一致，无需账户，也没有我们的服务器。">
     </figure>
     <ul class="panels">
@@ -469,7 +587,7 @@ sudo pacman -Syu mihrab</code></pre>
 </section>
 <!-- reviews:end -->
 
-<section class="features">
+<section class="features" id="features">
   <div class="wrap">
     <p class="eyebrow">功能</p>
     <h2>从晨礼到宵礼，一位伴侣</h2>
@@ -498,7 +616,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="privacy">
+<section class="privacy" id="privacy">
   <div class="wrap">
     <p class="eyebrow">隐私</p>
     <h2>无账户、无追踪——每个请求都写明</h2>
@@ -520,7 +638,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="faq">
+<section class="faq" id="faq">
   <div class="wrap">
     <p class="eyebrow">常见问题</p>
     <h2>最先被问到的问题</h2>
@@ -540,6 +658,26 @@ sudo pacman -Syu mihrab</code></pre>
       <article class="card">
         <h3>支持哪些设备？</h3>
         <p>iPhone、iPad、Android 和 Mac。Mac 上可用 Homebrew 安装。</p>
+      </article>
+      <article class="card">
+        <h3>为什么 Mihrab 的时间与其他应用不同？</h3>
+        <p>多数应用使用一种通用方法，结果与你的清真寺所依据的时间表相差一分钟或更多。在适用 Diyanet、摩洛哥和阿尔及利亚的部委、Kemenag 或瑞典时间表的地方，Mihrab 给出的就是印出的那一分钟：采用机构自己的方法，并逐日与其公布的时间表核对。其他地方则使用 AlAdhan 或你选择的方法。</p>
+      </article>
+      <article class="card">
+        <h3>时间表最后公布的日期之后会怎样？</h3>
+        <p>方法会在没有修正表的情况下继续单独计算。在已核对的时间里，方法本身除极小一部分外都落在印出的那一分钟上，而这一小部分只差一分钟，绝不会更多；应用会在“今日”页面上说明这一点。下一批月份公布并核对后，新的修正表无需更新应用即可送达。</p>
+      </article>
+      <article class="card">
+        <h3>我怎样自己核对时间？</h3>
+        <p>把 Mihrab 月视图中的一周与你所依据机构印出的时间表对照。这些方法、核对每个时间的脚本以及它写下的记录，都公开在 GitHub 上的 mihrab-methods 仓库中。</p>
+      </article>
+      <article class="card">
+        <h3>Mihrab 隶属于 Diyanet 或某个部委吗？</h3>
+        <p>不。Mihrab 是独立的，与其时间表相符的任何机构都没有隶属关系，也未获其认可。凡涉及时间本身的问题，都以该机构自己的公布为准。</p>
+      </article>
+      <article class="card">
+        <h3>Mihrab 会追踪我的位置吗？</h3>
+        <p>不会。没有统计分析，没有广告网络，也没有账号。坐标只在两种请求中离开手机，且都不发给开发者：当 AlAdhan 是你的时间来源时发给 AlAdhan；使用自动定位时发给 OpenStreetMap 以查出你所在城镇的名称，并取整到约一公里。选择在设备上计算并手动输入城镇，这两种请求都不会发出。</p>
       </article>
     </div>
   </div>

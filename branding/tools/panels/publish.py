@@ -146,6 +146,11 @@ def web():
     Image.open(os.path.join(sc, 'en', '01_og.png')).convert('RGB').save(os.path.join(img, 'og-hero.png'))
     # The devices alone carry no words: one picture for every page.
     jpeg(os.path.join(sc, 'en', '01_xplat.png'), os.path.join(img, 'panels', 'xplat.jpg'), 84)
+    # The same picture at half the width, for a phone: the page offers both
+    # in a srcset and a narrow screen takes this one (scripts/build-site.js).
+    half = Image.open(os.path.join(sc, 'en', '01_xplat.png')).convert('RGB')
+    half = half.resize((1200, round(half.height * 1200 / half.width)), Image.LANCZOS)
+    half.save(os.path.join(img, 'panels', 'xplat-1200.jpg'), quality=82, optimize=True)
     for lang in langs('play-phone'):
         d = os.path.join(img, 'panels', lang)
         os.makedirs(d, exist_ok=True)

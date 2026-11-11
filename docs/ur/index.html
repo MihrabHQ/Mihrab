@@ -47,7 +47,7 @@
   "name": "Mihrab: The Muslim Companion",
   "alternateName": "Mihrab",
   "applicationCategory": "LifestyleApplication",
-  "operatingSystem": "Android, iOS, iPadOS, macOS",
+  "operatingSystem": "Android, iOS, iPadOS, macOS, Windows, Linux",
   "softwareVersion": "2.37.0",
   "url": "https://mihrab.elghamri.se/ur/",
   "inLanguage": "ur",
@@ -110,6 +110,46 @@
         "@type": "Answer",
         "text": "آئی فون، آئی پیڈ، اینڈرائیڈ اور میک۔ میک پر Homebrew سے انسٹال کریں۔"
       }
+    },
+    {
+      "@type": "Question",
+      "name": "محراب کے اوقات دوسری ایپس سے مختلف کیوں ہیں؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "زیادہ تر ایپس ایک عمومی طریقہ استعمال کرتی ہیں اور اس جدول سے ایک منٹ یا زیادہ ہٹ جاتی ہیں جس پر آپ کی مسجد چلتی ہے۔ جہاں دیانت، مراکش اور الجزائر کی وزارتوں، Kemenag یا سویڈن کا جدول رائج ہے، وہاں محراب چھپا ہوا منٹ دیتا ہے: ادارے کا اپنا طریقہ، جو دن بہ دن اس کے شائع شدہ جدول سے ملایا گیا ہے۔ باقی جگہوں پر یہ AlAdhan یا آپ کا منتخب کردہ طریقہ استعمال کرتا ہے۔"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "جدول کی آخری شائع شدہ تاریخ کے بعد کیا ہوتا ہے؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "طریقہ اپنی تصحیحی فہرست کے بغیر اکیلا چلتا رہتا ہے۔ جن اوقات سے اسے ملایا گیا، ان میں طریقہ اکیلا بھی ایک چھوٹے سے حصے کے سوا چھپے ہوئے منٹ پر ہوتا ہے، اور وہ حصہ ایک منٹ ہٹتا ہے، اس سے زیادہ کبھی نہیں؛ ایپ «آج» کے صفحے پر یہ بتا دیتی ہے۔ جب اگلے مہینے شائع ہو کر جانچ لیے جاتے ہیں تو نئی فہرست بغیر اپ ڈیٹ کے ایپ تک پہنچ جاتی ہے۔"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "میں اوقات خود کیسے جانچ سکتا ہوں؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "محراب کے ماہانہ منظر کا ایک ہفتہ اپنے ادارے کے چھپے ہوئے جدول سے ملائیں۔ طریقے، ہر وقت کو جانچنے والا اسکرپٹ اور اس کا لکھا ہوا ریکارڈ GitHub پر mihrab-methods کے ذخیرے میں سب کے لیے کھلے ہیں۔"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "کیا محراب دیانت یا کسی وزارت سے وابستہ ہے؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "نہیں۔ محراب آزاد ہے اور جس ادارے کے جدول سے مطابقت رکھتا ہے اس سے نہ وابستہ ہے نہ اس کا توثیق یافتہ۔ اوقات سے متعلق ہر بات میں ادارے کی اپنی اشاعت ہی مرجع ہے۔"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "کیا محراب میرے مقام کا سراغ رکھتا ہے؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "نہیں۔ نہ کوئی اینالیٹکس ہے، نہ اشتہاری نیٹ ورک، نہ اکاؤنٹ۔ کوآرڈینیٹس فون سے صرف دو درخواستوں میں باہر جاتے ہیں، اور کوئی بھی ڈویلپر کو نہیں جاتی: AlAdhan کو، جب وہ آپ کے اوقات کا ماخذ ہو، اور خودکار مقام کی صورت میں OpenStreetMap کو، آپ کے قصبے کا نام جاننے کے لیے، تقریباً ایک کلومیٹر تک گول کر کے۔ آلے پر حساب منتخب کریں اور اپنا قصبہ خود درج کریں تو دونوں میں سے کوئی درخواست نہیں بھیجی جاتی۔"
+      }
     }
   ]
 }
@@ -147,6 +187,18 @@
     <div class="brandline">
       <img src="../assets/img/icon.png" width="62" height="62" alt="Mihrab">
       <span class="wordmark">Mihrab</span>
+<!-- jump:start -->
+<nav class="jump" aria-label="صفحے کے حصے">
+  <ul>
+    <li><a href="#install">انسٹال</a></li>
+    <li><a href="#accuracy">درستگی</a></li>
+    <li><a href="#screenshots">اسکرین شاٹس</a></li>
+    <li><a href="#features">خصوصیات</a></li>
+    <li><a href="#privacy">رازداری</a></li>
+    <li><a href="#faq">سوالات</a></li>
+  </ul>
+</nav>
+<!-- jump:end -->
 <!-- langpicker:start -->
 <details class="langpicker">
   <summary>
@@ -171,8 +223,19 @@
 </details>
 <!-- langpicker:end -->
     </div>
+    <div class="hero-grid">
+    <div class="hero-text">
     <h1>ہر نماز کے لیے، اور ان کے درمیان کی ہر چیز کے لیے۔</h1>
     <p class="sub">محراب ایک مسلمان کے دن کا پُرسکون رفیق ہے: نماز کے اوقات اور اذان، تلاوت، رنگین تجوید اور لفظ خواں کے ساتھ مدنی مصحف، اور نمازوں کے درمیان دعائیں اور ذکر — نہ اکاؤنٹ، نہ اشتہار، نہ تجزیات۔ مقام طے ہوتے ہی سارا دن نیٹ ورک کے بغیر چلتا ہے۔</p>
+<!-- cta:start -->
+    <div class="cta">
+      <ul class="badges">
+        <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="../assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="../assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
+      </ul>
+      <a class="more" href="#install">ونڈوز، لینکس، F-Droid اور ویب <span aria-hidden="true">&darr;</span></a>
+    </div>
+<!-- cta:end -->
     <ul class="trust">
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>نہ اشتہار، نہ ٹریکر، نہ اکاؤنٹ</li>
       <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>انٹرنیٹ کے بغیر کام کرتی ہے</li>
@@ -180,15 +243,23 @@
     </ul>
     <p class="meta">
       <span>ورژن 2.37.0 (296)</span> <span class="dot" aria-hidden="true">•</span>
-      <span>iOS, Android, macOS</span> <span class="dot" aria-hidden="true">•</span>
+      <span>iOS, Android, macOS, Windows, Linux, web</span> <span class="dot" aria-hidden="true">•</span>
       <span>AGPL-3.0-or-later</span> <span class="dot" aria-hidden="true">•</span>
       <a href="https://github.com/MihrabHQ/Mihrab">GitHub پر سورس</a>
     </p>
+    </div>
+<!-- heroshot:start -->
+    <figure class="hero-shot">
+      <img src="../assets/img/hero-home.jpg?v=2026-11-05p" width="540" height="1200" decoding="async"
+        alt="غروب کے وقت آسمان تھیم میں آج کی اسکرین: گلابی اور بنفشی آسمان میں ڈوبتا سورج، مغرب تک چلتی گنتی، اوقات کے اوپر دن، اور ہر ادا کی گئی نماز کے ساتھ نشان۔">
+    </figure>
+<!-- heroshot:end -->
+    </div>
   </div>
 </header>
 
 <main id="main">
-<section class="install">
+<section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">انسٹال</p>
     <h2>محراب حاصل کریں</h2>
@@ -267,6 +338,51 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
+<section class="accuracy-section" id="accuracy" data-review="native">
+<!-- DRAFT: needs review by a native ur speaker before it is relied on -->
+  <div class="wrap">
+    <p class="eyebrow">درستگی</p>
+    <h2>چھپے ہوئے منٹ تک</h2>
+    <p class="lede">زیادہ تر نماز ایپس اوقات ایک عمومی طریقے سے نکالتی ہیں اور اس جدول سے ایک منٹ یا زیادہ ہٹ جاتی ہیں جس پر آپ کی مسجد چلتی ہے۔ فجر کے آخر میں، مغرب کے وقت اور روزے کے آغاز پر یہی ایک منٹ اہم ہوتا ہے۔</p>
+    <p class="lede">اس لیے محراب ہر ادارے کا اپنا طریقہ — اس کے زاویے، احتیاطی وقفے اور گول کرنے کا اصول — دوبارہ بناتا ہے، اسے آپ کے فون پر شمار کرتا ہے اور ہر وقت کو شائع شدہ جدول سے ملاتا ہے: ہر جگہ، ہر دن۔ کوئی طریقہ تبھی استعمال ہوتا ہے جب ایک بھی وقت نہ ہٹے۔</p>
+<!-- accuracy-table:start -->
+      <div class="table-scroll">
+        <table class="accuracy">
+          <caption>ہر وہ وقت جس سے ہر طریقہ ملایا گیا ہے</caption>
+          <thead><tr><th scope="col"></th><th scope="col">جس کے شائع شدہ جدول سے مطابقت ہے</th><th scope="col">مقامات</th><th scope="col">جانچے گئے اوقات</th><th scope="col">چھپے ہوئے منٹ سے ہٹے ہوئے</th><th scope="col">جانچ کی مدت</th></tr></thead>
+          <tbody>
+          <tr><th scope="row">سویڈن</th><td>سویڈن کی اسلامی انجمن کے جدول</td><td>107</td><td>63,114</td><td><strong>0</strong></td><td>11 اکتوبر، 2026 → 14 دسمبر، 2027</td></tr>
+          <tr class="cont"><th scope="row"></th><td>سویڈن کے لیے دیانت کے جدول</td><td>159</td><td>1,393,794</td><td><strong>0</strong></td><td>1 جنوری، 2024 → 31 دسمبر، 2027</td></tr>
+          <tr><th scope="row">دیانت</th><td>دیانت کے جدول، ترکی اور دنیا بھر</td><td>8,132</td><td>69,999,603</td><td><strong>0</strong></td><td>1 جنوری، 2024 → 31 دسمبر، 2027</td></tr>
+          <tr><th scope="row">مراکش</th><td>وزارتِ اوقاف و اسلامی امور</td><td>164</td><td>94,350</td><td><strong>0</strong></td><td>27 اگست، 2026 → 30 نومبر، 2026</td></tr>
+          <tr><th scope="row">الجزائر</th><td>وزارتِ مذہبی امور و اوقاف</td><td>68</td><td>101,184</td><td><strong>0</strong></td><td>1 اکتوبر، 2026 → 5 جون، 2027</td></tr>
+          <tr><th scope="row">انڈونیشیا</th><td>Kemenag</td><td>517</td><td>362,934</td><td><strong>0</strong></td><td>7 اکتوبر، 2026 → 31 جنوری، 2027</td></tr>
+          </tbody>
+          <tfoot><tr><th scope="row">کل</th><td>آخری جانچ 9 نومبر، 2026</td><td></td><td>72,014,979</td><td><strong>0</strong></td><td></td></tr></tfoot>
+        </table>
+      </div>
+<!-- accuracy-table:end -->
+    <div class="cols">
+      <article class="card">
+        <h3>خود جانچیں</h3>
+        <p>طریقے، جانچ اور اس کا ریکارڈ <a href="https://github.com/MihrabHQ/mihrab-methods">mihrab-methods</a> میں سب کے لیے کھلے ہیں۔ آخری جانچ: <!--fig:total.checkedAtLong-->9 نومبر، 2026<!--/fig-->۔</p>
+      </article>
+      <article class="card">
+        <h3>کوئی وقت آپ کی مسجد سے مختلف ہے؟</h3>
+        <p>شہر، تاریخ، نماز اور چھپا ہوا وقت <a href="https://github.com/MihrabHQ/mihrab-methods/issues/new?template=times-differ.yml">رپورٹ فارم</a> میں لکھیں۔ اگر آپ کی مسجد اپنے اوقات رکھتی ہے تو ایپ میں ہر نماز کا الگ فرق انہیں ملا دیتا ہے۔</p>
+      </article>
+      <article class="card">
+        <h3>شائع شدہ جدول، جیسے چھپے ہیں</h3>
+        <p>سنگاپور (MUIS)، ملائیشیا (JAKIM) اور Türkiye Takvimi شمار نہیں کیے جاتے: محراب ان کے اپنے شائع شدہ جدول منٹ بہ منٹ دکھاتا ہے۔ یہ اوپر کی جانچ کا حصہ نہیں ہیں۔ باقی ہر جگہ اوقات AlAdhan سے یا آپ کے منتخب کردہ حسابی طریقے سے آتے ہیں۔</p>
+      </article>
+      <article class="card">
+        <h3>آزاد</h3>
+        <p>محراب یہاں مذکور کسی ادارے سے وابستہ نہیں اور نہ کسی کا توثیق یافتہ ہے۔ یہ ان کے شائع شدہ جدولوں سے مطابقت رکھتا ہے؛ ان کی طرف سے بات نہیں کرتا۔</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="shots" id="screenshots">
   <div class="wrap">
     <p class="eyebrow">اسکرین شاٹس</p>
@@ -274,6 +390,8 @@ sudo pacman -Syu mihrab</code></pre>
     <p class="lede">ہر خصوصیت اُسی ڈیوائس پر جس کے لیے بنی: پہلے فون، پھر iPad، Mac، Windows اور Chromebook، آسمان تھیم میں ایک دن کے پہروں کے ساتھ۔ مصحف مدینہ کا چھپا ہوا صفحہ ہی ہے، اُس کی تصویر نہیں۔ اسکرینوں پر ایپ انگریزی میں ہے؛ یہ اردو بھی بولتی ہے۔</p>
     <figure class="xplat">
       <img src="../assets/img/panels/xplat.jpg?v=2026-11-05p" width="2400" height="1200" loading="lazy" decoding="async"
+        srcset="../assets/img/panels/xplat-1200.jpg?v=2026-11-05p 1200w, ../assets/img/panels/xplat.jpg?v=2026-11-05p 2400w"
+        sizes="(max-width: 1128px) calc(100vw - 48px), 1032px"
         alt="آپ کے ہر آلے پر۔ اینڈرائیڈ فون، ٹیبلیٹ اور فولڈ ایبل، آئی فون، آئی پیڈ، میک، ونڈوز، لینکس اور ویب — سِنک کے ساتھ، نہ اکاؤنٹ نہ ہمارا کوئی سرور۔">
     </figure>
     <ul class="panels">
@@ -469,7 +587,7 @@ sudo pacman -Syu mihrab</code></pre>
 </section>
 <!-- reviews:end -->
 
-<section class="features">
+<section class="features" id="features">
   <div class="wrap">
     <p class="eyebrow">خصوصیات</p>
     <h2>فجر سے عشاء تک، ایک رفیق</h2>
@@ -498,7 +616,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="privacy">
+<section class="privacy" id="privacy">
   <div class="wrap">
     <p class="eyebrow">رازداری</p>
     <h2>نہ اکاؤنٹ، نہ ٹریکنگ — اور ہر درخواست لکھی ہوئی</h2>
@@ -520,7 +638,7 @@ sudo pacman -Syu mihrab</code></pre>
   </div>
 </section>
 
-<section class="faq">
+<section class="faq" id="faq">
   <div class="wrap">
     <p class="eyebrow">عام سوالات</p>
     <h2>سب سے پہلے پوچھے جانے والے سوال</h2>
@@ -540,6 +658,26 @@ sudo pacman -Syu mihrab</code></pre>
       <article class="card">
         <h3>کن آلات پر چلتی ہے؟</h3>
         <p>آئی فون، آئی پیڈ، اینڈرائیڈ اور میک۔ میک پر Homebrew سے انسٹال کریں۔</p>
+      </article>
+      <article class="card">
+        <h3>محراب کے اوقات دوسری ایپس سے مختلف کیوں ہیں؟</h3>
+        <p>زیادہ تر ایپس ایک عمومی طریقہ استعمال کرتی ہیں اور اس جدول سے ایک منٹ یا زیادہ ہٹ جاتی ہیں جس پر آپ کی مسجد چلتی ہے۔ جہاں دیانت، مراکش اور الجزائر کی وزارتوں، Kemenag یا سویڈن کا جدول رائج ہے، وہاں محراب چھپا ہوا منٹ دیتا ہے: ادارے کا اپنا طریقہ، جو دن بہ دن اس کے شائع شدہ جدول سے ملایا گیا ہے۔ باقی جگہوں پر یہ AlAdhan یا آپ کا منتخب کردہ طریقہ استعمال کرتا ہے۔</p>
+      </article>
+      <article class="card">
+        <h3>جدول کی آخری شائع شدہ تاریخ کے بعد کیا ہوتا ہے؟</h3>
+        <p>طریقہ اپنی تصحیحی فہرست کے بغیر اکیلا چلتا رہتا ہے۔ جن اوقات سے اسے ملایا گیا، ان میں طریقہ اکیلا بھی ایک چھوٹے سے حصے کے سوا چھپے ہوئے منٹ پر ہوتا ہے، اور وہ حصہ ایک منٹ ہٹتا ہے، اس سے زیادہ کبھی نہیں؛ ایپ «آج» کے صفحے پر یہ بتا دیتی ہے۔ جب اگلے مہینے شائع ہو کر جانچ لیے جاتے ہیں تو نئی فہرست بغیر اپ ڈیٹ کے ایپ تک پہنچ جاتی ہے۔</p>
+      </article>
+      <article class="card">
+        <h3>میں اوقات خود کیسے جانچ سکتا ہوں؟</h3>
+        <p>محراب کے ماہانہ منظر کا ایک ہفتہ اپنے ادارے کے چھپے ہوئے جدول سے ملائیں۔ طریقے، ہر وقت کو جانچنے والا اسکرپٹ اور اس کا لکھا ہوا ریکارڈ GitHub پر mihrab-methods کے ذخیرے میں سب کے لیے کھلے ہیں۔</p>
+      </article>
+      <article class="card">
+        <h3>کیا محراب دیانت یا کسی وزارت سے وابستہ ہے؟</h3>
+        <p>نہیں۔ محراب آزاد ہے اور جس ادارے کے جدول سے مطابقت رکھتا ہے اس سے نہ وابستہ ہے نہ اس کا توثیق یافتہ۔ اوقات سے متعلق ہر بات میں ادارے کی اپنی اشاعت ہی مرجع ہے۔</p>
+      </article>
+      <article class="card">
+        <h3>کیا محراب میرے مقام کا سراغ رکھتا ہے؟</h3>
+        <p>نہیں۔ نہ کوئی اینالیٹکس ہے، نہ اشتہاری نیٹ ورک، نہ اکاؤنٹ۔ کوآرڈینیٹس فون سے صرف دو درخواستوں میں باہر جاتے ہیں، اور کوئی بھی ڈویلپر کو نہیں جاتی: AlAdhan کو، جب وہ آپ کے اوقات کا ماخذ ہو، اور خودکار مقام کی صورت میں OpenStreetMap کو، آپ کے قصبے کا نام جاننے کے لیے، تقریباً ایک کلومیٹر تک گول کر کے۔ آلے پر حساب منتخب کریں اور اپنا قصبہ خود درج کریں تو دونوں میں سے کوئی درخواست نہیں بھیجی جاتی۔</p>
       </article>
     </div>
   </div>
