@@ -16,8 +16,9 @@ Three Connect IQ apps, fed by the Android app through
   with am/pm and the seconds small to its right; the next prayer, its name
   in the accent and its time in white; the countdown to it in full,
   "05:49:12", in the same Roboto; and at the foot, as Garmin's own faces
-  write theirs, a footprint with today's steps and a battery with what is
-  left of it.
+  write theirs, a footprint with today's steps and under it a battery with
+  what is left of it — two short rows rather than one long one, because
+  the dial narrows there and a short row can go nearly to the ring.
   **Round the edge runs the day** — the app's Track bent into the bezel:
   the twenty-four hours once round, midnight at the foot and noon at the
   top; the night a thin grey line and the day (sunrise to Maghrib) a white
@@ -35,7 +36,10 @@ Three Connect IQ apps, fed by the Android app through
   a minute. The face is laid out, not placed: it picks each row's font and
   stacks the rows so that every row's ink — measured for the widest thing
   that row can show — lies inside the ring, trying arrangements from the
-  best down. After days without the phone the weather's row says the
+  best down; then, with the clock settled, it grows each small row a size
+  at a time while everything still fits and opens the gaps above and below
+  the clock, so the stack reaches from the top of the dial to its foot
+  instead of sitting in the middle of it. After days without the phone the weather's row says the
   times may be out of date. Temperatures are in °F where the app's place
   reads Fahrenheit and °C elsewhere; the weather is the watch's own, which
   Gadgetbridge fills from the phone's weather app (Breezy Weather, say);

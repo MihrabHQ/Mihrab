@@ -17,7 +17,8 @@
 //            9:41              07            the time · the seconds
 //            Asr  16:42                      the next prayer
 //             05:49:12                       the countdown
-//            👣 4532  ▭ 87%                  steps · battery
+//              👣 4532                       today's steps
+//               ▭ 87%                        the battery
 //
 // After days without the phone the weather's row says the times may be
 // out of date (the weather is the phone's too); with no times at all the
@@ -85,6 +86,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private const GAP_UNDER = 8;
     private const GAP_COUNT = 6;
     private const GAP_FOOT = 7;
+    // The most each gap is opened by once the fonts are chosen (half of
+    // it between rows that belong together).
+    private const AIR_MAX = 16;
 
     // Weather icon kinds.
     private const W_SUN = 0;
@@ -109,21 +113,29 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // the clip a partial update is charged for is no taller than what it
     // draws (clockfont.py has the arithmetic).
     private var _countFontIds as Array<ResourceId> = [
-        Rez.Fonts.Count28, Rez.Fonts.Count24, Rez.Fonts.Count20
+        Rez.Fonts.Count20, Rez.Fonts.Count24, Rez.Fonts.Count28
     ] as Array<ResourceId>;
     private var _fSeconds as Graphics.FontType = Graphics.FONT_XTINY;
-    // The small rows, best first: the date, the weather, the next prayer,
-    // the foot row (steps, battery; a message) — and which of the
-    // countdown's sizes goes with them. The side text — am/pm, the high
-    // and low — is the smallest font throughout: it is read second.
-    private var _sets as Array<Array<Graphics.FontType>> = [
-        [Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_MEDIUM, Graphics.FONT_TINY],
-        [Graphics.FONT_TINY, Graphics.FONT_TINY, Graphics.FONT_SMALL, Graphics.FONT_TINY],
-        [Graphics.FONT_TINY, Graphics.FONT_TINY, Graphics.FONT_SMALL, Graphics.FONT_TINY],
-        [Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_XTINY],
-        [Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_XTINY, Graphics.FONT_XTINY]
-    ] as Array<Array<Graphics.FontType>>;
-    private var _setCount as Array<Number> = [0, 0, 1, 1, 2] as Array<Number>;
+    // The small rows' fonts, smallest first, and the arrangements tried,
+    // best first: which of them the date, the weather, the next prayer
+    // and the foot row (steps, battery) take, and which of the
+    // countdown's sizes goes with them. Whatever arrangement fits is then
+    // grown row by row as far as the dial has room (`layout`), up to
+    // these caps. The side text — am/pm, the high and low — is the
+    // smallest font throughout: it is read second.
+    private var _rowFonts as Array<Graphics.FontType> = [
+        Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_SMALL, Graphics.FONT_MEDIUM
+    ] as Array<Graphics.FontType>;
+    private var _sets as Array<Array<Number>> = [
+        [1, 1, 2, 1, 2],
+        [1, 1, 2, 1, 1],
+        [0, 0, 1, 0, 1],
+        [0, 0, 0, 0, 0]
+    ] as Array<Array<Number>>;
+    private var _caps as Array<Number> = [2, 2, 3, 2, 2] as Array<Number>;
+    // The order rows are grown in: the next prayer, the date, the
+    // countdown, the foot, the weather.
+    private var _growOrder as Array<Number> = [2, 0, 4, 3, 1] as Array<Number>;
     private const F_SIDE = Graphics.FONT_XTINY;
 
     // What the face shows this minute.
@@ -158,6 +170,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private var _bClock as Number = 0;
     private var _bPrayer as Number = 0;
     private var _bCount as Number = 0;
+    private var _bSteps as Number = 0;
     private var _bFoot as Number = 0;
     // The column right of the figures (am/pm, the seconds): its width.
     private var _rightW as Number = 0;
@@ -301,7 +314,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
             drawLines(dc, reasonLines, _fPrayer, _bPrayer);
         }
 
-        // At the foot: steps and battery.
+        // At the foot: the steps, and the battery under them.
         drawFoot(dc);
     }
 
@@ -433,8 +446,8 @@ class MihrabFaceView extends WatchUi.WatchFace {
         return _lo <= _hi;
     }
 
-    // Tries the arrangements best first and keeps the first in which every
-    // row lies inside the ring. A step down in the small rows costs as
+    // Tries the arrangements best first and takes the first in which every
+    // row lies inside the ring, then fills the dial from it (`fill`). A step down in the small rows costs as
     // much as two in the clock: the clock is read from furthest away, but
     // not at any price to the line that says which prayer is next. Should
     // none fit, the smallest of all is kept, placed as well as it can be.
@@ -457,22 +470,66 @@ class MihrabFaceView extends WatchUi.WatchFace {
         for (var cost = 0; cost <= worst; cost++) {
             for (var s = 0; s < sets; s++) {
                 var c = cost - 2 * s;
-                if (c >= 0 && c < clocks && place(dc, c, s, cm[c], counts[_setCount[s]], false)) {
+                if (c >= 0 && c < clocks && place(dc, c, cm[c], _sets[s], counts, 0, 0, false)) {
+                    fill(dc, c, cm[c], _sets[s], counts);
                     return;
                 }
             }
         }
-        place(dc, clocks - 1, sets - 1, cm[clocks - 1], counts[_setCount[sets - 1]], true);
+        place(dc, clocks - 1, cm[clocks - 1], _sets[sets - 1], counts, 0, 0, true);
     }
 
-    // Stacks the rows for clock c and small set s, and keeps the
+    // An arrangement fits; now the rest of the dial. What stopped the
+    // fonts growing was the widest row — the clock, across the middle —
+    // not the height, and a stack sized for it leaves a round dial empty
+    // at the top and the foot. So, with the clock as it is: each small
+    // row is grown a size at a time while everything still fits (the next
+    // prayer first, then the date, the countdown, the foot, the weather);
+    // and then the gaps are opened, above the clock and below it each as
+    // far as its own end row still clears the ring.
+    private function fill(dc as Dc, c as Number, clock as Array<Number>, set as Array<Number>, counts as Array<Graphics.FontType>) as Void {
+        var pick = [set[0], set[1], set[2], set[3], set[4]] as Array<Number>;
+        var grew = true;
+        while (grew) {
+            grew = false;
+            for (var g = 0; g < _growOrder.size(); g++) {
+                var row = _growOrder[g];
+                if (pick[row] < _caps[row]) {
+                    pick[row] += 1;
+                    if (place(dc, c, clock, pick, counts, 0, 0, false)) {
+                        grew = true;
+                    } else {
+                        pick[row] -= 1;
+                    }
+                }
+            }
+        }
+        var above = 0;
+        for (var a = AIR_MAX; a > 0 && above == 0; a -= 2) {
+            if (place(dc, c, clock, pick, counts, a, 0, false)) {
+                above = a;
+            }
+        }
+        var below = 0;
+        for (var b = AIR_MAX; b > 0 && below == 0; b -= 2) {
+            if (place(dc, c, clock, pick, counts, above, b, false)) {
+                below = b;
+            }
+        }
+        // Whatever was tried last and failed left nothing behind; this is
+        // the arrangement that stands.
+        place(dc, c, clock, pick, counts, above, below, true);
+    }
+
+    // Stacks the rows for clock c and the picked fonts, with the gaps
+    // above and below the clock opened by that much, and keeps the
     // arrangement if every row fits (or, forced, regardless).
-    private function place(dc as Dc, c as Number, s as Number, clock as Array<Number>, fCount as Graphics.FontType, force as Boolean) as Boolean {
-        var set = _sets[s];
-        var fDate = set[0];
-        var fWeather = set[1];
-        var fPrayer = set[2];
-        var fFoot = set[3];
+    private function place(dc as Dc, c as Number, clock as Array<Number>, pick as Array<Number>, counts as Array<Graphics.FontType>, above as Number, below as Number, force as Boolean) as Boolean {
+        var fDate = _rowFonts[pick[0]];
+        var fWeather = _rowFonts[pick[1]];
+        var fPrayer = _rowFonts[pick[2]];
+        var fFoot = _rowFonts[pick[3]];
+        var fCount = counts[pick[4]];
         var full = 2 * (_w / 2 - INSET);
         _lo = -10000;
         _hi = 10000;
@@ -500,12 +557,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
                 staleLines = [stale];
             }
             var staleH = up(fWeather) + Graphics.getFontDescent(fWeather);
-            y += GAP_SMALL;
+            y += GAP_SMALL + above / 2;
             bWeather = y + up(fWeather);
             ok = fit(widest(dc, staleLines, fWeather) / 2, y, y + staleLines.size() * staleH) && ok;
             y += staleLines.size() * staleH - Graphics.getFontDescent(fWeather);
         } else if (weatherW > 0) {
-            y += GAP_SMALL;
+            y += GAP_SMALL + above / 2;
             bWeather = y + up(fWeather);
             ok = fit(weatherW / 2, y, bWeather + 2) && ok;
             y = bWeather;
@@ -521,7 +578,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
             rightW = sw > rightW ? sw : rightW;
         }
         var group = clock[0] + (rightW > 0 ? SIDE_GAP + rightW : 0);
-        y += GAP_CLOCK;
+        y += GAP_CLOCK + above;
         var bClock = y + clock[1];
         ok = fit(group / 2, y, bClock) && ok;
         y = bClock;
@@ -532,11 +589,11 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var reasonLines = null;
         var reason = _reasonText;
         if (reason == null) {
-            y += GAP_UNDER;
+            y += GAP_UNDER + below;
             bPrayer = y + up(fPrayer);
             var prayerW = widestName(dc, fPrayer) + textW(dc, "  ", fPrayer) + textW(dc, _hour12 ? "12:88 pm" : "88:88", fPrayer);
             ok = fit(prayerW / 2, y, bPrayer + Graphics.getFontDescent(fPrayer) / 2) && ok;
-            y = bPrayer + GAP_COUNT;
+            y = bPrayer + GAP_COUNT + below / 2;
             bCount = y + up(fCount);
             ok = fit(textW(dc, "88:88:88", fCount) / 2, y, bCount) && ok;
             y = bCount;
@@ -549,16 +606,27 @@ class MihrabFaceView extends WatchUi.WatchFace {
                 reasonLines = [reason];
             }
             var lineH = up(fPrayer) + Graphics.getFontDescent(fPrayer);
-            y += GAP_UNDER;
+            y += GAP_UNDER + below;
             bPrayer = y + up(fPrayer);
             ok = fit(widest(dc, reasonLines, fPrayer) / 2, y, y + reasonLines.size() * lineH) && ok;
             y += reasonLines.size() * lineH - Graphics.getFontDescent(fPrayer);
         }
 
-        // The foot: steps and battery.
-        y += GAP_FOOT;
+        // The foot: the steps, and under them the battery — two short
+        // rows, not one long one. The dial narrows towards its foot, and
+        // a row as wide as both together has to stop well short of it;
+        // each alone can go nearly to the ring.
+        var bSteps = y;
+        if (_showSteps) {
+            y += GAP_FOOT + below;
+            bSteps = y + up(fFoot);
+            ok = fit(stepsWidth(dc, fFoot) / 2, y, bSteps + 1) && ok;
+            y = bSteps + GAP_SMALL + below / 2;
+        } else {
+            y += GAP_FOOT + below;
+        }
         var bFoot = y + up(fFoot);
-        ok = fit(footWidth(dc, fFoot) / 2, y, bFoot + 1) && ok;
+        ok = fit(batteryWidth(dc, fFoot) / 2, y, bFoot + 1) && ok;
         y = bFoot;
 
         if (!ok && !force) {
@@ -583,6 +651,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         _bClock = start + bClock;
         _bPrayer = start + bPrayer;
         _bCount = start + bCount;
+        _bSteps = start + bSteps;
         _bFoot = start + bFoot;
         _rightW = rightW;
         _reasonLines = reasonLines;
@@ -608,13 +677,13 @@ class MihrabFaceView extends WatchUi.WatchFace {
         return w;
     }
 
-    // The foot row's width in font f, for the most it can show.
-    private function footWidth(dc as Dc, f as Graphics.FontType) as Number {
-        var w = CELL_W + 2 + 4 + textW(dc, "100%", f);
-        if (_showSteps) {
-            w += ICON + 3 + textW(dc, "88888", f) + 12;
-        }
-        return w;
+    // The foot rows' widths in font f, each for the most it can show.
+    private function stepsWidth(dc as Dc, f as Graphics.FontType) as Number {
+        return ICON + 3 + textW(dc, "88888", f);
+    }
+
+    private function batteryWidth(dc as Dc, f as Graphics.FontType) as Number {
+        return CELL_W + 2 + 4 + textW(dc, "100%", f);
     }
 
     // ---- Drawing ----
@@ -729,31 +798,28 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
     }
 
-    // The foot: a footprint and today's steps, a battery and what is left
-    // of it — each an icon and a figure, as Garmin's own faces write
-    // theirs. The battery's fill is green, then yellow, orange and red as
-    // it runs down; the figure stays white.
+    // The foot: a footprint and today's steps, and under them a battery
+    // and what is left of it — each an icon and a figure, as Garmin's own
+    // faces write theirs, each centred on its own row. The battery's fill
+    // is green, then yellow, orange and red as it runs down; the figure
+    // stays white.
     private function drawFoot(dc as Dc) as Void {
         var f = _fFoot;
+        if (_showSteps) {
+            var steps = stepCount().format("%d");
+            var sx = _w / 2 - (ICON + 3 + textW(dc, steps, f)) / 2;
+            dc.setColor(_accent, Graphics.COLOR_TRANSPARENT);
+            drawFootprints(dc, sx, _bSteps - up(f) / 2 + 2 - ICON / 2);
+            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(sx + ICON + 3, _bSteps - up(f), f, steps, Graphics.TEXT_JUSTIFY_LEFT);
+        }
         var b = _bFoot;
-        var top = b - up(f);
         var pct = System.getSystemStats().battery;
         pct = pct < 0.0 ? 0.0 : (pct > 100.0 ? 100.0 : pct);
         var pctText = (pct + 0.5).toNumber().format("%d") + "%";
-        var steps = _showSteps ? stepCount().format("%d") : "";
-        var cellW = CELL_W + 2 + 4 + textW(dc, pctText, f);
-        var stepsW = _showSteps ? ICON + 3 + textW(dc, steps, f) + 12 : 0;
-        var x = _w / 2 - (stepsW + cellW) / 2;
-        var mid = b - up(f) / 2 + 2;
-        if (_showSteps) {
-            dc.setColor(_accent, Graphics.COLOR_TRANSPARENT);
-            drawFootprints(dc, x, mid - ICON / 2);
-            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x + ICON + 3, top, f, steps, Graphics.TEXT_JUSTIFY_LEFT);
-            x += stepsW;
-        }
+        var x = _w / 2 - (CELL_W + 2 + 4 + textW(dc, pctText, f)) / 2;
         // The cell: a white outline, a nub, and the charge inside it.
-        var cy = mid - CELL_H / 2;
+        var cy = b - up(f) / 2 + 2 - CELL_H / 2;
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(1);
         dc.drawRectangle(x, cy, CELL_W, CELL_H);
@@ -764,7 +830,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
             dc.fillRectangle(x + 2, cy + 2, inner, CELL_H - 4);
         }
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x + CELL_W + 2 + 4, top, f, pctText, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(x + CELL_W + 2 + 4, b - up(f), f, pctText, Graphics.TEXT_JUSTIFY_LEFT);
     }
 
     private function batteryColor(pct as Float) as Number {
