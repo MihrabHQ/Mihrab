@@ -19,12 +19,15 @@ Three Connect IQ apps, fed by the Android app through
   write theirs, a footprint with today's steps and under it a battery with
   what is left of it — two short rows rather than one long one, because
   the dial narrows there and a short row can go nearly to the ring.
-  **Round the edge runs the day** — the app's Track bent into the bezel:
-  the twenty-four hours once round, midnight at the foot and noon at the
-  top; the night a thin grey line and the day (sunrise to Maghrib) a white
-  one; a tick at each prayer; the next prayer a ring in the accent; the
-  stretch from now to it thick in the accent, shortening as it nears; and
-  a bead for the time now, yellow by day and white by night.
+  **Round the edge are the twelve hours ahead**, read as a clock is read
+  — the app's Track bent into the bezel: a bead where the hour hand would
+  be is the time now (yellow by day, white by night); from it, clockwise,
+  the line is white while it will be day and thin grey while it will be
+  night, with a tick at each prayer on the way, the next one a ring in the
+  accent, and the stretch from now to it thick in the accent, shortening
+  as it nears. Isha at 17:45 stands where the hour hand points at a
+  quarter to six. (For one build it was the whole day once round with noon
+  at the top; nobody reads the edge of a watch that way.)
   The seconds and the countdown are redrawn every second inside their own
   clips (a partial update), from values kept since the minute's draw and
   in fonts whose box is exactly their figures (`garmin/tools/clockfont.py`),

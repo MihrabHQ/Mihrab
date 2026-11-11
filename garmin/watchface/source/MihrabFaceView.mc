@@ -10,7 +10,7 @@
 // since the minute's full draw — no storage read, no layout, once a
 // second.
 //
-//                 ·  ╷  ·                    the day round the edge (below)
+//                 ·  ╷  ·                    the twelve hours ahead (below)
 //               Wed 11 Nov                   the date (or the Hijri date)
 //             ☁ 8°  16°/7°                   the weather
 //                              am
@@ -24,15 +24,19 @@
 // out of date (the weather is the phone's too); with no times at all the
 // prayer's two rows say to open Mihrab.
 //
-// THE DAY ROUND THE EDGE is the app's Track bent into the bezel, the way
-// Garmin's own faces carry a gauge there: the twenty-four hours once
-// round, midnight at the foot and noon at the top, so the sun climbs the
-// left side and comes down the right. The night is a thin grey line and
-// the day (sunrise to Maghrib) a white one; each prayer is a tick at its
-// own time; the next one is a ring in the accent, as on the app's Track;
-// the stretch from now to it is drawn thick in the accent and shortens as
-// it nears; and a bead — the sun's yellow by day, white by night — is the
-// time now. It is drawn once a minute.
+// ROUND THE EDGE ARE THE TWELVE HOURS AHEAD, read as a clock is read: a
+// thing at 17:45 stands where the hour hand points at a quarter to six.
+// It is the app's Track bent into the bezel, the way Garmin's own faces
+// carry a gauge there. A bead is the time now — where the hour hand would
+// be, the sun's yellow by day and white by night; from it, clockwise, the
+// coming twelve hours: the line white while it will be day and thin grey
+// while it will be night, a tick at each prayer on the way, the next one
+// a ring in the accent, and the stretch from now to it drawn thick in the
+// accent, shortening as it nears. Drawn once a minute.
+//
+// (It was the whole day once round, noon at the top, for one build. Nobody
+// reads the edge of a watch that way: Isha at 17:45 sat at three o'clock,
+// and Fajr's tick at the foot of the left side read as "eight".)
 //
 // Laid out, not placed: each row's font is chosen and the rows stacked so
 // that every row's ink — measured for the widest thing it can show, not
@@ -861,19 +865,23 @@ class MihrabFaceView extends WatchUi.WatchFace {
         return Graphics.COLOR_RED;
     }
 
-    // ---- The day round the edge ----
+    // ---- The twelve hours ahead, round the edge ----
 
-    // Where a time of day sits on the ring, in drawArc's degrees (0 at
-    // three o'clock, counter-clockwise): midnight at the foot, the hours
-    // clockwise, noon at the top.
+    // Where a time sits on the ring, in drawArc's degrees (0 at three
+    // o'clock, counter-clockwise): where the hour hand of a clock would
+    // point at it. Twelve at the top, three on the right.
     private function degreesOf(secondsOfDay as Number) as Number {
-        var d = 270 - (secondsOfDay * 360 / 86400);
+        var d = 90 - ((secondsOfDay % 43200) * 360 / 43200);
         return d < 0 ? d + 360 : d;
     }
 
     private function secondsOfDay(epoch as Number) as Number {
         var info = Gregorian.info(new Time.Moment(epoch), Time.FORMAT_SHORT);
         return info.hour * 3600 + info.min * 60 + info.sec;
+    }
+
+    private function degreesAt(epoch as Number) as Number {
+        return degreesOf(secondsOfDay(epoch));
     }
 
     // A point on the ring at `degrees`, `inward` pixels in from it.
@@ -883,16 +891,18 @@ class MihrabFaceView extends WatchUi.WatchFace {
         return [_w / 2 + (r * Math.cos(a) + (Math.cos(a) < 0 ? -0.5 : 0.5)).toNumber(), _h / 2 - (r * Math.sin(a) + (Math.sin(a) < 0 ? -0.5 : 0.5)).toNumber()];
     }
 
-    // Clockwise from one time of day to another; nothing when they are
-    // the same place (drawArc would draw the whole circle).
+    // Clockwise from one place on the ring to another; nothing when they
+    // are the same place (drawArc would draw the whole circle).
     private function arc(dc as Dc, from as Number, to as Number) as Void {
         if (from != to) {
             dc.drawArc(_w / 2, _h / 2, _w / 2 - RING_IN, Graphics.ARC_CLOCKWISE, from, to);
         }
     }
 
-    // The twenty-four hours round the edge — see the head of this file.
-    // Square screens have no edge to run round and go without.
+    // The ring — see the head of this file. It is read as a clock is: a
+    // thing at 17:45 stands where the hour hand points at a quarter to
+    // six. Only the twelve hours ahead are on it, so no two things share
+    // a place. Square screens have no edge to run round and go without.
     private function drawRing(dc as Dc, now as Number, clock as System.ClockTime) as Void {
         if (!_round) {
             return;
@@ -900,7 +910,8 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var cx = _w / 2;
         var cy = _h / 2;
         var r = _w / 2 - RING_IN;
-        // The night: the whole way round, thin and grey.
+        var ahead = now + 12 * 3600;
+        // The hours ahead that are night: the whole way round, thin and grey.
         dc.setPenWidth(RING_PEN);
         dc.setColor(TRACK, Graphics.COLOR_TRANSPARENT);
         dc.drawCircle(cx, cy, r);
@@ -910,57 +921,67 @@ class MihrabFaceView extends WatchUi.WatchFace {
         if (times == null || next == null) {
             return;
         }
-        // The day the next prayer belongs to: after Isha that is
-        // tomorrow, whose times are within minutes of today's.
-        var day = (next[0] / Mihrab.PER_DAY) * Mihrab.PER_DAY;
         var nowDeg = degreesOf(clock.hour * 3600 + clock.min * 60 + clock.sec);
 
-        // The day, sunrise (Fajr, when the app shows no sunrise) to
-        // Maghrib: white over the grey.
-        var rise = times[day + Mihrab.SUNRISE] > 0 ? times[day + Mihrab.SUNRISE] : times[day];
-        var set = times[day + 4];
+        // The hours ahead that are day — sunrise (Fajr, when the app
+        // shows no sunrise) to Maghrib, of whichever days reach into the
+        // twelve hours: white over the grey.
         var daylight = false;
-        if (rise > 0 && set > rise) {
-            var riseDeg = degreesOf(secondsOfDay(rise));
-            var setDeg = degreesOf(secondsOfDay(set));
-            dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-            arc(dc, riseDeg, setDeg);
-            var nowSec = clock.hour * 3600 + clock.min * 60 + clock.sec;
-            daylight = nowSec >= secondsOfDay(rise) && nowSec < secondsOfDay(set);
+        dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
+        for (var day = 0; day + Mihrab.PER_DAY <= times.size(); day += Mihrab.PER_DAY) {
+            var rise = times[day + Mihrab.SUNRISE] > 0 ? times[day + Mihrab.SUNRISE] : times[day];
+            var set = times[day + 4];
+            if (rise <= 0 || set <= rise) {
+                continue;
+            }
+            if (now >= rise && now < set) {
+                daylight = true;
+            }
+            var from = rise > now ? rise : now;
+            var to = set < ahead ? set : ahead;
+            if (to > from) {
+                arc(dc, from == now ? nowDeg : degreesAt(from), degreesAt(to));
+            }
         }
 
-        // From now to the next prayer, thick, in the accent.
-        var nextDeg = degreesOf(secondsOfDay(next[1]));
-        if (next[1] - now < 86400) {
+        // From now to the next prayer, thick, in the accent — when it is
+        // within the twelve hours the ring shows.
+        var nextOn = next[1] <= ahead;
+        var nextDeg = degreesAt(next[1]);
+        if (nextOn) {
             dc.setPenWidth(AHEAD_PEN);
             dc.setColor(_accent, Graphics.COLOR_TRANSPARENT);
             arc(dc, nowDeg, nextDeg);
         }
 
-        // A tick at each prayer (sunrise is where the line turns white).
+        // A tick at each prayer in the twelve hours ahead (sunrise is
+        // where the line turns white).
         dc.setPenWidth(TICK_PEN);
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-        for (var i = 0; i < Mihrab.PER_DAY; i++) {
-            var at = times[day + i];
-            if (i == Mihrab.SUNRISE || at <= 0 || day + i == next[0]) {
+        for (var i = 0; i < times.size(); i++) {
+            var at = times[i];
+            if (i % Mihrab.PER_DAY == Mihrab.SUNRISE || i == next[0] || at <= now || at > ahead) {
                 continue;
             }
-            var deg = degreesOf(secondsOfDay(at));
+            var deg = degreesAt(at);
             var outer = ringPoint(deg, -2);
             var inner = ringPoint(deg, TICK_IN);
             dc.drawLine(outer[0], outer[1], inner[0], inner[1]);
         }
 
         // The next prayer: a ring in the accent, as on the app's Track.
-        var at = ringPoint(nextDeg, 0);
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(at[0], at[1], BEAD + 2);
-        dc.setPenWidth(2);
-        dc.setColor(_accent, Graphics.COLOR_TRANSPARENT);
-        dc.drawCircle(at[0], at[1], BEAD);
+        if (nextOn) {
+            var at = ringPoint(nextDeg, 0);
+            dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+            dc.fillCircle(at[0], at[1], BEAD + 2);
+            dc.setPenWidth(2);
+            dc.setColor(_accent, Graphics.COLOR_TRANSPARENT);
+            dc.drawCircle(at[0], at[1], BEAD);
+        }
 
-        // Now: the bead, the sun's yellow by day and white by night, with
-        // a black edge to stand off the line it rides.
+        // Now: the bead, where the hour hand would be — the sun's yellow
+        // by day and white by night, with a black edge to stand off the
+        // line it rides.
         var bead = ringPoint(nowDeg, 0);
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(bead[0], bead[1], BEAD + 2);
