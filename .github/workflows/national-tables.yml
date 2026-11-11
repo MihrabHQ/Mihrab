@@ -6,7 +6,9 @@ name: National prayer-time tables
 # the department's JSON endpoint, and the London Unified Prayer Timetable
 # from londonprayertimes.com's API (with the key in the
 # LONDON_PRAYER_TIMES_KEY secret), and Kyrgyzstan's Spiritual
-# Administration's timetable from the public API on its site. Each is
+# Administration's timetable from the public API on its site, and
+# Tajikistan's Islamic Centre's table for Dushanbe with its towns' minutes.
+# Each is
 # mirrored as-is into
 # data/prayer-times/<country>/v1 and a seed bundled into the app.
 #
@@ -61,6 +63,11 @@ jobs:
         if: always()
         run: npx --yes tsx@4 tools/national-tables/kmdb.ts
 
+      - name: Tajikistan (Islamic Centre)
+        id: shuro
+        if: always()
+        run: npx --yes tsx@4 tools/national-tables/shuro.ts
+
       - name: Commit refreshed tables
         if: always()
         run: |
@@ -69,6 +76,7 @@ jobs:
           # A table that has not been built yet has no folder; add what exists.
           for p in data/prayer-times/singapore data/prayer-times/malaysia data/prayer-times/london data/prayer-times/kyrgyzstan \
             src/providers/data/kmdbSeed.json src/providers/data/kmdbPlaces.json \
+            data/prayer-times/tajikistan src/providers/data/shuroSeed.json src/providers/data/shuroPlaces.json \
             src/providers/data/muisSeed.json src/providers/data/muisPlaces.json \
             src/providers/data/jakimSeed.json src/providers/data/jakimPlaces.json \
             src/providers/data/londonSeed.json src/providers/data/londonPlaces.json; do
@@ -78,7 +86,7 @@ jobs:
             echo 'No table changes to commit.'
             exit 0
           fi
-          git commit -m "data: national tables ($(date -u +%F): Singapore ${{ steps.muis.outputs.coverage_days || '?' }} d, Malaysia ${{ steps.jakim.outputs.coverage_days || '?' }} d, London ${{ steps.london.outputs.coverage_days || '?' }} d, Kyrgyzstan ${{ steps.kmdb.outputs.coverage_days || '?' }} d left)"
+          git commit -m "data: national tables ($(date -u +%F): Singapore ${{ steps.muis.outputs.coverage_days || '?' }} d, Malaysia ${{ steps.jakim.outputs.coverage_days || '?' }} d, London ${{ steps.london.outputs.coverage_days || '?' }} d, Kyrgyzstan ${{ steps.kmdb.outputs.coverage_days || '?' }} d, Tajikistan ${{ steps.shuro.outputs.coverage_days || '?' }} d left)"
           for attempt in 1 2 3; do
             if git push; then
               echo "Pushed on attempt ${attempt}."
@@ -105,10 +113,10 @@ jobs:
           to: mihrab@elghamri.se
           subject: '[Mihrab] national prayer-time tables job FAILED'
           body: |
-            The national tables run FAILED (Singapore MUIS / Malaysia JAKIM / London / Kyrgyzstan).
+            The national tables run FAILED (Singapore MUIS / Malaysia JAKIM / London / Kyrgyzstan / Tajikistan).
 
             Usually one of:
-              • data.gov.sg, e-solat.gov.my, londonprayertimes.com or muftiyat.kg down or
+              • data.gov.sg, e-solat.gov.my, londonprayertimes.com, muftiyat.kg or shuroiulamo.tj down or
                 changed shape (or London's key no longer accepted),
               • a published day out of order (the build refuses it), or
               • the commit/push step failed.
