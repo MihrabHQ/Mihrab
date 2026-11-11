@@ -265,11 +265,69 @@ function webCard(code, t) {
   if (!w) throw new Error(`${code}: no strings for the Mihrab Web card`);
   return `      <div class="platform web">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg>${esc(w.h3)}</h3>
-        <div class="web-row">
-          <p class="web-body">${esc(w.body)}</p>
-          <p class="web-link"><a class="button" href="${WEB_APP_URL}">${esc(w.link)}</a> <code>mihrabhq.github.io</code></p>
-        </div>
+        <p class="web-link"><a class="button" href="${WEB_APP_URL}">${esc(w.link)}</a> <code>mihrabhq.github.io</code></p>
       </div>`;
+}
+
+/**
+ * Mihrab Web's own section, first on the page. It was the last card under
+ * "Get Mihrab", one more download channel — when it is the one way to use
+ * Mihrab with nothing to install, and the only button on the page that a
+ * visitor at a computer can press and be in the app. So: what it is, the
+ * way in, and the app itself in a browser window (a picture; the page
+ * still loads nothing from anywhere else, and embeds nothing).
+ */
+const WEB_SHOT = { width: 1600, height: 1076 };
+function webSection(code, t, at) {
+  const w = t.install && t.install.web;
+  if (!w || !w.h2 || !w.note || !w.alt) throw new Error(`${code}: no strings for the Mihrab Web section`);
+  return `<section class="webapp" id="web">
+  <div class="wrap">
+    <div class="webapp-grid">
+      <div class="webapp-text">
+        <p class="eyebrow">${esc(w.h3)}</p>
+        <h2>${esc(w.h2)}</h2>
+        <p class="lede">${esc(w.body)}</p>
+        <p class="web-go"><a class="button" href="${WEB_APP_URL}">${esc(w.link)}</a> <code dir="ltr">mihrabhq.github.io</code></p>
+        <p class="note">${esc(w.note)}</p>
+      </div>
+      <figure class="browser">
+        <div class="browser-bar" dir="ltr" aria-hidden="true"><i></i><i></i><i></i><span>mihrabhq.github.io</span></div>
+        <a href="${WEB_APP_URL}" tabindex="-1" aria-hidden="true">
+          <img src="${at}/img/web-app.jpg${SHOT_V}" width="${WEB_SHOT.width}" height="${WEB_SHOT.height}" loading="lazy" decoding="async"
+            srcset="${at}/img/web-app-800.jpg${SHOT_V} 800w, ${at}/img/web-app.jpg${SHOT_V} 1600w"
+            sizes="(max-width: 899px) calc(100vw - 48px), 560px"
+            alt="${esc(w.alt)}">
+        </a>
+      </figure>
+    </div>
+  </div>
+</section>`;
+}
+
+/** Mihrab Web as a thing of its own to a search engine: a web application, free, at its address. */
+function webLd(code, t) {
+  const w = t.install && t.install.web;
+  return `<script type="application/ld+json">
+${JSON.stringify(
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Mihrab Web',
+    url: WEB_APP_URL,
+    applicationCategory: 'LifestyleApplication',
+    operatingSystem: 'Any',
+    browserRequirements: 'Requires JavaScript',
+    description: w.body,
+    inLanguage: code,
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    license: 'https://www.gnu.org/licenses/agpl-3.0.html',
+  },
+  null,
+  2,
+)}
+</script>`;
 }
 
 /**
@@ -357,8 +415,9 @@ const PLATFORMS = 'iOS, Android, macOS, Windows, Linux, web';
 const OPERATING_SYSTEMS = 'Android, iOS, iPadOS, macOS, Windows, Linux';
 
 /**
- * The first screen's way in: the two stores most visitors want, and a link
- * down to every other channel. The hero used to be words only, with the
+ * The first screen's way in: the two stores most visitors want, Mihrab Web
+ * (the one a visitor at a computer can open on the spot), and a link down
+ * to every other channel. The hero used to be words only, with the
  * badges a screen further down — and a page whose job is to get the app
  * onto a device should not make the reader scroll to find out how.
  */
@@ -368,6 +427,7 @@ function heroCta(code, t, imgBase) {
   if (!more) throw new Error(`${code}: no label for the hero's link to every download`);
   return `    <div class="cta">
 ${badgeList(['appstore', 'googleplay'], imgBase, '      ')}
+      <a class="open-web" href="${WEB_APP_URL}">${esc(t.install.web.link)}</a>
       <a class="more" href="${to}">${esc(more)} <span aria-hidden="true">&darr;</span></a>
     </div>`;
 }
@@ -391,7 +451,7 @@ function jumpNav(code, t) {
   if (!t.nav) throw new Error(`${code}: no strings for the section links`);
   const items = Array.isArray(t.nav.items)
     ? t.nav.items
-    : ['install', 'accuracy', 'screenshots', 'features', 'privacy', 'faq'].map(id => [`#${id}`, t.nav[id]]);
+    : ['web', 'install', 'accuracy', 'screenshots', 'features', 'privacy', 'faq'].map(id => [`#${id}`, t.nav[id]]);
   for (const [href, label] of items) if (!href || !label) throw new Error(`${code}: a section link has no label`);
   return `<nav class="jump" aria-label="${esc(t.nav.label)}">
   <ul>
@@ -572,6 +632,9 @@ ${ld(app)}
 <script type="application/ld+json">
 ${ld(faq)}
 </script>
+<!-- webapp-ld:start -->
+${webLd(code, t)}
+<!-- webapp-ld:end -->
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
@@ -637,6 +700,10 @@ ${heroShot(code, t, '../assets')}
 </header>
 
 <main id="main">
+<!-- webapp:start -->
+${webSection(code, t, '../assets')}
+<!-- webapp:end -->
+
 <section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">${esc(t.install.eyebrow)}</p>
@@ -796,6 +863,8 @@ function build() {
       text = patchBlock(text, 'jump', jumpNav(code, l));
       text = patchBlock(text, 'cta', heroCta(code, l, `${assets}/img/badges`));
       text = patchBlock(text, 'heroshot', heroShot(code, l, assets));
+      text = patchBlock(text, 'webapp', webSection(code, l, assets));
+      text = patchBlock(text, 'webapp-ld', webLd(code, l));
       text = patchBlock(text, 'gallery', gallery(code, l));
       text = patchBlock(text, 'reviews', reviews(code, l));
       text = patchBlock(text, 'web', webCard(code, l));
@@ -842,4 +911,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { build, PLATFORMS, OPERATING_SYSTEMS, heroCta, heroShot, jumpNav, accuracy, picker, hreflang, gallery, webCard, desktopCard, ORIGIN, SHOT_V, PHONE_PANELS, WIDE_PANELS, panelWords, plain };
+module.exports = { build, WEB_APP_URL, webSection, webLd, PLATFORMS, OPERATING_SYSTEMS, heroCta, heroShot, jumpNav, accuracy, picker, hreflang, gallery, webCard, desktopCard, ORIGIN, SHOT_V, PHONE_PANELS, WIDE_PANELS, panelWords, plain };

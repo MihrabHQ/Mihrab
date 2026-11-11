@@ -242,15 +242,13 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .platform .note code { font-size: 12.5px; white-space: nowrap; display: inline-block; margin-top: 4px; }
 /* Mihrab Web: the width of the row, what it is beside the link out. */
 .platform.web { flex: 1 1 100%; min-width: 0; }
-.platform .web-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
-.platform .web-body { margin: 0; flex: 1 1 340px; font-size: 15px; line-height: 1.5; color: var(--ink-soft); }
 .platform .web-link { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
 .platform .web-link code { font-size: 12px; }
-.platform .web-link .button {
+.button {
   display: inline-block; padding: 10px 18px; border-radius: 10px; font-weight: 600;
   background: var(--accent); color: var(--accent-ink); text-decoration: none;
 }
-.platform .web-link .button:hover { text-decoration: underline; }
+.button:hover { text-decoration: underline; }
 /* Windows and Linux: cards beside Apple and Android, Windows the size of
    Apple's, Linux with each distribution folded under its name. An opened
    one shows its install and remove lines in full; they wrap anywhere but
@@ -277,7 +275,7 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
   .platform, .platform:first-child, .platform.windows, .platform.linux { flex: 1 1 100%; }
   .platform .badges { justify-content: center; }
   .platform .flag, .platform .note { text-align: center; }
-  .platform .web-row, .platform .web-link { justify-content: center; text-align: center; }
+  .platform .web-link { justify-content: center; text-align: center; }
   .platform .note code { white-space: normal; }
 }
 .note {
@@ -751,3 +749,41 @@ footer code { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255,
 .fold details > span { display: block; padding: 0 0 10px; }
 @media (prefers-reduced-motion: reduce) { .fold summary::before { transition: none; } }
 @media print { .fold details > span { display: block; } }
+
+/* ---- Mihrab Web: its own section, and its button in the hero ----
+ *
+ * The app in a browser is the one thing on this page a visitor at a
+ * computer can open on the spot, so it has the first section after the
+ * hero — what it is, the way in, and a picture of it in a browser window
+ * drawn here (three dots and the address; the picture is the page alone).
+ */
+.cta .open-web {
+  display: inline-flex; align-items: center; height: 48px; padding: 0 16px; border-radius: 9px;
+  border: 1px solid rgba(238,228,212,.55); background: rgba(238,228,212,.10);
+  color: var(--cream); font-size: 15.5px; font-weight: 600; text-decoration: none; white-space: nowrap;
+}
+.cta .open-web:hover { background: rgba(238,228,212,.2); color: #fff; }
+.webapp-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 30px 48px; align-items: center; }
+.webapp .web-go { margin: 22px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.webapp .web-go .button { padding: 13px 22px; font-size: 16.5px; }
+.webapp .web-go code { font-size: 13px; }
+.webapp .note { margin: 16px 0 0; font-size: 14.5px; color: var(--ink-soft); max-width: 46ch; }
+.browser {
+  margin: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--line);
+  background: var(--surface); box-shadow: var(--shadow);
+}
+.browser-bar {
+  display: flex; align-items: center; gap: 6px; padding: 9px 12px;
+  background: var(--frame); border-bottom: 1px solid var(--line);
+}
+.browser-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-soft); opacity: .35; }
+.browser-bar span {
+  margin-inline-start: 10px; flex: 1; max-width: 300px; padding: 3px 12px; border-radius: 999px;
+  background: var(--surface); font-family: var(--mono); font-size: 12px; color: var(--ink-soft);
+}
+.browser a { display: block; }
+.browser img { width: 100%; height: auto; }
+@media (min-width: 900px) {
+  .webapp-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+}
+@media (max-width: 420px) { .cta .open-web { height: 46px; } }

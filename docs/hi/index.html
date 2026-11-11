@@ -150,10 +150,40 @@
         "@type": "Answer",
         "text": "नहीं। न कोई एनालिटिक्स है, न विज्ञापन नेटवर्क, न खाता। निर्देशांक फ़ोन से सिर्फ़ दो अनुरोधों में बाहर जाते हैं, और कोई भी डेवलपर को नहीं जाता: AlAdhan को, जब वही आपके समय का स्रोत हो, और स्वचालित लोकेशन के साथ, आपके शहर का नाम जानने के लिए OpenStreetMap को, लगभग एक किलोमीटर तक पूर्णांकित करके। डिवाइस पर गणना चुनें और अपना शहर हाथ से लिखें, तो दोनों में से कोई अनुरोध नहीं भेजा जाता।"
       }
+    },
+    {
+      "@type": "Question",
+      "name": "क्या मैं कुछ इंस्टॉल किए बिना मिहराब इस्तेमाल कर सकता हूँ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "हाँ। मिहराब वेब आपके ब्राउज़र में mihrabhq.github.io पर चलता है: आपकी जगह के नमाज़ के समय, टैब खुला रहने तक हर नमाज़ पर एक सूचना, और पूरा क़ुरआन। सेटिंग और बुकमार्क उसी ब्राउज़र में रहते हैं।"
+      }
     }
   ]
 }
 </script>
+<!-- webapp-ld:start -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Mihrab Web",
+  "url": "https://mihrabhq.github.io/",
+  "applicationCategory": "LifestyleApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript",
+  "description": "आपकी जगह के नमाज़ के समय, हर नमाज़ पर सूचना, और पूरा क़ुरआन — कुछ भी इंस्टॉल नहीं करना।",
+  "inLanguage": "hi",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "license": "https://www.gnu.org/licenses/agpl-3.0.html"
+}
+</script>
+<!-- webapp-ld:end -->
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
@@ -190,6 +220,7 @@
 <!-- jump:start -->
 <nav class="jump" aria-label="पृष्ठ के भाग">
   <ul>
+    <li><a href="#web">वेब ऐप</a></li>
     <li><a href="#install">इंस्टॉल</a></li>
     <li><a href="#accuracy">सटीकता</a></li>
     <li><a href="#screenshots">स्क्रीनशॉट</a></li>
@@ -233,6 +264,7 @@
         <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="../assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
         <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="../assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
       </ul>
+      <a class="open-web" href="https://mihrabhq.github.io/">मिहराब वेब खोलें</a>
       <a class="more" href="#install">Windows, Linux, F-Droid और वेब <span aria-hidden="true">&darr;</span></a>
     </div>
 <!-- cta:end -->
@@ -259,6 +291,31 @@
 </header>
 
 <main id="main">
+<!-- webapp:start -->
+<section class="webapp" id="web">
+  <div class="wrap">
+    <div class="webapp-grid">
+      <div class="webapp-text">
+        <p class="eyebrow">आपके ब्राउज़र में</p>
+        <h2>अभी आज़माएँ — कुछ इंस्टॉल किए बिना</h2>
+        <p class="lede">आपकी जगह के नमाज़ के समय, हर नमाज़ पर सूचना, और पूरा क़ुरआन — कुछ भी इंस्टॉल नहीं करना।</p>
+        <p class="web-go"><a class="button" href="https://mihrabhq.github.io/">मिहराब वेब खोलें</a> <code dir="ltr">mihrabhq.github.io</code></p>
+        <p class="note">आपकी सेटिंग और बुकमार्क इसी ब्राउज़र में रहते हैं। इसे पास रखने के लिए होम स्क्रीन पर जोड़ लें।</p>
+      </div>
+      <figure class="browser">
+        <div class="browser-bar" dir="ltr" aria-hidden="true"><i></i><i></i><i></i><span>mihrabhq.github.io</span></div>
+        <a href="https://mihrabhq.github.io/" tabindex="-1" aria-hidden="true">
+          <img src="../assets/img/web-app.jpg?v=2026-11-05p" width="1600" height="1076" loading="lazy" decoding="async"
+            srcset="../assets/img/web-app-800.jpg?v=2026-11-05p 800w, ../assets/img/web-app.jpg?v=2026-11-05p 1600w"
+            sizes="(max-width: 899px) calc(100vw - 48px), 560px"
+            alt="ब्राउज़र में मिहराब वेब: सूर्यास्त के आसमान तले मग़रिब की उलटी गिनती के साथ «आज» पृष्ठ और दिन की नमाज़ के समय।">
+        </a>
+      </figure>
+    </div>
+  </div>
+</section>
+<!-- webapp:end -->
+
 <section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">इंस्टॉल</p>
@@ -329,10 +386,7 @@ sudo pacman -Syu mihrab</code></pre>
       </div>
       <div class="platform web">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg>आपके ब्राउज़र में</h3>
-        <div class="web-row">
-          <p class="web-body">आपकी जगह के नमाज़ के समय, हर नमाज़ पर सूचना, और पूरा क़ुरआन — कुछ भी इंस्टॉल नहीं करना।</p>
-          <p class="web-link"><a class="button" href="https://mihrabhq.github.io/">मिहराब वेब खोलें</a> <code>mihrabhq.github.io</code></p>
-        </div>
+        <p class="web-link"><a class="button" href="https://mihrabhq.github.io/">मिहराब वेब खोलें</a> <code>mihrabhq.github.io</code></p>
       </div>
     </div>
   </div>
@@ -678,6 +732,10 @@ sudo pacman -Syu mihrab</code></pre>
       <article class="card">
         <h3>क्या मिहराब मेरी लोकेशन पर नज़र रखता है?</h3>
         <p>नहीं। न कोई एनालिटिक्स है, न विज्ञापन नेटवर्क, न खाता। निर्देशांक फ़ोन से सिर्फ़ दो अनुरोधों में बाहर जाते हैं, और कोई भी डेवलपर को नहीं जाता: AlAdhan को, जब वही आपके समय का स्रोत हो, और स्वचालित लोकेशन के साथ, आपके शहर का नाम जानने के लिए OpenStreetMap को, लगभग एक किलोमीटर तक पूर्णांकित करके। डिवाइस पर गणना चुनें और अपना शहर हाथ से लिखें, तो दोनों में से कोई अनुरोध नहीं भेजा जाता।</p>
+      </article>
+      <article class="card">
+        <h3>क्या मैं कुछ इंस्टॉल किए बिना मिहराब इस्तेमाल कर सकता हूँ?</h3>
+        <p>हाँ। मिहराब वेब आपके ब्राउज़र में mihrabhq.github.io पर चलता है: आपकी जगह के नमाज़ के समय, टैब खुला रहने तक हर नमाज़ पर एक सूचना, और पूरा क़ुरआन। सेटिंग और बुकमार्क उसी ब्राउज़र में रहते हैं।</p>
       </article>
     </div>
   </div>

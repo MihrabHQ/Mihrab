@@ -150,10 +150,40 @@
         "@type": "Answer",
         "text": "不会。没有统计分析，没有广告网络，也没有账号。坐标只在两种请求中离开手机，且都不发给开发者：当 AlAdhan 是你的时间来源时发给 AlAdhan；使用自动定位时发给 OpenStreetMap 以查出你所在城镇的名称，并取整到约一公里。选择在设备上计算并手动输入城镇，这两种请求都不会发出。"
       }
+    },
+    {
+      "@type": "Question",
+      "name": "不安装任何东西可以使用 Mihrab 吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "可以。Mihrab 网页版在浏览器中运行，网址是 mihrabhq.github.io：你所在地的礼拜时间、标签页开着时每番礼拜的通知，以及完整的《古兰经》。设置和书签保存在该浏览器中。"
+      }
     }
   ]
 }
 </script>
+<!-- webapp-ld:start -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Mihrab Web",
+  "url": "https://mihrabhq.github.io/",
+  "applicationCategory": "LifestyleApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript",
+  "description": "你所在地的礼拜时间、每次礼拜的通知，以及完整的《古兰经》——无需安装。",
+  "inLanguage": "zh",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "license": "https://www.gnu.org/licenses/agpl-3.0.html"
+}
+</script>
+<!-- webapp-ld:end -->
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
@@ -190,6 +220,7 @@
 <!-- jump:start -->
 <nav class="jump" aria-label="页面导航">
   <ul>
+    <li><a href="#web">网页版</a></li>
     <li><a href="#install">安装</a></li>
     <li><a href="#accuracy">准确度</a></li>
     <li><a href="#screenshots">截图</a></li>
@@ -233,6 +264,7 @@
         <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="../assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
         <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="../assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
       </ul>
+      <a class="open-web" href="https://mihrabhq.github.io/">打开 Mihrab Web</a>
       <a class="more" href="#install">Windows、Linux、F-Droid 和网页版 <span aria-hidden="true">&darr;</span></a>
     </div>
 <!-- cta:end -->
@@ -259,6 +291,31 @@
 </header>
 
 <main id="main">
+<!-- webapp:start -->
+<section class="webapp" id="web">
+  <div class="wrap">
+    <div class="webapp-grid">
+      <div class="webapp-text">
+        <p class="eyebrow">在浏览器中</p>
+        <h2>现在就试试——无需安装</h2>
+        <p class="lede">你所在地的礼拜时间、每次礼拜的通知，以及完整的《古兰经》——无需安装。</p>
+        <p class="web-go"><a class="button" href="https://mihrabhq.github.io/">打开 Mihrab Web</a> <code dir="ltr">mihrabhq.github.io</code></p>
+        <p class="note">你的设置和书签保存在这个浏览器中。把它添加到主屏幕，随手可用。</p>
+      </div>
+      <figure class="browser">
+        <div class="browser-bar" dir="ltr" aria-hidden="true"><i></i><i></i><i></i><span>mihrabhq.github.io</span></div>
+        <a href="https://mihrabhq.github.io/" tabindex="-1" aria-hidden="true">
+          <img src="../assets/img/web-app.jpg?v=2026-11-05p" width="1600" height="1076" loading="lazy" decoding="async"
+            srcset="../assets/img/web-app-800.jpg?v=2026-11-05p 800w, ../assets/img/web-app.jpg?v=2026-11-05p 1600w"
+            sizes="(max-width: 899px) calc(100vw - 48px), 560px"
+            alt="浏览器中的 Mihrab 网页版：“今日”页面，日落天空下距昏礼的倒计时，以及当天的礼拜时间。">
+        </a>
+      </figure>
+    </div>
+  </div>
+</section>
+<!-- webapp:end -->
+
 <section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">安装</p>
@@ -329,10 +386,7 @@ sudo pacman -Syu mihrab</code></pre>
       </div>
       <div class="platform web">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg>在浏览器中</h3>
-        <div class="web-row">
-          <p class="web-body">你所在地的礼拜时间、每次礼拜的通知，以及完整的《古兰经》——无需安装。</p>
-          <p class="web-link"><a class="button" href="https://mihrabhq.github.io/">打开 Mihrab Web</a> <code>mihrabhq.github.io</code></p>
-        </div>
+        <p class="web-link"><a class="button" href="https://mihrabhq.github.io/">打开 Mihrab Web</a> <code>mihrabhq.github.io</code></p>
       </div>
     </div>
   </div>
@@ -678,6 +732,10 @@ sudo pacman -Syu mihrab</code></pre>
       <article class="card">
         <h3>Mihrab 会追踪我的位置吗？</h3>
         <p>不会。没有统计分析，没有广告网络，也没有账号。坐标只在两种请求中离开手机，且都不发给开发者：当 AlAdhan 是你的时间来源时发给 AlAdhan；使用自动定位时发给 OpenStreetMap 以查出你所在城镇的名称，并取整到约一公里。选择在设备上计算并手动输入城镇，这两种请求都不会发出。</p>
+      </article>
+      <article class="card">
+        <h3>不安装任何东西可以使用 Mihrab 吗？</h3>
+        <p>可以。Mihrab 网页版在浏览器中运行，网址是 mihrabhq.github.io：你所在地的礼拜时间、标签页开着时每番礼拜的通知，以及完整的《古兰经》。设置和书签保存在该浏览器中。</p>
       </article>
     </div>
   </div>

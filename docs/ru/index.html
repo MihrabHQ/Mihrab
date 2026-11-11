@@ -150,10 +150,40 @@
         "@type": "Answer",
         "text": "Нет. Нет ни аналитики, ни рекламной сети, ни учётной записи. Координаты покидают телефон только в двух запросах, и ни один не идёт разработчику: в AlAdhan, когда он служит источником времени, и, при автоматическом определении места, в OpenStreetMap, чтобы назвать ваш город, с округлением примерно до километра. Выберите расчёт на устройстве и введите город вручную — и ни один запрос не отправляется."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "Можно ли пользоваться Mihrab, ничего не устанавливая?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Да. Mihrab Web работает в браузере по адресу mihrabhq.github.io: время намаза для вашего места, уведомление к каждому намазу, пока вкладка открыта, и весь Коран. Настройки и закладки остаются в этом браузере."
+      }
     }
   ]
 }
 </script>
+<!-- webapp-ld:start -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Mihrab Web",
+  "url": "https://mihrabhq.github.io/",
+  "applicationCategory": "LifestyleApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript",
+  "description": "Время намаза для вашего места, уведомление к каждому намазу и весь Коран — ничего не нужно устанавливать.",
+  "inLanguage": "ru",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "license": "https://www.gnu.org/licenses/agpl-3.0.html"
+}
+</script>
+<!-- webapp-ld:end -->
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
@@ -190,6 +220,7 @@
 <!-- jump:start -->
 <nav class="jump" aria-label="Разделы">
   <ul>
+    <li><a href="#web">Веб-версия</a></li>
     <li><a href="#install">Установка</a></li>
     <li><a href="#accuracy">Точность</a></li>
     <li><a href="#screenshots">Скриншоты</a></li>
@@ -233,6 +264,7 @@
         <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="../assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
         <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="../assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
       </ul>
+      <a class="open-web" href="https://mihrabhq.github.io/">Открыть Mihrab Web</a>
       <a class="more" href="#install">Windows, Linux, F-Droid и веб-версия <span aria-hidden="true">&darr;</span></a>
     </div>
 <!-- cta:end -->
@@ -259,6 +291,31 @@
 </header>
 
 <main id="main">
+<!-- webapp:start -->
+<section class="webapp" id="web">
+  <div class="wrap">
+    <div class="webapp-grid">
+      <div class="webapp-text">
+        <p class="eyebrow">В браузере</p>
+        <h2>Попробуйте сейчас — без установки</h2>
+        <p class="lede">Время намаза для вашего места, уведомление к каждому намазу и весь Коран — ничего не нужно устанавливать.</p>
+        <p class="web-go"><a class="button" href="https://mihrabhq.github.io/">Открыть Mihrab Web</a> <code dir="ltr">mihrabhq.github.io</code></p>
+        <p class="note">Ваши настройки и закладки остаются в этом браузере. Добавьте страницу на главный экран, чтобы она была под рукой.</p>
+      </div>
+      <figure class="browser">
+        <div class="browser-bar" dir="ltr" aria-hidden="true"><i></i><i></i><i></i><span>mihrabhq.github.io</span></div>
+        <a href="https://mihrabhq.github.io/" tabindex="-1" aria-hidden="true">
+          <img src="../assets/img/web-app.jpg?v=2026-11-05p" width="1600" height="1076" loading="lazy" decoding="async"
+            srcset="../assets/img/web-app-800.jpg?v=2026-11-05p 800w, ../assets/img/web-app.jpg?v=2026-11-05p 1600w"
+            sizes="(max-width: 899px) calc(100vw - 48px), 560px"
+            alt="Mihrab Web в браузере: экран «Сегодня» с обратным отсчётом до магриба под закатным небом и время намазов на день.">
+        </a>
+      </figure>
+    </div>
+  </div>
+</section>
+<!-- webapp:end -->
+
 <section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">Установка</p>
@@ -329,10 +386,7 @@ sudo pacman -Syu mihrab</code></pre>
       </div>
       <div class="platform web">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg>В браузере</h3>
-        <div class="web-row">
-          <p class="web-body">Время намаза для вашего места, уведомление к каждому намазу и весь Коран — ничего не нужно устанавливать.</p>
-          <p class="web-link"><a class="button" href="https://mihrabhq.github.io/">Открыть Mihrab Web</a> <code>mihrabhq.github.io</code></p>
-        </div>
+        <p class="web-link"><a class="button" href="https://mihrabhq.github.io/">Открыть Mihrab Web</a> <code>mihrabhq.github.io</code></p>
       </div>
     </div>
   </div>
@@ -678,6 +732,10 @@ sudo pacman -Syu mihrab</code></pre>
       <article class="card">
         <h3>Отслеживает ли Mihrab моё местоположение?</h3>
         <p>Нет. Нет ни аналитики, ни рекламной сети, ни учётной записи. Координаты покидают телефон только в двух запросах, и ни один не идёт разработчику: в AlAdhan, когда он служит источником времени, и, при автоматическом определении места, в OpenStreetMap, чтобы назвать ваш город, с округлением примерно до километра. Выберите расчёт на устройстве и введите город вручную — и ни один запрос не отправляется.</p>
+      </article>
+      <article class="card">
+        <h3>Можно ли пользоваться Mihrab, ничего не устанавливая?</h3>
+        <p>Да. Mihrab Web работает в браузере по адресу mihrabhq.github.io: время намаза для вашего места, уведомление к каждому намазу, пока вкладка открыта, и весь Коран. Настройки и закладки остаются в этом браузере.</p>
       </article>
     </div>
   </div>

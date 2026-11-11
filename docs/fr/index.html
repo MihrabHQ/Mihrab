@@ -150,10 +150,40 @@
         "@type": "Answer",
         "text": "Non. Il n’y a ni statistiques, ni réseau publicitaire, ni compte. Les coordonnées ne quittent le téléphone que dans deux requêtes, aucune vers le développeur : vers AlAdhan lorsqu’il est la source de vos horaires, et, avec la position automatique, vers OpenStreetMap pour nommer votre ville, arrondies à environ un kilomètre. Choisissez le calcul sur l’appareil et saisissez votre ville à la main : aucune des deux requêtes n’est faite."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "Puis-je utiliser Mihrab sans rien installer ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui. Mihrab Web fonctionne dans votre navigateur à l’adresse mihrabhq.github.io : les horaires de prière pour votre lieu, une notification à chaque prière tant que l’onglet est ouvert, et le Coran en entier. Les réglages et les signets restent dans ce navigateur."
+      }
     }
   ]
 }
 </script>
+<!-- webapp-ld:start -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Mihrab Web",
+  "url": "https://mihrabhq.github.io/",
+  "applicationCategory": "LifestyleApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript",
+  "description": "Les horaires de prière de votre ville, une notification à chaque prière et le Coran entier — rien à installer.",
+  "inLanguage": "fr",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "license": "https://www.gnu.org/licenses/agpl-3.0.html"
+}
+</script>
+<!-- webapp-ld:end -->
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
@@ -190,6 +220,7 @@
 <!-- jump:start -->
 <nav class="jump" aria-label="Sections">
   <ul>
+    <li><a href="#web">Appli web</a></li>
     <li><a href="#install">Installer</a></li>
     <li><a href="#accuracy">Précision</a></li>
     <li><a href="#screenshots">Captures</a></li>
@@ -233,6 +264,7 @@
         <li><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="../assets/img/badges/appstore.png" width="564" height="168" alt="App Store"></a></li>
         <li><a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="../assets/img/badges/googleplay.png" width="564" height="168" alt="Google Play"></a></li>
       </ul>
+      <a class="open-web" href="https://mihrabhq.github.io/">Ouvrir Mihrab Web</a>
       <a class="more" href="#install">Windows, Linux, F-Droid et le web <span aria-hidden="true">&darr;</span></a>
     </div>
 <!-- cta:end -->
@@ -259,6 +291,31 @@
 </header>
 
 <main id="main">
+<!-- webapp:start -->
+<section class="webapp" id="web">
+  <div class="wrap">
+    <div class="webapp-grid">
+      <div class="webapp-text">
+        <p class="eyebrow">Dans votre navigateur</p>
+        <h2>Essayez maintenant — rien à installer</h2>
+        <p class="lede">Les horaires de prière de votre ville, une notification à chaque prière et le Coran entier — rien à installer.</p>
+        <p class="web-go"><a class="button" href="https://mihrabhq.github.io/">Ouvrir Mihrab Web</a> <code dir="ltr">mihrabhq.github.io</code></p>
+        <p class="note">Vos réglages et vos signets restent dans ce navigateur. Ajoutez-la à votre écran d’accueil pour la garder sous la main.</p>
+      </div>
+      <figure class="browser">
+        <div class="browser-bar" dir="ltr" aria-hidden="true"><i></i><i></i><i></i><span>mihrabhq.github.io</span></div>
+        <a href="https://mihrabhq.github.io/" tabindex="-1" aria-hidden="true">
+          <img src="../assets/img/web-app.jpg?v=2026-11-05p" width="1600" height="1076" loading="lazy" decoding="async"
+            srcset="../assets/img/web-app-800.jpg?v=2026-11-05p 800w, ../assets/img/web-app.jpg?v=2026-11-05p 1600w"
+            sizes="(max-width: 899px) calc(100vw - 48px), 560px"
+            alt="Mihrab Web dans un navigateur : la page Aujourd’hui avec le compte à rebours jusqu’au Maghrib sous un ciel de couchant, et les horaires de prière du jour.">
+        </a>
+      </figure>
+    </div>
+  </div>
+</section>
+<!-- webapp:end -->
+
 <section class="install" id="install">
   <div class="wrap">
     <p class="eyebrow">Installation</p>
@@ -329,10 +386,7 @@ sudo pacman -Syu mihrab</code></pre>
       </div>
       <div class="platform web">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg>Dans votre navigateur</h3>
-        <div class="web-row">
-          <p class="web-body">Les horaires de prière de votre ville, une notification à chaque prière et le Coran entier — rien à installer.</p>
-          <p class="web-link"><a class="button" href="https://mihrabhq.github.io/">Ouvrir Mihrab Web</a> <code>mihrabhq.github.io</code></p>
-        </div>
+        <p class="web-link"><a class="button" href="https://mihrabhq.github.io/">Ouvrir Mihrab Web</a> <code>mihrabhq.github.io</code></p>
       </div>
     </div>
   </div>
@@ -706,6 +760,10 @@ sudo pacman -Syu mihrab</code></pre>
       <article class="card">
         <h3>Mihrab suit-il ma position ?</h3>
         <p>Non. Il n’y a ni statistiques, ni réseau publicitaire, ni compte. Les coordonnées ne quittent le téléphone que dans deux requêtes, aucune vers le développeur : vers AlAdhan lorsqu’il est la source de vos horaires, et, avec la position automatique, vers OpenStreetMap pour nommer votre ville, arrondies à environ un kilomètre. Choisissez le calcul sur l’appareil et saisissez votre ville à la main : aucune des deux requêtes n’est faite.</p>
+      </article>
+      <article class="card">
+        <h3>Puis-je utiliser Mihrab sans rien installer ?</h3>
+        <p>Oui. Mihrab Web fonctionne dans votre navigateur à l’adresse mihrabhq.github.io : les horaires de prière pour votre lieu, une notification à chaque prière tant que l’onglet est ouvert, et le Coran en entier. Les réglages et les signets restent dans ce navigateur.</p>
       </article>
     </div>
   </div>

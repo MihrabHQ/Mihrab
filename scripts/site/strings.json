@@ -127,7 +127,10 @@
       "web": {
         "h3": "In your browser",
         "body": "Prayer times for where you are, notifications at each prayer, and the whole Qur’an — nothing to install.",
-        "link": "Open Mihrab Web"
+        "link": "Open Mihrab Web",
+        "h2": "Try it now — nothing to install",
+        "note": "Your settings and bookmarks stay in this browser. Add it to your home screen to keep it close.",
+        "alt": "Mihrab Web in a browser: the Today page with the countdown to Maghrib under a sunset sky, and the day’s prayer times."
       }
     },
     "reviews": {
@@ -143,7 +146,8 @@
       "screenshots": "Screenshots",
       "features": "Features",
       "privacy": "Privacy",
-      "faq": "Questions"
+      "faq": "Questions",
+      "web": "Web app"
     },
     "labels": {
       "lang": "Language",
@@ -278,7 +282,10 @@
       "web": {
         "h3": "I webbläsaren",
         "body": "Bönetider för där du är, aviseringar vid varje bön och hela Koranen — inget att installera.",
-        "link": "Öppna Mihrab Web"
+        "link": "Öppna Mihrab Web",
+        "h2": "Prova nu — inget att installera",
+        "note": "Dina inställningar och bokmärken stannar i den här webbläsaren. Lägg till den på hemskärmen för att ha den nära.",
+        "alt": "Mihrab Web i en webbläsare: sidan Idag med nedräkningen till maghrib under en solnedgångshimmel, och dagens bönetider."
       }
     },
     "reviews": {
@@ -290,6 +297,10 @@
     "nav": {
       "label": "Avsnitt",
       "items": [
+        [
+          "#web",
+          "Webbapp"
+        ],
         [
           "#ladda-ner",
           "Ladda ner"
@@ -361,7 +372,10 @@
       "web": {
         "h3": "في متصفحك",
         "body": "مواقيت الصلاة لمكانك، وإشعار عند كل صلاة، والقرآن كاملًا — دون أي تثبيت.",
-        "link": "افتح محراب على الويب"
+        "link": "افتح محراب على الويب",
+        "h2": "جرّبه الآن — دون أي تثبيت",
+        "note": "تبقى إعداداتك وعلاماتك في هذا المتصفح. أضفه إلى الشاشة الرئيسية ليبقى قريبًا منك.",
+        "alt": "محراب على الويب في متصفح: صفحة «اليوم» وفيها العدّ التنازلي لصلاة المغرب تحت سماء الغروب، ومواقيت صلوات اليوم."
       }
     },
     "features": {
@@ -448,6 +462,10 @@
         {
           "q": "هل يتتبّع محراب موقعي؟",
           "a": "لا. لا تحليلات ولا شبكة إعلانات ولا حساب. ولا تغادر الإحداثيات الهاتف إلا في طلبين، ليس أحدهما إلى المطوّر: إلى AlAdhan حين يكون مصدر مواقيتك، وإلى OpenStreetMap عند تحديد الموقع تلقائيًا لمعرفة اسم بلدتك، مقرَّبة إلى نحو كيلومتر. اختر الحساب على الجهاز وأدخل بلدتك يدويًا، فلا يُرسل أيٌّ منهما."
+        },
+        {
+          "q": "هل أستطيع استعمال محراب دون تثبيت أي شيء؟",
+          "a": "نعم. يعمل محراب على الويب في متصفحك على العنوان mihrabhq.github.io: مواقيت الصلاة لمكانك، وإشعار عند كل صلاة ما دام التبويب مفتوحًا، والقرآن كاملًا. وتبقى الإعدادات والعلامات في ذلك المتصفح."
         }
       ]
     },
@@ -624,7 +642,8 @@
       "screenshots": "لقطات",
       "features": "المزايا",
       "privacy": "الخصوصية",
-      "faq": "أسئلة"
+      "faq": "أسئلة",
+      "web": "تطبيق الويب"
     },
     "accuracy": {
       "review": "native",
@@ -727,7 +746,10 @@
       "web": {
         "h3": "Tarayıcınızda",
         "body": "Bulunduğunuz yerin namaz vakitleri, her vakitte bildirim ve Kur’an’ın tamamı — kurulum gerekmez.",
-        "link": "Mihrab Web’i aç"
+        "link": "Mihrab Web’i aç",
+        "h2": "Hemen deneyin — kurulum yok",
+        "note": "Ayarlarınız ve yer imleriniz bu tarayıcıda kalır. Elinizin altında olması için ana ekranınıza ekleyin.",
+        "alt": "Tarayıcıda Mihrab Web: gün batımı göğü altında akşam namazına geri sayımıyla Bugün sayfası ve günün namaz vakitleri."
       }
     },
     "features": {
@@ -814,6 +836,10 @@
         {
           "q": "Mihrab konumumu izliyor mu?",
           "a": "Hayır. Analitik yok, reklam ağı yok, hesap yok. Koordinatlar telefondan yalnızca iki istekte çıkar, hiçbiri geliştiriciye gitmez: vakitlerinizin kaynağı olduğunda AlAdhan’a ve otomatik konumda, şehrinizin adını bulmak için yaklaşık bir kilometreye yuvarlanmış olarak OpenStreetMap’e. Cihazda hesaplamayı seçip şehrinizi elle girerseniz ikisi de yapılmaz."
+        },
+        {
+          "q": "Mihrab’ı hiçbir şey kurmadan kullanabilir miyim?",
+          "a": "Evet. Mihrab Web tarayıcınızda mihrabhq.github.io adresinde çalışır: bulunduğunuz yerin namaz vakitleri, sekme açıkken her namazda bir bildirim ve Kur’an’ın tamamı. Ayarlar ve yer imleri o tarayıcıda kalır."
         }
       ]
     },
@@ -983,7 +1009,8 @@
       "screenshots": "Ekran görüntüleri",
       "features": "Özellikler",
       "privacy": "Gizlilik",
-      "faq": "Sorular"
+      "faq": "Sorular",
+      "web": "Web uygulaması"
     },
     "accuracy": {
       "review": "native",
@@ -1086,7 +1113,10 @@
       "web": {
         "h3": "اپنے براؤزر میں",
         "body": "آپ کے مقام کے نماز کے اوقات، ہر نماز پر اطلاع، اور پورا قرآن — کچھ انسٹال کرنے کی ضرورت نہیں۔",
-        "link": "محراب ویب کھولیں"
+        "link": "محراب ویب کھولیں",
+        "h2": "ابھی آزمائیں — کچھ انسٹال کیے بغیر",
+        "note": "آپ کی ترتیبات اور بک مارکس اسی براؤزر میں رہتے ہیں۔ اسے قریب رکھنے کے لیے ہوم اسکرین پر شامل کر لیں۔",
+        "alt": "براؤزر میں محراب ویب: «آج» کا صفحہ، غروب کے آسمان تلے مغرب تک الٹی گنتی اور دن کے اوقاتِ نماز کے ساتھ۔"
       }
     },
     "features": {
@@ -1173,6 +1203,10 @@
         {
           "q": "کیا محراب میرے مقام کا سراغ رکھتا ہے؟",
           "a": "نہیں۔ نہ کوئی اینالیٹکس ہے، نہ اشتہاری نیٹ ورک، نہ اکاؤنٹ۔ کوآرڈینیٹس فون سے صرف دو درخواستوں میں باہر جاتے ہیں، اور کوئی بھی ڈویلپر کو نہیں جاتی: AlAdhan کو، جب وہ آپ کے اوقات کا ماخذ ہو، اور خودکار مقام کی صورت میں OpenStreetMap کو، آپ کے قصبے کا نام جاننے کے لیے، تقریباً ایک کلومیٹر تک گول کر کے۔ آلے پر حساب منتخب کریں اور اپنا قصبہ خود درج کریں تو دونوں میں سے کوئی درخواست نہیں بھیجی جاتی۔"
+        },
+        {
+          "q": "کیا میں کچھ انسٹال کیے بغیر محراب استعمال کر سکتا ہوں؟",
+          "a": "جی ہاں۔ محراب ویب آپ کے براؤزر میں mihrabhq.github.io پر چلتا ہے: آپ کے مقام کے اوقاتِ نماز، ٹیب کھلا رہنے تک ہر نماز پر اطلاع، اور پورا قرآن۔ ترتیبات اور بک مارکس اسی براؤزر میں رہتے ہیں۔"
         }
       ]
     },
@@ -1323,7 +1357,8 @@
       "screenshots": "اسکرین شاٹس",
       "features": "خصوصیات",
       "privacy": "رازداری",
-      "faq": "سوالات"
+      "faq": "سوالات",
+      "web": "ویب ایپ"
     },
     "accuracy": {
       "review": "native",
@@ -1426,7 +1461,10 @@
       "web": {
         "h3": "Di peramban Anda",
         "body": "Waktu salat untuk tempat Anda, notifikasi di setiap waktu salat, dan seluruh Al-Qur’an — tanpa perlu memasang apa pun.",
-        "link": "Buka Mihrab Web"
+        "link": "Buka Mihrab Web",
+        "h2": "Coba sekarang — tanpa memasang apa pun",
+        "note": "Pengaturan dan penanda Anda tetap di peramban ini. Tambahkan ke layar utama agar selalu dekat.",
+        "alt": "Mihrab Web di peramban: halaman Hari Ini dengan hitung mundur menuju Magrib di bawah langit senja, dan waktu salat hari itu."
       }
     },
     "features": {
@@ -1513,6 +1551,10 @@
         {
           "q": "Apakah Mihrab melacak lokasi saya?",
           "a": "Tidak. Tidak ada analitik, jaringan iklan, maupun akun. Koordinat hanya keluar dari ponsel dalam dua permintaan, tidak satu pun ke pengembang: ke AlAdhan bila itu sumber waktu Anda, dan, dengan lokasi otomatis, ke OpenStreetMap untuk menamai kota Anda, dibulatkan sekitar satu kilometer. Pilih perhitungan di perangkat dan masukkan kota Anda secara manual, maka kedua permintaan itu tidak dilakukan."
+        },
+        {
+          "q": "Bisakah saya memakai Mihrab tanpa memasang apa pun?",
+          "a": "Bisa. Mihrab Web berjalan di peramban Anda di mihrabhq.github.io: waktu salat untuk tempat Anda, notifikasi di setiap waktu salat selama tab terbuka, dan Al-Qur’an lengkap. Pengaturan dan penanda tetap di peramban itu."
         }
       ]
     },
@@ -1682,7 +1724,8 @@
       "screenshots": "Tangkapan layar",
       "features": "Fitur",
       "privacy": "Privasi",
-      "faq": "Pertanyaan"
+      "faq": "Pertanyaan",
+      "web": "Aplikasi web"
     },
     "accuracy": {
       "review": "native",
@@ -1785,7 +1828,10 @@
       "web": {
         "h3": "Im Browser",
         "body": "Gebetszeiten für deinen Ort, eine Benachrichtigung zu jedem Gebet und der ganze Koran – ohne Installation.",
-        "link": "Mihrab Web öffnen"
+        "link": "Mihrab Web öffnen",
+        "h2": "Jetzt ausprobieren — ohne Installation",
+        "note": "Ihre Einstellungen und Lesezeichen bleiben in diesem Browser. Legen Sie die Seite auf den Startbildschirm, um sie griffbereit zu haben.",
+        "alt": "Mihrab Web im Browser: die Seite „Heute“ mit dem Countdown zum Maghrib unter einem Abendhimmel und den Gebetszeiten des Tages."
       }
     },
     "features": {
@@ -1872,6 +1918,10 @@
         {
           "q": "Verfolgt Mihrab meinen Standort?",
           "a": "Nein. Es gibt keine Analytik, kein Werbenetzwerk und kein Konto. Koordinaten verlassen das Telefon nur in zwei Anfragen, keine davon an den Entwickler: an AlAdhan, wo es die Quelle Ihrer Zeiten ist, und bei automatischem Standort an OpenStreetMap, um Ihren Ort zu benennen, auf etwa einen Kilometer gerundet. Wählen Sie die Berechnung auf dem Gerät und geben Sie Ihren Ort von Hand ein, entfällt beides."
+        },
+        {
+          "q": "Kann ich Mihrab nutzen, ohne etwas zu installieren?",
+          "a": "Ja. Mihrab Web läuft im Browser unter mihrabhq.github.io: Gebetszeiten für Ihren Ort, eine Benachrichtigung zu jedem Gebet, solange der Tab geöffnet ist, und der ganze Koran. Einstellungen und Lesezeichen bleiben in diesem Browser."
         }
       ]
     },
@@ -2022,7 +2072,8 @@
       "screenshots": "Screenshots",
       "features": "Funktionen",
       "privacy": "Datenschutz",
-      "faq": "Fragen"
+      "faq": "Fragen",
+      "web": "Web-App"
     },
     "accuracy": {
       "review": "native",
@@ -2125,7 +2176,10 @@
       "web": {
         "h3": "Dans votre navigateur",
         "body": "Les horaires de prière de votre ville, une notification à chaque prière et le Coran entier — rien à installer.",
-        "link": "Ouvrir Mihrab Web"
+        "link": "Ouvrir Mihrab Web",
+        "h2": "Essayez maintenant — rien à installer",
+        "note": "Vos réglages et vos signets restent dans ce navigateur. Ajoutez-la à votre écran d’accueil pour la garder sous la main.",
+        "alt": "Mihrab Web dans un navigateur : la page Aujourd’hui avec le compte à rebours jusqu’au Maghrib sous un ciel de couchant, et les horaires de prière du jour."
       }
     },
     "features": {
@@ -2212,6 +2266,10 @@
         {
           "q": "Mihrab suit-il ma position ?",
           "a": "Non. Il n’y a ni statistiques, ni réseau publicitaire, ni compte. Les coordonnées ne quittent le téléphone que dans deux requêtes, aucune vers le développeur : vers AlAdhan lorsqu’il est la source de vos horaires, et, avec la position automatique, vers OpenStreetMap pour nommer votre ville, arrondies à environ un kilomètre. Choisissez le calcul sur l’appareil et saisissez votre ville à la main : aucune des deux requêtes n’est faite."
+        },
+        {
+          "q": "Puis-je utiliser Mihrab sans rien installer ?",
+          "a": "Oui. Mihrab Web fonctionne dans votre navigateur à l’adresse mihrabhq.github.io : les horaires de prière pour votre lieu, une notification à chaque prière tant que l’onglet est ouvert, et le Coran en entier. Les réglages et les signets restent dans ce navigateur."
         }
       ]
     },
@@ -2388,7 +2446,8 @@
       "screenshots": "Captures",
       "features": "Fonctions",
       "privacy": "Vie privée",
-      "faq": "Questions"
+      "faq": "Questions",
+      "web": "Appli web"
     },
     "accuracy": {
       "review": "native",
@@ -2491,7 +2550,10 @@
       "web": {
         "h3": "En tu navegador",
         "body": "Horarios de oración para donde estés, un aviso en cada oración y el Corán completo, sin instalar nada.",
-        "link": "Abrir Mihrab Web"
+        "link": "Abrir Mihrab Web",
+        "h2": "Pruébala ahora — sin instalar nada",
+        "note": "Tus ajustes y marcadores se quedan en este navegador. Añádela a la pantalla de inicio para tenerla a mano.",
+        "alt": "Mihrab Web en un navegador: la página Hoy con la cuenta atrás hasta el Magrib bajo un cielo de atardecer, y los horarios de oración del día."
       }
     },
     "features": {
@@ -2578,6 +2640,10 @@
         {
           "q": "¿Mihrab rastrea mi ubicación?",
           "a": "No. No hay analítica, ni red publicitaria, ni cuenta. Las coordenadas salen del teléfono solo en dos peticiones, ninguna al desarrollador: a AlAdhan cuando es la fuente de tus horarios y, con la ubicación automática, a OpenStreetMap para nombrar tu ciudad, redondeadas a un kilómetro aproximadamente. Elige el cálculo en el dispositivo e introduce tu ciudad a mano, y no se hace ninguna de las dos."
+        },
+        {
+          "q": "¿Puedo usar Mihrab sin instalar nada?",
+          "a": "Sí. Mihrab Web funciona en tu navegador en mihrabhq.github.io: horarios de oración para donde estás, una notificación en cada oración mientras la pestaña esté abierta, y el Corán completo. Los ajustes y marcadores se quedan en ese navegador."
         }
       ]
     },
@@ -2728,7 +2794,8 @@
       "screenshots": "Capturas",
       "features": "Funciones",
       "privacy": "Privacidad",
-      "faq": "Preguntas"
+      "faq": "Preguntas",
+      "web": "App web"
     },
     "accuracy": {
       "review": "native",
@@ -2831,7 +2898,10 @@
       "web": {
         "h3": "В браузере",
         "body": "Время намаза для вашего места, уведомление к каждому намазу и весь Коран — ничего не нужно устанавливать.",
-        "link": "Открыть Mihrab Web"
+        "link": "Открыть Mihrab Web",
+        "h2": "Попробуйте сейчас — без установки",
+        "note": "Ваши настройки и закладки остаются в этом браузере. Добавьте страницу на главный экран, чтобы она была под рукой.",
+        "alt": "Mihrab Web в браузере: экран «Сегодня» с обратным отсчётом до магриба под закатным небом и время намазов на день."
       }
     },
     "features": {
@@ -2918,6 +2988,10 @@
         {
           "q": "Отслеживает ли Mihrab моё местоположение?",
           "a": "Нет. Нет ни аналитики, ни рекламной сети, ни учётной записи. Координаты покидают телефон только в двух запросах, и ни один не идёт разработчику: в AlAdhan, когда он служит источником времени, и, при автоматическом определении места, в OpenStreetMap, чтобы назвать ваш город, с округлением примерно до километра. Выберите расчёт на устройстве и введите город вручную — и ни один запрос не отправляется."
+        },
+        {
+          "q": "Можно ли пользоваться Mihrab, ничего не устанавливая?",
+          "a": "Да. Mihrab Web работает в браузере по адресу mihrabhq.github.io: время намаза для вашего места, уведомление к каждому намазу, пока вкладка открыта, и весь Коран. Настройки и закладки остаются в этом браузере."
         }
       ]
     },
@@ -3068,7 +3142,8 @@
       "screenshots": "Скриншоты",
       "features": "Возможности",
       "privacy": "Приватность",
-      "faq": "Вопросы"
+      "faq": "Вопросы",
+      "web": "Веб-версия"
     },
     "accuracy": {
       "review": "native",
@@ -3171,7 +3246,10 @@
       "web": {
         "h3": "আপনার ব্রাউজারে",
         "body": "আপনার জায়গার নামাজের সময়, প্রতি ওয়াক্তে বিজ্ঞপ্তি, আর পুরো কুরআন — কিছুই ইনস্টল করতে হবে না।",
-        "link": "মিহরাব ওয়েব খুলুন"
+        "link": "মিহরাব ওয়েব খুলুন",
+        "h2": "এখনই দেখে নিন — কিছু ইনস্টল করতে হবে না",
+        "note": "আপনার সেটিংস ও বুকমার্ক এই ব্রাউজারেই থাকে। হাতের কাছে রাখতে হোম স্ক্রিনে যোগ করে নিন।",
+        "alt": "ব্রাউজারে মিহরাব ওয়েব: সূর্যাস্তের আকাশের নিচে মাগরিবের কাউন্টডাউনসহ «আজ» পাতা এবং দিনের নামাজের সময়।"
       }
     },
     "features": {
@@ -3258,6 +3336,10 @@
         {
           "q": "মিহরাব কি আমার অবস্থান অনুসরণ করে?",
           "a": "না। কোনো অ্যানালিটিক্স, বিজ্ঞাপন নেটওয়ার্ক বা অ্যাকাউন্ট নেই। স্থানাঙ্ক ফোন থেকে বের হয় মাত্র দুটি অনুরোধে, যার কোনোটিই ডেভেলপারের কাছে যায় না: AlAdhan-এ, যখন সেটিই আপনার সময়ের উৎস, এবং স্বয়ংক্রিয় অবস্থান চালু থাকলে আপনার শহরের নাম জানতে OpenStreetMap-এ, প্রায় এক কিলোমিটারে গোল করে। ডিভাইসে হিসাব বেছে নিন এবং শহরের নাম নিজে লিখুন, তাহলে কোনো অনুরোধই পাঠানো হয় না।"
+        },
+        {
+          "q": "কিছু ইনস্টল না করে কি মিহরাব ব্যবহার করা যায়?",
+          "a": "হ্যাঁ। মিহরাব ওয়েব আপনার ব্রাউজারে mihrabhq.github.io ঠিকানায় চলে: আপনার জায়গার নামাজের সময়, ট্যাব খোলা থাকলে প্রতিটি নামাজে একটি নোটিফিকেশন, এবং সম্পূর্ণ কুরআন। সেটিংস ও বুকমার্ক ওই ব্রাউজারেই থাকে।"
         }
       ]
     },
@@ -3408,7 +3490,8 @@
       "screenshots": "স্ক্রিনশট",
       "features": "বৈশিষ্ট্য",
       "privacy": "গোপনীয়তা",
-      "faq": "প্রশ্ন"
+      "faq": "প্রশ্ন",
+      "web": "ওয়েব অ্যাপ"
     },
     "accuracy": {
       "review": "native",
@@ -3511,7 +3594,10 @@
       "web": {
         "h3": "आपके ब्राउज़र में",
         "body": "आपकी जगह के नमाज़ के समय, हर नमाज़ पर सूचना, और पूरा क़ुरआन — कुछ भी इंस्टॉल नहीं करना।",
-        "link": "मिहराब वेब खोलें"
+        "link": "मिहराब वेब खोलें",
+        "h2": "अभी आज़माएँ — कुछ इंस्टॉल किए बिना",
+        "note": "आपकी सेटिंग और बुकमार्क इसी ब्राउज़र में रहते हैं। इसे पास रखने के लिए होम स्क्रीन पर जोड़ लें।",
+        "alt": "ब्राउज़र में मिहराब वेब: सूर्यास्त के आसमान तले मग़रिब की उलटी गिनती के साथ «आज» पृष्ठ और दिन की नमाज़ के समय।"
       }
     },
     "features": {
@@ -3598,6 +3684,10 @@
         {
           "q": "क्या मिहराब मेरी लोकेशन पर नज़र रखता है?",
           "a": "नहीं। न कोई एनालिटिक्स है, न विज्ञापन नेटवर्क, न खाता। निर्देशांक फ़ोन से सिर्फ़ दो अनुरोधों में बाहर जाते हैं, और कोई भी डेवलपर को नहीं जाता: AlAdhan को, जब वही आपके समय का स्रोत हो, और स्वचालित लोकेशन के साथ, आपके शहर का नाम जानने के लिए OpenStreetMap को, लगभग एक किलोमीटर तक पूर्णांकित करके। डिवाइस पर गणना चुनें और अपना शहर हाथ से लिखें, तो दोनों में से कोई अनुरोध नहीं भेजा जाता।"
+        },
+        {
+          "q": "क्या मैं कुछ इंस्टॉल किए बिना मिहराब इस्तेमाल कर सकता हूँ?",
+          "a": "हाँ। मिहराब वेब आपके ब्राउज़र में mihrabhq.github.io पर चलता है: आपकी जगह के नमाज़ के समय, टैब खुला रहने तक हर नमाज़ पर एक सूचना, और पूरा क़ुरआन। सेटिंग और बुकमार्क उसी ब्राउज़र में रहते हैं।"
         }
       ]
     },
@@ -3748,7 +3838,8 @@
       "screenshots": "स्क्रीनशॉट",
       "features": "सुविधाएँ",
       "privacy": "निजता",
-      "faq": "सवाल"
+      "faq": "सवाल",
+      "web": "वेब ऐप"
     },
     "accuracy": {
       "review": "native",
@@ -3851,7 +3942,10 @@
       "web": {
         "h3": "在浏览器中",
         "body": "你所在地的礼拜时间、每次礼拜的通知，以及完整的《古兰经》——无需安装。",
-        "link": "打开 Mihrab Web"
+        "link": "打开 Mihrab Web",
+        "h2": "现在就试试——无需安装",
+        "note": "你的设置和书签保存在这个浏览器中。把它添加到主屏幕，随手可用。",
+        "alt": "浏览器中的 Mihrab 网页版：“今日”页面，日落天空下距昏礼的倒计时，以及当天的礼拜时间。"
       }
     },
     "features": {
@@ -3938,6 +4032,10 @@
         {
           "q": "Mihrab 会追踪我的位置吗？",
           "a": "不会。没有统计分析，没有广告网络，也没有账号。坐标只在两种请求中离开手机，且都不发给开发者：当 AlAdhan 是你的时间来源时发给 AlAdhan；使用自动定位时发给 OpenStreetMap 以查出你所在城镇的名称，并取整到约一公里。选择在设备上计算并手动输入城镇，这两种请求都不会发出。"
+        },
+        {
+          "q": "不安装任何东西可以使用 Mihrab 吗？",
+          "a": "可以。Mihrab 网页版在浏览器中运行，网址是 mihrabhq.github.io：你所在地的礼拜时间、标签页开着时每番礼拜的通知，以及完整的《古兰经》。设置和书签保存在该浏览器中。"
         }
       ]
     },
@@ -4088,7 +4186,8 @@
       "screenshots": "截图",
       "features": "功能",
       "privacy": "隐私",
-      "faq": "常见问题"
+      "faq": "常见问题",
+      "web": "网页版"
     },
     "accuracy": {
       "review": "native",

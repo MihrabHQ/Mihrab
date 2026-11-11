@@ -18,7 +18,7 @@ const DOCS = path.join(ROOT, 'docs');
 const LANGS = JSON.parse(
   readFileSync(path.join(ROOT, 'scripts', 'site', 'strings.json'), 'utf-8'),
 ) as Record<string, { path: string; accuracy?: { table?: unknown } }>;
-const { PLATFORMS, OPERATING_SYSTEMS } = require('../scripts/build-site.js');
+const { PLATFORMS, OPERATING_SYSTEMS, WEB_APP_URL } = require('../scripts/build-site.js');
 
 const codes = Object.keys(LANGS);
 const pageOf = (code: string) =>
@@ -105,5 +105,62 @@ describe('accuracy is on every page that leads with it', () => {
     expect(faq.match(/<article class="card">/g)!.length).toBeGreaterThanOrEqual(9);
     expect(faq).toContain('OpenStreetMap');
     expect(faq).toContain('mihrab-methods');
+  });
+});
+
+/**
+ * Mihrab Web was the last card under "Get Mihrab" — one more download
+ * channel, when it is the one way to use Mihrab with nothing to install.
+ * It has the hero's third button, the first section, a place in the
+ * section links, an answer in the questions and its own structured data.
+ */
+describe('Mihrab Web is shown as the app in a browser, not as one more download', () => {
+  it.each(codes)('%s opens it from the hero', code => {
+    expect(heroOf(code)).toContain(`<a class="open-web" href="${WEB_APP_URL}">`);
+  });
+
+  it.each(codes)('%s gives it the first section, with the way in and a picture described in its language', code => {
+    const page = pageOf(code);
+    const first = /<main id="main">\s*(?:<!--[^>]*-->\s*)*<section class="([\w-]+)" id="([\w-]+)"/.exec(page)!;
+    expect([first[1], first[2]]).toEqual(['webapp', 'web']);
+    const section = /<section class="webapp" id="web">[\s\S]*?<\/section>/.exec(page)![0];
+    expect(section).toContain(`<a class="button" href="${WEB_APP_URL}">`);
+    expect(section).toMatch(/<img src="[^"]*img\/web-app\.jpg[^"]*"[^>]*alt="[^"]{20,}"/);
+    // A picture of it, never the app itself in a frame: the page loads
+    // nothing from anywhere else.
+    expect(page).not.toMatch(/<iframe/);
+  });
+
+  it('ships the picture at both widths', () => {
+    for (const f of ['web-app.jpg', 'web-app-800.jpg']) {
+      expect(existsSync(path.join(DOCS, 'assets', 'img', f))).toBe(true);
+    }
+  });
+
+  it.each(codes)('%s links to it from the section links and answers whether it needs installing', code => {
+    const page = pageOf(code);
+    expect(/<nav class="jump"[\s\S]*?<\/nav>/.exec(page)![0]).toContain('href="#web"');
+    const faq = /<section class="faq"[\s\S]*?<\/section>/.exec(page)![0];
+    expect(faq).toContain('mihrabhq.github.io');
+  });
+
+  it.each(codes)('%s describes it to a search engine as a free web application', code => {
+    const blocks = Array.from(
+      pageOf(code).matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g),
+      m => JSON.parse(m[1]),
+    );
+    const web = blocks.find(b => b['@type'] === 'WebApplication');
+    expect(web).toBeDefined();
+    expect(web.url).toBe(WEB_APP_URL);
+    expect(web.offers.price).toBe('0');
+    // And the installed app is still the first block, which other tests read.
+    expect(blocks[0]['@type']).toBe('MobileApplication');
+  });
+
+  it('keeps one line for it under Get Mihrab, so every channel is still listed there', () => {
+    for (const code of codes) {
+      const install = /<section class="install"[\s\S]*?<\/section>/.exec(pageOf(code))![0];
+      expect(install).toContain(`<a class="button" href="${WEB_APP_URL}">`);
+    }
   });
 });
