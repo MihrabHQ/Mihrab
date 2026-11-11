@@ -18,8 +18,8 @@ import kotlin.system.exitProcess
  *
  * Exposes two methods to JS:
  *
- *   • restartApp()           — finishes the current activity, fires
- *     a fresh launch intent, then System.exit's the process. Used
+ *   • restartApp()           — fires a fresh launch intent from the
+ *     current activity, then System.exit's the process. Used
  *     after the Material You toggle so PlatformColor refs are torn
  *     down and re-resolved against the new theme.
  *
@@ -39,8 +39,13 @@ class SystemThemeModule(private val reactContext: ReactApplicationContext) :
     val pm = reactContext.packageManager
     val intent = pm.getLaunchIntentForPackage(reactContext.packageName) ?: return
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-    activity.finishAffinity()
-    reactContext.startActivity(intent)
+    // Started FROM the activity, and before anything is finished: the
+    // system lets an app start an activity only while it has one on
+    // screen. This used to finish first and start from the application
+    // context, and the start was then sometimes refused ("Background
+    // activity launch blocked", Android 17, 2026-11-11) — the app closed
+    // and did not come back. CLEAR_TASK takes the old activity away.
+    activity.startActivity(intent)
     Process.killProcess(Process.myPid())
     exitProcess(0)
   }
