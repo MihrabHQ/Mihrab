@@ -31,6 +31,8 @@ import { SWEDEN_METHOD_ID } from './swedenMethodId';
 import { congressTimes } from './congressMethod';
 import {
   algeriaCorrection,
+  albaniaCorrection,
+  bulgariaCorrection,
   cdumCorrection,
   indonesiaCorrection,
   moroccoCorrection,
@@ -42,6 +44,9 @@ import { diyanetInstants } from './diyanetMethod';
 import { algeriaTimes } from './algeriaMethod';
 import { tatarstanTimes } from './tatarstanMethod';
 import { cdumTimes } from './cdumMethod';
+import { albaniaTimes } from './albaniaMethod';
+import { bulgariaTimes } from './bulgariaMethod';
+import { ALBANIA_METHOD_ID, BULGARIA_METHOD_ID } from './balkanTowns';
 import { CDUM_METHOD_ID, TATARSTAN_METHOD_ID, tatarstanDipAt } from './russiaPlaces';
 import { moroccoTimes, moroccoDipEast, moroccoDipWest } from './moroccoMethod';
 import { kemenagTimes } from './indonesiaMethod';
@@ -621,6 +626,32 @@ export function computeLocalAdhanInstants(
         tatarstanCorrection(params.latitude, params.longitude, y, m, day),
         0,
       );
+  }
+  if (methodId === ALBANIA_METHOD_ID || methodId === BULGARIA_METHOD_ID) {
+    // Albania's calendar and Bulgaria's timetable: one town's table with
+    // the sun taken once a day (`townTableMethod.ts`), for the town whose
+    // point this is, then the few times on the other side of a minute
+    // (the first Asr only; the Hanafi one is the method's own at two
+    // shadow lengths).
+    const albania = methodId === ALBANIA_METHOD_ID;
+    const at = (albania ? albaniaTimes : bulgariaTimes)(
+      params.longitude,
+      y,
+      m,
+      day,
+      params.school === 1 ? 2 : 1,
+    );
+    return corrected(
+      at,
+      (albania ? albaniaCorrection : bulgariaCorrection)(
+        params.latitude,
+        params.longitude,
+        y,
+        m,
+        day,
+      ),
+      params.school ?? 0,
+    );
   }
   if (methodId === CDUM_METHOD_ID) {
     // The Central Muftiate of Russia's method (`cdumMethod.ts`), likewise.

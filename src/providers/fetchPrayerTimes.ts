@@ -4,6 +4,7 @@ import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
 import { getMarwDatasetTimes } from './marwDataset';
 import { getCdumTimes, getTatarstanTimes } from './russiaMuftiates';
+import { getAlbaniaTimes, getBulgariaTimes } from './balkanTimetables';
 import {
   computeNamazvaktiMethodTimes,
   getNamazvaktiTimes,
@@ -368,6 +369,26 @@ export async function fetchPrayerTimesUnified(
       // AlAdhan writes a place's times on the place's clock (`meta.timezone`).
       result.clock = result.timezone ?? DEVICE_CLOCK;
       break;
+    }
+    case 'kmsh':
+    case 'grandmufti': {
+      // The Muslim Community of Albania's calendar and the Grand Mufti's
+      // Office of Bulgaria's timetable, computed on the phone for the
+      // nearest listed town, with its correction list
+      // (`balkanTimetables.ts`); the Hanafi Asr from the same method where
+      // the reader keeps it. Outside the country, the general source.
+      try {
+        result = await (p.provider === 'kmsh' ? getAlbaniaTimes : getBulgariaTimes)({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+          school: p.school,
+        });
+        break;
+      } catch {
+        /* outside coverage */
+      }
+      return fetchPrayerTimesUnified({ ...p, provider: 'aladhan' });
     }
     case 'dumrt':
     case 'cdum': {

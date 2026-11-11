@@ -677,6 +677,14 @@
     "cdum": {
       "name": "Ryssland (Centrala muftiatet)",
       "desc": "Tidtabellen från Rysslands centrala muslimska andliga styrelse, beräknad på din enhet med dess egen metod för den av dess städer du är i – Moskva, Sankt Petersburg och sexton till – och den stämmer med de publicerade tiderna på minuten. Dess enda Asr är den hanafitiska."
+    },
+    "kmsh": {
+      "name": "Albanien",
+      "desc": "Albaniens muslimska gemenskaps kalender, beräknad på din enhet med dess egen metod för den stad i dess lista som ligger närmast dig – den stämmer med de publicerade tiderna på minuten."
+    },
+    "grandmufti": {
+      "name": "Bulgarien",
+      "desc": "Tidtabellen från Bulgariens stormuftiämbete, beräknad på din enhet med dess egen metod för den stad i dess lista som ligger närmast dig – den stämmer med de publicerade tiderna på minuten."
     }
   },
   "compass": {

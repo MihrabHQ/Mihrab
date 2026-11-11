@@ -677,6 +677,14 @@
     "cdum": {
       "name": "Rusya (Merkezî Müftülük)",
       "desc": "Rusya Müslümanları Merkezî Dinî İdaresi’nin vakit çizelgesi; cihazınızda kendi yöntemiyle, şehirlerinden bulunduğunuz şehir için — Moskova, Sankt-Peterburg ve on altı şehir daha — hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür. Tek ikindisi Hanefî ikindisidir."
+    },
+    "kmsh": {
+      "name": "Arnavutluk",
+      "desc": "Arnavutluk Müslüman Topluluğu’nun takvimi; cihazınızda kendi yöntemiyle, listesindeki size en yakın şehir için hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür."
+    },
+    "grandmufti": {
+      "name": "Bulgaristan",
+      "desc": "Bulgaristan Başmüftülüğü’nün vakit çizelgesi; cihazınızda kendi yöntemiyle, listesindeki size en yakın şehir için hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür."
     }
   },
   "compass": {

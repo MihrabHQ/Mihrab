@@ -677,6 +677,14 @@
     "cdum": {
       "name": "Rusia (Muftiat Pusat)",
       "desc": "Jadwal Administrasi Spiritual Pusat Muslim Rusia, dihitung di perangkat Anda dengan metodenya sendiri untuk kotanya tempat Anda berada — Moskow, Sankt Peterburg, dan enam belas lainnya — dan cocok dengan jadwal yang diterbitkan hingga ke menitnya. Satu-satunya Asarnya adalah Asar Hanafi."
+    },
+    "kmsh": {
+      "name": "Albania",
+      "desc": "Kalender Komunitas Muslim Albania, dihitung di perangkat Anda dengan metodenya sendiri untuk kota terdekat dengan Anda dalam daftarnya — cocok dengan jadwal yang diterbitkan hingga ke menitnya."
+    },
+    "grandmufti": {
+      "name": "Bulgaria",
+      "desc": "Jadwal Kantor Mufti Agung Bulgaria, dihitung di perangkat Anda dengan metodenya sendiri untuk kota terdekat dengan Anda dalam daftarnya — cocok dengan jadwal yang diterbitkan hingga ke menitnya."
     }
   },
   "compass": {

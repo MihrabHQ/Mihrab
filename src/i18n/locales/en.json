@@ -677,6 +677,14 @@
     "cdum": {
       "name": "Russia (Central Muftiate)",
       "desc": "The timetable of the Central Spiritual Administration of Muslims of Russia, calculated on your device by its own method for its city you are in — Moscow, Saint Petersburg and sixteen more — and matching the published times to the minute. Its one Asr is the Hanafi one."
+    },
+    "kmsh": {
+      "name": "Albania",
+      "desc": "The Muslim Community of Albania’s calendar, calculated on your device by its own method for the town nearest you in its list — it matches the published times to the minute."
+    },
+    "grandmufti": {
+      "name": "Bulgaria",
+      "desc": "The Grand Mufti’s Office of Bulgaria’s timetable, calculated on your device by its own method for the town nearest you in its list — it matches the published times to the minute."
     }
   },
   "compass": {

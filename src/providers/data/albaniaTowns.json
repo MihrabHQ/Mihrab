@@ -1,0 +1,13 @@
+[
+ {"id":1,"name":"Tirana","lat":41.3275,"lon":19.8187,"pointLat":41.3333,"pointLon":19.8167},
+ {"id":2,"name":"Durrës","lat":41.3246,"lon":19.4565,"pointLat":41.3333,"pointLon":19.3167},
+ {"id":3,"name":"Shkodër","lat":42.0683,"lon":19.5126,"pointLat":41.3343,"pointLon":19.3167},
+ {"id":4,"name":"Vlorë","lat":40.4667,"lon":19.4897,"pointLat":41.3333,"pointLon":19.5667},
+ {"id":5,"name":"Lushnjë","lat":40.9419,"lon":19.705,"pointLat":41.3343,"pointLon":19.5667},
+ {"id":6,"name":"Berat","lat":40.7058,"lon":19.9522,"pointLat":41.3343,"pointLon":19.8167},
+ {"id":7,"name":"Elbasan","lat":41.1125,"lon":20.0822,"pointLat":41.3333,"pointLon":20.0667},
+ {"id":8,"name":"Kukës","lat":42.0767,"lon":20.4219,"pointLat":41.3343,"pointLon":20.0667},
+ {"id":9,"name":"Peshkopi","lat":41.685,"lon":20.4289,"pointLat":41.3333,"pointLon":20.3167},
+ {"id":10,"name":"Librazhd","lat":41.1794,"lon":20.3153,"pointLat":41.3343,"pointLon":20.3167},
+ {"id":11,"name":"Korçë","lat":40.6186,"lon":20.7808,"pointLat":41.3333,"pointLon":21.0667}
+]

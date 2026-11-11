@@ -47,8 +47,13 @@ not in the table above: **Tatarstan** — the Spiritual Administration of
 Muslims of the Republic of Tatarstan (`tatarstanMethod.ts`, 44 towns and
 district seats, inside the republic's outline), and **Russia's Central
 Muftiate** — the Central Spiritual Administration of Muslims of Russia
-(`cdumMethod.ts`, 18 cities, within 30 km of each). Their certification is
-in mihrab-methods' `docs/status.md`. Both print one Asr, the Hanafi one.
+(`cdumMethod.ts`, 18 cities, within 30 km of each). Both print one Asr, the Hanafi one. And two
+more: **Albania** — the Muslim Community of Albania's calendar
+(`albaniaMethod.ts`, Tirana and ten towns) and **Bulgaria** — the Grand
+Mufti's Office's timetable (`bulgariaMethod.ts`, Sofia and 47 towns), each
+one town's table with the sun taken once a day (`townTableMethod.ts`) and
+served inside its country. The certification of all four is in
+mihrab-methods' `docs/status.md`.
 
 Every time is within a minute by the method alone. Each list covers the
 dates its tables do and is renewed as the authority publishes more; past

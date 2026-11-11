@@ -678,6 +678,14 @@
     "cdum": {
       "name": "Rusia (Muftiato Central)",
       "desc": "El horario de la Administración Espiritual Central de los Musulmanes de Rusia, calculado en tu dispositivo con su propio método para aquella de sus ciudades en la que estás —Moscú, San Petersburgo y dieciséis más—, y coincide al minuto con los horarios publicados. Su único Asr es el hanafí."
+    },
+    "kmsh": {
+      "name": "Albania",
+      "desc": "El calendario de la Comunidad Musulmana de Albania, calculado en tu dispositivo con su propio método para la ciudad de su lista más cercana a ti; coincide al minuto con los horarios publicados."
+    },
+    "grandmufti": {
+      "name": "Bulgaria",
+      "desc": "El horario de la Oficina del Gran Muftí de Bulgaria, calculado en tu dispositivo con su propio método para la ciudad de su lista más cercana a ti; coincide al minuto con los horarios publicados."
     }
   },
   "compass": {

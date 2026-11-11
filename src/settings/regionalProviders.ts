@@ -27,6 +27,8 @@ import { isCoordinateInDagestan } from '../utils/dagestanRegion';
 import { isCoordinateInBashkortostan } from '../utils/bashkortostanRegion';
 import { isCoordinateInTatarstan } from '../utils/tatarstanRegion';
 import { isNearCdumCity } from '../providers/russiaPlaces';
+import { isCoordinateInAlbania } from '../utils/albaniaRegion';
+import { isCoordinateInBulgaria } from '../utils/bulgariaRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import {
@@ -79,6 +81,10 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   // Russia Automatic stays the calculated 16° / 15°.
   { id: 'dumrt', covers: isCoordinateInTatarstan, yieldsToChosenMethod: true },
   { id: 'cdum', covers: isNearCdumCity, yieldsToChosenMethod: true },
+  // Albania's and Bulgaria's own timetables, each inside its country,
+  // before Diyanet's places there.
+  { id: 'kmsh', covers: isCoordinateInAlbania, yieldsToChosenMethod: true },
+  { id: 'grandmufti', covers: isCoordinateInBulgaria, yieldsToChosenMethod: true },
 ];
 
 /**

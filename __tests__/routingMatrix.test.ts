@@ -52,6 +52,9 @@ const OWN_SOURCE: Record<
   ID: { source: 'kemenag', method: 20, yields: true },
   TR: { source: 'diyanet', method: 13, yields: true },
   'TR-CY': { source: 'diyanet', method: 13, yields: true },
+  // Albania's and Bulgaria's own timetables (the stand-in method is the Muslim World League's)
+  AL: { source: 'kmsh', method: 3, yields: true },
+  BG: { source: 'grandmufti', method: 3, yields: true },
 };
 
 /** The country's own method, as listed under Calculation method (Bahrain, Oman, Iraq: not read off anything, MWL). */

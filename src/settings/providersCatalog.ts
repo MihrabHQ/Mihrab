@@ -95,6 +95,22 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.cdum.desc',
   },
   {
+    id: 'kmsh',
+    name: 'Albania',
+    description:
+      'The Muslim Community of Albania’s calendar, calculated on your device by its own method for the town nearest you in its list — it matches the published times to the minute.',
+    nameKey: 'providers.kmsh.name',
+    descriptionKey: 'providers.kmsh.desc',
+  },
+  {
+    id: 'grandmufti',
+    name: 'Bulgaria',
+    description:
+      'The Grand Mufti’s Office of Bulgaria’s timetable, calculated on your device by its own method for the town nearest you in its list — it matches the published times to the minute.',
+    nameKey: 'providers.grandmufti.name',
+    descriptionKey: 'providers.grandmufti.desc',
+  },
+  {
     id: 'marw',
     name: 'Algeria',
     description:

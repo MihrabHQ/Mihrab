@@ -2,7 +2,7 @@
  * The correction lists: for each authority whose method the phone computes
  * — Sweden (Islamiska Förbundet's tables, which are Diyanet's), Diyanet
  * worldwide, Morocco, Algeria, Indonesia, Tatarstan, Russia's Central
- * Muftiate — the few times the authority's
+ * Muftiate, Albania, Bulgaria — the few times the authority's
  * own program puts on the other side of a minute's rounding point from the
  * method. Each entry moves one printed time of one point on one date by a
  * minute. The lists are written by MihrabHQ/mihrab-methods
@@ -16,8 +16,8 @@
 
 type Key = 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 export type Corrections = { from: string; to: string; points: Record<string, string[]> };
-export type CorrectionAuthority = 'sweden' | 'diyanet' | 'morocco' | 'algeria' | 'indonesia' | 'tatarstan' | 'cdum';
-export const CORRECTION_AUTHORITIES: readonly CorrectionAuthority[] = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia', 'tatarstan', 'cdum'];
+export type CorrectionAuthority = 'sweden' | 'diyanet' | 'morocco' | 'algeria' | 'indonesia' | 'tatarstan' | 'cdum' | 'albania' | 'bulgaria';
+export const CORRECTION_AUTHORITIES: readonly CorrectionAuthority[] = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia', 'tatarstan', 'cdum', 'albania', 'bulgaria'];
 
 type Index = Map<string, Map<string, Partial<Record<Key, number>>>>;
 
@@ -33,6 +33,8 @@ const BUNDLED: Record<CorrectionAuthority, () => Corrections> = {
   indonesia: () => require('./data/indonesiaCorrections.json') as Corrections,
   tatarstan: () => require('./data/tatarstanCorrections.json') as Corrections,
   cdum: () => require('./data/cdumCorrections.json') as Corrections,
+  albania: () => require('./data/albaniaCorrections.json') as Corrections,
+  bulgaria: () => require('./data/bulgariaCorrections.json') as Corrections,
 };
 const inForce: Partial<Record<CorrectionAuthority, Corrections>> = {};
 const listInForce = (authority: CorrectionAuthority): Corrections =>
@@ -147,6 +149,9 @@ export const indonesiaCorrection = (lat: number, lon: number, y: number, m: numb
 export const tatarstanCorrection = (lat: number, lon: number, y: number, m: number, d: number) => correctionFor('tatarstan', lat, lon, y, m, d);
 /** The Central Spiritual Administration of Muslims of Russia's cities. */
 export const cdumCorrection = (lat: number, lon: number, y: number, m: number, d: number) => correctionFor('cdum', lat, lon, y, m, d);
+/** By a town's own point of the table (`balkanTowns.ts`). */
+export const albaniaCorrection = (lat: number, lon: number, y: number, m: number, d: number) => correctionFor('albania', lat, lon, y, m, d);
+export const bulgariaCorrection = (lat: number, lon: number, y: number, m: number, d: number) => correctionFor('bulgaria', lat, lon, y, m, d);
 
 /** The dates Sweden's bundled list covers. */
 export const swedenCorrectionsCoverage = (): { from: string; to: string } => {

@@ -30,6 +30,8 @@ export const PRAYER_DATA_PROVIDER_IDS = [
   'bashkortostan',
   'dumrt',
   'cdum',
+  'kmsh',
+  'grandmufti',
   'namazvakti',
   'diyanet',
   'igmg',

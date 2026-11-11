@@ -677,6 +677,14 @@
     "cdum": {
       "name": "Russland (Zentrales Muftiat)",
       "desc": "Der Zeitplan der Zentralen Geistlichen Verwaltung der Muslime Russlands, auf deinem Gerät nach ihrer eigenen Methode berechnet, für diejenige ihrer Städte, in der du bist – Moskau, Sankt Petersburg und sechzehn weitere –, auf die Minute übereinstimmend mit den veröffentlichten Zeiten. Ihr einziger Asr ist der hanafitische."
+    },
+    "kmsh": {
+      "name": "Albanien",
+      "desc": "Der Kalender der Muslimischen Gemeinschaft Albaniens, auf deinem Gerät nach ihrer eigenen Methode berechnet, für die Stadt ihrer Liste, die dir am nächsten liegt – er stimmt auf die Minute mit den veröffentlichten Zeiten überein."
+    },
+    "grandmufti": {
+      "name": "Bulgarien",
+      "desc": "Der Zeitplan des Großmuftiamts von Bulgarien, auf deinem Gerät nach dessen eigener Methode berechnet, für die Stadt seiner Liste, die dir am nächsten liegt – er stimmt auf die Minute mit den veröffentlichten Zeiten überein."
     }
   },
   "compass": {
