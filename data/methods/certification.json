@@ -69,7 +69,7 @@
         "places": 164,
         "times": 94350,
         "off": 0,
-        "offWithoutCorrections": 114,
+        "offWithoutCorrections": 108,
         "from": "2026-08-27",
         "to": "2026-11-30"
       }
@@ -77,10 +77,10 @@
     "corrections": {
       "from": "2026-08-27",
       "to": "2026-11-30",
-      "entries": 114,
-      "sha256": "2ae7161a7164f7ccebf1aa9f81628a810ce8fdd337e0645907e6c58d0be6aae9"
+      "entries": 108,
+      "sha256": "77aceac84e3e28a2fd0eb37fb21107a7782072c9ae806e464cf813d073e173be"
     },
-    "revision": 2
+    "revision": 3
   },
   "algeria": {
     "certified": true,

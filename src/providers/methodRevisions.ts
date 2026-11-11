@@ -9,7 +9,7 @@
 export const METHOD_REVISION = {
   sweden: 1,
   diyanet: 2,
-  morocco: 2,
+  morocco: 3,
   algeria: 1,
   indonesia: 2,
 } as const;
