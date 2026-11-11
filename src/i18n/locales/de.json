@@ -657,6 +657,10 @@
     "kmdb": {
       "name": "Kirgisistan",
       "desc": "Der Zeitplan der Geistlichen Verwaltung der Muslime Kirgisistans für den Ihnen nächstgelegenen Ort ihrer Liste, wie ihr eigener öffentlicher Dienst ihn liefert. Ein Asr, der hanafitische."
+    },
+    "shuro": {
+      "name": "Tadschikistan",
+      "desc": "Der Zeitplan des Islamischen Zentrums Tadschikistans: seine Tabelle für Duschanbe und für die übrigen genannten Orte die Minuten davor oder danach. Ein Asr, der hanafitische."
     }
   },
   "compass": {
@@ -2044,8 +2048,10 @@
     "serverMalaysia": "Malaysia · JAKIM e-Solat",
     "serverLondon": "London · Unified Prayer Timetable",
     "serverKyrgyzstan": "Kirgisistan · Geistliche Verwaltung",
+    "serverTajikistan": "Tadschikistan · Islamisches Zentrum",
     "jakimWindow": "JAKIM veröffentlicht nur das laufende Jahr, daher endet dieses Fenster am 31. Dezember und beginnt neu, sobald das neue Jahr in den ersten Januartagen veröffentlicht ist.",
     "londonWindow": "Der Zeitplan wird jeweils für ein Jahr veröffentlicht, daher endet dieses Fenster am 31. Dezember und beginnt neu, sobald das neue Jahr veröffentlicht ist.",
+    "shuroWindow": "Das Zentrum legt seine Tabelle Jahr für Jahr fest und veröffentlicht die letzten Monate spät, daher kann dieses Fenster gegen Jahresende kurz sein.",
     "serverIndonesia": "Indonesien · Kemenag",
     "kemenagWindow": "Wird jeweils eine Saison im Voraus geladen – dieser Monat und die zwei folgenden – und jede Woche verlängert."
   },

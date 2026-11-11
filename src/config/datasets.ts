@@ -14,6 +14,9 @@ export const LONDON_DATASET_BASE_URL =
 export const KMDB_DATASET_BASE_URL =
   'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/prayer-times/kyrgyzstan/v1';
 
+export const SHURO_DATASET_BASE_URL =
+  'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/prayer-times/tajikistan/v1';
+
 /** Fallback refresh when the index poll cannot reach the server. */
 export const NATIONAL_TABLE_REFRESH_TTL_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
 /** How often to re-read the tiny `index.json`. ±25% jitter at the call site. */

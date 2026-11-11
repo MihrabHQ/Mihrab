@@ -22,6 +22,7 @@ import { isCoordinateInIndonesia } from '../utils/indonesiaRegion';
 import { isCoordinateInMalaysia } from '../utils/malaysiaRegion';
 import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
+import { isCoordinateInTajikistan } from '../utils/tajikistanRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import {
@@ -66,6 +67,7 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   // before Diyanet's London, which Automatic would otherwise take.
   { id: 'london', covers: isCoordinateInLondon, yieldsToChosenMethod: true },
   { id: 'kmdb', covers: isCoordinateInKyrgyzstan, yieldsToChosenMethod: true },
+  { id: 'shuro', covers: isCoordinateInTajikistan, yieldsToChosenMethod: true },
 ];
 
 /**

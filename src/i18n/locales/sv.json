@@ -657,6 +657,10 @@
     "kmdb": {
       "name": "Kirgizistan",
       "desc": "Kirgizistans muslimska andliga styrelses tidtabell för den ort i dess lista som ligger närmast dig, så som dess egen öppna tjänst ger den. En Asr, den hanafitiska."
+    },
+    "shuro": {
+      "name": "Tadzjikistan",
+      "desc": "Tadzjikistans islamiska centers tidtabell: dess tabell för Dusjanbe, och för de övriga orter det nämner minuterna före eller efter den. En Asr, den hanafitiska."
     }
   },
   "compass": {
@@ -2044,8 +2048,10 @@
     "serverMalaysia": "Malaysia · JAKIM e-Solat",
     "serverLondon": "London · Unified Prayer Timetable",
     "serverKyrgyzstan": "Kirgizistan · Andliga styrelsen",
+    "serverTajikistan": "Tadzjikistan · Islamiska centret",
     "jakimWindow": "JAKIM publicerar bara innevarande år, så fönstret slutar den 31 december och börjar om när det nya året publiceras i början av januari.",
     "londonWindow": "Tidtabellen publiceras ett år i taget, så fönstret slutar den 31 december och börjar om när det nya året publiceras.",
+    "shuroWindow": "Centret fastställer sin tabell år för år och publicerar de sista månaderna sent, så fönstret kan vara kort mot slutet av ett år.",
     "serverIndonesia": "Indonesien · Kemenag",
     "kemenagWindow": "Hämtas en säsong i taget – den här månaden och de två nästa – och förlängs varje vecka."
   },

@@ -657,6 +657,10 @@
     "kmdb": {
       "name": "Kırgızistan",
       "desc": "Kırgızistan Müslümanları Dinî İdaresi’nin, listesindeki size en yakın yer için cetveli; kendi açık hizmetinin verdiği haliyle. Tek ikindi, Hanefî olanı."
+    },
+    "shuro": {
+      "name": "Tacikistan",
+      "desc": "Tacikistan İslam Merkezi’nin cetveli: Duşanbe için tablosu ve adını verdiği diğer şehirler için ondan önceki ya da sonraki dakikalar. Tek ikindi, Hanefî olanı."
     }
   },
   "compass": {
@@ -2044,8 +2048,10 @@
     "serverMalaysia": "Malezya · JAKIM e-Solat",
     "serverLondon": "Londra · Birleşik Vakit Cetveli",
     "serverKyrgyzstan": "Kırgızistan · Dinî İdare",
+    "serverTajikistan": "Tacikistan · İslam Merkezi",
     "jakimWindow": "JAKIM yalnızca içinde bulunulan yılı yayımlar; bu yüzden bu pencere 31 Aralık’ta biter ve yeni yıl Ocak’ın ilk günlerinde yayımlanınca yeniden başlar.",
     "londonWindow": "Cetvel yıldan yıla yayımlanır; bu yüzden bu pencere 31 Aralık’ta biter ve yeni yıl yayımlanınca yeniden başlar.",
+    "shuroWindow": "Merkez cetvelini yıldan yıla belirler ve son ayları geç yayımlar; bu yüzden bu pencere yıl sonuna doğru kısa olabilir.",
     "serverIndonesia": "Endonezya · Kemenag",
     "kemenagWindow": "Her seferinde bir mevsim alınır — bu ay ve sonraki iki ay — ve her hafta uzatılır."
   },

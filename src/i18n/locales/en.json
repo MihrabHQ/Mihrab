@@ -657,6 +657,10 @@
     "kmdb": {
       "name": "Kyrgyzstan",
       "desc": "The Spiritual Administration of Muslims of Kyrgyzstan’s timetable for the place nearest you in its list, as its own public service gives it. One Asr, the Hanafi one."
+    },
+    "shuro": {
+      "name": "Tajikistan",
+      "desc": "The Islamic Centre of Tajikistan’s timetable: its table for Dushanbe, and for the other towns it names the minutes before or after it. One Asr, the Hanafi one."
     }
   },
   "compass": {
@@ -2044,8 +2048,10 @@
     "serverMalaysia": "Malaysia · JAKIM e-Solat",
     "serverLondon": "London · Unified Prayer Timetable",
     "serverKyrgyzstan": "Kyrgyzstan · Spiritual Administration",
+    "serverTajikistan": "Tajikistan · Islamic Centre",
     "jakimWindow": "JAKIM publishes the current year only, so this window ends on 31 December and starts again when the new year is published in the first days of January.",
     "londonWindow": "The timetable is published a year at a time, so this window ends on 31 December and starts again when the new year is published.",
+    "shuroWindow": "The Centre sets its table year by year and publishes the last months late, so this window can be short near the end of a year.",
     "serverIndonesia": "Indonesia · Kemenag",
     "kemenagWindow": "Fetched a season at a time — this month and the two after it — and extended every week."
   },

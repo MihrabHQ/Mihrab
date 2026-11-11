@@ -103,6 +103,14 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.london.desc',
   },
   {
+    id: 'shuro',
+    name: 'Tajikistan',
+    description:
+      'The Islamic Centre of Tajikistan’s timetable: its table for Dushanbe, and for the other towns it names the minutes before or after it. One Asr, the Hanafi one.',
+    nameKey: 'providers.shuro.name',
+    descriptionKey: 'providers.shuro.desc',
+  },
+  {
     id: 'kmdb',
     name: 'Kyrgyzstan',
     description:

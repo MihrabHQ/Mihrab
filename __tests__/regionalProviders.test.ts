@@ -60,6 +60,10 @@ const PLACES: [string, number, number, string | null][] = [
   ['Bishkek', 42.8746, 74.5698, 'kmdb'],
   ['Osh', 40.5283, 72.7985, 'kmdb'],
   ['Karakol', 42.4907, 78.3936, 'kmdb'],
+  ['Dushanbe', 38.5598, 68.787, 'shuro'],
+  ['Khujand', 40.2833, 69.6167, 'shuro'],
+  ['Murghob', 38.171, 73.965, 'shuro'],
+  ['Termez', 37.2242, 67.2783, 'diyanet'], // Uzbekistan, across the Amu Darya's bend
   ['Andijan', 40.7821, 72.3442, 'diyanet'], // Uzbekistan, across the border from Osh
   ['Almaty', 43.2389, 76.8897, 'diyanet'],
   ['Watford', 51.6565, -0.3903, 'london'],
@@ -92,6 +96,7 @@ describe('the table', () => {
       'london',
       'marw',
       'muis',
+      'shuro',
     ]);
   });
 

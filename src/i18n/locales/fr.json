@@ -658,6 +658,10 @@
     "kmdb": {
       "name": "Kirghizistan",
       "desc": "Les horaires de l’Administration spirituelle des musulmans du Kirghizistan pour le lieu de sa liste le plus proche de vous, tels que les donne son propre service public. Un seul Asr, le hanafite."
+    },
+    "shuro": {
+      "name": "Tadjikistan",
+      "desc": "Les horaires du Centre islamique du Tadjikistan : sa table pour Douchanbé et, pour les autres villes qu’il nomme, les minutes avant ou après elle. Un seul Asr, le hanafite."
     }
   },
   "compass": {
@@ -2045,8 +2049,10 @@
     "serverMalaysia": "Malaisie · JAKIM e-Solat",
     "serverLondon": "Londres · Unified Prayer Timetable",
     "serverKyrgyzstan": "Kirghizistan · Administration spirituelle",
+    "serverTajikistan": "Tadjikistan · Centre islamique",
     "jakimWindow": "Le JAKIM ne publie que l’année en cours : cette fenêtre se termine le 31 décembre et reprend lorsque la nouvelle année est publiée dans les premiers jours de janvier.",
     "londonWindow": "L’horaire est publié une année à la fois : cette fenêtre se termine le 31 décembre et reprend lorsque la nouvelle année est publiée.",
+    "shuroWindow": "Le Centre fixe sa table année par année et publie tard les derniers mois : cette fenêtre peut être courte vers la fin d’une année.",
     "serverIndonesia": "Indonésie · Kemenag",
     "kemenagWindow": "Récupérés une saison à la fois — ce mois-ci et les deux suivants — et prolongés chaque semaine."
   },

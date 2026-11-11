@@ -6,6 +6,7 @@
  *   • Malaysia — JAKIM e-Solat, 59 zones (`jakim`)
  *   • London — the London Unified Prayer Timetable, one for the city (`london`)
  *   • Kyrgyzstan — the Spiritual Administration, 115 places (`kmdb`)
+ *   • Tajikistan — the Islamic Centre, Dushanbe and eighteen towns (`shuro`)
  *   • Indonesia — Kemenag (Bimas Islam), 517 regencies and cities (`kemenag`),
  *     computed on the phone (its method and correction list)
  *
@@ -16,6 +17,7 @@
 import {
   JAKIM_DATASET_BASE_URL,
   KMDB_DATASET_BASE_URL,
+  SHURO_DATASET_BASE_URL,
   LONDON_DATASET_BASE_URL,
   MUIS_DATASET_BASE_URL,
   NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
@@ -218,6 +220,48 @@ export const kmdbTable = createNationalTable({
   }),
 });
 
+/** Tajikistan's clock: UTC+5, no summer time. */
+export const SHURO_CLOCK: PlaceClock = { zone: 'Asia/Dushanbe' };
+/**
+ * What stands in past the published window: the Muslim World League's
+ * angles with the Hanafi Asr the table prints. The Centre's table is set
+ * by hand each year and is no calculation; this only fills the gap.
+ */
+export const SHURO_STAND_IN_METHOD = 3;
+
+/**
+ * Tajikistan: the nearest of Dushanbe and the eighteen towns the Centre
+ * gives minutes for. The cap allows for the Pamir, where Khorugh and
+ * Murghob stand for a wide country.
+ */
+export const shuroTable = createNationalTable({
+  id: 'shuro',
+  dataset: 'shuro',
+  baseUrl: SHURO_DATASET_BASE_URL,
+  timezone: 'Asia/Dushanbe',
+  get places() {
+    return placesOf(() => require('./data/shuroPlaces.json'));
+  },
+  maxPlaceKm: 200,
+  get seed() {
+    return seedOf(() => require('./data/shuroSeed.json'));
+  },
+  refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
+  indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
+  calculate: (place, date) => ({
+    ...computeLocalAdhanTimes({
+      latitude: place.lat,
+      longitude: place.lon,
+      date,
+      calculationMethod: SHURO_STAND_IN_METHOD,
+      // the one Asr the table prints
+      school: 1,
+      placeClock: SHURO_CLOCK,
+    }),
+    source: 'local',
+  }),
+});
+
 /**
  * Indonesia: the ministry publishes per regency, and a regency's seat
  * stands for it. Regencies in Papua and Kalimantan are large.
@@ -278,6 +322,7 @@ export const NATIONAL_TABLES: Partial<Record<PrayerDataProviderId, NationalTable
   kemenag: kemenagTable,
   london: londonTable,
   kmdb: kmdbTable,
+  shuro: shuroTable,
 };
 
 /**

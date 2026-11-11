@@ -53,7 +53,8 @@ What ships today:
   [MihrabHQ/mihrab-methods](https://github.com/MihrabHQ/mihrab-methods).
   Singapore (MUIS, from data.gov.sg), Malaysia (JAKIM e-Solat) and London
   (the London Unified Prayer Timetable, from londonprayertimes.com) and
-  Kyrgyzstan (the Spiritual Administration's, from muftiyat.kg's public API) are
+  Kyrgyzstan (the Spiritual Administration's, from muftiyat.kg's public API)
+  and Tajikistan (the Islamic Centre's, from shuroiulamo.tj) are
   built by `tools/national-tables/` and read through one module,
   `src/providers/nationalTable.ts`. Türkiye Takvimi (namazvakti.com):
   a workflow builds its city index (`tools/namazvakti-dataset/`). Where

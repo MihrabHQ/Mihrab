@@ -25,6 +25,7 @@ export const PRAYER_DATA_PROVIDER_IDS = [
   'kemenag',
   'london',
   'kmdb',
+  'shuro',
   'namazvakti',
   'diyanet',
   'igmg',
