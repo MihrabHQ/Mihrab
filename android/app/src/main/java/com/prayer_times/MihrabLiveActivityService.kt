@@ -90,6 +90,13 @@ class MihrabLiveActivityService : Service() {
    *  reschedules when the upcoming prayer actually changes. */
   @Volatile private var lastAlarmEpoch = 0L
 
+  /** The card as last built keeps itself current (`EXTRA_SELF_TICKING`); see `tickDelay`. */
+  @Volatile private var selfTicking = false
+
+  /** The stored payload last compared in `persistIfAdvanced`, and its instant. */
+  private var persistedRef: String? = null
+  private var persistedNext = -1L
+
   /** Flips [screenOn] and re-posts immediately so the countdown switches
    *  between the per-second and per-minute formats the instant the screen
    *  turns on or off. */
@@ -98,6 +105,11 @@ class MihrabLiveActivityService : Service() {
       when (intent?.action) {
         Intent.ACTION_SCREEN_ON, Intent.ACTION_USER_PRESENT -> screenOn = true
         Intent.ACTION_SCREEN_OFF -> screenOn = false
+        // The clock or its zone moved: the card's "At 17:02" is a wall
+        // time worked out when it was built, and the tick is counted from
+        // then. The minute's re-post used to put both right within the
+        // minute; a card that is not re-posted every minute is told.
+        Intent.ACTION_TIMEZONE_CHANGED, Intent.ACTION_TIME_CHANGED -> Unit
         else -> return
       }
       repostNow()
@@ -117,6 +129,8 @@ class MihrabLiveActivityService : Service() {
           addAction(Intent.ACTION_SCREEN_ON)
           addAction(Intent.ACTION_SCREEN_OFF)
           addAction(Intent.ACTION_USER_PRESENT)
+          addAction(Intent.ACTION_TIMEZONE_CHANGED)
+          addAction(Intent.ACTION_TIME_CHANGED)
         },
       )
     }
@@ -225,7 +239,16 @@ class MihrabLiveActivityService : Service() {
       val next = JSONObject(candidate).optLong("nextEpochMs", 0L)
       if (next <= 0L) return
       val storedJson = MihrabLiveActivityModule.loadPayload(this)
-      val stored = storedJson?.let { JSONObject(it).optLong("nextEpochMs", -1L) } ?: -1L
+      // The preferences hand back the same String until it is written
+      // again, so a payload already read is not parsed a second time —
+      // this ran every minute over a thirty-day schedule.
+      val stored = if (storedJson != null && storedJson === persistedRef) {
+        persistedNext
+      } else {
+        storedJson?.let { JSONObject(it).optLong("nextEpochMs", -1L) } ?: -1L
+      }
+      persistedRef = storedJson
+      persistedNext = stored
       if (stored == next) return
       MihrabLiveActivityModule.savePayload(this, candidate)
       Log.i(TAG, "persisted advance: nextEpochMs $stored -> $next")
@@ -435,10 +458,37 @@ class MihrabLiveActivityService : Service() {
       // (`scheduleMinuteAlarm`) is the one re-post: when the CPU happened
       // to be awake, both used to fire for the same change and post twice.
       val next = ticker
-      if (next != null && screenOn) handler.postDelayed(next, TICK_MS)
+      if (next != null && screenOn) handler.postDelayed(next, tickDelay())
     }
     ticker = tick
-    if (screenOn) handler.postDelayed(tick, TICK_MS)
+    if (screenOn) handler.postDelayed(tick, tickDelay())
+  }
+
+  /**
+   * How long until the card next needs building, screen on.
+   *
+   * A minute, for a card with a bar: the bar's position is the app's to
+   * move. The countdown card on Android 17 has none — a MetricStyle whose
+   * countdown the system ticks — and between events not one character of
+   * it changes, yet it was rebuilt and re-posted every minute the screen
+   * was on, sixty binder calls and sixty re-layouts of the card an hour
+   * to draw the same thing. That card (`selfTicking`) now waits for what
+   * does change it: the prayer coming in, and the end of the "Now" moment
+   * after it. A change of setting, of the alert override, of the system's
+   * colours or of the clock re-posts on its own path, as before.
+   *
+   * Capped at a quarter of an hour: four posts an hour instead of sixty,
+   * and anything this has not thought of is put right within that.
+   */
+  private fun tickDelay(): Long {
+    if (!selfTicking) return TICK_MS
+    val p = lastPayload?.let { runCatching { JSONObject(it) }.getOrNull() } ?: return TICK_MS
+    val now = System.currentTimeMillis()
+    val next = p.optLong("nextEpochMs", 0L)
+    val prev = p.optLong("prevEpochMs", 0L)
+    var at = if (next > now) next + 1000L else now + TICK_MS
+    if (prev > 0L && now - prev in 0 until ARRIVED_MS) at = minOf(at, prev + ARRIVED_MS + 500L)
+    return (at - now).coerceIn(1000L, SELF_TICKING_MAX_MS)
   }
 
   /**
@@ -747,7 +797,9 @@ class MihrabLiveActivityService : Service() {
     // Screen off: no chronometer (it freezes on the always-on display), the
     // hours and minutes as text instead. See `ambientCountdown`.
     o.put("ambient", !screenOn)
-    return MihrabLiveActivityModule.buildNotificationFromPayload(this, o)
+    val notif = MihrabLiveActivityModule.buildNotificationFromPayload(this, o)
+    selfTicking = notif.extras?.getBoolean(MihrabLiveActivityModule.EXTRA_SELF_TICKING, false) == true
+    return notif
   }
 
   /**
@@ -901,6 +953,8 @@ class MihrabLiveActivityService : Service() {
      * and rolls onto the next prayer. See `tickInterval`.
      */
     const val TICK_MS = 60_000L
+    /** The longest a card that keeps itself current goes without a re-post (`tickDelay`). */
+    const val SELF_TICKING_MAX_MS = 15 * 60_000L
     /** How long the card says "<prayer> · Now" after a prayer — the builder's `justArrived`. */
     const val ARRIVED_MS = 90_000L
 

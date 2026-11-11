@@ -204,6 +204,54 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
     }
   }
 
+  /**
+   * Whether Android will show the card as a Live Update — the status-bar
+   * chip and the always-on display. A person can turn "Live Updates" off
+   * for one app in the system's settings, and then the card is an
+   * ordinary notification with nothing in the app to say why.
+   * `supported` is false below Android 16, where there is no chip.
+   */
+  @ReactMethod
+  fun promotionStatus(promise: Promise) {
+    try {
+      val nm = reactContext.getSystemService(android.app.NotificationManager::class.java)
+      val supported = Build.VERSION.SDK_INT >= 36
+      val map = com.facebook.react.bridge.Arguments.createMap()
+      map.putBoolean("supported", supported)
+      map.putBoolean("notifications", nm?.areNotificationsEnabled() ?: true)
+      map.putBoolean("promoted", if (supported && nm != null) canPostPromoted(nm) else true)
+      promise.resolve(map)
+    } catch (t: Throwable) {
+      promise.reject("E_PROMOTION_STATUS", t)
+    }
+  }
+
+  /** The system's Live Updates switch for this app; its notification settings where that is what is off, or that page is missing. */
+  @ReactMethod
+  fun openPromotionSettings(promise: Promise) {
+    fun open(action: String) = reactContext.startActivity(
+      Intent(action)
+        .putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, reactContext.packageName)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+    )
+    try {
+      // Notifications off altogether is fixed one page up from the Live
+      // Updates switch, which is greyed out until they are on.
+      val nm = reactContext.getSystemService(android.app.NotificationManager::class.java)
+      val notificationsOn = nm?.areNotificationsEnabled() ?: true
+      val opened = notificationsOn && Build.VERSION.SDK_INT >= 36 &&
+        runCatching { open("android.settings.APP_NOTIFICATION_PROMOTION_SETTINGS") }.isSuccess
+      if (!opened) open(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+      promise.resolve(null)
+    } catch (t: Throwable) {
+      promise.reject("E_PROMOTION_SETTINGS", t)
+    }
+  }
+
+  @SuppressLint("NewApi")
+  private fun canPostPromoted(nm: android.app.NotificationManager): Boolean =
+    runCatching { nm.canPostPromotedNotifications() }.getOrDefault(true)
+
   @ReactMethod
   fun cancel(promise: Promise) {
     try {
@@ -354,6 +402,8 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
     // explicitly) so the Android 16 status-bar chip can promote us.
     // Channel importance must match what JS creates in liveActivity.ts.
     const val CHANNEL_ID = "mihrab_live_activity_v3"
+    /** On a built card: the system keeps it current between events (MetricStyle, screen on). */
+    const val EXTRA_SELF_TICKING = "mihrab.selfTicking"
     const val NOTIF_ID = 0xA1B2
 
     // Foreground-service placeholder notification (beta.10+ dual-notification
@@ -870,6 +920,10 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         val arrivedTitle =
           if (justArrived && arrivedLabel.isNotEmpty()) "$arrivedLabel · $nowWord"
           else null
+        // The status-bar chip in the moment the card says "<prayer> · Now":
+        // the same word, not the hours to the prayer AFTER it — which is
+        // what it showed, under a card announcing this one.
+        val chipText = if (arrivedTitle != null) nowWord else shortText
         // Whether the PLATFORM is already animating the countdown for this
         // card. MetricStyle's TimeDifference is system-ticked, so a
         // chronometer on top of it would show the same number twice. Every
@@ -944,7 +998,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
             val sub = joinDot(nextTimeText, hijri)
             if (sub.isNotEmpty()) builder.setSubText(sub)
             builder.setProgress(100, progressPct, false)
-            tryAttachShortCriticalText(builder, shortText)
+            tryAttachShortCriticalText(builder, chipText)
           }
         } else {
           // timeline (default) or markers: the segmented ProgressStyle bar
@@ -982,7 +1036,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
             builder.setContentTitle("$inlineTitle · $progressPct%")
             builder.setProgress(100, progressPct, false)
           }
-          tryAttachShortCriticalText(builder, shortText)
+          tryAttachShortCriticalText(builder, chipText)
         }
 
         // The seconds, drawn by the platform. Same reasoning as the Android 16
@@ -990,6 +1044,12 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         // own, so the service posts once a minute instead of once a second.
         // Skipped when MetricStyle already ticks the countdown itself.
         if (!systemTicked) ambientCountdown(builder, ambient, nextEpochMs)
+        // Nothing on this card moves by re-posting it: the system ticks the
+        // countdown and there is no bar. The service reads this and wakes
+        // only when the card's words change (`tickDelay`).
+        if (systemTicked && !ambient) {
+          builder.addExtras(android.os.Bundle().apply { putBoolean(EXTRA_SELF_TICKING, true) })
+        }
 
         // The alert-mode action — the same control as the home row, for one
         // occurrence. One tap cycles the upcoming event through the modes
@@ -1143,20 +1203,8 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
       /** Screen off: this, fixed, instead of the ticking TimeDifference. */
       ambientText: String? = null,
     ): Pair<Notification.Style, Boolean>? {
+      val api = metricApi ?: return null
       return try {
-        val msCls = Class.forName("android.app.Notification\$MetricStyle")
-        val metricCls = Class.forName("android.app.Notification\$Metric")
-        val mvCls = Class.forName("android.app.Notification\$Metric\$MetricValue")
-        val tdCls = Class.forName("android.app.Notification\$Metric\$TimeDifference")
-        val ftCls = Class.forName("android.app.Notification\$Metric\$FixedTime")
-        val fmtChrono = tdCls.getField("FORMAT_CHRONOMETER").getInt(null)
-        val forTimer = tdCls.getMethod(
-          "forTimer", Instant::class.java, Int::class.javaPrimitiveType,
-        )
-        val metricCtor = metricCls.getConstructor(mvCls, CharSequence::class.java)
-        val addMetric = msCls.getMethod("addMetric", metricCls)
-        val setMetrics = msCls.getMethod("setMetrics", java.util.List::class.java)
-        val setCritical = msCls.getMethod("setCriticalMetric", Int::class.javaPrimitiveType)
 
         // Always the chronometer format: the system shows H:MM:SS while the
         // screen is on and H:MM on the Always-On Display (it drops the seconds
@@ -1168,34 +1216,29 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         // service passes the hours and minutes as text and re-posts it each
         // minute instead (MihrabLiveActivityService, `screenOn`).
         val timer = if (ambientText != null) {
-          Class.forName("android.app.Notification\$Metric\$FixedText")
-            .getConstructor(CharSequence::class.java)
-            .newInstance(ambientText as CharSequence)
+          api.fixedText.newInstance(ambientText as CharSequence)
         } else {
-          forTimer.invoke(
+          api.forTimer.invoke(
             null,
             Instant.ofEpochMilli(nextEpochMs),
-            fmtChrono,
+            api.fmtChrono,
           )
         }
-        val countdownMetric = metricCtor.newInstance(timer, inWord as CharSequence)
+        val countdownMetric = api.metric.newInstance(timer, inWord as CharSequence)
 
         val second: Any? = when (secondKind) {
           "time" -> {
             // The clock time of the instant itself (step 1.7), not the
             // "HH:mm" text parsed back.
             if (atText != null) {
-              val fixedText = Class.forName("android.app.Notification\$Metric\$FixedText")
-                .getConstructor(CharSequence::class.java)
-              metricCtor.newInstance(fixedText.newInstance(atText as CharSequence), atWord as CharSequence)
+              api.metric.newInstance(api.fixedText.newInstance(atText as CharSequence), atWord as CharSequence)
             } else if (nextEpochMs <= 0L) null else {
               val lt = Instant.ofEpochMilli(nextEpochMs)
                 .atZone(java.time.ZoneId.systemDefault())
                 .toLocalTime()
                 .withSecond(0)
                 .withNano(0)
-              val ftCtor = ftCls.getConstructor(java.time.LocalTime::class.java)
-              metricCtor.newInstance(ftCtor.newInstance(lt), atWord as CharSequence)
+              api.metric.newInstance(api.fixedTime.newInstance(lt), atWord as CharSequence)
             }
           }
           // A "Since Asr 1:12" stopwatch used to be offered here as a third
@@ -1205,17 +1248,60 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
           else -> null
         }
 
-        val ms = msCls.getConstructor().newInstance()
+        val ms = api.style.newInstance()
         if (second != null) {
-          setMetrics.invoke(ms, arrayListOf(second, countdownMetric))
-          setCritical.invoke(ms, 1)
+          api.setMetrics.invoke(ms, arrayListOf(second, countdownMetric))
+          api.setCritical.invoke(ms, 1)
         } else {
-          addMetric.invoke(ms, countdownMetric)
-          setCritical.invoke(ms, 0)
+          api.addMetric.invoke(ms, countdownMetric)
+          api.setCritical.invoke(ms, 0)
         }
         Pair(ms as Notification.Style, second != null)
       } catch (t: Throwable) {
-        Log.w(NAME, "MetricStyle reflection unavailable, using fallback", t)
+        Log.w(NAME, "MetricStyle could not be built, using fallback", t)
+        null
+      }
+    }
+
+    /**
+     * The MetricStyle classes, constructors and methods, looked up ONCE.
+     * `tryBuildCountdownMetricStyle` used to do these twelve lookups on
+     * every post of the card. Null where the platform has no MetricStyle
+     * (below API 37), and then it is not asked again.
+     */
+    private class MetricApi(
+      val style: java.lang.reflect.Constructor<*>,
+      val metric: java.lang.reflect.Constructor<*>,
+      val fixedText: java.lang.reflect.Constructor<*>,
+      val fixedTime: java.lang.reflect.Constructor<*>,
+      val forTimer: java.lang.reflect.Method,
+      val fmtChrono: Int,
+      val addMetric: java.lang.reflect.Method,
+      val setMetrics: java.lang.reflect.Method,
+      val setCritical: java.lang.reflect.Method,
+    )
+
+    private val metricApi: MetricApi? by lazy {
+      try {
+        val msCls = Class.forName("android.app.Notification\$MetricStyle")
+        val metricCls = Class.forName("android.app.Notification\$Metric")
+        val mvCls = Class.forName("android.app.Notification\$Metric\$MetricValue")
+        val tdCls = Class.forName("android.app.Notification\$Metric\$TimeDifference")
+        MetricApi(
+          style = msCls.getConstructor(),
+          metric = metricCls.getConstructor(mvCls, CharSequence::class.java),
+          fixedText = Class.forName("android.app.Notification\$Metric\$FixedText")
+            .getConstructor(CharSequence::class.java),
+          fixedTime = Class.forName("android.app.Notification\$Metric\$FixedTime")
+            .getConstructor(java.time.LocalTime::class.java),
+          forTimer = tdCls.getMethod("forTimer", Instant::class.java, Int::class.javaPrimitiveType),
+          fmtChrono = tdCls.getField("FORMAT_CHRONOMETER").getInt(null),
+          addMetric = msCls.getMethod("addMetric", metricCls),
+          setMetrics = msCls.getMethod("setMetrics", java.util.List::class.java),
+          setCritical = msCls.getMethod("setCriticalMetric", Int::class.javaPrimitiveType),
+        )
+      } catch (t: Throwable) {
+        Log.i(NAME, "no MetricStyle on this Android; the countdown card uses the standard template")
         null
       }
     }
@@ -1431,61 +1517,31 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
 
     // ── Reflection helpers for Android 16 chip APIs ─────────────────
 
-    /** Set the short critical text on the notification — drives the
-     *  status-bar Live Update chip on Android 16+. Probed via runtime
-     *  method enumeration; takes String on AOSP, may differ on OEMs. */
+    /**
+     * The status-bar chip's text and the request to be promoted (Android
+     * 16's `setShortCriticalText` / `setRequestPromotedOngoing`).
+     *
+     * Called directly. These were found by walking every public method of
+     * `Notification.Builder` and matching candidate names — written when
+     * the API was a preview whose names were still moving — and the walk
+     * ran twice on every post, with a log line each. compileSdk has both
+     * now, and both callers are behind an API 36 check.
+     */
+    @SuppressLint("NewApi")
     private fun tryAttachShortCriticalText(
       builder: Notification.Builder,
       text: String,
     ) {
-      if (text.isEmpty()) return
-      val cls = Notification.Builder::class.java
-      val candidateNames = setOf(
-        "setShortCriticalText",
-        "setShortText",
-        "setStatusBarShortText",
-        "setOngoingActivityShortText",
-      )
-      for (m in cls.methods) {
-        if (m.name !in candidateNames) continue
-        val pts = m.parameterTypes
-        if (pts.size != 1) continue
-        if (!pts[0].isAssignableFrom(CharSequence::class.java) &&
-            pts[0] != CharSequence::class.java &&
-            pts[0] != String::class.java) continue
-        val ok = runCatching { m.invoke(builder, text as CharSequence) }.isSuccess
-        if (ok) {
-          Log.i(NAME, "ShortCriticalText attached via ${m.name}: $text")
-          builder.extras.putCharSequence("android.shortCriticalText", text)
-          return
-        }
-      }
-      builder.extras.putCharSequence("android.shortCriticalText", text)
-      Log.i(NAME, "ShortCriticalText set via extras fallback: $text")
+      if (text.isEmpty() || Build.VERSION.SDK_INT < 36) return
+      runCatching { builder.setShortCriticalText(text) }
+        .onFailure { Log.w(NAME, "setShortCriticalText failed", it) }
     }
 
-    /** Ask the system to promote this notification to the status-bar
-     *  chip. Available since Android 16. */
+    @SuppressLint("NewApi")
     private fun tryRequestPromotedOngoing(builder: Notification.Builder) {
-      val candidates = setOf(
-        "setRequestPromotedOngoing",
-        "setOngoingPromoted",
-        "requestPromotedOngoing",
-        "setPromotedOngoing",
-      )
-      for (m in Notification.Builder::class.java.methods) {
-        if (m.name !in candidates) continue
-        val pts = m.parameterTypes
-        if (pts.size != 1) continue
-        if (pts[0] != Boolean::class.javaPrimitiveType &&
-            pts[0] != java.lang.Boolean::class.java) continue
-        val ok = runCatching { m.invoke(builder, true) }.isSuccess
-        if (ok) {
-          Log.i(NAME, "Requested promoted ongoing via ${m.name}")
-          return
-        }
-      }
-      Log.w(NAME, "No promoted-ongoing API found on this build")
+      if (Build.VERSION.SDK_INT < 36) return
+      runCatching { builder.setRequestPromotedOngoing(true) }
+        .onFailure { Log.w(NAME, "setRequestPromotedOngoing failed", it) }
     }
 
     // ── Small helpers ───────────────────────────────────────────────

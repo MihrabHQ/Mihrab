@@ -19,7 +19,7 @@
  * module isn't linked (iOS, JS-only tests). Callers should fall through
  * to the notifee path when it returns null.
  */
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 /**
  * One event on the card.
@@ -192,7 +192,24 @@ export interface MihrabLiveActivityInterface {
   /** Forget the one-occurrence override and repaint the card without it.
    *  Optional: a JS bundle can outlive the native module that has it. */
   clearAlertOverride?(): Promise<void>;
+  /** Whether Android will show the card as a Live Update. Optional, as above. */
+  promotionStatus?(): Promise<LiveUpdatePromotion>;
+  /** The system's Live Updates switch for this app. Optional, as above. */
+  openPromotionSettings?(): Promise<void>;
 }
+
+/**
+ * What the system says about the card being a Live Update — the
+ * status-bar chip and the always-on display (Android 16 and later).
+ */
+export type LiveUpdatePromotion = {
+  /** False below Android 16: there is no chip to be allowed or not. */
+  supported: boolean;
+  /** The app may post notifications at all. */
+  notifications: boolean;
+  /** "Live Updates" is on for this app in the system's settings. */
+  promoted: boolean;
+};
 
 export function getMihrabLiveActivityModule(): MihrabLiveActivityInterface | null {
   const mod = NativeModules.MihrabLiveActivity as
@@ -220,5 +237,38 @@ export async function clearNativeAlertOverride(): Promise<void> {
     await getMihrabLiveActivityModule()?.clearAlertOverride?.();
   } catch (e) {
     console.warn('[liveActivity] clearAlertOverride failed', e);
+  }
+}
+
+/**
+ * Why Android is not showing the card as the app means it, if it is not:
+ *  - 'notifications': Mihrab may not post notifications at all, so there
+ *    is no card anywhere — only a foreground service nobody can see;
+ *  - 'promotion': "Live Updates" is off for Mihrab in the system's
+ *    settings, so the card is an ordinary notification — no chip in the
+ *    status bar, nothing on the always-on display.
+ * Null when neither, and wherever it cannot be known. Nothing in the app
+ * said either of these before; the feature just looked broken.
+ */
+export type LiveUpdateBlock = 'notifications' | 'promotion' | null;
+
+export async function liveUpdateBlock(): Promise<LiveUpdateBlock> {
+  if (Platform.OS !== 'android') return null;
+  try {
+    const status = await getMihrabLiveActivityModule()?.promotionStatus?.();
+    if (!status) return null;
+    if (!status.notifications) return 'notifications';
+    return status.supported && !status.promoted ? 'promotion' : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Opens the system page with the Live Updates switch. Never throws. */
+export async function openLiveUpdateSettings(): Promise<void> {
+  try {
+    await getMihrabLiveActivityModule()?.openPromotionSettings?.();
+  } catch (e) {
+    console.warn('[liveActivity] openPromotionSettings failed', e);
   }
 }

@@ -202,7 +202,7 @@ describe('with the screen off, hours and minutes that keep moving', () => {
     expect(kotlin).toMatch(/ambient -> "\$inlineTitle · \$countdown"/);
     expect(kotlin).toMatch(/if \(ambient && arrivedTitle == null\) "\$inlineName · \$countdown"/);
     expect(kotlin).toMatch(/ambientText = if \(ambient\) countdown else null/);
-    expect(kotlin).toMatch(/if \(ambientText != null\) \{\s*Class\.forName\("android\.app\.Notification\\\$Metric\\\$FixedText"\)/);
+    expect(kotlin).toMatch(/if \(ambientText != null\) \{\s*api\.fixedText\.newInstance\(ambientText as CharSequence\)/);
   });
 
   it('wakes the phone only when the ambient text changes, and stops when it wakes', () => {
@@ -211,8 +211,8 @@ describe('with the screen off, hours and minutes that keep moving', () => {
     expect(service).toContain('val triggerAt = System.currentTimeMillis() + untilAmbientChange()');
     // The handler ticker runs only with the screen on: the alarm is the one
     // screen-off re-post, never both for the same change.
-    expect(service).toContain('if (next != null && screenOn) handler.postDelayed(next, TICK_MS)');
-    expect(service).toContain('if (screenOn) handler.postDelayed(tick, TICK_MS)');
+    expect(service).toContain('if (next != null && screenOn) handler.postDelayed(next, tickDelay())');
+    expect(service).toContain('if (screenOn) handler.postDelayed(tick, tickDelay())');
     expect(service).not.toMatch(/untilNextMinute|tickInterval\(\)/);
     expect(service).toMatch(/if \(screenOn \|\| lastPayload == null\) \{\s*am\.cancel\(pi\)/);
     expect(service).toMatch(/setExactAndAllowWhileIdle\(AlarmManager\.RTC_WAKEUP, triggerAt, pi\)/);

@@ -1,5 +1,5 @@
-import { memo } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { memo, useEffect, useState } from 'react';
+import { AppState, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useLiveActivitySettings } from '../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../hooks/useAppPalette';
@@ -14,6 +14,11 @@ import { sharedSettingsStyles as s } from './sharedStyles';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 import { HelpText } from '../../components/ui/InfoSheet';
+import {
+  liveUpdateBlock,
+  openLiveUpdateSettings,
+  type LiveUpdateBlock,
+} from '../../native/MihrabLiveActivity';
 import {
   LIVE_ACTIVITY_DESIGNS,
   liveActivityDesignSupport,
@@ -193,6 +198,39 @@ function PlainBar({ accent, muted, pct }: { accent: string; muted: string; pct: 
 }
 
 /**
+ * Notifications, or "Live Updates", turned off for Mihrab in the
+ * system's settings (`liveUpdateBlock`): there is no card, or it is an
+ * ordinary notification with no chip and nothing on the always-on
+ * display — and the app had no way to say so. Asked
+ * when the page opens and each time the app comes back to the front,
+ * which is how the reader returns from the system page that fixes it.
+ */
+function useLiveUpdateBlock(enabled: boolean): LiveUpdateBlock {
+  const [blocked, setBlocked] = useState<LiveUpdateBlock>(null);
+  useEffect(() => {
+    if (Platform.OS !== 'android' || !enabled) {
+      setBlocked(null);
+      return;
+    }
+    let live = true;
+    const ask = () => {
+      void liveUpdateBlock().then(b => {
+        if (live) setBlocked(b);
+      });
+    };
+    ask();
+    const sub = AppState.addEventListener('change', state => {
+      if (state === 'active') ask();
+    });
+    return () => {
+      live = false;
+      sub.remove();
+    };
+  }, [enabled]);
+  return blocked;
+}
+
+/**
  * Live Activity card — task #128.
  *
  * Master toggle pins an ongoing notification (Android) or starts an ActivityKit
@@ -213,6 +251,7 @@ function LiveActivityCardImpl({
   const { t } = useTranslation();
   const { slice: settings, update } = useLiveActivitySettings();
   const { palette } = useAppPalette();
+  const blocked = useLiveUpdateBlock(settings.liveActivityEnabled);
 
   // No desktop has a Live Activity surface, so hide the whole card there.
   if (isDesktop) return null;
@@ -255,6 +294,16 @@ function LiveActivityCardImpl({
         value={settings.liveActivityEnabled}
         onValueChange={v => update({ liveActivityEnabled: v })}
       />
+
+      {blocked ? (
+        <SettingsLinkRow
+          testID="live-updates-blocked"
+          title={t(blocked === 'notifications' ? 'settings.laNoNotifTitle' : 'settings.laBlockedTitle')}
+          value={t('settings.laBlockedAction')}
+          help={t(blocked === 'notifications' ? 'settings.laNoNotifHelp' : 'settings.laBlockedHelp')}
+          onPress={() => void openLiveUpdateSettings()}
+        />
+      ) : null}
 
       {/* Design picker — Android only (the iOS Live Activity has its own,
           fixed layout). Shown when the Live Activity is enabled. */}
