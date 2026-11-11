@@ -571,6 +571,7 @@
     "garminShowHelp": "Langsung dikirim ke jam. Memerlukan aplikasi jam yang disertakan dengan versi Mihrab ini; versi lama tetap menampilkan semuanya.",
     "garminSteps": "Langkah di tampilan jam",
     "garminWeather": "Cuaca di tampilan jam",
+    "garminBattery": "Baterai di tampilan jam",
     "garminSeconds": "Detik di tampilan jam",
     "garminFieldProgress": "Bilah kemajuan di kolom data",
     "garminFieldProgressHelp": "Bilah dari salat terakhir ke salat berikutnya, di bawah hitung mundur.",

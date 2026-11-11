@@ -571,6 +571,7 @@
     "garminShowHelp": "Saate hemen gönderilir. Mihrab'ın bu sürümüyle gelen saat uygulamalarını gerektirir; eskisi her şeyi göstermeye devam eder.",
     "garminSteps": "Kadranda adımlar",
     "garminWeather": "Kadranda hava durumu",
+    "garminBattery": "Kadranda pil",
     "garminSeconds": "Kadranda saniyeler",
     "garminFieldProgress": "Veri alanında ilerleme çubuğu",
     "garminFieldProgressHelp": "Son namazdan sonrakine uzanan bir çubuk, geri sayımın altında.",

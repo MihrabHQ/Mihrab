@@ -410,6 +410,12 @@ function GarminWatchCardImpl() {
             testID="settings-garmin-weather"
           />
           <SettingsToggleRow
+            title={t('settings.garminBattery')}
+            value={watch.faceBattery}
+            onValueChange={v => show({ faceBattery: v })}
+            testID="settings-garmin-battery"
+          />
+          <SettingsToggleRow
             title={t('settings.garminSeconds')}
             value={watch.faceSeconds}
             onValueChange={v => show({ faceSeconds: v })}

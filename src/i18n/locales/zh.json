@@ -571,6 +571,7 @@
     "garminShowHelp": "立即发送到手表。需要此版本 Mihrab 附带的手表应用；旧版本会继续显示全部内容。",
     "garminSteps": "表盘上的步数",
     "garminWeather": "表盘上的天气",
+    "garminBattery": "表盘上的电量",
     "garminSeconds": "表盘上的秒数",
     "garminFieldProgress": "数据栏中的进度条",
     "garminFieldProgressHelp": "倒计时下方，从上一次礼拜到下一次礼拜的进度条。",

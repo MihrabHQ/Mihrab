@@ -571,6 +571,7 @@
     "garminShowHelp": "Skickas till klockan direkt. Kräver klockapparna som följde med den här versionen av Mihrab; en äldre fortsätter visa allt.",
     "garminSteps": "Steg på urtavlan",
     "garminWeather": "Väder på urtavlan",
+    "garminBattery": "Batteri på urtavlan",
     "garminSeconds": "Sekunder på urtavlan",
     "garminFieldProgress": "Förloppsstapel i datafältet",
     "garminFieldProgressHelp": "En stapel från förra bönen till nästa, under nedräkningen.",

@@ -27,7 +27,7 @@ describe('the Garmin watch setting', () => {
 
   it('reads what the watch shows, and a blob from before the choice as everything shown', () => {
     const old = coerceGarminWatch({ enabled: true, address: 'D4:3A:2C:11:22:FF' });
-    expect(old).toMatchObject({ faceDate: 'gregorian', faceSteps: true, faceWeather: true, faceSeconds: true, fieldProgress: false });
+    expect(old).toMatchObject({ faceDate: 'gregorian', faceSteps: true, faceWeather: true, faceBattery: true, faceSeconds: true, fieldProgress: false });
     expect(
       coerceGarminWatch({ faceDate: 'both', faceSteps: false, faceWeather: false, faceSeconds: false, fieldProgress: true }),
     ).toMatchObject({ faceDate: 'both', faceSteps: false, faceWeather: false, faceSeconds: false, fieldProgress: true });
@@ -55,6 +55,7 @@ describe('what the watch is told to show', () => {
     expect(garminOptionFlags({ ...w, faceDate: 'hijri' })).toBe(8);
     expect(garminOptionFlags({ ...w, faceDate: 'both' })).toBe(16);
     expect(garminOptionFlags({ ...w, fieldProgress: true })).toBe(32);
+    expect(garminOptionFlags({ ...w, faceBattery: false })).toBe(64);
     expect(
       garminOptionFlags({ ...w, faceSteps: false, faceWeather: false, faceSeconds: false, faceDate: 'both', fieldProgress: true }),
     ).toBe(1 + 2 + 4 + 16 + 32);
@@ -67,6 +68,7 @@ describe('what the watch is told to show', () => {
     expect(bit('OPT_NO_SECONDS')).toBe(GARMIN_OPT.noSeconds);
     expect(bit('OPT_DATE_SHIFT')).toBe(GARMIN_OPT.dateShift);
     expect(bit('OPT_FIELD_PROGRESS')).toBe(GARMIN_OPT.fieldProgress);
+    expect(bit('OPT_NO_BATTERY')).toBe(GARMIN_OPT.noBattery);
   });
 
   it('travels in a second message, after the times and never in place of them', () => {

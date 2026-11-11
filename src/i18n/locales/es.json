@@ -572,6 +572,7 @@
     "garminShowHelp": "Se envía al reloj al instante. Requiere las apps de reloj incluidas en esta versión de Mihrab; una anterior sigue mostrándolo todo.",
     "garminSteps": "Pasos en la esfera",
     "garminWeather": "Tiempo en la esfera",
+    "garminBattery": "Batería en la esfera",
     "garminSeconds": "Segundos en la esfera",
     "garminFieldProgress": "Barra de progreso en el campo de datos",
     "garminFieldProgressHelp": "Una barra desde la última oración hasta la siguiente, bajo la cuenta atrás.",

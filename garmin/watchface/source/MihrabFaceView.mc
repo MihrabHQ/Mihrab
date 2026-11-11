@@ -166,6 +166,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private var _next as [Number, Number]? = null;
     // What the phone has asked to be left off (Mihrab.mc, OPT_).
     private var _showSteps as Boolean = true;
+    private var _showBattery as Boolean = true;
     private var _showSeconds as Boolean = true;
     // Kept for the second-by-second draws, which read nothing: when the
     // next prayer is, and the accent.
@@ -212,7 +213,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
     function initialize() {
         WatchFace.initialize();
         _fSeconds = WatchUi.loadResource(Rez.Fonts.Seconds15) as Graphics.FontReference;
-        _fCell = WatchUi.loadResource(Rez.Fonts.Battery7) as Graphics.FontReference;
+        _fCell = WatchUi.loadResource(Rez.Fonts.Battery9) as Graphics.FontReference;
     }
 
     function onLayout(dc as Dc) as Void {
@@ -271,6 +272,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
             }
         }
         _showSteps = !Mihrab.option(MihrabStore.OPT_NO_STEPS);
+        _showBattery = !Mihrab.option(MihrabStore.OPT_NO_BATTERY);
         _showSeconds = !Mihrab.option(MihrabStore.OPT_NO_SECONDS) && !_overBudget;
         _staleText = Mihrab.stale(now) ? WatchUi.loadResource(Rez.Strings.Stale) as String : null;
         _hour12 = Mihrab.hour12();
@@ -299,7 +301,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var key = (_w.toString() + "|" + _dateText + "|" + (_staleText == null ? "" : _staleText) + "|" + (_hour12 ? "12" : "24")
             + "|" + _hourText.length().toString() + "|" + (_weather[0] as Number).toString() + "|" + (_weather[1] as String)
             + "|" + (_weather[2] as String) + "|" + (_reasonText == null ? "" : _reasonText)
-            + "|" + (_showSteps ? "s" : "") + (_showSeconds ? "c" : "")
+            + "|" + (_showSteps ? "s" : "") + (_showSeconds ? "c" : "") + (_showBattery ? "b" : "")
             + "|" + System.getDeviceSettings().systemLanguage.toString()) as String;
         if (!key.equals(_key)) {
             layout(dc);
@@ -582,12 +584,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
             bWeather = y + up(fWeather);
             ok = fit(widest(dc, staleLines, fWeather) / 2, y, y + staleLines.size() * staleH) && ok;
             y += staleLines.size() * staleH - Graphics.getFontDescent(fWeather);
-        } else {
+        } else if (weatherW + cellW(fWeather) > 0) {
             // The weather and, beside it, the battery's circle, which is
             // the line's own height.
             y += GAP_SMALL + above / 2;
             bWeather = y + up(fWeather);
-            ok = fit((weatherW + (weatherW > 0 ? CELL_GAP : 0) + 2 * cellR(fWeather) + 1) / 2, y, bWeather + 2) && ok;
+            ok = fit((weatherW + (weatherW > 0 && _showBattery ? CELL_GAP : 0) + cellW(fWeather)) / 2, y, bWeather + 2) && ok;
             y = bWeather;
         }
 
@@ -640,7 +642,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         // stands here beside the steps instead.)
         var bFoot = y;
         var footW = (_showSteps ? stepsWidth(dc, fFoot) : 0)
-            + (stale != null ? (_showSteps ? CELL_GAP : 0) + 2 * cellR(fFoot) + 1 : 0);
+            + (stale != null && _showBattery ? (_showSteps ? CELL_GAP : 0) + cellW(fFoot) : 0);
         if (footW > 0) {
             y += GAP_FOOT + below;
             bFoot = y + up(fFoot);
@@ -722,7 +724,10 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var f = _fWeather;
         var weatherW = weatherWidth(dc, f);
         var r = cellR(f);
-        var total = weatherW + (weatherW > 0 ? CELL_GAP : 0) + 2 * r + 1;
+        var total = weatherW + (weatherW > 0 && _showBattery ? CELL_GAP : 0) + cellW(f);
+        if (total <= 0) {
+            return;
+        }
         var b = _bWeather;
         var x = _w / 2 - total / 2;
         var mid = b - up(f) / 2 + 2;
@@ -744,15 +749,23 @@ class MihrabFaceView extends WatchUi.WatchFace {
             }
             x += CELL_GAP;
         }
-        drawBattery(dc, x + r, mid, r);
+        if (_showBattery) {
+            drawBattery(dc, x + r, mid, r);
+        }
     }
 
-    // The battery's radius in a line of font f: the circle is as tall as
-    // the line itself — the font's ascent — and within what a figure can
-    // be read inside.
+    // The room the battery's circle takes in a line of font f: none when
+    // the phone says to leave it off.
+    private function cellW(f as Graphics.FontType) as Number {
+        return _showBattery ? 2 * cellR(f) + 1 : 0;
+    }
+
+    // The battery's radius in a line of font f: the circle is the line's
+    // own height — the font's ascent — and a little over, and within what
+    // a figure can be read inside.
     private function cellR(f as Graphics.FontType) as Number {
-        var r = up(f) / 2;
-        return r < 10 ? 10 : (r > 14 ? 14 : r);
+        var r = up(f) / 2 + 2;
+        return r < 11 ? 11 : (r > 16 ? 16 : r);
     }
 
     // The battery, as CyanogenMod drew it: a circle that fills round from
@@ -764,7 +777,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var pct = System.getSystemStats().battery;
         pct = pct < 0.0 ? 0.0 : (pct > 100.0 ? 100.0 : pct);
         var whole = (pct + 0.5).toNumber();
-        var pen = radius >= 14 ? 3 : 2;
+        var pen = radius >= 15 ? 3 : 2;
         var r = radius - pen / 2;
         dc.setPenWidth(pen);
         dc.setColor(TRACK, Graphics.COLOR_TRANSPARENT);
@@ -863,7 +876,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // times has the weather's row, the battery's circle beside them.
     private function drawFoot(dc as Dc) as Void {
         var f = _fFoot;
-        var cell = _staleText != null;
+        var cell = _staleText != null && _showBattery;
         var steps = _showSteps ? stepCount().format("%d") : "";
         var stepsW = _showSteps ? ICON + 3 + textW(dc, steps, f) : 0;
         var r = cellR(f);

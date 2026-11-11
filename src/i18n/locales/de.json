@@ -571,6 +571,7 @@
     "garminShowHelp": "Wird sofort an die Uhr gesendet. Benötigt die Uhren-Apps aus dieser Mihrab-Version; eine ältere zeigt weiterhin alles.",
     "garminSteps": "Schritte auf dem Zifferblatt",
     "garminWeather": "Wetter auf dem Zifferblatt",
+    "garminBattery": "Akku auf dem Zifferblatt",
     "garminSeconds": "Sekunden auf dem Zifferblatt",
     "garminFieldProgress": "Fortschrittsbalken im Datenfeld",
     "garminFieldProgressHelp": "Ein Balken vom letzten Gebet zum nächsten, unter dem Countdown.",

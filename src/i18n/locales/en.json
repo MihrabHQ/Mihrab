@@ -571,6 +571,7 @@
     "garminShowHelp": "Sent to the watch at once. Needs the watch apps that came with this version of Mihrab; an older one goes on showing everything.",
     "garminSteps": "Steps on the watch face",
     "garminWeather": "Weather on the watch face",
+    "garminBattery": "Battery on the watch face",
     "garminSeconds": "Seconds on the watch face",
     "garminFieldProgress": "Progress bar in the data field",
     "garminFieldProgressHelp": "A bar from the last prayer to the next, under the countdown.",

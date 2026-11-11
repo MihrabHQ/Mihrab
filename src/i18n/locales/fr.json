@@ -572,6 +572,7 @@
     "garminShowHelp": "Envoyé à la montre aussitôt. Nécessite les apps de montre fournies avec cette version de Mihrab ; une plus ancienne continue de tout afficher.",
     "garminSteps": "Pas sur le cadran",
     "garminWeather": "Météo sur le cadran",
+    "garminBattery": "Batterie sur le cadran",
     "garminSeconds": "Secondes sur le cadran",
     "garminFieldProgress": "Barre de progression dans le champ de données",
     "garminFieldProgressHelp": "Une barre de la dernière prière à la suivante, sous le compte à rebours.",

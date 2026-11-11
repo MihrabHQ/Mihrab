@@ -24,6 +24,7 @@ export type GarminWatchSettings = {
   faceDate: GarminFaceDate;
   faceSteps: boolean;
   faceWeather: boolean;
+  faceBattery: boolean;
   faceSeconds: boolean;
   /** The data field: a bar from the last prayer to the next. */
   fieldProgress: boolean;
@@ -35,6 +36,7 @@ export const DEFAULT_GARMIN_WATCH: GarminWatchSettings = {
   faceDate: 'gregorian',
   faceSteps: true,
   faceWeather: true,
+  faceBattery: true,
   faceSeconds: true,
   fieldProgress: false,
 };
@@ -57,6 +59,7 @@ export function coerceGarminWatch(value: unknown): GarminWatchSettings {
     // On unless turned off: a blob from before the choice has none of these.
     faceSteps: raw.faceSteps !== false,
     faceWeather: raw.faceWeather !== false,
+    faceBattery: raw.faceBattery !== false,
     faceSeconds: raw.faceSeconds !== false,
     fieldProgress: raw.fieldProgress === true,
   };
@@ -74,6 +77,7 @@ export const GARMIN_OPT = {
   noSeconds: 4,
   dateShift: 3,
   fieldProgress: 32,
+  noBattery: 64,
 } as const;
 
 export function garminOptionFlags(watch: GarminWatchSettings): number {
@@ -83,7 +87,8 @@ export function garminOptionFlags(watch: GarminWatchSettings): number {
     (watch.faceWeather ? 0 : GARMIN_OPT.noWeather) |
     (watch.faceSeconds ? 0 : GARMIN_OPT.noSeconds) |
     (date << GARMIN_OPT.dateShift) |
-    (watch.fieldProgress ? GARMIN_OPT.fieldProgress : 0)
+    (watch.fieldProgress ? GARMIN_OPT.fieldProgress : 0) |
+    (watch.faceBattery ? 0 : GARMIN_OPT.noBattery)
   );
 }
 

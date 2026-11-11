@@ -75,6 +75,8 @@ module MihrabStore {
     const OPT_DATE_MASK = 3;
     // The data field: a bar from the last prayer to the next.
     const OPT_FIELD_PROGRESS = 32;
+    // The face without the battery's circle.
+    const OPT_NO_BATTERY = 64;
 
     // Which night mark an entry of `n` is: its seconds' place.
     const NIGHT_MIDNIGHT = 1;

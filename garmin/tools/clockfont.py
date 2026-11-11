@@ -37,7 +37,7 @@ COUNT_HEIGHTS = [28, 24, 20, 18]
 SECONDS_HEIGHTS = [15]
 # The figure inside the battery's circle: small, to sit in the ring with air
 # all round it (the circle is as tall as the line it stands in).
-BATTERY_HEIGHTS = [7]
+BATTERY_HEIGHTS = [9]
 
 
 def font_for(height):
