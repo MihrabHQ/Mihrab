@@ -1,0 +1,429 @@
+[
+ {
+  "id": 1,
+  "name": "Уфа",
+  "nameEn": "Ufa",
+  "lat": 54.7352,
+  "lon": 55.9587
+ },
+ {
+  "id": 2,
+  "name": "Бирск",
+  "nameEn": "Birsk",
+  "lat": 55.4175,
+  "lon": 55.5307
+ },
+ {
+  "id": 5,
+  "name": "Агидель",
+  "nameEn": "Agidel",
+  "lat": 55.899,
+  "lon": 53.9334
+ },
+ {
+  "id": 6,
+  "name": "Баймак",
+  "nameEn": "Baymak",
+  "lat": 52.5912,
+  "lon": 58.3112
+ },
+ {
+  "id": 7,
+  "name": "Белебей",
+  "nameEn": "Belebey",
+  "lat": 54.1112,
+  "lon": 54.1034
+ },
+ {
+  "id": 8,
+  "name": "Белорецк",
+  "nameEn": "Beloretsk",
+  "lat": 53.9592,
+  "lon": 58.3904
+ },
+ {
+  "id": 9,
+  "name": "Благовещенск",
+  "nameEn": "Blagoveshchensk",
+  "lat": 55.0311,
+  "lon": 55.9818
+ },
+ {
+  "id": 10,
+  "name": "Давлеканово",
+  "nameEn": "Davlekanovo",
+  "lat": 54.2227,
+  "lon": 55.0312
+ },
+ {
+  "id": 11,
+  "name": "Дюртюли",
+  "nameEn": "Dyurtyuli",
+  "lat": 54.868,
+  "lon": 55.494
+ },
+ {
+  "id": 12,
+  "name": "Ишимбай",
+  "nameEn": "Ishimbay",
+  "lat": 53.4546,
+  "lon": 56.044
+ },
+ {
+  "id": 13,
+  "name": "Кармаскалы",
+  "nameEn": "Karmaskaly",
+  "lat": 54.3627,
+  "lon": 56.1593
+ },
+ {
+  "id": 14,
+  "name": "Кумертау",
+  "nameEn": "Kumertau",
+  "lat": 52.7565,
+  "lon": 55.7969
+ },
+ {
+  "id": 15,
+  "name": "Межгорье",
+  "nameEn": "Mezhgorye",
+  "lat": 54.2373,
+  "lon": 57.947
+ },
+ {
+  "id": 16,
+  "name": "Мелеуз",
+  "nameEn": "Meleuz",
+  "lat": 52.9589,
+  "lon": 55.9283
+ },
+ {
+  "id": 18,
+  "name": "Нефтекамск",
+  "nameEn": "Neftekamsk",
+  "lat": 56.0992,
+  "lon": 54.2615
+ },
+ {
+  "id": 19,
+  "name": "Октябрьский",
+  "nameEn": "Oktyabrsky",
+  "lat": 54.452,
+  "lon": 53.3381
+ },
+ {
+  "id": 21,
+  "name": "Салават",
+  "nameEn": "Salavat",
+  "lat": 53.3616,
+  "lon": 55.9245
+ },
+ {
+  "id": 22,
+  "name": "Сибай",
+  "nameEn": "Sibay",
+  "lat": 52.7204,
+  "lon": 58.6657
+ },
+ {
+  "id": 23,
+  "name": "Стерлитамак",
+  "nameEn": "Sterlitamak",
+  "lat": 53.6323,
+  "lon": 55.9522
+ },
+ {
+  "id": 24,
+  "name": "Туймазы",
+  "nameEn": "Tuymazy",
+  "lat": 54.5999,
+  "lon": 53.6949
+ },
+ {
+  "id": 25,
+  "name": "Учалы",
+  "nameEn": "Uchaly",
+  "lat": 54.3191,
+  "lon": 59.3785
+ },
+ {
+  "id": 26,
+  "name": "Чишмы",
+  "nameEn": "Chishmy",
+  "lat": 54.5893,
+  "lon": 55.3803
+ },
+ {
+  "id": 27,
+  "name": "Янаул",
+  "nameEn": "Yanaul",
+  "lat": 56.2713,
+  "lon": 54.9331
+ },
+ {
+  "id": 32,
+  "name": "Аскарово",
+  "nameEn": "Askarovo",
+  "lat": 53.3363,
+  "lon": 58.5115
+ },
+ {
+  "id": 33,
+  "name": "Раевский",
+  "nameEn": "Rayevsky",
+  "lat": 54.0649,
+  "lon": 54.9328
+ },
+ {
+  "id": 34,
+  "name": "Архангельское",
+  "nameEn": "Arkhangelskoye",
+  "lat": 54.4061,
+  "lon": 56.7811
+ },
+ {
+  "id": 35,
+  "name": "Аскино",
+  "nameEn": "Askino",
+  "lat": 56.0896,
+  "lon": 56.5814
+ },
+ {
+  "id": 36,
+  "name": "Толбазы",
+  "nameEn": "Tolbazy",
+  "lat": 54.0134,
+  "lon": 55.8889
+ },
+ {
+  "id": 37,
+  "name": "Бакалы",
+  "nameEn": "Bakaly",
+  "lat": 55.1796,
+  "lon": 53.7955
+ },
+ {
+  "id": 38,
+  "name": "Старобалтачево",
+  "nameEn": "Starobaltachevo",
+  "lat": 56.0008,
+  "lon": 55.9179
+ },
+ {
+  "id": 39,
+  "name": "Новобелокатай",
+  "nameEn": "Novobelokatay",
+  "lat": 55.7077,
+  "lon": 58.9591
+ },
+ {
+  "id": 40,
+  "name": "Бижбуляк",
+  "nameEn": "Bizhbulyak",
+  "lat": 53.6925,
+  "lon": 54.2696
+ },
+ {
+  "id": 41,
+  "name": "Языково",
+  "nameEn": "Yazykovo",
+  "lat": 54.6882,
+  "lon": 55.0216
+ },
+ {
+  "id": 42,
+  "name": "Буздяк",
+  "nameEn": "Buzdyak",
+  "lat": 54.5705,
+  "lon": 54.534
+ },
+ {
+  "id": 43,
+  "name": "Бураево",
+  "nameEn": "Burayevo",
+  "lat": 55.8369,
+  "lon": 55.4104
+ },
+ {
+  "id": 44,
+  "name": "Старосубхангулово",
+  "nameEn": "Starosubkhangulovo",
+  "lat": 53.1021,
+  "lon": 57.4416
+ },
+ {
+  "id": 45,
+  "name": "Красноусольский",
+  "nameEn": "Krasnousolsky",
+  "lat": 53.8883,
+  "lon": 56.4736
+ },
+ {
+  "id": 46,
+  "name": "Месягутово",
+  "nameEn": "Mesyagutovo",
+  "lat": 55.5378,
+  "lon": 58.2412
+ },
+ {
+  "id": 47,
+  "name": "Ермекеево",
+  "nameEn": "Yermekeyevo",
+  "lat": 54.0769,
+  "lon": 53.6701
+ },
+ {
+  "id": 48,
+  "name": "Исянгулово",
+  "nameEn": "Isyangulovo",
+  "lat": 52.1896,
+  "lon": 56.5824
+ },
+ {
+  "id": 49,
+  "name": "Зилаир",
+  "nameEn": "Zilair",
+  "lat": 52.2335,
+  "lon": 57.4424
+ },
+ {
+  "id": 50,
+  "name": "Иглино",
+  "nameEn": "Iglino",
+  "lat": 54.8237,
+  "lon": 56.4099
+ },
+ {
+  "id": 51,
+  "name": "Верхнеяркеево",
+  "nameEn": "Verkhneyarkeyevo",
+  "lat": 55.4514,
+  "lon": 54.309
+ },
+ {
+  "id": 52,
+  "name": "Калтасы",
+  "nameEn": "Kaltasy",
+  "lat": 55.9693,
+  "lon": 54.8009
+ },
+ {
+  "id": 53,
+  "name": "Караидель",
+  "nameEn": "Karaidel",
+  "lat": 55.8327,
+  "lon": 56.9131
+ },
+ {
+  "id": 54,
+  "name": "Верхние Киги",
+  "nameEn": "Verkhniye Kigi",
+  "lat": 55.4075,
+  "lon": 58.6002
+ },
+ {
+  "id": 55,
+  "name": "Николо-Березовка",
+  "nameEn": "Nikolo-Berezovka",
+  "lat": 56.1281,
+  "lon": 54.1717
+ },
+ {
+  "id": 56,
+  "name": "Мраково",
+  "nameEn": "Mrakovo",
+  "lat": 52.7173,
+  "lon": 56.6231
+ },
+ {
+  "id": 57,
+  "name": "Кушнаренково",
+  "nameEn": "Kushnarenkovo",
+  "lat": 55.107,
+  "lon": 55.342
+ },
+ {
+  "id": 58,
+  "name": "Ермолаево",
+  "nameEn": "Yermolayevo",
+  "lat": 52.7028,
+  "lon": 55.8349
+ },
+ {
+  "id": 59,
+  "name": "Большеустьикинское",
+  "nameEn": "Bolsheustyikinskoye",
+  "lat": 55.9426,
+  "lon": 58.2751
+ },
+ {
+  "id": 60,
+  "name": "Мишкино",
+  "nameEn": "Mishkino",
+  "lat": 55.534,
+  "lon": 55.9611
+ },
+ {
+  "id": 61,
+  "name": "Киргиз-Мияки",
+  "nameEn": "Kirgiz-Miyaki",
+  "lat": 53.6299,
+  "lon": 54.7962
+ },
+ {
+  "id": 62,
+  "name": "Красная Горка",
+  "nameEn": "Krasnaya Gorka",
+  "lat": 55.1955,
+  "lon": 56.6739
+ },
+ {
+  "id": 63,
+  "name": "Стерлибашево",
+  "nameEn": "Sterlibashevo",
+  "lat": 53.4378,
+  "lon": 55.2543
+ },
+ {
+  "id": 64,
+  "name": "Верхние Татышлы",
+  "nameEn": "Verkhniye Tatyshly",
+  "lat": 56.29,
+  "lon": 55.8562
+ },
+ {
+  "id": 65,
+  "name": "Федоровка",
+  "nameEn": "Fyodorovka",
+  "lat": 53.1787,
+  "lon": 55.188
+ },
+ {
+  "id": 66,
+  "name": "Акъяр",
+  "nameEn": "Akyar",
+  "lat": 51.8637,
+  "lon": 58.2171
+ },
+ {
+  "id": 67,
+  "name": "Чекмагуш",
+  "nameEn": "Chekmagush",
+  "lat": 55.1406,
+  "lon": 54.6476
+ },
+ {
+  "id": 68,
+  "name": "Шаран",
+  "nameEn": "Sharan",
+  "lat": 54.82,
+  "lon": 54.0057
+ },
+ {
+  "id": 69,
+  "name": "Малояз",
+  "nameEn": "Maloyaz",
+  "lat": 55.1804,
+  "lon": 58.1459
+ }
+]

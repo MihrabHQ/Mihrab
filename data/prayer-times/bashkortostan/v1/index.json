@@ -1,0 +1,318 @@
+{
+  "version": 1,
+  "builtAt": "2026-11-11T22:53:35.468Z",
+  "timezone": "Asia/Yekaterinburg",
+  "source": "https://dumrb.com/namaz",
+  "serverStatus": "ok",
+  "firstDate": "2026-11-04",
+  "lastDate": "2026-12-31",
+  "minCoverageDays": 50,
+  "deadCities": [],
+  "cities": [
+    {
+      "id": 1,
+      "city": "Уфа",
+      "cityEn": "Ufa"
+    },
+    {
+      "id": 2,
+      "city": "Бирск",
+      "cityEn": "Birsk"
+    },
+    {
+      "id": 5,
+      "city": "Агидель",
+      "cityEn": "Agidel"
+    },
+    {
+      "id": 6,
+      "city": "Баймак",
+      "cityEn": "Baymak"
+    },
+    {
+      "id": 7,
+      "city": "Белебей",
+      "cityEn": "Belebey"
+    },
+    {
+      "id": 8,
+      "city": "Белорецк",
+      "cityEn": "Beloretsk"
+    },
+    {
+      "id": 9,
+      "city": "Благовещенск",
+      "cityEn": "Blagoveshchensk"
+    },
+    {
+      "id": 10,
+      "city": "Давлеканово",
+      "cityEn": "Davlekanovo"
+    },
+    {
+      "id": 11,
+      "city": "Дюртюли",
+      "cityEn": "Dyurtyuli"
+    },
+    {
+      "id": 12,
+      "city": "Ишимбай",
+      "cityEn": "Ishimbay"
+    },
+    {
+      "id": 13,
+      "city": "Кармаскалы",
+      "cityEn": "Karmaskaly"
+    },
+    {
+      "id": 14,
+      "city": "Кумертау",
+      "cityEn": "Kumertau"
+    },
+    {
+      "id": 15,
+      "city": "Межгорье",
+      "cityEn": "Mezhgorye"
+    },
+    {
+      "id": 16,
+      "city": "Мелеуз",
+      "cityEn": "Meleuz"
+    },
+    {
+      "id": 18,
+      "city": "Нефтекамск",
+      "cityEn": "Neftekamsk"
+    },
+    {
+      "id": 19,
+      "city": "Октябрьский",
+      "cityEn": "Oktyabrsky"
+    },
+    {
+      "id": 21,
+      "city": "Салават",
+      "cityEn": "Salavat"
+    },
+    {
+      "id": 22,
+      "city": "Сибай",
+      "cityEn": "Sibay"
+    },
+    {
+      "id": 23,
+      "city": "Стерлитамак",
+      "cityEn": "Sterlitamak"
+    },
+    {
+      "id": 24,
+      "city": "Туймазы",
+      "cityEn": "Tuymazy"
+    },
+    {
+      "id": 25,
+      "city": "Учалы",
+      "cityEn": "Uchaly"
+    },
+    {
+      "id": 26,
+      "city": "Чишмы",
+      "cityEn": "Chishmy"
+    },
+    {
+      "id": 27,
+      "city": "Янаул",
+      "cityEn": "Yanaul"
+    },
+    {
+      "id": 32,
+      "city": "Аскарово",
+      "cityEn": "Askarovo"
+    },
+    {
+      "id": 33,
+      "city": "Раевский",
+      "cityEn": "Rayevsky"
+    },
+    {
+      "id": 34,
+      "city": "Архангельское",
+      "cityEn": "Arkhangelskoye"
+    },
+    {
+      "id": 35,
+      "city": "Аскино",
+      "cityEn": "Askino"
+    },
+    {
+      "id": 36,
+      "city": "Толбазы",
+      "cityEn": "Tolbazy"
+    },
+    {
+      "id": 37,
+      "city": "Бакалы",
+      "cityEn": "Bakaly"
+    },
+    {
+      "id": 38,
+      "city": "Старобалтачево",
+      "cityEn": "Starobaltachevo"
+    },
+    {
+      "id": 39,
+      "city": "Новобелокатай",
+      "cityEn": "Novobelokatay"
+    },
+    {
+      "id": 40,
+      "city": "Бижбуляк",
+      "cityEn": "Bizhbulyak"
+    },
+    {
+      "id": 41,
+      "city": "Языково",
+      "cityEn": "Yazykovo"
+    },
+    {
+      "id": 42,
+      "city": "Буздяк",
+      "cityEn": "Buzdyak"
+    },
+    {
+      "id": 43,
+      "city": "Бураево",
+      "cityEn": "Burayevo"
+    },
+    {
+      "id": 44,
+      "city": "Старосубхангулово",
+      "cityEn": "Starosubkhangulovo"
+    },
+    {
+      "id": 45,
+      "city": "Красноусольский",
+      "cityEn": "Krasnousolsky"
+    },
+    {
+      "id": 46,
+      "city": "Месягутово",
+      "cityEn": "Mesyagutovo"
+    },
+    {
+      "id": 47,
+      "city": "Ермекеево",
+      "cityEn": "Yermekeyevo"
+    },
+    {
+      "id": 48,
+      "city": "Исянгулово",
+      "cityEn": "Isyangulovo"
+    },
+    {
+      "id": 49,
+      "city": "Зилаир",
+      "cityEn": "Zilair"
+    },
+    {
+      "id": 50,
+      "city": "Иглино",
+      "cityEn": "Iglino"
+    },
+    {
+      "id": 51,
+      "city": "Верхнеяркеево",
+      "cityEn": "Verkhneyarkeyevo"
+    },
+    {
+      "id": 52,
+      "city": "Калтасы",
+      "cityEn": "Kaltasy"
+    },
+    {
+      "id": 53,
+      "city": "Караидель",
+      "cityEn": "Karaidel"
+    },
+    {
+      "id": 54,
+      "city": "Верхние Киги",
+      "cityEn": "Verkhniye Kigi"
+    },
+    {
+      "id": 55,
+      "city": "Николо-Березовка",
+      "cityEn": "Nikolo-Berezovka"
+    },
+    {
+      "id": 56,
+      "city": "Мраково",
+      "cityEn": "Mrakovo"
+    },
+    {
+      "id": 57,
+      "city": "Кушнаренково",
+      "cityEn": "Kushnarenkovo"
+    },
+    {
+      "id": 58,
+      "city": "Ермолаево",
+      "cityEn": "Yermolayevo"
+    },
+    {
+      "id": 59,
+      "city": "Большеустьикинское",
+      "cityEn": "Bolsheustyikinskoye"
+    },
+    {
+      "id": 60,
+      "city": "Мишкино",
+      "cityEn": "Mishkino"
+    },
+    {
+      "id": 61,
+      "city": "Киргиз-Мияки",
+      "cityEn": "Kirgiz-Miyaki"
+    },
+    {
+      "id": 62,
+      "city": "Красная Горка",
+      "cityEn": "Krasnaya Gorka"
+    },
+    {
+      "id": 63,
+      "city": "Стерлибашево",
+      "cityEn": "Sterlibashevo"
+    },
+    {
+      "id": 64,
+      "city": "Верхние Татышлы",
+      "cityEn": "Verkhniye Tatyshly"
+    },
+    {
+      "id": 65,
+      "city": "Федоровка",
+      "cityEn": "Fyodorovka"
+    },
+    {
+      "id": 66,
+      "city": "Акъяр",
+      "cityEn": "Akyar"
+    },
+    {
+      "id": 67,
+      "city": "Чекмагуш",
+      "cityEn": "Chekmagush"
+    },
+    {
+      "id": 68,
+      "city": "Шаран",
+      "cityEn": "Sharan"
+    },
+    {
+      "id": 69,
+      "city": "Малояз",
+      "cityEn": "Maloyaz"
+    }
+  ]
+}

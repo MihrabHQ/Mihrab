@@ -665,6 +665,10 @@
     "dagestan": {
       "name": "Dagestan",
       "desc": "Jadwal Muftiat Dagestan untuk kota atau pusat distrik terdekat dengan Anda dalam daftarnya, sebagaimana diberikan situsnya sendiri (islamdag.ru). Satu Asar, yang pertama."
+    },
+    "bashkortostan": {
+      "name": "Bashkortostan",
+      "desc": "Jadwal Administrasi Spiritual Muslim Bashkortostan untuk kota atau pusat distrik terdekat dengan Anda dalam daftarnya, sebagaimana diberikan situsnya sendiri (dumrb.com). Zuhur adalah waktu jam tetapnya, dan satu-satunya Asarnya adalah Asar Hanafi."
     }
   },
   "compass": {
@@ -2054,6 +2058,7 @@
     "serverKyrgyzstan": "Kirgizstan · Administrasi Spiritual",
     "serverTajikistan": "Tajikistan · Pusat Islam",
     "serverDagestan": "Dagestan · Muftiat",
+    "serverBashkortostan": "Bashkortostan · DUM RB",
     "jakimWindow": "JAKIM hanya menerbitkan tahun berjalan, jadi jendela ini berakhir 31 Desember dan dimulai lagi saat tahun baru diterbitkan pada hari-hari pertama Januari.",
     "londonWindow": "Jadwal ini diterbitkan per tahun, jadi jendela ini berakhir 31 Desember dan dimulai lagi saat tahun baru diterbitkan.",
     "shuroWindow": "Pusat menetapkan tabelnya tahun demi tahun dan menerbitkan bulan-bulan terakhir belakangan, jadi jendela ini bisa pendek menjelang akhir tahun.",

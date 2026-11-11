@@ -665,6 +665,10 @@
     "dagestan": {
       "name": "Dağıstan",
       "desc": "Dağıstan Müftülüğü’nün vakit çizelgesi; listesindeki size en yakın şehir veya ilçe merkezi için, kendi sitesinin (islamdag.ru) verdiği gibi. Tek ikindi, ilki."
+    },
+    "bashkortostan": {
+      "name": "Başkurdistan",
+      "desc": "Başkurdistan Müslümanları Dinî İdaresi’nin vakit çizelgesi; listesindeki size en yakın şehir veya ilçe merkezi için, kendi sitesinin (dumrb.com) verdiği gibi. Öğle onun sabit saatidir, tek ikindisi de Hanefî ikindisidir."
     }
   },
   "compass": {
@@ -2054,6 +2058,7 @@
     "serverKyrgyzstan": "Kırgızistan · Dinî İdare",
     "serverTajikistan": "Tacikistan · İslam Merkezi",
     "serverDagestan": "Dağıstan · Müftülük",
+    "serverBashkortostan": "Başkurdistan · DUM RB",
     "jakimWindow": "JAKIM yalnızca içinde bulunulan yılı yayımlar; bu yüzden bu pencere 31 Aralık’ta biter ve yeni yıl Ocak’ın ilk günlerinde yayımlanınca yeniden başlar.",
     "londonWindow": "Cetvel yıldan yıla yayımlanır; bu yüzden bu pencere 31 Aralık’ta biter ve yeni yıl yayımlanınca yeniden başlar.",
     "shuroWindow": "Merkez cetvelini yıldan yıla belirler ve son ayları geç yayımlar; bu yüzden bu pencere yıl sonuna doğru kısa olabilir.",

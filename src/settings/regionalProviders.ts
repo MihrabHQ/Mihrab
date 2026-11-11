@@ -24,6 +24,7 @@ import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInTajikistan } from '../utils/tajikistanRegion';
 import { isCoordinateInDagestan } from '../utils/dagestanRegion';
+import { isCoordinateInBashkortostan } from '../utils/bashkortostanRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import {
@@ -70,6 +71,7 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   { id: 'kmdb', covers: isCoordinateInKyrgyzstan, yieldsToChosenMethod: true },
   { id: 'shuro', covers: isCoordinateInTajikistan, yieldsToChosenMethod: true },
   { id: 'dagestan', covers: isCoordinateInDagestan, yieldsToChosenMethod: true },
+  { id: 'bashkortostan', covers: isCoordinateInBashkortostan, yieldsToChosenMethod: true },
 ];
 
 /**

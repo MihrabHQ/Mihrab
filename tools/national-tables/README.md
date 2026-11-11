@@ -14,6 +14,7 @@ correction list, from MihrabHQ/mihrab-methods); its places list,
 | Kyrgyzstan | The Spiritual Administration of Muslims' timetable, from the [public API](https://muftiyat.kg/ru/calendar/api/) on its site | `kmdb.ts` | 115 (`kmdb-places.ts`, each at the point its timetable shows — the API gives no coordinates) |
 | Tajikistan | The Islamic Centre of Tajikistan's [table](https://shuroiulamo.tj/tj/namaz) for Dushanbe, and the page's note of the towns' minutes | `shuro.ts` | 19 (Dushanbe and 18 towns) |
 | Dagestan | The Muftiate of the Republic of Dagestan's timetable, a file per place on [islamdag.ru](https://islamdag.ru/vremya-namaza/mahachkala) (copying allowed with a link) | `dagestan.ts` | 27 towns and district seats; 365 rows, the same every year |
+| Bashkortostan | The Spiritual Administration of Muslims of the Republic of Bashkortostan's timetable, from the open interface its own site reads ([dumrb.com](https://dumrb.com/namaz)) | `bashkortostan.ts` | 63 towns and district seats; a month a request, three months ahead |
 | Malaysia | JAKIM's [e-Solat](https://www.e-solat.gov.my) JSON endpoint, per zone | `jakim.ts` | 59 zones, 178 towns (`jakim-zones.ts`) |
 
 ## What a builder produces

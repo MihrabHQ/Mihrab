@@ -15,7 +15,7 @@ import {
   type DataStatus,
   type ServerDatasetId,
 } from '../../prayer/dataStatus';
-import { dagestanTable, jakimTable, kmdbTable, londonTable, muisTable, shuroTable } from '../../providers/nationalTables';
+import { bashkortostanTable, dagestanTable, jakimTable, kmdbTable, londonTable, muisTable, shuroTable } from '../../providers/nationalTables';
 import {
   getNamazvaktiTimes,
   namazvaktiHeld,
@@ -95,6 +95,13 @@ const SERVERS: {
     nextRun: nextNationalTableServerRunAfter,
   },
   {
+    id: 'bashkortostan',
+    provider: 'bashkortostan',
+    labelKey: 'dataStats.serverBashkortostan',
+    labelDefault: 'Bashkortostan · DUM RB',
+    nextRun: nextNationalTableServerRunAfter,
+  },
+  {
     id: 'london',
     provider: 'london',
     labelKey: 'dataStats.serverLondon',
@@ -168,6 +175,7 @@ function DataStatsPanelImpl() {
           kmdbTable.pollServerIndexNow(),
           shuroTable.pollServerIndexNow(),
           dagestanTable.pollServerIndexNow(),
+          bashkortostanTable.pollServerIndexNow(),
         ].map(p =>
           p.catch(() => {
             /* offline — keep whatever was recorded before */

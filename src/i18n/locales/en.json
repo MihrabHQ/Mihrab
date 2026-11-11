@@ -665,6 +665,10 @@
     "dagestan": {
       "name": "Dagestan",
       "desc": "The Muftiate of Dagestan’s timetable for the town or district seat nearest you in its list, as its own site (islamdag.ru) gives it. One Asr, the first."
+    },
+    "bashkortostan": {
+      "name": "Bashkortostan",
+      "desc": "The timetable of the Spiritual Administration of Muslims of Bashkortostan for the town or district seat nearest you in its list, as its own site (dumrb.com) gives it. Dhuhr is its fixed clock time, and its one Asr is the Hanafi one."
     }
   },
   "compass": {
@@ -2054,6 +2058,7 @@
     "serverKyrgyzstan": "Kyrgyzstan · Spiritual Administration",
     "serverTajikistan": "Tajikistan · Islamic Centre",
     "serverDagestan": "Dagestan · Muftiate",
+    "serverBashkortostan": "Bashkortostan · DUM RB",
     "jakimWindow": "JAKIM publishes the current year only, so this window ends on 31 December and starts again when the new year is published in the first days of January.",
     "londonWindow": "The timetable is published a year at a time, so this window ends on 31 December and starts again when the new year is published.",
     "shuroWindow": "The Centre sets its table year by year and publishes the last months late, so this window can be short near the end of a year.",

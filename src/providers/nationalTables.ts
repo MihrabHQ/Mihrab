@@ -8,6 +8,7 @@
  *   • Kyrgyzstan — the Spiritual Administration, 115 places (`kmdb`)
  *   • Tajikistan — the Islamic Centre, Dushanbe and eighteen towns (`shuro`)
  *   • Dagestan — the Muftiate, 27 towns and district seats (`dagestan`)
+ *   • Bashkortostan — the Spiritual Administration, 63 towns and district seats (`bashkortostan`)
  *   • Indonesia — Kemenag (Bimas Islam), 517 regencies and cities (`kemenag`),
  *     computed on the phone (its method and correction list)
  *
@@ -20,6 +21,7 @@ import {
   KMDB_DATASET_BASE_URL,
   SHURO_DATASET_BASE_URL,
   DAGESTAN_DATASET_BASE_URL,
+  BASHKORTOSTAN_DATASET_BASE_URL,
   LONDON_DATASET_BASE_URL,
   MUIS_DATASET_BASE_URL,
   NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
@@ -307,6 +309,49 @@ export const dagestanTable = createNationalTable({
   }),
 });
 
+/** Bashkortostan's clock: Yekaterinburg time, no summer time. */
+export const BASHKORTOSTAN_CLOCK: PlaceClock = { zone: 'Asia/Yekaterinburg' };
+/**
+ * What stands in past the window: the Muslim World League's angles with the
+ * Hanafi Asr the table prints. The Administration publishes a year at a
+ * time and the mirror holds three months of it, so this is for a phone that
+ * has not reached the mirror in that long, and for the turn of a year the
+ * Administration has not published yet.
+ */
+export const BASHKORTOSTAN_STAND_IN_METHOD = 3;
+
+/**
+ * Bashkortostan: the nearest of the Administration's 63 towns and district
+ * seats, which cover the republic closely.
+ */
+export const bashkortostanTable = createNationalTable({
+  id: 'bashkortostan',
+  dataset: 'bashkortostan',
+  baseUrl: BASHKORTOSTAN_DATASET_BASE_URL,
+  timezone: 'Asia/Yekaterinburg',
+  get places() {
+    return placesOf(() => require('./data/bashkortostanPlaces.json'));
+  },
+  maxPlaceKm: 90,
+  get seed() {
+    return seedOf(() => require('./data/bashkortostanSeed.json'));
+  },
+  refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
+  indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
+  calculate: (place, date) => ({
+    ...computeLocalAdhanTimes({
+      latitude: place.lat,
+      longitude: place.lon,
+      date,
+      calculationMethod: BASHKORTOSTAN_STAND_IN_METHOD,
+      // the one Asr the table prints, the Hanafi one
+      school: 1,
+      placeClock: BASHKORTOSTAN_CLOCK,
+    }),
+    source: 'local',
+  }),
+});
+
 /**
  * Indonesia: the ministry publishes per regency, and a regency's seat
  * stands for it. Regencies in Papua and Kalimantan are large.
@@ -369,6 +414,7 @@ export const NATIONAL_TABLES: Partial<Record<PrayerDataProviderId, NationalTable
   kmdb: kmdbTable,
   shuro: shuroTable,
   dagestan: dagestanTable,
+  bashkortostan: bashkortostanTable,
 };
 
 /**

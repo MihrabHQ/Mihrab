@@ -665,6 +665,10 @@
     "dagestan": {
       "name": "Dagestan",
       "desc": "Der Zeitplan des Muftiats von Dagestan für die Stadt oder den Bezirkssitz seiner Liste, der dir am nächsten liegt, wie ihn seine eigene Website (islamdag.ru) angibt. Ein Asr, der erste."
+    },
+    "bashkortostan": {
+      "name": "Baschkortostan",
+      "desc": "Der Zeitplan der Geistlichen Verwaltung der Muslime Baschkortostans für die Stadt oder den Bezirkssitz ihrer Liste, der dir am nächsten liegt, wie ihn ihre eigene Website (dumrb.com) angibt. Dhuhr ist ihre feste Uhrzeit, und ihr einziger Asr ist der hanafitische."
     }
   },
   "compass": {
@@ -2054,6 +2058,7 @@
     "serverKyrgyzstan": "Kirgisistan · Geistliche Verwaltung",
     "serverTajikistan": "Tadschikistan · Islamisches Zentrum",
     "serverDagestan": "Dagestan · Muftiat",
+    "serverBashkortostan": "Baschkortostan · DUM RB",
     "jakimWindow": "JAKIM veröffentlicht nur das laufende Jahr, daher endet dieses Fenster am 31. Dezember und beginnt neu, sobald das neue Jahr in den ersten Januartagen veröffentlicht ist.",
     "londonWindow": "Der Zeitplan wird jeweils für ein Jahr veröffentlicht, daher endet dieses Fenster am 31. Dezember und beginnt neu, sobald das neue Jahr veröffentlicht ist.",
     "shuroWindow": "Das Zentrum legt seine Tabelle Jahr für Jahr fest und veröffentlicht die letzten Monate spät, daher kann dieses Fenster gegen Jahresende kurz sein.",

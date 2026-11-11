@@ -20,6 +20,8 @@ import {
   SHURO_STAND_IN_METHOD,
   DAGESTAN_CLOCK,
   DAGESTAN_STAND_IN_METHOD,
+  BASHKORTOSTAN_CLOCK,
+  BASHKORTOSTAN_STAND_IN_METHOD,
   LONDON_STAND_IN_METHOD,
   nationalTableFor,
   nationalTablePlaceId,
@@ -403,6 +405,7 @@ export async function fetchPrayerTimesUnified(
     case 'kmdb':
     case 'shuro':
     case 'dagestan':
+    case 'bashkortostan':
     case 'kemenag': {
       // A national source (Singapore's MUIS, Malaysia's JAKIM, Indonesia's
       // Kemenag): the authority's day for the nearest listed place — the
@@ -467,6 +470,8 @@ export async function fetchPrayerTimesUnified(
             ? SHURO_CLOCK
             : p.provider === 'dagestan'
             ? DAGESTAN_CLOCK
+            : p.provider === 'bashkortostan'
+            ? BASHKORTOSTAN_CLOCK
             : indonesiaClock(place.nameEn),
           date: p.date,
           calculationMethod:
@@ -482,6 +487,8 @@ export async function fetchPrayerTimesUnified(
               ? SHURO_STAND_IN_METHOD
               : p.provider === 'dagestan'
               ? DAGESTAN_STAND_IN_METHOD
+              : p.provider === 'bashkortostan'
+              ? BASHKORTOSTAN_STAND_IN_METHOD
               : 20,
           // MUIS and JAKIM: the table's Shafi'i Asr, the same on a computed day as a printed one.
           // London: the reader's school, as its timetable's two Asr times.

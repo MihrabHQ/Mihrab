@@ -55,7 +55,8 @@ What ships today:
   (the London Unified Prayer Timetable, from londonprayertimes.com) and
   Kyrgyzstan (the Spiritual Administration's, from muftiyat.kg's public API)
   and Tajikistan (the Islamic Centre's, from shuroiulamo.tj) and Dagestan
-  (the Muftiate's, from islamdag.ru) are
+  (the Muftiate's, from islamdag.ru) and Bashkortostan (the Spiritual
+  Administration's, from dumrb.com) are
   built by `tools/national-tables/` and read through one module,
   `src/providers/nationalTable.ts`. Türkiye Takvimi (namazvakti.com):
   a workflow builds its city index (`tools/namazvakti-dataset/`). Where

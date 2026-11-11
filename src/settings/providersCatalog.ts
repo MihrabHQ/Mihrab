@@ -103,6 +103,14 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.london.desc',
   },
   {
+    id: 'bashkortostan',
+    name: 'Bashkortostan',
+    description:
+      'The timetable of the Spiritual Administration of Muslims of Bashkortostan for the town or district seat nearest you in its list, as its own site (dumrb.com) gives it. Dhuhr is its fixed clock time, and its one Asr is the Hanafi one.',
+    nameKey: 'providers.bashkortostan.name',
+    descriptionKey: 'providers.bashkortostan.desc',
+  },
+  {
     id: 'dagestan',
     name: 'Dagestan',
     description:
