@@ -633,6 +633,10 @@
       "name": "Diyanet",
       "desc": "Diyanets världsomspännande metod (Bönetidskongressen 2021), beräknad i telefonen för din egen plats — stämmer med Diyanets publicerade tabeller på minuten."
     },
+    "igmg": {
+      "name": "IGMG",
+      "desc": "Bönekalendern från Islamische Gemeinschaft Millî Görüş: Diyanets tabeller, så som IGMG publicerar dem för sina orter – uträknade på telefonen med Diyanets metod för närmaste listade ort."
+    },
     "muis": {
       "name": "Singapore",
       "desc": "Majlis Ugama Islam Singapuras publicerade tidtabell, så som regeringens öppna dataportal tillhandahåller den."

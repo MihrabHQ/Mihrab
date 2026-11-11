@@ -1,4 +1,5 @@
 import { diyanetCoverage } from '../../providers/diyanetMethod';
+import { isDiyanetSource } from '../../settings/providerUi';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePrayerSettings } from '../../context/PrayerSettingsContext';
@@ -77,7 +78,7 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
     effectiveProvider === 'namazvakti' && nvCoverage === 'no-city';
   // Diyanet answers everywhere, but says where it is not on Diyanet's minute.
   const diyanetNote =
-    effectiveProvider === 'diyanet' && coordsForEffective
+    isDiyanetSource(effectiveProvider) && coordsForEffective
       ? diyanetCoverage(
           coordsForEffective.latitude,
           coordsForEffective.longitude,

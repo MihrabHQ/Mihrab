@@ -59,6 +59,8 @@ the first of the month to three months ahead (`tools/compat-feed/build.ts`,
 `.github/workflows/compat-feed.yml`, daily; files change only when a day
 does).
 
+**IGMG** (`igmg`) is not a source of its own data: its prayer calendar is Diyanet's tables for its cities, and the app answers it with the Diyanet calculation (`isDiyanetSource`, `fetchPrayerTimes.ts`). Nothing is fetched from igmg.org.
+
 ### Free APIs, mirrored, the API as backup
 
 | Source | Into the repo by | Phone's backup | Calculation behind it |

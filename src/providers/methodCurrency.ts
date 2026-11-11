@@ -299,6 +299,7 @@ export function methodAuthorityFor(
   switch (provider) {
     case 'islamiska_forbundet':
       return 'sweden';
+    case 'igmg':
     case 'diyanet':
       return isCoordinateInSweden(latitude, longitude) ? 'sweden' : 'diyanet';
     case 'habous':

@@ -633,6 +633,10 @@
       "name": "Diyanet",
       "desc": "Diyanet’s worldwide method (the 2021 Prayer Times Congress), calculated on your phone for your own location — it matches Diyanet’s published tables to the minute."
     },
+    "igmg": {
+      "name": "IGMG",
+      "desc": "The prayer calendar of the Islamische Gemeinschaft Millî Görüş: Diyanet’s tables, as IGMG publishes them for its cities — calculated on your phone by Diyanet’s method for the nearest listed place."
+    },
     "muis": {
       "name": "Singapore",
       "desc": "The Majlis Ugama Islam Singapura’s published timetable, as the government’s open-data portal carries it."

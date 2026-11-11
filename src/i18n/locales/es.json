@@ -634,6 +634,10 @@
       "name": "Diyanet",
       "desc": "El método mundial de la Diyanet (Congreso de Horarios de Oración de 2021), calculado en tu teléfono para tu ubicación — coincide al minuto con las tablas publicadas por la Diyanet."
     },
+    "igmg": {
+      "name": "IGMG",
+      "desc": "El calendario de oración de la Islamische Gemeinschaft Millî Görüş: las tablas de Diyanet, tal como IGMG las publica para sus ciudades — calculadas en tu teléfono con el método de Diyanet para el lugar listado más cercano."
+    },
     "muis": {
       "name": "Singapur",
       "desc": "El horario publicado por el Majlis Ugama Islam Singapura, tal como lo ofrece el portal de datos abiertos del gobierno."

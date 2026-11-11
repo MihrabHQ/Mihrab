@@ -633,6 +633,10 @@
       "name": "Diyanet",
       "desc": "Metode Diyanet untuk seluruh dunia (Kongres Waktu Salat 2021), dihitung di ponsel Anda untuk lokasi Anda — sesuai dengan tabel terbitan Diyanet hingga menitnya."
     },
+    "igmg": {
+      "name": "IGMG",
+      "desc": "Kalender salat Islamische Gemeinschaft Millî Görüş: tabel Diyanet, sebagaimana diterbitkan IGMG untuk kota-kotanya — dihitung di ponsel Anda dengan metode Diyanet untuk tempat terdaftar terdekat."
+    },
     "muis": {
       "name": "Singapura",
       "desc": "Jadwal yang diterbitkan Majlis Ugama Islam Singapura, sebagaimana tersedia di portal data terbuka pemerintah."

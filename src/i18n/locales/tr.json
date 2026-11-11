@@ -633,6 +633,10 @@
       "name": "Diyanet",
       "desc": "Diyanet İşleri Başkanlığı’nın dünya geneli yöntemi (2021 Uluslararası Namaz Vakitleri Kongresi), telefonunuzda kendi konumunuz için hesaplanır — Diyanet’in yayımladığı takvimlerle dakikası dakikasına uyar."
     },
+    "igmg": {
+      "name": "IGMG",
+      "desc": "Islamische Gemeinschaft Millî Görüş’ün namaz takvimi: IGMG’nin şehirleri için yayımladığı haliyle Diyanet’in cetvelleri — telefonunuzda, listedeki en yakın yer için Diyanet’in yöntemiyle hesaplanır."
+    },
     "muis": {
       "name": "Singapur",
       "desc": "Majlis Ugama Islam Singapura’nın yayımladığı vakit cetveli, hükümetin açık veri portalındaki haliyle."

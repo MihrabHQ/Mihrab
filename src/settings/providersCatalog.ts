@@ -40,6 +40,14 @@ export const MAINSTREAM_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.diyanet.desc',
   },
   {
+    id: 'igmg',
+    name: 'IGMG',
+    description:
+      'The prayer calendar of the Islamische Gemeinschaft Millî Görüş: Diyanet’s tables, as IGMG publishes them for its cities — calculated on your phone by Diyanet’s method for the nearest listed place.',
+    nameKey: 'providers.igmg.name',
+    descriptionKey: 'providers.igmg.desc',
+  },
+  {
     id: 'local_adhan',
     name: 'On-device (Adhan JS)',
     description:

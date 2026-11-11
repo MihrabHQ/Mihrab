@@ -147,7 +147,7 @@ function DataStatsPanelImpl() {
           }),
         ),
       );
-      if (coords && (provider === 'islamiska_forbundet' || provider === 'habous' || provider === 'marw' || provider === 'kemenag' || provider === 'diyanet')) {
+      if (coords && (provider === 'islamiska_forbundet' || provider === 'habous' || provider === 'marw' || provider === 'kemenag' || provider === 'diyanet' || provider === 'igmg')) {
         // Calculated on the phone (the authority's method and correction list): nothing to poll or hold.
         await recordDataSource('local');
       }

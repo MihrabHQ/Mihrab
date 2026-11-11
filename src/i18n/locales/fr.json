@@ -634,6 +634,10 @@
       "name": "Diyanet",
       "desc": "La méthode mondiale de la Diyanet (Congrès des horaires de prière de 2021), calculée sur votre téléphone pour votre position — elle correspond à la minute près aux tableaux publiés par la Diyanet."
     },
+    "igmg": {
+      "name": "IGMG",
+      "desc": "Le calendrier de prière de l’Islamische Gemeinschaft Millî Görüş : les tables de la Diyanet, telles que l’IGMG les publie pour ses villes — calculées sur votre téléphone selon la méthode de la Diyanet pour le lieu répertorié le plus proche."
+    },
     "muis": {
       "name": "Singapour",
       "desc": "Les horaires publiés par le Majlis Ugama Islam Singapura, tels que les diffuse le portail de données ouvertes du gouvernement."

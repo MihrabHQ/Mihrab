@@ -633,6 +633,10 @@
       "name": "Diyanet",
       "desc": "土耳其宗教事务局（Diyanet）的全球方法（2021年礼拜时间大会），在手机上按您的位置计算——与 Diyanet 公布的时间表精确到分钟一致。"
     },
+    "igmg": {
+      "name": "IGMG",
+      "desc": "Islamische Gemeinschaft Millî Görüş（IGMG）的礼拜时间表：即 Diyanet 的时间表，由 IGMG 为其各城市发布——在您的手机上按 Diyanet 的方法为最近的所列地点计算。"
+    },
     "muis": {
       "name": "新加坡",
       "desc": "新加坡伊斯兰宗教理事会（MUIS）发布的时间表，取自政府开放数据门户。"

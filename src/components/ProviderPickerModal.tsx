@@ -1,4 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
+import { isDiyanetSource } from '../settings/providerUi';
 import { useTranslation } from 'react-i18next';
 import {
   FlatList,
@@ -207,7 +208,7 @@ function ProviderPickerModalImpl({
       // method, computed on the phone, is still the calendar.
       const nvNoCity = item.id === 'namazvakti' && nvCoverage === 'no-city';
       const diyanetNote =
-        item.id === 'diyanet' && coords
+        isDiyanetSource(item.id) && coords
           ? diyanetCoverage(coords.latitude, coords.longitude)
           : 'place';
       return (

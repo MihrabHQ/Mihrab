@@ -26,6 +26,7 @@ export const PRAYER_DATA_PROVIDER_IDS = [
   'london',
   'namazvakti',
   'diyanet',
+  'igmg',
   'local_adhan',
 ] as const;
 export type PrayerDataProviderId = (typeof PRAYER_DATA_PROVIDER_IDS)[number];

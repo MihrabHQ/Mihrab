@@ -633,6 +633,10 @@
       "name": "Diyanet",
       "desc": "Die weltweite Methode der Diyanet (Gebetszeitenkongress 2021), auf deinem Handy für deinen Standort berechnet — stimmt minutengenau mit den veröffentlichten Tabellen der Diyanet überein."
     },
+    "igmg": {
+      "name": "IGMG",
+      "desc": "Der Gebetskalender der Islamischen Gemeinschaft Millî Görüş: Diyanets Tabellen, wie die IGMG sie für ihre Orte veröffentlicht – auf dem Telefon nach Diyanets Methode für den nächstgelegenen gelisteten Ort berechnet."
+    },
     "muis": {
       "name": "Singapur",
       "desc": "Der veröffentlichte Zeitplan des Majlis Ugama Islam Singapura, wie ihn das Open-Data-Portal der Regierung bereitstellt."

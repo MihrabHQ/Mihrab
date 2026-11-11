@@ -15,6 +15,7 @@ import {
 import {
   providerHidesCalculationMethod,
   providerHidesHanafiAsr,
+  isDiyanetSource,
 } from '../../settings/providerUi';
 import { getMethodLabel } from '../../settings/methods';
 import { madhabMatches, selectedMadhab } from '../../prayer/madhab';
@@ -341,7 +342,7 @@ function CalculationCardImpl({
           {/* The summer-night rule: only where a method is computed, since a
               published table has already decided — Diyanet's too, where
               the picker is offered only to leave it. */}
-          {effectiveProvider === 'diyanet' ? null : (
+          {isDiyanetSource(effectiveProvider) ? null : (
             <>
               <SettingsLinkRow
                 title={t('settings.highLatitudeRule')}

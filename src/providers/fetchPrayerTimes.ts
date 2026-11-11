@@ -533,6 +533,8 @@ export async function fetchPrayerTimesUnified(
       }
       return local;
     }
+    // IGMG's calendar is Diyanet's tables for its cities: the same answer.
+    case 'igmg':
     case 'diyanet': {
       // Diyanet's worldwide method, computed on the phone for the reader's
       // own coordinates (`diyanetMethod.ts`). Nothing is fetched: the method

@@ -1,5 +1,13 @@
 import type { PrayerDataProviderId } from './types';
 
+/**
+ * Served by Diyanet's method on the phone: Diyanet itself, and IGMG, whose
+ * prayer calendar is Diyanet's tables for its cities.
+ */
+export function isDiyanetSource(id: PrayerDataProviderId | null | undefined): boolean {
+  return id === 'diyanet' || id === 'igmg';
+}
+
 /** Calculation-method picker does not apply (provider uses fixed rules/tables). */
 export function providerHidesCalculationMethod(
   id: PrayerDataProviderId,
@@ -17,7 +25,9 @@ export function providerHidesCalculationMethod(
     // (it picks the calendar's Asr-ı sânî).
     id === 'namazvakti' ||
     // Diyanet's method is fixed; its Asr-ı sânî is the Hanafi toggle.
-    id === 'diyanet'
+    id === 'diyanet' ||
+    // IGMG's calendar is Diyanet's tables: the same method, the same toggle.
+    id === 'igmg'
   );
 }
 

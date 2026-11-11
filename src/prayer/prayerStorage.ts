@@ -189,7 +189,7 @@ function correctionListKey(p: Omit<StoredPrayerData, 'months'>): string[] {
  */
 const CONGRESS_METHOD_REVISION = 3;
 function computedByCongressMethod(p: Omit<StoredPrayerData, 'months'>): boolean {
-  if (p.provider === 'diyanet') return true;
+  if (p.provider === 'diyanet' || p.provider === 'igmg') return true;
   if (p.calculationMethod === SWEDEN_METHOD_ID || p.calculationMethod === 13) return true;
   return p.calculationMethod === 'auto' && isCoordinateInTurkey(p.latitude, p.longitude);
 }
