@@ -21,68 +21,98 @@
  * before anyone "fixes" this with a reload.
  */
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type ColorValue } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { usePrayerSettings } from '../../context/PrayerSettingsContext';
 import { APP_LANGUAGES } from '../../i18n/languages';
 import { LanguageModal } from '../../screens/settings/LanguageModal';
 import { RADIUS, SPACING } from '../../theme/tokens';
-import { FONTS, TYPE, typeStyle } from '../../theme/typography';
+import { TYPE, typeStyle } from '../../theme/typography';
 import type { AppLanguage } from '../../settings/types';
 import { MihrabLogoIcon, TranslationIcon } from '../../theme/icons';
 import { OnboardingFrame, PrimaryAction } from '../OnboardingChrome';
 import { useVerticalBar } from '../../native/VerticalBar';
+import Svg, { G, Path } from 'react-native-svg';
+import { useWindowSize } from '../../responsive/windowSize';
+import { radialGlow } from '../../screens/home/skyPaint';
+import { SALAM_ASPECT, SALAM_PATHS, SALAM_TRANSFORM, SALAM_VIEWBOX } from '../salamCalligraphy';
 
 /**
- * The Arabic salām — task #89, and no longer animated.
+ * The salām — written, not typed.
  *
- * It used to fade in over 1.1 seconds while scaling from 0.92 and sliding
- * twenty points sideways, and then bring the translation up behind it.
- * Three effects at once on the first thing anybody sees, and it looked
- * like a splash screen: the scale read as a stock app-launch zoom, and
- * the slide was a hardcoded `translateX` that pushed right-to-left text
- * in whichever direction the number said rather than the language did.
+ * It was a line of Amiri: the greeting set as body text, two lines of it,
+ * and the first screen of the app looked like a paragraph. It is now the
+ * salām as a calligrapher composes it — a thuluth piece, traced to paths
+ * (salamCalligraphy.ts) so it is drawn in the theme's accent at whatever
+ * size the screen gives it, with no bitmap — standing in a soft light of
+ * the same colour, over a hairline with the app's mark in its middle.
  *
- * The greeting does not need an entrance. The flow's own cross-fade and
- * the modal presentation already bring the screen in; anything here was
- * a second animation layered on the first. Typography and space carry it
- * now — which is principle 4, and which is also why there is no
- * Reduce Motion branch left in this file: there is no motion to reduce.
+ * Still no entrance (task #89): it does not fade, scale or slide. The
+ * flow's own cross-fade brings the screen in.
+ *
+ * The piece reads "as-salāmu ʿalaykum wa raḥmatu llāhi wa barakātuh";
+ * the spoken label (onboarding.salamA11y) says the same.
  */
+/** The piece's width: this much of the screen's, and no wider than this (dp). */
+export const SALAM_WIDTH_OF_SCREEN = 0.74;
+export const SALAM_MAX_WIDTH = 340;
+/** On a short screen it gives way: never taller than this much of the screen's height. */
+export const SALAM_HEIGHT_OF_SCREEN = 0.3;
+/** The light behind it: this much wider than the piece, at this strength. */
+const SALAM_GLOW_SCALE = 1.7;
+const SALAM_GLOW = 0.16;
+
 function SalamHero({
   accentColor,
   mutedColor,
+  lineColor,
 }: {
   accentColor: string;
   mutedColor: string;
+  lineColor: ColorValue;
 }) {
   const { t } = useTranslation();
+  const { width: winW, height: winH } = useWindowSize();
+  const width = Math.round(
+    Math.min(winW * SALAM_WIDTH_OF_SCREEN, SALAM_MAX_WIDTH, winH * SALAM_HEIGHT_OF_SCREEN * SALAM_ASPECT),
+  );
+  const height = Math.round(width / SALAM_ASPECT);
+  const glow = Math.round(width * SALAM_GLOW_SCALE);
   return (
     <View style={salamStyles.wrap}>
-      <Text
-        accessibilityLabel={t('onboarding.salamA11y', {
-          defaultValue:
-            'As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh',
-        })}
-        style={[
-          salamStyles.salam,
-          {
-            color: accentColor,
-            // The bundled Amiri font ships via task #69 — a calligraphic
-            // Naskh that's elegant at large sizes. Falls back to the
-            // system default if the .ttf hasn't been registered yet.
-            //
-            // Take the name from `FONTS`, do not spell it here. This used
-            // to select 'Amiri-Regular' on Android, which meant Android
-            // had to carry a SECOND copy of the same 431 KB file under
-            // that filename purely so this one greeting resolved — the
-            // rest of the app asks for `FONTS.arabicBody` ('Amiri').
-            fontFamily: FONTS.arabicBody,
-          },
-        ]}>
-        السلام عليكم ورحمة الله تعالى وبركاته
-      </Text>
+      <View style={{ width, height, alignItems: 'center', justifyContent: 'center' }}>
+        {/* A square, centred on the piece: the one radial form React Native reads right (skyPaint.ts). */}
+        <View
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            width: glow,
+            height: glow,
+            backgroundImage: radialGlow(accentColor, SALAM_GLOW),
+          }}
+        />
+        <Svg
+          width={width}
+          height={height}
+          viewBox={SALAM_VIEWBOX}
+          accessible
+          accessibilityRole="image"
+          accessibilityLabel={t('onboarding.salamA11y', {
+            defaultValue: 'As-salāmu ʿalaykum wa raḥmatu llāhi wa barakātuh',
+          })}>
+          <G transform={SALAM_TRANSFORM} fill={accentColor}>
+            {SALAM_PATHS.map((d, i) => (
+              <Path key={i} d={d} />
+            ))}
+          </G>
+        </Svg>
+      </View>
+      <View style={salamStyles.rule}>
+        <View style={[salamStyles.ruleLine, { backgroundColor: lineColor }]} />
+        <MihrabLogoIcon size={22} color={accentColor} />
+        <View style={[salamStyles.ruleLine, { backgroundColor: lineColor }]} />
+      </View>
       <Text style={[salamStyles.translation, { color: mutedColor }]}>
         {t(
           'onboarding.welcome.salam',
@@ -96,20 +126,12 @@ function SalamHero({
 const salamStyles = StyleSheet.create({
   wrap: {
     alignItems: 'center',
-    gap: SPACING.sm,
+    gap: SPACING.lg,
   },
-  salam: {
-    // The hero of the screen, and sized like one. Arabic naskh needs the
-    // line height more than the point size — the descenders on ك and ه
-    // and the kashida strokes collide at anything tighter.
-    fontSize: 33, // tokens-ok-line: display or Arabic scale, sized by hand
-    lineHeight: 58,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-    fontWeight: '400',
-    letterSpacing: 0,
-    paddingHorizontal: SPACING.sm,
-  },
+  // A hairline each side of the mark: the piece's foot, and what parts
+  // the greeting from its translation.
+  rule: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md, marginTop: SPACING.sm },
+  ruleLine: { width: 56, height: StyleSheet.hairlineWidth },
   translation: {
     fontSize: TYPE.footnote.fontSize,
     lineHeight: 19,
@@ -182,20 +204,19 @@ export function SalamScreen({ onAdvance }: { onAdvance: () => void }) {
           onPress={onAdvance}
         />
       }>
-      {/* THREE TIERS, AND THE SALĀM IS THE MIDDLE ONE.
+      {/* THE SALĀM IS THE SCREEN.
        *
-       * The mark anchors the composition, the greeting is the hero, and
-       * the app's name and what it does come last and quietest — because
+       * The greeting, written, is the hero; the mark is the small thing
+       * at its foot; and the app's name and what it does come last and
+       * quietest — because
        * the salām has already done the welcoming, and a title the same
        * weight as it would be a second greeting arguing with the first.
        * The gap between the tiers is what says so; nothing is boxed or
        * ruled off. */}
-      <View style={styles.mark}>
-        <MihrabLogoIcon size={52} color={palette.accentSolid} />
-      </View>
       <SalamHero
         accentColor={palette.accentSolid}
         mutedColor={palette.mutedSolid}
+        lineColor={palette.border}
       />
       <View style={styles.tail}>
         <Text
@@ -232,7 +253,6 @@ const styles = StyleSheet.create({
   },
   // In the vertical bar's column: a round button around the glyph.
   chipRound: { width: 40, height: 40, paddingHorizontal: 0, paddingVertical: 0, justifyContent: 'center' },
-  mark: { alignItems: 'center', marginBottom: SPACING.lg },
   // The one big gap on the screen, and the only thing separating the
   // greeting from the introduction.
   tail: { marginTop: SPACING.xxl, gap: SPACING.sm },

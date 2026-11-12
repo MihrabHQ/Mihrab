@@ -8,6 +8,7 @@
  * quarter of an hour at a sun of twelve degrees.
  */
 import fs from 'fs';
+import { homeSegmentHeights, sheetFits } from '../src/screens/home/homeBudget';
 import path from 'path';
 import { HERO_SPAN, MUTED_INK_FLOOR, SKY_FADE_LOW_MID_AT, SKY_GLOW_FALL, SKY_SHEET_DP, sheetTurnAt, SKY_THEME_MID_AT, SKY_TURN_HALF_AT, SUN_HORIZON_Y, luminance, skyColorAt, skyFrame, skyInkAcross, skyInkAt, skyMoment, skyStops, themedSkyFrame } from '../src/screens/home/skyModel';
 import { ACCENT_CROSSING, accentCrossing, contrastOf, mixHexHorizon, mixHexOklab, mixMoods, skyMoodOf, skyMoodsOf } from '../src/theme/skyMoods';
@@ -321,9 +322,9 @@ describe('on the phone the turn is an edge: the page’s sheet over the sky’s 
     expect(sky).toMatch(/sheet: f\.sheet,/);
     // the phone's hero with a list under it — not Minimal, whose hero is the page — and room for it under the block at every hour
     const hero = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'HeroToday.tsx'), 'utf8');
-    expect(hero).toMatch(/const sheeted = !!fill && !minimal;/);
+    expect(hero).toMatch(/const sheeted = !!fill && !minimal && sheet;/);
     const card = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'TodayCard.tsx'), 'utf8');
-    expect(card).toMatch(/const sheetPad = fullBleed && !minimal && settings\.appearance !== 'sky' \? SKY_SHEET_DP : 0;/);
+    expect(card).toMatch(/const sheetPad = fullBleed && !minimal && sheet && settings\.appearance !== 'sky' \? SKY_SHEET_DP : 0;/);
     expect(card).toMatch(/\+ \(minimal \? footInset : 0\) \+ sheetPad;/);
   });
 });
@@ -377,5 +378,58 @@ describe('Vibrant’s sun by day', () => {
       expect(contrastOf(m.bodyLight, sky)).toBeGreaterThanOrEqual(1.4);
       expect(luminance(m.bodyLight)).toBeGreaterThan(luminance(m.heroMid));
     }
+  });
+});
+
+describe('the page’s sizes know the sheet, and a new reader’s doors go to one line with the rest', () => {
+  it('the sheet’s height is in the budget under Light and Dark', () => {
+    const home = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'HomeScreen.tsx'), 'utf8');
+    expect(home).toMatch(/const sheet = sheetWanted && \(!budgeted \|\| sheetFits\(budgetInput, SKY_SHEET_DP\)\);/);
+    expect(home).toMatch(/pickHomeTier\(\{ \.\.\.budgetInput, extra: budgetInput\.extra \+ \(sheet \? SKY_SHEET_DP : 0\) \}\)/);
+    expect(home).toMatch(/tier=\{tier\}\s*sheet=\{sheet\}/);
+    // and the page's foot is the one the sum counts
+    expect(home).toMatch(/\{ paddingBottom: minimal \? 0 : \(budgeted \? BELOW_GAP\[tier\] : SPACING\.xl\) \+ tabBarInset \},/);
+    // left out on one page only: the one that fits without it and would scroll with it
+    const input = { viewport: 0, topInset: 24, fontScale: 1, rows: 6, sublineRows: 0, extra: 0 };
+    const need = homeSegmentHeights('compact', input).total + 4;
+    expect(sheetFits({ ...input, viewport: need + SKY_SHEET_DP }, SKY_SHEET_DP)).toBe(true);
+    expect(sheetFits({ ...input, viewport: need + SKY_SHEET_DP - 1 }, SKY_SHEET_DP)).toBe(false);
+    expect(sheetFits({ ...input, viewport: need }, SKY_SHEET_DP)).toBe(false);
+    // too short either way: the page scrolls regardless, and keeps its sheet
+    expect(sheetFits({ ...input, viewport: need - 1 }, SKY_SHEET_DP)).toBe(true);
+    expect(sheetFits({ ...input, viewport: need + 400 }, SKY_SHEET_DP)).toBe(true);
+  });
+
+  it('Start reading and Start a khatmah are dense on the compact tier: no hint, the dense padding', () => {
+    const doors = fs.readFileSync(path.join(__dirname, '..', 'src', 'quran', 'ResumeDoors.tsx'), 'utf8');
+    expect(doors).toMatch(/\{showStart \? <StartDoor onOpenQuran=\{onOpenQuran\} dense=\{dense\} \/> : null\}/);
+    expect(doors).toMatch(/<Door label=\{read\} onPress=\{onOpenQuran\} column dense=\{dense\}>/);
+    expect(doors).toMatch(/<Door label=\{plan\} onPress=\{onOpenQuran\} column divided dense=\{dense\}>/);
+    expect(doors.match(/\{dense \? null : \(\s*<Text style=\{\[styles\.subtitle, \{ color: palette\.muted \}\]\} numberOfLines=\{1\}>/g)).toHaveLength(2);
+  });
+});
+
+describe('the welcome screen’s salām', () => {
+  const screen = fs.readFileSync(path.join(__dirname, '..', 'src', 'onboarding', 'screens', 'SalamScreen.tsx'), 'utf8');
+
+  it('is the written piece, as paths in the theme’s colour — no bitmap, no entrance', () => {
+    const art = require('../src/onboarding/salamCalligraphy');
+    expect(art.SALAM_PATHS.length).toBeGreaterThan(40);
+    for (const d of art.SALAM_PATHS) expect(d).toMatch(/^M[\d\s-]+ c/);
+    const [, , w, h] = art.SALAM_VIEWBOX.split(' ').map(Number);
+    expect(w / h).toBeCloseTo(art.SALAM_ASPECT, 2);
+    expect(screen).toMatch(/<G transform=\{SALAM_TRANSFORM\} fill=\{accentColor\}>/);
+    expect(screen).not.toMatch(/Animated\./);
+    expect(screen).not.toMatch(/<Image/);
+  });
+
+  it('is sized by the screen — its width, and on a short one its height — and says what it reads', () => {
+    expect(screen).toMatch(/Math\.min\(winW \* SALAM_WIDTH_OF_SCREEN, SALAM_MAX_WIDTH, winH \* SALAM_HEIGHT_OF_SCREEN \* SALAM_ASPECT\)/);
+    expect(screen).toMatch(/accessibilityLabel=\{t\('onboarding\.salamA11y'/);
+    // the piece has no "taʿālā"; the spoken label says what is written
+    const en = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src', 'i18n', 'locales', 'en.json'), 'utf8'));
+    expect(en.onboarding.salamA11y).toBe('As-salāmu ʿalaykum wa raḥmatu llāhi wa barakātuh');
+    const ar = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src', 'i18n', 'locales', 'ar.json'), 'utf8'));
+    expect(ar.onboarding.salamA11y).toBe('السلام عليكم ورحمة الله وبركاته');
   });
 });
