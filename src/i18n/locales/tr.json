@@ -721,6 +721,10 @@
     "tehran": {
       "name": "İran (Jeofizik Enstitüsü, Tahran)",
       "desc": "Tahran Üniversitesi Jeofizik Enstitüsü'nün namaz vakitleri, kendi yöntemiyle cihazınızda hesaplanır — eyalet merkezlerinde Enstitü'nün yayımladığı çizelgelerle dakikası dakikasına örtüşür. Çizelgelerde yer almayan ikindi ve yatsı aynı yöntemle hesaplanır."
+    },
+    "wifaq": {
+      "name": "Birleşik Krallık (Wifaqul Ulama)",
+      "desc": "Wifaqul Ulama'nın (Britain) seksen kadar yerleşim için yayımladığı vakit çizelgeleri, kendi yöntemiyle cihazınızda hesaplanır — imsak 18°, yatsı 15° veya gecenin yedide biri — ve yayımlanan çizelgeyle dakikası dakikasına örtüşür. Her iki ikindi vakti de Hanefî ikindi ayarıyla kullanılabilir."
     }
   },
   "compass": {

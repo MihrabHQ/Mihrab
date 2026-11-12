@@ -722,6 +722,10 @@
     "tehran": {
       "name": "Irán (Instituto de Geofísica, Teherán)",
       "desc": "Los horarios de oración del Instituto de Geofísica de la Universidad de Teherán, calculados en tu dispositivo con su propio método: en las capitales de provincia coinciden al minuto con las tablas publicadas por el Instituto. Asr e Isha, que las tablas no incluyen, se calculan con el mismo método."
+    },
+    "wifaq": {
+      "name": "Reino Unido (Wifaqul Ulama)",
+      "desc": "Los horarios que Wifaqul Ulama (Britain) publica para unas ochenta localidades, calculados en tu dispositivo con su propio método —Fajr a 18°, Isha a 15° o un séptimo de la noche— y que coinciden al minuto con el horario publicado. Ambas horas de Asr están disponibles mediante el ajuste de Asr hanafí."
     }
   },
   "compass": {

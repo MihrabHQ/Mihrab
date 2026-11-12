@@ -40,6 +40,8 @@ export function providerHidesCalculationMethod(
     id === 'banuri' ||
     id === 'uae' ||
     id === 'tehran' ||
+    // Wifaqul Ulama prints both Asrs; the toggle picks between them.
+    id === 'wifaq' ||
     // The calendar is its own method; the Hanafi Asr toggle still applies
     // (it picks the calendar's Asr-ı sânî).
     id === 'namazvakti' ||

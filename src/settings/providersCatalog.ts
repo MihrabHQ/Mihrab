@@ -183,6 +183,14 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.tehran.desc',
   },
   {
+    id: 'wifaq',
+    name: 'United Kingdom (Wifaqul Ulama)',
+    description:
+      'The timetables Wifaqul Ulama (Britain) prints for some eighty towns, calculated on your device by its own method — Fajr at 18°, Isha at 15° or a seventh of the night — matching the published timetable to the minute. Both Asr times are available through the Hanafi Asr setting.',
+    nameKey: 'providers.wifaq.name',
+    descriptionKey: 'providers.wifaq.desc',
+  },
+  {
     id: 'marw',
     name: 'Algeria',
     description:

@@ -449,5 +449,28 @@
       "sha256": "793c04c2764da229798b4913bc387485fbe9e219a11c86e3d65b8ede8feac1ea"
     },
     "revision": 1
+  },
+  "wifaq": {
+    "certified": true,
+    "checkedAt": "2026-11-12",
+    "places": 81,
+    "checks": [
+      {
+        "tables": "United Kingdom — Wifaqul Ulama’s timetables",
+        "places": 81,
+        "times": 197100,
+        "off": 0,
+        "offWithoutCorrections": 2600,
+        "from": "2026-01-01",
+        "to": "2027-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2026-01-01",
+      "to": "2027-12-31",
+      "entries": 2508,
+      "sha256": "1597716577faca2a44911d71195c75d26f4da440d447fe792d4c7df1c9c49b4f"
+    },
+    "revision": 1
   }
 }

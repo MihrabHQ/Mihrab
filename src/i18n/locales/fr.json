@@ -722,6 +722,10 @@
     "tehran": {
       "name": "Iran (Institut de géophysique, Téhéran)",
       "desc": "Les horaires de prière de l’Institut de géophysique de l’Université de Téhéran, calculés sur votre appareil selon sa propre méthode — dans les chefs-lieux de province, ils correspondent à la minute près aux tableaux publiés par l’Institut. Asr et Isha, que les tableaux n’indiquent pas, sont calculés selon la même méthode."
+    },
+    "wifaq": {
+      "name": "Royaume-Uni (Wifaqul Ulama)",
+      "desc": "Les horaires que Wifaqul Ulama (Britain) publie pour quelque quatre-vingts villes, calculés sur votre appareil selon sa propre méthode — Fajr à 18°, Isha à 15° ou un septième de la nuit — et correspondant à la minute près à l’horaire publié. Les deux heures de l’Asr sont disponibles via le réglage de l’Asr hanafite."
     }
   },
   "compass": {

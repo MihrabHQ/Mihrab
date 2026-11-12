@@ -326,6 +326,7 @@ export function methodAuthorityFor(
     case 'banuri':
     case 'uae':
     case 'tehran':
+    case 'wifaq':
       return provider;
     case 'kemenag':
       return 'indonesia';

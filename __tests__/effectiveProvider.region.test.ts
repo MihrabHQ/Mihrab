@@ -21,7 +21,9 @@ describe('getEffectiveDataProvider — region awareness', () => {
     });
 
     it('uses Diyanet near a place it lists, outside Sweden', () => {
-      expect(getEffectiveDataProvider(true, 'islamiska_forbundet', MANCHESTER, 'auto')).toBe('diyanet');
+      // Paris; Manchester is a town of Wifaqul Ulama's timetables now
+      expect(getEffectiveDataProvider(true, 'islamiska_forbundet', { latitude: 48.8566, longitude: 2.3522 }, 'auto')).toBe('diyanet');
+      expect(getEffectiveDataProvider(true, 'islamiska_forbundet', MANCHESTER, 'auto')).toBe('wifaq');
     });
 
     it('uses London’s own timetable in London', () => {

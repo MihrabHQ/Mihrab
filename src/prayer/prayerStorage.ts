@@ -10,6 +10,7 @@ import { MINISTRY_TIMETABLES, isMinistryTimetable } from '../providers/ministryT
 import { getBanuriTimes } from '../providers/banuriTimetable';
 import { getUaeTimes } from '../providers/uaeTimetable';
 import { getTehranTimes } from '../providers/tehranTimetable';
+import { getWifaqTimes } from '../providers/wifaqTimetable';
 import { nationalTableFor, nationalTablePlaceId } from '../providers/nationalTables';
 import { getNamazvaktiTimes } from '../providers/namazvakti';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
@@ -836,6 +837,7 @@ function hasPreparedDataset(provider: PrayerDataProviderId): boolean {
     provider === 'banuri' ||
     provider === 'uae' ||
     provider === 'tehran' ||
+    provider === 'wifaq' ||
     nationalTableFor(provider) != null ||
     // Not a dataset of times but the same arrangement: a published year
     // held on the phone that overtakes any day cached from a fallback.
@@ -902,6 +904,7 @@ function rawDatasetTimesFor(
   if (provider === 'banuri') return getBanuriTimes({ ...q, school: params.school });
   if (provider === 'uae') return getUaeTimes({ ...q, school: params.school });
   if (provider === 'tehran') return getTehranTimes({ ...q, school: params.school });
+  if (provider === 'wifaq') return getWifaqTimes({ ...q, school: params.school });
   const table = nationalTableFor(provider);
   if (table) return table.getTimes({ ...q, placeId: nationalTablePlaceId(provider, params.school) });
   return getIslamiskaForbundetDatasetTimes(q);

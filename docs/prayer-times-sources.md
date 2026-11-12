@@ -73,7 +73,12 @@ Institute of Geophysics' own method (`tehranTimetable.ts`, inside the
 country's outline): in one of the thirty-one province capitals its
 Calendar Center prints a sheet for, that capital's times; elsewhere in the
 country the same method for the reader's own spot. The sheets print no Asr
-and no Isha; those are the method's (one shadow length, 14°).
+and no Isha; those are the method's (one shadow length, 14°). And the
+**United Kingdom** outside London — Wifaqul Ulama (Britain)'s own method
+(`wifaqTimetable.ts`): in one of the eighty-one towns it prints a timetable
+for (within fifteen kilometres of the town's point), that town's times;
+both its Asrs, by the Hanafi Asr setting. Elsewhere in the country
+Automatic is as before.
 **Turkmenistan** has no
 timetable of its own Muftiate's to follow; Automatic there is Diyanet's
 method throughout (Diyanet prints tables for some thirty Turkmen towns),

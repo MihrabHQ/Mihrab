@@ -109,7 +109,8 @@ it('a regional source picked where it does not answer is not kept', () => {
 it('Automatic outside a pinned source’s country picks what fits best there, not the global default', () => {
   expect(getEffectiveDataProvider(false, 'islamiska_forbundet', RABAT, 'auto')).toBe('habous');
   expect(getEffectiveDataProvider(false, 'islamiska_forbundet', LONDON, 'auto')).toBe('london'); // London's own timetable
-  expect(getEffectiveDataProvider(false, 'islamiska_forbundet', { latitude: 53.4808, longitude: -2.2426 }, 'auto')).toBe('diyanet'); // Manchester: a place Diyanet lists
+  expect(getEffectiveDataProvider(false, 'islamiska_forbundet', { latitude: 53.4808, longitude: -2.2426 }, 'auto')).toBe('wifaq'); // Manchester: a town Wifaqul Ulama prints a timetable for
+  expect(getEffectiveDataProvider(false, 'islamiska_forbundet', { latitude: 48.8566, longitude: 2.3522 }, 'auto')).toBe('diyanet'); // Paris: a place Diyanet lists
   expect(getEffectiveDataProvider(false, 'islamiska_forbundet', { latitude: -29.0135, longitude: 134.7544 }, 'auto')).toBe('aladhan'); // Coober Pedy: no place Diyanet lists within reach
 });
 

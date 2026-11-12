@@ -721,6 +721,10 @@
     "tehran": {
       "name": "Iran (Institut Geofisika, Teheran)",
       "desc": "Waktu salat dari Institut Geofisika Universitas Teheran, dihitung di perangkat Anda dengan metodenya sendiri — di ibu kota provinsi cocok hingga menit dengan tabel yang diterbitkan Institut. Asar dan Isya, yang tidak tercantum dalam tabel, dihitung dengan metode yang sama."
+    },
+    "wifaq": {
+      "name": "Britania Raya (Wifaqul Ulama)",
+      "desc": "Jadwal yang diterbitkan Wifaqul Ulama (Britain) untuk sekitar delapan puluh kota, dihitung di perangkat Anda dengan metodenya sendiri — Subuh pada 18°, Isya pada 15° atau sepertujuh malam — dan cocok hingga menit dengan jadwal yang diterbitkan. Kedua waktu Asar tersedia melalui pengaturan Asar Hanafi."
     }
   },
   "compass": {

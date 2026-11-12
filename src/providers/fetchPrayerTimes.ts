@@ -9,6 +9,7 @@ import { MINISTRY_TIMETABLES } from './ministryTimetables';
 import { getBanuriTimes } from './banuriTimetable';
 import { getUaeTimes } from './uaeTimetable';
 import { getTehranTimes } from './tehranTimetable';
+import { getWifaqTimes } from './wifaqTimetable';
 import {
   computeNamazvaktiMethodTimes,
   getNamazvaktiTimes,
@@ -395,6 +396,23 @@ export async function fetchPrayerTimesUnified(
       // coverage, the general source.
       try {
         result = await MINISTRY_TIMETABLES[p.provider]({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+          school: p.school,
+        });
+        break;
+      } catch {
+        /* outside coverage */
+      }
+      return fetchPrayerTimesUnified({ ...p, provider: 'aladhan' });
+    }
+    case 'wifaq': {
+      // Wifaqul Ulama's own method, computed on the phone for the listed
+      // town the reader is in (`wifaqTimetable.ts`). Outside its towns, the
+      // general source.
+      try {
+        result = await getWifaqTimes({
           latitude: p.latitude,
           longitude: p.longitude,
           date: p.date,

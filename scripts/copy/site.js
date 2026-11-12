@@ -48,6 +48,7 @@ const TABLE_WORDS = {
       banuri: ['Pakistan', 'Jamia Uloom-ul-Islamia, Banuri Town'],
       uae: ['United Arab Emirates', 'the General Authority of Islamic Affairs, Endowments and Zakat'],
       tehran: ['Iran', 'the Institute of Geophysics, University of Tehran'],
+      wifaq: ['United Kingdom', 'Wifaqul Ulama (Britain)'],
     },
   },
   sv: {
@@ -76,6 +77,7 @@ const TABLE_WORDS = {
       banuri: ['Pakistan', 'Jamia Uloom-ul-Islamia, Banuri Town'],
       uae: ['Förenade Arabemiraten', 'Allmänna myndigheten för islamiska frågor, stiftelser och zakat'],
       tehran: ['Iran', 'Geofysiska institutet vid Teherans universitet'],
+      wifaq: ['Storbritannien', 'Wifaqul Ulama (Britain)'],
     },
   },
 };

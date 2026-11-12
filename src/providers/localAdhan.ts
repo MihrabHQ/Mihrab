@@ -54,6 +54,8 @@ import { BANURI_METHOD_ID } from './banuriTimetable';
 import { uaeTimes } from './uaeMethod';
 import { tehranTimes } from './tehranMethod';
 import { TEHRAN_INSTITUTE_METHOD_ID } from './tehranTimetable';
+import { wifaqTimes } from './wifaqMethod';
+import { WIFAQ_METHOD_ID } from './wifaqTimetable';
 import { UAE_METHOD_ID, uaeZoneAt } from './uaeTimetable';
 import { kuwaitTimes } from './kuwaitMethod';
 import { qatarTimes } from './qatarMethod';
@@ -648,6 +650,16 @@ export function computeLocalAdhanInstants(
         tatarstanCorrection(params.latitude, params.longitude, y, m, day),
         0,
       );
+  }
+  if (methodId === WIFAQ_METHOD_ID) {
+    // United Kingdom — Wifaqul Ulama's own method (`wifaqTimetable.ts`), on
+    // the minute its timetable prints at a town's point, then the few times
+    // on the other side of a minute. The timetable prints both Asrs; the
+    // list is for the Hanafi one, and a reader of another school gets the
+    // same method's Shafi'i Asr, which the list does not touch.
+    const hanafi = params.school === 1;
+    const at = wifaqTimes(params.latitude, params.longitude, y, m, day, hanafi ? 2 : 1);
+    if (at) return corrected(at, correctionFor('wifaq', params.latitude, params.longitude, y, m, day), hanafi ? 0 : 1);
   }
   if (methodId === TEHRAN_INSTITUTE_METHOD_ID) {
     // Iran — the Institute of Geophysics' own method (`tehranTimetable.ts`),

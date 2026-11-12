@@ -50,6 +50,7 @@ const CASES: [PrayerDataProviderId, string, number, number, number | 'auto', str
   ['banuri', 'Karachi', 24.8607, 67.0011, 'auto', []],
   ['uae', 'Abu Dhabi', 24.4539, 54.3773, 'auto', []],
   ['tehran', 'Tehran', 35.6892, 51.389, 'auto', []],
+  ['wifaq', 'Bradford', 53.795, -1.759, 'auto', []],
   ['kemenag', 'Jakarta', -6.2088, 106.8456, 'auto', []],
   ['muis', 'Singapore', 1.3521, 103.8198, 'auto', []],
   ['jakim', 'Kuala Lumpur', 3.139, 101.6869, 'auto', []],

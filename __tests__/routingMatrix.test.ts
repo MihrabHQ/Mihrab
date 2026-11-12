@@ -25,6 +25,7 @@
  *
  * `ROUTING_MATRIX=1 npx jest __tests__/routingMatrix.test.ts` prints the table.
  */
+import { isCoordinateInWifaqTown } from '../src/utils/wifaqRegion';
 import { autoMethodAheadOfListedPlace, autoMethodForCoords } from '../src/providers/autoMethod';
 import { isCoordinateInLondon } from '../src/utils/londonRegion';
 import { ROUTING_PLACES } from './fixtures/routingPlaces';
@@ -185,6 +186,11 @@ describe('the routing matrix', () => {
         // Russia; the rest of the country is the next branch (CHANGELOG).
         expect(row.auto).toBe(RUSSIA_OWN[name]);
         expect(row.method).toBe(NATIONAL_METHOD.RU);
+        expect(row.chosen3).toBe('aladhan');
+      } else if (isCoordinateInWifaqTown(latitude, longitude)) {
+        // A town Wifaqul Ulama prints a timetable for, outside London (CHANGELOG).
+        expect(row.auto).toBe('wifaq');
+        expect(row.method).toBe(3);
         expect(row.chosen3).toBe('aladhan');
       } else if (autoMethodAheadOfListedPlace(latitude, longitude)) {
         // The United States, Canada, KwaZulu-Natal: the convention their

@@ -38,6 +38,7 @@ import { isCoordinateInBrunei } from '../utils/bruneiRegion';
 import { isCoordinateInPakistan } from '../utils/pakistanRegion';
 import { isCoordinateInUae } from '../utils/uaeRegion';
 import { isCoordinateInIran } from '../utils/iranRegion';
+import { isCoordinateInWifaqTown } from '../utils/wifaqRegion';
 import { isCoordinateInTurkmenistan } from '../utils/turkmenistanRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
@@ -109,6 +110,9 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   { id: 'uae', covers: isCoordinateInUae, yieldsToChosenMethod: true },
   // Iran: the Institute of Geophysics' own method, the one the "Tehran" angles are named after.
   { id: 'tehran', covers: isCoordinateInIran, yieldsToChosenMethod: true },
+  // The United Kingdom outside London: Wifaqul Ulama's timetable, in the towns it prints one for.
+  // After London's own (above): Wifaqul Ulama's London districts are a reader's to choose there.
+  { id: 'wifaq', covers: isCoordinateInWifaqTown, yieldsToChosenMethod: true },
 ];
 
 /**

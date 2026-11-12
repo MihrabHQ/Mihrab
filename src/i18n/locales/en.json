@@ -721,6 +721,10 @@
     "tehran": {
       "name": "Iran (Institute of Geophysics, Tehran)",
       "desc": "The prayer times of the University of Tehran's Institute of Geophysics, calculated on your device by its own method — in the province capitals they match the Institute's published sheets to the minute. Asr and Isha, which the sheets do not print, are calculated by the same method."
+    },
+    "wifaq": {
+      "name": "United Kingdom (Wifaqul Ulama)",
+      "desc": "The timetables Wifaqul Ulama (Britain) prints for some eighty towns, calculated on your device by its own method — Fajr at 18°, Isha at 15° or a seventh of the night — matching the published timetable to the minute. Both Asr times are available through the Hanafi Asr setting."
     }
   },
   "compass": {
