@@ -615,8 +615,8 @@
       "name": "Cihazda (Adhan JS)"
     },
     "islamiska_forbundet": {
-      "desc": "Listelenen İsveç şehirleri için namaz vakitleri; konumunuz listede en yakın şehirle eşleştirilir.",
-      "name": "İsveç"
+      "desc": "Listelenen İsveç şehirleri için Islamiska Förbundet’in namaz vakitleri; konumunuz listede en yakın şehirle eşleştirilir.",
+      "name": "İsveç (Islamiska Förbundet)"
     },
     "habous": {
       "name": "Fas",

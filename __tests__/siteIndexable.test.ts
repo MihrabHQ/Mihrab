@@ -390,7 +390,11 @@ describe('every language the app speaks has a page', () => {
     for (const code of codes) {
       const page = pageOf(code);
       if (code === 'sv' || code === 'en') continue;
-      expect(page).not.toMatch(/Islamiska Förbundet/);
+      // The federation is named once, by its own name, where the table lists
+      // whose timetable Sweden's times match — and nowhere else.
+      expect((page.match(/Islamiska Förbundet/g) ?? []).length).toBe(1);
+      expect(page).toMatch(/<tr><th scope="row">[^<]+<\/th><td>[^<]*Islamiska Förbundet[^<]*<\/td>/);
+      expect(page).not.toMatch(/Bönetider i Sverige|Islamiska Förbundets tider/);
     }
     expect(pageOf('sv')).toMatch(/Islamiska Förbundet/);
   });

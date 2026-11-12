@@ -64,9 +64,9 @@ export const MAINSTREAM_PRAYER_PROVIDERS: ProviderOption[] = [
 export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
   {
     id: 'islamiska_forbundet',
-    name: 'Sweden',
+    name: 'Sweden (Islamiska Förbundet)',
     description:
-      'Prayer times for listed Swedish cities; your location is matched to the nearest city in the list.',
+      'Islamiska Förbundet’s prayer times for listed Swedish cities; your location is matched to the nearest city in the list.',
     nameKey: 'providers.islamiska_forbundet.name',
     descriptionKey: 'providers.islamiska_forbundet.desc',
   },
