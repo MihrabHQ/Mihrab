@@ -80,10 +80,13 @@ describe('the banner that explains the hour', () => {
   });
 
   it('is dismissible, and above the notices about how data was obtained', () => {
-    expect(banners).toMatch(/timezoneShift &&[\s\S]{0,900}onDismissTimezoneShift/);
-    expect(banners.indexOf('timezoneShift &&')).toBeLessThan(
-      banners.indexOf('{usingLocalFallback &&'),
+    expect(banners).toMatch(/if \(timezoneShift\) \{[\s\S]{0,900}onAction: onDismissTimezoneShift/);
+    // the notices are one list, said in order: the clocks' change first
+    expect(banners.indexOf('if (timezoneShift) {')).toBeGreaterThan(-1);
+    expect(banners.indexOf('if (timezoneShift) {')).toBeLessThan(
+      banners.indexOf("if (usingLocalFallback && !away('fallback')) {"),
     );
+    expect(banners.indexOf("if (usingLocalFallback && !away('fallback')) {")).toBeGreaterThan(-1);
   });
 
   it('and dismissing one does not silence the next', () => {

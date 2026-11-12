@@ -243,7 +243,7 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
     heroTop: '#ECA586',
     heroMid: '#FFD7A8',
     heroFoot: '#FFF4E8',
-    bodyLight: '#FFC25C',
+    bodyLight: '#FFF1C0',
     starGlow: '#FFFFFF',
     bg: '#FFF4E8',
     card: '#FFFDF9',
@@ -289,7 +289,7 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
     heroTop: '#DF9A68',
     heroMid: '#FFCF9A',
     heroFoot: '#FFF0E0',
-    bodyLight: '#FFB03B',
+    bodyLight: '#FFE7A0',
     starGlow: '#FFFFFF',
     bg: '#FFF0E0',
     card: '#FFFAF3',
@@ -421,7 +421,7 @@ function buildAnchors() {
     accentSurface: '#F1EAF8',
     accentSurfaceStrong: '#EAE0F4',
     accentHairline: '#B88ED0',
-    bodyLight: '#FFDD8A',
+    bodyLight: '#FFEDAA',
     overlay: 'rgba(30,30,68,0.45)',
   }),
   midday: M.midday,
@@ -449,7 +449,7 @@ function buildAnchors() {
     accentSurface: '#F4EAF4',
     accentSurfaceStrong: '#EEE0EE',
     accentHairline: '#C494CC',
-    bodyLight: '#FFCF72',
+    bodyLight: '#FFEAA0',
     overlay: 'rgba(40,28,62,0.45)',
   }),
   golden: M.golden,
@@ -965,11 +965,39 @@ export function mixMoods(a: SkyMood, b: SkyMood, u: number): SkyMood {
   if (u >= 1) return b;
   const near = u < 0.5 ? a : b;
   const out: SkyMood = { ...near };
+  const ua = accentCrossing(a.accent, b.accent, u);
   for (const k of MIXED) {
     const mix = ROUND.has(k) ? mixHexRound : k === 'heroMid' ? mixHexHorizon : mixHexOklab;
-    (out as unknown as Record<string, string>)[k] = mix(a[k] as string, b[k] as string, u);
+    (out as unknown as Record<string, string>)[k] = mix(a[k] as string, b[k] as string, ACCENT_FAMILY.has(k) ? ua : u);
   }
   return out;
+}
+
+/**
+ * THE ACCENT'S CROSSING. Where two neighbouring hours' accents are far
+ * apart on the wheel — the afternoon's blue and the golden hour's
+ * terracotta, a sun of thirteen degrees and one of nine — the way
+ * between them is by violet and crimson (`hueWay`: never by green, and
+ * straight through the middle is a grey). Spread over the whole span,
+ * that was half an hour in which every button and the next prayer's time
+ * were blue, then purple, then crimson, then orange: four accents, none
+ * of them the hour's. The accent now HOLDS each end and makes the
+ * crossing in the middle of the span — `ACCENT_CROSSING` of it, eased —
+ * so it is the afternoon's, then for a few minutes on its way, then the
+ * evening's. Everything drawn in or under the accent crosses with it.
+ * Near accents (the same family, an hour apart) mix across the whole
+ * span as they did.
+ */
+export const ACCENT_FAR_HUE = 100;
+export const ACCENT_CROSSING = 0.36;
+const ACCENT_FAMILY: ReadonlySet<keyof SkyMood> = new Set(['accent', 'accentBg', 'onAccent', 'accentSurface', 'accentSurfaceStrong', 'accentHairline']);
+export function accentCrossing(a: string, b: string, u: number): number {
+  const A = hexToOklch(a);
+  const B = hexToOklch(b);
+  if (A.C < 0.015 || B.C < 0.015) return u;
+  if (Math.abs(hueWay(A.h, B.h)) < ACCENT_FAR_HUE) return u;
+  const k = Math.max(0, Math.min(1, (u - (1 - ACCENT_CROSSING) / 2) / ACCENT_CROSSING));
+  return k * k * (3 - 2 * k);
 }
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));

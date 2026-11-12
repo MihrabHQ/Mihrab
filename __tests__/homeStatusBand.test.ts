@@ -151,14 +151,28 @@ describe('a notice is a card over the page, not a row of it (the phone)', () => 
 
   it('is a card — the page’s card colour, an edge, a shadow — and every one can be put away', () => {
     expect(banners).toMatch(/\? \[styles\.card, \{ backgroundColor: palette\.card, borderColor: palette\.border, shadowColor: palette\.text \}\]/);
-    expect(banners.match(/style=\{\[styles\.banner, card, leadStyle\(\)\]\}/g)).toHaveLength(6);
+    // six notices, one list, in the order they are said
+    expect((banners.match(/notices\.push\(\{/g) ?? []).length + (banners.match(/\) notices\.push\(\{ key: /g) ?? []).length).toBeGreaterThanOrEqual(6);
+    for (const key of ['timezone', 'method', 'zone', 'fallback', 'exactAlarm', 'notifications']) expect(banners).toContain(`key: '${key}'`);
     // the three whose own button is an action get a close of their own
     for (const key of ['fallback', 'exactAlarm', 'notifications']) {
-      expect(banners).toContain(`!away('${key}') && (`);
-      expect(banners).toContain(`{close('${key}')}`);
+      expect(banners).toContain(`!away('${key}')`);
+      expect(banners).toMatch(new RegExp(`key: '${key}',[\\s\\S]{0,260}?closable: true`));
     }
+    expect(banners).toMatch(/\{n\.closable \? close\(n\.key\) : null\}/);
     // in the column (a dashboard, a desktop window) they are as they were: no close, the tinted strip
     expect(banners).toMatch(/: \{ backgroundColor: palette\.accentBg \};/);
     expect(banners).toMatch(/floating \? \(\s*<Pressable/);
+  });
+
+  it('over the page: one card at a time, the rest counted, a long note held to two lines until touched', () => {
+    // the first only — the others wait behind it and come forward as it is put away
+    expect(banners).toMatch(/if \(floating\) \{\s*const n = notices\[0\];\s*const more = notices\.length - 1;/);
+    expect(banners).toMatch(/\{`\+\$\{more\}`\}/);
+    expect(banners).toMatch(/numberOfLines=\{open \? undefined : FLOATING_LINES\}/);
+    expect(banners).toMatch(/export const FLOATING_LINES = 2;/);
+    expect(banners).toMatch(/onPress=\{\(\) => setOpenKey\(open \? null : n\.key\)\}/);
+    // in the column every notice still stands, each in its strip
+    expect(banners).toMatch(/\{notices\.map\(n => \(\s*<View key=\{n\.key\} style=\{\[styles\.banner, card, leadStyle\(\)\]\}>/);
   });
 });

@@ -86,7 +86,7 @@ import {
 } from 'react-native-gesture-handler';
 import { TodayTimesSheet, type TimesSheetDay, type TimesSheetRow } from './TodayTimesSheet';
 import { pageRecess } from './MinimalSheet';
-import { type SkyInkColors } from './skyModel';
+import { SKY_SHEET_DP, type SkyInkColors } from './skyModel';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVerticalBarActions, useVerticalBar } from '../../native/VerticalBar';
 import { QiblaChip } from './QiblaChip';
@@ -1088,7 +1088,13 @@ function TodayCardImpl({
   const Outer = fullBleed ? View : GlassSurface;
   // Minimal: the sky runs on under the dots at the page's foot, so the
   // hero's foot takes the bar's inset as well as its own padding.
-  const footPad = HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] + (minimal ? footInset : 0);
+  // Under Light and Dark the page comes up over the sky's foot as a sheet
+  // (skyModel's SkyFrame.sheet): its height is added under the block, so
+  // the rail's two names stand on the sky above the sheet's edge and not
+  // under it. At every hour, not only those with a sheet, so the page
+  // does not move by it when the sky's shade changes.
+  const sheetPad = fullBleed && !minimal && settings.appearance !== 'sky' ? SKY_SHEET_DP : 0;
+  const footPad = HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] + (minimal ? footInset : 0) + sheetPad;
   // Minimal: a drag up on the hero opens the day's times too — only a
   // clearly upward one, so a sideways drag is still the tabs' and a drag
   // down the page's (the pull to refresh).

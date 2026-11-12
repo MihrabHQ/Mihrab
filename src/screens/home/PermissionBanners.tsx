@@ -9,6 +9,7 @@ import { useAppPalette } from '../../hooks/useAppPalette';
 import { formatUtcOffset } from '../../utils/utcOffset';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
+import { tabularNumeralStyle } from '../../theme/textScale';
 
 /**
  * Four banner conditions surfaced above the next-prayer card:
@@ -122,6 +123,7 @@ function PermissionBannersImpl({
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const [, redraw] = useState(0);
+  const [openKey, setOpenKey] = useState<string | null>(null);
   const away = (key: string) => floating && putAway.has(key);
   const card = floating
     ? [styles.card, { backgroundColor: palette.card, borderColor: palette.border, shadowColor: palette.text }]
@@ -173,123 +175,114 @@ function PermissionBannersImpl({
     return lead;
   };
 
+  // The notices, in the order they are said. FIRST, above the offline
+  // notice, the clocks' change: it is the one that explains why the
+  // numbers underneath are not the numbers the reader remembers, and the
+  // others are about how they were obtained.
+  type Notice = {
+    key: string;
+    text: string;
+    action: string;
+    onAction?: () => void;
+    /** The action is not a dismissal: the floating card gets a close of its own. */
+    closable?: boolean;
+    /** In the column, the text is held to two lines. */
+    clamp?: boolean;
+  };
+  const dismiss = t('common.dismiss', 'Dismiss');
+  const notices: Notice[] = [];
+  if (timezoneShift) {
+    notices.push({
+      key: 'timezone',
+      text: t('home.timezoneShiftNotice', {
+        defaultValue: 'The clocks here changed ({{from}} → {{to}}). Prayer times have been refreshed.',
+        from: formatUtcOffset(timezoneShift.from),
+        to: formatUtcOffset(timezoneShift.to),
+      }),
+      action: dismiss,
+      onAction: onDismissTimezoneShift,
+    });
+  }
+  if (methodNote) notices.push({ key: 'method', text: methodNote, action: dismiss, onAction: onDismissMethodNote });
+  if (zoneNote) notices.push({ key: 'zone', text: zoneNote, action: dismiss, onAction: onDismissZoneNote });
+  if (usingLocalFallback && !away('fallback')) {
+    notices.push({ key: 'fallback', text: t('home.localFallbackNotice'), action: t('common.retry'), onAction: onRetryFetch, closable: true });
+  }
+  if (exactAlarmDenied && !away('exactAlarm')) {
+    notices.push({
+      key: 'exactAlarm',
+      text: t('home.exactAlarmDenied'),
+      action: t('common.openSettings'),
+      onAction: () => notifee.openAlarmPermissionSettings().catch(() => {}),
+      closable: true,
+      clamp: true,
+    });
+  }
+  if (notifPermDenied && !away('notifications')) {
+    notices.push({
+      key: 'notifications',
+      text: t('home.notifPermDenied'),
+      action: t('common.openSettings'),
+      onAction: () => Linking.openSettings().catch(() => {}),
+      closable: true,
+      clamp: true,
+    });
+  }
+  if (notices.length === 0) return null;
+
+  // OVER THE PAGE, ONE AT A TIME. Three cards under the status bar covered
+  // the place's name, the date and half the sky, and a long note (a
+  // method's, four lines of it) did the same alone. The card on show is
+  // the first; the rest wait behind it, counted (+2), and each comes
+  // forward as the one before it is put away. A note longer than two
+  // lines is held to two until it is touched.
+  if (floating) {
+    const n = notices[0];
+    const more = notices.length - 1;
+    const open = openKey === n.key;
+    return (
+      <View style={[styles.banner, card]}>
+        <Pressable
+          style={styles.grow}
+          onPress={() => setOpenKey(open ? null : n.key)}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: open }}
+          accessibilityLabel={n.text}>
+          <Text style={[styles.text, styles.textFloating, { color: palette.text }]} numberOfLines={open ? undefined : FLOATING_LINES}>
+            {n.text}
+          </Text>
+        </Pressable>
+        {more > 0 ? (
+          <Text style={[styles.more, tabularNumeralStyle, { color: palette.muted, borderColor: palette.border }]}>
+            {`+${more}`}
+          </Text>
+        ) : null}
+        <Pressable onPress={n.onAction} hitSlop={8} accessibilityRole="button" accessibilityLabel={n.action}>
+          <Text style={[styles.action, { color: palette.accent }]}>{n.action}</Text>
+        </Pressable>
+        {n.closable ? close(n.key) : null}
+      </View>
+    );
+  }
+
   return (
     <>
-      {/* FIRST, above the offline notice: it is the one that explains why
-          the numbers underneath are not the numbers the reader remembers,
-          and the others are about how they were obtained. */}
-      {timezoneShift && (
-        <View style={[styles.banner, card, leadStyle()]}>
-          <Text style={[styles.text, { color: palette.text }]}>
-            {t('home.timezoneShiftNotice', {
-              defaultValue:
-                'The clocks here changed ({{from}} → {{to}}). Prayer times have been refreshed.',
-              from: formatUtcOffset(timezoneShift.from),
-              to: formatUtcOffset(timezoneShift.to),
-            })}
+      {notices.map(n => (
+        <View key={n.key} style={[styles.banner, card, leadStyle()]}>
+          <Text style={[styles.text, { color: palette.text }]} numberOfLines={n.clamp ? 2 : undefined}>
+            {n.text}
           </Text>
-          <Pressable
-            onPress={onDismissTimezoneShift}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={t('common.dismiss', 'Dismiss')}>
-            <Text style={[styles.action, { color: palette.accent }]}>
-              {t('common.dismiss', 'Dismiss')}
-            </Text>
+          <Pressable onPress={n.onAction} hitSlop={8} accessibilityRole="button" accessibilityLabel={n.action}>
+            <Text style={[styles.action, { color: palette.accent }]}>{n.action}</Text>
           </Pressable>
         </View>
-      )}
-
-      {methodNote && (
-        <View style={[styles.banner, card, leadStyle()]}>
-          <Text style={[styles.text, { color: palette.text }]}>{methodNote}</Text>
-          <Pressable
-            onPress={onDismissMethodNote}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={t('common.dismiss', 'Dismiss')}>
-            <Text style={[styles.action, { color: palette.accent }]}>
-              {t('common.dismiss', 'Dismiss')}
-            </Text>
-          </Pressable>
-        </View>
-      )}
-
-      {zoneNote && (
-        <View style={[styles.banner, card, leadStyle()]}>
-          <Text style={[styles.text, { color: palette.text }]}>{zoneNote}</Text>
-          <Pressable
-            onPress={onDismissZoneNote}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={t('common.dismiss', 'Dismiss')}>
-            <Text style={[styles.action, { color: palette.accent }]}>
-              {t('common.dismiss', 'Dismiss')}
-            </Text>
-          </Pressable>
-        </View>
-      )}
-
-      {usingLocalFallback && !away('fallback') && (
-        <View style={[styles.banner, card, leadStyle()]}>
-          <Text style={[styles.text, { color: palette.text }]}>
-            {t('home.localFallbackNotice')}
-          </Text>
-          <Pressable
-            onPress={onRetryFetch}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={t('common.retry')}>
-            <Text style={[styles.action, { color: palette.accent }]}>
-              {t('common.retry')}
-            </Text>
-          </Pressable>
-          {close('fallback')}
-        </View>
-      )}
-
-      {exactAlarmDenied && !away('exactAlarm') && (
-        <View style={[styles.banner, card, leadStyle()]}>
-          <Text
-            style={[styles.text, { color: palette.text }]}
-            numberOfLines={2}>
-            {t('home.exactAlarmDenied')}
-          </Text>
-          <Pressable
-            onPress={() => notifee.openAlarmPermissionSettings().catch(() => {})}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={t('common.openSettings')}>
-            <Text style={[styles.action, { color: palette.accent }]}>
-              {t('common.openSettings')}
-            </Text>
-          </Pressable>
-          {close('exactAlarm')}
-        </View>
-      )}
-
-      {notifPermDenied && !away('notifications') && (
-        <View style={[styles.banner, card, leadStyle()]}>
-          <Text
-            style={[styles.text, { color: palette.text }]}
-            numberOfLines={2}>
-            {t('home.notifPermDenied')}
-          </Text>
-          <Pressable
-            onPress={() => Linking.openSettings().catch(() => {})}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={t('common.openSettings')}>
-            <Text style={[styles.action, { color: palette.accent }]}>
-              {t('common.openSettings')}
-            </Text>
-          </Pressable>
-          {close('notifications')}
-        </View>
-      )}
+      ))}
     </>
   );
 }
+
+/** A floating card's note, until it is touched: this many lines. */
+export const FLOATING_LINES = 2;
 
 export const PermissionBanners = memo(PermissionBannersImpl);
 
@@ -304,6 +297,16 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   text: { flex: 1, fontSize: TYPE.footnote.fontSize, lineHeight: 18 },
+  grow: { flex: 1 },
+  textFloating: { flex: 0 },
+  more: {
+    fontSize: TYPE.caption.fontSize,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: RADIUS.sm,
+    paddingHorizontal: SPACING.xs,
+    paddingVertical: 1,
+    overflow: 'hidden',
+  },
   action: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
   card: {
     borderWidth: StyleSheet.hairlineWidth,

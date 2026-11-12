@@ -9,8 +9,8 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { HERO_SPAN, MUTED_INK_FLOOR, SKY_FADE_LOW_MID_AT, SKY_GLOW_FALL, SKY_THEME_MID_AT, SKY_TURN_HALF_AT, SUN_HORIZON_Y, luminance, skyColorAt, skyFrame, skyInkAcross, skyInkAt, skyMoment, skyStops, themedSkyFrame } from '../src/screens/home/skyModel';
-import { contrastOf, mixHexHorizon, mixHexOklab, skyMoodOf } from '../src/theme/skyMoods';
+import { HERO_SPAN, MUTED_INK_FLOOR, SKY_FADE_LOW_MID_AT, SKY_GLOW_FALL, SKY_SHEET_DP, sheetTurnAt, SKY_THEME_MID_AT, SKY_TURN_HALF_AT, SUN_HORIZON_Y, luminance, skyColorAt, skyFrame, skyInkAcross, skyInkAt, skyMoment, skyStops, themedSkyFrame } from '../src/screens/home/skyModel';
+import { ACCENT_CROSSING, accentCrossing, contrastOf, mixHexHorizon, mixHexOklab, mixMoods, skyMoodOf, skyMoodsOf } from '../src/theme/skyMoods';
 import { hexToOklch } from '../src/theme/oklch';
 
 // A night sky and a day's, each whole — glow, block, its own foot — over a page that is not its polarity.
@@ -68,7 +68,7 @@ describe('the turn into a page of the other polarity', () => {
     expect(src).toMatch(/skyInkAt\(frame, yFootInk, HERO_SPAN\.foot\)/);
     // its own page: the sky runs into it; another's: the same sky, and the turn
     expect(src).toMatch(/if \(mood\.isDark === pageDark\) return themedSkyFrame\(f, \{ \.\.\.mood, heroFoot: pageBg \}, glowAt, blockAt\);/);
-    expect(src).toMatch(/return themedSkyFrame\(f, mood, glowAt, blockAt, \{ at: lowMidAt, page: pageBg \}\);/);
+    expect(src).toMatch(/return themedSkyFrame\(f, mood, glowAt, blockAt, \{ at: lowMidAt, page: pageBg, sheet: sheeted \}\);/);
     const sky = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'HeroSky.tsx'), 'utf8');
     // both painters — the still sky and the launch run's layers — take their stops from the one place
     expect(sky.match(/linearDown\(skyStops\(/g)).toHaveLength(2);
@@ -278,13 +278,104 @@ describe('the launch run rides the sky the hero then stands in', () => {
     // one rule for the three heights, used for the first frame and for every measured one
     expect(hero).toMatch(/function skyHeights\(blockTop: number, blockFoot: number\): \{ turn: number; glow: number; block: number \}/);
     expect(hero).toMatch(/const was = fill && layoutKey \? rememberedTodayLayout\(layoutKey\) : null;/);
-    expect(hero).toMatch(/return skyHeights\(\(top \+ was\.block\.y\) \/ sky, \(top \+ was\.block\.y \+ was\.block\.h\) \/ sky\);/);
+    expect(hero).toMatch(/const at = skyHeights\(\(top \+ was\.block\.y\) \/ sky, \(top \+ was\.block\.y \+ was\.block\.h\) \/ sky\);\s*return minimal \? at : \{ \.\.\.at, turn: sheetTurnAt\(sky\) \};/);
     expect(hero).toMatch(/useState\(startAts\?\.turn \?\? SKY_FADE_LOW_MID_AT\)/);
     expect(hero).toMatch(/useState\(startAts\?\.glow \?\? SKY_THEME_MID_AT\)/);
     expect(hero).toMatch(/useState<number \| undefined>\(startAts\?\.block\)/);
-    expect(hero).toMatch(/const at = measured \? skyHeights\(heroY\.eyebrow, footY\)\.turn : SKY_FADE_LOW_MID_AT;/);
+    expect(hero).toMatch(/const at = sheeted && skyH > 0 \? sheetTurnAt\(skyH\) : measured \? skyHeights\(heroY\.eyebrow, footY\)\.turn : SKY_FADE_LOW_MID_AT;/);
     // the states are declared before the painter that the run's keyframes are painted with
     expect(hero.indexOf('const startAts = useMemo')).toBeLessThan(hero.indexOf('const paint = useCallback'));
     expect(hero.indexOf('const startAts = useMemo')).toBeGreaterThan(-1);
+  });
+});
+
+describe('on the phone the turn is an edge: the page’s sheet over the sky’s foot', () => {
+  const sheet = { ...NIGHT, turnAt: sheetTurnAt(700), sheet: true };
+
+  it('the sky is painted whole to its foot — the page is not a stop in it', () => {
+    expect(SKY_SHEET_DP).toBe(18);
+    expect(sheet.turnAt).toBeCloseTo(1 - 18 / 700, 3);
+    expect(skyStops(sheet)).toEqual(skyStops({ ...NIGHT, page: undefined }));
+    // a card on a dashboard keeps the fade
+    expect(skyStops({ ...NIGHT, turnAt: 0.97 })).toHaveLength(6);
+  });
+
+  it('the colour under a word is the sky’s above the edge and the page’s on the sheet', () => {
+    expect(skyColorAt(sheet, sheet.turnAt - 0.001)).toBe(skyColorAt({ ...NIGHT, page: undefined }, sheet.turnAt - 0.001));
+    expect(skyColorAt(sheet, sheet.turnAt + 0.001)).toBe(NIGHT.page);
+    expect(skyColorAt(sheet, 1)).toBe(NIGHT.page);
+    // a word wholly above the edge is in the sky's ink; one across it is weighed against both
+    expect(skyInkAt(sheet, sheet.turnAt - 0.03, 0.012).text).toBe('#FFFFFF');
+    const day = { ...DAY_OVER_DARK, turnAt: sheetTurnAt(700), sheet: true };
+    expect(skyInkAt(day, day.turnAt - 0.03, 0.012).text).toBe('#000000');
+    expect(skyInkAt(sheet, 0.995, 0.004).text).toBe('#000000');
+  });
+
+  it('one view draws it, over the launch run and the still sky alike', () => {
+    const sky = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'HeroSky.tsx'), 'utf8');
+    expect(sky).toMatch(/frame\.sheet && frame\.page && frame\.turnAt != null/);
+    expect(sky.match(/backgroundColor: frame\.page,/g)).toHaveLength(1);
+    expect(sky).toMatch(/borderTopStartRadius: Math\.min\(sheetH, SKY_SHEET_RADIUS\)/);
+    // after the run's layers, the still sky and the Track: the last child of the root
+    expect(sky.indexOf('{sheetH > 0 ? (')).toBeGreaterThan(sky.indexOf('<HeroTrack'));
+    expect(sky).toMatch(/sheet: f\.sheet,/);
+    // the phone's hero with a list under it — not Minimal, whose hero is the page — and room for it under the block at every hour
+    const hero = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'HeroToday.tsx'), 'utf8');
+    expect(hero).toMatch(/const sheeted = !!fill && !minimal;/);
+    const card = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'TodayCard.tsx'), 'utf8');
+    expect(card).toMatch(/const sheetPad = fullBleed && !minimal && settings\.appearance !== 'sky' \? SKY_SHEET_DP : 0;/);
+    expect(card).toMatch(/\+ \(minimal \? footInset : 0\) \+ sheetPad;/);
+  });
+});
+
+describe('the accent between two hours far apart on the wheel', () => {
+  const R = skyMoodsOf('realistic');
+
+  it('holds each end and crosses in the middle of the span — not four accents in half an hour', () => {
+    // the afternoon's blue and the golden hour's terracotta
+    const blue = R.midday.accent;
+    const warm = R.golden.accent;
+    expect(Math.abs(hexToOklch(blue).h - hexToOklch(warm).h)).toBeGreaterThan(150);
+    const lo = (1 - ACCENT_CROSSING) / 2;
+    for (const u of [0.05, 0.15, 0.25, lo]) expect(accentCrossing(blue, warm, u)).toBe(0);
+    for (const u of [1 - lo, 0.75, 0.9]) expect(accentCrossing(blue, warm, u)).toBe(1);
+    expect(accentCrossing(blue, warm, 0.5)).toBeCloseTo(0.5, 6);
+    // eased, and never backwards
+    let was = 0;
+    for (let u = 0; u <= 1.0001; u += 0.02) {
+      const k = accentCrossing(blue, warm, u);
+      expect(k).toBeGreaterThanOrEqual(was);
+      was = k;
+    }
+    // the mood: the accent and all that is drawn in or under it wait; the page and the sky do not
+    const early = mixMoods(R.midday, R.golden, 0.25);
+    for (const k of ['accent', 'accentBg', 'onAccent', 'accentSurface', 'accentSurfaceStrong', 'accentHairline'] as const) expect(early[k]).toBe(R.midday[k]);
+    expect(early.heroTop).not.toBe(R.midday.heroTop);
+    expect(early.bg).toBe(mixHexOklab(R.midday.bg, R.golden.bg, 0.25));
+    const late = mixMoods(R.midday, R.golden, 0.75);
+    expect(late.accent).toBe(R.golden.accent);
+    // on the way it still reads on the page it is over
+    for (let u = 0.3; u <= 0.7; u += 0.05) {
+      const m = mixMoods(R.midday, R.golden, u);
+      for (const g of [m.bg, m.card, m.controlBg, m.accentBg]) expect(contrastOf(m.accent, g)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('near accents — the same family, an hour apart — mix across the whole span as they did', () => {
+    expect(accentCrossing('#0760AB', '#0450A8', 0.2)).toBe(0.2);
+    expect(accentCrossing(R.sunset.accent, R.dawn.accent, 0.3)).toBe(0.3);
+  });
+});
+
+describe('Vibrant’s sun by day', () => {
+  it('is lighter than the sky it is drawn on at every light hour — the golden hour’s and the first of the morning’s too', () => {
+    const V = skyMoodsOf('vibrant');
+    for (const name of ['morning', 'midday', 'golden'] as const) {
+      const m = V[name];
+      // the disc stands in the upper sky, between the top and the hour's glow
+      const sky = mixHexOklab(m.heroTop, m.heroMid, 0.5);
+      expect(contrastOf(m.bodyLight, sky)).toBeGreaterThanOrEqual(1.4);
+      expect(luminance(m.bodyLight)).toBeGreaterThan(luminance(m.heroMid));
+    }
   });
 });
