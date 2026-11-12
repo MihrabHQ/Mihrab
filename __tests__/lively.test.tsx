@@ -71,3 +71,30 @@ describe('what the window gates', () => {
     expect(home).toContain('if (flip) clearTimeout(flip);\n    };');
   });
 });
+
+/**
+ * The reader's session dot had the same fault as the stars: a native loop
+ * for as long as the reader was open, so a page being read and not touched
+ * was redrawn sixty times a second (Pixel 10 Pro: the render thread at a
+ * sixth of a core). It breathes on an arrival — the reader opening, the
+ * trail changing, the session changing — and then rests whole.
+ */
+describe('the session dot', () => {
+  const dot = read('src/quran/SessionDot.tsx');
+
+  it('breathes for the window after an arrival, and a change of the session is an arrival', () => {
+    expect(dot).toContain("import { LIVELY_MS } from '../hooks/useLively';");
+    expect(dot).toContain('timer = setTimeout(() => setLively(false), LIVELY_MS);');
+    expect(dot).toContain('const unsubscribe = subscribeReadingSession(arrive);');
+    expect(dot).toMatch(/arrive\(\);\s*const unsubscribe[\s\S]*?\}, \[color\]\);/);
+  });
+
+  it('rests whole: no loop outside the window, and the dot settles at full size and colour', () => {
+    const effect = dot.slice(dot.indexOf('if (!lively) {'), dot.indexOf('}, [pulse, lively]);'));
+    const rest = effect.slice(0, effect.indexOf('const loop = Animated.loop('));
+    expect(rest).toMatch(/toValue: 1,[\s\S]*?useNativeDriver: true/);
+    expect(rest).toMatch(/return \(\) => settle\.stop\(\);/);
+    expect(rest).not.toContain('Animated.loop');
+    expect(effect).toContain('return () => loop.stop();');
+  });
+});

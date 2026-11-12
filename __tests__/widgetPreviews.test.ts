@@ -100,4 +100,18 @@ describe('Settings → Widgets in the app', () => {
   it('draws nothing where there is no such module: other platforms, older builds', () => {
     expect(previews).toContain("if (Platform.OS !== 'android' || !getPrayerWidgetModule()?.renderPreviews) return null;");
   });
+  it('packs each sample off the main thread, and hands the thread back between cards', () => {
+    // 37–44 ms a card of Bitmap.compress on the main thread, back to back,
+    // while the page slid in (traced on the emulator; 93 ms on a Pixel 10
+    // Pro with three cards).
+    const module = fs.readFileSync(
+      path.join(__dirname, '..', 'android/app/src/main/java/com/prayer_times/PrayerWidgetModule.kt'),
+      'utf8',
+    );
+    const body = module.slice(module.indexOf('fun renderPreviews('), module.indexOf('fun takeLogQueue('));
+    expect(body).toMatch(
+      /withContext\(kotlinx\.coroutines\.Dispatchers\.Default\) \{[\s\S]*?bitmap\.compress\([\s\S]*?bitmap\.recycle\(\)[\s\S]*?Base64\.encodeToString/,
+    );
+    expect(body).toMatch(/out\.pushMap\(map\)\s*kotlinx\.coroutines\.yield\(\)/);
+  });
 });

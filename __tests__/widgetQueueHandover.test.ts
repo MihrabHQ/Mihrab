@@ -80,8 +80,12 @@ describe('taking a queue does not redraw the widget', () => {
 
 describe('the redraw that replaces it', () => {
   it('setData tells every widget kind, which is what closes the window', () => {
-    const body = module_.slice(module_.indexOf('fun setData('));
-    expect(body).toMatch(/PrayerWidgetProvider\.requestUpdate\(reactContext\)/);
+    // Through the module's gate: at once when the app is not in front (the
+    // headless drain), and when it is, as it is left — which is when the
+    // card can next be seen.
+    const body = module_.slice(module_.indexOf('private fun store('), module_.indexOf('fun setAndroidWidgetAppearance('));
+    expect(body).toMatch(/\n\s+fanOut\(\)\n/);
+    expect(module_).toMatch(/private fun fanOut\(\) \{[\s\S]*?PrayerWidgetProvider\.requestUpdate\(reactContext\)/);
   });
 
   it('and requestUpdate reaches the Tasbih widget', () => {

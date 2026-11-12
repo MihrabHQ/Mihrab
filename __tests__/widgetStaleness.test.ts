@@ -108,7 +108,11 @@ describe('android tells every widget kind, exactly once', () => {
       module.indexOf('fun setData('),
       module.indexOf('fun setAndroidWidgetAppearance('),
     );
-    expect(body).toContain('PrayerWidgetProvider.requestUpdate');
+    // The one fan-out, through the module's own gate (`fanOut`), which is
+    // the only place the module names the provider's.
+    expect(body).toMatch(/\n\s+fanOut\(\)\n/);
+    expect(body).not.toContain('PrayerWidgetProvider.requestUpdate');
+    expect(module.match(/PrayerWidgetProvider\.requestUpdate\(reactContext\)/g)).toHaveLength(2);
     for (const kind of KINDS.filter(k => k !== 'PrayerWidgetProvider')) {
       expect(body).not.toContain(`${kind}.requestUpdate`);
     }

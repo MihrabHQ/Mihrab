@@ -11,9 +11,11 @@
  *
  * It pulses because it is live. A still dot in a bookmark colour is
  * indistinguishable from a decoration; a slow breath is the one thing on
- * this page that says "and it is recording".
+ * this page that says "and it is recording". It says so when the reading
+ * begins and when the session changes, for half a minute, and then rests
+ * whole — see `SessionDot` for what breathing without end cost.
  */
-import { useEffect, useRef, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import {
   BOOKMARK_COLORS,
@@ -22,6 +24,7 @@ import {
   useQuranBookmarks,
 } from './quranState';
 import type { QuranBookmark } from './quranTypes';
+import { LIVELY_MS } from '../hooks/useLively';
 import {
   readingSessionSnapshot,
   subscribeReadingSession,
@@ -114,11 +117,47 @@ export function useSessionColor(reader: ReaderKind = 'mushaf'): string | null {
 }
 
 export function SessionDot({ color, size = 8 }: { color: string; size?: number }) {
-  // One driver, native: this thing breathes for as long as the reader is
-  // open, and a JS-driven loop on a page being swiped is a dropped frame
-  // waiting to happen.
+  // One driver, native: a JS-driven loop on a page being swiped is a
+  // dropped frame waiting to happen.
   const pulse = useRef(new Animated.Value(0)).current;
+  // IT BREATHES ON AN ARRIVAL, NOT FOR EVER. A native loop costs nothing
+  // on the JS thread, but every frame of it is a frame the renderer
+  // draws, and this one ran for as long as the reader was open: measured
+  // on a Pixel 10 Pro, a page being read and not touched was redrawn sixty
+  // times a second — the render thread at a sixth of a core and the
+  // display held at its full rate — for a dot seven points wide, through
+  // an hour's reading. Today's stars had the same fault and the same
+  // answer (hooks/useLively): the motion says "this began", and then the
+  // page is still. Here it begins when the reader opens, when another
+  // trail takes the reading over (the colour), and whenever the session
+  // itself changes — a place put down, a place carried on.
+  const [lively, setLively] = useState(true);
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const arrive = () => {
+      setLively(true);
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => setLively(false), LIVELY_MS);
+    };
+    arrive();
+    const unsubscribe = subscribeReadingSession(arrive);
+    return () => {
+      if (timer) clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [color]);
+  useEffect(() => {
+    if (!lively) {
+      // At rest the dot is whole: full size, full colour.
+      const settle = Animated.timing(pulse, {
+        toValue: 1,
+        duration: 600,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      });
+      settle.start();
+      return () => settle.stop();
+    }
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulse, {
@@ -137,7 +176,7 @@ export function SessionDot({ color, size = 8 }: { color: string; size?: number }
     );
     loop.start();
     return () => loop.stop();
-  }, [pulse]);
+  }, [pulse, lively]);
 
   return (
     <View

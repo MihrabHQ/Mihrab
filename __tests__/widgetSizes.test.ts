@@ -249,7 +249,7 @@ describe('setData coalesces identical pushes', () => {
   });
 
   it('still stores the payload and marks the draw when it does redraw', () => {
-    expect(module).toMatch(/\.putString\(PrayerWidgetProvider\.PREFS_KEY, json\)[\s\S]*?\.putLong\(PREFS_LAST_FANOUT_MS, now\)[\s\S]*?PrayerWidgetProvider\.requestUpdate\(reactContext\)/);
+    expect(module).toMatch(/\.putString\(PrayerWidgetProvider\.PREFS_KEY, json\)[\s\S]*?\.putLong\(PREFS_LAST_FANOUT_MS, now\)[\s\S]*?\n\s+fanOut\(\)\n/);
   });
 
   it('a taken tap queue forces the next redraw', () => {
@@ -264,6 +264,45 @@ describe('setData coalesces identical pushes', () => {
       module.indexOf('private fun forceNextFanout'),
     );
     expect(appearance).not.toMatch(/FANOUT_COALESCE_MS|PREFS_LAST_FANOUT_MS/);
-    expect(appearance).toMatch(/PrayerWidgetProvider\.requestUpdate\(reactContext\)/);
+    expect(appearance).toMatch(/\n\s+fanOut\(\)\n/);
+  });
+});
+
+/**
+ * Glance composes on the app's own main thread, so a redraw of the placed
+ * cards while the app is in front is a block of that thread for something
+ * nobody can see: 125–145 ms a second and a half after every page turned,
+ * on a Pixel 10 Pro with three cards. The redraw is owed until the app is
+ * left.
+ */
+describe('a redraw asked for while the app is in front waits until it is left', () => {
+  const module = kt('PrayerWidgetModule');
+  const gate = module.slice(module.indexOf('private fun fanOut()'), module.indexOf('override fun onHostResume'));
+
+  it('is owed, not drawn, while the activity is resumed and has the screen to itself', () => {
+    expect(gate).toMatch(/reactContext\.lifecycleState == LifecycleState\.RESUMED && activity != null/);
+    expect(gate).toMatch(/if \(inFront && activity\?\.isInMultiWindowMode != true\) \{\s*redrawOwed\.set\(true\)\s*return\s*\}/);
+    // Otherwise — headless, or sharing the screen — it is drawn at once.
+    expect(gate).toMatch(/redrawOwed\.set\(false\)\s*PrayerWidgetProvider\.requestUpdate\(reactContext\)/);
+  });
+
+  it('is paid once, when the activity is paused or destroyed, or the module goes', () => {
+    expect(gate).toMatch(/if \(!redrawOwed\.getAndSet\(false\)\) return/);
+    expect(module).toMatch(/ReactContextBaseJavaModule\(reactContext\), LifecycleEventListener/);
+    expect(module).toMatch(/reactContext\.addLifecycleEventListener\(this\)/);
+    expect(module).toMatch(/override fun onHostPause\(\) = payRedraw\(\)/);
+    expect(module).toMatch(/override fun onHostDestroy\(\) = payRedraw\(\)/);
+    expect(module).toMatch(/override fun invalidate\(\) \{[\s\S]*?payRedraw\(\)[\s\S]*?super\.invalidate\(\)/);
+  });
+
+  it('what is written is still written at once: only the redraw waits', () => {
+    const store = module.slice(module.indexOf('private fun store('), module.indexOf('fun setAndroidWidgetAppearance('));
+    expect(store.indexOf('.apply()')).toBeLessThan(store.indexOf('fanOut()'));
+    expect(store).toMatch(/fanOut\(\)[\s\S]*?GarminWatch\.onPayloadWritten\(reactContext\)/);
+  });
+
+  it('every redraw the module asks for goes through the gate', () => {
+    expect(module.match(/\n\s+fanOut\(\)\n/g)!.length).toBeGreaterThanOrEqual(6);
+    expect(module.match(/PrayerWidgetProvider\.requestUpdate\(reactContext\)/g)).toHaveLength(2);
   });
 });

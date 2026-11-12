@@ -3,19 +3,86 @@ package com.prayer_times
 import android.content.Context
 import android.util.Log
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.common.LifecycleState
 import com.prayer_times.contract.WidgetContract
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.launch
 
 class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  ReactContextBaseJavaModule(reactContext), LifecycleEventListener {
 
   override fun getName(): String = NAME
 
-  /** The samples are composed and drawn on the main thread, one request after another. */
+  /**
+   * THE REDRAW WAITS UNTIL THE APP IS LEFT.
+   *
+   * Glance composes a card on THIS process's main thread — its session
+   * worker runs on `Dispatchers.Main` — and a redraw of the placed cards is
+   * a recomposition of each. Measured on a Pixel 10 Pro with three cards on
+   * the home screen: 125–145 ms of the main thread, three `Compose:recompose`
+   * slices back to back, a second and a half after every page turned in the
+   * reader (the payload's coalescing delay) — a dozen dropped frames in
+   * whatever the reader was doing by then, the next page's swipe as often as
+   * not. The same after a prayer logged, a bead counted, a tab returned to,
+   * and in the first second of a launch.
+   *
+   * None of it could be seen: a card on the home screen is behind the app
+   * for as long as the app is in front. So everything this module is asked
+   * to write is still written at once — the payload, the looks, the sky —
+   * and the redraw is owed, and paid when the activity is paused: once,
+   * with whatever was written last, as the home screen comes into view.
+   *
+   * Not deferred: a call with no activity in front (the headless refresh,
+   * a launch for an alarm), and a window that shares the screen — split
+   * screen, a freeform window on a tablet — where the home screen may well
+   * be showing beside it. The redraws that do not come through here are
+   * untouched: a prayer time passing, the clock changing, the card's own
+   * settings page.
+   */
+  private val redrawOwed = AtomicBoolean(false)
+
+  init {
+    reactContext.addLifecycleEventListener(this)
+  }
+
+  private fun fanOut() {
+    val activity = reactContext.currentActivity
+    val inFront = reactContext.lifecycleState == LifecycleState.RESUMED && activity != null
+    if (inFront && activity?.isInMultiWindowMode != true) {
+      redrawOwed.set(true)
+      return
+    }
+    redrawOwed.set(false)
+    PrayerWidgetProvider.requestUpdate(reactContext)
+  }
+
+  private fun payRedraw() {
+    if (!redrawOwed.getAndSet(false)) return
+    try {
+      PrayerWidgetProvider.requestUpdate(reactContext)
+    } catch (t: Throwable) {
+      Log.w(NAME, "the owed widget redraw failed", t)
+    }
+  }
+
+  override fun onHostResume() = Unit
+
+  override fun onHostPause() = payRedraw()
+
+  override fun onHostDestroy() = payRedraw()
+
+  override fun invalidate() {
+    reactContext.removeLifecycleEventListener(this)
+    payRedraw()
+    super.invalidate()
+  }
+
+  /** The samples are composed and drawn on the main thread, one request after another; packed off it. */
   private val previewScope = kotlinx.coroutines.MainScope()
 
   @ReactMethod
@@ -68,15 +135,26 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
           try {
             val views = WidgetLivePreview.compose(reactContext, widget, size, emptyMap())
             val bitmap = WidgetLivePreview.bitmap(reactContext, views, size, widthPx, tallestDp)
-            val bytes = java.io.ByteArrayOutputStream()
-            bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, bytes)
+            // Composing and drawing need the main thread; packing the picture
+            // does not, and it was the longer half: 37–44 ms a card of
+            // `Bitmap.compress` on the main thread, back to back, in the
+            // middle of the page sliding in. Packed off it, and the main
+            // thread is handed back between one card and the next.
+            val width = bitmap.width
+            val height = bitmap.height
+            val uri = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+              val bytes = java.io.ByteArrayOutputStream()
+              bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, bytes)
+              bitmap.recycle()
+              "data:image/png;base64," + android.util.Base64.encodeToString(bytes.toByteArray(), android.util.Base64.NO_WRAP)
+            }
             val map = Arguments.createMap()
-            map.putString("uri", "data:image/png;base64," + android.util.Base64.encodeToString(bytes.toByteArray(), android.util.Base64.NO_WRAP))
-            map.putDouble("width", (bitmap.width / density).toDouble())
-            map.putDouble("height", (bitmap.height / density).toDouble())
+            map.putString("uri", uri)
+            map.putDouble("width", (width / density).toDouble())
+            map.putDouble("height", (height / density).toDouble())
             map.putString("kind", cls.substringAfterLast('.'))
-            bitmap.recycle()
             out.pushMap(map)
+            kotlinx.coroutines.yield()
           } catch (e: kotlinx.coroutines.CancellationException) {
             throw e
           } catch (e: Exception) {
@@ -251,7 +329,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       // entirely on the fan-out it was written to duplicate. A list of
       // widget kinds maintained in two places is a list that will be wrong
       // in one of them, and it already was.
-      PrayerWidgetProvider.requestUpdate(reactContext)
+      fanOut()
       // The Garmin watch draws from this same schedule (GarminWatch.kt).
       GarminWatch.onPayloadWritten(reactContext)
       promise.resolve(null)
@@ -289,7 +367,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
         )
         .putBoolean(PrayerWidgetProvider.PREFS_WIDGET_TINTED, tinted)
         .apply()
-      PrayerWidgetProvider.requestUpdate(reactContext)
+      fanOut()
       promise.resolve(null)
     } catch (e: Exception) {
       promise.reject("E_WIDGET_APPEARANCE", e.message, e)
@@ -310,7 +388,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
         .putString(PrayerWidgetProvider.PREFS_WIDGET_SKY_BG, bgHex?.trim() ?: "")
         .putString(PrayerWidgetProvider.PREFS_WIDGET_SKY_ACCENT, accentHex?.trim() ?: "")
         .apply()
-      PrayerWidgetProvider.requestUpdate(reactContext)
+      fanOut()
       promise.resolve(null)
     } catch (e: Exception) {
       promise.reject("E_WIDGET_SKY", e.message, e)
@@ -332,7 +410,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
         .edit()
         .putString(PrayerWidgetProvider.PREFS_WIDGET_SKY_SCHEDULE, json?.trim() ?: "")
         .apply()
-      PrayerWidgetProvider.requestUpdate(reactContext)
+      fanOut()
       promise.resolve(null)
     } catch (e: Exception) {
       promise.reject("E_WIDGET_SKY", e.message, e)
@@ -401,7 +479,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
           .putInt(PrayerWidgetDisplay.KEY_TIME_SCALE, scale)
           .putInt(PrayerWidgetDisplay.KEY_SINCE_ADHAN, since)
           .apply()
-        PrayerWidgetProvider.requestUpdate(reactContext)
+        fanOut()
       }
       promise.resolve(null)
     } catch (e: Exception) {
@@ -418,7 +496,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
         .putString(PrayerWidgetProvider.PREFS_UI_STYLE_KEY, style)
         .putBoolean(PrayerWidgetProvider.PREFS_UI_OLED, oledBackground)
         .apply()
-      PrayerWidgetProvider.requestUpdate(reactContext)
+      fanOut()
       promise.resolve(null)
     } catch (e: Exception) {
       promise.reject("E_WIDGET_UI", e.message, e)
