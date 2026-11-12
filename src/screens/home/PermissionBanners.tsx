@@ -1,7 +1,7 @@
 // hover-ok: list-row / settings-row / sheet pressables. Hover-state
 // treatment would visually noise these dense surfaces; the touch
 // feedback (pressed opacity / ripple) is the right affordance here.
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import notifee from '@notifee/react-native';
 import { useTranslation } from 'react-i18next';
@@ -63,7 +63,23 @@ type PermissionBannersProps = {
    * strip behind the bar rather than leaving a band of page above it.
    */
   topInset?: number;
+  /**
+   * Drawn OVER the page, as cards under the status bar, instead of in the
+   * page's column above the hero (the phone): a notice is a word to the
+   * reader about the page, and in the column it pushed the sky, the
+   * countdown and the day's times down by its own height for as long as
+   * it stood — a different page, cramped, with a band of paper over the
+   * sky. A card takes the page's card colour, an edge and a shadow, since
+   * what is under it is the sky and not the page; and every card can be
+   * put away, the ones with an action of their own too (until the app is
+   * next opened), because a card that cannot be closed covers the
+   * place's name for good.
+   */
+  floating?: boolean;
 };
+
+/** Notices put away for this run of the app (floating cards only). */
+const putAway = new Set<string>();
 
 /**
  * Whether any notice is drawn at all. The Home page asks it too: the
@@ -101,9 +117,29 @@ function PermissionBannersImpl({
   zoneNote,
   onDismissZoneNote,
   topInset = 0,
+  floating = false,
 }: PermissionBannersProps) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  const [, redraw] = useState(0);
+  const away = (key: string) => floating && putAway.has(key);
+  const card = floating
+    ? [styles.card, { backgroundColor: palette.card, borderColor: palette.border, shadowColor: palette.text }]
+    : { backgroundColor: palette.accentBg };
+  /** The close on a card whose own button is an action, not a dismissal. */
+  const close = (key: string) =>
+    floating ? (
+      <Pressable
+        onPress={() => {
+          putAway.add(key);
+          redraw(n => n + 1);
+        }}
+        hitSlop={10}
+        accessibilityRole="button"
+        accessibilityLabel={t('common.dismiss', 'Dismiss')}>
+        <Text style={[styles.close, { color: palette.muted }]}>✕</Text>
+      </Pressable>
+    ) : null;
 
   if (
     !permissionBannersShown({
@@ -143,7 +179,7 @@ function PermissionBannersImpl({
           the numbers underneath are not the numbers the reader remembers,
           and the others are about how they were obtained. */}
       {timezoneShift && (
-        <View style={[styles.banner, { backgroundColor: palette.accentBg }, leadStyle()]}>
+        <View style={[styles.banner, card, leadStyle()]}>
           <Text style={[styles.text, { color: palette.text }]}>
             {t('home.timezoneShiftNotice', {
               defaultValue:
@@ -165,7 +201,7 @@ function PermissionBannersImpl({
       )}
 
       {methodNote && (
-        <View style={[styles.banner, { backgroundColor: palette.accentBg }, leadStyle()]}>
+        <View style={[styles.banner, card, leadStyle()]}>
           <Text style={[styles.text, { color: palette.text }]}>{methodNote}</Text>
           <Pressable
             onPress={onDismissMethodNote}
@@ -180,7 +216,7 @@ function PermissionBannersImpl({
       )}
 
       {zoneNote && (
-        <View style={[styles.banner, { backgroundColor: palette.accentBg }, leadStyle()]}>
+        <View style={[styles.banner, card, leadStyle()]}>
           <Text style={[styles.text, { color: palette.text }]}>{zoneNote}</Text>
           <Pressable
             onPress={onDismissZoneNote}
@@ -194,8 +230,8 @@ function PermissionBannersImpl({
         </View>
       )}
 
-      {usingLocalFallback && (
-        <View style={[styles.banner, { backgroundColor: palette.accentBg }, leadStyle()]}>
+      {usingLocalFallback && !away('fallback') && (
+        <View style={[styles.banner, card, leadStyle()]}>
           <Text style={[styles.text, { color: palette.text }]}>
             {t('home.localFallbackNotice')}
           </Text>
@@ -208,11 +244,12 @@ function PermissionBannersImpl({
               {t('common.retry')}
             </Text>
           </Pressable>
+          {close('fallback')}
         </View>
       )}
 
-      {exactAlarmDenied && (
-        <View style={[styles.banner, { backgroundColor: palette.accentBg }, leadStyle()]}>
+      {exactAlarmDenied && !away('exactAlarm') && (
+        <View style={[styles.banner, card, leadStyle()]}>
           <Text
             style={[styles.text, { color: palette.text }]}
             numberOfLines={2}>
@@ -227,11 +264,12 @@ function PermissionBannersImpl({
               {t('common.openSettings')}
             </Text>
           </Pressable>
+          {close('exactAlarm')}
         </View>
       )}
 
-      {notifPermDenied && (
-        <View style={[styles.banner, { backgroundColor: palette.accentBg }, leadStyle()]}>
+      {notifPermDenied && !away('notifications') && (
+        <View style={[styles.banner, card, leadStyle()]}>
           <Text
             style={[styles.text, { color: palette.text }]}
             numberOfLines={2}>
@@ -246,6 +284,7 @@ function PermissionBannersImpl({
               {t('common.openSettings')}
             </Text>
           </Pressable>
+          {close('notifications')}
         </View>
       )}
     </>
@@ -266,4 +305,12 @@ const styles = StyleSheet.create({
   },
   text: { flex: 1, fontSize: TYPE.footnote.fontSize, lineHeight: 18 },
   action: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
+  card: {
+    borderWidth: StyleSheet.hairlineWidth,
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+  },
+  close: { fontSize: TYPE.footnote.fontSize, paddingStart: SPACING.xs },
 });

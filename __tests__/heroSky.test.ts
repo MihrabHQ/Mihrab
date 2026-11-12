@@ -201,8 +201,13 @@ describe('the ink', () => {
     expect(hero).toMatch(/const yEyebrow = measured \? heroY\.eyebrow : HERO_Y\.eyebrow;/);
     expect(hero).toMatch(/const yCountdown = measured \? heroY\.countdown : HERO_Y\.countdown;/);
     expect(hero).toMatch(/const yFoot = measured \? heroY\.foot : HERO_Y\.foot;/);
-    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yEyebrow, HERO_SPAN\.eyebrow\), \[frame, yEyebrow\]\)/);
-    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yCountdown, HERO_SPAN\.countdown\), \[frame, yCountdown\]\)/);
+    // the eyebrow at its line's middle; the figures at theirs — and under Minimal one ink for the figures and
+    // the line under them, by each one's own floor (__tests__/skyTurn)
+    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yEyebrowInk, HERO_SPAN\.eyebrow\), \[frame, yEyebrowInk\]\)/);
+    expect(hero).toMatch(/: skyInkAt\(frame, yCountdown, HERO_SPAN\.countdown\),\s*\[frame, yCountdown, yCaption, minimal, measured\]/);
+    // the top row, the status bar and the Track's lines where THEY stand
+    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yRow, HERO_SPAN\.eyebrow\), \[frame, yRow\]\)/);
+    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yBar\), \[frame, yBar\]\)/);
     expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yFootInk, HERO_SPAN\.foot\), \[frame, yFootInk\]\)/);
     expect(hero).not.toMatch(/palette\./);
     // The sky is the clock's, not the target's.

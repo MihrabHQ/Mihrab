@@ -57,6 +57,8 @@ import {
   SKY_THEME_MID_AT,
   skyFrame,
   skyInkAt,
+  skyInkAcross,
+  MUTED_INK_FLOOR,
   HERO_SPAN,
   skyMoment,
   themedSkyFrame,
@@ -74,6 +76,17 @@ import { RAIL_LINE, RAIL_TICK, RAIL_TICK_TARGET, styles } from './todayCardStyle
 
 /** Minimal under the Track: the chart goes on under the line to its floor (see `trackDepth`). */
 const MINIMAL_TRACK_DEPTH = true;
+/** Where the top row and the status bar stand in the sky before the hero has measured itself. */
+const HERO_Y_TOP_ROW = 0.08;
+const HERO_Y_STATUS_BAR = 0.02;
+/** The hour's glow stands this far above the block's top edge (a fraction of the sky), and never higher than this. */
+const SKY_GLOW_ABOVE_BLOCK = 0.09;
+const SKY_GLOW_MIN_AT = 0.45;
+/** Half the eyebrow's line, dp: from the block's top edge to the middle of its words. */
+const EYEBROW_HALF_LINE = 9;
+/** Minimal's line under the figures: how far above the block's foot its middle is, and its half height, as fractions of the sky. */
+const MINIMAL_CAPTION_UP = 0.014;
+const MINIMAL_CAPTION_SPAN = 0.012;
 /** Minimal: the seconds appear this close to the prayer — the last five minutes. */
 const MINIMAL_SECONDS_UNDER = 5 * 60;
 /** The unit letters' size in the figures' em, and the seconds' unit in theirs. */
@@ -499,17 +512,29 @@ export const HeroToday = memo(function HeroToday({
   // under the countdown block's foot, once the growing hero has measured
   // it (set below), so the block is all on the sky.
   const [lowMidAt, setLowMidAt] = useState(SKY_FADE_LOW_MID_AT);
+  /**
+   * Where the hour's glow — the gradient's middle stop — stands: just
+   * above the block, once the hero has measured it (set below). It stood
+   * at a fixed 0.62 of the sky, which on a phone is the eyebrow's own
+   * line: at dusk and at dawn the prayer's name was written across the
+   * brightest of an ember whose luminance is the one at which neither
+   * ink clears AA (white 4.2:1, black 5.0 and failing an inch lower).
+   * Above the block the glow is the horizon the figures stand under, and
+   * every word of the block is on the side of it that runs into the
+   * page.
+   */
+  const [glowAt, setGlowAt] = useState(SKY_THEME_MID_AT);
+  // …and the top of the block itself, where the glow has fallen most of its way to the page (SKY_GLOW_FALL).
+  const [blockAt, setBlockAt] = useState<number | undefined>(undefined);
   const paint = useCallback(
     (f: SkyFrame): SkyFrame => {
       const mood = skyMoodFor(f.passage, f.t, undefined, heroVariant, f.light);
-      if (skyTheme) return themedSkyFrame(f, mood);
-      return themedSkyFrame(
-        f,
-        { ...mood, heroFoot: pageBg },
-        mood.isDark === pageDark ? SKY_THEME_MID_AT : lowMidAt,
-      );
+      if (skyTheme) return themedSkyFrame(f, mood, glowAt, blockAt);
+      // Its own page under it: the sky runs into it. Another's: the same sky, whole, and the turn in the last of the hero.
+      if (mood.isDark === pageDark) return themedSkyFrame(f, { ...mood, heroFoot: pageBg }, glowAt, blockAt);
+      return themedSkyFrame(f, mood, glowAt, blockAt, { at: lowMidAt, page: pageBg });
     },
-    [skyTheme, heroVariant, pageBg, pageDark, lowMidAt],
+    [skyTheme, heroVariant, pageBg, pageDark, lowMidAt, glowAt, blockAt],
   );
   /**
    * The Track look (trackModel.ts) at a moment: the band as a chart of
@@ -737,6 +762,15 @@ export const HeroToday = memo(function HeroToday({
     const at = measured ? Math.min(0.97, Math.round((footY + 0.015) * 200) / 200) : SKY_FADE_LOW_MID_AT;
     setLowMidAt(prev => (prev === at ? prev : Math.max(SKY_FADE_LOW_MID_AT, at)));
   }, [measured, footY]);
+  const blockTopY = heroY.eyebrow;
+  useEffect(() => {
+    const at = measured
+      ? Math.max(SKY_GLOW_MIN_AT, Math.min(SKY_THEME_MID_AT, Math.round((blockTopY - SKY_GLOW_ABOVE_BLOCK) * 200) / 200))
+      : SKY_THEME_MID_AT;
+    setGlowAt(prev => (prev === at ? prev : at));
+    const block = measured ? Math.round(blockTopY * 200) / 200 : undefined;
+    setBlockAt(prev => (prev === block ? prev : block));
+  }, [measured, blockTopY]);
   /**
    * The band behind the status bar wears this sky — it is the one view
    * that has to know the gradient without being inside it. Published only
@@ -839,8 +873,48 @@ export const HeroToday = memo(function HeroToday({
       ? countdownBase - atBase
       : HERO_ASCENT_EM * (bigSize - styles.heroAt.fontSize),
   );
-  const inkTop = useMemo(() => skyInkAt(frame, yEyebrow, HERO_SPAN.eyebrow), [frame, yEyebrow]);
-  const ink = useMemo(() => skyInkAt(frame, yCountdown, HERO_SPAN.countdown), [frame, yCountdown]);
+  // The eyebrow's words are a line under the block's top edge, not on it:
+  // inked at the line's middle. On the edge of the hour's glow those few
+  // hundredths are the difference between the two inks.
+  const yEyebrowInk = measured && skyH > 0 ? yEyebrow + EYEBROW_HALF_LINE / skyH : yEyebrow;
+  const inkTop = useMemo(() => skyInkAt(frame, yEyebrowInk, HERO_SPAN.eyebrow), [frame, yEyebrowInk]);
+  /**
+   * The top row — the place, the Qibla — the status bar over it, and the
+   * Track's lines stand at the TOP of the sky, and took the eyebrow's ink,
+   * which is taken two thirds of the way down, on the hour's glow. For
+   * most of the day the two agree. Through the dusk and the dawn they do
+   * not: the glow is an ember light enough for black ink while the sky
+   * over it is already a deep blue, and for the twenty minutes after
+   * Maghrib the place's name and the clock in the status bar were black
+   * on that blue (2.4:1, measured on an emulator). Each is inked where it
+   * is.
+   */
+  const yRow = skyH > 0 && topRowH > 0 ? Math.min(yEyebrow, (bleedTop + topRowH / 2) / skyH) : Math.min(yEyebrow, HERO_Y_TOP_ROW);
+  const yBar = skyH > 0 && bleedTop > 0 ? bleedTop / 2 / skyH : HERO_Y_STATUS_BAR;
+  const inkRow = useMemo(() => skyInkAt(frame, yRow, HERO_SPAN.eyebrow), [frame, yRow]);
+  const inkBar = useMemo(() => skyInkAt(frame, yBar), [frame, yBar]);
+  // The Track's band: from under the top row to the eyebrow, inked for the worst of it.
+  const yBand = (yRow + yEyebrow) / 2;
+  const inkBand = useMemo(() => skyInkAt(frame, yBand, Math.max(0, (yEyebrow - yRow) * 0.4)), [frame, yBand, yEyebrow, yRow]);
+  /**
+   * The figures' ink. Under Minimal the prayer's name and time stand
+   * under the figures in the same ink, at the block's foot: one ink for
+   * the two, scored by each one's own floor (`skyInkAcross`) — at dusk
+   * the figures stand on the ember and the line under them on the darker
+   * sky below it, and the ink that suited the figures alone left the
+   * line at 3.4:1.
+   */
+  const yCaption = Math.max(yCountdown, yFoot - MINIMAL_CAPTION_UP);
+  const ink = useMemo(
+    () =>
+      minimal && measured
+        ? skyInkAcross(frame, [
+            { y: yCountdown, span: HERO_SPAN.countdown, floor: 3 },
+            { y: yCaption, span: MINIMAL_CAPTION_SPAN, floor: MUTED_INK_FLOOR },
+          ])
+        : skyInkAt(frame, yCountdown, HERO_SPAN.countdown),
+    [frame, yCountdown, yCaption, minimal, measured],
+  );
   /**
    * The Track look (trackModel.ts): the band as a chart of the sky, from
    * the reader's coordinates — nothing without them, when the painted sky
@@ -862,7 +936,7 @@ export const HeroToday = memo(function HeroToday({
    * a night sky, every night under Light — so there it is taken from the
    * sky just above the turn.
    */
-  const turnAt = frame.midAt != null && frame.midAt > SKY_THEME_MID_AT ? frame.midAt : null;
+  const turnAt = frame.turnAt ?? null;
   const yFootInk = turnAt != null ? Math.min(yFoot, turnAt - HERO_SPAN.foot) : yFoot;
   const inkFoot = useMemo(() => skyInkAt(frame, yFootInk, HERO_SPAN.foot), [frame, yFootInk]);
   /**
@@ -980,8 +1054,8 @@ export const HeroToday = memo(function HeroToday({
         sceneTop={sceneTop}
         sceneBottom={sceneBottom}
         track={track}
-        trackInk={inkTop.text}
-        trackLabelInk={inkTop.muted}
+        trackInk={inkBand.text}
+        trackLabelInk={inkBand.muted}
         trackLabels={trackLabels}
         trackDepth={trackDepth}
         bleed={
@@ -1000,7 +1074,7 @@ export const HeroToday = memo(function HeroToday({
           same gate as the countdown, so nothing here runs in a pocket. */}
       {ownsStatusBar && active ? (
         <StatusBar
-          barStyle={inkTop.text === '#FFFFFF' ? 'light-content' : 'dark-content'}
+          barStyle={inkBar.text === '#FFFFFF' ? 'light-content' : 'dark-content'}
           animated
         />
       ) : null}
@@ -1015,11 +1089,11 @@ export const HeroToday = memo(function HeroToday({
         topRow?.renderHelp ? (
           <View style={styles.heroTopRow} onLayout={banded ? onTopRowLayout : undefined}>
             <View style={styles.heroTopLeading} />
-            {topRow.renderHelp(inkTop)}
+            {topRow.renderHelp(inkRow)}
           </View>
         ) : null
       ) : topRow && fill && vbar ? null : topRow ? (
-        <HeroTopRow topRow={topRow} ink={inkTop} onLayout={banded ? onTopRowLayout : undefined} />
+        <HeroTopRow topRow={topRow} ink={inkRow} onLayout={banded ? onTopRowLayout : undefined} />
       ) : null}
       {/* The room the sky's bodies move in. */}
       {/* The dashboard's card does not grow, so its band is a fixed

@@ -234,6 +234,15 @@ export type SkyFrame = {
   /** A third colour, at `midAt` of the height, when the sky has one (the Sky theme's hero). */
   mid?: string;
   midAt?: number;
+  /**
+   * A fourth stop under the glow, at the top of the hero's block: the sky
+   * the block's first words stand on (`SKY_GLOW_FALL`, themedSkyFrame).
+   */
+  low?: string;
+  lowAt?: number;
+  /** Where the sky ends and turns into a page of the other polarity, and that page's colour (`skyStops`). */
+  turnAt?: number;
+  page?: string;
   glow: string;
   /** 0–1: how visible the stars are. */
   stars: number;
@@ -390,6 +399,17 @@ export function skyFrame(
    * coordinates: the average day's sun is up by day.
    */
   const under = placed && altitude + 0.83 < 0 ? clamp01(0.5 - (altitude + 0.83) / 1.6) : 0;
+  /**
+   * …and it is drawn AT the horizon then, not on the arc. `below` lowers
+   * the disc by its own width and the sky clips it at the horizon's line,
+   * which hides a sun that stands on that line — but the arc's sun at a
+   * Tromsø December noon stands high in the middle of the sky, and
+   * lowered by its width it was still there: an orange disc at the top
+   * of a twilight it never rose into (seen on an emulator at 69.65° N,
+   * 20 December, noon). Under the real horizon, the horizon is where it
+   * is drawn from.
+   */
+  const sunY = under > 0 ? SUN_HORIZON_Y : sun.y;
   // How dark the sky is for stars: none through a sun above the horizon
   // or within the civil twilight under it (the midnight sun's "night");
   // the ordinary night is far past that depth and untouched.
@@ -417,7 +437,7 @@ export function skyFrame(
     }
     case 'day':
       // Clearing the horizon through the first minutes after sunrise.
-      body = { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, below: Math.max(under, 0.5 - daylight / (2 * SUN_RISE_SPAN)), ...sunLight };
+      body = { kind: 'sun', x: sun.x, y: sunY, alpha: 1, below: Math.max(under, 0.5 - daylight / (2 * SUN_RISE_SPAN)), ...sunLight };
       break;
     case 'sunset': {
       // The same arc, still coming down — and into the horizon through the
@@ -425,7 +445,7 @@ export function skyFrame(
       body = {
         kind: 'sun',
         x: sun.x,
-        y: sun.y,
+        y: sunY,
         alpha: 1,
         below: Math.max(under, 0.5 - (1 - daylight) / (2 * SUN_RISE_SPAN)),
         ...sunLight,
@@ -465,40 +485,108 @@ export type SkyInkColors = {
 };
 
 /** The sky's colour at a fraction of the card's height. */
-export function skyColorAt(frame: Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt'>, y: number): string {
-  const k = Math.max(0, Math.min(1, y));
-  if (frame.mid && frame.midAt != null && frame.midAt > 0 && frame.midAt < 1) {
-    return k <= frame.midAt
-      ? mixHex(frame.top, frame.mid, k / frame.midAt)
-      : mixHex(frame.mid, frame.bottom, (k - frame.midAt) / (1 - frame.midAt));
+/** A sky's gradient: its stops, which is all the painters and the ink need of a frame. */
+export type SkyGradient = Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt' | 'low' | 'lowAt' | 'turnAt' | 'page'>;
+
+/**
+ * The sky's gradient as it is painted: its stops, top to foot — the one
+ * place they are worked out, for the painters (HeroSky) and for the ink
+ * (`skyColorAt`) alike.
+ *
+ *   the top · the hour's glow (`mid`) · the top of the block (`low`,
+ *   where there is one: SKY_GLOW_FALL) · the sky's own foot
+ *
+ * and, where the page under the hero is not the sky's polarity — a night
+ * sky over the Light theme's paper, a day's over the Dark's — THE TURN:
+ * the sky ends at `turnAt`, whole, as it is under its own page, and in
+ * the last of the hero turns into the page. Two stops across that turn —
+ * a night's navy and a paper cream — are joined by the straight line
+ * between them in sRGB, a grey that belongs to neither, in a band thin
+ * enough to read as an edge; so the turn has a stop in its middle, mixed
+ * in OKLab — half-way in lightness as the eye counts it, with the sky's
+ * tint still in it.
+ *
+ * (The turn used to be made by moving the GLOW down to it: top to glow
+ * over the whole hero, glow to page in the last strip. The rail and the
+ * two prayer names then stood on the brightest of the ember, at the one
+ * luminance where neither ink reads well, and the sky under Light was a
+ * different sky from the one under Sky.)
+ */
+export function skyStops(frame: SkyGradient): Array<readonly [string, number]> {
+  const turning = frame.turnAt != null && !!frame.page && frame.turnAt > 0 && frame.turnAt < 1;
+  const end = turning ? (frame.turnAt as number) : 1;
+  const stops: Array<readonly [string, number]> = [[frame.top, 0]];
+  const glow = !!frame.mid && frame.midAt != null && frame.midAt > 0 && frame.midAt < end;
+  if (glow) stops.push([frame.mid as string, frame.midAt as number]);
+  if (glow && frame.low && frame.lowAt != null && frame.lowAt > (frame.midAt as number) && frame.lowAt < end) stops.push([frame.low, frame.lowAt]);
+  stops.push([frame.bottom, end]);
+  if (turning) {
+    stops.push([mixHexOklab(frame.bottom, frame.page as string, 0.5), end + (1 - end) * SKY_TURN_HALF_AT]);
+    stops.push([frame.page as string, 1]);
   }
-  return mixHex(frame.top, frame.bottom, k);
+  return stops;
 }
 
-/** Where the Sky theme's middle stop sits: the glow is low, near the horizon. */
-/**
- * The sky's gradient as it is painted: its stops, top to foot.
- *
- * Where the sky turns into a page of the other polarity the turn is the
- * last few hundredths of the hero (`SKY_FADE_LOW_MID_AT` and lower), and
- * two stops across it — a twilight violet and a paper cream — are joined
- * by the straight line between them in sRGB: a grey that belongs to
- * neither, in a band thin enough to read as an edge. So the turn gets a
- * stop in its middle, mixed in OKLab — half-way in lightness as the eye
- * counts it, with the sky's own tint still in it — and the eye is carried
- * across instead of stopped.
- */
-export function skyStops(frame: Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt'>): Array<readonly [string, number]> {
-  if (!frame.mid || frame.midAt == null) return [[frame.top, 0], [frame.bottom, 1]];
-  if (frame.midAt > SKY_THEME_MID_AT && frame.midAt < 1) {
-    const half = frame.midAt + (1 - frame.midAt) * SKY_TURN_HALF_AT;
-    return [[frame.top, 0], [frame.mid, frame.midAt], [mixHexOklab(frame.mid, frame.bottom, 0.5), half], [frame.bottom, 1]];
+/** The sky's colour at a height (0 the top, 1 the foot): straight between its stops, as it is painted. */
+export function skyColorAt(frame: SkyGradient, y: number): string {
+  const k = Math.max(0, Math.min(1, y));
+  const stops = skyStops(frame);
+  for (let i = 1; i < stops.length; i += 1) {
+    const [to, at] = stops[i];
+    if (k <= at || i === stops.length - 1) {
+      const [from, start] = stops[i - 1];
+      return at > start ? mixHex(from, to, Math.max(0, Math.min(1, (k - start) / (at - start)))) : to;
+    }
   }
-  return [[frame.top, 0], [frame.mid, frame.midAt], [frame.bottom, 1]];
+  return stops[stops.length - 1][0];
 }
+
 /** Where in the turn its half-way colour stands: a little late, so the sky's side is the longer and the page arrives softly. */
 export const SKY_TURN_HALF_AT = 0.55;
 
+/**
+ * How far the sky has gone from the glow toward the page by the top of
+ * the block. The glow is a band — the horizon's — and not a slope the
+ * whole lower sky lies on: straight from the glow to the foot, the
+ * block's first line (the prayer's name) still stood on four fifths of
+ * the ember at dusk, at a luminance where the better of the two inks is
+ * 4.3:1. Falling this far in the short way from the glow to the block,
+ * and the rest of the way under the words, every word of the block has
+ * the page's own polarity under it at AA through every twilight walked
+ * (22 places, the year round).
+ */
+export const SKY_GLOW_FALL = 0.45;
+/** The block's first line: how far under the block's top it reaches, and what the better ink must clear on it. */
+const SKY_BLOCK_FIRST_LINE = 0.045;
+const SKY_BLOCK_FLOOR = 4.6;
+const SKY_GLOW_FALL_STEP = 0.03;
+/**
+ * The stop at the top of the block — only where it is needed, and only as
+ * deep as it is needed. At its full depth on every sky it was a band of
+ * its own: a smoke behind the countdown under a rose glow that needed no
+ * help (the first build of it, as Hassan saw it at once). Most skies
+ * clear AA under the block's first line on the straight line from the
+ * glow to the foot, and they are left on it: no stop, no tint. Under an
+ * ember that does not, the sky under the block is taken toward the page
+ * a step at a time until the better ink reads, and no further.
+ */
+function glowFall(mid: string, foot: string, midAt: number, lowAt: number | undefined): { low: string | undefined; lowAt: number | undefined } {
+  const none = { low: undefined, lowAt: undefined };
+  if (lowAt == null || !(lowAt > midAt) || !(lowAt < 1)) return none;
+  const reads = (low: string): boolean => {
+    const under = mixHex(low, foot, Math.min(1, SKY_BLOCK_FIRST_LINE / (1 - lowAt)));
+    const a = luminance(low);
+    const b = luminance(under);
+    return Math.max(Math.min(ratio(1, a), ratio(1, b)), Math.min(ratio(0, a), ratio(0, b))) >= SKY_BLOCK_FLOOR;
+  };
+  const straight = (lowAt - midAt) / (1 - midAt);
+  if (reads(mixHex(mid, foot, straight))) return none;
+  for (let fall = straight + SKY_GLOW_FALL_STEP; fall < SKY_GLOW_FALL; fall += SKY_GLOW_FALL_STEP) {
+    const low = mixHexOklab(mid, foot, fall);
+    if (reads(low)) return { low, lowAt };
+  }
+  return { low: mixHexOklab(mid, foot, SKY_GLOW_FALL), lowAt };
+}
 export const SKY_THEME_MID_AT = 0.62;
 /**
  * Where it sits when the sky runs into a page of the other polarity — a
@@ -522,6 +610,8 @@ export function themedSkyFrame(
   frame: SkyFrame,
   hero: { heroTop: string; heroMid: string; heroFoot: string; bodyLight: string; starGlow: string },
   midAt: number = SKY_THEME_MID_AT,
+  lowAt?: number,
+  turn?: { at: number; page: string },
 ): SkyFrame {
   const body: SkyBody =
     frame.body.kind === 'none'
@@ -532,7 +622,10 @@ export function themedSkyFrame(
     top: hero.heroTop,
     mid: hero.heroMid,
     midAt,
+    ...glowFall(hero.heroMid, hero.heroFoot, midAt, lowAt),
     bottom: hero.heroFoot,
+    turnAt: turn?.at,
+    page: turn?.page,
     glow: hero.starGlow,
     body,
   };
@@ -584,9 +677,27 @@ function inkLuminanceOver(white: boolean, alpha: number, sky: string): number {
  * firmest is what it gets: nearly the full ink, and still told from it
  * by its size and weight.
  */
+/**
+ * The sky an element stands on: at its middle and at both its ends — and
+ * at the gradient's middle stop when the element lies across it. The
+ * gradient is straight between its stops, so its lightest and its darkest
+ * under an element are at the element's ends or at a stop; the three
+ * samples alone stepped over the stop, and the stop is the hour's glow —
+ * the one place the ink is hardest to choose.
+ */
+function skiesAcross(frame: SkyGradient, y: number, span: number): string[] {
+  if (!(span > 0)) return [skyColorAt(frame, y)];
+  const at = [y - span, y, y + span];
+  for (const [, stop] of skyStops(frame)) if (stop > y - span && stop < y + span) at.push(stop);
+  return at.map(v => skyColorAt(frame, v));
+}
 export const MUTED_INK_FLOOR = 4.5;
-const MUTED_WHITE = [0.78, 0.84, 0.9, 0.95] as const;
-const MUTED_BLACK = [0.66, 0.74, 0.82, 0.9] as const;
+// The last step is the ink itself: on the hour's glow at dusk — an ember at
+// the one luminance where black and white read alike, and neither well —
+// a "muted" ink short of the full one was under AA (4.0:1 at 0.9), and the
+// words on it are the prayer's name.
+const MUTED_WHITE = [0.78, 0.84, 0.9, 0.95, 1] as const;
+const MUTED_BLACK = [0.66, 0.74, 0.82, 0.9, 1] as const;
 
 /**
  * The ink for an element drawn at height `y` of the card.
@@ -600,12 +711,11 @@ const MUTED_BLACK = [0.66, 0.74, 0.82, 0.9] as const;
  * muted alpha is set for that worst place too.
  */
 export function skyInkAt(
-  frame: Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt'>,
+  frame: SkyGradient,
   y: number,
   span = 0,
 ): SkyInkColors {
-  const skies =
-    span > 0 ? [skyColorAt(frame, y - span), skyColorAt(frame, y), skyColorAt(frame, y + span)] : [skyColorAt(frame, y)];
+  const skies = skiesAcross(frame, y, span);
   let worstWhite = Infinity;
   let worstBlack = Infinity;
   for (const sky of skies) {
@@ -641,6 +751,52 @@ export function skyInkAt(
         fill: '#000000',
         ring: 'rgba(0,0,0,0.14)',
       };
+}
+
+/**
+ * One ink for a stack of elements that must share it — Minimal's figures
+ * and the prayer's name and time under them — where each has its own
+ * place in the sky and its own floor: the figures are large (3:1), the
+ * line under them is small (4.5:1). `skyInkAt` over the whole stack asks
+ * for the better ink at the stack's worst place, whoever stands there,
+ * and at dusk that was the figures' place on the ember: black, for the
+ * figures' sake, and the small line under them — on the darker sky
+ * below the glow — black on it too (3.4:1). Here each ink is scored by
+ * how far it clears each element's OWN floor, and the one whose worst
+ * element clears furthest is taken.
+ */
+export function skyInkAcross(
+  frame: SkyGradient,
+  parts: ReadonlyArray<{ y: number; span: number; floor: number }>,
+): SkyInkColors {
+  const skiesOf = (p: { y: number; span: number }) => skiesAcross(frame, p.y, p.span);
+  let white = Infinity;
+  let black = Infinity;
+  for (const p of parts) {
+    for (const sky of skiesOf(p)) {
+      const l = luminance(sky);
+      white = Math.min(white, ratio(1, l) / p.floor);
+      black = Math.min(black, ratio(0, l) / p.floor);
+    }
+  }
+  const light = white >= black;
+  const ladder = light ? MUTED_WHITE : MUTED_BLACK;
+  // The muted ink is the small elements': strong enough for each of them where it stands.
+  const small = parts.filter(p => p.floor >= MUTED_INK_FLOOR);
+  let alpha: number = ladder[ladder.length - 1];
+  for (const step of ladder) {
+    let worst = Infinity;
+    for (const p of small.length ? small : parts) {
+      for (const sky of skiesOf(p)) worst = Math.min(worst, ratio(inkLuminanceOver(light, step, sky), luminance(sky)));
+    }
+    if (worst >= MUTED_INK_FLOOR) {
+      alpha = step;
+      break;
+    }
+  }
+  return light
+    ? { text: '#FFFFFF', muted: `rgba(255,255,255,${alpha})`, track: 'rgba(255,255,255,0.24)', fill: '#FFFFFF', ring: 'rgba(255,255,255,0.22)' }
+    : { text: '#000000', muted: `rgba(0,0,0,${alpha})`, track: 'rgba(0,0,0,0.16)', fill: '#000000', ring: 'rgba(0,0,0,0.14)' };
 }
 
 /**

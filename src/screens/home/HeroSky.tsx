@@ -316,7 +316,7 @@ function HeroSkyImpl({
             style={[
               StyleSheet.absoluteFill,
               {
-                backgroundImage: linearDown(skyStops({ top, bottom, mid: frame.mid, midAt: frame.midAt })),
+                backgroundImage: linearDown(skyStops({ top, bottom, mid: frame.mid, midAt: frame.midAt, low: frame.low, lowAt: frame.lowAt, turnAt: frame.turnAt, page: frame.page })),
               },
             ]}
           />
@@ -533,6 +533,10 @@ function SkyRunLayersImpl({
         top: f.top,
         mid: f.mid,
         midAt: f.midAt,
+        low: f.low,
+        lowAt: f.lowAt,
+        turnAt: f.turnAt,
+        page: f.page,
         bottom: f.bottom,
         fadeTo: topFadeH > 0 ? skyColorAt(f, Math.min(1, topFadeH / height)) : null,
         opacity: layerOpacity(i, 1),

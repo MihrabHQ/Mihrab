@@ -516,6 +516,16 @@ export function HomeScreen() {
     timezoneShift != null ||
     methodNote != null ||
     zoneNote != null;
+  /**
+   * On the phone the notices are cards OVER the page, under the status
+   * bar (PermissionBanners, `floating`): the sky stays under the bar and
+   * nothing on the page moves for them. In the column above the hero —
+   * where they still stand on a dashboard, a desktop window and a folded
+   * book, which have the room — a notice pushed the whole page down by
+   * its height.
+   */
+  const floatBanners = !isDashboard && !desktopLayout && !isRoomy && !book;
+  const bannerInFlow = hasBanner && !floatBanners;
   const [nextInfoState, setNextInfo] = useState<{ name: string; at: Date } | null>(
     null,
   );
@@ -1793,12 +1803,12 @@ export function HomeScreen() {
   const tier: HomeTier = budgeted
     ? pickHomeTier({
         viewport,
-        topInset: hasBanner ? 0 : insets.top,
+        topInset: bannerInFlow ? 0 : insets.top,
         fontScale: currentFontScale(),
         rows: DISPLAY_ORDER.filter(key => todayMap[key]).length,
         sublineRows: DISPLAY_ORDER.filter(key => todayMap[`${key}Daruri` as keyof TimingsMap]).length,
         // A banner's height is its own; this is a notice's usual size.
-        extra: hasBanner ? 72 : 0,
+        extra: bannerInFlow ? 72 : 0,
       })
     : 'comfortable';
 
@@ -1929,7 +1939,7 @@ export function HomeScreen() {
         timezoneShift,
         methodNote,
         zoneNote,
-      }) ? (
+      }) && !floatBanners ? (
         <View
           style={
             book
@@ -1953,7 +1963,7 @@ export function HomeScreen() {
               setTzNoticeDismissedAt(timezoneShift?.at ?? Date.now());
             }}
             topInset={
-              !isDashboard && !desktopLayout && !isRoomy && hasBanner ? insets.top : 0
+              !isDashboard && !desktopLayout && !isRoomy && bannerInFlow ? insets.top : 0
             }
           />
         </View>
@@ -2003,7 +2013,7 @@ export function HomeScreen() {
             // The hero is under the status bar only when nothing is above
             // it. A permission banner takes that place, and takes the
             // inset and the bar's ink with it.
-            bannerAbove={hasBanner}
+            bannerAbove={bannerInFlow}
             renderLocation={
               fullBleed
                 ? (ink, column) => (
@@ -2181,18 +2191,50 @@ export function HomeScreen() {
     </PullToRefreshFrame>
     {/* Over the page, and only on the phone's full-bleed hero: the
         dashboard's card does not run under the status bar. */}
-    {!isDashboard && !desktopLayout && !hasBanner ? (
+    {!isDashboard && !desktopLayout && !bannerInFlow ? (
       <HomeStatusBand
         scrollY={scrollY}
         insetTop={insets.top}
         pageColor={String(palette.bg)}
       />
     ) : null}
+    {/* The notices, over the page (see `floatBanners`): cards under the
+        status bar, clear of the screen's edges, the page untouched under
+        them and still scrolling past their sides. */}
+    {floatBanners && hasBanner ? (
+      <View pointerEvents="box-none" style={[styles.floatingNotices, { top: insets.top + SPACING.xs }]}>
+        <PermissionBanners
+          floating
+          usingLocalFallback={state.usingLocalFallback ?? false}
+          exactAlarmDenied={exactAlarmDenied}
+          notifPermDenied={notifPermDenied}
+          onRetryFetch={retry}
+          timezoneShift={timezoneShift}
+          methodNote={methodNote}
+          onDismissMethodNote={dismissMethodNote}
+          zoneNote={zoneNote}
+          onDismissZoneNote={dismissZoneNote}
+          onDismissTimezoneShift={() => {
+            clearTimezoneShiftNotice();
+            setTzNoticeDismissedAt(timezoneShift?.at ?? Date.now());
+          }}
+        />
+      </View>
+    ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // The notices over the page (the phone): under the status bar, clear of the edges, above everything on the page.
+  floatingNotices: {
+    position: 'absolute',
+    left: HOME_SCREEN_PADDING,
+    right: HOME_SCREEN_PADDING,
+    gap: SPACING.sm,
+    zIndex: 30,
+    elevation: 30,
+  },
   // Expanded-width dashboard: fixed "today" main column + flexible tools
   // sidebar, so Home fills a wide window and fits without scrolling.
   dashRow: {
