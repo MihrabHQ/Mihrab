@@ -8,9 +8,8 @@
  * quarter of an hour at a sun of twelve degrees.
  */
 import fs from 'fs';
-import { homeSegmentHeights, sheetFits } from '../src/screens/home/homeBudget';
 import path from 'path';
-import { HERO_SPAN, MUTED_INK_FLOOR, SKY_FADE_LOW_MID_AT, SKY_GLOW_FALL, SKY_SHEET_DP, sheetTurnAt, SKY_THEME_MID_AT, SKY_TURN_HALF_AT, SUN_HORIZON_Y, luminance, skyColorAt, skyFrame, skyInkAcross, skyInkAt, skyMoment, skyStops, themedSkyFrame } from '../src/screens/home/skyModel';
+import { HERO_SPAN, MUTED_INK_FLOOR, SKY_FADE_LOW_MID_AT, SKY_GLOW_FALL, SKY_THEME_MID_AT, SKY_TURN_HALF_AT, SUN_HORIZON_Y, luminance, skyColorAt, skyFrame, skyInkAcross, skyInkAt, skyMoment, skyStops, themedSkyFrame } from '../src/screens/home/skyModel';
 import { ACCENT_CROSSING, accentCrossing, contrastOf, mixHexHorizon, mixHexOklab, mixMoods, skyMoodOf, skyMoodsOf } from '../src/theme/skyMoods';
 import { hexToOklch } from '../src/theme/oklch';
 
@@ -69,7 +68,7 @@ describe('the turn into a page of the other polarity', () => {
     expect(src).toMatch(/skyInkAt\(frame, yFootInk, HERO_SPAN\.foot\)/);
     // its own page: the sky runs into it; another's: the same sky, and the turn
     expect(src).toMatch(/if \(mood\.isDark === pageDark\) return themedSkyFrame\(f, \{ \.\.\.mood, heroFoot: pageBg \}, glowAt, blockAt\);/);
-    expect(src).toMatch(/return themedSkyFrame\(f, mood, glowAt, blockAt, \{ at: lowMidAt, page: pageBg, sheet: sheeted \}\);/);
+    expect(src).toMatch(/return themedSkyFrame\(f, mood, glowAt, blockAt, \{ at: lowMidAt, page: pageBg \}\);/);
     const sky = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'HeroSky.tsx'), 'utf8');
     // both painters — the still sky and the launch run's layers — take their stops from the one place
     expect(sky.match(/linearDown\(skyStops\(/g)).toHaveLength(2);
@@ -279,53 +278,14 @@ describe('the launch run rides the sky the hero then stands in', () => {
     // one rule for the three heights, used for the first frame and for every measured one
     expect(hero).toMatch(/function skyHeights\(blockTop: number, blockFoot: number\): \{ turn: number; glow: number; block: number \}/);
     expect(hero).toMatch(/const was = fill && layoutKey \? rememberedTodayLayout\(layoutKey\) : null;/);
-    expect(hero).toMatch(/const at = skyHeights\(\(top \+ was\.block\.y\) \/ sky, \(top \+ was\.block\.y \+ was\.block\.h\) \/ sky\);\s*return minimal \? at : \{ \.\.\.at, turn: sheetTurnAt\(sky\) \};/);
+    expect(hero).toMatch(/return skyHeights\(\(top \+ was\.block\.y\) \/ sky, \(top \+ was\.block\.y \+ was\.block\.h\) \/ sky\);/);
     expect(hero).toMatch(/useState\(startAts\?\.turn \?\? SKY_FADE_LOW_MID_AT\)/);
     expect(hero).toMatch(/useState\(startAts\?\.glow \?\? SKY_THEME_MID_AT\)/);
     expect(hero).toMatch(/useState<number \| undefined>\(startAts\?\.block\)/);
-    expect(hero).toMatch(/const at = sheeted && skyH > 0 \? sheetTurnAt\(skyH\) : measured \? skyHeights\(heroY\.eyebrow, footY\)\.turn : SKY_FADE_LOW_MID_AT;/);
+    expect(hero).toMatch(/const at = measured \? skyHeights\(heroY\.eyebrow, footY\)\.turn : SKY_FADE_LOW_MID_AT;/);
     // the states are declared before the painter that the run's keyframes are painted with
     expect(hero.indexOf('const startAts = useMemo')).toBeLessThan(hero.indexOf('const paint = useCallback'));
     expect(hero.indexOf('const startAts = useMemo')).toBeGreaterThan(-1);
-  });
-});
-
-describe('on the phone the turn is an edge: the page’s sheet over the sky’s foot', () => {
-  const sheet = { ...NIGHT, turnAt: sheetTurnAt(700), sheet: true };
-
-  it('the sky is painted whole to its foot — the page is not a stop in it', () => {
-    expect(SKY_SHEET_DP).toBe(18);
-    expect(sheet.turnAt).toBeCloseTo(1 - 18 / 700, 3);
-    expect(skyStops(sheet)).toEqual(skyStops({ ...NIGHT, page: undefined }));
-    // a card on a dashboard keeps the fade
-    expect(skyStops({ ...NIGHT, turnAt: 0.97 })).toHaveLength(6);
-  });
-
-  it('the colour under a word is the sky’s above the edge and the page’s on the sheet', () => {
-    expect(skyColorAt(sheet, sheet.turnAt - 0.001)).toBe(skyColorAt({ ...NIGHT, page: undefined }, sheet.turnAt - 0.001));
-    expect(skyColorAt(sheet, sheet.turnAt + 0.001)).toBe(NIGHT.page);
-    expect(skyColorAt(sheet, 1)).toBe(NIGHT.page);
-    // a word wholly above the edge is in the sky's ink; one across it is weighed against both
-    expect(skyInkAt(sheet, sheet.turnAt - 0.03, 0.012).text).toBe('#FFFFFF');
-    const day = { ...DAY_OVER_DARK, turnAt: sheetTurnAt(700), sheet: true };
-    expect(skyInkAt(day, day.turnAt - 0.03, 0.012).text).toBe('#000000');
-    expect(skyInkAt(sheet, 0.995, 0.004).text).toBe('#000000');
-  });
-
-  it('one view draws it, over the launch run and the still sky alike', () => {
-    const sky = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'HeroSky.tsx'), 'utf8');
-    expect(sky).toMatch(/frame\.sheet && frame\.page && frame\.turnAt != null/);
-    expect(sky.match(/backgroundColor: frame\.page,/g)).toHaveLength(1);
-    expect(sky).toMatch(/borderTopStartRadius: Math\.min\(sheetH, SKY_SHEET_RADIUS\)/);
-    // after the run's layers, the still sky and the Track: the last child of the root
-    expect(sky.indexOf('{sheetH > 0 ? (')).toBeGreaterThan(sky.indexOf('<HeroTrack'));
-    expect(sky).toMatch(/sheet: f\.sheet,/);
-    // the phone's hero with a list under it — not Minimal, whose hero is the page — and room for it under the block at every hour
-    const hero = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'HeroToday.tsx'), 'utf8');
-    expect(hero).toMatch(/const sheeted = !!fill && !minimal && sheet;/);
-    const card = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'TodayCard.tsx'), 'utf8');
-    expect(card).toMatch(/const sheetPad = fullBleed && !minimal && sheet && settings\.appearance !== 'sky' \? SKY_SHEET_DP : 0;/);
-    expect(card).toMatch(/\+ \(minimal \? footInset : 0\) \+ sheetPad;/);
   });
 });
 
@@ -381,23 +341,11 @@ describe('Vibrant’s sun by day', () => {
   });
 });
 
-describe('the page’s sizes know the sheet, and a new reader’s doors go to one line with the rest', () => {
-  it('the sheet’s height is in the budget under Light and Dark', () => {
+describe('the page’s sizes count what the page draws, and a new reader’s doors go to one line with the rest', () => {
+  it('the page’s foot is the one the sum counts', () => {
     const home = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'HomeScreen.tsx'), 'utf8');
-    expect(home).toMatch(/const sheet = sheetWanted && \(!budgeted \|\| sheetFits\(budgetInput, SKY_SHEET_DP\)\);/);
-    expect(home).toMatch(/pickHomeTier\(\{ \.\.\.budgetInput, extra: budgetInput\.extra \+ \(sheet \? SKY_SHEET_DP : 0\) \}\)/);
-    expect(home).toMatch(/tier=\{tier\}\s*sheet=\{sheet\}/);
-    // and the page's foot is the one the sum counts
+    expect(home).toMatch(/const tier: HomeTier = budgeted \? pickHomeTier\(budgetInput\) : 'comfortable';/);
     expect(home).toMatch(/\{ paddingBottom: minimal \? 0 : \(budgeted \? BELOW_GAP\[tier\] : SPACING\.xl\) \+ tabBarInset \},/);
-    // left out on one page only: the one that fits without it and would scroll with it
-    const input = { viewport: 0, topInset: 24, fontScale: 1, rows: 6, sublineRows: 0, extra: 0 };
-    const need = homeSegmentHeights('compact', input).total + 4;
-    expect(sheetFits({ ...input, viewport: need + SKY_SHEET_DP }, SKY_SHEET_DP)).toBe(true);
-    expect(sheetFits({ ...input, viewport: need + SKY_SHEET_DP - 1 }, SKY_SHEET_DP)).toBe(false);
-    expect(sheetFits({ ...input, viewport: need }, SKY_SHEET_DP)).toBe(false);
-    // too short either way: the page scrolls regardless, and keeps its sheet
-    expect(sheetFits({ ...input, viewport: need - 1 }, SKY_SHEET_DP)).toBe(true);
-    expect(sheetFits({ ...input, viewport: need + 400 }, SKY_SHEET_DP)).toBe(true);
   });
 
   it('Start reading and Start a khatmah are dense on the compact tier: no hint, the dense padding', () => {

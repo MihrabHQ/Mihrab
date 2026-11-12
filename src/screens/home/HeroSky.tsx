@@ -131,9 +131,6 @@ export type SkyRun = {
   tracks?: Array<TrackFrame | null>;
 };
 
-/** The round of the page's sheet where it comes up over the sky (SkyFrame.sheet), dp. */
-const SKY_SHEET_RADIUS = 22;
-
 function HeroSkyImpl({
   frame,
   run,
@@ -278,12 +275,6 @@ function HeroSkyImpl({
   const extraEnd = bleed && vbar && vbar.side === endSide ? vbar.width : 0;
   const extraStart = bleed && vbar && vbar.side !== endSide ? vbar.width : 0;
 
-  // The page's sheet over the sky's foot, dp (SkyFrame.sheet).
-  const sheetH =
-    frame.sheet && frame.page && frame.turnAt != null && frame.turnAt > 0 && frame.turnAt < 1 && size.height > 0
-      ? Math.round((1 - frame.turnAt) * size.height)
-      : 0;
-
   return (
     <View
       pointerEvents="none"
@@ -325,7 +316,7 @@ function HeroSkyImpl({
             style={[
               StyleSheet.absoluteFill,
               {
-                backgroundImage: linearDown(skyStops({ top, bottom, mid: frame.mid, midAt: frame.midAt, low: frame.low, lowAt: frame.lowAt, turnAt: frame.turnAt, page: frame.page, sheet: frame.sheet })),
+                backgroundImage: linearDown(skyStops({ top, bottom, mid: frame.mid, midAt: frame.midAt, low: frame.low, lowAt: frame.lowAt, turnAt: frame.turnAt, page: frame.page })),
               },
             ]}
           />
@@ -422,24 +413,6 @@ function HeroSkyImpl({
           // Through a launch run the chart stands and the body rides the
           // run's progress along it; the rest is drawn as it will be.
           run={running && run?.tracks ? { tracks: run.tracks, progress: run.progress } : undefined}
-        />
-      ) : null}
-      {sheetH > 0 ? (
-        // The page, come up over the sky's foot as a sheet (SkyFrame.sheet):
-        // one view, over the launch run's layers and the still sky alike,
-        // so the edge does not move when the run hands over.
-        <View
-          pointerEvents="none"
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: sheetH,
-            borderTopStartRadius: Math.min(sheetH, SKY_SHEET_RADIUS),
-            borderTopEndRadius: Math.min(sheetH, SKY_SHEET_RADIUS),
-            backgroundColor: frame.page,
-          }}
         />
       ) : null}
     </View>
@@ -564,7 +537,6 @@ function SkyRunLayersImpl({
         lowAt: f.lowAt,
         turnAt: f.turnAt,
         page: f.page,
-        sheet: f.sheet,
         bottom: f.bottom,
         fadeTo: topFadeH > 0 ? skyColorAt(f, Math.min(1, topFadeH / height)) : null,
         opacity: layerOpacity(i, 1),

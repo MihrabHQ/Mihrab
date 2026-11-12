@@ -243,13 +243,6 @@ export type SkyFrame = {
   /** Where the sky ends and turns into a page of the other polarity, and that page's colour (`skyStops`). */
   turnAt?: number;
   page?: string;
-  /**
-   * The turn is an EDGE, not a fade: the sky runs whole to its foot and
-   * the page comes up over it from `turnAt` as a sheet with round
-   * shoulders (HeroSky draws it). The phone's, where the page under the
-   * hero is the list's own sheet.
-   */
-  sheet?: boolean;
   glow: string;
   /** 0–1: how visible the stars are. */
   stars: number;
@@ -493,7 +486,7 @@ export type SkyInkColors = {
 
 /** The sky's colour at a fraction of the card's height. */
 /** A sky's gradient: its stops, which is all the painters and the ink need of a frame. */
-export type SkyGradient = Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt' | 'low' | 'lowAt' | 'turnAt' | 'page' | 'sheet'>;
+export type SkyGradient = Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt' | 'low' | 'lowAt' | 'turnAt' | 'page'>;
 
 /**
  * The sky's gradient as it is painted: its stops, top to foot — the one
@@ -520,8 +513,7 @@ export type SkyGradient = Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt' | 'l
  * different sky from the one under Sky.)
  */
 export function skyStops(frame: SkyGradient): Array<readonly [string, number]> {
-  // Under a sheet the sky is painted whole, to its foot: the page is a view over it, not a stop in it.
-  const turning = !frame.sheet && frame.turnAt != null && !!frame.page && frame.turnAt > 0 && frame.turnAt < 1;
+  const turning = frame.turnAt != null && !!frame.page && frame.turnAt > 0 && frame.turnAt < 1;
   const end = turning ? (frame.turnAt as number) : 1;
   const stops: Array<readonly [string, number]> = [[frame.top, 0]];
   const glow = !!frame.mid && frame.midAt != null && frame.midAt > 0 && frame.midAt < end;
@@ -538,8 +530,6 @@ export function skyStops(frame: SkyGradient): Array<readonly [string, number]> {
 /** The sky's colour at a height (0 the top, 1 the foot): straight between its stops, as it is painted. */
 export function skyColorAt(frame: SkyGradient, y: number): string {
   const k = Math.max(0, Math.min(1, y));
-  // On the sheet the colour is the page's, from its top edge down.
-  if (frame.sheet && frame.page && frame.turnAt != null && frame.turnAt > 0 && k > frame.turnAt) return frame.page;
   const stops = skyStops(frame);
   for (let i = 1; i < stops.length; i += 1) {
     const [to, at] = stops[i];
@@ -549,18 +539,6 @@ export function skyColorAt(frame: SkyGradient, y: number): string {
     }
   }
   return stops[stops.length - 1][0];
-}
-
-/**
- * On the phone the turn is the page's own sheet, come up over the sky's
- * foot with round shoulders: this tall, dp. (A fade stood here: a band of
- * the sky going grey into paper under the rail. An edge is the thing it
- * is — the list's sheet over the sky.)
- */
-export const SKY_SHEET_DP = 18;
-/** Where the sheet's top edge is, as a fraction of a sky `skyH` dp tall — to a thousandth. */
-export function sheetTurnAt(skyH: number): number {
-  return Math.round((1 - SKY_SHEET_DP / skyH) * 1000) / 1000;
 }
 
 /** Where in the turn its half-way colour stands: a little late, so the sky's side is the longer and the page arrives softly. */
@@ -633,7 +611,7 @@ export function themedSkyFrame(
   hero: { heroTop: string; heroMid: string; heroFoot: string; bodyLight: string; starGlow: string },
   midAt: number = SKY_THEME_MID_AT,
   lowAt?: number,
-  turn?: { at: number; page: string; sheet?: boolean },
+  turn?: { at: number; page: string },
 ): SkyFrame {
   const body: SkyBody =
     frame.body.kind === 'none'
@@ -648,7 +626,6 @@ export function themedSkyFrame(
     bottom: hero.heroFoot,
     turnAt: turn?.at,
     page: turn?.page,
-    sheet: turn?.sheet || undefined,
     glow: hero.starGlow,
     body,
   };
@@ -712,8 +689,6 @@ function skiesAcross(frame: SkyGradient, y: number, span: number): string[] {
   if (!(span > 0)) return [skyColorAt(frame, y)];
   const at = [y - span, y, y + span];
   for (const [, stop] of skyStops(frame)) if (stop > y - span && stop < y + span) at.push(stop);
-  // A sheet's edge is a step: the sky just above it and the page just under.
-  if (frame.sheet && frame.turnAt != null && frame.turnAt > y - span && frame.turnAt < y + span) at.push(frame.turnAt, frame.turnAt + 1e-4);
   return at.map(v => skyColorAt(frame, v));
 }
 export const MUTED_INK_FLOOR = 4.5;

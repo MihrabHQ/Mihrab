@@ -55,7 +55,6 @@ import {
   HERO_Y,
   SKY_FADE_LOW_MID_AT,
   SKY_THEME_MID_AT,
-  sheetTurnAt,
   skyFrame,
   skyInkAt,
   skyInkAcross,
@@ -229,7 +228,6 @@ export const HeroToday = memo(function HeroToday({
   onLayout,
   launchRun: launchRunWanted = true,
   skyTheme = false,
-  sheet = true,
   skyVariant = 'realistic',
   heroLook = 'sky',
   band = false,
@@ -331,8 +329,6 @@ export const HeroToday = memo(function HeroToday({
    * the hour's mood, not the real sky's colours, and runs into the page.
    */
   skyTheme?: boolean;
-  /** The page's sheet over the sky's foot may be drawn (the page has budgeted its height); false: the fade, as on a card. */
-  sheet?: boolean;
   /**
    * Whose colours the Sky theme's hero wears (settings.skyVariant). Asked
    * for here rather than read from skyMoods' module state, so a change
@@ -540,16 +536,13 @@ export const HeroToday = memo(function HeroToday({
    * the rail and the names, and when the run ended the still sky, turning
    * at 0.97, replaced it in one frame: the shade "abruptly disappeared".
    */
-  // The page's sheet over the sky's foot (skyModel's SkyFrame.sheet): the phone's, where a list follows the hero — not Minimal, whose hero is the page.
-  const sheeted = !!fill && !minimal && sheet;
   const startAts = useMemo(() => {
     const was = fill && layoutKey ? rememberedTodayLayout(layoutKey) : null;
     const h = was?.heroH ?? 0;
     if (!was || !(h > 0) || !was.block) return null;
     const top = bleed?.top ?? 0;
     const sky = h + top + (bleed?.bottom ?? 0);
-    const at = skyHeights((top + was.block.y) / sky, (top + was.block.y + was.block.h) / sky);
-    return minimal ? at : { ...at, turn: sheetTurnAt(sky) };
+    return skyHeights((top + was.block.y) / sky, (top + was.block.y + was.block.h) / sky);
     // Once, for the first frame: the measured values take over below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -574,9 +567,9 @@ export const HeroToday = memo(function HeroToday({
       if (skyTheme) return themedSkyFrame(f, mood, glowAt, blockAt);
       // Its own page under it: the sky runs into it. Another's: the same sky, whole, and the turn in the last of the hero.
       if (mood.isDark === pageDark) return themedSkyFrame(f, { ...mood, heroFoot: pageBg }, glowAt, blockAt);
-      return themedSkyFrame(f, mood, glowAt, blockAt, { at: lowMidAt, page: pageBg, sheet: sheeted });
+      return themedSkyFrame(f, mood, glowAt, blockAt, { at: lowMidAt, page: pageBg });
     },
-    [skyTheme, heroVariant, pageBg, pageDark, lowMidAt, glowAt, blockAt, sheeted],
+    [skyTheme, heroVariant, pageBg, pageDark, lowMidAt, glowAt, blockAt],
   );
   /**
    * The Track look (trackModel.ts) at a moment: the band as a chart of
@@ -801,10 +794,10 @@ export const HeroToday = memo(function HeroToday({
     : HERO_Y;
   const footY = heroY.foot;
   useEffect(() => {
-    const at = sheeted && skyH > 0 ? sheetTurnAt(skyH) : measured ? skyHeights(heroY.eyebrow, footY).turn : SKY_FADE_LOW_MID_AT;
+    const at = measured ? skyHeights(heroY.eyebrow, footY).turn : SKY_FADE_LOW_MID_AT;
     setLowMidAt(prev => (prev === at ? prev : at));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [measured, footY, sheeted, skyH]);
+  }, [measured, footY]);
   const blockTopY = heroY.eyebrow;
   useEffect(() => {
     const at = measured ? skyHeights(blockTopY, footY).glow : SKY_THEME_MID_AT;

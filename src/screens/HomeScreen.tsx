@@ -66,8 +66,7 @@ import {
 } from '../utils/prayerTimes';
 import { filterOptionalTimes } from '../utils/nightTimes';
 import { DISPLAY_ORDER, type TimingsMap } from '../types/prayer';
-import { BELOW_GAP, currentFontScale, pickHomeTier, sheetFits, type HomeTier } from './home/homeBudget';
-import { SKY_SHEET_DP } from './home/skyModel';
+import { BELOW_GAP, currentFontScale, pickHomeTier, type HomeTier } from './home/homeBudget';
 import { injectDaruriTimes } from '../prayer/daruriTimes';
 import { useClockFormatter } from '../hooks/useClockFormatter';
 import { qiblaBearingFrom } from '../utils/qibla';
@@ -1810,15 +1809,7 @@ export function HomeScreen() {
     // A banner's height is its own; this is a notice's usual size.
     extra: bannerInFlow ? 72 : 0,
   };
-  // Under Light and Dark the page comes up over the sky's foot as a sheet
-  // (TodayCard's sheetPad), and its height is in the sum: unbudgeted, a
-  // page that fitted to the point scrolled by it. On the one page it
-  // alone would push into a scroll there is no sheet (homeBudget's sheetFits).
-  const sheetWanted = !minimal && settings.appearance !== 'sky';
-  const sheet = sheetWanted && (!budgeted || sheetFits(budgetInput, SKY_SHEET_DP));
-  const tier: HomeTier = budgeted
-    ? pickHomeTier({ ...budgetInput, extra: budgetInput.extra + (sheet ? SKY_SHEET_DP : 0) })
-    : 'comfortable';
+  const tier: HomeTier = budgeted ? pickHomeTier(budgetInput) : 'comfortable';
 
   return (
     <View style={styles.homeRoot} onLayout={onRootLayout}>
@@ -2018,7 +2009,6 @@ export function HomeScreen() {
             fullBleed={fullBleed}
             roomy={isRoomy}
             tier={tier}
-            sheet={sheet}
             heroHeight={tabletopHeroHeight}
             sideInset={wideInset}
             // The hero is under the status bar only when nothing is above

@@ -401,7 +401,7 @@ describe('the hero under the theme', () => {
     // the glow just above the block, where the hero has measured it (`glowAt`, __tests__/skyTurn)
     expect(card).toMatch(/if \(skyTheme\) return themedSkyFrame\(f, mood, glowAt, blockAt\);/);
     expect(card).toMatch(/themedSkyFrame\(f, \{ \.\.\.mood, heroFoot: pageBg \}, glowAt, blockAt\)/);
-    expect(card).toMatch(/\[skyTheme, heroVariant, pageBg, pageDark, lowMidAt, glowAt, blockAt, sheeted\]/);
+    expect(card).toMatch(/\[skyTheme, heroVariant, pageBg, pageDark, lowMidAt, glowAt, blockAt\]/);
     expect(card).toMatch(/const f = paint\(skyFrame\(skyMoment\(day, at, tomorrowFajr\)/);
     // The countdown is flat ink in every sky: no halo, no tint of the hour.
     expect(card).not.toMatch(/textShadow/);
@@ -410,7 +410,7 @@ describe('the hero under the theme', () => {
     const sky = read('src/screens/home/HeroSky.tsx');
     expect(sky).toMatch(/const field = dense \? STAR_FIELD_DENSE : STAR_FIELD;/);
     // three stops (four where the sky turns into a page of the other polarity: skyStops, __tests__/skyTurn)
-    expect(sky).toMatch(/linearDown\(skyStops\(\{ top, bottom, mid: frame\.mid, midAt: frame\.midAt, low: frame\.low, lowAt: frame\.lowAt, turnAt: frame\.turnAt, page: frame\.page, sheet: frame\.sheet \}\)\)/);
+    expect(sky).toMatch(/linearDown\(skyStops\(\{ top, bottom, mid: frame\.mid, midAt: frame\.midAt, low: frame\.low, lowAt: frame\.lowAt, turnAt: frame\.turnAt, page: frame\.page \}\)\)/);
     expect(sky).toMatch(/linearDown\(skyStops\(g\)\)/);
   });
 });
