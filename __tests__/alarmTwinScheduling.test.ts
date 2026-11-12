@@ -52,12 +52,13 @@ const sync = () =>
     baseDate: NOW,
   });
 
-describe('the default tone, the alarm stream, a prayer set to Adhan', () => {
-  it('asks for the twin with the phone\'s own tone and addresses it once it is made', async () => {
+describe('"Default notification", the alarm stream, a prayer set to Adhan', () => {
+  it('plays an adhan — the default one — on the alarm stream, on a channel that was made', async () => {
     made.mockImplementation((id: string) => Promise.resolve(id));
     await sync();
-    expect(made).toHaveBeenCalledWith('prayer-times-default-alarm', expect.any(String), '@default');
-    expect(channelOf('Maghrib')).toBe('prayer-times-default-alarm');
+    // WHICH adhan is apart from whether (settings/adhanVoice.ts): the row asked for one.
+    expect(made).toHaveBeenCalledWith('prayer-times-adhan-makkah-alarm', expect.any(String), 'adhan_makkah');
+    expect(channelOf('Maghrib')).toBe('prayer-times-adhan-makkah-alarm');
     // A prayer left on the plain alert is not on the alarm stream.
     expect(channelOf('Dhuhr')).toBe('prayer-times-default');
   });
@@ -65,6 +66,21 @@ describe('the default tone, the alarm stream, a prayer set to Adhan', () => {
   it('still arrives when the twin could not be made: the ordinary channel, never a missing one', async () => {
     made.mockResolvedValue(null);
     await sync();
-    expect(channelOf('Maghrib')).toBe('prayer-times-default');
+    expect(channelOf('Maghrib')).toBe('prayer-times-adhan-makkah');
+  });
+
+  it('with no prayer set to Adhan, the twin is the system tone\'s — made, and addressed by nothing', async () => {
+    made.mockImplementation((id: string) => Promise.resolve(id));
+    await syncPrayerNotifications({
+      enabled: true,
+      prePrayerReminderMinutes: 0,
+      notificationSound: 'default',
+      adhanUsesAlarmStream: true,
+      today,
+      tomorrow: today,
+      baseDate: NOW,
+    });
+    expect(made).toHaveBeenCalledWith('prayer-times-default-alarm', expect.any(String), '@default');
+    for (const name of ['Dhuhr', 'Asr', 'Maghrib', 'Isha']) expect(channelOf(name)).toBe('prayer-times-default');
   });
 });

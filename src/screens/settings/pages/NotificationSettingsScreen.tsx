@@ -33,6 +33,7 @@ import {
 } from '../../../settings/prayerSilence';
 import { SettingsPage } from '../SettingsPage';
 import { SoundPickerModal } from '../SoundPickerModal';
+import { adhanVoiceOf, chooseAdhanVoice } from '../../../settings/adhanVoice';
 import type {
   CustomAdhanSound,
   NotificationSoundId,
@@ -46,6 +47,9 @@ import {
 export function NotificationSettingsScreen() {
   const { t } = useTranslation();
   const { settings, updateSettings } = usePrayerSettings();
+  // The settings as they are when an import finishes, not as they were when it began.
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
   const { palette } = useAppPalette();
   const [soundModal, setSoundModal] = useState(false);
   const [preReminderModal, setPreReminderModal] = useState(false);
@@ -112,7 +116,7 @@ export function NotificationSettingsScreen() {
         // Selecting it is the point of having imported it; leaving the
         // user to tap the row again would be a step that never has
         // another answer.
-        if (sound) updateSettings({ notificationSound: 'custom' });
+        if (sound) updateSettings(chooseAdhanVoice(settingsRef.current, 'custom'));
       })
       .catch(() => {
         // The import failed — the row stays a placeholder, which is honest.
@@ -165,10 +169,10 @@ export function NotificationSettingsScreen() {
 
       <SoundPickerModal
         visible={soundModal}
-        currentSound={settings.notificationSound}
+        currentSound={adhanVoiceOf(settings.notificationSound)}
         previewingId={previewingId}
         palette={palette}
-        onSelect={id => updateSettings({ notificationSound: id })}
+        onSelect={id => updateSettings(chooseAdhanVoice(settings, id))}
         onSetPreviewingId={setPreviewingId}
         onClose={closeSound}
         customAdhan={customAdhan}

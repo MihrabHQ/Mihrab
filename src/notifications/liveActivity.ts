@@ -60,6 +60,7 @@ import {
 import { shownAlertMode } from '../settings/alertModes';
 import { formatHijriLabel } from '../hijri/formatHijriLabel';
 import { quiet } from '../utils/quiet';
+import { adhanVoiceInUse } from '../settings/adhanVoice';
 
 /** Hijri label for a "yyyy-MM-dd" day key (parsed in local time). */
 export function hijriLabelForDateKey(dateKey: string): string {
@@ -165,9 +166,11 @@ export async function loadLiveActivityOptions(): Promise<LiveActivityOptions> {
   };
   try {
     const s = await loadSettings();
-    const soundOpt = getNotificationSoundOption(s.notificationSound);
-    const adhanChosen = soundOpt.id !== 'default';
+    const adhanChosen = s.notificationSound !== 'default';
     const alertModes = s.prayerAlertModes ?? {};
+    // The adhan a prayer set to Adhan plays — one even under "Default
+    // notification" — where its channel has been made (adhanVoice.ts).
+    const soundOpt = getNotificationSoundOption(adhanVoiceInUse(s.notificationSound, alertModes));
     out.modeOf = key =>
       shownAlertMode(key, alertModes, adhanChosen, s.notificationsEnabled);
     out.android = {

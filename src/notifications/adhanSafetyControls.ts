@@ -28,6 +28,7 @@ import { syncWidgetLogQueue } from '../widget/syncWidgetLogQueue';
 import { syncWidgetTasbihQueue } from '../widget/syncWidgetTasbihQueue';
 import { republishWidgetPayload } from '../widget/republishWidgetPayload';
 import { applyReaderLanguage } from '../i18n/readerLanguage';
+import { anyRowSetToAdhan, withoutAdhan } from '../settings/adhanVoice';
 
 // Re-exported for back-compat with existing importers.
 export { ADHAN_CONTROLS_CATEGORY_ID, ADHAN_ACTION_STOP, ADHAN_ACTION_DISABLE };
@@ -42,8 +43,10 @@ async function disableAdhanAndClose(notificationId?: string) {
     await notifee.cancelNotification(notificationId);
   }
   const settings = await loadSettings();
-  if (settings.notificationSound !== 'default') {
-    await saveSettings({ ...settings, notificationSound: 'default' });
+  // No adhan chosen, and no prayer left set to Adhan: a row still asking
+  // for it would go on playing it (settings/adhanVoice.ts).
+  if (settings.notificationSound !== 'default' || anyRowSetToAdhan(settings.prayerAlertModes)) {
+    await saveSettings({ ...settings, ...withoutAdhan(settings.prayerAlertModes) });
   }
 }
 

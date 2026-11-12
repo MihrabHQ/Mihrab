@@ -38,6 +38,7 @@ import {
   syncCustomAdhan,
 } from '../native/CustomAdhan';
 import { ADHAN_CONTROLS_CATEGORY_ID } from './adhanActionIds';
+import { adhanVoiceInUse } from '../settings/adhanVoice';
 import { SNOOZE_PRESETS, prayerAlertActions } from './prayerAlertActions';
 import { prayerEndsAt, snoozeMenu, windowEdges } from './snoozeWindow';
 import { JOURNAL_LOG_ACTION_ID } from './prayerLogAction';
@@ -666,8 +667,6 @@ async function syncPrayerNotificationsNow(params: {
   // Tinted surfaces: colourise the whole notification with the accent.
   const colorized = params.tinted === true;
   const clock = makeClockFormatter(params.hour12 === true, i18n.language);
-  await ensureChannel(params.notificationSound, useAlarmStream);
-  const prayerTimeSound = getNotificationSoundOption(params.notificationSound);
   const reminderSound = getNotificationSoundOption('default');
   const exactAlarms = await canUseExactAlarms();
   const now = new Date();
@@ -684,6 +683,17 @@ async function syncPrayerNotificationsNow(params: {
   // it did until somebody actually changes a row.
   const alertModes = params.alertModes ?? {};
   const adhanChosen = params.notificationSound !== 'default';
+  // WHICH adhan, apart from whether (settings/adhanVoice.ts, #129): a
+  // prayer set to Adhan plays one even where "Default notification" is all
+  // that was ever chosen — and its channel exists before anything is
+  // scheduled against it.
+  const adhanVoice = adhanVoiceInUse(
+    params.notificationSound,
+    alertModes,
+    nextAlertOverride?.mode === 'adhan',
+  );
+  await ensureChannel(adhanVoice, useAlarmStream);
+  const prayerTimeSound = getNotificationSoundOption(adhanVoice);
   const standingModeOf = (name: string) =>
     alertModeFor(name, alertModes, adhanChosen);
   /**

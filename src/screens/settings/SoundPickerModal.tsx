@@ -55,9 +55,13 @@ export const SoundPickerModal = memo(function SoundPickerModal({
 
   // A build without the native module cannot import anything, so the row is
   // left out entirely rather than offered and then failing.
-  const options = CUSTOM_ADHAN_SUPPORTED
-    ? NOTIFICATION_SOUND_OPTIONS
-    : NOTIFICATION_SOUND_OPTIONS.filter(option => option.id !== 'custom');
+  // The adhans, and nothing else: this list says WHICH adhan, and whether a
+  // prayer plays one is that prayer's row. "Default notification" stood at
+  // its head once, and a prayer set to Adhan under it had none to play
+  // (#129, settings/adhanVoice.ts).
+  const options = NOTIFICATION_SOUND_OPTIONS.filter(
+    option => option.id !== 'default' && (CUSTOM_ADHAN_SUPPORTED || option.id !== 'custom'),
+  );
 
   const handleClose = () => {
     stopAdhanPreview().catch(() => {});
@@ -81,7 +85,7 @@ export const SoundPickerModal = memo(function SoundPickerModal({
         />
         <View
           accessibilityRole="radiogroup"
-          accessibilityLabel={t('settings.notificationSoundModalTitle')}
+          accessibilityLabel={t('settings.alertModeAdhan', 'Adhan')}
           style={[
             modalStyles.sheet,
             { backgroundColor: palette.card, ...cardEdgeStyle(palette) },
@@ -94,7 +98,7 @@ export const SoundPickerModal = memo(function SoundPickerModal({
           ]}
         >
           <Text style={[modalStyles.title, { color: palette.text }]}>
-            {t('settings.notificationSoundModalTitle')}
+            {t('settings.alertModeAdhan', 'Adhan')}
           </Text>
           <FlatList
             data={options}

@@ -75,7 +75,8 @@ describe('the twin of the system\'s own tone', () => {
     expect(sync).toMatch(/const made = await ensureAlarmAdhanChannel\([\s\S]*?registerAlarmTwin\(made\);/);
     expect(sync).toMatch(/await deleteAdhanChannel\(alarmId\);\s*registerAlarmTwin\(undefined\);/);
     // The channels are settled before the first target is resolved for an event.
-    expect(sync.indexOf('await ensureChannel(params.notificationSound, useAlarmStream);')).toBeLessThan(
+    expect(sync.indexOf('await ensureChannel(adhanVoice, useAlarmStream);')).toBeGreaterThan(-1);
+    expect(sync.indexOf('await ensureChannel(adhanVoice, useAlarmStream);')).toBeLessThan(
       sync.indexOf('const eventTargets = resolveSoundTargets('),
     );
   });

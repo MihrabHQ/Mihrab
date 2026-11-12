@@ -25,6 +25,7 @@ import {
   SettingsToggleRow,
 } from './SettingsGroup';
 import { TYPE } from '../../theme/typography';
+import { adhanVoiceOf } from '../../settings/adhanVoice';
 
 type NotificationsCardProps = {
   onOpenSoundPicker: () => void;
@@ -84,7 +85,9 @@ function NotificationsCardImpl({
   );
 
   const selectedNotificationSound = useMemo(
-    () => getNotificationSoundOption(settings.notificationSound),
+    // The adhan in force: the chosen one, or the one a prayer set to Adhan
+    // plays where none has been (settings/adhanVoice.ts).
+    () => getNotificationSoundOption(adhanVoiceOf(settings.notificationSound)),
     [settings.notificationSound],
   );
 
@@ -145,7 +148,10 @@ function NotificationsCardImpl({
 
       {on ? (
         <SettingsLinkRow
-          title={t('settings.notificationSound')}
+          // WHICH adhan — whether a prayer plays it is the prayer's own
+          // row (Prayer sounds). It was "Alert sound", with "Default
+          // notification" in the list, and the two could disagree (#129).
+          title={t('settings.alertModeAdhan', 'Adhan')}
           value={t(selectedNotificationSound.labelKey)}
           help={t(selectedNotificationSound.helpKey)}
           onPress={onOpenSoundPicker}
