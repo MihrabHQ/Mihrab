@@ -109,7 +109,8 @@ describe('the text colour is common to every widget', () => {
     expect(textAt).toBeGreaterThan(-1);
     expect(textAt).toBeLessThan(prayerAt);
     // Saved whichever widget opened the screen, not only a prayer-times one.
-    expect(ACTIVITY).toMatch(/editor\.putString\(PrayerWidgetDisplay\.KEY_TEXT_HEX, textHex\)/);
+    // (`pending()` is what Save writes, and what the sample is composed over.)
+    expect(ACTIVITY).toMatch(/val out = LinkedHashMap<String, Any>\(\)\s*out\[PrayerWidgetDisplay\.KEY_TEXT_HEX\] = textHex\s*if \(isPrayerWidget\) \{/);
     expect(ACTIVITY).not.toMatch(/if \(isPrayerWidget\) \{\s*val checkedText/);
   });
 

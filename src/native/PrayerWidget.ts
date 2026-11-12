@@ -6,6 +6,9 @@
  */
 import { NativeModules, TurboModuleRegistry } from 'react-native';
 
+/** One widget's sample, as `renderPreviews` hands it over. */
+export type WidgetPicture = { uri: string; width: number; height: number; kind: string };
+
 export interface PrayerWidgetInterface {
   /** Push a JSON-serialised WidgetPrayerPayload to the home-screen widget. */
   setData(json: string): Promise<void>;
@@ -111,11 +114,12 @@ export interface PrayerWidgetInterface {
   takeTasbihQueue?(): Promise<string>;
 
   /**
-   * Android: the prayer-times widgets as they are drawn now — the strip and
-   * the tall card together — as a PNG data URI `widthDp` wide, with its size
-   * in dp (WidgetPreviewCard.kt). Absent on other platforms and older builds.
+   * Android: the widgets on the home screen as they are drawn now — one of
+   * each kind placed, the prayer times first; with none placed, the two
+   * prayer-times cards — each a PNG data URI `widthDp` wide with its size in
+   * dp (WidgetLivePreview.kt). Absent on other platforms and older builds.
    */
-  renderPreviews?(widthDp: number): Promise<{ uri: string; width: number; height: number }>;
+  renderPreviews?(widthDp: number): Promise<WidgetPicture[]>;
 }
 
 /**

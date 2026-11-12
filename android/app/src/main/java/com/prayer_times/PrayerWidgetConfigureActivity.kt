@@ -29,6 +29,10 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.prayer_times.glance.WidgetSample
 import kotlin.math.max
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 /**
  * Shown when the user adds a widget or opens “Settings” from its long-press
@@ -38,11 +42,13 @@ import kotlin.math.max
  * choice is seen before it is saved: the background's strength over a
  * stand-in wallpaper, the text and highlight colours, and — from a
  * prayer-times widget — what is shown and the size of the times. It is
- * THE CARD THIS WAS OPENED FROM (`WidgetPreviewCard`): the Next prayer
- * card, the Prayer times strip, or the tall card with its graph — it was
- * the strip whichever was held, and someone setting up the tall card was
- * shown a card that was not theirs. Drawn from the day the widgets hold
- * (`WidgetSample`), so the names and times are the user's own.
+ * THE WIDGET THIS WAS OPENED FROM, composed by its own code at the size it
+ * is placed at, with the choices so far laid over what is stored
+ * (`WidgetLivePreview`) — the tall prayer card with its graph, the Log's
+ * card with its checks, the Hijri date: whichever was held. It was a
+ * drawing of the prayer-times strip whichever was held, and someone setting
+ * up another card was shown one that was not theirs. Should composing
+ * fail, a drawing of the prayer-times card stands in (`WidgetPreviewCard`).
  *
  * THE SETTINGS ARE NOT THIS WIDGET'S ALONE. The first section is followed
  * by every Mihrab widget, and says so; the second by the prayer-times
@@ -68,6 +74,12 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   private var isSmallWidget = false
   /** The card this was opened from; null from a widget that is not a prayer-times one. */
   private var kind: WidgetPreviewCard.Kind? = null
+  /** The widget itself, for the sample; null where its receiver is not one of the Glance ones. */
+  private var widget: androidx.glance.appwidget.GlanceAppWidget? = null
+  private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
+  private var providerClass = ""
+  private val scope = MainScope()
+  private var previewJob: Job? = null
   private var sample: WidgetSample? = null
   private var cardRgb = 0x101418
 
@@ -118,6 +130,9 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     isPrayerWidget = provider in PRAYER_TIMES_PROVIDERS
     isSmallWidget = provider == NextPrayerWidgetReceiver::class.java.name
     kind = WidgetPreviewCard.kindOf(provider)
+    widget = WidgetLivePreview.widgetOf(provider)
+    widgetId = appWidgetId
+    providerClass = provider.orEmpty()
 
     readStored()
     sample = try {
@@ -184,29 +199,14 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     }
 
     val editor = getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE).edit()
-    editor.putString(PrayerWidgetDisplay.KEY_TEXT_HEX, textHex)
-    if (isPrayerWidget) {
-      editor
-        .putBoolean(PrayerWidgetDisplay.KEY_SHOW_LOCATION, showLocation)
-        .putBoolean(PrayerWidgetDisplay.KEY_SHOW_COUNTDOWN, showCountdown)
-        .putInt(PrayerWidgetDisplay.KEY_SINCE_ADHAN, sinceAdhan)
-      // What the Next prayer card does not draw, it does not write.
-      if (!isSmallWidget) {
-        editor
-          .putBoolean(PrayerWidgetDisplay.KEY_SHOW_TABLE, showTable)
-          .putInt(PrayerWidgetDisplay.KEY_TIME_SCALE, timeScalePercent)
+    for ((key, value) in pending()) {
+      when (value) {
+        is Boolean -> editor.putBoolean(key, value)
+        is Int -> editor.putInt(key, value)
+        is String -> editor.putString(key, value)
       }
     }
-    editor
-      .putInt(PrayerWidgetProvider.PREFS_WIDGET_BG_OPACITY, opacity)
-      .putString(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_ID, highlightId)
-      .putString(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_HEX, if (highlightId == "custom") highlightCustomHex else "")
-      // Written as false rather than left alone: saving here is the one
-      // moment we know the user has looked at this screen, and an older
-      // build's stored `true` would otherwise sit in the store for ever,
-      // waiting for a downgrade to honour it.
-      .putBoolean(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_DYNAMIC, false)
-      .apply()
+    editor.apply()
 
     // Every card honours the common settings, so every card is redrawn —
     // the fan-out re-reads the ids itself, whichever provider this widget
@@ -215,6 +215,46 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
 
     setResult(RESULT_OK, Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId))
     finish()
+  }
+
+  /**
+   * What Save writes, as chosen so far: the store's keys and their values.
+   * The sample is composed over exactly this (`WidgetLivePreview`), so what
+   * is seen before Save is what is stored by it.
+   */
+  private fun pending(): Map<String, Any> {
+    val out = LinkedHashMap<String, Any>()
+    out[PrayerWidgetDisplay.KEY_TEXT_HEX] = textHex
+    if (isPrayerWidget) {
+      out[PrayerWidgetDisplay.KEY_SHOW_LOCATION] = showLocation
+      out[PrayerWidgetDisplay.KEY_SHOW_COUNTDOWN] = showCountdown
+      out[PrayerWidgetDisplay.KEY_SINCE_ADHAN] = sinceAdhan
+      // What the Next prayer card does not draw, it does not write.
+      if (!isSmallWidget) {
+        out[PrayerWidgetDisplay.KEY_SHOW_TABLE] = showTable
+        out[PrayerWidgetDisplay.KEY_TIME_SCALE] = timeScalePercent
+      }
+    }
+    out[PrayerWidgetProvider.PREFS_WIDGET_BG_OPACITY] = opacity
+    out[PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_ID] = highlightId
+    out[PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_HEX] = if (highlightId == "custom") highlightCustomHex else ""
+    // Written as false rather than left alone: saving here is the one
+    // moment we know the user has looked at this screen, and an older
+    // build's stored `true` would otherwise sit in the store for ever,
+    // waiting for a downgrade to honour it.
+    out[PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_DYNAMIC] = false
+    return out
+  }
+
+  override fun onDestroy() {
+    scope.cancel()
+    // The home screen ends on what is stored, whatever a sample was
+    // composed with in passing (WidgetLivePreview, on `Palette`).
+    try {
+      PrayerWidgetProvider.requestUpdate(this)
+    } catch (_: Exception) {
+    }
+    super.onDestroy()
   }
 
   // ── The controls ───────────────────────────────────────────────────────
@@ -363,6 +403,30 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     // The wallpaper's width: the screen's, less its margins (the layout's
     // 20dp) and its own padding.
     val innerPx = m.widthPixels - (2 * dp(20f) + 2 * dp(WidgetPreviewCard.WALL_PAD_DP)).toInt()
+    val glance = widget
+    if (glance == null) {
+      drawnPreview(wall, innerPx)
+      return
+    }
+    // The widget itself, with the choices so far: the latest asked for wins.
+    val choices = pending()
+    val size = WidgetLivePreview.sizeOf(this, widgetId, providerClass, (innerPx / m.density).toInt())
+    previewJob?.cancel()
+    previewJob = scope.launch {
+      try {
+        val views = WidgetLivePreview.compose(this@PrayerWidgetConfigureActivity, glance, size, choices)
+        WidgetLivePreview.show(wall, views, size)
+      } catch (e: kotlinx.coroutines.CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        android.util.Log.w(PrayerWidgetProvider.WIDGET_LOG_TAG, "widget sample could not be composed", e)
+        drawnPreview(wall, innerPx)
+      }
+    }
+  }
+
+  /** The stand-in: a drawing of the prayer-times card (WidgetPreviewCard). */
+  private fun drawnPreview(wall: LinearLayout, innerPx: Int) {
     // The common settings alone, from a widget that is not a prayer-times
     // one: the strip still shows a day's times, whole, as the sample of
     // its colours.

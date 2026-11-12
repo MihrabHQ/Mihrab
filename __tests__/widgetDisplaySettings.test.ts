@@ -122,7 +122,8 @@ describe('the widget\'s own settings screen', () => {
   it('offers the time since the adhan, with the app\'s choices', () => {
     expect(layout).toContain('widget_configure_since_adhan_group');
     expect(display).toMatch(/SINCE_ADHAN_CHOICES = listOf\(0, 10, 20, 30\)/);
-    expect(kt).toMatch(/putInt\(PrayerWidgetDisplay\.KEY_SINCE_ADHAN, sinceAdhan\)/);
+    expect(kt).toMatch(/out\[PrayerWidgetDisplay\.KEY_SINCE_ADHAN\] = sinceAdhan/);
+    expect(kt).toMatch(/is Int -> editor\.putInt\(key, value\)/);
   });
 
   it('the card counts with the stored window, not only the published one', () => {

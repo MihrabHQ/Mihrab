@@ -8,11 +8,15 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.prayer_times.contract.WidgetContract
+import kotlinx.coroutines.launch
 
 class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
 
   override fun getName(): String = NAME
+
+  /** The samples are composed and drawn on the main thread, one request after another. */
+  private val previewScope = kotlinx.coroutines.MainScope()
 
   @ReactMethod
   fun getAndroidWidgetAppearance(promise: Promise) {
@@ -35,40 +39,51 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
   }
 
   /**
-   * The prayer-times widgets as they are drawn now — the strip and the tall
-   * card, on the sample's wallpaper — as a PNG for Settings → Widgets
-   * (WidgetPreviewCard). Both, because the page cannot know which the
-   * reader has placed, and they may have placed both.
+   * The widgets on the home screen as they are drawn now, each on the
+   * sample's wallpaper, as PNGs for Settings → Widgets — one of each kind
+   * placed, the prayer times first (WidgetLivePreview: the widgets' own
+   * compositions, at the sizes they are placed at). With none placed, the
+   * two prayer-times cards.
    *
-   * Resolves { uri, width, height } with the size in dp; `widthDp` is the
-   * room the page has for it.
+   * Resolves a list of { uri, width, height, kind } with the sizes in dp;
+   * `widthDp` is the room the page has for one.
    */
   @ReactMethod
   fun renderPreviews(widthDp: Double, promise: Promise) {
-    com.facebook.react.bridge.UiThreadUtil.runOnUiThread {
+    previewScope.launch {
       try {
         val density = reactContext.resources.displayMetrics.density
         val widthPx = (widthDp * density).toInt().coerceIn(200, 4000)
-        val sample = try {
-          com.prayer_times.glance.WidgetSample.of(reactContext)
-        } catch (_: Exception) {
-          null
+        val roomDp = (widthPx / density - 2 * WidgetPreviewCard.WALL_PAD_DP).toInt()
+        val shown = WidgetLivePreview.placed(reactContext)
+          .ifEmpty { WidgetLivePreview.DEFAULTS.map { it to null } }
+        val out = Arguments.createArray()
+        // The sizes first: every wallpaper in the row is as tall as the tallest card.
+        val sized = shown.mapNotNull { (cls, id) ->
+          WidgetLivePreview.widgetOf(cls)?.let { Triple(cls, it, WidgetLivePreview.sizeOf(reactContext, id, cls, roomDp)) }
         }
-        val bitmap = WidgetPreviewCard.bitmap(
-          reactContext,
-          listOf(WidgetPreviewCard.Kind.STRIP, WidgetPreviewCard.Kind.TALL),
-          WidgetPreviewCard.storedLook(reactContext),
-          sample,
-          widthPx,
-        )
-        val bytes = java.io.ByteArrayOutputStream()
-        bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, bytes)
-        val map = Arguments.createMap()
-        map.putString("uri", "data:image/png;base64," + android.util.Base64.encodeToString(bytes.toByteArray(), android.util.Base64.NO_WRAP))
-        map.putDouble("width", (bitmap.width / density).toDouble())
-        map.putDouble("height", (bitmap.height / density).toDouble())
-        bitmap.recycle()
-        promise.resolve(map)
+        val tallestDp = sized.maxOfOrNull { it.third.height.value } ?: 0f
+        for ((cls, widget, size) in sized) {
+          // One card failing costs that card, not the page's sample.
+          try {
+            val views = WidgetLivePreview.compose(reactContext, widget, size, emptyMap())
+            val bitmap = WidgetLivePreview.bitmap(reactContext, views, size, widthPx, tallestDp)
+            val bytes = java.io.ByteArrayOutputStream()
+            bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, bytes)
+            val map = Arguments.createMap()
+            map.putString("uri", "data:image/png;base64," + android.util.Base64.encodeToString(bytes.toByteArray(), android.util.Base64.NO_WRAP))
+            map.putDouble("width", (bitmap.width / density).toDouble())
+            map.putDouble("height", (bitmap.height / density).toDouble())
+            map.putString("kind", cls.substringAfterLast('.'))
+            bitmap.recycle()
+            out.pushMap(map)
+          } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+          } catch (e: Exception) {
+            Log.w(PrayerWidgetProvider.WIDGET_LOG_TAG, "widget sample failed: $cls", e)
+          }
+        }
+        promise.resolve(out)
       } catch (e: Exception) {
         promise.reject("E_WIDGET_PREVIEW", e.message, e)
       }

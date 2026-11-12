@@ -45,9 +45,9 @@ describe('the option is not offered', () => {
     // The key stays in the store so a downgrade still finds what it wrote,
     // but the one moment we know the user has looked at this screen is the
     // right moment to stop an old `true` sitting there for ever.
-    expect(repo(...CONFIGURE_ACTIVITY)).toMatch(
-      /putBoolean\(\s*PrayerWidgetProvider\.PREFS_WIDGET_HIGHLIGHT_DYNAMIC,\s*false,?\s*\)/,
-    );
+    expect(repo(...CONFIGURE_ACTIVITY)).toMatch(/out\[PrayerWidgetProvider\.PREFS_WIDGET_HIGHLIGHT_DYNAMIC\] = false/);
+    // …and what `pending()` lists is written, a Boolean as a Boolean.
+    expect(repo(...CONFIGURE_ACTIVITY)).toMatch(/for \(\(key, value\) in pending\(\)\) \{\s*when \(value\) \{\s*is Boolean -> editor\.putBoolean\(key, value\)/);
   });
 
   it('the strings it used are gone from every locale', () => {
