@@ -580,6 +580,30 @@ export function mixHexRound(a: string, b: string, u: number): string {
   return oklchToHex({ L: A.L + (B.L - A.L) * u, C, h });
 }
 
+/**
+ * The mix for the horizon's stop: straight in OKLab, so a warm haze and a
+ * blue-white one meet in white, as a real horizon does — with the green
+ * taken out of the meeting. The straight line from an amber to a blue
+ * passes just on the green side of grey, and the "white" of a sun at
+ * twelve degrees was a mint (#d4e3e1) for the quarter of an hour it
+ * stood: where neither end is a green, what green the middle picks up is
+ * let go, eased in from the band's edges so nothing steps.
+ */
+const HORIZON_GREEN_TO = 205;
+const HORIZON_GREEN_EASE = 8;
+const HORIZON_GREEN_KEPT = 0.2;
+export function mixHexHorizon(a: string, b: string, u: number): string {
+  const mixed = mixHexOklab(a, b, u);
+  if (u <= 0 || u >= 1) return mixed;
+  const m = hexToOklch(mixed);
+  const green = (h: number) => h > GREEN_FROM && h < HORIZON_GREEN_TO;
+  if (!green(m.h) || green(hexToOklch(a).h) || green(hexToOklch(b).h)) return mixed;
+  const depth = Math.min(m.h - GREEN_FROM, HORIZON_GREEN_TO - m.h) / HORIZON_GREEN_EASE;
+  const k = Math.max(0, Math.min(1, depth));
+  const eased = k * k * (3 - 2 * k);
+  return oklchToHex({ ...m, C: m.C * (1 - (1 - HORIZON_GREEN_KEPT) * eased) });
+}
+
 const lch = (L: number, C: number, h: number): string => oklchToHex({ L, C, h });
 const shift = (hex: string, d: Partial<Oklch>): string => {
   const c = hexToOklch(hex);
@@ -942,7 +966,7 @@ export function mixMoods(a: SkyMood, b: SkyMood, u: number): SkyMood {
   const near = u < 0.5 ? a : b;
   const out: SkyMood = { ...near };
   for (const k of MIXED) {
-    const mix = ROUND.has(k) ? mixHexRound : mixHexOklab;
+    const mix = ROUND.has(k) ? mixHexRound : k === 'heroMid' ? mixHexHorizon : mixHexOklab;
     (out as unknown as Record<string, string>)[k] = mix(a[k] as string, b[k] as string, u);
   }
   return out;

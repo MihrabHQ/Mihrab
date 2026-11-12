@@ -408,8 +408,9 @@ describe('the hero under the theme', () => {
     expect(card).toMatch(/\n\s+denseStars\n/);
     const sky = read('src/screens/home/HeroSky.tsx');
     expect(sky).toMatch(/const field = dense \? STAR_FIELD_DENSE : STAR_FIELD;/);
-    expect(sky).toMatch(/\[\[top, 0\], \[frame\.mid, frame\.midAt\], \[bottom, 1\]\]/);
-    expect(sky).toMatch(/\[\[g\.top, 0\], \[g\.mid, g\.midAt\], \[g\.bottom, 1\]\]/);
+    // three stops (four where the sky turns into a page of the other polarity: skyStops, __tests__/skyTurn)
+    expect(sky).toMatch(/linearDown\(skyStops\(\{ top, bottom, mid: frame\.mid, midAt: frame\.midAt \}\)\)/);
+    expect(sky).toMatch(/linearDown\(skyStops\(g\)\)/);
   });
 });
 

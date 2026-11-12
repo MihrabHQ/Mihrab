@@ -4,7 +4,7 @@ import { useVerticalBar } from '../../native/VerticalBar';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import Svg, { Circle, G, Path } from 'react-native-svg';
 import { linearDown, radialGlow, withAlpha } from './skyPaint';
-import { skyColorAt, SUN_HORIZON_Y, type SkyFrame } from './skyModel';
+import { skyColorAt, skyStops, SUN_HORIZON_Y, type SkyFrame } from './skyModel';
 import { SUN_GLOW_PEAK } from './skyLight';
 import { HeroTrack, type TrackLabels } from './HeroTrack';
 import type { TrackFrame } from './trackModel';
@@ -316,11 +316,7 @@ function HeroSkyImpl({
             style={[
               StyleSheet.absoluteFill,
               {
-                backgroundImage: linearDown(
-                  frame.mid && frame.midAt != null
-                    ? [[top, 0], [frame.mid, frame.midAt], [bottom, 1]]
-                    : [[top, 0], [bottom, 1]],
-                ),
+                backgroundImage: linearDown(skyStops({ top, bottom, mid: frame.mid, midAt: frame.midAt })),
               },
             ]}
           />
@@ -583,11 +579,7 @@ function SkyRunLayersImpl({
             width,
             height,
             opacity: g.opacity,
-            backgroundImage: linearDown(
-              g.mid && g.midAt != null
-                ? [[g.top, 0], [g.mid, g.midAt], [g.bottom, 1]]
-                : [[g.top, 0], [g.bottom, 1]],
-            ),
+            backgroundImage: linearDown(skyStops(g)),
           }}
         />
       ))}

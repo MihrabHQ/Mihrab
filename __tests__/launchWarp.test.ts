@@ -288,7 +288,7 @@ describe('wiring', () => {
     // once the next is in; the gradients and the halo are native
     // backgrounds, with no bitmap behind them (skyPaint.ts).
     expect(sky).toMatch(/outputRange: \[0, peak, peak, 0\]/);
-    expect(sky).toMatch(/backgroundImage: linearDown\(\s*g\.mid && g\.midAt != null/);
+    expect(sky).toMatch(/backgroundImage: linearDown\(skyStops\(g\)\)/);
     expect(sky).toMatch(/backgroundImage: radialGlow\(built\.halo\.light, 1\)/);
     expect(sky).toMatch(/transform: \[\{ translateX: built\.bodyTx \}, \{ translateY: built\.bodyTy \}, \{ scale: built\.haloScale \}\]/);
   });

@@ -853,7 +853,18 @@ export const HeroToday = memo(function HeroToday({
     () => trackAt(new Date(minuteKey * 60_000), frame.passage),
     [trackAt, minuteKey, frame.passage],
   );
-  const inkFoot = useMemo(() => skyInkAt(frame, yFoot, HERO_SPAN.foot), [frame, yFoot]);
+  /**
+   * Where a sky turns into a page of the other polarity (a night sky over
+   * the Light theme's page, a day's over the Dark's) it does so under the
+   * block, in the last of the hero. The rail and its two names are the
+   * block's foot: on the sky, not in the turn. Sampled across the turn,
+   * the foot's ink came out the PAGE's — a black rail and black names on
+   * a night sky, every night under Light — so there it is taken from the
+   * sky just above the turn.
+   */
+  const turnAt = frame.midAt != null && frame.midAt > SKY_THEME_MID_AT ? frame.midAt : null;
+  const yFootInk = turnAt != null ? Math.min(yFoot, turnAt - HERO_SPAN.foot) : yFoot;
+  const inkFoot = useMemo(() => skyInkAt(frame, yFootInk, HERO_SPAN.foot), [frame, yFootInk]);
   /**
    * Minimal stacks the countdown, its line and the rail in the middle of
    * the page, and the rail took the foot's ink while the figures over it

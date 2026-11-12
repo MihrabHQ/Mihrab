@@ -45,7 +45,7 @@
 import { combineLocalDateAndTime } from '../../utils/prayerTimes';
 import type { TimingsMap } from '../../types/prayer';
 import { moonPosition, moonView, sunAltitude, type MoonView } from './moon';
-import { nominalSkyLight, skyMoodFor, type SkyLight } from '../../theme/skyMoods';
+import { mixHexOklab, nominalSkyLight, skyMoodFor, type SkyLight } from '../../theme/skyMoods';
 import {
   moonGlow,
   MOON_SURFACE,
@@ -476,6 +476,29 @@ export function skyColorAt(frame: Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'mid
 }
 
 /** Where the Sky theme's middle stop sits: the glow is low, near the horizon. */
+/**
+ * The sky's gradient as it is painted: its stops, top to foot.
+ *
+ * Where the sky turns into a page of the other polarity the turn is the
+ * last few hundredths of the hero (`SKY_FADE_LOW_MID_AT` and lower), and
+ * two stops across it — a twilight violet and a paper cream — are joined
+ * by the straight line between them in sRGB: a grey that belongs to
+ * neither, in a band thin enough to read as an edge. So the turn gets a
+ * stop in its middle, mixed in OKLab — half-way in lightness as the eye
+ * counts it, with the sky's own tint still in it — and the eye is carried
+ * across instead of stopped.
+ */
+export function skyStops(frame: Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt'>): Array<readonly [string, number]> {
+  if (!frame.mid || frame.midAt == null) return [[frame.top, 0], [frame.bottom, 1]];
+  if (frame.midAt > SKY_THEME_MID_AT && frame.midAt < 1) {
+    const half = frame.midAt + (1 - frame.midAt) * SKY_TURN_HALF_AT;
+    return [[frame.top, 0], [frame.mid, frame.midAt], [mixHexOklab(frame.mid, frame.bottom, 0.5), half], [frame.bottom, 1]];
+  }
+  return [[frame.top, 0], [frame.mid, frame.midAt], [frame.bottom, 1]];
+}
+/** Where in the turn its half-way colour stands: a little late, so the sky's side is the longer and the page arrives softly. */
+export const SKY_TURN_HALF_AT = 0.55;
+
 export const SKY_THEME_MID_AT = 0.62;
 /**
  * Where it sits when the sky runs into a page of the other polarity — a

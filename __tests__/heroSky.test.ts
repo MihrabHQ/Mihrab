@@ -203,7 +203,7 @@ describe('the ink', () => {
     expect(hero).toMatch(/const yFoot = measured \? heroY\.foot : HERO_Y\.foot;/);
     expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yEyebrow, HERO_SPAN\.eyebrow\), \[frame, yEyebrow\]\)/);
     expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yCountdown, HERO_SPAN\.countdown\), \[frame, yCountdown\]\)/);
-    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yFoot, HERO_SPAN\.foot\), \[frame, yFoot\]\)/);
+    expect(hero).toMatch(/useMemo\(\(\) => skyInkAt\(frame, yFootInk, HERO_SPAN\.foot\), \[frame, yFootInk\]\)/);
     expect(hero).not.toMatch(/palette\./);
     // The sky is the clock's, not the target's.
     expect(hero).toMatch(/skyMoment\(skyToday \?\? today, /);
