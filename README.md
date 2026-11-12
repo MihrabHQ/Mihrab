@@ -71,7 +71,7 @@ sudo pacman -Syu mihrab</pre>
 <!-- accuracy:start -->
 <div align="center">
 
-<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 73,645,454 times off the printed minute"></a>
+<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 76,724,216 times off the printed minute"></a>
 
 Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)**, the authorities’ own methods checked against every time they have published.
 

@@ -127,5 +127,258 @@
       "sha256": "a3f1c30576ddddbfda6cadabe442e1bcf3fb476b018b269d7d4783edd4e39d03"
     },
     "revision": 2
+  },
+  "turkiyetakvimi": {
+    "certified": true,
+    "checkedAt": "2026-11-11",
+    "places": 821,
+    "checks": [
+      {
+        "tables": "Türkiye Takvimi — its cities’ years",
+        "places": 821,
+        "times": 1812768,
+        "off": 0,
+        "offWithoutCorrections": 860,
+        "from": "2025-12-31",
+        "to": "2027-01-02"
+      }
+    ],
+    "corrections": {
+      "from": "2025-12-31",
+      "to": "2027-01-02",
+      "entries": 860,
+      "sha256": "edf5bd37ccd06dbcb87300a6c943353adb624a545ff6ea416a8f89715713d7bd"
+    },
+    "revision": 1
+  },
+  "kazakhstan": {
+    "certified": true,
+    "checkedAt": "2026-11-11",
+    "places": 84,
+    "checks": [
+      {
+        "tables": "Kazakhstan — the Spiritual Administration’s times",
+        "places": 84,
+        "times": 551880,
+        "off": 0,
+        "offWithoutCorrections": 0,
+        "from": "2025-01-01",
+        "to": "2027-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2025-01-01",
+      "to": "2027-12-31",
+      "entries": 0,
+      "sha256": "e3d60e566ca082f74ce9904886087b29e65d2871c5bcc02f46349d82c8994d88"
+    },
+    "revision": 1
+  },
+  "egypt": {
+    "certified": true,
+    "checkedAt": "2026-11-11",
+    "places": 77,
+    "checks": [
+      {
+        "tables": "Egypt — the Survey Authority’s times",
+        "places": 77,
+        "times": 168630,
+        "off": 0,
+        "offWithoutCorrections": 1056,
+        "from": "2026-01-01",
+        "to": "2026-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2026-01-01",
+      "to": "2026-12-31",
+      "entries": 1056,
+      "sha256": "f786f9d990448233355b46023e174a8073336682b67035decd209c0e19d3e4aa"
+    },
+    "revision": 1
+  },
+  "brunei": {
+    "certified": true,
+    "checkedAt": "2026-11-11",
+    "places": 4,
+    "checks": [
+      {
+        "tables": "Brunei — the Ministry’s times",
+        "places": 4,
+        "times": 17064,
+        "off": 0,
+        "offWithoutCorrections": 56,
+        "from": "2025-01-09",
+        "to": "2026-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2025-01-09",
+      "to": "2026-12-31",
+      "entries": 56,
+      "sha256": "a4f8313391631cc3442c3c5bef715755f2be27766853e94f5a2ece39fbb31ab7"
+    },
+    "revision": 1
+  },
+  "qatar": {
+    "certified": true,
+    "checkedAt": "2026-11-11",
+    "places": 1,
+    "checks": [
+      {
+        "tables": "Qatar — the Calendar House’s times",
+        "places": 1,
+        "times": 708,
+        "off": 0,
+        "offWithoutCorrections": 27,
+        "from": "2026-06-16",
+        "to": "2026-10-11"
+      }
+    ],
+    "corrections": {
+      "from": "2026-06-16",
+      "to": "2026-10-11",
+      "entries": 27,
+      "sha256": "e6fc01f1ab8332d8e02a376474474748539b7d9edfacbd55cc36a3e1ebee6220"
+    },
+    "revision": 1
+  },
+  "kuwait": {
+    "certified": true,
+    "checkedAt": "2026-11-11",
+    "places": 46,
+    "checks": [
+      {
+        "tables": "Kuwait — the Ministry’s table",
+        "places": 46,
+        "times": 201480,
+        "off": 0,
+        "offWithoutCorrections": 9660,
+        "from": "2026-01-01",
+        "to": "2027-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2026-01-01",
+      "to": "2027-12-31",
+      "entries": 9660,
+      "sha256": "2238661dbbf9b59c25656ff3577415d9043de99a7e3a54f8b308139d12ed68c3"
+    },
+    "revision": 1
+  },
+  "jordan": {
+    "certified": true,
+    "checkedAt": "2026-11-11",
+    "places": 17,
+    "checks": [
+      {
+        "tables": "Jordan — the Ministry’s times",
+        "places": 17,
+        "times": 37230,
+        "off": 0,
+        "offWithoutCorrections": 603,
+        "from": "2026-01-01",
+        "to": "2026-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2026-01-01",
+      "to": "2026-12-31",
+      "entries": 603,
+      "sha256": "c7394f9141a43803ae8758f533aa48487efb9d9932c71532812d53d27dfc2bf2"
+    },
+    "revision": 1
+  },
+  "tatarstan": {
+    "certified": true,
+    "checkedAt": "2026-11-11",
+    "places": 44,
+    "checks": [
+      {
+        "tables": "Tatarstan — the Administration’s timetable",
+        "places": 44,
+        "times": 96360,
+        "off": 0,
+        "offWithoutCorrections": 1858,
+        "from": "2026-01-01",
+        "to": "2026-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2026-01-01",
+      "to": "2026-12-31",
+      "entries": 1858,
+      "sha256": "0b2b61eba29c210ddadf9512a73065c0a3d6aa17fd83b2a41db57337753abaf7"
+    },
+    "revision": 1
+  },
+  "cdum": {
+    "certified": true,
+    "checkedAt": "2026-11-11",
+    "places": 18,
+    "checks": [
+      {
+        "tables": "Russia — the Central Muftiate’s timetables",
+        "places": 18,
+        "times": 39342,
+        "off": 0,
+        "offWithoutCorrections": 48,
+        "from": "2026-01-01",
+        "to": "2026-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2026-01-01",
+      "to": "2026-12-31",
+      "entries": 48,
+      "sha256": "1d7a0850ff60e86588df21070a543c90da3e70354c2bc3eed59b1cbfdc0fba4c"
+    },
+    "revision": 1
+  },
+  "albania": {
+    "certified": true,
+    "checkedAt": "2026-11-11",
+    "places": 22,
+    "checks": [
+      {
+        "tables": "Albania — the Community’s calendar",
+        "places": 22,
+        "times": 48180,
+        "off": 0,
+        "offWithoutCorrections": 924,
+        "from": "2026-01-01",
+        "to": "2026-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2026-01-01",
+      "to": "2026-12-31",
+      "entries": 924,
+      "sha256": "cb5b9d12609c0522b81468faceda1ac184afbe440225d23781aaa8f4b08f16ca"
+    },
+    "revision": 1
+  },
+  "bulgaria": {
+    "certified": true,
+    "checkedAt": "2026-11-11",
+    "places": 48,
+    "checks": [
+      {
+        "tables": "Bulgaria — the Grand Mufti’s Office’s timetable",
+        "places": 48,
+        "times": 105120,
+        "off": 0,
+        "offWithoutCorrections": 2448,
+        "from": "2026-01-01",
+        "to": "2026-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2026-01-01",
+      "to": "2026-12-31",
+      "entries": 2448,
+      "sha256": "2639c48418d7e7539dd2364aaeddd6f87953cbbd7c7f459bdf48d8ba157bfc63"
+    },
+    "revision": 1
   }
 }

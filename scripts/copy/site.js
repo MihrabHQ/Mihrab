@@ -10,7 +10,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { AUTHORITY_ORDER, figures, fillBlock, fillFigures, int, longDate, namedFigures, span } = require('./figures');
+const { AUTHORITY_NAMES, AUTHORITY_ORDER, figures, fillBlock, fillFigures, int, longDate, namedFigures, span } = require('./figures');
 
 const CERT = path.join(__dirname, '..', '..', 'data', 'methods', 'certification.json');
 
@@ -34,6 +34,18 @@ const TABLE_WORDS = {
       morocco: ['Morocco', 'the Ministry of Habous and Islamic Affairs'],
       algeria: ['Algeria', 'the Ministry of Religious Affairs and Wakfs'],
       indonesia: ['Indonesia', 'Kemenag'],
+      turkiyetakvimi: ['Türkiye Takvimi', 'Türkiye Takvimi (namazvakti.com)'],
+      kazakhstan: ['Kazakhstan', 'the Spiritual Administration of Muslims of Kazakhstan'],
+      egypt: ['Egypt', 'the Egyptian General Authority of Survey'],
+      brunei: ['Brunei', 'the Ministry of Religious Affairs'],
+      qatar: ['Qatar', 'Qatar Calendar House'],
+      kuwait: ['Kuwait', 'the Ministry of Awqaf and Islamic Affairs'],
+      jordan: ['Jordan', 'the Ministry of Awqaf, Islamic Affairs and Holy Places'],
+      tatarstan: ['Tatarstan', 'the Spiritual Administration of Muslims of Tatarstan'],
+      cdum: ['Russia', 'the Central Spiritual Administration of Muslims of Russia'],
+      albania: ['Albania', 'the Muslim Community of Albania'],
+      bulgaria: ['Bulgaria', 'the Grand Mufti’s Office'],
+      banuri: ['Pakistan', 'Jamia Uloom-ul-Islamia, Banuri Town'],
     },
   },
   sv: {
@@ -48,6 +60,18 @@ const TABLE_WORDS = {
       morocco: ['Marocko', 'Ministeriet för habous och islamiska frågor'],
       algeria: ['Algeriet', 'Ministeriet för religiösa frågor och wakf'],
       indonesia: ['Indonesien', 'Kemenag'],
+      turkiyetakvimi: ['Türkiye Takvimi', 'Türkiye Takvimi (namazvakti.com)'],
+      kazakhstan: ['Kazakstan', 'Kazakstans muslimers andliga styrelse'],
+      egypt: ['Egypten', 'Egyptens lantmäterimyndighet'],
+      brunei: ['Brunei', 'Ministeriet för religiösa frågor'],
+      qatar: ['Qatar', 'Qatars kalenderhus'],
+      kuwait: ['Kuwait', 'Ministeriet för awqaf och islamiska frågor'],
+      jordan: ['Jordanien', 'Ministeriet för awqaf, islamiska frågor och heliga platser'],
+      tatarstan: ['Tatarstan', 'Tatarstans muslimers andliga styrelse'],
+      cdum: ['Ryssland', 'Rysslands muslimers centrala andliga styrelse'],
+      albania: ['Albanien', 'Albaniens muslimska samfund'],
+      bulgaria: ['Bulgarien', 'Stormuftins kansli'],
+      banuri: ['Pakistan', 'Jamia Uloom-ul-Islamia, Banuri Town'],
     },
   },
 };
@@ -75,7 +99,9 @@ function accuracyTable(cert, lang = 'en') {
     const a = by[id];
     a.checks.forEach((c, i) => {
       const key = id === 'sweden' && i === 1 ? 'sweden-diyanet' : id;
-      const [name, tables] = w.names[key];
+      // A method the page has no words for yet is named as the library names it,
+      // so a new method never stops the figures from being renewed.
+      const [name, tables] = w.names[key] ?? [AUTHORITY_NAMES[id].short, AUTHORITY_NAMES[id].authority];
       rows.push(
         `          <tr${i > 0 ? ' class="cont"' : ''}><th scope="row">${esc(i === 0 ? name : '')}</th><td>${esc(tables)}</td><td>${int(c.places, lang)}</td><td>${int(c.times, lang)}</td><td><strong>${int(c.off, lang)}</strong></td><td>${esc(span(c.from, c.to, lang))}</td></tr>`,
       );

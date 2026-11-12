@@ -14,7 +14,7 @@
  * add it to `npm run certify` (tools/certify.ts), not to type it in.
  */
 
-const AUTHORITY_ORDER = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia'];
+const AUTHORITY_ORDER = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia', 'turkiyetakvimi', 'kazakhstan', 'egypt', 'brunei', 'qatar', 'kuwait', 'jordan', 'tatarstan', 'cdum', 'albania', 'bulgaria'];
 
 /** Who prints the tables each method matches, in words — names, not figures. */
 const AUTHORITY_NAMES = {
@@ -23,6 +23,17 @@ const AUTHORITY_NAMES = {
   morocco: { short: 'Morocco', authority: 'Ministry of Habous and Islamic Affairs' },
   algeria: { short: 'Algeria', authority: 'Ministry of Religious Affairs and Wakfs' },
   indonesia: { short: 'Indonesia', authority: 'Kemenag (Ministry of Religious Affairs)' },
+  turkiyetakvimi: { short: 'Türkiye Takvimi', authority: 'Türkiye Takvimi (namazvakti.com)' },
+  kazakhstan: { short: 'Kazakhstan', authority: 'Spiritual Administration of Muslims of Kazakhstan' },
+  egypt: { short: 'Egypt', authority: 'Egyptian General Authority of Survey' },
+  brunei: { short: 'Brunei', authority: 'Brunei Ministry of Religious Affairs' },
+  qatar: { short: 'Qatar', authority: 'Qatar Calendar House' },
+  kuwait: { short: 'Kuwait', authority: 'Kuwait Ministry of Awqaf and Islamic Affairs' },
+  jordan: { short: 'Jordan', authority: 'Jordan Ministry of Awqaf, Islamic Affairs and Holy Places' },
+  tatarstan: { short: 'Tatarstan', authority: 'Spiritual Administration of Muslims of the Republic of Tatarstan' },
+  cdum: { short: 'Russia (Central Muftiate)', authority: 'Central Spiritual Administration of Muslims of Russia' },
+  albania: { short: 'Albania', authority: 'Muslim Community of Albania' },
+  bulgaria: { short: 'Bulgaria', authority: 'Grand Mufti’s Office of Bulgaria' },
 };
 
 class MissingFigure extends Error {

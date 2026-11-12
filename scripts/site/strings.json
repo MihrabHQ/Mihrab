@@ -706,6 +706,54 @@
           "indonesia": [
             "إندونيسيا",
             "Kemenag"
+          ],
+          "turkiyetakvimi": [
+            "Türkiye Takvimi",
+            "Türkiye Takvimi (namazvakti.com)"
+          ],
+          "kazakhstan": [
+            "كازاخستان",
+            "الإدارة الدينية لمسلمي كازاخستان"
+          ],
+          "egypt": [
+            "مصر",
+            "الهيئة المصرية العامة للمساحة"
+          ],
+          "brunei": [
+            "بروناي",
+            "وزارة الشؤون الدينية"
+          ],
+          "qatar": [
+            "قطر",
+            "دار التقويم القطري"
+          ],
+          "kuwait": [
+            "الكويت",
+            "وزارة الأوقاف والشؤون الإسلامية"
+          ],
+          "jordan": [
+            "الأردن",
+            "وزارة الأوقاف والشؤون والمقدسات الإسلامية"
+          ],
+          "tatarstan": [
+            "تتارستان",
+            "الإدارة الدينية لمسلمي تتارستان"
+          ],
+          "cdum": [
+            "روسيا",
+            "الإدارة الدينية المركزية لمسلمي روسيا"
+          ],
+          "albania": [
+            "ألبانيا",
+            "المشيخة الإسلامية في ألبانيا"
+          ],
+          "bulgaria": [
+            "بلغاريا",
+            "دار الإفتاء العام"
+          ],
+          "banuri": [
+            "باكستان",
+            "جامعة العلوم الإسلامية، بنوري تاون"
           ]
         }
       }
@@ -1073,6 +1121,54 @@
           "indonesia": [
             "Endonezya",
             "Kemenag"
+          ],
+          "turkiyetakvimi": [
+            "Türkiye Takvimi",
+            "Türkiye Takvimi (namazvakti.com)"
+          ],
+          "kazakhstan": [
+            "Kazakistan",
+            "Kazakistan Müslümanları Dinî İdaresi"
+          ],
+          "egypt": [
+            "Mısır",
+            "Mısır Genel Harita Kurumu"
+          ],
+          "brunei": [
+            "Brunei",
+            "Din İşleri Bakanlığı"
+          ],
+          "qatar": [
+            "Katar",
+            "Katar Takvim Evi"
+          ],
+          "kuwait": [
+            "Kuveyt",
+            "Evkaf ve İslam İşleri Bakanlığı"
+          ],
+          "jordan": [
+            "Ürdün",
+            "Evkaf, İslam İşleri ve Mukaddesat Bakanlığı"
+          ],
+          "tatarstan": [
+            "Tataristan",
+            "Tataristan Müslümanları Dinî İdaresi"
+          ],
+          "cdum": [
+            "Rusya",
+            "Rusya Müslümanları Merkezî Dinî İdaresi"
+          ],
+          "albania": [
+            "Arnavutluk",
+            "Arnavutluk Müslüman Topluluğu"
+          ],
+          "bulgaria": [
+            "Bulgaristan",
+            "Başmüftülük"
+          ],
+          "banuri": [
+            "Pakistan",
+            "Camia Ulûm-i İslâmiyye, Benuri Town"
           ]
         }
       }
@@ -1421,6 +1517,54 @@
           "indonesia": [
             "انڈونیشیا",
             "Kemenag"
+          ],
+          "turkiyetakvimi": [
+            "Türkiye Takvimi",
+            "Türkiye Takvimi (namazvakti.com)"
+          ],
+          "kazakhstan": [
+            "قازقستان",
+            "قازقستان کے مسلمانوں کی دینی انتظامیہ"
+          ],
+          "egypt": [
+            "مصر",
+            "مصری جنرل اتھارٹی برائے سروے"
+          ],
+          "brunei": [
+            "برونائی",
+            "وزارتِ مذہبی امور"
+          ],
+          "qatar": [
+            "قطر",
+            "قطر کیلنڈر ہاؤس"
+          ],
+          "kuwait": [
+            "کویت",
+            "وزارتِ اوقاف و اسلامی امور"
+          ],
+          "jordan": [
+            "اردن",
+            "وزارتِ اوقاف، اسلامی امور و مقدسات"
+          ],
+          "tatarstan": [
+            "تاتارستان",
+            "تاتارستان کے مسلمانوں کی دینی انتظامیہ"
+          ],
+          "cdum": [
+            "روس",
+            "روس کے مسلمانوں کی مرکزی دینی انتظامیہ"
+          ],
+          "albania": [
+            "البانیا",
+            "البانیا کی مسلم کمیونٹی"
+          ],
+          "bulgaria": [
+            "بلغاریہ",
+            "دفترِ مفتیِ اعظم"
+          ],
+          "banuri": [
+            "پاکستان",
+            "جامعہ علوم اسلامیہ علامہ بنوری ٹاؤن"
           ]
         }
       }
@@ -1788,6 +1932,54 @@
           "indonesia": [
             "Indonesia",
             "Kemenag"
+          ],
+          "turkiyetakvimi": [
+            "Türkiye Takvimi",
+            "Türkiye Takvimi (namazvakti.com)"
+          ],
+          "kazakhstan": [
+            "Kazakhstan",
+            "Administrasi Spiritual Muslim Kazakhstan"
+          ],
+          "egypt": [
+            "Mesir",
+            "Otoritas Umum Survei Mesir"
+          ],
+          "brunei": [
+            "Brunei",
+            "Kementerian Urusan Agama"
+          ],
+          "qatar": [
+            "Qatar",
+            "Rumah Kalender Qatar"
+          ],
+          "kuwait": [
+            "Kuwait",
+            "Kementerian Wakaf dan Urusan Islam"
+          ],
+          "jordan": [
+            "Yordania",
+            "Kementerian Wakaf, Urusan Islam, dan Tempat Suci"
+          ],
+          "tatarstan": [
+            "Tatarstan",
+            "Administrasi Spiritual Muslim Tatarstan"
+          ],
+          "cdum": [
+            "Rusia",
+            "Administrasi Spiritual Pusat Muslim Rusia"
+          ],
+          "albania": [
+            "Albania",
+            "Komunitas Muslim Albania"
+          ],
+          "bulgaria": [
+            "Bulgaria",
+            "Kantor Mufti Agung"
+          ],
+          "banuri": [
+            "Pakistan",
+            "Jamia Uloom-ul-Islamia, Banuri Town"
           ]
         }
       }
@@ -2136,6 +2328,54 @@
           "indonesia": [
             "Indonesien",
             "Kemenag"
+          ],
+          "turkiyetakvimi": [
+            "Türkiye Takvimi",
+            "Türkiye Takvimi (namazvakti.com)"
+          ],
+          "kazakhstan": [
+            "Kasachstan",
+            "Geistliche Verwaltung der Muslime Kasachstans"
+          ],
+          "egypt": [
+            "Ägypten",
+            "Ägyptische Vermessungsbehörde"
+          ],
+          "brunei": [
+            "Brunei",
+            "Ministerium für religiöse Angelegenheiten"
+          ],
+          "qatar": [
+            "Katar",
+            "Kalenderhaus von Katar"
+          ],
+          "kuwait": [
+            "Kuwait",
+            "Ministerium für Awqaf und islamische Angelegenheiten"
+          ],
+          "jordan": [
+            "Jordanien",
+            "Ministerium für Awqaf, islamische Angelegenheiten und heilige Stätten"
+          ],
+          "tatarstan": [
+            "Tatarstan",
+            "Geistliche Verwaltung der Muslime Tatarstans"
+          ],
+          "cdum": [
+            "Russland",
+            "Zentrale Geistliche Verwaltung der Muslime Russlands"
+          ],
+          "albania": [
+            "Albanien",
+            "Muslimische Gemeinschaft Albaniens"
+          ],
+          "bulgaria": [
+            "Bulgarien",
+            "Amt des Großmuftis"
+          ],
+          "banuri": [
+            "Pakistan",
+            "Jamia Uloom-ul-Islamia, Banuri Town"
           ]
         }
       }
@@ -2510,6 +2750,54 @@
           "indonesia": [
             "Indonésie",
             "Kemenag"
+          ],
+          "turkiyetakvimi": [
+            "Türkiye Takvimi",
+            "Türkiye Takvimi (namazvakti.com)"
+          ],
+          "kazakhstan": [
+            "Kazakhstan",
+            "l’Administration spirituelle des musulmans du Kazakhstan"
+          ],
+          "egypt": [
+            "Égypte",
+            "l’Autorité générale égyptienne de topographie"
+          ],
+          "brunei": [
+            "Brunei",
+            "le ministère des Affaires religieuses"
+          ],
+          "qatar": [
+            "Qatar",
+            "la Maison du calendrier du Qatar"
+          ],
+          "kuwait": [
+            "Koweït",
+            "le ministère des Awqaf et des Affaires islamiques"
+          ],
+          "jordan": [
+            "Jordanie",
+            "le ministère des Awqaf, des Affaires islamiques et des Lieux saints"
+          ],
+          "tatarstan": [
+            "Tatarstan",
+            "l’Administration spirituelle des musulmans du Tatarstan"
+          ],
+          "cdum": [
+            "Russie",
+            "l’Administration spirituelle centrale des musulmans de Russie"
+          ],
+          "albania": [
+            "Albanie",
+            "la Communauté musulmane d’Albanie"
+          ],
+          "bulgaria": [
+            "Bulgarie",
+            "le Bureau du grand mufti"
+          ],
+          "banuri": [
+            "Pakistan",
+            "Jamia Uloom-ul-Islamia, Banuri Town"
           ]
         }
       }
@@ -2858,6 +3146,54 @@
           "indonesia": [
             "Indonesia",
             "Kemenag"
+          ],
+          "turkiyetakvimi": [
+            "Türkiye Takvimi",
+            "Türkiye Takvimi (namazvakti.com)"
+          ],
+          "kazakhstan": [
+            "Kazajistán",
+            "la Administración Espiritual de los Musulmanes de Kazajistán"
+          ],
+          "egypt": [
+            "Egipto",
+            "la Autoridad General Egipcia de Topografía"
+          ],
+          "brunei": [
+            "Brunéi",
+            "el Ministerio de Asuntos Religiosos"
+          ],
+          "qatar": [
+            "Catar",
+            "la Casa del Calendario de Catar"
+          ],
+          "kuwait": [
+            "Kuwait",
+            "el Ministerio de Awqaf y Asuntos Islámicos"
+          ],
+          "jordan": [
+            "Jordania",
+            "el Ministerio de Awqaf, Asuntos Islámicos y Santos Lugares"
+          ],
+          "tatarstan": [
+            "Tartaristán",
+            "la Administración Espiritual de los Musulmanes de Tartaristán"
+          ],
+          "cdum": [
+            "Rusia",
+            "la Administración Espiritual Central de los Musulmanes de Rusia"
+          ],
+          "albania": [
+            "Albania",
+            "la Comunidad Musulmana de Albania"
+          ],
+          "bulgaria": [
+            "Bulgaria",
+            "la Oficina del Gran Muftí"
+          ],
+          "banuri": [
+            "Pakistán",
+            "Jamia Uloom-ul-Islamia, Banuri Town"
           ]
         }
       }
@@ -3206,6 +3542,54 @@
           "indonesia": [
             "Индонезия",
             "Kemenag"
+          ],
+          "turkiyetakvimi": [
+            "Türkiye Takvimi",
+            "Türkiye Takvimi (namazvakti.com)"
+          ],
+          "kazakhstan": [
+            "Казахстан",
+            "Духовное управление мусульман Казахстана"
+          ],
+          "egypt": [
+            "Египет",
+            "Главное геодезическое управление Египта"
+          ],
+          "brunei": [
+            "Бруней",
+            "Министерство по делам религий"
+          ],
+          "qatar": [
+            "Катар",
+            "Катарский дом календаря"
+          ],
+          "kuwait": [
+            "Кувейт",
+            "Министерство вакуфов и исламских дел"
+          ],
+          "jordan": [
+            "Иордания",
+            "Министерство вакуфов, исламских дел и святынь"
+          ],
+          "tatarstan": [
+            "Татарстан",
+            "Духовное управление мусульман Республики Татарстан"
+          ],
+          "cdum": [
+            "Россия",
+            "Центральное духовное управление мусульман России"
+          ],
+          "albania": [
+            "Албания",
+            "Мусульманская община Албании"
+          ],
+          "bulgaria": [
+            "Болгария",
+            "Главное муфтийство"
+          ],
+          "banuri": [
+            "Пакистан",
+            "Джамия Улюм-уль-Исламия, Банури-Таун"
           ]
         }
       }
@@ -3554,6 +3938,54 @@
           "indonesia": [
             "ইন্দোনেশিয়া",
             "Kemenag"
+          ],
+          "turkiyetakvimi": [
+            "Türkiye Takvimi",
+            "Türkiye Takvimi (namazvakti.com)"
+          ],
+          "kazakhstan": [
+            "কাজাখস্তান",
+            "কাজাখস্তানের মুসলিমদের আধ্যাত্মিক প্রশাসন"
+          ],
+          "egypt": [
+            "মিশর",
+            "মিশরীয় সাধারণ জরিপ কর্তৃপক্ষ"
+          ],
+          "brunei": [
+            "ব্রুনাই",
+            "ধর্ম বিষয়ক মন্ত্রণালয়"
+          ],
+          "qatar": [
+            "কাতার",
+            "কাতার ক্যালেন্ডার হাউস"
+          ],
+          "kuwait": [
+            "কুয়েত",
+            "আওকাফ ও ইসলাম বিষয়ক মন্ত্রণালয়"
+          ],
+          "jordan": [
+            "জর্ডান",
+            "আওকাফ, ইসলাম বিষয়ক ও পবিত্র স্থান মন্ত্রণালয়"
+          ],
+          "tatarstan": [
+            "তাতারস্তান",
+            "তাতারস্তানের মুসলিমদের আধ্যাত্মিক প্রশাসন"
+          ],
+          "cdum": [
+            "রাশিয়া",
+            "রাশিয়ার মুসলিমদের কেন্দ্রীয় আধ্যাত্মিক প্রশাসন"
+          ],
+          "albania": [
+            "আলবেনিয়া",
+            "আলবেনিয়ার মুসলিম সম্প্রদায়"
+          ],
+          "bulgaria": [
+            "বুলগেরিয়া",
+            "প্রধান মুফতির কার্যালয়"
+          ],
+          "banuri": [
+            "পাকিস্তান",
+            "জামিয়া উলুমুল ইসলামিয়া, বানুরি টাউন"
           ]
         }
       }
@@ -3902,6 +4334,54 @@
           "indonesia": [
             "इंडोनेशिया",
             "Kemenag"
+          ],
+          "turkiyetakvimi": [
+            "Türkiye Takvimi",
+            "Türkiye Takvimi (namazvakti.com)"
+          ],
+          "kazakhstan": [
+            "कज़ाख़स्तान",
+            "कज़ाख़स्तान के मुसलमानों का आध्यात्मिक प्रशासन"
+          ],
+          "egypt": [
+            "मिस्र",
+            "मिस्र का सामान्य सर्वेक्षण प्राधिकरण"
+          ],
+          "brunei": [
+            "ब्रुनेई",
+            "धार्मिक मामलों का मंत्रालय"
+          ],
+          "qatar": [
+            "क़तर",
+            "क़तर कैलेंडर हाउस"
+          ],
+          "kuwait": [
+            "कुवैत",
+            "औक़ाफ़ और इस्लामी मामलों का मंत्रालय"
+          ],
+          "jordan": [
+            "जॉर्डन",
+            "औक़ाफ़, इस्लामी मामलों और पवित्र स्थलों का मंत्रालय"
+          ],
+          "tatarstan": [
+            "तातारस्तान",
+            "तातारस्तान के मुसलमानों का आध्यात्मिक प्रशासन"
+          ],
+          "cdum": [
+            "रूस",
+            "रूस के मुसलमानों का केंद्रीय आध्यात्मिक प्रशासन"
+          ],
+          "albania": [
+            "अल्बानिया",
+            "अल्बानिया का मुस्लिम समुदाय"
+          ],
+          "bulgaria": [
+            "बुल्गारिया",
+            "मुफ़्ती-ए-आज़म का कार्यालय"
+          ],
+          "banuri": [
+            "पाकिस्तान",
+            "जामिया उलूम-उल-इस्लामिया, बनूरी टाउन"
           ]
         }
       }
@@ -4250,6 +4730,54 @@
           "indonesia": [
             "印度尼西亚",
             "Kemenag"
+          ],
+          "turkiyetakvimi": [
+            "Türkiye Takvimi",
+            "Türkiye Takvimi (namazvakti.com)"
+          ],
+          "kazakhstan": [
+            "哈萨克斯坦",
+            "哈萨克斯坦穆斯林宗教管理局"
+          ],
+          "egypt": [
+            "埃及",
+            "埃及测绘总局"
+          ],
+          "brunei": [
+            "文莱",
+            "宗教事务部"
+          ],
+          "qatar": [
+            "卡塔尔",
+            "卡塔尔历法馆"
+          ],
+          "kuwait": [
+            "科威特",
+            "宗教基金与伊斯兰事务部"
+          ],
+          "jordan": [
+            "约旦",
+            "宗教基金、伊斯兰事务与圣地部"
+          ],
+          "tatarstan": [
+            "鞑靼斯坦",
+            "鞑靼斯坦穆斯林宗教管理局"
+          ],
+          "cdum": [
+            "俄罗斯",
+            "俄罗斯穆斯林中央宗教管理局"
+          ],
+          "albania": [
+            "阿尔巴尼亚",
+            "阿尔巴尼亚穆斯林社群"
+          ],
+          "bulgaria": [
+            "保加利亚",
+            "大穆夫提办公室"
+          ],
+          "banuri": [
+            "巴基斯坦",
+            "巴努里镇伊斯兰学大学"
           ]
         }
       }
