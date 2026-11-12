@@ -725,6 +725,10 @@
     "wifaq": {
       "name": "United Kingdom (Wifaqul Ulama)",
       "desc": "The timetables Wifaqul Ulama (Britain) prints for some eighty towns, calculated on your device by its own method — Fajr at 18°, Isha at 15° or a seventh of the night — matching the published timetable to the minute. Both Asr times are available through the Hanafi Asr setting."
+    },
+    "tunisia": {
+      "name": "Tunisia (Institut National de la Météorologie)",
+      "desc": "The prayer times Tunisia's National Institute of Meteorology gives for the governorates' seats, Aïn Draham and Rjim Maatoug, calculated on your device by its own method — Fajr and Isha at 18°, Maghrib two minutes after sunset — matching the published times to the minute. The Institute gives no sunrise; the one shown is the method's."
     }
   },
   "compass": {

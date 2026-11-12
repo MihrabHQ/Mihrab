@@ -726,6 +726,10 @@
     "wifaq": {
       "name": "Royaume-Uni (Wifaqul Ulama)",
       "desc": "Les horaires que Wifaqul Ulama (Britain) publie pour quelque quatre-vingts villes, calculés sur votre appareil selon sa propre méthode — Fajr à 18°, Isha à 15° ou un septième de la nuit — et correspondant à la minute près à l’horaire publié. Les deux heures de l’Asr sont disponibles via le réglage de l’Asr hanafite."
+    },
+    "tunisia": {
+      "name": "Tunisie (Institut National de la Météorologie)",
+      "desc": "Les heures de prière que l’Institut National de la Météorologie de Tunisie donne pour les chefs-lieux des gouvernorats, Aïn Draham et Rjim Maatoug, calculées sur votre appareil selon sa propre méthode — Fajr et Isha à 18°, Maghrib deux minutes après le coucher du soleil — et correspondant à la minute près aux heures publiées. L’Institut n’indique pas le lever du soleil ; celui qui est affiché est celui de la méthode."
     }
   },
   "compass": {

@@ -18,8 +18,8 @@
 
 type Key = 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 export type Corrections = { from: string; to: string; points: Record<string, string[]> };
-export type CorrectionAuthority = 'sweden' | 'diyanet' | 'morocco' | 'algeria' | 'indonesia' | 'tatarstan' | 'cdum' | 'albania' | 'bulgaria' | 'egypt' | 'kuwait' | 'qatar' | 'jordan' | 'kazakhstan' | 'brunei' | 'banuri' | 'uae' | 'tehran' | 'wifaq';
-export const CORRECTION_AUTHORITIES: readonly CorrectionAuthority[] = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia', 'tatarstan', 'cdum', 'albania', 'bulgaria', 'egypt', 'kuwait', 'qatar', 'jordan', 'kazakhstan', 'brunei', 'banuri', 'uae', 'tehran', 'wifaq'];
+export type CorrectionAuthority = 'sweden' | 'diyanet' | 'morocco' | 'algeria' | 'indonesia' | 'tatarstan' | 'cdum' | 'albania' | 'bulgaria' | 'egypt' | 'kuwait' | 'qatar' | 'jordan' | 'kazakhstan' | 'brunei' | 'banuri' | 'uae' | 'tehran' | 'wifaq' | 'tunisia';
+export const CORRECTION_AUTHORITIES: readonly CorrectionAuthority[] = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia', 'tatarstan', 'cdum', 'albania', 'bulgaria', 'egypt', 'kuwait', 'qatar', 'jordan', 'kazakhstan', 'brunei', 'banuri', 'uae', 'tehran', 'wifaq', 'tunisia'];
 
 type Index = Map<string, Map<string, Partial<Record<Key, number>>>>;
 
@@ -47,6 +47,7 @@ const BUNDLED: Record<CorrectionAuthority, () => Corrections> = {
   uae: () => require('./data/uaeCorrections.json') as Corrections,
   tehran: () => require('./data/tehranCorrections.json') as Corrections,
   wifaq: () => require('./data/wifaqCorrections.json') as Corrections,
+  tunisia: () => require('./data/tunisiaCorrections.json') as Corrections,
 };
 const inForce: Partial<Record<CorrectionAuthority, Corrections>> = {};
 const listInForce = (authority: CorrectionAuthority): Corrections =>

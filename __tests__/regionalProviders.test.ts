@@ -139,6 +139,7 @@ describe('the table', () => {
       'qatar',
       'shuro',
       'tehran',
+      'tunisia',
       'uae',
       'wifaq',
     ]);

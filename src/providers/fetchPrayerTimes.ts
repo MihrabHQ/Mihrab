@@ -10,6 +10,7 @@ import { getBanuriTimes } from './banuriTimetable';
 import { getUaeTimes } from './uaeTimetable';
 import { getTehranTimes } from './tehranTimetable';
 import { getWifaqTimes } from './wifaqTimetable';
+import { getTunisiaTimes } from './tunisiaTimetable';
 import {
   computeNamazvaktiMethodTimes,
   getNamazvaktiTimes,
@@ -396,6 +397,23 @@ export async function fetchPrayerTimesUnified(
       // coverage, the general source.
       try {
         result = await MINISTRY_TIMETABLES[p.provider]({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+          school: p.school,
+        });
+        break;
+      } catch {
+        /* outside coverage */
+      }
+      return fetchPrayerTimesUnified({ ...p, provider: 'aladhan' });
+    }
+    case 'tunisia': {
+      // The Institut National de la Météorologie's own method, computed on
+      // the phone for the listed place the reader is in
+      // (`tunisiaTimetable.ts`). Outside its places, the general source.
+      try {
+        result = await getTunisiaTimes({
           latitude: p.latitude,
           longitude: p.longitude,
           date: p.date,

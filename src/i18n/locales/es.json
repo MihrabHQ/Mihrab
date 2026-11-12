@@ -726,6 +726,10 @@
     "wifaq": {
       "name": "Reino Unido (Wifaqul Ulama)",
       "desc": "Los horarios que Wifaqul Ulama (Britain) publica para unas ochenta localidades, calculados en tu dispositivo con su propio método —Fajr a 18°, Isha a 15° o un séptimo de la noche— y que coinciden al minuto con el horario publicado. Ambas horas de Asr están disponibles mediante el ajuste de Asr hanafí."
+    },
+    "tunisia": {
+      "name": "Túnez (Institut National de la Météorologie)",
+      "desc": "Los horarios de oración que el Instituto Nacional de Meteorología de Túnez ofrece para las capitales de las gobernaciones, Aïn Draham y Rjim Maatoug, calculados en tu dispositivo con su propio método —Fajr e Isha a 18°, Maghrib dos minutos después de la puesta del sol— y que coinciden al minuto con los horarios publicados. El Instituto no indica la salida del sol; la que se muestra es la del método."
     }
   },
   "compass": {

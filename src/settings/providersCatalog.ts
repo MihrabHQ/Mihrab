@@ -191,6 +191,14 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.wifaq.desc',
   },
   {
+    id: 'tunisia',
+    name: 'Tunisia (Institut National de la Météorologie)',
+    description:
+      'The prayer times Tunisia\'s National Institute of Meteorology gives for the governorates\' seats, Aïn Draham and Rjim Maatoug, calculated on your device by its own method — Fajr and Isha at 18°, Maghrib two minutes after sunset — matching the published times to the minute. The Institute gives no sunrise; the one shown is the method\'s.',
+    nameKey: 'providers.tunisia.name',
+    descriptionKey: 'providers.tunisia.desc',
+  },
+  {
     id: 'marw',
     name: 'Algeria',
     description:

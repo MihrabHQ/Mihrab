@@ -257,10 +257,14 @@ describe('who gets it', () => {
     expect(
       regionalProviderForCoords({ latitude: 33.5731, longitude: -7.5898 }),
     ).toBe('habous');
-    // Tunis has no national table here, but Tunisia has a method of its own
-    // (18), which AlAdhan's Automatic computes: not Diyanet for being near.
+    // Tunis is its own Institute's (tunisiaTimetable.ts), never Algeria's for being near.
     expect(
       regionalProviderForCoords({ latitude: 36.8065, longitude: 10.1815 }),
+    ).toBe('tunisia');
+    // …and a Tunisian town the Institute's method is not held to has no
+    // national table here: its country's method (18), by AlAdhan.
+    expect(
+      regionalProviderForCoords({ latitude: 35.296, longitude: 10.706 }),
     ).toBeNull();
   });
 

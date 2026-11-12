@@ -39,7 +39,7 @@ const NATIONAL: [string, number, number, string][] = [
   // not Moscow: the Central Muftiate's own timetable is Automatic's there (`russiaMuftiates.test.ts`)
   ['Vladivostok', 43.1155, 131.8855, 'RU'],
   // not Cairo, Amman, Kuwait City or Doha: each has its own timetable now (`ministryTimetables.test.ts`)
-  ['Tunis', 36.8065, 10.1815, 'TN'],
+  // Not Tunis any more: in the places its Institute's method is held to, Tunisia is its own (tunisiaTimetable.test.ts).
   ['Lisbon', 38.7223, -9.1393, 'PT'],
 ];
 

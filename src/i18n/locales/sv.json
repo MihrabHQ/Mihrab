@@ -725,6 +725,10 @@
     "wifaq": {
       "name": "Storbritannien (Wifaqul Ulama)",
       "desc": "Tidtabellerna som Wifaqul Ulama (Britain) ger ut för ett åttiotal orter, beräknade på din enhet med dess egen metod – fajr vid 18°, isha vid 15° eller en sjundedel av natten – och de stämmer med den publicerade tidtabellen på minuten. Båda asr-tiderna finns via inställningen för hanafi-asr."
+    },
+    "tunisia": {
+      "name": "Tunisien (Institut National de la Météorologie)",
+      "desc": "Bönetiderna som Tunisiens nationella meteorologiska institut ger för guvernementens huvudorter, Aïn Draham och Rjim Maatoug, beräknade på din enhet med dess egen metod – fajr och isha vid 18°, maghrib två minuter efter solnedgången – och de stämmer med de publicerade tiderna på minuten. Institutet anger ingen soluppgång; den som visas är metodens."
     }
   },
   "compass": {

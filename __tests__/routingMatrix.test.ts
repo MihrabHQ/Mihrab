@@ -39,6 +39,7 @@ import { nearestDiyanetPlace } from '../src/providers/diyanetMethod';
 import { providerHidesHanafiAsr } from '../src/settings/providerUi';
 import { CALCULATION_METHODS } from '../src/settings/methods';
 import type { PrayerDataProviderId } from '../src/settings/types';
+import { isCoordinateInTunisiaPlace } from '../src/utils/tunisiaRegion';
 
 const OWN_SOURCE: Record<
   string,
@@ -198,6 +199,10 @@ describe('the routing matrix', () => {
         expect(row.auto).toBe('aladhan');
         expect(row.method).toBe(autoMethodForCoords(latitude, longitude));
         expect([1, 2]).toContain(row.method);
+        expect(row.chosen3).toBe('aladhan');
+      } else if (isCoordinateInTunisiaPlace(latitude, longitude)) {
+        // A place Tunisia's Institute's method is held to: its own times, on the phone.
+        expect(row.auto).toBe('tunisia');
         expect(row.chosen3).toBe('aladhan');
       } else if (country in NATIONAL_METHOD) {
         // Its own method, by AlAdhan: never Diyanet for a listed place nearby.

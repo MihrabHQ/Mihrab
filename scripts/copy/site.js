@@ -49,6 +49,7 @@ const TABLE_WORDS = {
       uae: ['United Arab Emirates', 'the General Authority of Islamic Affairs, Endowments and Zakat'],
       tehran: ['Iran', 'the Institute of Geophysics, University of Tehran'],
       wifaq: ['United Kingdom', 'Wifaqul Ulama (Britain)'],
+      tunisia: ['Tunisia', 'the Institut National de la Météorologie'],
     },
   },
   sv: {
@@ -78,6 +79,7 @@ const TABLE_WORDS = {
       uae: ['Förenade Arabemiraten', 'Allmänna myndigheten för islamiska frågor, stiftelser och zakat'],
       tehran: ['Iran', 'Geofysiska institutet vid Teherans universitet'],
       wifaq: ['Storbritannien', 'Wifaqul Ulama (Britain)'],
+      tunisia: ['Tunisien', 'Institut National de la Météorologie'],
     },
   },
 };

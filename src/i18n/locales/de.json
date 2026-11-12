@@ -725,6 +725,10 @@
     "wifaq": {
       "name": "Vereinigtes Königreich (Wifaqul Ulama)",
       "desc": "Die Gebetszeitentabellen, die Wifaqul Ulama (Britain) für rund achtzig Orte herausgibt, auf deinem Gerät nach dessen eigener Methode berechnet – Fadschr bei 18°, Ischa bei 15° oder einem Siebtel der Nacht – und auf die Minute mit der veröffentlichten Tabelle übereinstimmend. Beide Asr-Zeiten sind über die Einstellung für das hanafitische Asr verfügbar."
+    },
+    "tunisia": {
+      "name": "Tunesien (Institut National de la Météorologie)",
+      "desc": "Die Gebetszeiten, die Tunesiens Nationales Institut für Meteorologie für die Hauptorte der Gouvernements, Aïn Draham und Rjim Maatoug angibt, auf deinem Gerät nach dessen eigener Methode berechnet – Fadschr und Ischa bei 18°, Maghrib zwei Minuten nach Sonnenuntergang – und auf die Minute mit den veröffentlichten Zeiten übereinstimmend. Das Institut gibt keinen Sonnenaufgang an; der angezeigte stammt aus der Methode."
     }
   },
   "compass": {

@@ -39,6 +39,7 @@ import { isCoordinateInPakistan } from '../utils/pakistanRegion';
 import { isCoordinateInUae } from '../utils/uaeRegion';
 import { isCoordinateInIran } from '../utils/iranRegion';
 import { isCoordinateInWifaqTown } from '../utils/wifaqRegion';
+import { isCoordinateInTunisiaPlace } from '../utils/tunisiaRegion';
 import { isCoordinateInTurkmenistan } from '../utils/turkmenistanRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
@@ -113,6 +114,8 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   // The United Kingdom outside London: Wifaqul Ulama's timetable, in the towns it prints one for.
   // After London's own (above): Wifaqul Ulama's London districts are a reader's to choose there.
   { id: 'wifaq', covers: isCoordinateInWifaqTown, yieldsToChosenMethod: true },
+  // Tunisia: the Institut National de la Météorologie's own times, in the places its method is held to.
+  { id: 'tunisia', covers: isCoordinateInTunisiaPlace, yieldsToChosenMethod: true },
 ];
 
 /**

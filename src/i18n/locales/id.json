@@ -725,6 +725,10 @@
     "wifaq": {
       "name": "Britania Raya (Wifaqul Ulama)",
       "desc": "Jadwal yang diterbitkan Wifaqul Ulama (Britain) untuk sekitar delapan puluh kota, dihitung di perangkat Anda dengan metodenya sendiri — Subuh pada 18°, Isya pada 15° atau sepertujuh malam — dan cocok hingga menit dengan jadwal yang diterbitkan. Kedua waktu Asar tersedia melalui pengaturan Asar Hanafi."
+    },
+    "tunisia": {
+      "name": "Tunisia (Institut National de la Météorologie)",
+      "desc": "Waktu salat yang diberikan Institut Meteorologi Nasional Tunisia untuk ibu kota kegubernuran, Aïn Draham, dan Rjim Maatoug, dihitung di perangkat Anda dengan metodenya sendiri — Subuh dan Isya pada 18°, Magrib dua menit setelah matahari terbenam — dan cocok hingga menit dengan waktu yang diterbitkan. Institut tidak memberikan waktu terbit; yang ditampilkan berasal dari metode ini."
     }
   },
   "compass": {

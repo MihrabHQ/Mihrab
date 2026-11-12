@@ -56,6 +56,9 @@ import { tehranTimes } from './tehranMethod';
 import { TEHRAN_INSTITUTE_METHOD_ID } from './tehranTimetable';
 import { wifaqTimes } from './wifaqMethod';
 import { WIFAQ_METHOD_ID } from './wifaqTimetable';
+import { tunisiaTimes } from './tunisiaMethod';
+import { TUNISIA_METHOD_ID } from './tunisiaTimetable';
+import { tunisiaPlaceAt } from '../utils/tunisiaRegion';
 import { UAE_METHOD_ID, uaeZoneAt } from './uaeTimetable';
 import { kuwaitTimes } from './kuwaitMethod';
 import { qatarTimes } from './qatarMethod';
@@ -650,6 +653,17 @@ export function computeLocalAdhanInstants(
         tatarstanCorrection(params.latitude, params.longitude, y, m, day),
         0,
       );
+  }
+  if (methodId === TUNISIA_METHOD_ID) {
+    // Tunisia — the Institut National de la Météorologie's own method
+    // (`tunisiaTimetable.ts`), on the minute it gives at a listed place's
+    // point with that place's horizon, then the few times on the other
+    // side of a minute. The list is for the Institute's Asr, at one shadow
+    // length; a Hanafi reader's is the method's own at two. It gives no
+    // sunrise, so the list never touches the method's.
+    const place = tunisiaPlaceAt(params.latitude, params.longitude);
+    const at = tunisiaTimes(params.latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1, place?.dip, place?.dipSunset);
+    if (at) return corrected(at, correctionFor('tunisia', params.latitude, params.longitude, y, m, day), params.school ?? 0);
   }
   if (methodId === WIFAQ_METHOD_ID) {
     // United Kingdom — Wifaqul Ulama's own method (`wifaqTimetable.ts`), on

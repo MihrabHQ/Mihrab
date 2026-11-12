@@ -42,6 +42,7 @@ export const PRAYER_DATA_PROVIDER_IDS = [
   'uae',
   'tehran',
   'wifaq',
+  'tunisia',
   'namazvakti',
   'diyanet',
   'igmg',

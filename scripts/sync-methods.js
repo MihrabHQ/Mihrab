@@ -53,13 +53,14 @@ const METHODS = [
   ['methods/uae.ts', 'uaeMethod.ts', 'uae'],
   ['methods/tehran.ts', 'tehranMethod.ts', 'tehran'],
   ['methods/wifaq.ts', 'wifaqMethod.ts', 'wifaq'],
+  ['methods/tunisia.ts', 'tunisiaMethod.ts', 'tunisia'],
 ];
 /**
  * Lists the app keeps under the same name. Corrections: every authority the app has a list for.
  * Not here: Albania's and Bulgaria's towns, which the app keeps in a shape of its own (the reader's
  * town beside the reference point).
  */
-const PLACES = ['algeriaCities', 'algeriaMethodPoints', 'banuriCities', 'bruneiDistricts', 'cdumCities', 'egyptCities', 'jordanZones', 'kazakhstanCities', 'kemenagMethodPoints', 'kemenagPlaces', 'kuwaitAreas', 'moroccoCities', 'moroccoMethodPoints', 'qatarCities', 'tatarstanPlaces', 'tehranCities', 'uaeZones', 'wifaqTowns'];
+const PLACES = ['algeriaCities', 'algeriaMethodPoints', 'banuriCities', 'bruneiDistricts', 'cdumCities', 'egyptCities', 'jordanZones', 'kazakhstanCities', 'kemenagMethodPoints', 'kemenagPlaces', 'kuwaitAreas', 'moroccoCities', 'moroccoMethodPoints', 'qatarCities', 'tatarstanPlaces', 'tehranCities', 'tunisiaPlaces', 'uaeZones', 'wifaqTowns'];
 
 /** Entries of a list the app does not serve: Jordan's ministry also prints a zone for Jerusalem (33), outside the country's outline. */
 const LEFT_OUT = { jordanZones: [33] };

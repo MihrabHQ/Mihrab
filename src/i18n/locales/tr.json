@@ -725,6 +725,10 @@
     "wifaq": {
       "name": "Birleşik Krallık (Wifaqul Ulama)",
       "desc": "Wifaqul Ulama'nın (Britain) seksen kadar yerleşim için yayımladığı vakit çizelgeleri, kendi yöntemiyle cihazınızda hesaplanır — imsak 18°, yatsı 15° veya gecenin yedide biri — ve yayımlanan çizelgeyle dakikası dakikasına örtüşür. Her iki ikindi vakti de Hanefî ikindi ayarıyla kullanılabilir."
+    },
+    "tunisia": {
+      "name": "Tunus (Institut National de la Météorologie)",
+      "desc": "Tunus Ulusal Meteoroloji Enstitüsü'nün vilayet merkezleri, Aïn Draham ve Rjim Maatoug için verdiği namaz vakitleri, kendi yöntemiyle cihazınızda hesaplanır — imsak ve yatsı 18°, akşam gün batımından iki dakika sonra — ve yayımlanan vakitlerle dakikası dakikasına örtüşür. Enstitü güneşin doğuşunu vermez; gösterilen, yöntemin kendi hesabıdır."
     }
   },
   "compass": {
