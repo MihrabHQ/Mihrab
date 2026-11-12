@@ -47,6 +47,7 @@ const CASES: [PrayerDataProviderId, string, number, number, number | 'auto', str
   ['jordan', 'Amman', 31.9539, 35.9106, 'auto', []],
   ['kazakhstan', 'Almaty', 43.222, 76.8512, 'auto', []],
   ['brunei', 'Bandar Seri Begawan', 4.9031, 114.9398, 'auto', []],
+  ['banuri', 'Karachi', 24.8607, 67.0011, 'auto', []],
   ['kemenag', 'Jakarta', -6.2088, 106.8456, 'auto', []],
   ['muis', 'Singapore', 1.3521, 103.8198, 'auto', []],
   ['jakim', 'Kuala Lumpur', 3.139, 101.6869, 'auto', []],

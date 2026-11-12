@@ -159,6 +159,14 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.brunei.desc',
   },
   {
+    id: 'banuri',
+    name: 'Pakistan (Jamia Banuri Town)',
+    description:
+      'The prayer times of Jamia Uloom-ul-Islamia, Banuri Town (Karachi), calculated on your device by its own method: in a city of its list, that city’s times as its page gives them, to the minute; elsewhere in Pakistan, the same method for where you are. Dhuhr is a minute after the zenith (zawal) it prints.',
+    nameKey: 'providers.banuri.name',
+    descriptionKey: 'providers.banuri.desc',
+  },
+  {
     id: 'marw',
     name: 'Algeria',
     description:

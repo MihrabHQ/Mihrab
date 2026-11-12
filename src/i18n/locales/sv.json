@@ -709,6 +709,10 @@
     "brunei": {
       "name": "Brunei",
       "desc": "Tidtabellen från Bruneis ministerium för religiösa frågor, beräknad på din enhet med dess egen metod för den plats i dess lista som är din – den stämmer med de publicerade tiderna på minuten."
+    },
+    "banuri": {
+      "name": "Pakistan (Jamia Banuri Town)",
+      "desc": "Bönetiderna från Jamia Uloom-ul-Islamia, Banuri Town (Karachi), beräknade på din enhet med dess egen metod: i en stad på dess lista är det stadens tider som dess sida anger dem, på minuten; i övriga Pakistan samma metod för platsen där du är. Dhuhr är en minut efter zenit (zawal) som sidan anger."
     }
   },
   "compass": {

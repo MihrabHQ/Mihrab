@@ -709,6 +709,10 @@
     "brunei": {
       "name": "Brunei",
       "desc": "Jadwal Kementerian Hal Ehwal Ugama Brunei, dihitung di perangkat Anda dengan metodenya sendiri untuk tempat Anda dalam daftarnya — cocok dengan jadwal yang diterbitkan hingga ke menitnya."
+    },
+    "banuri": {
+      "name": "Pakistan (Jamia Banuri Town)",
+      "desc": "Waktu salat Jamia Uloom-ul-Islamia, Banuri Town (Karachi), dihitung di perangkat Anda dengan metodenya sendiri: di kota dalam daftarnya, waktu kota itu sebagaimana halamannya memberikannya, tepat hingga menit; di tempat lain di Pakistan, metode yang sama untuk lokasi Anda. Zuhur satu menit setelah zawal yang dicantumkannya."
     }
   },
   "compass": {

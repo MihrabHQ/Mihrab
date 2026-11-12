@@ -14,7 +14,7 @@
  * add it to `npm run certify` (tools/certify.ts), not to type it in.
  */
 
-const AUTHORITY_ORDER = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia', 'turkiyetakvimi', 'kazakhstan', 'egypt', 'brunei', 'qatar', 'kuwait', 'jordan', 'tatarstan', 'cdum', 'albania', 'bulgaria'];
+const AUTHORITY_ORDER = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia', 'turkiyetakvimi', 'kazakhstan', 'egypt', 'brunei', 'qatar', 'kuwait', 'jordan', 'tatarstan', 'cdum', 'albania', 'bulgaria', 'banuri'];
 
 /** Who prints the tables each method matches, in words — names, not figures. */
 const AUTHORITY_NAMES = {
@@ -34,6 +34,7 @@ const AUTHORITY_NAMES = {
   cdum: { short: 'Russia (Central Muftiate)', authority: 'Central Spiritual Administration of Muslims of Russia' },
   albania: { short: 'Albania', authority: 'Muslim Community of Albania' },
   bulgaria: { short: 'Bulgaria', authority: 'Grand Mufti’s Office of Bulgaria' },
+  banuri: { short: 'Pakistan (Banuri Town)', authority: 'Jamia Uloom-ul-Islamia, Banuri Town, Karachi' },
 };
 
 class MissingFigure extends Error {

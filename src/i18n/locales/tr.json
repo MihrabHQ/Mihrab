@@ -709,6 +709,10 @@
     "brunei": {
       "name": "Brunei",
       "desc": "Vakit çizelgesinin sahibi: Brunei Din İşleri Bakanlığı. Cihazınızda bu kurumun kendi yöntemiyle, listesindeki size ait yer için hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür."
+    },
+    "banuri": {
+      "name": "Pakistan (Camia Benuri Town)",
+      "desc": "Camia Ulûm-i İslâmiyye, Benuri Town’un (Karaçi) namaz vakitleri, cihazınızda kendi yöntemiyle hesaplanır: listesindeki bir şehirde o şehrin vakitleri, sayfasının verdiği gibi, dakikası dakikasına; Pakistan’ın başka yerlerinde aynı yöntem bulunduğunuz yer için. Öğle, yayımladığı zeval vaktinden bir dakika sonradır."
     }
   },
   "compass": {

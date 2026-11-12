@@ -58,7 +58,12 @@ Survey, 77 cities), **Kuwait** (the Ministry of Awqaf, its areas),
 **Qatar** (the Calendar House's table), **Jordan** (the Ministry of Awqaf,
 16 zones), **Kazakhstan** (the Spiritual Administration of Muslims, 84
 cities and the reader's own spot elsewhere) and **Brunei** (the Ministry of
-Religious Affairs, four districts) — `ministryTimetables.ts`. The
+Religious Affairs, four districts) — `ministryTimetables.ts`. And
+**Pakistan** — Jamia Uloom-ul-Islamia, Banuri Town's own method
+(`banuriTimetable.ts`, inside the country's outline): in one of the hundred
+cities its page lists, that city's times; elsewhere in the country the same
+method for the reader's own spot. Dhuhr is the minute after the zenith
+(zawal) the page prints; the Hanafi Asr toggle applies. The
 certification of all of these is in mihrab-methods' `docs/status.md`.
 
 Every time is within a minute by the method alone. Each list covers the

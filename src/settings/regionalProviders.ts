@@ -35,6 +35,7 @@ import { isCoordinateInQatar } from '../utils/qatarRegion';
 import { isCoordinateInJordan } from '../utils/jordanRegion';
 import { isCoordinateInKazakhstan } from '../utils/kazakhstanRegion';
 import { isCoordinateInBrunei } from '../utils/bruneiRegion';
+import { isCoordinateInPakistan } from '../utils/pakistanRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import {
@@ -98,6 +99,8 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   { id: 'jordan', covers: isCoordinateInJordan, yieldsToChosenMethod: true },
   { id: 'kazakhstan', covers: isCoordinateInKazakhstan, yieldsToChosenMethod: true },
   { id: 'brunei', covers: isCoordinateInBrunei, yieldsToChosenMethod: true },
+  // Pakistan: Jamia Banuri Town's own method, the one the country's "Karachi" angles are named after.
+  { id: 'banuri', covers: isCoordinateInPakistan, yieldsToChosenMethod: true },
 ];
 
 /**

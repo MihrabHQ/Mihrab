@@ -33,8 +33,7 @@ const NATIONAL: [string, number, number, string][] = [
   ['Dubai', 25.2048, 55.2708, 'AE'],
   ['Manama', 26.2285, 50.586, 'BH'],
   ['Muscat', 23.588, 58.3829, 'OM'],
-  ['Karachi', 24.8607, 67.0011, 'PK'],
-  ['Lahore', 31.5204, 74.3587, 'PK'],
+  // not Karachi or Lahore: Jamia Banuri Town's own method is Automatic's in Pakistan (`banuriTimetable.test.ts`)
   ['Delhi', 28.6139, 77.209, 'IN'],
   ['Dhaka', 23.8103, 90.4125, 'BD'],
   // not Moscow: the Central Muftiate's own timetable is Automatic's there (`russiaMuftiates.test.ts`)

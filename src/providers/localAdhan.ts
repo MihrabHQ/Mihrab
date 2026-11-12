@@ -49,6 +49,8 @@ import { albaniaTimes } from './albaniaMethod';
 import { bulgariaTimes } from './bulgariaMethod';
 import { ALBANIA_METHOD_ID, BULGARIA_METHOD_ID } from './balkanTowns';
 import { egyptTimes } from './egyptMethod';
+import { banuriTimes } from './banuriMethod';
+import { BANURI_METHOD_ID } from './banuriTimetable';
 import { kuwaitTimes } from './kuwaitMethod';
 import { qatarTimes } from './qatarMethod';
 import { jordanTimes } from './jordanMethod';
@@ -642,6 +644,20 @@ export function computeLocalAdhanInstants(
         tatarstanCorrection(params.latitude, params.longitude, y, m, day),
         0,
       );
+  }
+  if (methodId === BANURI_METHOD_ID) {
+    // Pakistan — Jamia Banuri Town's own method (`banuriTimetable.ts`), on
+    // the minute its page prints at a listed city's point, then the few
+    // times on the other side of a minute. The page's Asr, and the list's,
+    // is the Hanafi one; a reader of another school gets the same method's
+    // at one shadow length, which the list does not touch. The page prints
+    // the zenith and no Dhuhr: Dhuhr is the minute after it.
+    const hanafi = params.school === 1;
+    const at = banuriTimes(params.latitude, params.longitude, y, m, day, hanafi ? 2 : 1);
+    if (at) {
+      const t = corrected(at, correctionFor('banuri', params.latitude, params.longitude, y, m, day), hanafi ? 0 : 1);
+      return { ...t, dhuhr: new Date(t.dhuhr.getTime() + 60_000) };
+    }
   }
   if (methodId >= EGYPT_METHOD_ID && methodId <= BRUNEI_METHOD_ID) {
     // Six national timetables by the authority's own method

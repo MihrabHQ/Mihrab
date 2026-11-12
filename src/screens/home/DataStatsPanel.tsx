@@ -183,7 +183,7 @@ function DataStatsPanelImpl() {
           }),
         ),
       );
-      if (coords && (provider === 'islamiska_forbundet' || provider === 'habous' || provider === 'marw' || provider === 'kemenag' || provider === 'diyanet' || provider === 'igmg' || provider === 'dumrt' || provider === 'cdum' || provider === 'kmsh' || provider === 'grandmufti' || (provider != null && isMinistryTimetable(provider)))) {
+      if (coords && (provider === 'islamiska_forbundet' || provider === 'habous' || provider === 'marw' || provider === 'kemenag' || provider === 'diyanet' || provider === 'igmg' || provider === 'dumrt' || provider === 'cdum' || provider === 'kmsh' || provider === 'grandmufti' || provider === 'banuri' || (provider != null && isMinistryTimetable(provider)))) {
         // Calculated on the phone (the authority's method and correction list): nothing to poll or hold.
         await recordDataSource('local');
       }

@@ -337,7 +337,7 @@
   },
   "albania": {
     "certified": true,
-    "checkedAt": "2026-11-11",
+    "checkedAt": "2026-11-12",
     "places": 22,
     "checks": [
       {
@@ -378,6 +378,29 @@
       "to": "2026-12-31",
       "entries": 2448,
       "sha256": "2639c48418d7e7539dd2364aaeddd6f87953cbbd7c7f459bdf48d8ba157bfc63"
+    },
+    "revision": 1
+  },
+  "banuri": {
+    "certified": true,
+    "checkedAt": "2026-11-12",
+    "places": 100,
+    "checks": [
+      {
+        "tables": "Pakistan — Jamia Banuri Town’s timetable",
+        "places": 100,
+        "times": 219000,
+        "off": 0,
+        "offWithoutCorrections": 8,
+        "from": "2026-01-01",
+        "to": "2026-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2026-01-01",
+      "to": "2026-12-31",
+      "entries": 8,
+      "sha256": "b2b8cf5d7017759ddafe6f77bcf2d9cfbf8c0e9e66fefcb4d68948ff68fc8077"
     },
     "revision": 1
   }

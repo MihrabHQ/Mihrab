@@ -109,6 +109,7 @@ describe('each national table is recommended where it covers, and nowhere else',
 describe('the table', () => {
   it('covers every country that has a published source', () => {
     expect(REGIONAL_PROVIDER_REGIONS.map(r => r.id).sort()).toEqual([
+      'banuri',
       'bashkortostan',
       'brunei',
       'cdum',

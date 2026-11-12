@@ -710,6 +710,10 @@
     "brunei": {
       "name": "Brunei",
       "desc": "L’horaire établi par le ministère des Affaires religieuses du Brunei, calculé sur votre appareil selon sa propre méthode pour le lieu de sa liste qui est le vôtre ; il correspond à la minute près aux horaires publiés."
+    },
+    "banuri": {
+      "name": "Pakistan (Jamia Banuri Town)",
+      "desc": "Les horaires de prière de la Jamia Uloom-ul-Islamia, Banuri Town (Karachi), calculés sur votre appareil selon sa propre méthode : dans une ville de sa liste, les horaires de cette ville tels que sa page les donne, à la minute près ; ailleurs au Pakistan, la même méthode pour l’endroit où vous êtes. Le Dhuhr est une minute après le zénith (zawal) qu’elle publie."
     }
   },
   "compass": {

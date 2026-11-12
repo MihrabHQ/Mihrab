@@ -6,6 +6,7 @@ import { getMarwDatasetTimes } from './marwDataset';
 import { getCdumTimes, getTatarstanTimes } from './russiaMuftiates';
 import { getAlbaniaTimes, getBulgariaTimes } from './balkanTimetables';
 import { MINISTRY_TIMETABLES } from './ministryTimetables';
+import { getBanuriTimes } from './banuriTimetable';
 import {
   computeNamazvaktiMethodTimes,
   getNamazvaktiTimes,
@@ -383,6 +384,24 @@ export async function fetchPrayerTimesUnified(
       // coverage, the general source.
       try {
         result = await MINISTRY_TIMETABLES[p.provider]({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+          school: p.school,
+        });
+        break;
+      } catch {
+        /* outside coverage */
+      }
+      return fetchPrayerTimesUnified({ ...p, provider: 'aladhan' });
+    }
+    case 'banuri': {
+      // Jamia Banuri Town's own method, computed on the phone: a listed
+      // city's times inside it, the reader's own spot elsewhere in
+      // Pakistan (`banuriTimetable.ts`). Outside Pakistan, the general
+      // source.
+      try {
+        result = await getBanuriTimes({
           latitude: p.latitude,
           longitude: p.longitude,
           date: p.date,

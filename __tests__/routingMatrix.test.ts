@@ -62,6 +62,8 @@ const OWN_SOURCE: Record<
   JO: { source: 'jordan', method: 23, yields: true },
   KZ: { source: 'kazakhstan', method: 3, yields: true },
   BN: { source: 'brunei', method: 3, yields: true },
+  // Pakistan: Jamia Banuri Town's own method; the stand-in is the Karachi angles it is named for
+  PK: { source: 'banuri', method: 1, yields: true },
 };
 
 /** The country's own method, as listed under Calculation method (Bahrain, Oman, Iraq: not read off anything, MWL). */

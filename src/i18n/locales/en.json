@@ -709,6 +709,10 @@
     "brunei": {
       "name": "Brunei",
       "desc": "The timetable of Brunei’s Ministry of Religious Affairs, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute."
+    },
+    "banuri": {
+      "name": "Pakistan (Jamia Banuri Town)",
+      "desc": "The prayer times of Jamia Uloom-ul-Islamia, Banuri Town (Karachi), calculated on your device by its own method: in a city of its list, that city’s times as its page gives them, to the minute; elsewhere in Pakistan, the same method for where you are. Dhuhr is a minute after the zenith (zawal) it prints."
     }
   },
   "compass": {
