@@ -96,6 +96,7 @@ import {
 import { playAyahOnRepeat, playFromAyah, playRange } from '../audio/playback';
 import { RecitationControls } from '../audio/RecitationControls';
 import { ShareAyahModal } from './ShareAyahModal';
+import { ShareAyahRangeSheet } from './ShareAyahRangeSheet';
 import {
   speakWord,
   TajweedAyahSection,
@@ -293,6 +294,8 @@ export function AyahActionSheet({
   /** The "as text or as a card" question — see `share` below. */
   const [formatPicker, setFormatPicker] = useState(false);
   const [shareCardVisible, setShareCardVisible] = useState(false);
+  /** Several ayahs from this one on — see `ShareAyahRangeSheet`. */
+  const [rangeVisible, setRangeVisible] = useState(false);
 
   // ── Tafsir (v2.7.28; persisted v2.8) ────────────────────────────────
   // The chosen edition is derived from the persisted quran pref so it sticks
@@ -483,6 +486,7 @@ export function AyahActionSheet({
   useEffect(() => {
     if (!visible) {
       setShareCardVisible(false);
+      setRangeVisible(false);
       setFormatPicker(false);
       // A walk with ‹ › ends with the sheet: reopened, it shows the ayah it
       // is opened on (see `stepped`).
@@ -1762,7 +1766,26 @@ export function AyahActionSheet({
             subtitle: t('quran.shareAsImageHelp', 'A card with the ayah on it'),
             onPress: () => setShareCardVisible(true),
           },
+          {
+            // More than this one ayah: a run in the same surah, to share
+            // or to copy (a Play review, 12 Nov 2026).
+            id: 'range',
+            title: t('quran.shareRange', 'Several ayahs'),
+            subtitle: t('quran.shareRangeHelp', {
+              defaultValue: 'From this ayah on in {{surah}}, to share or to copy',
+              surah: meta?.romanized ?? '',
+            }),
+            onPress: () => setRangeVisible(true),
+          },
         ]}
+      />
+      <ShareAyahRangeSheet
+        visible={rangeVisible}
+        onClose={() => setRangeVisible(false)}
+        surah={surah}
+        ayah={ayah}
+        riwayah={riwayah}
+        edition={edition}
       />
       <ShareAyahModal
         visible={shareCardVisible}

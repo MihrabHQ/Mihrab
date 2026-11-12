@@ -57,6 +57,63 @@ export function ayahShareText({
   return attributed([arabic, translation], reference);
 }
 
+/** Which parts of a run of ayahs to send: as for a dua (`DuaShareParts`). */
+export type AyahRangeParts = 'arabic' | 'translation' | 'both';
+
+export type AyahRangeShare = {
+  /** The ayahs' Arabic, in order, one string each. */
+  arabic: ReadonlyArray<string>;
+  /** Their translations, in the same order. */
+  translation: ReadonlyArray<string>;
+  /** The number of the first ayah. */
+  first: number;
+  surah: number;
+  /** The surah's name as the app shows it — "Al-Kahf". */
+  surahName: string;
+};
+
+/** 5 → "٥": the ayah's number as it is printed at the ayah's end. */
+function arabicIndic(n: number): string {
+  return String(n).replace(/[0-9]/g, d => String.fromCharCode(0x0660 + Number(d)));
+}
+
+/** "Al-Kahf 18:1–10", or "Al-Kahf 18:5" for a run of one. */
+export function ayahRangeReference(surahName: string, surah: number, first: number, last: number): string {
+  return `${surahName} ${surah}:${first}${last > first ? `\u2013${last}` : ''}`;
+}
+
+/**
+ * A run of ayahs — asked for in a Play review: "add the option to copy or
+ * share more than one verse; it shouldn't be limited to just one".
+ *
+ * The Arabic as it is printed: one block, each ayah closed by its number
+ * in the ornate brackets the muṣḥaf closes it with (﴿٥﴾), so the run reads
+ * as a passage and still says where each ayah ends. The translation as a
+ * second block, each ayah on its own line behind its number — a passage
+ * of translation with the joins hidden would hand a reader one man's
+ * sentence as if it were one verse. One reference for the run, last,
+ * as every share here ends.
+ *
+ * Arabic only, or translation only, as the dua share lets the sender
+ * choose (#47): what a person sends depends on who receives it.
+ */
+export function ayahRangeShareText(
+  { arabic, translation, first, surah, surahName }: AyahRangeShare,
+  parts: AyahRangeParts = 'both',
+): string {
+  const last = first + arabic.length - 1;
+  const arabicBlock = arabic
+    .map((text, i) => `${text.trim()} \uFD3F${arabicIndic(first + i)}\uFD3E`)
+    .join(' ');
+  const translationBlock = translation
+    .map((text, i) => (text.trim() ? `(${first + i}) ${text.trim()}` : ''))
+    .filter(Boolean)
+    .join('\n');
+  const blocks =
+    parts === 'arabic' ? [arabicBlock] : parts === 'translation' ? [translationBlock] : [arabicBlock, translationBlock];
+  return attributed(blocks, ayahRangeReference(surahName, surah, first, last));
+}
+
 export type DuaShare = {
   title: string;
   arabic: string;
