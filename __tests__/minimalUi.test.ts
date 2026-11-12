@@ -163,14 +163,28 @@ describe('the swipe', () => {
     expect(bar).not.toContain('settlePagerBase(state.index, !first.current);');
   });
 
-  it('turns by a finger held on the dots and slid along them', () => {
+  it('a finger held on the dots lights the tab under it, ticks, and opens it on the lift — not before', () => {
     expect(bar).toContain('.activateAfterLongPress(160)');
-    expect(bar).toContain('pagerHold.setValue(pos - live.current.index);');
     expect(bar).toContain('const target = Math.round(slotAt(e.x));');
     expect(bar).toContain('if (live.current.rtl) fromLeft = count - 1 - fromLeft;');
-    // The dots and the pages read one position, so the strip follows the finger with them.
     expect(bar).toContain('() => pagerPosition(width, state.routes.length, rtl),');
-    expect(bar).toContain('settlePagerBase(target);');
+    // The page does not move under the hold: nothing drives the pager's
+    // offset from the finger, and the turn is made in onEnd alone.
+    expect(bar).not.toContain('pagerHold');
+    const [, start = '', update = '', end = ''] =
+      /\.onStart\(([\s\S]*?)\.onUpdate\(([\s\S]*?)\.onEnd\(([\s\S]*?)\.onFinalize\(/.exec(bar) ?? [];
+    expect(start).toContain('hapticScrubStart();');
+    expect(start).not.toMatch(/turnPagerTo|navigate/);
+    // The full bar's tick, once a tab crossed and not on every move.
+    expect(update).toMatch(/if \(slot === lastSlot\.current\) return;[\s\S]*setHovered\(slot\);[\s\S]*hapticScrubTick\(false\);/);
+    expect(update).not.toMatch(/turnPagerTo|navigate|settlePagerBase/);
+    expect(end).toContain('turnPagerTo(target, at, () => navigation.navigate(route.name, route.params));');
+    // Lit whole, at the current tab's size, in the colour the full bar's hover uses.
+    // A whole icon of its own: a native-driven opacity does not yield to a style set from the bar.
+    expect(bar).toContain('<View style={[styles.icon, hovered === index ? styles.unseen : null]}>');
+    expect(bar).toMatch(/\{Icon && hovered === index \? \([\s\S]*?<View style=\{\[styles\.icon, styles\.hovered\]\}>\s*<TabIcon render=\{Icon\} color=\{String\(palette\.textSolid\)\}/);
+    expect(bar).toContain('hovered: { transform: [{ scale: HOVER_SCALE }] },');
+    expect(readFileSync(path.join(__dirname, '..', 'src', 'navigation', 'MainTabs.tsx'), 'utf8')).toContain('setHoverTint(palette.textSolid);');
   });
 
   it('shows the icons while a page turns, the current one larger, and dots at rest', () => {

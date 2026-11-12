@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Animated, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -9,24 +9,18 @@ import { useAppearanceSliceOrNull } from '../context/PrayerSettingsContext';
 import { MINIMAL_TAB_BAR_HEIGHT, useTabBarBottom } from './tabBarInset';
 import { useTabBarHidden } from './tabBarVisibility';
 import { scrimColor } from './TabBarScrim';
+import { hapticScrubStart, hapticScrubTick } from '../polish/haptics';
 import {
   PAGER_TRANSITION_MS,
   engagePagerFor,
   pagerEngaged,
   pagerHeldByFinger,
-  pagerHold,
   pagerPosition,
   setPagerEngaged,
   settlePagerBase,
-  settlePagerHold,
   notePagerIndex,
   pagerRowIndex,
   turnPagerTo,
-  nextPagerTurn,
-  isCurrentPagerTurn,
-  holdPendingTurn,
-  flushPendingTurn,
-  setPagerSettling,
 } from './minimalPager';
 
 /**
@@ -43,10 +37,11 @@ import {
  * icons are half lit each. As the turn settles the icons go back to
  * dots.
  *
- * A finger HELD on a dot and slid along the row does the same by hand:
- * the icons come up, the lit one follows the finger from dot to dot and
- * the page leans the way it is going, and the tab under the finger when
- * it lifts is the one opened — the full bar's hold-and-slide, on dots.
+ * A finger HELD on a dot and slid along the row is the full bar's
+ * hold-and-slide, on dots: the icons come up, the one under the finger
+ * lights in the full bar's colour with a tick for each tab crossed, and
+ * the page stays where it is — the tab under the finger is opened when
+ * the finger lifts, not before.
  *
  * Or, with Settings → Appearance → "Icons instead of dots"
  * (`minimalTabIcons`), the small icons stay up all the time and the dots
@@ -62,6 +57,8 @@ const DOT = 6;
 const ICON = 16;
 const HIT = 44;
 const FADE_REACH = 20;
+/** The icon under a held finger: the current tab's size. */
+const HOVER_SCALE = 1.25;
 
 /**
  * A tab's icon, drawn as a component of its own.
@@ -146,6 +143,8 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
     if (live.current.rtl) fromLeft = count - 1 - fromLeft;
     return Math.max(0, Math.min(count - 1, fromLeft));
   };
+  // The tab under a held finger — lit, and opened on the lift.
+  const [hovered, setHovered] = useState<number | null>(null);
   const hold = useMemo(
     () =>
       Gesture.Pan()
@@ -153,49 +152,41 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
         .runOnJS(true)
         .onStart(e => {
           holding.current = true;
-          // With reach: a hold can slide to any tab, so every page is laid out.
+          // With reach: a hold can lift on any tab, so every page is laid
+          // out by then. The page itself does not move under the hold.
           setPagerEngaged(true, true);
           lastSlot.current = Math.round(slotAt(e.x));
-          pagerHold.setValue(slotAt(e.x) - live.current.index);
+          setHovered(lastSlot.current);
+          hapticScrubStart();
         })
         .onUpdate(e => {
-          const pos = slotAt(e.x);
-          const slot = Math.round(pos);
-          // No haptic as the finger crosses a dot: the icon lighting is the mark.
-          if (slot !== lastSlot.current) lastSlot.current = slot;
-          pagerHold.setValue(pos - live.current.index);
+          const slot = Math.round(slotAt(e.x));
+          if (slot === lastSlot.current) return;
+          lastSlot.current = slot;
+          setHovered(slot);
+          // The full bar's tick (TabBarButton), one a tab crossed.
+          hapticScrubTick(false);
         })
         .onEnd((e, success) => {
           if (!success) return; // onFinalize lets go.
           const target = Math.round(slotAt(e.x));
           const route = state.routes[target];
           holding.current = false;
-          if (route && target !== pagerRowIndex(live.current.index)) {
+          setHovered(null);
+          const at = pagerRowIndex(live.current.index);
+          if (route && target !== at) {
             const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-            if (!event.defaultPrevented) {
-              // As a swipe's: the navigator hears of it when the row has
-              // landed (minimalPager.ts, `turnPagerTo`), the pages already
-              // laid out by the hold's reach.
-              const mine = nextPagerTurn();
-              setPagerSettling(true);
-              settlePagerBase(target);
-              holdPendingTurn(target, () => navigation.navigate(route.name, route.params));
-              settlePagerHold(() => {
-                if (isCurrentPagerTurn(mine)) {
-                  flushPendingTurn();
-                  setPagerSettling(false);
-                }
-                setPagerEngaged(false, true);
-              });
-              return;
-            }
+            // As a tap on that dot: the row slides, and the navigator
+            // hears when it has landed (minimalPager.ts, `turnPagerTo`).
+            if (!event.defaultPrevented) turnPagerTo(target, at, () => navigation.navigate(route.name, route.params));
           }
-          settlePagerHold(() => setPagerEngaged(false, true));
+          setPagerEngaged(false, true);
         })
         .onFinalize((_e, success) => {
           if (success || !holding.current) return;
           holding.current = false;
-          settlePagerHold(() => setPagerEngaged(false, true));
+          setHovered(null);
+          setPagerEngaged(false, true);
         }),
     [navigation, state.routes],
   );
@@ -300,16 +291,25 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
               ]}
             />
             {Icon ? (
-              <Animated.View
-                style={[
-                  styles.icon,
-                  {
+              // The plain view is the hover's: a native-driven opacity does
+              // not yield to a style set from here, so under a held finger
+              // the turning icon is put out of sight and a whole one drawn.
+              <View style={[styles.icon, hovered === index ? styles.unseen : null]}>
+                <Animated.View
+                  style={{
                     opacity: nodes.iconOpacity,
                     transform: [{ scale: nodes.iconScale }],
-                  },
-                ]}>
+                  }}>
+                  <TabIcon render={Icon} color={String(palette.textSolid)} size={ICON} focused={focused} />
+                </Animated.View>
+              </View>
+            ) : null}
+            {Icon && hovered === index ? (
+              // Under a held finger: lit whole and at the current tab's
+              // size, whatever tab the page is on.
+              <View style={[styles.icon, styles.hovered]}>
                 <TabIcon render={Icon} color={String(palette.textSolid)} size={ICON} focused={focused} />
-              </Animated.View>
+              </View>
             ) : null}
           </Pressable>
         );
@@ -339,4 +339,6 @@ const styles = StyleSheet.create({
   dot: { width: DOT, height: DOT, borderRadius: DOT / 2 },
   // Over the dot, in the same spot: one or the other shows.
   icon: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
+  unseen: { opacity: 0 },
+  hovered: { transform: [{ scale: HOVER_SCALE }] },
 });
