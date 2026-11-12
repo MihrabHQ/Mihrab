@@ -78,7 +78,14 @@ and no Isha; those are the method's (one shadow length, 14°). And the
 (`wifaqTimetable.ts`): in one of the eighty-one towns it prints a timetable
 for (within fifteen kilometres of the town's point), that town's times;
 both its Asrs, by the Hanafi Asr setting. Elsewhere in the country
-Automatic is as before.
+Automatic is as before. And **Tunisia** — the Institut National de la
+Météorologie's own method (`tunisiaTimetable.ts`): within twelve
+kilometres of one of the twenty-six places it is held to (the governorates'
+seats, Aïn Draham, Rjim Maatoug), that place's times, with the horizon of
+its height. The Institute answers every delegation with its own horizon
+and only these were read, so elsewhere in Tunisia Automatic is as before:
+the country's method, by AlAdhan. It gives no sunrise; the one shown is
+the method's.
 **Turkmenistan** has no
 timetable of its own Muftiate's to follow; Automatic there is Diyanet's
 method throughout (Diyanet prints tables for some thirty Turkmen towns),

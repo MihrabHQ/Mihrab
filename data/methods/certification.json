@@ -228,18 +228,18 @@
       {
         "tables": "Qatar — the Calendar House’s times",
         "places": 1,
-        "times": 708,
+        "times": 720,
         "off": 0,
         "offWithoutCorrections": 27,
         "from": "2026-06-16",
-        "to": "2026-10-11"
+        "to": "2026-11-12"
       }
     ],
     "corrections": {
       "from": "2026-06-16",
-      "to": "2026-10-11",
+      "to": "2026-11-12",
       "entries": 27,
-      "sha256": "e6fc01f1ab8332d8e02a376474474748539b7d9edfacbd55cc36a3e1ebee6220"
+      "sha256": "0fd4b772e9d33346f35f841016b39ff4007ff24b6b03c9f37a6b011131e611f3"
     },
     "revision": 1
   },
@@ -412,18 +412,18 @@
       {
         "tables": "United Arab Emirates — the Authority’s times",
         "places": 41,
-        "times": 89790,
+        "times": 179580,
         "off": 0,
-        "offWithoutCorrections": 1325,
+        "offWithoutCorrections": 3193,
         "from": "2026-01-01",
-        "to": "2026-12-31"
+        "to": "2027-12-31"
       }
     ],
     "corrections": {
       "from": "2026-01-01",
-      "to": "2026-12-31",
-      "entries": 1251,
-      "sha256": "3bc4720857ef51e55061f59fe2521ce1fb00d2d6c864c897a5bd6b9976802b9b"
+      "to": "2027-12-31",
+      "entries": 3036,
+      "sha256": "747d36488188db98e5949c3844f50ee708322b5690ea76556f9d69638944af29"
     },
     "revision": 1
   },
@@ -472,5 +472,28 @@
       "sha256": "f223b540b2cc17936c137e04f7a0efbf211a5ebb7ab41051194801c5243c2c31"
     },
     "revision": 2
+  },
+  "tunisia": {
+    "certified": true,
+    "checkedAt": "2026-11-12",
+    "places": 26,
+    "checks": [
+      {
+        "tables": "Tunisia — the Institute’s times",
+        "places": 26,
+        "times": 47405,
+        "off": 0,
+        "offWithoutCorrections": 1051,
+        "from": "2026-01-01",
+        "to": "2026-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2026-01-01",
+      "to": "2026-12-31",
+      "entries": 1051,
+      "sha256": "e21e868bf6c38ebc19a4a066104cad6fe2e401bf85e1ba10133545c63b39148b"
+    },
+    "revision": 1
   }
 }
