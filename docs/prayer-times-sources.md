@@ -68,7 +68,10 @@ method for the reader's own spot. Dhuhr is the minute after the zenith
 Endowments and Zakat's own method (`uaeTimetable.ts`): its forty-one
 zones, each at its own point with its own horizons, the reader given the
 zone of the nearest of its towns (`data/uaeAreas.json`); the two summits, Jebel Jais and Jebel
-Hafeet, only on the mountain. The
+Hafeet, only on the mountain. **Turkmenistan** has no
+timetable of its own Muftiate's to follow; Automatic there is Diyanet's
+method throughout (Diyanet prints tables for some thirty Turkmen towns),
+for a listed town near the reader or the reader's own spot. The
 certification of all of these is in mihrab-methods' `docs/status.md`.
 
 Every time is within a minute by the method alone. Each list covers the

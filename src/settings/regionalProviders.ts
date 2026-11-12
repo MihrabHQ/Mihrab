@@ -37,6 +37,7 @@ import { isCoordinateInKazakhstan } from '../utils/kazakhstanRegion';
 import { isCoordinateInBrunei } from '../utils/bruneiRegion';
 import { isCoordinateInPakistan } from '../utils/pakistanRegion';
 import { isCoordinateInUae } from '../utils/uaeRegion';
+import { isCoordinateInTurkmenistan } from '../utils/turkmenistanRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import {
@@ -117,6 +118,13 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
  */
 export const HOME_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   { id: 'diyanet', covers: isCoordinateInTurkey, yieldsToChosenMethod: true },
+  // Turkmenistan. Its Muftiate publishes no timetable to follow, and Diyanet
+  // prints one for some thirty of its towns — Ashgabat, Mary, Türkmenabat,
+  // Daşoguz, Türkmenbaşy, Balkanabat — which Automatic already gave near
+  // them. The rest of the country had the worldwide default, another
+  // convention from the next town's; it has Diyanet's method too now, for
+  // the reader's own spot.
+  { id: 'diyanet', covers: isCoordinateInTurkmenistan, yieldsToChosenMethod: true },
 ];
 
 /**
