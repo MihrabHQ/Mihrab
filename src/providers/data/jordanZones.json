@@ -1,0 +1,18 @@
+[
+ {"id":1,"name":"Amman, Balqa, Zarqa, Madaba","lat":32.017,"lon":35.832,"dipEast":1.375,"dipWest":1.24,"fajrMinutes":-0.65},
+ {"id":2,"name":"Irbid","lat":32.534,"lon":35.81,"dipEast":1.082,"dipWest":1.119,"fajrMinutes":-0.85},
+ {"id":3,"name":"Karak","lat":31.17,"lon":35.7,"dipEast":1.397,"dipWest":1.357,"fajrMinutes":-0.19},
+ {"id":4,"name":"Tafileh","lat":30.822,"lon":35.606,"dipEast":1.557,"dipWest":1.519,"fajrMinutes":-0.19},
+ {"id":5,"name":"Ma'an","lat":30.21,"lon":35.7315,"dipEast":1.265,"dipWest":1.257,"fajrMinutes":-0.01},
+ {"id":6,"name":"Aqaba","lat":29.526,"lon":35.019,"dipEast":0.507,"dipWest":0.84,"fajrMinutes":0.0},
+ {"id":7,"name":"Northern Valleys","lat":32.608,"lon":35.604,"dipEast":0.157,"dipWest":0.152,"fajrMinutes":-0.01},
+ {"id":8,"name":"Jarash and Ajloun","lat":32.284,"lon":35.802,"dipEast":1.365,"dipWest":1.297,"fajrMinutes":-0.65},
+ {"id":9,"name":"Mafraq","lat":32.351,"lon":36.201,"dipEast":1.144,"dipWest":1.327,"fajrMinutes":-0.85},
+ {"id":10,"name":"Umm al-Qutan","lat":32.245,"lon":36.552,"dipEast":1.255,"dipWest":1.247,"fajrMinutes":-1.06},
+ {"id":11,"name":"Dhiban","lat":31.496,"lon":35.788,"dipEast":1.252,"dipWest":1.127,"fajrMinutes":-0.62},
+ {"id":12,"name":"Azraq","lat":31.837,"lon":36.8155,"dipEast":0.827,"dipWest":0.824,"fajrMinutes":0.0},
+ {"id":13,"name":"Central Valleys","lat":31.892,"lon":35.618,"dipEast":0.152,"dipWest":0.155,"fajrMinutes":0.02},
+ {"id":14,"name":"Shobak and Petra","lat":30.396,"lon":35.493,"dipEast":1.585,"dipWest":1.589,"fajrMinutes":0.01},
+ {"id":15,"name":"Dhleil and Hashimiyeh","lat":32.135,"lon":36.141,"dipEast":1.019,"dipWest":0.937,"fajrMinutes":-0.41},
+ {"id":19,"name":"Ruwayshid","lat":32.505,"lon":38.2005,"dipEast":0.957,"dipWest":0.955,"fajrMinutes":0.0}
+]

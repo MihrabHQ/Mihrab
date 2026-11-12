@@ -46,7 +46,9 @@ const PLACES: [string, number, number, string | null][] = [
   ['Batam, across the strait from Singapore', 1.1, 104.05, 'kemenag'],
   ['Pontianak', -0.03, 109.33, 'kemenag'],
   ['Jayapura', -2.53, 140.72, 'kemenag'],
-  ['Bandar Seri Begawan', 4.9031, 114.9398, 'diyanet'],
+  ['Bandar Seri Begawan', 4.9031, 114.9398, 'brunei'],
+  ['Kuala Belait', 4.584, 114.2, 'brunei'],
+  ['Limbang, between Brunei’s two halves', 4.75, 115.0, 'jakim'],
   ['Dili', -8.556, 125.56, 'diyanet'],
   ['Hat Yai', 7.0, 100.47, null],
   ['Pattani', 6.87, 101.25, null],
@@ -77,7 +79,14 @@ const PLACES: [string, number, number, string | null][] = [
   ['Kardzhali', 41.65, 25.367, 'grandmufti'],
   ['Termez', 37.2242, 67.2783, 'diyanet'], // Uzbekistan, across the Amu Darya's bend
   ['Andijan', 40.7821, 72.3442, 'diyanet'], // Uzbekistan, across the border from Osh
-  ['Almaty', 43.2389, 76.8897, 'diyanet'],
+  ['Almaty', 43.2389, 76.8897, 'kazakhstan'],
+  ['Aktau, on the Caspian', 43.65, 51.15, 'kazakhstan'],
+  ['Cairo', 30.0444, 31.2357, 'egypt'],
+  ['Sharm el-Sheikh', 27.9158, 34.33, 'egypt'],
+  ['Kuwait City', 29.3759, 47.9774, 'kuwait'],
+  ['Doha', 25.2854, 51.531, 'qatar'],
+  ['Amman', 31.9539, 35.9106, 'jordan'],
+  ['Aqaba', 29.5321, 35.0063, 'jordan'],
   ['Watford', 51.6565, -0.3903, 'london'],
   ['Luton', 51.8787, -0.42, 'diyanet'],
   ['Manchester', 53.4808, -2.2426, 'diyanet'],
@@ -101,19 +110,25 @@ describe('the table', () => {
   it('covers every country that has a published source', () => {
     expect(REGIONAL_PROVIDER_REGIONS.map(r => r.id).sort()).toEqual([
       'bashkortostan',
+      'brunei',
       'cdum',
       'dagestan',
       'dumrt',
+      'egypt',
       'grandmufti',
       'habous',
       'islamiska_forbundet',
       'jakim',
+      'jordan',
+      'kazakhstan',
       'kemenag',
       'kmdb',
       'kmsh',
+      'kuwait',
       'london',
       'marw',
       'muis',
+      'qatar',
       'shuro',
     ]);
   });
@@ -128,7 +143,7 @@ describe('the table', () => {
     expect(regionalProviderForCoords({ latitude: 1.3521, longitude: 103.8198 })).toBe('muis');
     expect(regionalProviderForCoords({ latitude: 1.4927, longitude: 103.7414 })).toBe('jakim'); // Johor Bahru
     expect(regionalProviderForCoords({ latitude: 5.9804, longitude: 116.0735 })).toBe('jakim'); // Kota Kinabalu
-    expect(regionalProviderForCoords({ latitude: 4.9031, longitude: 114.9398 })).toBe('diyanet'); // Bandar Seri Begawan, which Diyanet lists
+    expect(regionalProviderForCoords({ latitude: 4.9031, longitude: 114.9398 })).toBe('brunei'); // Bandar Seri Begawan: Brunei's own, before the place Diyanet lists
     expect(regionalProviderForCoords({ latitude: 1.1, longitude: 104.05 })).toBe('kemenag'); // Batam, across the strait
     expect(regionalProviderForCoords(null)).toBeNull();
   });

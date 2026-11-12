@@ -2,7 +2,8 @@
  * The correction lists: for each authority whose method the phone computes
  * — Sweden (Islamiska Förbundet's tables, which are Diyanet's), Diyanet
  * worldwide, Morocco, Algeria, Indonesia, Tatarstan, Russia's Central
- * Muftiate, Albania, Bulgaria — the few times the authority's
+ * Muftiate, Albania, Bulgaria, Egypt, Kuwait, Qatar, Jordan, Kazakhstan,
+ * Brunei — the few times the authority's
  * own program puts on the other side of a minute's rounding point from the
  * method. Each entry moves one printed time of one point on one date by a
  * minute. The lists are written by MihrabHQ/mihrab-methods
@@ -16,8 +17,8 @@
 
 type Key = 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 export type Corrections = { from: string; to: string; points: Record<string, string[]> };
-export type CorrectionAuthority = 'sweden' | 'diyanet' | 'morocco' | 'algeria' | 'indonesia' | 'tatarstan' | 'cdum' | 'albania' | 'bulgaria';
-export const CORRECTION_AUTHORITIES: readonly CorrectionAuthority[] = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia', 'tatarstan', 'cdum', 'albania', 'bulgaria'];
+export type CorrectionAuthority = 'sweden' | 'diyanet' | 'morocco' | 'algeria' | 'indonesia' | 'tatarstan' | 'cdum' | 'albania' | 'bulgaria' | 'egypt' | 'kuwait' | 'qatar' | 'jordan' | 'kazakhstan' | 'brunei';
+export const CORRECTION_AUTHORITIES: readonly CorrectionAuthority[] = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia', 'tatarstan', 'cdum', 'albania', 'bulgaria', 'egypt', 'kuwait', 'qatar', 'jordan', 'kazakhstan', 'brunei'];
 
 type Index = Map<string, Map<string, Partial<Record<Key, number>>>>;
 
@@ -35,6 +36,12 @@ const BUNDLED: Record<CorrectionAuthority, () => Corrections> = {
   cdum: () => require('./data/cdumCorrections.json') as Corrections,
   albania: () => require('./data/albaniaCorrections.json') as Corrections,
   bulgaria: () => require('./data/bulgariaCorrections.json') as Corrections,
+  egypt: () => require('./data/egyptCorrections.json') as Corrections,
+  kuwait: () => require('./data/kuwaitCorrections.json') as Corrections,
+  qatar: () => require('./data/qatarCorrections.json') as Corrections,
+  jordan: () => require('./data/jordanCorrections.json') as Corrections,
+  kazakhstan: () => require('./data/kazakhstanCorrections.json') as Corrections,
+  brunei: () => require('./data/bruneiCorrections.json') as Corrections,
 };
 const inForce: Partial<Record<CorrectionAuthority, Corrections>> = {};
 const listInForce = (authority: CorrectionAuthority): Corrections =>

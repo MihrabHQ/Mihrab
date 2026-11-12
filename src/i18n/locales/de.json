@@ -685,6 +685,30 @@
     "grandmufti": {
       "name": "Bulgarien",
       "desc": "Der Zeitplan des Großmuftiamts von Bulgarien, auf deinem Gerät nach dessen eigener Methode berechnet, für die Stadt seiner Liste, die dir am nächsten liegt – er stimmt auf die Minute mit den veröffentlichten Zeiten überein."
+    },
+    "egypt": {
+      "name": "Ägypten",
+      "desc": "Der Zeitplan von: Ägyptische Allgemeine Vermessungsbehörde – auf deinem Gerät nach der eigenen Methode der Behörde berechnet, für den Ort ihrer Liste, der deiner ist; er stimmt auf die Minute mit den veröffentlichten Zeiten überein."
+    },
+    "kuwait": {
+      "name": "Kuwait",
+      "desc": "Der Zeitplan von: Kuwaits Ministerium für Awqaf und islamische Angelegenheiten – auf deinem Gerät nach der eigenen Methode der Behörde berechnet, für den Ort ihrer Liste, der deiner ist; er stimmt auf die Minute mit den veröffentlichten Zeiten überein."
+    },
+    "qatar": {
+      "name": "Katar",
+      "desc": "Der Zeitplan von: Katarisches Kalenderhaus – auf deinem Gerät nach der eigenen Methode der Behörde berechnet, für den Ort ihrer Liste, der deiner ist; er stimmt auf die Minute mit den veröffentlichten Zeiten überein."
+    },
+    "jordan": {
+      "name": "Jordanien",
+      "desc": "Der Zeitplan von: Jordaniens Ministerium für Awqaf, islamische Angelegenheiten und heilige Stätten – auf deinem Gerät nach der eigenen Methode der Behörde berechnet, für den Ort ihrer Liste, der deiner ist; er stimmt auf die Minute mit den veröffentlichten Zeiten überein."
+    },
+    "kazakhstan": {
+      "name": "Kasachstan",
+      "desc": "Der Zeitplan von: Geistliche Verwaltung der Muslime Kasachstans – auf deinem Gerät nach der eigenen Methode der Behörde berechnet, für den Ort ihrer Liste, der deiner ist; er stimmt auf die Minute mit den veröffentlichten Zeiten überein. Der einzige Asr ist der hanafitische."
+    },
+    "brunei": {
+      "name": "Brunei",
+      "desc": "Der Zeitplan von: Bruneis Ministerium für religiöse Angelegenheiten – auf deinem Gerät nach der eigenen Methode der Behörde berechnet, für den Ort ihrer Liste, der deiner ist; er stimmt auf die Minute mit den veröffentlichten Zeiten überein."
     }
   },
   "compass": {

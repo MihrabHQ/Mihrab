@@ -30,19 +30,16 @@ const NATIONAL: [string, number, number, string][] = [
   ['Tehran', 35.6892, 51.389, 'IR'],
   ['Najaf', 32.0, 44.33, 'IQ'],
   ['Baghdad', 33.3152, 44.3661, 'IQ'],
-  ['Kuwait City', 29.3759, 47.9774, 'KW'],
-  ['Doha', 25.2854, 51.531, 'QA'],
   ['Dubai', 25.2048, 55.2708, 'AE'],
   ['Manama', 26.2285, 50.586, 'BH'],
   ['Muscat', 23.588, 58.3829, 'OM'],
-  ['Amman', 31.9539, 35.9106, 'JO'],
   ['Karachi', 24.8607, 67.0011, 'PK'],
   ['Lahore', 31.5204, 74.3587, 'PK'],
   ['Delhi', 28.6139, 77.209, 'IN'],
   ['Dhaka', 23.8103, 90.4125, 'BD'],
   // not Moscow: the Central Muftiate's own timetable is Automatic's there (`russiaMuftiates.test.ts`)
   ['Vladivostok', 43.1155, 131.8855, 'RU'],
-  ['Cairo', 30.0444, 31.2357, 'EG'],
+  // not Cairo, Amman, Kuwait City or Doha: each has its own timetable now (`ministryTimetables.test.ts`)
   ['Tunis', 36.8065, 10.1815, 'TN'],
   ['Lisbon', 38.7223, -9.1393, 'PT'],
 ];

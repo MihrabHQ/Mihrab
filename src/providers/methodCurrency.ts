@@ -2,7 +2,8 @@
  * IS THE CALCULATION CURRENT?
  *
  * Sweden's, Diyanet's, Morocco's, Algeria's, Indonesia's, Tatarstan's,
- * Russia's Central Muftiate's, Albania's and Bulgaria's times are the
+ * Russia's Central Muftiate's, Albania's, Bulgaria's, Egypt's, Kuwait's,
+ * Qatar's, Jordan's, Kazakhstan's and Brunei's times are the
  * authority's method computed on the phone, with a correction list that puts
  * the method's few rounding differences back on the printed minute. The
  * list covers the dates the authority's tables did when it was made. Three
@@ -315,6 +316,13 @@ export function methodAuthorityFor(
       return 'albania';
     case 'grandmufti':
       return 'bulgaria';
+    case 'egypt':
+    case 'kuwait':
+    case 'qatar':
+    case 'jordan':
+    case 'kazakhstan':
+    case 'brunei':
+      return provider;
     case 'kemenag':
       return 'indonesia';
     case 'aladhan': {

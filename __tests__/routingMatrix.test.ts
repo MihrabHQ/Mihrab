@@ -55,6 +55,13 @@ const OWN_SOURCE: Record<
   // Albania's and Bulgaria's own timetables (the stand-in method is the Muslim World League's)
   AL: { source: 'kmsh', method: 3, yields: true },
   BG: { source: 'grandmufti', method: 3, yields: true },
+  // six more national timetables; the method beside each is the stand-in Automatic names for the country
+  EG: { source: 'egypt', method: 5, yields: true },
+  KW: { source: 'kuwait', method: 9, yields: true },
+  QA: { source: 'qatar', method: 10, yields: true },
+  JO: { source: 'jordan', method: 23, yields: true },
+  KZ: { source: 'kazakhstan', method: 3, yields: true },
+  BN: { source: 'brunei', method: 3, yields: true },
 };
 
 /** The country's own method, as listed under Calculation method (Bahrain, Oman, Iraq: not read off anything, MWL). */
@@ -195,7 +202,7 @@ describe('the routing matrix', () => {
       // The Hanafi switch is offered wherever the source computes or serves
       // a Hanafi Asr; the national tables that print one Asr say so instead.
       expect(row.hanafi).toBe(
-        !['islamiska_forbundet', 'habous', 'marw', 'muis', 'jakim', 'dagestan', 'dumrt', 'cdum'].includes(
+        !['islamiska_forbundet', 'habous', 'marw', 'muis', 'jakim', 'dagestan', 'dumrt', 'cdum', 'kazakhstan'].includes(
           row.auto,
         ),
       );

@@ -685,6 +685,30 @@
     "grandmufti": {
       "name": "Bulgaria",
       "desc": "Jadwal Kantor Mufti Agung Bulgaria, dihitung di perangkat Anda dengan metodenya sendiri untuk kota terdekat dengan Anda dalam daftarnya — cocok dengan jadwal yang diterbitkan hingga ke menitnya."
+    },
+    "egypt": {
+      "name": "Mesir",
+      "desc": "Jadwal Otoritas Umum Survei Mesir, dihitung di perangkat Anda dengan metodenya sendiri untuk tempat Anda dalam daftarnya — cocok dengan jadwal yang diterbitkan hingga ke menitnya."
+    },
+    "kuwait": {
+      "name": "Kuwait",
+      "desc": "Jadwal Kementerian Wakaf dan Urusan Islam Kuwait, dihitung di perangkat Anda dengan metodenya sendiri untuk tempat Anda dalam daftarnya — cocok dengan jadwal yang diterbitkan hingga ke menitnya."
+    },
+    "qatar": {
+      "name": "Qatar",
+      "desc": "Jadwal Rumah Kalender Qatar, dihitung di perangkat Anda dengan metodenya sendiri untuk tempat Anda dalam daftarnya — cocok dengan jadwal yang diterbitkan hingga ke menitnya."
+    },
+    "jordan": {
+      "name": "Yordania",
+      "desc": "Jadwal Kementerian Wakaf, Urusan Islam, dan Tempat Suci Yordania, dihitung di perangkat Anda dengan metodenya sendiri untuk tempat Anda dalam daftarnya — cocok dengan jadwal yang diterbitkan hingga ke menitnya."
+    },
+    "kazakhstan": {
+      "name": "Kazakhstan",
+      "desc": "Jadwal Administrasi Spiritual Muslim Kazakhstan, dihitung di perangkat Anda dengan metodenya sendiri untuk tempat Anda dalam daftarnya — cocok dengan jadwal yang diterbitkan hingga ke menitnya. Satu-satunya Asarnya adalah Asar Hanafi."
+    },
+    "brunei": {
+      "name": "Brunei",
+      "desc": "Jadwal Kementerian Hal Ehwal Ugama Brunei, dihitung di perangkat Anda dengan metodenya sendiri untuk tempat Anda dalam daftarnya — cocok dengan jadwal yang diterbitkan hingga ke menitnya."
     }
   },
   "compass": {

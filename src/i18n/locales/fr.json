@@ -686,6 +686,30 @@
     "grandmufti": {
       "name": "Bulgarie",
       "desc": "L’horaire du Bureau du grand mufti de Bulgarie, calculé sur votre appareil selon sa propre méthode pour la ville de sa liste la plus proche de vous ; il correspond à la minute près aux horaires publiés."
+    },
+    "egypt": {
+      "name": "Égypte",
+      "desc": "L’horaire établi par l’Autorité générale égyptienne de topographie, calculé sur votre appareil selon sa propre méthode pour le lieu de sa liste qui est le vôtre ; il correspond à la minute près aux horaires publiés."
+    },
+    "kuwait": {
+      "name": "Koweït",
+      "desc": "L’horaire établi par le ministère des Awqaf et des Affaires islamiques du Koweït, calculé sur votre appareil selon sa propre méthode pour le lieu de sa liste qui est le vôtre ; il correspond à la minute près aux horaires publiés."
+    },
+    "qatar": {
+      "name": "Qatar",
+      "desc": "L’horaire établi par la Maison du calendrier du Qatar, calculé sur votre appareil selon sa propre méthode pour le lieu de sa liste qui est le vôtre ; il correspond à la minute près aux horaires publiés."
+    },
+    "jordan": {
+      "name": "Jordanie",
+      "desc": "L’horaire établi par le ministère des Awqaf, des Affaires islamiques et des Lieux saints de Jordanie, calculé sur votre appareil selon sa propre méthode pour le lieu de sa liste qui est le vôtre ; il correspond à la minute près aux horaires publiés."
+    },
+    "kazakhstan": {
+      "name": "Kazakhstan",
+      "desc": "L’horaire établi par l’Administration spirituelle des musulmans du Kazakhstan, calculé sur votre appareil selon sa propre méthode pour le lieu de sa liste qui est le vôtre ; il correspond à la minute près aux horaires publiés. Son seul Asr est le hanafite."
+    },
+    "brunei": {
+      "name": "Brunei",
+      "desc": "L’horaire établi par le ministère des Affaires religieuses du Brunei, calculé sur votre appareil selon sa propre méthode pour le lieu de sa liste qui est le vôtre ; il correspond à la minute près aux horaires publiés."
     }
   },
   "compass": {

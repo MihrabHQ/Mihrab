@@ -6,6 +6,7 @@ import { getHabousDatasetTimes } from '../providers/habousDataset';
 import { getMarwDatasetTimes } from '../providers/marwDataset';
 import { getCdumTimes, getTatarstanTimes } from '../providers/russiaMuftiates';
 import { getAlbaniaTimes, getBulgariaTimes } from '../providers/balkanTimetables';
+import { MINISTRY_TIMETABLES, isMinistryTimetable } from '../providers/ministryTimetables';
 import { nationalTableFor, nationalTablePlaceId } from '../providers/nationalTables';
 import { getNamazvaktiTimes } from '../providers/namazvakti';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
@@ -828,6 +829,7 @@ function hasPreparedDataset(provider: PrayerDataProviderId): boolean {
     provider === 'cdum' ||
     provider === 'kmsh' ||
     provider === 'grandmufti' ||
+    isMinistryTimetable(provider) ||
     nationalTableFor(provider) != null ||
     // Not a dataset of times but the same arrangement: a published year
     // held on the phone that overtakes any day cached from a fallback.
@@ -890,6 +892,7 @@ function rawDatasetTimesFor(
   if (provider === 'cdum') return getCdumTimes(q);
   if (provider === 'kmsh') return getAlbaniaTimes({ ...q, school: params.school });
   if (provider === 'grandmufti') return getBulgariaTimes({ ...q, school: params.school });
+  if (isMinistryTimetable(provider)) return MINISTRY_TIMETABLES[provider]({ ...q, school: params.school });
   const table = nationalTableFor(provider);
   if (table) return table.getTimes({ ...q, placeId: nationalTablePlaceId(provider, params.school) });
   return getIslamiskaForbundetDatasetTimes(q);

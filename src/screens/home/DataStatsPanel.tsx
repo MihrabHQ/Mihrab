@@ -16,6 +16,7 @@ import {
   type ServerDatasetId,
 } from '../../prayer/dataStatus';
 import { bashkortostanTable, dagestanTable, jakimTable, kmdbTable, londonTable, muisTable, shuroTable } from '../../providers/nationalTables';
+import { isMinistryTimetable } from '../../providers/ministryTimetables';
 import {
   getNamazvaktiTimes,
   namazvaktiHeld,
@@ -182,7 +183,7 @@ function DataStatsPanelImpl() {
           }),
         ),
       );
-      if (coords && (provider === 'islamiska_forbundet' || provider === 'habous' || provider === 'marw' || provider === 'kemenag' || provider === 'diyanet' || provider === 'igmg' || provider === 'dumrt' || provider === 'cdum' || provider === 'kmsh' || provider === 'grandmufti')) {
+      if (coords && (provider === 'islamiska_forbundet' || provider === 'habous' || provider === 'marw' || provider === 'kemenag' || provider === 'diyanet' || provider === 'igmg' || provider === 'dumrt' || provider === 'cdum' || provider === 'kmsh' || provider === 'grandmufti' || (provider != null && isMinistryTimetable(provider)))) {
         // Calculated on the phone (the authority's method and correction list): nothing to poll or hold.
         await recordDataSource('local');
       }

@@ -56,9 +56,9 @@ describe('where Diyanet is recommended', () => {
     expect(getEffectiveDataProvider(true, 'aladhan', ATHENS, 'auto')).toBe(
       'diyanet',
     );
-    // Egypt has a method of its own (5), which AlAdhan's Automatic computes.
+    // Egypt has a timetable of its own, the Survey Authority's, computed on the phone.
     expect(getEffectiveDataProvider(true, 'aladhan', CAIRO, 'auto')).toBe(
-      'aladhan',
+      'egypt',
     );
     expect(
       getEffectiveDataProvider(true, 'aladhan', at(-29.0135, 134.7544), 'auto'),

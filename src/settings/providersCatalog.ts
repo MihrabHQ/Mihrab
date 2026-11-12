@@ -111,6 +111,54 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.grandmufti.desc',
   },
   {
+    id: 'egypt',
+    name: 'Egypt',
+    description:
+      'The timetable of the Egyptian General Authority of Survey, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute.',
+    nameKey: 'providers.egypt.name',
+    descriptionKey: 'providers.egypt.desc',
+  },
+  {
+    id: 'kuwait',
+    name: 'Kuwait',
+    description:
+      'The timetable of Kuwait’s Ministry of Awqaf and Islamic Affairs, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute.',
+    nameKey: 'providers.kuwait.name',
+    descriptionKey: 'providers.kuwait.desc',
+  },
+  {
+    id: 'qatar',
+    name: 'Qatar',
+    description:
+      'The timetable of the Qatar Calendar House, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute.',
+    nameKey: 'providers.qatar.name',
+    descriptionKey: 'providers.qatar.desc',
+  },
+  {
+    id: 'jordan',
+    name: 'Jordan',
+    description:
+      'The timetable of Jordan’s Ministry of Awqaf, Islamic Affairs and Holy Places, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute.',
+    nameKey: 'providers.jordan.name',
+    descriptionKey: 'providers.jordan.desc',
+  },
+  {
+    id: 'kazakhstan',
+    name: 'Kazakhstan',
+    description:
+      'The timetable of the Spiritual Administration of Muslims of Kazakhstan, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute. Its one Asr is the Hanafi one.',
+    nameKey: 'providers.kazakhstan.name',
+    descriptionKey: 'providers.kazakhstan.desc',
+  },
+  {
+    id: 'brunei',
+    name: 'Brunei',
+    description:
+      'The timetable of Brunei’s Ministry of Religious Affairs, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute.',
+    nameKey: 'providers.brunei.name',
+    descriptionKey: 'providers.brunei.desc',
+  },
+  {
     id: 'marw',
     name: 'Algeria',
     description:

@@ -30,6 +30,12 @@ export function providerHidesCalculationMethod(
     // Albania's and Bulgaria's are their own methods; the Hanafi Asr toggle still applies.
     id === 'kmsh' ||
     id === 'grandmufti' ||
+    id === 'egypt' ||
+    id === 'kuwait' ||
+    id === 'qatar' ||
+    id === 'jordan' ||
+    id === 'kazakhstan' ||
+    id === 'brunei' ||
     // The calendar is its own method; the Hanafi Asr toggle still applies
     // (it picks the calendar's Asr-ı sânî).
     id === 'namazvakti' ||
@@ -66,7 +72,9 @@ export function providerHidesHanafiAsr(id: PrayerDataProviderId): boolean {
     // Bashkortostan's prints one Asr, the Hanafi one; so do Tatarstan's and the Central Muftiate's.
     id === 'bashkortostan' ||
     id === 'dumrt' ||
-    id === 'cdum'
+    id === 'cdum' ||
+    // Kazakhstan's too.
+    id === 'kazakhstan'
   );
 }
 
@@ -77,5 +85,5 @@ export function providerHidesHanafiAsr(id: PrayerDataProviderId): boolean {
  * school is set to, and Settings tells a reader of another school so.
  */
 export function providerPrintsHanafiAsrOnly(id: PrayerDataProviderId | null | undefined): boolean {
-  return id === 'kmdb' || id === 'shuro' || id === 'bashkortostan' || id === 'dumrt' || id === 'cdum';
+  return id === 'kmdb' || id === 'shuro' || id === 'bashkortostan' || id === 'dumrt' || id === 'cdum' || id === 'kazakhstan';
 }

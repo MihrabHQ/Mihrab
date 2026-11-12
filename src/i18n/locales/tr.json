@@ -685,6 +685,30 @@
     "grandmufti": {
       "name": "Bulgaristan",
       "desc": "Bulgaristan Başmüftülüğü’nün vakit çizelgesi; cihazınızda kendi yöntemiyle, listesindeki size en yakın şehir için hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür."
+    },
+    "egypt": {
+      "name": "Mısır",
+      "desc": "Vakit çizelgesinin sahibi: Mısır Genel Harita Kurumu. Cihazınızda bu kurumun kendi yöntemiyle, listesindeki size ait yer için hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür."
+    },
+    "kuwait": {
+      "name": "Kuveyt",
+      "desc": "Vakit çizelgesinin sahibi: Kuveyt Evkaf ve İslami İşler Bakanlığı. Cihazınızda bu kurumun kendi yöntemiyle, listesindeki size ait yer için hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür."
+    },
+    "qatar": {
+      "name": "Katar",
+      "desc": "Vakit çizelgesinin sahibi: Katar Takvim Evi. Cihazınızda bu kurumun kendi yöntemiyle, listesindeki size ait yer için hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür."
+    },
+    "jordan": {
+      "name": "Ürdün",
+      "desc": "Vakit çizelgesinin sahibi: Ürdün Evkaf, İslami İşler ve Mukaddesat Bakanlığı. Cihazınızda bu kurumun kendi yöntemiyle, listesindeki size ait yer için hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür."
+    },
+    "kazakhstan": {
+      "name": "Kazakistan",
+      "desc": "Vakit çizelgesinin sahibi: Kazakistan Müslümanları Dinî İdaresi. Cihazınızda bu kurumun kendi yöntemiyle, listesindeki size ait yer için hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür. Tek ikindisi Hanefî ikindisidir."
+    },
+    "brunei": {
+      "name": "Brunei",
+      "desc": "Vakit çizelgesinin sahibi: Brunei Din İşleri Bakanlığı. Cihazınızda bu kurumun kendi yöntemiyle, listesindeki size ait yer için hesaplanır ve yayımlanan vakitlerle dakikası dakikasına örtüşür."
     }
   },
   "compass": {

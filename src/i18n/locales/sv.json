@@ -685,6 +685,30 @@
     "grandmufti": {
       "name": "Bulgarien",
       "desc": "Tidtabellen från Bulgariens stormuftiämbete, beräknad på din enhet med dess egen metod för den stad i dess lista som ligger närmast dig – den stämmer med de publicerade tiderna på minuten."
+    },
+    "egypt": {
+      "name": "Egypten",
+      "desc": "Tidtabellen från Egyptens lantmäterimyndighet, beräknad på din enhet med dess egen metod för den plats i dess lista som är din – den stämmer med de publicerade tiderna på minuten."
+    },
+    "kuwait": {
+      "name": "Kuwait",
+      "desc": "Tidtabellen från Kuwaits ministerium för awqaf och islamiska frågor, beräknad på din enhet med dess egen metod för den plats i dess lista som är din – den stämmer med de publicerade tiderna på minuten."
+    },
+    "qatar": {
+      "name": "Qatar",
+      "desc": "Tidtabellen från Qatars kalenderhus, beräknad på din enhet med dess egen metod för den plats i dess lista som är din – den stämmer med de publicerade tiderna på minuten."
+    },
+    "jordan": {
+      "name": "Jordanien",
+      "desc": "Tidtabellen från Jordaniens ministerium för awqaf, islamiska frågor och heliga platser, beräknad på din enhet med dess egen metod för den plats i dess lista som är din – den stämmer med de publicerade tiderna på minuten."
+    },
+    "kazakhstan": {
+      "name": "Kazakstan",
+      "desc": "Tidtabellen från Kazakstans muslimska andliga styrelse, beräknad på din enhet med dess egen metod för den plats i dess lista som är din – den stämmer med de publicerade tiderna på minuten. Dess enda Asr är den hanafitiska."
+    },
+    "brunei": {
+      "name": "Brunei",
+      "desc": "Tidtabellen från Bruneis ministerium för religiösa frågor, beräknad på din enhet med dess egen metod för den plats i dess lista som är din – den stämmer med de publicerade tiderna på minuten."
     }
   },
   "compass": {

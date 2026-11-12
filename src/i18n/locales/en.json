@@ -685,6 +685,30 @@
     "grandmufti": {
       "name": "Bulgaria",
       "desc": "The Grand Mufti’s Office of Bulgaria’s timetable, calculated on your device by its own method for the town nearest you in its list — it matches the published times to the minute."
+    },
+    "egypt": {
+      "name": "Egypt",
+      "desc": "The timetable of the Egyptian General Authority of Survey, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute."
+    },
+    "kuwait": {
+      "name": "Kuwait",
+      "desc": "The timetable of Kuwait’s Ministry of Awqaf and Islamic Affairs, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute."
+    },
+    "qatar": {
+      "name": "Qatar",
+      "desc": "The timetable of the Qatar Calendar House, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute."
+    },
+    "jordan": {
+      "name": "Jordan",
+      "desc": "The timetable of Jordan’s Ministry of Awqaf, Islamic Affairs and Holy Places, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute."
+    },
+    "kazakhstan": {
+      "name": "Kazakhstan",
+      "desc": "The timetable of the Spiritual Administration of Muslims of Kazakhstan, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute. Its one Asr is the Hanafi one."
+    },
+    "brunei": {
+      "name": "Brunei",
+      "desc": "The timetable of Brunei’s Ministry of Religious Affairs, calculated on your device by its own method for the place of its list that is yours — it matches the published times to the minute."
     }
   },
   "compass": {

@@ -25,11 +25,11 @@ const ALICE_SPRINGS = { latitude: -29.0135, longitude: 134.7544 }; // Coober Ped
 
 describe('a national source picked from outside its country', () => {
   it('is redirected to what Automatic picks there', () => {
-    // Cairo is a place Diyanet lists, but Egypt has a method of its own, which
-    // AlAdhan's Automatic computes; Alice Springs is far from any place.
+    // Cairo is a place Diyanet lists, but Egypt has a timetable of its own, the
+    // Survey Authority's; Alice Springs is far from any place.
     expect(
       getEffectiveDataProvider(false, 'islamiska_forbundet', CAIRO, 'auto'),
-    ).toBe('aladhan');
+    ).toBe('egypt');
     expect(
       getEffectiveDataProvider(
         false,

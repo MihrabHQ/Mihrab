@@ -5,6 +5,7 @@ import { getHabousDatasetTimes } from './habousDataset';
 import { getMarwDatasetTimes } from './marwDataset';
 import { getCdumTimes, getTatarstanTimes } from './russiaMuftiates';
 import { getAlbaniaTimes, getBulgariaTimes } from './balkanTimetables';
+import { MINISTRY_TIMETABLES } from './ministryTimetables';
 import {
   computeNamazvaktiMethodTimes,
   getNamazvaktiTimes,
@@ -369,6 +370,29 @@ export async function fetchPrayerTimesUnified(
       // AlAdhan writes a place's times on the place's clock (`meta.timezone`).
       result.clock = result.timezone ?? DEVICE_CLOCK;
       break;
+    }
+    case 'egypt':
+    case 'kuwait':
+    case 'qatar':
+    case 'jordan':
+    case 'kazakhstan':
+    case 'brunei': {
+      // A national timetable by the authority's own method, computed on
+      // the phone for the place of its table that answers for the reader,
+      // with its correction list (`ministryTimetables.ts`). Outside its
+      // coverage, the general source.
+      try {
+        result = await MINISTRY_TIMETABLES[p.provider]({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+          school: p.school,
+        });
+        break;
+      } catch {
+        /* outside coverage */
+      }
+      return fetchPrayerTimesUnified({ ...p, provider: 'aladhan' });
     }
     case 'kmsh':
     case 'grandmufti': {

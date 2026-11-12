@@ -29,6 +29,12 @@ import { isCoordinateInTatarstan } from '../utils/tatarstanRegion';
 import { isNearCdumCity } from '../providers/russiaPlaces';
 import { isCoordinateInAlbania } from '../utils/albaniaRegion';
 import { isCoordinateInBulgaria } from '../utils/bulgariaRegion';
+import { isCoordinateInEgypt } from '../utils/egyptRegion';
+import { isCoordinateInKuwait } from '../utils/kuwaitRegion';
+import { isCoordinateInQatar } from '../utils/qatarRegion';
+import { isCoordinateInJordan } from '../utils/jordanRegion';
+import { isCoordinateInKazakhstan } from '../utils/kazakhstanRegion';
+import { isCoordinateInBrunei } from '../utils/bruneiRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import {
@@ -85,6 +91,13 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   // before Diyanet's places there.
   { id: 'kmsh', covers: isCoordinateInAlbania, yieldsToChosenMethod: true },
   { id: 'grandmufti', covers: isCoordinateInBulgaria, yieldsToChosenMethod: true },
+  // Six more national timetables, each inside its country's outline.
+  { id: 'egypt', covers: isCoordinateInEgypt, yieldsToChosenMethod: true },
+  { id: 'kuwait', covers: isCoordinateInKuwait, yieldsToChosenMethod: true },
+  { id: 'qatar', covers: isCoordinateInQatar, yieldsToChosenMethod: true },
+  { id: 'jordan', covers: isCoordinateInJordan, yieldsToChosenMethod: true },
+  { id: 'kazakhstan', covers: isCoordinateInKazakhstan, yieldsToChosenMethod: true },
+  { id: 'brunei', covers: isCoordinateInBrunei, yieldsToChosenMethod: true },
 ];
 
 /**

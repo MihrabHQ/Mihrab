@@ -32,6 +32,7 @@ import { congressTimes } from './congressMethod';
 import {
   algeriaCorrection,
   albaniaCorrection,
+  correctionFor,
   bulgariaCorrection,
   cdumCorrection,
   indonesiaCorrection,
@@ -47,6 +48,21 @@ import { cdumTimes } from './cdumMethod';
 import { albaniaTimes } from './albaniaMethod';
 import { bulgariaTimes } from './bulgariaMethod';
 import { ALBANIA_METHOD_ID, BULGARIA_METHOD_ID } from './balkanTowns';
+import { egyptTimes } from './egyptMethod';
+import { kuwaitTimes } from './kuwaitMethod';
+import { qatarTimes } from './qatarMethod';
+import { jordanTimes } from './jordanMethod';
+import { kazakhstanTimes } from './kazakhstanMethod';
+import { bruneiTimes } from './bruneiMethod';
+import {
+  BRUNEI_METHOD_ID,
+  EGYPT_METHOD_ID,
+  JORDAN_METHOD_ID,
+  KAZAKHSTAN_METHOD_ID,
+  KUWAIT_METHOD_ID,
+  QATAR_METHOD_ID,
+  jordanZoneAt,
+} from './ministryPlaces';
 import { CDUM_METHOD_ID, TATARSTAN_METHOD_ID, tatarstanDipAt } from './russiaPlaces';
 import { moroccoTimes, moroccoDipEast, moroccoDipWest } from './moroccoMethod';
 import { kemenagTimes } from './indonesiaMethod';
@@ -627,6 +643,36 @@ export function computeLocalAdhanInstants(
         0,
       );
   }
+  if (methodId >= EGYPT_METHOD_ID && methodId <= BRUNEI_METHOD_ID) {
+    // Six national timetables by the authority's own method
+    // (`ministryTimetables.ts`), each on the minute it prints at the point
+    // of its table this is, then the few times on the other side of a
+    // minute. The lists are for the Asr the table prints: the first — a
+    // Hanafi reader's is the method's own at two shadow lengths — and for
+    // Kazakhstan's, which prints the Hanafi one alone, that one.
+    const shadow = params.school === 1 ? 2 : 1;
+    const { latitude: lat, longitude: lon } = params;
+    const zone = methodId === JORDAN_METHOD_ID ? jordanZoneAt(lat, lon) : undefined;
+    const at =
+      methodId === EGYPT_METHOD_ID
+        ? egyptTimes(lat, lon, y, m, day, shadow)
+        : methodId === KUWAIT_METHOD_ID
+        ? kuwaitTimes(lon, y, m, day, shadow)
+        : methodId === QATAR_METHOD_ID
+        ? qatarTimes(lat, lon, y, m, day, shadow)
+        : methodId === JORDAN_METHOD_ID
+        ? jordanTimes(lat, lon, y, m, day, zone?.dipEast, shadow, zone?.dipWest, zone?.fajrMinutes)
+        : methodId === KAZAKHSTAN_METHOD_ID
+        ? kazakhstanTimes(lat, lon, y, m, day)
+        : bruneiTimes(lon, y, m, day, shadow);
+    const authority = MINISTRY_AUTHORITY[methodId];
+    if (at)
+      return corrected(
+        at,
+        correctionFor(authority, lat, lon, y, m, day),
+        methodId === KAZAKHSTAN_METHOD_ID ? 0 : params.school ?? 0,
+      );
+  }
   if (methodId === ALBANIA_METHOD_ID || methodId === BULGARIA_METHOD_ID) {
     // Albania's calendar and Bulgaria's timetable: one town's table with
     // the sun taken once a day (`townTableMethod.ts`), for the town whose
@@ -703,6 +749,15 @@ export function computeLocalAdhanInstants(
 }
 
 const ALGERIA_SIGNED_SHADOW_METHOD_ID = 19;
+/** Whose correction list each of the six national methods' is. */
+const MINISTRY_AUTHORITY: Readonly<Record<number, 'egypt' | 'kuwait' | 'qatar' | 'jordan' | 'kazakhstan' | 'brunei'>> = {
+  [EGYPT_METHOD_ID]: 'egypt',
+  [KUWAIT_METHOD_ID]: 'kuwait',
+  [QATAR_METHOD_ID]: 'qatar',
+  [JORDAN_METHOD_ID]: 'jordan',
+  [KAZAKHSTAN_METHOD_ID]: 'kazakhstan',
+  [BRUNEI_METHOD_ID]: 'brunei',
+};
 const MOROCCO_METHOD_ID_LOCAL = 21;
 type PrayerInstantKey =
   | 'fajr'

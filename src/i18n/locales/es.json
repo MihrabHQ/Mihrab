@@ -686,6 +686,30 @@
     "grandmufti": {
       "name": "Bulgaria",
       "desc": "El horario de la Oficina del Gran Muftí de Bulgaria, calculado en tu dispositivo con su propio método para la ciudad de su lista más cercana a ti; coincide al minuto con los horarios publicados."
+    },
+    "egypt": {
+      "name": "Egipto",
+      "desc": "El horario de la Autoridad General de Topografía de Egipto, calculado en tu dispositivo con su propio método para el lugar de su lista que es el tuyo; coincide al minuto con los horarios publicados."
+    },
+    "kuwait": {
+      "name": "Kuwait",
+      "desc": "El horario de el Ministerio de Awqaf y Asuntos Islámicos de Kuwait, calculado en tu dispositivo con su propio método para el lugar de su lista que es el tuyo; coincide al minuto con los horarios publicados."
+    },
+    "qatar": {
+      "name": "Catar",
+      "desc": "El horario de la Casa del Calendario de Catar, calculado en tu dispositivo con su propio método para el lugar de su lista que es el tuyo; coincide al minuto con los horarios publicados."
+    },
+    "jordan": {
+      "name": "Jordania",
+      "desc": "El horario de el Ministerio de Awqaf, Asuntos Islámicos y Santos Lugares de Jordania, calculado en tu dispositivo con su propio método para el lugar de su lista que es el tuyo; coincide al minuto con los horarios publicados."
+    },
+    "kazakhstan": {
+      "name": "Kazajistán",
+      "desc": "El horario de la Administración Espiritual de los Musulmanes de Kazajistán, calculado en tu dispositivo con su propio método para el lugar de su lista que es el tuyo; coincide al minuto con los horarios publicados. Su único Asr es el hanafí."
+    },
+    "brunei": {
+      "name": "Brunéi",
+      "desc": "El horario de el Ministerio de Asuntos Religiosos de Brunéi, calculado en tu dispositivo con su propio método para el lugar de su lista que es el tuyo; coincide al minuto con los horarios publicados."
     }
   },
   "compass": {

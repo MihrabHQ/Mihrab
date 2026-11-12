@@ -52,8 +52,14 @@ more: **Albania** — the Muslim Community of Albania's calendar
 (`albaniaMethod.ts`, Tirana and ten towns) and **Bulgaria** — the Grand
 Mufti's Office's timetable (`bulgariaMethod.ts`, Sofia and 47 towns), each
 one town's table with the sun taken once a day (`townTableMethod.ts`) and
-served inside its country. The certification of all four is in
-mihrab-methods' `docs/status.md`.
+served inside its country. And six more, each
+served inside its country's outline: **Egypt** (the General Authority of
+Survey, 77 cities), **Kuwait** (the Ministry of Awqaf, its areas),
+**Qatar** (the Calendar House's table), **Jordan** (the Ministry of Awqaf,
+16 zones), **Kazakhstan** (the Spiritual Administration of Muslims, 84
+cities and the reader's own spot elsewhere) and **Brunei** (the Ministry of
+Religious Affairs, four districts) — `ministryTimetables.ts`. The
+certification of all of these is in mihrab-methods' `docs/status.md`.
 
 Every time is within a minute by the method alone. Each list covers the
 dates its tables do and is renewed as the authority publishes more; past
