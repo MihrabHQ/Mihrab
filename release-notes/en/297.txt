@@ -1,0 +1,9 @@
+• More countries on their own published timetables, calculated on the phone, with Automatic choosing them in their towns: the United Kingdom (Wifaqul Ulama), London (the London Unified Prayer Timetable), Tunisia, Iran, the United Arab Emirates (through 2027), Pakistan (Jamia Banuri Town), Egypt, Kuwait, Qatar, Jordan, Kazakhstan, Brunei, Albania, Bulgaria, Tatarstan, Russia's Central Muftiate, Bashkortostan, Dagestan, Tajikistan and Kyrgyzstan. IGMG is a new source too.
+• The United States and Canada: Automatic is the 15° and 15° their mosques print. South Africa uses its own convention, and KwaZulu-Natal its own. Turkmenistan has one calculation across the country.
+• Share or copy several ayahs at once: Share in the ayah sheet has a new choice, "Several ayahs".
+• The adhan's sound is chosen apart from whether it plays — and a prayer set to Adhan with the "Default notification" sound now arrives.
+• Garmin: choose what the watch shows, the Hijri date and the night times, with fonts made for the watch's screen.
+• Android: opening the Quran and turning its pages no longer stutter, a page left open no longer keeps redrawing, and the widgets draw for their real size, show the next prayer on top and cost less to draw.
+• GrapheneOS: the compass says when the Sensors permission is off, "Approximate" location works without network location and no longer asks for precise, and the app runs with memory tagging on.
+• Minimal: hold and slide along the dots, the times sheet keeps its height on other days, and switching between Full and Minimal no longer crashes on Android.
+• The Sky theme: words that read at dusk and dawn, no sun in the far north's winter sky, and calmer colours before sunset.

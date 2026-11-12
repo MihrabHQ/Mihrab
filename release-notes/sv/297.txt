@@ -1,0 +1,9 @@
+• Fler länder enligt sina egna publicerade tidtabeller, beräknade i telefonen, och Automatiskt väljer dem i deras orter: Storbritannien (Wifaqul Ulama), London (London Unified Prayer Timetable), Tunisien, Iran, Förenade Arabemiraten (till och med 2027), Pakistan (Jamia Banuri Town), Egypten, Kuwait, Qatar, Jordanien, Kazakstan, Brunei, Albanien, Bulgarien, Tatarstan, Rysslands centrala muftiat, Basjkortostan, Dagestan, Tadzjikistan och Kirgizistan. IGMG är också en ny källa.
+• USA och Kanada: Automatiskt är de 15° och 15° som deras moskéer trycker. Sydafrika använder sin egen konvention, och KwaZulu-Natal sin egen. Turkmenistan har en beräkning för hela landet.
+• Dela eller kopiera flera ayat på en gång: Dela på en ayah har ett nytt val, ”Flera ayat”.
+• Adhanets ljud väljs för sig, oberoende av om det spelas — och en bön inställd på Adhan med ljudet ”Standardavisering” kommer nu fram.
+• Garmin: välj vad klockan visar, hijri-datumet och nattens tider, med typsnitt gjorda för klockans skärm.
+• Android: att öppna Koranen och vända sidor hackar inte längre, en öppen sida ritas inte om hela tiden, och widgetarna ritas för sin verkliga storlek, visar nästa bön överst och kostar mindre att rita.
+• GrapheneOS: kompassen säger till när behörigheten Sensorer är av, ”Ungefärlig” plats fungerar utan nätverksplats och ber inte längre om exakt, och appen körs med minnestaggning på.
+• Minimal: håll och dra längs prickarna, tidsbladet behåller sin höjd andra dagar, och byte mellan Fullständig och Minimal kraschar inte längre på Android.
+• Himmelstemat: text som syns i skymning och gryning, ingen sol på den norra vinterhimlen, och lugnare färger före solnedgången.
