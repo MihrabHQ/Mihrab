@@ -63,7 +63,12 @@ Religious Affairs, four districts) — `ministryTimetables.ts`. And
 (`banuriTimetable.ts`, inside the country's outline): in one of the hundred
 cities its page lists, that city's times; elsewhere in the country the same
 method for the reader's own spot. Dhuhr is the minute after the zenith
-(zawal) the page prints; the Hanafi Asr toggle applies. The
+(zawal) the page prints; the Hanafi Asr toggle applies. And the
+**United Arab Emirates** — the General Authority of Islamic Affairs,
+Endowments and Zakat's own method (`uaeTimetable.ts`): its forty-one
+zones, each at its own point with its own horizons, the reader given the
+zone of the nearest of its towns (`data/uaeAreas.json`); the two summits, Jebel Jais and Jebel
+Hafeet, only on the mountain. The
 certification of all of these is in mihrab-methods' `docs/status.md`.
 
 Every time is within a minute by the method alone. Each list covers the

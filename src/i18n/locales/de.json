@@ -713,6 +713,10 @@
     "banuri": {
       "name": "Pakistan (Jamia Banuri Town)",
       "desc": "Die Gebetszeiten der Jamia Uloom-ul-Islamia, Banuri Town (Karatschi), auf deinem Gerät nach ihrer eigenen Methode berechnet: in einer Stadt ihrer Liste die Zeiten dieser Stadt, wie ihre Seite sie angibt, auf die Minute; im übrigen Pakistan dieselbe Methode für deinen Standort. Dhuhr ist eine Minute nach dem Zenit (Zawal), den sie angibt."
+    },
+    "uae": {
+      "name": "Vereinigte Arabische Emirate",
+      "desc": "Der Gebetszeitenplan der Allgemeinen Behörde für islamische Angelegenheiten, Stiftungen und Zakat, auf deinem Gerät nach ihrer eigenen Methode für die Zone berechnet, in der du bist – er stimmt mit den veröffentlichten Zeiten auf die Minute überein."
     }
   },
   "compass": {

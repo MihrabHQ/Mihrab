@@ -713,6 +713,10 @@
     "banuri": {
       "name": "Pakistan (Jamia Banuri Town)",
       "desc": "The prayer times of Jamia Uloom-ul-Islamia, Banuri Town (Karachi), calculated on your device by its own method: in a city of its list, that city’s times as its page gives them, to the minute; elsewhere in Pakistan, the same method for where you are. Dhuhr is a minute after the zenith (zawal) it prints."
+    },
+    "uae": {
+      "name": "United Arab Emirates",
+      "desc": "The timetable of the General Authority of Islamic Affairs, Endowments and Zakat, calculated on your device by its own method for the zone you are in — it matches the published times to the minute."
     }
   },
   "compass": {

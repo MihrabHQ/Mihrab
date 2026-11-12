@@ -167,6 +167,14 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.banuri.desc',
   },
   {
+    id: 'uae',
+    name: 'United Arab Emirates',
+    description:
+      'The timetable of the General Authority of Islamic Affairs, Endowments and Zakat, calculated on your device by its own method for the zone you are in — it matches the published times to the minute.',
+    nameKey: 'providers.uae.name',
+    descriptionKey: 'providers.uae.desc',
+  },
+  {
     id: 'marw',
     name: 'Algeria',
     description:

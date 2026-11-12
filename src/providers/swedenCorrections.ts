@@ -3,7 +3,8 @@
  * — Sweden (Islamiska Förbundet's tables, which are Diyanet's), Diyanet
  * worldwide, Morocco, Algeria, Indonesia, Tatarstan, Russia's Central
  * Muftiate, Albania, Bulgaria, Egypt, Kuwait, Qatar, Jordan, Kazakhstan,
- * Brunei, Pakistan's Jamia Banuri Town — the few times the authority's
+ * Brunei, Pakistan's Jamia Banuri Town, the United Arab Emirates — the few
+ * times the authority's
  * own program puts on the other side of a minute's rounding point from the
  * method. Each entry moves one printed time of one point on one date by a
  * minute. The lists are written by MihrabHQ/mihrab-methods
@@ -17,8 +18,8 @@
 
 type Key = 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 export type Corrections = { from: string; to: string; points: Record<string, string[]> };
-export type CorrectionAuthority = 'sweden' | 'diyanet' | 'morocco' | 'algeria' | 'indonesia' | 'tatarstan' | 'cdum' | 'albania' | 'bulgaria' | 'egypt' | 'kuwait' | 'qatar' | 'jordan' | 'kazakhstan' | 'brunei' | 'banuri';
-export const CORRECTION_AUTHORITIES: readonly CorrectionAuthority[] = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia', 'tatarstan', 'cdum', 'albania', 'bulgaria', 'egypt', 'kuwait', 'qatar', 'jordan', 'kazakhstan', 'brunei', 'banuri'];
+export type CorrectionAuthority = 'sweden' | 'diyanet' | 'morocco' | 'algeria' | 'indonesia' | 'tatarstan' | 'cdum' | 'albania' | 'bulgaria' | 'egypt' | 'kuwait' | 'qatar' | 'jordan' | 'kazakhstan' | 'brunei' | 'banuri' | 'uae';
+export const CORRECTION_AUTHORITIES: readonly CorrectionAuthority[] = ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia', 'tatarstan', 'cdum', 'albania', 'bulgaria', 'egypt', 'kuwait', 'qatar', 'jordan', 'kazakhstan', 'brunei', 'banuri', 'uae'];
 
 type Index = Map<string, Map<string, Partial<Record<Key, number>>>>;
 
@@ -43,6 +44,7 @@ const BUNDLED: Record<CorrectionAuthority, () => Corrections> = {
   kazakhstan: () => require('./data/kazakhstanCorrections.json') as Corrections,
   brunei: () => require('./data/bruneiCorrections.json') as Corrections,
   banuri: () => require('./data/banuriCorrections.json') as Corrections,
+  uae: () => require('./data/uaeCorrections.json') as Corrections,
 };
 const inForce: Partial<Record<CorrectionAuthority, Corrections>> = {};
 const listInForce = (authority: CorrectionAuthority): Corrections =>

@@ -64,6 +64,8 @@ const OWN_SOURCE: Record<
   BN: { source: 'brunei', method: 3, yields: true },
   // Pakistan: Jamia Banuri Town's own method; the stand-in is the Karachi angles it is named for
   PK: { source: 'banuri', method: 1, yields: true },
+  // the Emirates: the Authority's own timetable; the stand-in is AlAdhan's Dubai
+  AE: { source: 'uae', method: 16, yields: true },
 };
 
 /** The country's own method, as listed under Calculation method (Bahrain, Oman, Iraq: not read off anything, MWL). */

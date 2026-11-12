@@ -713,6 +713,10 @@
     "banuri": {
       "name": "Pakistan (Jamia Banuri Town)",
       "desc": "Waktu salat Jamia Uloom-ul-Islamia, Banuri Town (Karachi), dihitung di perangkat Anda dengan metodenya sendiri: di kota dalam daftarnya, waktu kota itu sebagaimana halamannya memberikannya, tepat hingga menit; di tempat lain di Pakistan, metode yang sama untuk lokasi Anda. Zuhur satu menit setelah zawal yang dicantumkannya."
+    },
+    "uae": {
+      "name": "Uni Emirat Arab",
+      "desc": "Jadwal Otoritas Umum Urusan Islam, Wakaf, dan Zakat, dihitung di perangkat Anda dengan metodenya sendiri untuk zona tempat Anda berada — cocok dengan waktu yang diterbitkan hingga menitnya."
     }
   },
   "compass": {

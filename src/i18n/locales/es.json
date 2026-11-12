@@ -714,6 +714,10 @@
     "banuri": {
       "name": "Pakistán (Jamia Banuri Town)",
       "desc": "Los horarios de oración de Jamia Uloom-ul-Islamia, Banuri Town (Karachi), calculados en tu dispositivo con su propio método: en una ciudad de su lista, los horarios de esa ciudad tal como los da su página, al minuto; en el resto de Pakistán, el mismo método para donde estás. El Dhuhr es un minuto después del cenit (zawal) que publica."
+    },
+    "uae": {
+      "name": "Emiratos Árabes Unidos",
+      "desc": "El horario de la Autoridad General de Asuntos Islámicos, Awqaf y Zakat, calculado en tu dispositivo con su propio método para la zona en la que estás: coincide con los horarios publicados al minuto."
     }
   },
   "compass": {

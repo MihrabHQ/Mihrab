@@ -51,6 +51,8 @@ import { ALBANIA_METHOD_ID, BULGARIA_METHOD_ID } from './balkanTowns';
 import { egyptTimes } from './egyptMethod';
 import { banuriTimes } from './banuriMethod';
 import { BANURI_METHOD_ID } from './banuriTimetable';
+import { uaeTimes } from './uaeMethod';
+import { UAE_METHOD_ID, uaeZoneAt } from './uaeTimetable';
 import { kuwaitTimes } from './kuwaitMethod';
 import { qatarTimes } from './qatarMethod';
 import { jordanTimes } from './jordanMethod';
@@ -644,6 +646,17 @@ export function computeLocalAdhanInstants(
         tatarstanCorrection(params.latitude, params.longitude, y, m, day),
         0,
       );
+  }
+  if (methodId === UAE_METHOD_ID) {
+    // The United Arab Emirates — the Authority's own method
+    // (`uaeTimetable.ts`), on the minute it publishes at the zone's point
+    // with the zone's horizons and morning margin, then the few times on
+    // the other side of a minute. The list is for the first Asr, which the
+    // Authority prints; a Hanafi reader's is the method's own at two shadow
+    // lengths.
+    const zone = uaeZoneAt(params.latitude, params.longitude);
+    const at = uaeTimes(params.latitude, params.longitude, y, m, day, zone?.dipEast, params.school === 1 ? 2 : 1, zone?.dipWest, zone?.morningMinutes);
+    if (at) return corrected(at, correctionFor('uae', params.latitude, params.longitude, y, m, day), params.school ?? 0);
   }
   if (methodId === BANURI_METHOD_ID) {
     // Pakistan — Jamia Banuri Town's own method (`banuriTimetable.ts`), on

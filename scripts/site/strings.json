@@ -754,6 +754,10 @@
           "banuri": [
             "باكستان",
             "جامعة العلوم الإسلامية، بنوري تاون"
+          ],
+          "uae": [
+            "الإمارات",
+            "الهيئة العامة للشؤون الإسلامية والأوقاف والزكاة"
           ]
         }
       }
@@ -1169,6 +1173,10 @@
           "banuri": [
             "Pakistan",
             "Camia Ulûm-i İslâmiyye, Benuri Town"
+          ],
+          "uae": [
+            "Birleşik Arap Emirlikleri",
+            "İslam İşleri, Vakıflar ve Zekât Genel Otoritesi"
           ]
         }
       }
@@ -1565,6 +1573,10 @@
           "banuri": [
             "پاکستان",
             "جامعہ علوم اسلامیہ علامہ بنوری ٹاؤن"
+          ],
+          "uae": [
+            "متحدہ عرب امارات",
+            "جنرل اتھارٹی برائے اسلامی امور، اوقاف و زکوٰۃ"
           ]
         }
       }
@@ -1980,6 +1992,10 @@
           "banuri": [
             "Pakistan",
             "Jamia Uloom-ul-Islamia, Banuri Town"
+          ],
+          "uae": [
+            "Uni Emirat Arab",
+            "Otoritas Umum Urusan Islam, Wakaf, dan Zakat"
           ]
         }
       }
@@ -2376,6 +2392,10 @@
           "banuri": [
             "Pakistan",
             "Jamia Uloom-ul-Islamia, Banuri Town"
+          ],
+          "uae": [
+            "Vereinigte Arabische Emirate",
+            "Allgemeine Behörde für islamische Angelegenheiten, Stiftungen und Zakat"
           ]
         }
       }
@@ -2798,6 +2818,10 @@
           "banuri": [
             "Pakistan",
             "Jamia Uloom-ul-Islamia, Banuri Town"
+          ],
+          "uae": [
+            "Émirats arabes unis",
+            "l’Autorité générale des affaires islamiques, des awqaf et de la zakat"
           ]
         }
       }
@@ -3194,6 +3218,10 @@
           "banuri": [
             "Pakistán",
             "Jamia Uloom-ul-Islamia, Banuri Town"
+          ],
+          "uae": [
+            "Emiratos Árabes Unidos",
+            "la Autoridad General de Asuntos Islámicos, Awqaf y Zakat"
           ]
         }
       }
@@ -3590,6 +3618,10 @@
           "banuri": [
             "Пакистан",
             "Джамия Улюм-уль-Исламия, Банури-Таун"
+          ],
+          "uae": [
+            "ОАЭ",
+            "Главное управление по делам ислама, вакуфов и закята"
           ]
         }
       }
@@ -3986,6 +4018,10 @@
           "banuri": [
             "পাকিস্তান",
             "জামিয়া উলুমুল ইসলামিয়া, বানুরি টাউন"
+          ],
+          "uae": [
+            "সংযুক্ত আরব আমিরাত",
+            "ইসলাম বিষয়ক, আওকাফ ও যাকাতের সাধারণ কর্তৃপক্ষ"
           ]
         }
       }
@@ -4382,6 +4418,10 @@
           "banuri": [
             "पाकिस्तान",
             "जामिया उलूम-उल-इस्लामिया, बनूरी टाउन"
+          ],
+          "uae": [
+            "संयुक्त अरब अमीरात",
+            "इस्लामी मामलों, औक़ाफ़ और ज़कात का सामान्य प्राधिकरण"
           ]
         }
       }
@@ -4778,6 +4818,10 @@
           "banuri": [
             "巴基斯坦",
             "巴努里镇伊斯兰学大学"
+          ],
+          "uae": [
+            "阿拉伯联合酋长国",
+            "伊斯兰事务、宗教基金与天课总局"
           ]
         }
       }

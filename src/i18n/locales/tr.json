@@ -713,6 +713,10 @@
     "banuri": {
       "name": "Pakistan (Camia Benuri Town)",
       "desc": "Camia Ulûm-i İslâmiyye, Benuri Town’un (Karaçi) namaz vakitleri, cihazınızda kendi yöntemiyle hesaplanır: listesindeki bir şehirde o şehrin vakitleri, sayfasının verdiği gibi, dakikası dakikasına; Pakistan’ın başka yerlerinde aynı yöntem bulunduğunuz yer için. Öğle, yayımladığı zeval vaktinden bir dakika sonradır."
+    },
+    "uae": {
+      "name": "Birleşik Arap Emirlikleri",
+      "desc": "İslam İşleri, Vakıflar ve Zekât Genel Otoritesi’nin vakit çizelgesi, cihazınızda kendi yöntemiyle bulunduğunuz bölge için hesaplanır; yayımlanan vakitlerle dakikası dakikasına örtüşür."
     }
   },
   "compass": {

@@ -3,8 +3,8 @@
  *
  * Sweden's, Diyanet's, Morocco's, Algeria's, Indonesia's, Tatarstan's,
  * Russia's Central Muftiate's, Albania's, Bulgaria's, Egypt's, Kuwait's,
- * Qatar's, Jordan's, Kazakhstan's, Brunei's and Pakistan's Jamia Banuri
- * Town's times are the
+ * Qatar's, Jordan's, Kazakhstan's, Brunei's, Pakistan's Jamia Banuri
+ * Town's and the United Arab Emirates' times are the
  * authority's method computed on the phone, with a correction list that puts
  * the method's few rounding differences back on the printed minute. The
  * list covers the dates the authority's tables did when it was made. Three
@@ -324,6 +324,7 @@ export function methodAuthorityFor(
     case 'kazakhstan':
     case 'brunei':
     case 'banuri':
+    case 'uae':
       return provider;
     case 'kemenag':
       return 'indonesia';

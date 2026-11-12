@@ -39,6 +39,7 @@ export const PRAYER_DATA_PROVIDER_IDS = [
   'kazakhstan',
   'brunei',
   'banuri',
+  'uae',
   'namazvakti',
   'diyanet',
   'igmg',

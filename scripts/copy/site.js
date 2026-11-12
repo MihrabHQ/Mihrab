@@ -46,6 +46,7 @@ const TABLE_WORDS = {
       albania: ['Albania', 'the Muslim Community of Albania'],
       bulgaria: ['Bulgaria', 'the Grand Mufti’s Office'],
       banuri: ['Pakistan', 'Jamia Uloom-ul-Islamia, Banuri Town'],
+      uae: ['United Arab Emirates', 'the General Authority of Islamic Affairs, Endowments and Zakat'],
     },
   },
   sv: {
@@ -72,6 +73,7 @@ const TABLE_WORDS = {
       albania: ['Albanien', 'Albaniens muslimska samfund'],
       bulgaria: ['Bulgarien', 'Stormuftins kansli'],
       banuri: ['Pakistan', 'Jamia Uloom-ul-Islamia, Banuri Town'],
+      uae: ['Förenade Arabemiraten', 'Allmänna myndigheten för islamiska frågor, stiftelser och zakat'],
     },
   },
 };

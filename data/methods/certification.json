@@ -403,5 +403,28 @@
       "sha256": "b2b8cf5d7017759ddafe6f77bcf2d9cfbf8c0e9e66fefcb4d68948ff68fc8077"
     },
     "revision": 1
+  },
+  "uae": {
+    "certified": true,
+    "checkedAt": "2026-11-12",
+    "places": 41,
+    "checks": [
+      {
+        "tables": "United Arab Emirates — the Authority’s times",
+        "places": 41,
+        "times": 89790,
+        "off": 0,
+        "offWithoutCorrections": 1325,
+        "from": "2026-01-01",
+        "to": "2026-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2026-01-01",
+      "to": "2026-12-31",
+      "entries": 1251,
+      "sha256": "3bc4720857ef51e55061f59fe2521ce1fb00d2d6c864c897a5bd6b9976802b9b"
+    },
+    "revision": 1
   }
 }

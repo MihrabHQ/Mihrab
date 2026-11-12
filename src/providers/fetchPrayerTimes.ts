@@ -7,6 +7,7 @@ import { getCdumTimes, getTatarstanTimes } from './russiaMuftiates';
 import { getAlbaniaTimes, getBulgariaTimes } from './balkanTimetables';
 import { MINISTRY_TIMETABLES } from './ministryTimetables';
 import { getBanuriTimes } from './banuriTimetable';
+import { getUaeTimes } from './uaeTimetable';
 import {
   computeNamazvaktiMethodTimes,
   getNamazvaktiTimes,
@@ -384,6 +385,23 @@ export async function fetchPrayerTimesUnified(
       // coverage, the general source.
       try {
         result = await MINISTRY_TIMETABLES[p.provider]({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+          school: p.school,
+        });
+        break;
+      } catch {
+        /* outside coverage */
+      }
+      return fetchPrayerTimesUnified({ ...p, provider: 'aladhan' });
+    }
+    case 'uae': {
+      // The United Arab Emirates' Authority's own method, computed on the
+      // phone for the reader's zone, with its correction list
+      // (`uaeTimetable.ts`). Outside the Emirates, the general source.
+      try {
+        result = await getUaeTimes({
           latitude: p.latitude,
           longitude: p.longitude,
           date: p.date,
