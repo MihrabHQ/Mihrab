@@ -76,6 +76,13 @@
 # having already succeeded.
 set -uo pipefail
 
+# CocoaPods dies on a non-UTF-8 locale ("Unicode Normalization not
+# appropriate for ASCII-8BIT"), and a release started from a shell with no
+# LANG — a launchd job, ssh, an agent's process — has none. 2.38.0 lost an
+# attempt to it at the Catalyst step.
+export LANG="${LANG:-en_US.UTF-8}"
+export LC_ALL="${LC_ALL:-$LANG}"
+
 REPO="MihrabHQ/Mihrab"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TAP="$HOME/git/homebrew-tap/Casks/mihrab.rb"
