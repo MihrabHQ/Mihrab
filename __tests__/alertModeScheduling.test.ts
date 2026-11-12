@@ -10,6 +10,13 @@ import { Platform } from 'react-native';
 import { syncPrayerNotifications } from '../src/notifications/prayerNotifications';
 import type { TimingsMap } from '../src/types/prayer';
 
+// The phone makes the alarm twin; here there is no native module to, and a
+// twin that could not be made is — rightly — not addressed (#129).
+jest.mock('../src/native/CustomAdhan', () => ({
+  ...jest.requireActual('../src/native/CustomAdhan'),
+  ensureAlarmAdhanChannel: jest.fn((id: string) => Promise.resolve(id)),
+}));
+
 const ORIGINAL_OS = Platform.OS;
 const NOW = new Date(2026, 5, 14, 10, 0, 0);
 

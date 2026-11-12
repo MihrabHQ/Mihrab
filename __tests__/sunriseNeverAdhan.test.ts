@@ -19,6 +19,13 @@ import { Platform } from 'react-native';
 import { syncPrayerNotifications } from '../src/notifications/prayerNotifications';
 import { adhanMuteToggleTask } from '../src/notifications/adhanMute';
 
+// The phone makes the alarm twin; here there is no native module to, and a
+// twin that could not be made is — rightly — not addressed (#129).
+jest.mock('../src/native/CustomAdhan', () => ({
+  ...jest.requireActual('../src/native/CustomAdhan'),
+  ensureAlarmAdhanChannel: jest.fn((id: string) => Promise.resolve(id)),
+}));
+
 const TIMINGS = {
   Fajr: '05:00',
   Sunrise: '06:30',

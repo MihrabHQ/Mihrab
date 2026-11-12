@@ -25,6 +25,9 @@ import {
   NOTIFICATION_SOUND_OPTIONS,
   registerCustomAdhan,
   resolveSoundTargets,
+  registerAlarmTwin,
+  isCustomAdhanReady,
+  SYSTEM_DEFAULT_ALARM_SOUND,
   alarmChannelId,
   type NotificationSoundId,
 } from './notificationSounds';
@@ -272,15 +275,26 @@ async function ensureChannel(
   const alarmId = alarmChannelId(selectedTargets.androidChannelId);
   if (alarmStream) {
     const option = getNotificationSoundOption(selectedSound);
-    await ensureAlarmAdhanChannel(
+    // The imported recording only while it is there: with its file gone the
+    // channel above has fallen back to the default one, and so does this.
+    const imported = selectedSound === 'custom' && isCustomAdhanReady();
+    const made = await ensureAlarmAdhanChannel(
       alarmId,
       `Prayer times (${i18n.t(option.labelKey)}) — alarm`,
       // null means "the imported recording", which the native side reads
-      // from disk. Bundled adhans name their res/raw resource.
-      selectedSound === 'custom' ? null : option.androidSound ?? null,
+      // from disk. Bundled adhans name their res/raw resource. The system's
+      // own tone ("Default notification") has neither: it was handed over
+      // as null, the native side found no recording and made no channel,
+      // and every prayer set to Adhan was posted to a channel that did not
+      // exist — no sound, no card (#129).
+      imported ? null : option.androidSound ?? SYSTEM_DEFAULT_ALARM_SOUND,
     );
+    // Said either way: a twin that could not be made is not addressed
+    // (notificationSounds.ts, `registerAlarmTwin`).
+    registerAlarmTwin(made);
   } else {
     await deleteAdhanChannel(alarmId);
+    registerAlarmTwin(undefined);
   }
 }
 

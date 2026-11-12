@@ -6,9 +6,11 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaMetadataRetriever
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.provider.OpenableColumns
+import android.provider.Settings
 import androidx.core.content.FileProvider
 import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.Arguments
@@ -242,7 +244,15 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
       return
     }
     val uri =
-        if (soundResName.isNullOrBlank()) {
+        if (soundResName == SYSTEM_DEFAULT_SOUND) {
+          // "Default notification" as the alert sound: the phone's own
+          // notification tone, on the alarm stream. It was handed over as
+          // null — "the imported recording" — and with none imported no
+          // channel was made, so the adhan's notification had nowhere to go
+          // and Android dropped it (#129).
+          RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+              ?: Settings.System.DEFAULT_NOTIFICATION_URI
+        } else if (soundResName.isNullOrBlank()) {
           // The imported file, when that is what is selected. Its content
           // URI needs the same read grant the notification channel above
           // hands out, because the sound is played by the system UI process.
@@ -418,6 +428,9 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
 
   companion object {
     const val NAME = "CustomAdhan"
+
+    /** `SYSTEM_DEFAULT_ALARM_SOUND` in notificationSounds.ts: the phone's own notification tone. */
+    const val SYSTEM_DEFAULT_SOUND = "@default"
 
     private const val PICK_REQUEST = 0xADAA
     private const val DIR_NAME = "custom_adhan"

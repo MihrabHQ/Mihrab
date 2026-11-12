@@ -232,6 +232,43 @@ export function getRegisteredCustomAdhan(): CustomAdhanSound | null {
 }
 
 /**
+ * ── THE ALARM-STREAM TWIN THAT WAS NEVER MADE (#129) ───────────────────
+ *
+ * With "play the adhan when the phone is silent" on, the adhan is addressed
+ * to the alarm-stream twin of its channel (`alarmChannelId`). The twin is
+ * built natively, and building it can fail: there was no sound to attach
+ * when the alert sound was the system's own ("Default notification") or an
+ * imported recording whose file had gone. The scheduler addressed the twin
+ * all the same — and Android drops a notification posted to a channel that
+ * does not exist, without a sound, a card or an error. A prayer set to
+ * Adhan with the default sound simply never arrived.
+ *
+ * So whoever builds the twin says how it went, and `resolveSoundTargets`
+ * hands out the twin's id only while it stands: `undefined` — nobody has
+ * tried yet this run (a channel made by an earlier run is trusted, as it
+ * always was); a channel id — that twin exists; `null` — the attempt
+ * failed, and the adhan goes to the ordinary channel, which obeys the
+ * ringer but ARRIVES.
+ */
+let alarmTwin: string | null | undefined;
+
+export function registerAlarmTwin(channelId: string | null | undefined): void {
+  alarmTwin = channelId;
+}
+
+/** Whether a notification may be addressed to this alarm-stream twin. */
+function alarmTwinStands(twinId: string): boolean {
+  return alarmTwin === undefined || alarmTwin === twinId;
+}
+
+/**
+ * What the native side attaches to the alarm twin of the "Default
+ * notification" sound: the phone's own notification tone, on the alarm
+ * stream (CustomAdhanModule.ensureAlarmChannel). Not a `res/raw` name.
+ */
+export const SYSTEM_DEFAULT_ALARM_SOUND = '@default';
+
+/**
  * Where a notification should actually point, for a given choice.
  *
  * FALLS BACK TO THE DEFAULT SOUND WHEN 'custom' IS SELECTED BUT NOTHING IS
@@ -262,18 +299,22 @@ export function resolveSoundTargets(
   iosSound: string;
 } {
   const option = getNotificationSoundOption(id);
+  // The twin only while it stands (#129, above): otherwise the channel it
+  // is the twin of, which always exists.
+  const onStream = (base: string) => {
+    const twin = alarmChannelId(base);
+    return alarmStream && alarmTwinStands(twin) ? twin : base;
+  };
   if (id !== 'custom') {
     return {
-      androidChannelId: alarmStream
-        ? alarmChannelId(option.androidChannelId)
-        : option.androidChannelId,
+      androidChannelId: onStream(option.androidChannelId),
       iosSound: option.iosSound,
     };
   }
   const fallback = getNotificationSoundOption('default');
   const base = registeredCustom?.channelId ?? fallback.androidChannelId;
   return {
-    androidChannelId: alarmStream ? alarmChannelId(base) : base,
+    androidChannelId: onStream(base),
     iosSound: registeredCustom?.soundName ?? fallback.iosSound,
   };
 }
