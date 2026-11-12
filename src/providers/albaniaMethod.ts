@@ -6,7 +6,7 @@
  * 19°49′ E, as its calendar says), and gives twenty-one other towns — of
  * Albania, Kosovo, North Macedonia, Montenegro and the Preševo valley — as
  * whole minutes on it. It is a reference town's table with the sun taken
- * once a day (`townTableMethod.ts`; from MihrabHQ/mihrab-methods, revision 1):
+ * once a day (`townTable.ts`):
  *
  *   • the day's sun is taken at 0h UT of the date (one in the morning in
  *     Tirana, by winter time);
@@ -16,6 +16,8 @@
  *
  * This gives the calendar's minute for about 98 % of the table; every other
  * time is a single minute away.
+ *
+ * From MihrabHQ/mihrab-methods, revision 1.
  */
 import { townTableRawMinutes, townTableTimes, type TownTable, type TownTableInstants, type TownTableMinutes } from './townTableMethod';
 

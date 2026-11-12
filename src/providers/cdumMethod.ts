@@ -5,8 +5,7 @@
  *
  * Read off its year for eighteen cities from 46° to 60° N:
  *
- *   • the sun and arithmetic Kazakhstan's muftiate also uses (from
- *     MihrabHQ/mihrab-methods, revision 1): the short series for the sun, the day
+ *   • Kazakhstan's sun and arithmetic: the short series for the sun, the day
  *     counted from 0h of the civil date at the place's own meridian, and
  *     each time computed once with the sun taken at a fixed first guess of
  *     its hour (Fajr 5h, sunrise 6h, Dhuhr 12h, Asr 13h, sunset and Isha
@@ -30,7 +29,10 @@
  * Where the sun does not rise or set the timetable prints the 45th
  * parallel's own day; no place listed here is that far north, and the
  * method gives no times there.
+ *
+ * From MihrabHQ/mihrab-methods, revision 1.
  */
+import { kazakhstanSunAt as sunAt, kazakhstanJulian as julian } from './kazakhstanMethod';
 
 const RAD = Math.PI / 180;
 const sin = (d: number) => Math.sin(d * RAD);
@@ -48,28 +50,6 @@ export type CdumInstants = {
 };
 
 type Six = { fajr: number; sunrise: number; dhuhr: number; asr: number; maghrib: number; isha: number };
-
-/** The Julian day of 0h UT of a civil date (month 1-based). */
-function julian(year: number, month: number, day: number): number {
-  if (month <= 2) {
-    year -= 1;
-    month += 12;
-  }
-  const a = Math.floor(year / 100);
-  const b = 2 - a + Math.floor(a / 4);
-  return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day + b - 1524.5;
-}
-
-/** The method's sun at a Julian day: declination (degrees), equation of time (hours). */
-function sunAt(jd: number): { decl: number; eqt: number } {
-  const D = jd - 2451545.0;
-  const g = fix(357.529 + 0.98560028 * D, 360);
-  const q = fix(280.459 + 0.98564736 * D, 360);
-  const L = fix(q + 1.915 * sin(g) + 0.02 * sin(2 * g), 360);
-  const e = 23.439 - 0.00000036 * D;
-  const ra = Math.atan2(cos(e) * sin(L), cos(L)) / RAD / 15;
-  return { decl: Math.asin(sin(e) * sin(L)) / RAD, eqt: q / 15 - fix(ra, 24) };
-}
 
 const FAJR = 18;
 const ISHA = 17;

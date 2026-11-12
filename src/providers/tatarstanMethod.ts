@@ -1,7 +1,6 @@
 /**
  * Tatarstan — the Spiritual Administration of Muslims of the Republic of
- * Tatarstan's method, as the times in its yearly timetable are computed
- * (from MihrabHQ/mihrab-methods, revision 1).
+ * Tatarstan's method, as the times in its yearly timetable are computed.
  *
  * Read off its year for forty-four places:
  *
@@ -26,6 +25,8 @@
  * minutes before the printed sunrise every day of the year, and Dhuhr at a
  * fixed clock time (12:00 in most districts). The Dhuhr here is the zenith
  * column, the sun's transit.
+ *
+ * From MihrabHQ/mihrab-methods, revision 1.
  */
 import { meeusApparentSun, refractionFromApparent, refractionFromTrue } from './moroccoMethod';
 

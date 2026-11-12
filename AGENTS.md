@@ -98,6 +98,13 @@ unsure whether a change touches 1 or 2, assume it does.
   and the store paragraph (`scripts/copy/store/`).
 - The website ships **no JavaScript, no webfonts, no third-party
   requests**. Generated content is written into the HTML at build time.
+- **The calculation methods are copies, and a script makes them.**
+  `src/providers/<x>Method.ts`, the correction lists and the place lists
+  under `src/providers/data/` come from mihrab-methods through
+  `node scripts/sync-methods.js ../mihrab-methods` — never edit one by hand:
+  change the method there (its revision, its ports), then run the script
+  here. `npm run preflight` runs it with `--check` and fails when a copy
+  is not what mihrab-methods has.
 
 ## 5. Before you say you are done
 

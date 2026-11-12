@@ -21,8 +21,9 @@
  *     from the reference town's to the minute, west later).
  *
  * The moment the sun is taken at and the margin on Fajr are each
- * timetable's own (`bulgariaMethod.ts`, `albaniaMethod.ts`). From
- * MihrabHQ/mihrab-methods.
+ * timetable's own (`bulgaria.ts`, `albania.ts`).
+ *
+ * From MihrabHQ/mihrab-methods, revision 1.
  */
 import { meeusApparentSun } from './moroccoMethod';
 
