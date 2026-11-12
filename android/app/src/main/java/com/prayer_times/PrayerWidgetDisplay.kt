@@ -56,12 +56,51 @@ data class PrayerWidgetDisplay(
         try { Color.parseColor(hex) } catch (_: Exception) { DEFAULT_TEXT }
       } else DEFAULT_TEXT
       return PrayerWidgetDisplay(
-        text = text,
+        text = legibleOnSky(context, text),
         showLocation = p.getBoolean(KEY_SHOW_LOCATION, true),
         showCountdown = p.getBoolean(KEY_SHOW_COUNTDOWN, true),
         showTable = p.getBoolean(KEY_SHOW_TABLE, true),
         timeScale = p.getInt(KEY_TIME_SCALE, 100).coerceIn(SCALE_MIN, SCALE_MAX) / 100f,
       )
+    }
+
+    /**
+     * UNDER THE APP'S SKY THEME THE CARD IS THE HOUR'S, AND IT IS DARK
+     * (theme/skyMoods.ts, `widgetSkyColors`): a dark card in the hour's hue
+     * by day, the night's own page by night. A text colour chosen for
+     * another card — the Dark preset, picked for a see-through card over a
+     * pale wallpaper — is then dark on dark, and the times cannot be read.
+     *
+     * So where the Sky card is what the text stands on (drawn at
+     * SKY_CARD_MIN_OPACITY or more) and the chosen colour does not reach
+     * SKY_TEXT_MIN_CONTRAST against it, the card's own light text is used.
+     * A see-through card is the wallpaper's to judge, and the choice
+     * stands. Nothing is stored: with the theme off the choice is back.
+     */
+    internal fun legibleOnSky(context: Context, text: Int): Int {
+      val card = try {
+        PrayerWidgetProvider.skyCard(context)
+      } catch (_: Exception) {
+        null
+      } ?: return text
+      if (card.second < SKY_CARD_MIN_OPACITY) return text
+      return if (contrast(text, card.first) < SKY_TEXT_MIN_CONTRAST) DEFAULT_TEXT else text
+    }
+
+    const val SKY_CARD_MIN_OPACITY = 60
+    const val SKY_TEXT_MIN_CONTRAST = 3.0
+
+    /** WCAG contrast ratio of two opaque colours, 1 … 21. */
+    internal fun contrast(a: Int, b: Int): Double {
+      fun channel(v: Int): Double {
+        val c = v / 255.0
+        return if (c <= 0.03928) c / 12.92 else Math.pow((c + 0.055) / 1.055, 2.4)
+      }
+      fun luminance(c: Int) =
+        0.2126 * channel(Color.red(c)) + 0.7152 * channel(Color.green(c)) + 0.0722 * channel(Color.blue(c))
+      val la = luminance(a)
+      val lb = luminance(b)
+      return (maxOf(la, lb) + 0.05) / (minOf(la, lb) + 0.05)
     }
 
     /** The count-up window in force: the stored one, else what the app published. */

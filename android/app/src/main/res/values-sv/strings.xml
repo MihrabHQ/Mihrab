@@ -24,6 +24,7 @@
     <string name="widget_configure_background">Bakgrundsstyrka</string>
     <string name="widget_configure_opacity_percent">%1$d%%</string>
     <string name="widget_configure_highlight">Markering för nästa bön</string>
+    <string name="widget_configure_highlight_sky">Följer appens tema ”Himmel”: timmens egen färg, så länge temat är på.</string>
     <string name="widget_configure_highlight_green">Grön</string>
     <string name="widget_configure_highlight_teal">Turkos</string>
     <string name="widget_configure_highlight_blue">Blå</string>

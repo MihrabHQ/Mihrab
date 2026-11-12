@@ -24,6 +24,7 @@
     <string name="widget_configure_background">پس منظر کی شدت</string>
     <string name="widget_configure_opacity_percent">%1$d%%</string>
     <string name="widget_configure_highlight">اگلی نماز کا نمایاں رنگ</string>
+    <string name="widget_configure_highlight_sky">ایپ کی ”آسمان“ تھیم کے مطابق: جب تک تھیم آن ہے، اسی گھڑی کا اپنا رنگ۔</string>
     <string name="widget_configure_highlight_green">سبز</string>
     <string name="widget_configure_highlight_teal">فیروزی</string>
     <string name="widget_configure_highlight_blue">نیلا</string>

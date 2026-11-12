@@ -24,6 +24,7 @@
     <string name="widget_configure_background">背景强度</string>
     <string name="widget_configure_opacity_percent">%1$d%%</string>
     <string name="widget_configure_highlight">下一次礼拜高亮</string>
+    <string name="widget_configure_highlight_sky">跟随应用的“天空”主题：主题开启时，使用当时的颜色。</string>
     <string name="widget_configure_highlight_green">绿色</string>
     <string name="widget_configure_highlight_teal">青色</string>
     <string name="widget_configure_highlight_blue">蓝色</string>

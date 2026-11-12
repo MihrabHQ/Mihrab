@@ -134,7 +134,19 @@
                 android:text="@string/widget_configure_highlight"
                 android:textAppearance="?attr/textAppearanceTitleSmall" />
 
+            <!-- Under the app's Sky theme the highlight is the hour's: said here, in the swatches' place. -->
+            <TextView
+                android:id="@+id/widget_configure_highlight_sky"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/widget_configure_highlight_sky"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:visibility="gone" />
+
             <HorizontalScrollView
+                android:id="@+id/widget_configure_highlight_scroll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"

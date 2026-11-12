@@ -258,6 +258,22 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
      * app. A second reader that fell behind on, say, the dynamic-accent flag
      * would show one widget in Material You and the one beside it in green.
      */
+    /**
+     * The app's Sky theme on the widgets, when it is on: the card's colour
+     * (opaque) and how strongly it is drawn, 0–100. Null: the theme is off,
+     * and the widgets' own settings decide.
+     */
+    fun skyCard(context: Context): Pair<Int, Int>? {
+      val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+      val style = readWidgetStyle(prefs)
+      if (!style.skyBg.matches(Regex("^#([0-9A-Fa-f]{6})$"))) return null
+      return try {
+        Pair(Color.parseColor(style.skyBg), style.bgOpacityPercent)
+      } catch (_: Exception) {
+        null
+      }
+    }
+
     fun resolvedColors(context: Context): Pair<Int, Int> {
       val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
       val style = readWidgetStyle(prefs)

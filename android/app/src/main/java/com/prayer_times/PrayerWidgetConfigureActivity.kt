@@ -312,6 +312,24 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     val input = findViewById<TextInputEditText>(R.id.widget_configure_hex_input)
     input.setText(highlightCustomHex)
 
+    // UNDER THE APP'S SKY THEME THE HIGHLIGHT IS THE HOUR'S, on every widget
+    // (PrayerWidgetProvider.WidgetStyle.skyAccent). The swatches would be
+    // five colours none of which the card takes — the sample above them not
+    // moving when one is tapped — so in their place a line says whose the
+    // colour is. The stored choice is kept, and is the card's again when
+    // the theme is turned off.
+    val skyOn = try {
+      PrayerWidgetProvider.skyCard(this) != null
+    } catch (_: Exception) {
+      false
+    }
+    findViewById<View>(R.id.widget_configure_highlight_sky).visibility = if (skyOn) View.VISIBLE else View.GONE
+    findViewById<View>(R.id.widget_configure_highlight_scroll).visibility = if (skyOn) View.GONE else View.VISIBLE
+    if (skyOn) {
+      layout.visibility = View.GONE
+      return
+    }
+
     fun redraw() {
       row.removeAllViews()
       for ((id, hex, nameRes) in HIGHLIGHTS) {
