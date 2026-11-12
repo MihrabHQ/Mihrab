@@ -15,7 +15,7 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from 'react-native';
-import Svg, { Path, Rect } from 'react-native-svg';
+import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import type { LoggedStatus } from '../../journal/journal';
 import type { QuickLogPhase } from '../../journal/quickLog';
@@ -31,6 +31,7 @@ import { MinimalGlyph } from './MinimalGlyph';
 import { MapPinIcon } from '../../theme/icons';
 import { CompassIcon } from '../../components/HeaderToolbarIcons';
 import { pagerPosition } from './pagerPosition';
+import { BACK_ICON_SIZE, BACK_PILL_PAD, backToTodayForm } from './backToTodayFit';
 
 /** The doors' glyphs: a step under the type's cap, as the Qibla chip's small one. */
 const DOOR_ICON = 15;
@@ -217,23 +218,13 @@ function TodayTimesSheetImpl({
             <Chevron color={muted} back={rtl} />
           </Pressable>
         </View>
-        {/* Off today, the way back — a line, as the full page's day bar has. */}
-        {isToday ? null : (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('home.backToToday', 'Back to today')}
-            onPress={onBackToToday}
-            hitSlop={6}
-            style={styles.backToToday}>
-            <Text style={[styles.backToTodayText, { color: palette.accentSolid }]}>
-              {t('home.backToToday', 'Back to today')}
-            </Text>
-          </Pressable>
-        )}
+        {/* Off today, the way back stands in the first row's empty middle
+            (`BackToToday`, below) — not on a line of its own, which made
+            the sheet a line taller on every day but today. */}
         {days && onTurn && days.length > 1 ? (
-          <DayPager days={days} offset={offset} onTurn={onTurn} rtl={rtl} />
+          <DayPager days={days} offset={offset} onTurn={onTurn} rtl={rtl} onBackToToday={onBackToToday} />
         ) : (
-          <DayRows rows={rows} />
+          <DayRows rows={rows} onBackToToday={isToday ? undefined : onBackToToday} />
         )}
         {/* The foot, one row: the place at the start, where the times come
             from in the middle — "Times source" over the provider, small, so
@@ -308,15 +299,29 @@ function TodayTimesSheetImpl({
   );
 }
 
-/** One day's rows: the check, the name, the time. */
-function DayRows({ rows }: { rows: TimesSheetRow[] }) {
+/**
+ * One day's rows: the check, the name, the time — and, on a day that is
+ * not today (`onBackToToday`), the way back in the first row's middle.
+ */
+function DayRows({ rows, onBackToToday }: { rows: TimesSheetRow[]; onBackToToday?: () => void }) {
   const { palette } = useAppPalette();
+  // The first row's measures, for the way back: the row, the name's ink
+  // (its box is the row's spare width; the ink is the first line's), and
+  // the time's.
+  const [rowW, setRowW] = useState(0);
+  const [nameW, setNameW] = useState(0);
+  const [timeW, setTimeW] = useState(0);
+  const firstName = rows[0]?.name ?? '';
   return (
     <View style={styles.rows}>
-      {rows.map(row => {
+      {rows.map((row, index) => {
         const ink = row.secondary && !row.lit ? palette.muted : palette.text;
+        const first = index === 0 && !!onBackToToday;
         return (
-          <View key={row.key} style={styles.row}>
+          <View
+            key={row.key}
+            style={styles.row}
+            onLayout={first ? e => setRowW(e.nativeEvent.layout.width) : undefined}>
             {/* The check, or its room: the names line up whether or not
                 a row can be logged (Sunrise cannot). */}
             <View style={styles.check}>
@@ -333,20 +338,113 @@ function DayRows({ rows }: { rows: TimesSheetRow[] }) {
             </View>
             <Text
               style={[styles.name, { color: ink }, row.lit && styles.lit, row.secondary && styles.secondary]}
-              numberOfLines={1}>
+              numberOfLines={1}
+              onTextLayout={first ? e => setNameW(e.nativeEvent.lines[0]?.width ?? 0) : undefined}>
               {row.name}
             </Text>
             <Text
               style={[styles.time, tabularNumeralStyle, { color: ink }, row.lit && styles.lit]}
               numberOfLines={1}
               maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
-              accessibilityLanguage="en-US">
+              accessibilityLanguage="en-US"
+              onLayout={first ? e => setTimeW(e.nativeEvent.layout.width) : undefined}>
               {row.time}
             </Text>
+            {first && onBackToToday ? (
+              <BackToToday
+                onPress={onBackToToday}
+                rowW={rowW}
+                // No text layout on the web: the name's width from its length.
+                startW={LOG_CHECK_SIZE + SPACING.sm + (nameW > 0 ? nameW : firstName.length * TYPE.body.fontSize * 0.62)}
+                endW={timeW}
+              />
+            ) : null}
           </View>
         );
       })}
     </View>
+  );
+}
+
+/**
+ * The way back to today, in the middle of a row: over the row, centred on
+ * it, in the form that fits between the name and the time
+ * (backToTodayFit.ts). The words are measured at both sizes off screen
+ * first; until then nothing is drawn.
+ */
+function BackToToday({
+  onPress,
+  rowW,
+  startW,
+  endW,
+}: {
+  onPress: () => void;
+  rowW: number;
+  startW: number;
+  endW: number;
+}) {
+  const { t } = useTranslation();
+  const { palette } = useAppPalette();
+  const label = t('home.backToToday', 'Back to today');
+  const [fullW, setFullW] = useState(0);
+  const [smallW, setSmallW] = useState(0);
+  const form = backToTodayForm({ rowW, startW, endW, fullW, smallW });
+  const accent = String(palette.accentSolid);
+  return (
+    <View style={styles.backLayer} pointerEvents="box-none">
+      {/* The measures: the words at each size, unseen and untouched. */}
+      <Text
+        style={[styles.backText, styles.backMeasure]}
+        numberOfLines={1}
+        onLayout={e => setFullW(e.nativeEvent.layout.width)}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants">
+        {label}
+      </Text>
+      <Text
+        style={[styles.backText, styles.backTextSmall, styles.backMeasure]}
+        numberOfLines={1}
+        onLayout={e => setSmallW(e.nativeEvent.layout.width)}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants">
+        {label}
+      </Text>
+      {form ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={label}
+          onPress={onPress}
+          hitSlop={8}
+          style={({ pressed }) => [form === 'icon' ? styles.backIcon : styles.backPill, pressed && styles.pressed]}>
+          {form === 'icon' ? (
+            <TodayGlyph color={accent} />
+          ) : (
+            <Text
+              style={[styles.backText, form === 'small' && styles.backTextSmall, { color: accent }]}
+              numberOfLines={1}>
+              {label}
+            </Text>
+          )}
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
+/** Back to now: an arrow turning round to a dot — the day that is today. */
+function TodayGlyph({ color }: { color: string }) {
+  return (
+    <Svg width={20} height={20} viewBox="0 0 20 20" accessibilityElementsHidden importantForAccessibility="no">
+      <Path
+        d="M4.2 10a5.8 5.8 0 1 0 1.9-4.3M3.6 3.4v3.2h3.2"
+        stroke={color}
+        strokeWidth={1.7}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+      <Circle cx={10} cy={10} r={1.7} fill={color} />
+    </Svg>
   );
 }
 
@@ -373,11 +471,14 @@ function DayPager({
   offset,
   onTurn,
   rtl,
+  onBackToToday,
 }: {
   days: TimesSheetDay[];
   offset: number;
   onTurn: (offset: number) => void;
   rtl: boolean;
+  /** Drawn on every day's rows but today's, so it comes and goes with its page. */
+  onBackToToday: () => void;
 }) {
   const [width, setWidth] = useState(0);
   const listRef = useRef<FlatList<TimesSheetDay>>(null);
@@ -460,14 +561,17 @@ function DayPager({
           nestedScrollEnabled
           renderItem={({ item }) => (
             <View style={[styles.page, { width }]}>
-              <DayRows rows={item.rows} />
+              <DayRows rows={item.rows} onBackToToday={item.offset === 0 ? undefined : onBackToToday} />
             </View>
           )}
         />
       ) : (
         // Before the width is known: the day on show, on its own.
         <View style={styles.page}>
-          <DayRows rows={days.find(d => d.offset === offset)?.rows ?? []} />
+          <DayRows
+            rows={days.find(d => d.offset === offset)?.rows ?? []}
+            onBackToToday={offset === 0 ? undefined : onBackToToday}
+          />
         </View>
       )}
     </View>
@@ -514,8 +618,14 @@ const styles = StyleSheet.create({
   day: { flex: 1, alignItems: 'center' },
   title: { textAlign: 'center' },
   subtitle: { fontSize: TYPE.footnote.fontSize, fontWeight: '400', textAlign: 'center', marginTop: 1 },
-  backToToday: { alignSelf: 'center', paddingVertical: SPACING.xs, paddingHorizontal: SPACING.sm },
-  backToTodayText: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  // The way back, over the first row and centred on it: the layer takes no
+  // touches of its own, so a swipe across the row still turns the day.
+  backLayer: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' },
+  backPill: { paddingHorizontal: BACK_PILL_PAD, paddingVertical: SPACING.xs },
+  backIcon: { width: BACK_ICON_SIZE, height: BACK_ICON_SIZE, alignItems: 'center', justifyContent: 'center' },
+  backText: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  backTextSmall: { fontSize: TYPE.caption.fontSize },
+  backMeasure: { position: 'absolute', opacity: 0, left: 0, top: 0 },
   rows: { gap: SPACING.xs, marginTop: SPACING.xs },
   // The sheet's card padding (MinimalSheet, SPACING.lg), undone and redone.
   pager: { marginHorizontal: -SPACING.lg },

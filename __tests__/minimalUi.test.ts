@@ -294,7 +294,7 @@ describe('the minimal Today', () => {
     expect(card).toContain('onTurn={setSheetOffset}');
     // A paged list, laid out like the full page's (pagerPosition), whose
     // settle turns the day bar and which follows a chevron.
-    expect(sheet).toContain('<DayPager days={days} offset={offset} onTurn={onTurn} rtl={rtl} />');
+    expect(sheet).toContain('<DayPager days={days} offset={offset} onTurn={onTurn} rtl={rtl} onBackToToday={onBackToToday} />');
     expect(sheet).toContain('pagingEnabled');
     expect(sheet).toContain('onMomentumScrollEnd={onSettled}');
     expect(sheet).toContain("import { pagerPosition } from './pagerPosition';");
