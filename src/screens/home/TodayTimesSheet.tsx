@@ -273,7 +273,9 @@ function TodayTimesSheetImpl({
               </Text>
               <Text
                 style={[styles.source, styles.sourceName, { color: palette.muted }]}
-                numberOfLines={1}
+                // Two lines: "Sweden (Islamiska Förbundet)" is whose times
+                // they are, and one line cut the name off at "Förbun…".
+                numberOfLines={2}
                 maxFontSizeMultiplier={SOURCE_MAX_SCALE}>
                 {source}
               </Text>
