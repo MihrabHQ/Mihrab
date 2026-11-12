@@ -43,7 +43,7 @@ import { notePlaceZone, placeZoneFor } from './placeZone';
 import { DEVICE_CLOCK } from '../utils/prayerTimes';
 import { DIYANET_METHOD_ID } from './diyanetMethodId';
 import { computeDiyanetTimes } from './diyanetMethod';
-import { autoMethodForCoords } from './autoMethod';
+import { autoMethodForCoords, autoMethodToAsk } from './autoMethod';
 import { ALGERIA_METHOD_ID } from './algeriaCities';
 import { nearestMoroccoCity } from './moroccoNearest';
 import { SWEDEN_METHOD_ID } from './swedenMethodId';
@@ -176,6 +176,15 @@ async function onDeviceMethod(
   return local;
 }
 
+/** The method AlAdhan is asked for: the reader's, or Automatic's where that is asked by number. */
+function methodToAsk(
+  p: Pick<UnifiedFetchParams, 'latitude' | 'longitude' | 'calculationMethod'>,
+): UnifiedFetchParams['calculationMethod'] {
+  return p.calculationMethod === 'auto'
+    ? autoMethodToAsk(p.latitude, p.longitude)
+    : p.calculationMethod;
+}
+
 /**
  * Would `fetchPrayerTimesUnified` ask AlAdhan for these parameters? The
  * AlAdhan provider with a method that is not computed on the phone — the
@@ -211,7 +220,7 @@ export async function fetchAladhanMonth(
     longitude: p.longitude,
     year,
     month,
-    method: p.calculationMethod,
+    method: methodToAsk(p),
     school: p.school,
   });
   const out = new Map<string, PrayerTimesResult>();
@@ -252,7 +261,7 @@ async function askAladhan(p: UnifiedFetchParams): Promise<PrayerTimesResult> {
       latitude: p.latitude,
       longitude: p.longitude,
       date,
-      method: p.calculationMethod,
+      method: methodToAsk(p),
       school: p.school,
     });
   const dayOn = (zone: PlaceClock | undefined) => {

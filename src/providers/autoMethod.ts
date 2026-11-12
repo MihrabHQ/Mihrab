@@ -27,9 +27,11 @@
  */
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
 import { isCoordinateInIndonesia } from '../utils/indonesiaRegion';
+import { isCoordinateInKwaZuluNatal } from '../utils/kwazuluNatalRegion';
 import { isCoordinateInMalaysia } from '../utils/malaysiaRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInSingapore } from '../utils/singaporeRegion';
+import { isCoordinateInSouthAfrica } from '../utils/southAfricaRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import { nationalMethodCountryAt } from '../utils/countryAt';
@@ -42,6 +44,31 @@ type AutoMethodRegion = {
   method: number;
   covers: (latitude: number, longitude: number) => boolean;
 };
+
+/**
+ * Regions where Automatic is one of AlAdhan's methods, but not the one its
+ * own Automatic would pick there — so AlAdhan is asked for it by number
+ * (`autoMethodToAsk`), and the phone computes the same offline.
+ *
+ * South Africa. AlAdhan's Automatic takes the method whose home is nearest,
+ * which this far south is Umm al-Qura's (Fajr 18.5°, Isha ninety minutes
+ * after sunset) — nobody's convention here, and not what the phone computed
+ * offline. The country goes by the Muslim World League's 18° / 17° (3): the
+ * Muslim Judicial Council's Cape Town timetable is that to the minute, and
+ * the Jamiatul Ulama South Africa names it.
+ *
+ * KwaZulu-Natal is the exception, and first because the first match wins:
+ * the Jamiatul Ulama KwaZulu-Natal, which publishes the province's
+ * timetable, puts Isha at 18° — Karachi's angles (1), four to seven minutes
+ * later through the year. Its Fajr is the same 18°. Its own margins (Zuhr
+ * some minutes after the zenith, Maghrib a few after sunset) are not taken:
+ * they differ between its printed tables and its website, and neither is
+ * one formula.
+ */
+const ASKED_BY_NUMBER: readonly AutoMethodRegion[] = [
+  { method: 1, covers: isCoordinateInKwaZuluNatal },
+  { method: 3, covers: isCoordinateInSouthAfrica },
+];
 
 const AUTO_METHOD_REGIONS: readonly AutoMethodRegion[] = [
   // 19 = Algeria. FIRST, because Morocco's rectangle takes in a strip of
@@ -60,6 +87,7 @@ const AUTO_METHOD_REGIONS: readonly AutoMethodRegion[] = [
   { method: SWEDEN_METHOD_ID, covers: isCoordinateInSweden },
   // 13 = Türkiye (Diyanet's own method, computed on the device).
   { method: 13, covers: isCoordinateInTurkey },
+  ...ASKED_BY_NUMBER,
 ];
 
 /**
@@ -99,4 +127,18 @@ export function autoMethodForCoords(
   }
   const national = nationalMethodCountryAt(latitude, longitude);
   return (national && NATIONAL_AUTO_METHOD[national]) || DEFAULT_AUTO_METHOD;
+}
+
+/**
+ * What to ask AlAdhan for when the reader's method is Automatic: its own
+ * Automatic ('auto') nearly everywhere, a method by number where the app's
+ * Automatic is not the one AlAdhan would choose (`ASKED_BY_NUMBER`).
+ */
+export function autoMethodToAsk(
+  latitude: number,
+  longitude: number,
+): number | 'auto' {
+  return (
+    ASKED_BY_NUMBER.find(r => r.covers(latitude, longitude))?.method ?? 'auto'
+  );
 }

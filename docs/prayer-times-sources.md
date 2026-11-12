@@ -71,7 +71,12 @@ zone of the nearest of its towns (`data/uaeAreas.json`); the two summits, Jebel 
 Hafeet, only on the mountain. **Turkmenistan** has no
 timetable of its own Muftiate's to follow; Automatic there is Diyanet's
 method throughout (Diyanet prints tables for some thirty Turkmen towns),
-for a listed town near the reader or the reader's own spot. The
+for a listed town near the reader or the reader's own spot. In **South
+Africa** Automatic asks AlAdhan for the Muslim World League's angles by
+number (AlAdhan's own choice there is Umm al-Qura's), and in
+**KwaZulu-Natal** for 18° and 18°, the Jamiatul Ulama KwaZulu-Natal's
+Fajr and Isha, ahead of Diyanet's listed towns in the province
+(`autoMethod.ts`). The
 certification of all of these is in mihrab-methods' `docs/status.md`.
 
 Every time is within a minute by the method alone. Each list covers the
