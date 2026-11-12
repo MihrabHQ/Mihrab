@@ -1382,3 +1382,19 @@ Changed the release cycle itself:
   - `scripts/release/release.ts`
 
 **Lesson:** the release clone had no `garmin/build/`, so the Android build would have shipped without the watch face that Settings → Devices installs (copyGarminFace copies it only when it exists). The first attempt was stopped during the Android build, the face built with `garmin/build.sh`, and the release restarted. Build the Garmin apps in the release clone before cutting, or have the release tool build them.
+
+## 2.38.0 (297) — 2026-11-12
+
+Took 2 aborted attempt(s) before it ran clean:
+
+  - 2 catalyst build failed — /tmp/release-catalyst.log
+
+Changed the release cycle itself:
+
+  - `.github/workflows/ci.yml`
+  - `.github/workflows/national-tables.yml`
+  - `docs/DISTRIBUTION.md`
+  - `scripts/release.sh`
+  - `scripts/release/io.ts`
+
+**Lesson:** _(unfilled)_
