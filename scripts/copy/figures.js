@@ -136,23 +136,35 @@ function pct(part, whole, digits = 3, lang = 'en') {
   return new Intl.NumberFormat(loc(lang), { numberingSystem: 'latn', minimumFractionDigits: digits, maximumFractionDigits: digits }).format(v);
 }
 
+/**
+ * A date as Intl writes it, made the same on every Node. Hindi's dates
+ * gained a comma between the month and the year in a later CLDR
+ * ("12 नवंबर 2026" on Node 22, "12 नवंबर, 2026" on Node 26), so a page
+ * built on one machine was "out of date" on another and the site's check
+ * failed on CI for a page nobody had touched. The comma is dropped: the
+ * older form, and the one the pages already carry.
+ */
+function steady(text, lang) {
+  return lang === 'hi' ? text.replace(/,/g, '') : text;
+}
+
 /** 'Nov 2027' / 'nov. 2027' — the month a span ends in. */
 function monthYear(iso, lang = 'en') {
   const [y, m] = iso.split('-').map(Number);
-  return new Intl.DateTimeFormat(loc(lang), { month: 'short', year: 'numeric', timeZone: 'UTC', numberingSystem: 'latn' }).format(new Date(Date.UTC(y, m - 1, 15)));
+  return steady(new Intl.DateTimeFormat(loc(lang), { month: 'short', year: 'numeric', timeZone: 'UTC', numberingSystem: 'latn' }).format(new Date(Date.UTC(y, m - 1, 15))), lang);
 }
 
 /** '16 October 2026' */
 function longDate(iso, lang = 'en') {
   const [y, m, d] = iso.split('-').map(Number);
-  return new Intl.DateTimeFormat(loc(lang), { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC', numberingSystem: 'latn' }).format(new Date(Date.UTC(y, m - 1, d)));
+  return steady(new Intl.DateTimeFormat(loc(lang), { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC', numberingSystem: 'latn' }).format(new Date(Date.UTC(y, m - 1, d))), lang);
 }
 
 /** '27 Aug 2026 → 11 Nov 2026' */
 function span(from, to, lang = 'en') {
   const f = iso => {
     const [y, m, d] = iso.split('-').map(Number);
-    return new Intl.DateTimeFormat(loc(lang), { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC', numberingSystem: 'latn' }).format(new Date(Date.UTC(y, m - 1, d)));
+    return steady(new Intl.DateTimeFormat(loc(lang), { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC', numberingSystem: 'latn' }).format(new Date(Date.UTC(y, m - 1, d))), lang);
   };
   return `${f(from)} → ${f(to)}`;
 }
