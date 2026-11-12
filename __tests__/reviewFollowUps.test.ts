@@ -16,6 +16,25 @@ describe('the muṣḥaf line cache', () => {
     );
     // Drawn directly then, without queueing another paint of a line it has.
     expect(view).toContain('if (!cached && pendingGeneration != generation) paintInBackground(line)');
+    // And a capture is never kept waiting for the picture: the wait is the screen's.
+    expect(view).toContain('if (!cached && canvas.isHardwareAccelerated) {');
+  });
+
+  /**
+   * Opening the reader held one frame for 179 ms on a Pixel 10 Pro: the
+   * render thread rasterising every word of the page as a path, because a
+   * line with no picture yet drew itself directly.
+   */
+  it('waits for its picture, briefly, rather than draw itself on the page’s first frames', () => {
+    expect(view).toContain('private const val INK_WAIT_MS = 250L');
+    const draw = view.slice(view.indexOf('override fun onDraw'), view.indexOf('private fun inkOf'));
+    expect(draw).toMatch(/if \(now - waitingSince < INK_WAIT_MS\) \{[\s\S]*?postInvalidateDelayed\([\s\S]*?return\s*\}\s*\}\s*drawLine\(canvas, line, uiPens, 0f\)/);
+    // Its own older picture only: the same words, the same size.
+    expect(draw).toContain('cacheInk == inkOf(line) && cacheWidth == width && cacheHeight == height');
+    // A paint that failed ends the wait.
+    expect(view).toMatch(/if \(gen == generation\) \{\s*waitingSince = 1L\s*invalidate\(\)/);
+    // And the picture arriving, or the view leaving, resets it.
+    expect(view.match(/waitingSince = 0L/g)!.length).toBeGreaterThanOrEqual(3);
   });
 
   it('frees the slot when a paint fails, so a later frame tries again', () => {

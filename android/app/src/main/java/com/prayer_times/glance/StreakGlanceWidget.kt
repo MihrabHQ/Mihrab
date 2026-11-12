@@ -215,6 +215,20 @@ internal class StreakGlanceWidget : MihrabGlanceWidget("streak") {
  * The practice graph for a typed practice block, drawn by the one renderer
  * every widget uses, from each day in the v1 shape it reads — written by
  * the v1 adapter's own `practiceDayJson`, so the two cannot drift.
+ *
+ * DRAWN ONCE FOR THE SAME QUESTION. A stretchable card goes to the launcher
+ * as a map of sixteen sizes (`STRETCHABLE_SIZES`), each composed in full,
+ * and every redraw of the placed cards composes all of them again — after a
+ * page turned, a bead counted, the app left — though the graph changes
+ * when a prayer is logged or the day turns and at no other time. Each of
+ * those compositions drew its own bitmap: on a Pixel 10 Pro with three
+ * cards placed, 150 bitmaps (25 MB) stood in the app's memory from the
+ * moment its process started, and one redraw put 170 more beside them
+ * (another 60 MB) until the collector came round. The same record, on the
+ * same day, in the same shape and colour is the same picture: it is kept
+ * (`GridCache`) and handed out again, to the next size that lays out the
+ * same, to the second card of a kind, to the next redraw. RemoteViews
+ * sends a bitmap it is given twice once.
  */
 internal fun practiceGrid(
   pr: WidgetContract.Practice,
@@ -229,8 +243,60 @@ internal fun practiceGrid(
 ): Bitmap {
   val days = org.json.JSONArray()
   for (d in pr.days) days.put(WidgetPayloadV1.practiceDayJson(d))
-  val grid = PracticeGridBitmap.render(days, rows, columns, cellWPx, cellHPx, gapPx, accent, pr.since?.ifEmpty { null })
-  if (!mirror) return grid
-  val flip = android.graphics.Matrix().apply { preScale(-1f, 1f) }
-  return Bitmap.createBitmap(grid, 0, 0, grid.width, grid.height, flip, false)
+  val since = pr.since?.ifEmpty { null }
+  // Everything the picture is drawn from, the day included: today is its
+  // last column.
+  val today = java.util.Calendar.getInstance().let { it.get(java.util.Calendar.YEAR) * 1000 + it.get(java.util.Calendar.DAY_OF_YEAR) }
+  val key = "$today|$rows|$columns|$cellWPx|$cellHPx|$gapPx|$accent|$mirror|$since|$days"
+  return GridCache.get(key) {
+    val grid = PracticeGridBitmap.render(days, rows, columns, cellWPx, cellHPx, gapPx, accent, since)
+    if (!mirror) {
+      grid
+    } else {
+      val flip = android.graphics.Matrix().apply { preScale(-1f, 1f) }
+      Bitmap.createBitmap(grid, 0, 0, grid.width, grid.height, flip, false)
+    }
+  }
+}
+
+/**
+ * The graphs drawn lately, by everything they were drawn from.
+ *
+ * Small on purpose: a card's size map is sixteen sizes over two widths and
+ * a record changes a few times a day, so what is worth keeping is one
+ * record's worth of shapes. Least lately used goes first, by count and by
+ * bytes. A picture that leaves is not recycled — a RemoteViews on its way
+ * to the launcher may still hold it — only let go.
+ */
+internal object GridCache {
+  private const val MAX_ENTRIES = 40
+  private const val MAX_BYTES = 8L * 1024 * 1024
+  private val kept = LinkedHashMap<String, Bitmap>(64, 0.75f, true)
+  private var bytes = 0L
+
+  @Synchronized
+  fun get(key: String, draw: () -> Bitmap): Bitmap {
+    kept[key]?.let { if (!it.isRecycled) return it }
+    val drawn = draw()
+    kept.put(key, drawn)?.let { bytes -= it.allocationByteCount }
+    bytes += drawn.allocationByteCount
+    val eldest = kept.entries.iterator()
+    while ((kept.size > MAX_ENTRIES || bytes > MAX_BYTES) && kept.size > 1 && eldest.hasNext()) {
+      val gone = eldest.next()
+      if (gone.value === drawn) continue
+      bytes -= gone.value.allocationByteCount
+      eldest.remove()
+    }
+    return drawn
+  }
+
+  /** How many pictures are kept, and their bytes: for the log, and for a test. */
+  @Synchronized
+  fun held(): Pair<Int, Long> = kept.size to bytes
+
+  @Synchronized
+  fun clear() {
+    kept.clear()
+    bytes = 0L
+  }
 }

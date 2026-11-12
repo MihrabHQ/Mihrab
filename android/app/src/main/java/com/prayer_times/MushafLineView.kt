@@ -55,9 +55,22 @@ import kotlin.math.ceil
  * and drawing them all in the frame a neighbour page appears in — the
  * moment a finger lands on the pager — cost 100–200 ms on that thread: a
  * hitch at the very start of every swipe, which is where it is felt most.
- * So a line without a bitmap draws itself the old way (as it did before
- * any of this) while a worker paints its bitmap, and swaps to the bitmap
- * the frame after it is ready.
+ * So a worker paints the bitmap and the line swaps to it the frame after
+ * it is ready.
+ *
+ * AND UNTIL IT IS READY THE LINE WAITS, BRIEFLY, RATHER THAN DRAW ITSELF.
+ * It used to draw itself the old way in the meantime, so that the ink was
+ * there from the first frame. But the old way is the expensive one, and a
+ * page's first frame is fifteen lines of it at once, on the render thread:
+ * traced on a Pixel 10 Pro, opening the reader held one frame for 179 ms
+ * (94 ms the second time) — the render thread rasterising every word of
+ * the page as a path while the screen was sliding in, the UI thread
+ * waiting on it. The worker has the same page painted in less time than
+ * that, off both threads. So a line with nothing to show yet draws nothing
+ * for up to `INK_WAIT_MS`, and a line whose words are the same but whose
+ * marks changed (a selection, the ayah being recited) goes on showing the
+ * picture it has until the new one comes. Past the wait — a worker that
+ * failed, or never ran — it draws itself as it always could.
  */
 class MushafLineView(context: Context) : View(context) {
   var fontFamily: String = ""
@@ -113,6 +126,12 @@ class MushafLineView(context: Context) : View(context) {
   private var generation = 0
   /** The generation a worker is painting, if one is. */
   private var pendingGeneration = -1
+  /** What the cached picture is a picture of: its words and their size, whatever its marks. */
+  private var cacheInk: String? = null
+  private var cacheWidth = 0
+  private var cacheHeight = 0
+  /** When this line began waiting for its picture (uptime, ms); 0 when it is not waiting. */
+  private var waitingSince = 0L
 
   init {
     setWillNotDraw(false)
@@ -137,6 +156,8 @@ class MushafLineView(context: Context) : View(context) {
     cache?.recycle()
     cache = null
     cacheGeneration = -1
+    cacheInk = null
+    waitingSince = 0L
   }
 
   override fun onDraw(canvas: Canvas) {
@@ -165,9 +186,38 @@ class MushafLineView(context: Context) : View(context) {
       return
     }
     val line = snapshot(pieces, typeface)
-    drawLine(canvas, line, uiPens, 0f)
     if (!cached && pendingGeneration != generation) paintInBackground(line)
+    // On the screen, the line waits for its picture (see the note at the
+    // top). A software canvas — a capture — is never kept waiting.
+    if (!cached && canvas.isHardwareAccelerated) {
+      val now = android.os.SystemClock.uptimeMillis()
+      if (waitingSince == 0L) waitingSince = now
+      if (now - waitingSince < INK_WAIT_MS) {
+        // The same words in the same place, with older marks: better than
+        // nothing, and never another line's ink.
+        if (bitmap != null && !bitmap.isRecycled && cacheInk == inkOf(line) && cacheWidth == width && cacheHeight == height) {
+          val m = -cacheMargin.toFloat()
+          canvas.drawBitmap(bitmap, m, m, blitPaint)
+        }
+        // Looked at again when the wait is over, should no picture have come.
+        postInvalidateDelayed(INK_WAIT_MS - (now - waitingSince) + 1)
+        return
+      }
+    }
+    drawLine(canvas, line, uiPens, 0f)
   }
+
+  /** The words of a line and where they are set, without its marks. */
+  private fun inkOf(line: Line): String =
+    buildString {
+      append(System.identityHashCode(line.typeface)).append('|').append(line.textPx).append('|')
+      append(line.penRight).append('|').append(line.baseline).append('|').append(line.color)
+      for (i in line.texts.indices) {
+        append('|')
+        val t = line.texts[i]
+        if (t != null) append(t) else append('~').append(line.gaps[i])
+      }
+    }
 
   private fun snapshot(pieces: ReadableArray, typeface: Typeface?): Line {
     val density = resources.displayMetrics.density
@@ -241,6 +291,12 @@ class MushafLineView(context: Context) : View(context) {
           // frame until a prop changed: the next draw tries again, by when
           // the memory pressure that failed this one may have passed.
           if (pendingGeneration == gen) pendingGeneration = -1
+          // And it is not kept waiting for a picture that is not coming:
+          // the wait is declared over, and the line draws itself now.
+          if (gen == generation) {
+            waitingSince = 1L
+            invalidate()
+          }
           return@post
         }
         if (gen != generation || !isAttachedToWindow) {
@@ -252,13 +308,24 @@ class MushafLineView(context: Context) : View(context) {
         cacheGeneration = gen
         cacheTypeface = line.typeface
         cacheMargin = margin
+        cacheInk = inkOf(line)
+        cacheWidth = width
+        cacheHeight = height
         pendingGeneration = -1
+        waitingSince = 0L
         invalidate()
       }
     }
   }
 
   companion object {
+    /**
+     * How long a line goes without its ink before drawing itself. A page
+     * is painted in a fraction of this on a phone that is keeping up; the
+     * figure is for the one that is not.
+     */
+    private const val INK_WAIT_MS = 250L
+
     private fun isHardwareBitmap(b: Bitmap): Boolean =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && b.config == Bitmap.Config.HARDWARE
 

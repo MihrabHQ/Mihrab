@@ -321,7 +321,7 @@ That APK is **not** what goes on GitHub Releases any more (it was, up to 2.25.0)
 # → android/app/build/outputs/apk/github/release/app-github-release.apk
 ```
 
-`release.sh` builds it and publishes it as `Mihrab-vX.Y.Z.apk`. It exists because the F-Droid APK is shaped by F-Droid's CI, not by phones: R8 off and all four ABIs made it 84 MB against Play's ~36 MB per device. The `github` flavor keeps R8 and resource shrinking on and packages `arm64-v8a` + `armeabi-v7a` only (`ndk.abiFilters`). Like every flavor it has no Google Play Services, Firebase or Play Core — `release.sh` checks the dex before publishing — and "Rate Mihrab" opens GitHub rather than the Play Store. Same applicationId and signing key as earlier GitHub APKs, so Obtainium installs update in place. Gradle refuses to build it (or play) in the same invocation as fdroid, and refuses to debug-sign it.
+`release.sh` builds it and publishes it as `Mihrab-vX.Y.Z.apk`. It exists because the F-Droid APK was shaped by F-Droid's CI, not by phones: R8 off (until the release after 2.37.0) and all four ABIs made it 84 MB against Play's ~36 MB per device. The `github` flavor keeps R8 and resource shrinking on and packages `arm64-v8a` + `armeabi-v7a` only (`ndk.abiFilters`). Like every flavor it has no Google Play Services, Firebase or Play Core — `release.sh` checks the dex before publishing — and "Rate Mihrab" opens GitHub rather than the Play Store. Same applicationId and signing key as earlier GitHub APKs, so Obtainium installs update in place. Gradle refuses to build it (or play) in the same invocation as fdroid, and refuses to debug-sign it.
 
 ### What the `fdroid` flavor does differently
 
@@ -622,7 +622,7 @@ Every tag gets a GitHub release with the `github`-flavor APK attached as `Mihrab
 - Obtainium users (Android power-user app updater) can subscribe to GitHub Releases and auto-pull every new APK.
 - Anyone can sideload a signed build without a store.
 
-It is not byte-comparable with F-Droid's build: F-Droid signs with its own key and builds with R8 off, the GitHub APK is R8-minified, ARM-only and signed with the project key. `release.sh` does all of this; the commands below are what it runs.
+It is not byte-comparable with F-Droid's build: F-Droid signs with its own key and builds `arm64-v8a` alone; the GitHub APK carries both ARM ABIs and is signed with the project key. Both are R8-minified (F-Droid's from the release after 2.37.0; `-PfdroidNoR8` builds it without, see `app/build.gradle`). `release.sh` does all of this; the commands below are what it runs.
 
 ```sh
 gh release create vX.Y.Z \

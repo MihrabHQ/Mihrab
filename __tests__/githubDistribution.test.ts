@@ -69,7 +69,7 @@ describe('the github flavor in gradle', () => {
     expect(gradle).toMatch(/\(wantsPlayRelease \|\| wantsGithubRelease\) && !hasReleaseSigningConfig/);
   });
 
-  it('cannot share an invocation with fdroid, which would turn its R8 off', () => {
+  it('cannot share an invocation with fdroid, whose build type is set differently', () => {
     expect(gradle).toMatch(/wantsFdroid && \(wantsPlayAny \|\| wantsGithubAny\)/);
   });
 });

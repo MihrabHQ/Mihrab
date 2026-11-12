@@ -90,6 +90,13 @@ entry = r"      - printf '\norg.gradle.java.home=/usr/local/jdk-17\n' >> gradle.
 1-hour job timeout. Use `arm64-v8a` only. Virtually all active devices are arm64.
 
 ### 4. Lint + R8 parallel OOM → daemon crash + timeout (v2.3.9+)
+> **Since the release after 2.37.0 R8 is ON in the F-Droid build** (`enableProguardInReleaseBuilds`
+> in `android/app/build.gradle`): lint is off for the flavor in the project itself, so R8 no longer
+> runs beside it. Built from clean on a Mac it takes 149 s instead of 96 s and the largest Java
+> process peaks at 2.9 GB instead of 2.4 GB. If F-Droid's builder cannot afford that, add
+> `fdroidNoR8=true` to the recipe's `gradleprops` — no source change needed. Do NOT inject
+> `minifyEnabled false` any more.
+
 Even arm64-only isn't enough. `lintVitalAnalyzeRelease` runs on every native npm module
 (react-native-svg, netinfo, gesture-handler, ...) in parallel with R8 minification. Combined
 memory pressure OOM-kills the AAPT2 and Gradle daemons ("Gradle build daemon disappeared

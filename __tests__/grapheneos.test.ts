@@ -343,3 +343,60 @@ describe('what the APK promises a hardened Android', () => {
     );
   });
 });
+
+/**
+ * F-Droid's build was the one without R8: a dex of 32.8 MB against 10.5 MB,
+ * all of it compiled at every install on a phone that compiles ahead of time
+ * — 4.7 s against 2.8 s on a Pixel 10 Pro under GrapheneOS.
+ */
+describe('R8 runs in every release flavor, F-Droid included', () => {
+  const gradle = repo('android', 'app', 'build.gradle');
+
+  it('is on unless a build asks otherwise by name', () => {
+    expect(gradle).toContain('def fdroidWithoutR8 = wantsFdroid && project.hasProperty("fdroidNoR8")');
+    expect(gradle).toContain('def enableProguardInReleaseBuilds = !fdroidWithoutR8 && !profileBuild');
+    expect(gradle).not.toContain('!wantsFdroid && !profileBuild');
+    expect(gradle).toMatch(/minifyEnabled enableProguardInReleaseBuilds/);
+    expect(gradle).toMatch(/shrinkResources enableProguardInReleaseBuilds/);
+  });
+
+  it('lint stays off for that flavor: it was the other half of what the builder ran out of memory on', () => {
+    expect(gradle).toMatch(/checkReleaseBuilds !wantsFdroid/);
+  });
+
+  it('the recipe mirrored here turns nothing of it off', () => {
+    const recipe = repo('contrib', 'fdroid', 'com.prayer_times.yml');
+    expect(recipe).not.toMatch(/minifyEnabled false|fdroidNoR8/);
+  });
+});
+
+/**
+ * A stretchable card is sixteen sizes, each composed in full at every
+ * redraw, and each drew its own practice graph: 150 bitmaps (25 MB) stood in
+ * the app's memory on a Pixel 10 Pro with three cards placed, and a redraw
+ * put 170 more beside them. The same record on the same day in the same
+ * shape is the same picture.
+ */
+describe('the widgets’ practice graph is drawn once for the same question', () => {
+  const src = repo('android', 'app', 'src', 'main', 'java', 'com', 'prayer_times', 'glance', 'StreakGlanceWidget.kt');
+
+  it('is kept by everything it is drawn from, the day included', () => {
+    expect(src).toContain('val key = "$today|$rows|$columns|$cellWPx|$cellHPx|$gapPx|$accent|$mirror|$since|$days"');
+    expect(src).toMatch(/return GridCache\.get\(key\) \{/);
+    // Every card draws through it.
+    for (const card of ['LogGlanceWidget', 'PrayerGlanceWidget', 'StreakGlanceWidget']) {
+      const kt = repo('android', 'app', 'src', 'main', 'java', 'com', 'prayer_times', 'glance', `${card}.kt`);
+      expect(kt).toMatch(/practiceGrid\(pr, /);
+      expect(kt.replace(src, '')).not.toMatch(/PracticeGridBitmap\.render\(/);
+    }
+  });
+
+  it('is small, and lets a picture go without recycling it', () => {
+    const cache = src.slice(src.indexOf('internal object GridCache'));
+    expect(cache).toContain('private const val MAX_ENTRIES = 40');
+    expect(cache).toContain('private const val MAX_BYTES = 8L * 1024 * 1024');
+    // A RemoteViews on its way to the launcher may still hold it.
+    expect(cache).not.toMatch(/\.recycle\(\)/);
+    expect(cache).toMatch(/kept\[key\]\?\.let \{ if \(!it\.isRecycled\) return it \}/);
+  });
+});

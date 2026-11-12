@@ -36,7 +36,7 @@ describe('the Baseline Profile', () => {
   });
 
   it('is recorded from a build with R8 off, which is never the default', () => {
-    expect(read('build.gradle')).toContain('def enableProguardInReleaseBuilds = !wantsFdroid && !profileBuild');
+    expect(read('build.gradle')).toContain('def enableProguardInReleaseBuilds = !fdroidWithoutR8 && !profileBuild');
   });
 });
 

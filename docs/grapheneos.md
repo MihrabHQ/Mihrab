@@ -14,7 +14,7 @@ Mihrab is independent of GrapheneOS and is not endorsed by it.
 | GrapheneOS | Mihrab |
 |---|---|
 | No Google Play services unless the owner installs the sandboxed ones | Never used. No flavor has any Google Play services, Firebase or Play Core class in it; the release script counts them in the APK and stops on one. Prayer alerts are local alarms: nothing is pushed. |
-| Apps are compiled in full when installed; the runtime's JIT and profiles are off | 2.8 s for the GitHub build on a Pixel 10 Pro (`cmd package compile -m speed -f`), 4.7 s for F-Droid's, which is built without R8 (see *Not done*). The Baseline Profile the APK carries does nothing there, and is not needed. |
+| Apps are compiled in full when installed; the runtime's JIT and profiles are off | 2.8 s on a Pixel 10 Pro (`cmd package compile -m speed -f`). F-Droid's build was made without R8 until the release after 2.37.0 and took 4.7 s (dex 32.8 MB against 10.5 MB); it is built with R8 now — on this Mac that build takes 149 s instead of 96 s and its largest Java process 2.9 GB instead of 2.4 GB, and `-PfdroidNoR8` builds it the old way should F-Droid's builder object. The Baseline Profile the APK carries does nothing on GrapheneOS, and is not needed. |
 | Hardened allocator (`hardened_malloc`) | Runs under it; see *Memory* below for what it costs. |
 | Hardware memory tagging (MTE), Pixel 8 and later | The manifest asks for it (`android:memtagMode="async"`). A walk of every screen, the reader, the compass and the widgets' settings in the synchronous mode — a build made with `-PmemtagMode=sync`, which faults at the bad access itself — found nothing. |
 | Dynamic code loading can be blocked, from memory and from storage | The app loads no code that is not in the APK: no class loader for files or memory in the dex, native libraries used from inside the APK (`extractNativeLibs=false`), no library with a writable-and-executable segment, and Hermes runs bytecode without a JIT. `scripts/check-apk-hardening.py` reads this off the APK at every release. |
@@ -68,26 +68,33 @@ immediate.
 
 ## Memory
 
-On the Pixel the app holds 520–650 MB (PSS) in front and 430–460 MB in the
-background after every screen has been visited; the same build on a stock
-emulator holds about 200 MB. Part of the difference is GrapheneOS's own:
-`hardened_malloc` keeps freed memory in quarantine and guards each slab
-(the process has some 32,000 mappings, 27,000 of them tagged), and a
-process started without the zygote shares none of the framework's memory
-with other apps. How much of it is that, and how much the app could give
-back, has not been separated.
+Measured on the Pixel with the same walk — a cold start, every tab and
+settings page, then the home screen for half a minute — once as GrapheneOS
+runs it and once with the app's *Exploit protection compatibility mode* on
+(Android's own allocator instead of `hardened_malloc`):
+
+| | hardened | compatibility mode |
+|---|---:|---:|
+| after a cold start | 411 MB | 386 MB |
+| after every screen | 536 MB | 506 MB |
+| in the background | 400 MB | 350 MB |
+
+So the hardened allocator costs 25–50 MB of it, and nothing about the app
+needs the compatibility mode. Of what is the app's own after a cold start,
+on a 1280 × 2856 screen at 120 Hz: about 115 MB is graphics (70 MB of it
+the window's own five buffers, which are the system's), about 150 MB
+native memory, 64 MB mapped code, 31 MB the Java heap. Two things in it
+were found and are the app's doing:
+
+- the widgets' practice graph, drawn sixteen times a card at every redraw
+  (fixed: `GridCache`), and
+- the Minimal layout, which keeps every tab mounted (about a thousand views
+  more than the Full layout) and draws the day chart of the neighbouring
+  days ahead of the swipe — about 17 MB on the emulator. Left as it is:
+  that is what makes the tabs and the day swipe immediate.
 
 ## Not done, and why
 
-- **R8 in the F-Droid build.** F-Droid's build is the only one without it:
-  its dex is 32.8 MB in four files against 10.5 MB in two. Measured on the
-  Pixel 10 Pro, the same source both ways: the full compile GrapheneOS does
-  at every install takes 4.7 s without R8 and 2.8 s with it, and the whole
-  install 7.2 s against 3.9 s. R8 was turned off there because F-Droid's
-  merge-request pipeline ran out of memory with lint running beside it;
-  lint is off for that flavor now, and R8 alone has not been tried on
-  their builder. A build that fails there keeps a release off F-Droid, so
-  it is a change to make with one release to spare, not a flag to flip.
 - **A 64-bit-only APK on GitHub.** The GitHub APK carries `arm64-v8a` and
   `armeabi-v7a`: 61 MB, of which the 32-bit libraries are 11.6 MB. The
   libraries are stored uncompressed and used from inside the APK, so the
