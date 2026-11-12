@@ -82,7 +82,9 @@ Africa** Automatic asks AlAdhan for the Muslim World League's angles by
 number (AlAdhan's own choice there is Umm al-Qura's), and in
 **KwaZulu-Natal** for 18° and 18°, the Jamiatul Ulama KwaZulu-Natal's
 Fajr and Isha, ahead of Diyanet's listed towns in the province
-(`autoMethod.ts`). The
+(`autoMethod.ts`). In the **United States and Canada** it asks for 15° and
+15° (the Islamic Society of North America's, which the Fiqh Council of North
+America suggests), likewise ahead of the places Diyanet lists there. The
 certification of all of these is in mihrab-methods' `docs/status.md`.
 
 Every time is within a minute by the method alone. Each list covers the

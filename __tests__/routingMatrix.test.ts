@@ -25,10 +25,10 @@
  *
  * `ROUTING_MATRIX=1 npx jest __tests__/routingMatrix.test.ts` prints the table.
  */
+import { autoMethodAheadOfListedPlace, autoMethodForCoords } from '../src/providers/autoMethod';
 import { isCoordinateInLondon } from '../src/utils/londonRegion';
 import { ROUTING_PLACES } from './fixtures/routingPlaces';
 import { getEffectiveDataProvider } from '../src/settings/effectiveProvider';
-import { autoMethodForCoords } from '../src/providers/autoMethod';
 import {
   countryAt,
   NATIONAL_METHOD_COUNTRIES,
@@ -185,6 +185,13 @@ describe('the routing matrix', () => {
         // Russia; the rest of the country is the next branch (CHANGELOG).
         expect(row.auto).toBe(RUSSIA_OWN[name]);
         expect(row.method).toBe(NATIONAL_METHOD.RU);
+        expect(row.chosen3).toBe('aladhan');
+      } else if (autoMethodAheadOfListedPlace(latitude, longitude)) {
+        // The United States, Canada, KwaZulu-Natal: the convention their
+        // mosques print, by AlAdhan, ahead of a place Diyanet lists (CHANGELOG).
+        expect(row.auto).toBe('aladhan');
+        expect(row.method).toBe(autoMethodForCoords(latitude, longitude));
+        expect([1, 2]).toContain(row.method);
         expect(row.chosen3).toBe('aladhan');
       } else if (country in NATIONAL_METHOD) {
         // Its own method, by AlAdhan: never Diyanet for a listed place nearby.

@@ -30,6 +30,7 @@ import { isCoordinateInIndonesia } from '../utils/indonesiaRegion';
 import { isCoordinateInKwaZuluNatal } from '../utils/kwazuluNatalRegion';
 import { isCoordinateInMalaysia } from '../utils/malaysiaRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
+import { isCoordinateInUsOrCanada } from '../utils/northAmericaRegion';
 import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 import { isCoordinateInSouthAfrica } from '../utils/southAfricaRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
@@ -43,6 +44,8 @@ export const DEFAULT_AUTO_METHOD = 3;
 type AutoMethodRegion = {
   method: number;
   covers: (latitude: number, longitude: number) => boolean;
+  /** Automatic is this method even where Diyanet lists a place nearby (`regionalProviders.ts`). */
+  aheadOfListedPlaces?: boolean;
 };
 
 /**
@@ -64,10 +67,20 @@ type AutoMethodRegion = {
  * some minutes after the zenith, Maghrib a few after sunset) are not taken:
  * they differ between its printed tables and its website, and neither is
  * one formula.
+ *
+ * The United States and Canada: 15° / 15° (2), the convention of the
+ * Islamic Society of North America that the Fiqh Council of North America
+ * suggests for the United States and most mosques on the continent print.
+ * (The Council's page suggests 13° for Canada; the country's timetables and
+ * AlAdhan's own choice there are 15°, and that is what is taken.) Diyanet
+ * lists a place near almost every town of both countries, and its table —
+ * Fajr at 18°, Maghrib seven minutes after sunset — is not what their
+ * mosques go by, so this comes ahead of it.
  */
 const ASKED_BY_NUMBER: readonly AutoMethodRegion[] = [
-  { method: 1, covers: isCoordinateInKwaZuluNatal },
+  { method: 1, covers: isCoordinateInKwaZuluNatal, aheadOfListedPlaces: true },
   { method: 3, covers: isCoordinateInSouthAfrica },
+  { method: 2, covers: isCoordinateInUsOrCanada, aheadOfListedPlaces: true },
 ];
 
 const AUTO_METHOD_REGIONS: readonly AutoMethodRegion[] = [
@@ -140,5 +153,15 @@ export function autoMethodToAsk(
 ): number | 'auto' {
   return (
     ASKED_BY_NUMBER.find(r => r.covers(latitude, longitude))?.method ?? 'auto'
+  );
+}
+
+/** Is Automatic here a calculation method the app has settled on, ahead of a place Diyanet lists nearby? */
+export function autoMethodAheadOfListedPlace(
+  latitude: number,
+  longitude: number,
+): boolean {
+  return ASKED_BY_NUMBER.some(
+    r => r.aheadOfListedPlaces && r.covers(latitude, longitude),
   );
 }

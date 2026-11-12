@@ -114,7 +114,8 @@ const CITIES: City[] = [
     zone: 'America/New_York',
     lat: 40.7128,
     lng: -74.006,
-    source: 'diyanet',
+    // 15° and 15°, computed: not Diyanet's New York (CHANGELOG, November 2026)
+    source: 'aladhan',
   },
   {
     name: 'Hammerfest',

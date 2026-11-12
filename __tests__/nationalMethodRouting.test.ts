@@ -48,7 +48,7 @@ const NEAR_LISTED: [string, number, number][] = [
   ['Manchester', 53.4808, -2.2426],
   ['Paris', 48.8566, 2.3522],
   ['Berlin', 52.52, 13.405],
-  ['New York', 40.7128, -74.006],
+  // not New York: the United States and Canada compute 15° and 15° (`northAmericaAuto.test.ts`)
   ['Vienna', 48.2082, 16.3738],
   ['Amsterdam', 52.3676, 4.9041],
   ['Damascus', 33.5138, 36.2765],
