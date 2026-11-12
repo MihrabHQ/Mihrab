@@ -5,6 +5,7 @@ All notable changes to this project are documented here. The format is inspired 
 ## [Unreleased]
 
 ### Added
+- **Android: the layout shortcut on Today restarts the app, as Settings does.** The Full/Minimal shortcut shown with the data stats changed the layout in place, which on Android could leave the app unstable; it now asks and restarts, the same way as the layout picker in Settings.
 - **Minimal: hold and slide along the dots, as on the full bar.** A finger held on the row and slid across it now lights the tab under it, with a tick for each tab crossed, and the page stays put until the finger lifts — then it opens that tab. Before, the page slid along under the finger.
 - **Sweden's source says whose times they are.** The source is now listed as “Sweden (Islamiska Förbundet)” in every language, and its description names Islamiska Förbundet's prayer times instead of only “listed Swedish cities”. On the website, the table names the federation by its own name in every language instead of a translation of it.
 - **Website: Tunisia in the accuracy table.** The table of checked methods on the site now has a row for Tunisia's Institut National de la Météorologie, the twenty-first method, and its totals count it.

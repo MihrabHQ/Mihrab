@@ -27,8 +27,9 @@ describe('Minimal wears the classic colours', () => {
     expect(read('src/context/PrayerSettingsContext.tsx')).toContain(
       'const next = minimalLook(enteringMinimal(prev, applyLocationProviders(prev, patch)));',
     );
-    expect(read('src/screens/settings/AppearanceCard.tsx')).toContain(
-      'const next = minimalLook(enteringMinimal(fullSettings, { ...fullSettings, ...patch }));',
+    // The write before a restart — Settings' and Today's layout shortcut's.
+    expect(read('src/settings/applyAndRestart.ts')).toContain(
+      'const next = minimalLook(enteringMinimal(full, { ...full, ...patch }));',
     );
     expect(read('src/settings/storage.ts')).toContain('return noteSecureRead(minimalLook(merged), secureFailed);');
     const card = read('src/screens/settings/AppearanceCard.tsx');

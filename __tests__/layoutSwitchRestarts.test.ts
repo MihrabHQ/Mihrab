@@ -41,3 +41,24 @@ describe('the layout switch on Android', () => {
     }
   });
 });
+
+describe('the layout shortcut on Today (shown with the data stats)', () => {
+  const today = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'TodayCard.tsx'), 'utf8');
+  const shared = fs.readFileSync(path.join(__dirname, '..', 'src', 'settings', 'applyAndRestart.ts'), 'utf8');
+
+  it('never changes the layout in place on Android: both doors ask, as Settings does', () => {
+    expect(today).toMatch(/const switchLayout = \(on: boolean\) => \{\s*if \(Platform\.OS === 'android'\) setPendingLayout\(on\);\s*else updateSettings\(\{ minimalUi: on \}\);/);
+    expect(today).toContain('onPress={() => switchLayout(!settings.minimalUi)}');
+    expect(today).toContain('onToggleMinimal={settings.showDataStats ? () => switchLayout(false) : undefined}');
+    // No other write of the layout is left on the page.
+    expect(today.match(/updateSettings\(\{ minimalUi/g)).toHaveLength(1);
+  });
+
+  it('restarts through the one function Settings uses, saved before the process goes', () => {
+    expect(today).toContain("message={t('settings.layoutRestartBody')}");
+    expect(today).toContain('applySettingsAndRestart(settings, { minimalUi: on }, updateSettings, t);');
+    expect(card).toContain('applySettingsAndRestart(fullSettings, patch, updateSettings, t);');
+    expect(shared.indexOf('await saveSettings(next);')).toBeGreaterThan(-1);
+    expect(shared.indexOf('await saveSettings(next);')).toBeLessThan(shared.indexOf('nativeRestartApp()'));
+  });
+});

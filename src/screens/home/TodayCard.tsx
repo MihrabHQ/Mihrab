@@ -27,6 +27,7 @@ import React, { memo, useCallback, useEffect, useMemo, useRef, useState, type Re
 import {
   Animated,
   FlatList,
+  Platform,
   Pressable,
   Text,
   View,
@@ -40,6 +41,8 @@ import { rememberedTodayLayout, rememberTodayLayout } from './todayLayoutMemory'
 import Svg, { Path } from 'react-native-svg';
 import { MinimalGlyph } from './MinimalGlyph';
 import { useTranslation } from 'react-i18next';
+import { ConfirmModal } from '../../components/ConfirmModal';
+import { applySettingsAndRestart } from '../../settings/applyAndRestart';
 import { useIsOnScreen } from '../../hooks/useIsActive';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { useLaunchRunActive } from '../../boot/launchWarp';
@@ -390,6 +393,15 @@ function TodayCardImpl({
   // Minimal: the day's times, in a sheet, on the day it is turned to —
   // today when opened, a day behind or ahead by its chevrons.
   const [timesOpen, setTimesOpen] = useState(false);
+  // The layout shortcut's change, awaiting the confirm Settings asks with:
+  // on Android a change of layout is a restart (settings/applyAndRestart.ts),
+  // and a shortcut that did it in place left the app on the navigator
+  // Fabric does not survive being traded. Elsewhere, at once.
+  const [pendingLayout, setPendingLayout] = useState<boolean | null>(null);
+  const switchLayout = (on: boolean) => {
+    if (Platform.OS === 'android') setPendingLayout(on);
+    else updateSettings({ minimalUi: on });
+  };
   const [sheetOffset, setSheetOffset] = useState(0);
   // The day the sheet opens on: the one the full page's table is on —
   // tomorrow once today has nothing left in it (`landing`, below). The
@@ -1578,7 +1590,7 @@ function TodayCardImpl({
               accessibilityRole="switch"
               accessibilityLabel={t('settings.minimalUi', 'Minimal')}
               accessibilityState={{ checked: settings.minimalUi }}
-              onPress={() => updateSettings({ minimalUi: !settings.minimalUi })}
+              onPress={() => switchLayout(!settings.minimalUi)}
               hitSlop={14}
               style={({ pressed }) => [styles.dayStep, pressed && styles.dayStepPressed]}>
               <MinimalGlyph color={String(palette.muted)} />
@@ -1788,12 +1800,25 @@ function TodayCardImpl({
           onNext={dayAt(sheetOffset + 1) ? () => setSheetOffset(o => o + 1) : undefined}
           onBackToToday={() => setSheetOffset(0)}
           onMonth={onOpenMonth}
-          onToggleMinimal={settings.showDataStats ? () => updateSettings({ minimalUi: false }) : undefined}
+          onToggleMinimal={settings.showDataStats ? () => switchLayout(false) : undefined}
           qibla={qiblaBearing != null ? { bearing: qiblaBearing, onPress: onOpenQibla } : undefined}
           place={placeLabel ? { label: placeLabel, onPress: onOpenPlace } : undefined}
           source={timesSource}
         />
       ) : null}
+      <ConfirmModal
+        visible={pendingLayout !== null}
+        title={t('settings.themeRestartTitle', 'Restart required')}
+        message={t('settings.layoutRestartBody')}
+        confirmLabel={t('settings.themeRestartConfirm', 'Restart')}
+        cancelLabel={t('common.cancel', 'Cancel')}
+        onCancel={() => setPendingLayout(null)}
+        onConfirm={() => {
+          const on = pendingLayout;
+          setPendingLayout(null);
+          if (on !== null) applySettingsAndRestart(settings, { minimalUi: on }, updateSettings, t);
+        }}
+      />
     </Outer>
   );
 }

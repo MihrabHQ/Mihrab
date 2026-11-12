@@ -4,9 +4,6 @@
 // feedback (pressed opacity / ripple) is the right affordance here.
 import { memo, useState } from 'react';
 import {
-  Alert,
-  BackHandler,
-  NativeModules,
   Platform,
   StyleSheet,
   Text,
@@ -20,9 +17,8 @@ import {
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { AccentShelf } from '../../components/AccentShelf';
 import { ConfirmModal } from '../../components/ConfirmModal';
-import { restartApp as nativeRestartApp } from '../../native/SystemTheme';
-import { saveSettings } from '../../settings/storage';
-import { enteringMinimal, minimalLook, minimalOn } from '../../settings/minimalLook';
+import { applySettingsAndRestart } from '../../settings/applyAndRestart';
+import { minimalOn } from '../../settings/minimalLook';
 import { useMinimalOffered } from '../../settings/useMinimalOffered';
 import { PALETTE_STEPS, skyMoodFor } from '../../theme/skyMoods';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
@@ -104,44 +100,8 @@ function AppearanceCardImpl() {
   // the classic colours, settings/minimalLook.ts) — the same restart.
   const applyDynamicAndRestart = (v: boolean) =>
     applyAndRestart({ useSystemDynamicTheme: v, ...(v ? { tintedSurfaces: false } : {}) });
-  const applyAndRestart = (patch: Partial<typeof fullSettings>) => {
-    void (async () => {
-      const next = minimalLook(enteringMinimal(fullSettings, { ...fullSettings, ...patch }));
-      try {
-        await saveSettings(next);
-      } catch (e) {
-        console.warn('Failed to persist toggle before restart:', e);
-      }
-      updateSettings(patch);
-      const tryReload = () => {
-        try {
-          const dev = (
-            NativeModules as { DevSettings?: { reload?: () => void } }
-          ).DevSettings;
-          if (dev?.reload) {
-            dev.reload();
-            return true;
-          }
-        } catch {
-          // ignore
-        }
-        return false;
-      };
-      if (Platform.OS === 'android') {
-        if (nativeRestartApp()) return;
-        if (!tryReload()) BackHandler.exitApp();
-      } else if (!tryReload()) {
-        Alert.alert(
-          t('settings.themeRestartManualTitle', 'Reopen the app'),
-          t(
-            'settings.themeRestartManualBody',
-            'iOS does not allow apps to restart themselves. Please force-quit Prayer Times and reopen it for the new theme to take effect.',
-          ),
-          [{ text: t('common.ok', 'OK'), style: 'default' }],
-        );
-      }
-    })();
-  };
+  const applyAndRestart = (patch: Partial<typeof fullSettings>) =>
+    applySettingsAndRestart(fullSettings, patch, updateSettings, t);
 
   // Picker is hidden under dynamic colors — both app and widget follow OS.
   // Android = Material You; iOS = Liquid Glass (system colours).
