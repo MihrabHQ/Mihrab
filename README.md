@@ -84,6 +84,22 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 | Morocco’s Ministry of Habous and Islamic Affairs | 94,350 | **0** |
 | Algeria’s Ministry of Religious Affairs and Wakfs | 101,184 | **0** |
 | Indonesia’s Kemenag | 362,934 | **0** |
+| Türkiye Takvimi (namazvakti.com) | 1,812,768 | **0** |
+| Spiritual Administration of Muslims of Kazakhstan | 551,880 | **0** |
+| Egyptian General Authority of Survey | 168,630 | **0** |
+| Brunei Ministry of Religious Affairs | 17,064 | **0** |
+| Qatar Calendar House | 720 | **0** |
+| Kuwait Ministry of Awqaf and Islamic Affairs | 201,480 | **0** |
+| Jordan Ministry of Awqaf, Islamic Affairs and Holy Places | 37,230 | **0** |
+| Spiritual Administration of Muslims of the Republic of Tatarstan | 96,360 | **0** |
+| Central Spiritual Administration of Muslims of Russia | 39,342 | **0** |
+| Muslim Community of Albania | 48,180 | **0** |
+| Grand Mufti’s Office of Bulgaria | 105,120 | **0** |
+| Pakistan: Jamia Uloom-ul-Islamia, Banuri Town, Karachi | 219,000 | **0** |
+| United Arab Emirates: General Authority of Islamic Affairs, Endowments and Zakat | 179,580 | **0** |
+| Iran: Institute of Geophysics, University of Tehran | 90,520 | **0** |
+| United Kingdom: Wifaqul Ulama (Britain) | 350,400 | **0** |
+| Tunisia: Institut National de la Météorologie | 47,405 | **0** |
 
 <sub>Last checked 12 November 2026. Generated from mihrab-methods’ <code>certification.json</code> by <code>scripts/build-copy.js</code>. Mihrab is independent and not affiliated with any of these authorities.</sub>
 <!-- accuracy:end -->

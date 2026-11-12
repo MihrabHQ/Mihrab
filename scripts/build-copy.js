@@ -21,7 +21,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { namedFigures, badgeSvg, figures, int, longDate } = require('./copy/figures');
+const { AUTHORITY_NAMES, AUTHORITY_ORDER, namedFigures, badgeSvg, figures, int, longDate } = require('./copy/figures');
 const { certification } = require('./copy/site');
 
 const ROOT = path.join(__dirname, '..');
@@ -108,14 +108,21 @@ function readmeBlock(cert) {
   const rows = [
     '| Matches the published timetable of | Times checked | Off the printed minute |',
     '|---|---:|---:|',
-    ...['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia'].map(id => {
-      const label = {
+    // Every method the record certifies, in its order — not a chosen few:
+    // the badge above the table counts them all, and the table said five.
+    // A method added to mihrab-methods gets its row here by itself.
+    ...AUTHORITY_ORDER.map(id => {
+      const own = {
         sweden: 'Islamiska Förbundet (Sweden), and Diyanet’s tables for Sweden',
         diyanet: 'Diyanet, Türkiye and worldwide',
         morocco: 'Morocco’s Ministry of Habous and Islamic Affairs',
         algeria: 'Algeria’s Ministry of Religious Affairs and Wakfs',
         indonesia: 'Indonesia’s Kemenag',
       }[id];
+      const { short, authority } = AUTHORITY_NAMES[id];
+      // The place, then whose timetable — unless the name already says where.
+      const place = short.replace(/ \(.*\)$/, '');
+      const label = own ?? (authority.includes(place) ? authority : `${place}: ${authority}`);
       return `| ${label} | ${int(by[id].times)} | **${int(by[id].off)}** |`;
     }),
   ];

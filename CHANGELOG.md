@@ -5,6 +5,7 @@ All notable changes to this project are documented here. The format is inspired 
 ## [Unreleased]
 
 ### Added
+- **README: the accuracy table lists every certified method.** It showed five rows under a badge that counts twenty-one; it now has a row for each method in mihrab-methods' record, and a method added there gets its row by itself.
 - **Settings → Appearance: Layout comes before Sky band.** The Full/Minimal layout choice (and, under Minimal, the icons-or-dots switch) now sits above the sky band's Painted/Track choice.
 - **Minimal: the times sheet keeps its height on other days.** “Back to today” used to appear on a line of its own when you swiped to another day, making the sheet taller. It now stands in the empty middle of the first row, between the prayer's name and its time, and turns with the day's page; where that space is too narrow (a small phone, large text, a long name) it is written smaller, or as an icon.
 - **Garmin watch face: fonts made for the watch's screen.** Everything the face writes — the time, the countdown, the seconds, the date, the weather, the prayer, the steps, the battery's figure — is now in heavy, simple, pixel-aligned figures and letters of its own, in place of the app's Roboto for the figures and the watch's thin, smoothed fonts for the words, which a memory-in-pixel screen can only dither. The fonts hold Latin with its accents, Greek and Cyrillic; the prayers' names in Arabic stay in the watch's own font. Reinstall the watch face from Settings → Devices → Garmin watch to get it.
