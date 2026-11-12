@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
@@ -39,8 +38,11 @@ import kotlin.math.max
  * choice is seen before it is saved: the background's strength over a
  * stand-in wallpaper, the text and highlight colours, and — from a
  * prayer-times widget — what is shown and the size of the times. It is
- * drawn from the day the widgets hold (`WidgetSample`), so the names and
- * times are the user's own.
+ * THE CARD THIS WAS OPENED FROM (`WidgetPreviewCard`): the Next prayer
+ * card, the Prayer times strip, or the tall card with its graph — it was
+ * the strip whichever was held, and someone setting up the tall card was
+ * shown a card that was not theirs. Drawn from the day the widgets hold
+ * (`WidgetSample`), so the names and times are the user's own.
  *
  * THE SETTINGS ARE NOT THIS WIDGET'S ALONE. The first section is followed
  * by every Mihrab widget, and says so; the second by the prayer-times
@@ -64,6 +66,8 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
 
   private var isPrayerWidget = false
   private var isSmallWidget = false
+  /** The card this was opened from; null from a widget that is not a prayer-times one. */
+  private var kind: WidgetPreviewCard.Kind? = null
   private var sample: WidgetSample? = null
   private var cardRgb = 0x101418
 
@@ -113,6 +117,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     val provider = AppWidgetManager.getInstance(this).getAppWidgetInfo(appWidgetId)?.provider?.className
     isPrayerWidget = provider in PRAYER_TIMES_PROVIDERS
     isSmallWidget = provider == NextPrayerWidgetReceiver::class.java.name
+    kind = WidgetPreviewCard.kindOf(provider)
 
     readStored()
     sample = try {
@@ -354,103 +359,25 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
 
   private fun renderPreview() {
     val wall = findViewById<LinearLayout>(R.id.widget_configure_preview)
-    val card = findViewById<LinearLayout>(R.id.widget_configure_preview_card)
-    val header = findViewById<TextView>(R.id.widget_configure_preview_header)
-    val row = findViewById<LinearLayout>(R.id.widget_configure_preview_row)
-    val nextLine = findViewById<TextView>(R.id.widget_configure_preview_next)
-    val countdown = findViewById<TextView>(R.id.widget_configure_preview_countdown)
-
-    // A stand-in wallpaper, light at one corner and dark at the other, so
-    // the background's strength and a dark or a light text can both be
-    // judged against it.
-    if (wall.background == null) {
-      wall.background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(0xFFE2B98C.toInt(), 0xFF5F7E9C.toInt(), 0xFF1F2A3A.toInt()))
-        .apply { cornerRadius = dp(22f) }
-    }
-    card.background = GradientDrawable().apply {
-      cornerRadius = dp(18f)
-      setColor((opacity * 255 / 100 shl 24) or cardRgb)
-    }
-
-    val text = Color.parseColor(textHex)
-    val muted = (text and 0x00FFFFFF) or (0xA6 shl 24)
-    val accent = highlightColour()
-    val s = sample
-
-    // The common settings alone, from a widget that is not a prayer-times
-    // one: the card still shows a day's times, as the sample of its colours.
-    val withLocation = !isPrayerWidget || showLocation
-    val withCountdown = !isPrayerWidget || showCountdown
-    val withTable = !isPrayerWidget || showTable || isSmallWidget
-    val scale = if (isPrayerWidget && !isSmallWidget) timeScalePercent / 100f else 1f
-
-    header.setTextColor(muted)
-    header.text = listOfNotNull(
-      s?.dayLabel?.takeIf { it.isNotEmpty() },
-      s?.location?.takeIf { withLocation && it.isNotEmpty() },
-    ).joinToString(" · ")
-    header.visibility = if (header.text.isNullOrEmpty()) View.GONE else View.VISIBLE
-
-    row.removeAllViews()
-    val rows = s?.rows ?: FALLBACK_ROWS
-    row.visibility = if (withTable) View.VISIBLE else View.GONE
-    if (withTable) {
-      for (r in rows) {
-        val column = LinearLayout(this).apply {
-          orientation = LinearLayout.VERTICAL
-          gravity = Gravity.CENTER_HORIZONTAL
-          setPadding(0, dp(4f).toInt(), 0, dp(4f).toInt())
-          if (r.next) {
-            background = GradientDrawable().apply {
-              cornerRadius = dp(10f)
-              setColor((text and 0x00FFFFFF) or (0x24 shl 24))
-            }
-          }
-        }
-        val colour = if (r.next) accent else text
-        if (r.name.isNotEmpty()) {
-          column.addView(TextView(this).apply {
-            this.text = r.name
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f)
-            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-            setTextColor(if (r.next) accent else muted)
-            maxLines = 1
-            gravity = Gravity.CENTER
-          })
-        }
-        column.addView(TextView(this).apply {
-          this.text = r.time
-          // As the widget does: the size asked for, where the column has
-          // room for it.
-          val sp = (PREVIEW_TIME_SP * scale).coerceAtMost(previewTimeCapSp(rows.size, r.time.length))
-          setTextSize(TypedValue.COMPLEX_UNIT_SP, sp)
-          typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-          setTextColor(colour)
-          maxLines = 1
-          gravity = Gravity.CENTER
-        })
-        row.addView(column, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-      }
-    }
-
-    // Without the table the card is the next prayer, large.
-    val next = rows.firstOrNull { it.next } ?: rows.firstOrNull()
-    nextLine.visibility = if (withTable || next == null) View.GONE else View.VISIBLE
-    nextLine.setTextColor(text)
-    nextLine.text = next?.let { listOf(it.name, it.time).filter { p -> p.isNotEmpty() }.joinToString("  ") }.orEmpty()
-
-    countdown.visibility = if (withCountdown && next != null) View.VISIBLE else View.GONE
-    countdown.setTextColor(muted)
-    countdown.text = listOf(next?.name.orEmpty(), SAMPLE_COUNTDOWN).filter { it.isNotEmpty() }.joinToString("  ")
-  }
-
-  /** The largest a time may be drawn in the sample's column, in sp: its share of the card's width over its characters. */
-  private fun previewTimeCapSp(columns: Int, chars: Int): Float {
     val m = resources.displayMetrics
-    val cardDp = m.widthPixels / m.density - 2 * 20 - 2 * 14 - 2 * 10
-    val perColumn = cardDp / columns.coerceAtLeast(1)
-    // A digit of the widgets' face is about 0.56 of its size wide.
-    return (perColumn / (chars.coerceAtLeast(4) * 0.58f)) * (m.density / m.scaledDensity)
+    // The wallpaper's width: the screen's, less its margins (the layout's
+    // 20dp) and its own padding.
+    val innerPx = m.widthPixels - (2 * dp(20f) + 2 * dp(WidgetPreviewCard.WALL_PAD_DP)).toInt()
+    // The common settings alone, from a widget that is not a prayer-times
+    // one: the strip still shows a day's times, whole, as the sample of
+    // its colours.
+    val prayer = isPrayerWidget
+    val look = WidgetPreviewCard.Look(
+      opacity = opacity,
+      cardRgb = cardRgb,
+      text = Color.parseColor(textHex),
+      accent = highlightColour(),
+      showLocation = !prayer || showLocation,
+      showCountdown = !prayer || showCountdown,
+      showTable = !prayer || showTable,
+      timeScalePercent = if (prayer) timeScalePercent else 100,
+    )
+    WidgetPreviewCard.fill(wall, listOf(kind ?: WidgetPreviewCard.Kind.STRIP), look, sample, innerPx)
   }
 
   // ── Small pieces ───────────────────────────────────────────────────────
@@ -502,8 +429,6 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
 
   companion object {
     private const val DEFAULT_HIGHLIGHT = "#46A081"
-    private const val PREVIEW_TIME_SP = 17f
-    private const val SAMPLE_COUNTDOWN = "1:23:45"
 
     /** The cards PrayerGlanceWidget draws: Next prayer, Prayer times, tall. */
     private val PRAYER_TIMES_PROVIDERS = setOf(
@@ -529,10 +454,6 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
       R.string.widget_configure_text_sky to "#A8C7FA",
       R.string.widget_configure_text_dark to "#1C1C1E",
     )
-
-    /** The sample's times when the widgets hold no day yet: figures alone. */
-    private val FALLBACK_ROWS = listOf("05:03", "07:19", "11:37", "13:15", "15:44", "17:44")
-      .mapIndexed { i, t -> WidgetSample.Row("", t, i == 3) }
 
     /** "#abc123", "abc123" → "#ABC123"; anything else → null. */
     fun normaliseHex(input: String?): String? {

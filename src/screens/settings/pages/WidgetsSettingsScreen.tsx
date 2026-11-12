@@ -23,11 +23,14 @@
 import { PrayerWidgetCard } from '../PrayerWidgetCard';
 import { SettingsPage } from '../SettingsPage';
 import { WidgetCard } from '../WidgetCard';
+import { WidgetPreviews } from '../WidgetPreviews';
 import { WidgetSinceAdhanCard } from '../WidgetSinceAdhanCard';
 
 export function WidgetsSettingsScreen() {
   return (
     <SettingsPage>
+      {/* The cards as they are now — both prayer-times ones (WidgetPreviews). */}
+      <WidgetPreviews />
       <WidgetCard />
       <PrayerWidgetCard />
       <WidgetSinceAdhanCard />

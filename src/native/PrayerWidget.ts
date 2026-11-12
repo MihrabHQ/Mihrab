@@ -109,6 +109,13 @@ export interface PrayerWidgetInterface {
    * that will eventually be parsed by the wrong one.
    */
   takeTasbihQueue?(): Promise<string>;
+
+  /**
+   * Android: the prayer-times widgets as they are drawn now — the strip and
+   * the tall card together — as a PNG data URI `widthDp` wide, with its size
+   * in dp (WidgetPreviewCard.kt). Absent on other platforms and older builds.
+   */
+  renderPreviews?(widthDp: number): Promise<{ uri: string; width: number; height: number }>;
 }
 
 /**

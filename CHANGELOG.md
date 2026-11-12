@@ -5,6 +5,7 @@ All notable changes to this project are documented here. The format is inspired 
 ## [Unreleased]
 
 ### Added
+- **Android widgets: the settings show the widget you are setting up.** A prayer-times widget's own settings (touch and hold it → Settings) showed the Prayer times strip as its sample whichever widget was held; it now shows that widget — the Next prayer card, the strip, or the tall card with its graph. And Settings → Widgets in the app has a sample at its head, of both the strip and the tall card, that follows the controls under it.
 - **README: the accuracy table lists every certified method.** It showed five rows under a badge that counts twenty-one; it now has a row for each method in mihrab-methods' record, and a method added there gets its row by itself.
 - **Settings → Appearance: Layout comes before Sky band.** The Full/Minimal layout choice (and, under Minimal, the icons-or-dots switch) now sits above the sky band's Painted/Track choice.
 - **Minimal: the times sheet keeps its height on other days.** “Back to today” used to appear on a line of its own when you swiped to another day, making the sheet taller. It now stands in the empty middle of the first row, between the prayer's name and its time, and turns with the day's page; where that space is too narrow (a small phone, large text, a long name) it is written smaller, or as an icon.

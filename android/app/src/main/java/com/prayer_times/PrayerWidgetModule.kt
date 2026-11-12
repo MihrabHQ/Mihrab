@@ -35,6 +35,47 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
   }
 
   /**
+   * The prayer-times widgets as they are drawn now — the strip and the tall
+   * card, on the sample's wallpaper — as a PNG for Settings → Widgets
+   * (WidgetPreviewCard). Both, because the page cannot know which the
+   * reader has placed, and they may have placed both.
+   *
+   * Resolves { uri, width, height } with the size in dp; `widthDp` is the
+   * room the page has for it.
+   */
+  @ReactMethod
+  fun renderPreviews(widthDp: Double, promise: Promise) {
+    com.facebook.react.bridge.UiThreadUtil.runOnUiThread {
+      try {
+        val density = reactContext.resources.displayMetrics.density
+        val widthPx = (widthDp * density).toInt().coerceIn(200, 4000)
+        val sample = try {
+          com.prayer_times.glance.WidgetSample.of(reactContext)
+        } catch (_: Exception) {
+          null
+        }
+        val bitmap = WidgetPreviewCard.bitmap(
+          reactContext,
+          listOf(WidgetPreviewCard.Kind.STRIP, WidgetPreviewCard.Kind.TALL),
+          WidgetPreviewCard.storedLook(reactContext),
+          sample,
+          widthPx,
+        )
+        val bytes = java.io.ByteArrayOutputStream()
+        bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, bytes)
+        val map = Arguments.createMap()
+        map.putString("uri", "data:image/png;base64," + android.util.Base64.encodeToString(bytes.toByteArray(), android.util.Base64.NO_WRAP))
+        map.putDouble("width", (bitmap.width / density).toDouble())
+        map.putDouble("height", (bitmap.height / density).toDouble())
+        bitmap.recycle()
+        promise.resolve(map)
+      } catch (e: Exception) {
+        promise.reject("E_WIDGET_PREVIEW", e.message, e)
+      }
+    }
+  }
+
+  /**
    * Hand over every tap the Log Today widget has queued, and clear it.
    *
    * Returns a JSON string rather than a WritableArray so the JS side can run

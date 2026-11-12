@@ -5,8 +5,8 @@ import com.prayer_times.contract.WallClock
 
 /**
  * The day the widgets hold, as the widget settings screen's sample card
- * shows it (PrayerWidgetConfigureActivity): the day's label, the city, and
- * the row of times with the next one marked. Read the way the cards read
+ * shows it (WidgetPreviewCard): the day's label, the city, the row of
+ * times with the next one marked, and the practice the tall card graphs. Read the way the cards read
  * it — the live payload, the schedule's own "next" — so the sample names
  * the user's prayers at the user's times, in the user's clock format.
  *
@@ -17,6 +17,8 @@ internal class WidgetSample(
   val dayLabel: String,
   val location: String,
   val rows: List<Row>,
+  /** What the tall card's graph and streak are drawn from; null with nothing logged or published. */
+  val practice: com.prayer_times.contract.WidgetContract.Practice? = null,
 ) {
   class Row(val name: String, val time: String, val next: Boolean)
 
@@ -36,6 +38,7 @@ internal class WidgetSample(
       return WidgetSample(
         dayLabel = day.label.trim().ifEmpty { s.shown.label.trim() },
         location = p.locationName.trim(),
+        practice = p.practice,
         rows = rows.map { r ->
           Row(
             name = r.name.trim().ifEmpty { r.abbr.trim() },
