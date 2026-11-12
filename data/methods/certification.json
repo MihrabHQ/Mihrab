@@ -458,9 +458,9 @@
       {
         "tables": "United Kingdom — Wifaqul Ulama’s timetables",
         "places": 81,
-        "times": 197100,
+        "times": 350400,
         "off": 0,
-        "offWithoutCorrections": 2600,
+        "offWithoutCorrections": 4815,
         "from": "2026-01-01",
         "to": "2027-12-31"
       }
@@ -468,9 +468,9 @@
     "corrections": {
       "from": "2026-01-01",
       "to": "2027-12-31",
-      "entries": 2508,
-      "sha256": "1597716577faca2a44911d71195c75d26f4da440d447fe792d4c7df1c9c49b4f"
+      "entries": 4641,
+      "sha256": "f223b540b2cc17936c137e04f7a0efbf211a5ebb7ab41051194801c5243c2c31"
     },
-    "revision": 1
+    "revision": 2
   }
 }

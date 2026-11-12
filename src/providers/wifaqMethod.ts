@@ -7,9 +7,11 @@
  *
  *   • Meeus's apparent sun (Morocco's) at each time's own moment, its
  *     declination and equation of time iterated;
- *   • Fajr with the sun 18° below the horizon. Near the edge of the summer
- *     twilight, where the sun of the event's own moment no longer reaches
- *     18°, the sun of 0h UT of the date is asked instead; and on the nights
+ *   • Fajr with the sun 18° below the horizon, the search starting from the
+ *     sun of 0h UT (which decides, at the very edge, whether it forms).
+ *     Near the edge of the summer twilight, where the sun of the event's
+ *     own moment no longer reaches 18°, the sun of 0h UT of the date is
+ *     asked instead; and on the nights
  *     neither reaches it, Fajr is the middle between that date's sunset and
  *     the sunrise of the day before, twelve hours earlier (the page's
  *     "Nisful-Layl", as the tables have it);
@@ -29,7 +31,7 @@
  * for is the Hanafi, which the page names as the one to follow where no
  * local scholar says otherwise.
  *
- * From MihrabHQ/mihrab-methods, revision 1.
+ * From MihrabHQ/mihrab-methods, revision 2.
  */
 import { meeusApparentSun } from './moroccoMethod';
 
@@ -99,7 +101,8 @@ export function wifaqRawMinutes(
   const { noon, event, at } = program(latitude, longitude, year, month, day);
   const sunrise = event(HORIZON, -1, noon - 360);
   const sunset = event(HORIZON, 1, noon + 360);
-  let fajr = event(-FAJR, -1, noon - 420);
+  // the first pass reads the sun at 0h UT: at the very edge of the twilight that decides whether Fajr forms
+  let fajr = event(-FAJR, -1, 0);
   if (!Number.isFinite(fajr)) fajr = event(-FAJR, -1, noon - 420, 0);
   if (!Number.isFinite(fajr)) {
     const b = shifted(year, month, day, -1);
