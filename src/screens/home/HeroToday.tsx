@@ -229,6 +229,7 @@ export const HeroToday = memo(function HeroToday({
   onLayout,
   launchRun: launchRunWanted = true,
   skyTheme = false,
+  sheet = true,
   skyVariant = 'realistic',
   heroLook = 'sky',
   band = false,
@@ -330,6 +331,8 @@ export const HeroToday = memo(function HeroToday({
    * the hour's mood, not the real sky's colours, and runs into the page.
    */
   skyTheme?: boolean;
+  /** The page's sheet over the sky's foot may be drawn (the page has budgeted its height); false: the fade, as on a card. */
+  sheet?: boolean;
   /**
    * Whose colours the Sky theme's hero wears (settings.skyVariant). Asked
    * for here rather than read from skyMoods' module state, so a change
@@ -538,7 +541,7 @@ export const HeroToday = memo(function HeroToday({
    * at 0.97, replaced it in one frame: the shade "abruptly disappeared".
    */
   // The page's sheet over the sky's foot (skyModel's SkyFrame.sheet): the phone's, where a list follows the hero — not Minimal, whose hero is the page.
-  const sheeted = !!fill && !minimal;
+  const sheeted = !!fill && !minimal && sheet;
   const startAts = useMemo(() => {
     const was = fill && layoutKey ? rememberedTodayLayout(layoutKey) : null;
     const h = was?.heroH ?? 0;

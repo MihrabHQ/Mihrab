@@ -260,6 +260,12 @@ export type TodayCardProps = {
    */
   tier?: HomeTier;
   /**
+   * Whether the page has room for the sheet the page comes up over the
+   * sky as under Light and Dark (homeBudget's `sheetFits`). False on the
+   * one page it would push into a scroll: the sky fades there, as before.
+   */
+  sheet?: boolean;
+  /**
    * The hero's height, given — a foldable standing in tabletop posture,
    * where the hero fills the upright half down to the hinge and the table
    * lies on the flat one (HomeScreen). Absent, the hero sizes itself.
@@ -325,6 +331,7 @@ function TodayCardImpl({
   bannerAbove = false,
   roomy = false,
   tier = 'comfortable',
+  sheet = true,
   heroHeight,
   sideInset = 0,
   renderLocation,
@@ -1093,7 +1100,7 @@ function TodayCardImpl({
   // the rail's two names stand on the sky above the sheet's edge and not
   // under it. At every hour, not only those with a sheet, so the page
   // does not move by it when the sky's shade changes.
-  const sheetPad = fullBleed && !minimal && settings.appearance !== 'sky' ? SKY_SHEET_DP : 0;
+  const sheetPad = fullBleed && !minimal && sheet && settings.appearance !== 'sky' ? SKY_SHEET_DP : 0;
   const footPad = HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] + (minimal ? footInset : 0) + sheetPad;
   // Minimal: a drag up on the hero opens the day's times too — only a
   // clearly upward one, so a sideways drag is still the tabs' and a drag
@@ -1468,6 +1475,7 @@ function TodayCardImpl({
               footer={footer}
               frozenAt={interval.fromAt}
               skyTheme={settings.appearance === 'sky'}
+              sheet={sheet}
               skyVariant={settings.skyVariant}
               heroLook={settings.heroLook}
               band={desktopLayout}
@@ -1484,6 +1492,7 @@ function TodayCardImpl({
             onLayout={onRealHeroLayout}
             launchRun={runWanted}
             skyTheme={settings.appearance === 'sky'}
+              sheet={sheet}
             skyVariant={settings.skyVariant}
             heroLook={settings.heroLook}
             band={desktopLayout}

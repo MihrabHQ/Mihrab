@@ -97,8 +97,14 @@ const QURAN_TEXT: Record<HomeTier, number> = {
   compact: TYPE.footnote.lineHeight,
 };
 const QURAN_PAD: Record<HomeTier, number> = { roomy: SPACING.md, comfortable: SPACING.md, compact: SPACING.sm + 2 };
-/** Between the table and the door, and under the door. */
-const BELOW_GAP: Record<HomeTier, number> = { roomy: SPACING.md, comfortable: SPACING.md, compact: SPACING.sm };
+/**
+ * Between the table and the door, and under the door — the page's own
+ * foot (HomeScreen's scroll padding on a budgeted page reads this). The
+ * page padded its foot by 24 whatever the tier while the sum counted 12
+ * or 8: a page the budget called fitting was 12 to 16 dp too tall, and
+ * scrolled by that for nothing.
+ */
+export const BELOW_GAP: Record<HomeTier, number> = { roomy: SPACING.md, comfortable: SPACING.md, compact: SPACING.sm };
 
 /* ── The sum ──────────────────────────────────────────────────────────── */
 
@@ -168,4 +174,21 @@ export function pickHomeTier(input: HomeBudgetInput): HomeTier {
 export function currentFontScale(): number {
   const s = PixelRatio.getFontScale();
   return Number.isFinite(s) && s > 0 ? s : 1;
+}
+
+/**
+ * Whether the page takes the sheet the page comes up over the sky as
+ * under Light and Dark (TodayCard's sheetPad, `sheet` dp tall).
+ *
+ * The sheet is in the sum like anything else, and a tier is picked with
+ * it. It is left out on one page only: the one whose tightest tier fits
+ * WITHOUT it and not with it — there the sheet alone would make a page
+ * that fits scroll by its own height, and the sky fades into the page
+ * instead, as it did. A page too short for the compact tier either way
+ * scrolls regardless, and keeps its sheet.
+ */
+export function sheetFits(input: HomeBudgetInput, sheet: number): boolean {
+  if (!(sheet > 0)) return false;
+  const need = homeSegmentHeights('compact', input).total + TIER_SLACK.compact;
+  return !(need <= input.viewport && need + sheet > input.viewport);
 }

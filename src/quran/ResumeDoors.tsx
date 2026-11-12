@@ -555,8 +555,16 @@ function BookmarkDoor({
  */
 function StartDoor({
   onOpenQuran,
+  dense,
 }: {
   onOpenQuran: () => void;
+  /**
+   * Today on a short screen (the compact tier): one line each, the hint
+   * gone. The two doors a new reader sees stayed two lines tall when
+   * every other door went dense, and the page the budget had counted as
+   * fitting scrolled by the difference (homeBudget's QURAN_TEXT.compact).
+   */
+  dense?: boolean;
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
@@ -564,30 +572,34 @@ function StartDoor({
   const plan = t('quran.startKhatmah', 'Start a khatmah');
   return (
     <View style={styles.columns}>
-      <Door label={read} onPress={onOpenQuran} column>
+      <Door label={read} onPress={onOpenQuran} column dense={dense}>
         <View style={styles.body}>
           <View style={[styles.titleRow, styles.titleRowColumn]}>
             <View style={[styles.dot, { backgroundColor: READING_COLOR }]} />
-            <Text style={[styles.title, { color: palette.text }]} numberOfLines={1}>
+            <Text style={[styles.title, dense && styles.denseTitle, { color: palette.text }]} numberOfLines={1}>
               {read}
             </Text>
           </View>
-          <Text style={[styles.subtitle, { color: palette.muted }]} numberOfLines={1}>
-            {t('home.startReadingHint', 'Al-Fātiḥah, page 1')}
-          </Text>
+          {dense ? null : (
+            <Text style={[styles.subtitle, { color: palette.muted }]} numberOfLines={1}>
+              {t('home.startReadingHint', 'Al-Fātiḥah, page 1')}
+            </Text>
+          )}
         </View>
       </Door>
-      <Door label={plan} onPress={onOpenQuran} column divided>
+      <Door label={plan} onPress={onOpenQuran} column divided dense={dense}>
         <View style={styles.body}>
           <View style={[styles.titleRow, styles.titleRowColumn]}>
             <View style={[styles.dot, { backgroundColor: palette.accentSolid }]} />
-            <Text style={[styles.title, { color: palette.text }]} numberOfLines={1}>
+            <Text style={[styles.title, dense && styles.denseTitle, { color: palette.text }]} numberOfLines={1}>
               {plan}
             </Text>
           </View>
-          <Text style={[styles.subtitle, { color: palette.muted }]} numberOfLines={1}>
-            {t('home.startKhatmahHint', 'The whole Qurʼan, at your pace')}
-          </Text>
+          {dense ? null : (
+            <Text style={[styles.subtitle, { color: palette.muted }]} numberOfLines={1}>
+              {t('home.startKhatmahHint', 'The whole Qurʼan, at your pace')}
+            </Text>
+          )}
         </View>
       </Door>
     </View>
@@ -645,7 +657,7 @@ function ResumeDoorsImpl({
   if (!first && !reading && shortcuts.length === 0) {
     return (
       <>
-        {showStart ? <StartDoor onOpenQuran={onOpenQuran} /> : null}
+        {showStart ? <StartDoor onOpenQuran={onOpenQuran} dense={dense} /> : null}
         {hifz && onOpenHifz ? <HifzDoor due={hifz} divided={showStart} onPress={onOpenHifz} /> : null}
       </>
     );

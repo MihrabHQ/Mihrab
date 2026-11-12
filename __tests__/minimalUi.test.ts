@@ -305,7 +305,7 @@ describe('the minimal Today', () => {
   });
 
   it('runs its sky on under the dots', () => {
-    expect(home).toContain('{ paddingBottom: minimal ? 0 : SPACING.xl + tabBarInset }');
+    expect(home).toContain('{ paddingBottom: minimal ? 0 : (budgeted ? BELOW_GAP[tier] : SPACING.xl) + tabBarInset }');
     expect(home).toContain('footInset={tabBarInset}');
   });
 
