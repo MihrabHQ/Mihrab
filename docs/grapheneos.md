@@ -89,12 +89,24 @@ back, has not been separated.
   their builder. A build that fails there keeps a release off F-Droid, so
   it is a change to make with one release to spare, not a flag to flip.
 - **A 64-bit-only APK on GitHub.** The GitHub APK carries `arm64-v8a` and
-  `armeabi-v7a` (61 MB, 12 MB of it the 32-bit libraries). The libraries
-  are stored uncompressed and used from inside the APK, so the 32-bit ones
-  cost a download and disk, not install time. A second asset changes which
-  file Obtainium picks for people who already follow the releases, so it
-  is a decision for a release, not a build flag. F-Droid's build is
-  already 64-bit only.
+  `armeabi-v7a`: 61 MB, of which the 32-bit libraries are 11.6 MB. The
+  libraries are stored uncompressed and used from inside the APK, so the
+  32-bit ones cost a download and disk on a 64-bit phone and nothing else —
+  not install time, not memory. A second APK beside the first would save
+  that download and cost more than it saves: Obtainium installs in the
+  background only when a release leaves it exactly one APK, and with two it
+  stops and asks (its `canInstallSilently`; its filter by CPU architecture
+  can leave one, where the reader has it on and the names carry the
+  architecture). Making the one APK 64-bit only would save the 11.6 MB for
+  everyone and leave 32-bit phones without a GitHub build. F-Droid's build
+  is already 64-bit only.
+- **Squeezing the dex further.** With R8 on, the GitHub build's dex holds
+  about 7 MB of code. The keep rules in `proguard-rules.pro` that are
+  wider than they need be — all of `kotlin.**` (0.9 MB) and all of
+  `com.facebook.react.**` (1.2 MB) — could give back perhaps 1 MB of it,
+  some 0.4 s of the 2.8 s compile, at the price of finding every class
+  that native code or reflection reaches by name. Not worth a prayer alarm
+  that does not ring.
 
 ## Checking it again
 
