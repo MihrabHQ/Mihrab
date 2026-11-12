@@ -14,7 +14,7 @@ Mihrab is independent of GrapheneOS and is not endorsed by it.
 | GrapheneOS | Mihrab |
 |---|---|
 | No Google Play services unless the owner installs the sandboxed ones | Never used. No flavor has any Google Play services, Firebase or Play Core class in it; the release script counts them in the APK and stops on one. Prayer alerts are local alarms: nothing is pushed. |
-| Apps are compiled in full when installed; the runtime's JIT and profiles are off | 2.9 s for the GitHub build on a Pixel 10 Pro (`cmd package compile -m speed -f`). The Baseline Profile the APK carries does nothing there, and is not needed. |
+| Apps are compiled in full when installed; the runtime's JIT and profiles are off | 2.8 s for the GitHub build on a Pixel 10 Pro (`cmd package compile -m speed -f`), 4.7 s for F-Droid's, which is built without R8 (see *Not done*). The Baseline Profile the APK carries does nothing there, and is not needed. |
 | Hardened allocator (`hardened_malloc`) | Runs under it; see *Memory* below for what it costs. |
 | Hardware memory tagging (MTE), Pixel 8 and later | The manifest asks for it (`android:memtagMode="async"`). A walk of every screen, the reader, the compass and the widgets' settings in the synchronous mode — a build made with `-PmemtagMode=sync`, which faults at the bad access itself — found nothing. |
 | Dynamic code loading can be blocked, from memory and from storage | The app loads no code that is not in the APK: no class loader for files or memory in the dex, native libraries used from inside the APK (`extractNativeLibs=false`), no library with a writable-and-executable segment, and Hermes runs bytecode without a JIT. `scripts/check-apk-hardening.py` reads this off the APK at every release. |
@@ -79,11 +79,15 @@ back, has not been separated.
 
 ## Not done, and why
 
-- **R8 in the F-Droid build.** F-Droid's build is the only one without it
-  (it ran out of memory with lint beside it; lint is now off for that
-  flavor, R8 alone has not been tried on their builder). What it would
-  save on a phone is install-time compilation of a dex about twice the
-  size — a few seconds on a Pixel 10 Pro, per update.
+- **R8 in the F-Droid build.** F-Droid's build is the only one without it:
+  its dex is 32.8 MB in four files against 10.5 MB in two. Measured on the
+  Pixel 10 Pro, the same source both ways: the full compile GrapheneOS does
+  at every install takes 4.7 s without R8 and 2.8 s with it, and the whole
+  install 7.2 s against 3.9 s. R8 was turned off there because F-Droid's
+  merge-request pipeline ran out of memory with lint running beside it;
+  lint is off for that flavor now, and R8 alone has not been tried on
+  their builder. A build that fails there keeps a release off F-Droid, so
+  it is a change to make with one release to spare, not a flag to flip.
 - **A 64-bit-only APK on GitHub.** The GitHub APK carries `arm64-v8a` and
   `armeabi-v7a` (61 MB, 12 MB of it the 32-bit libraries). The libraries
   are stored uncompressed and used from inside the APK, so the 32-bit ones
