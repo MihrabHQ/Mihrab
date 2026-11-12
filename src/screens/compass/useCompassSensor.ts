@@ -68,6 +68,12 @@ const compassEmitter = CompassNativeModule
  *   • Startup timeout that flips to "unsupported" if no sample arrives in
  *     10s — which is also how a device with no usable sensor reports
  *     itself, since the native side simply stays quiet.
+ *   • The system's own switch (GrapheneOS's Sensors permission): asked
+ *     before anything is started, and again on every return to the app.
+ *     Off, the mode is `permission_denied` at once — no ten seconds of
+ *     "starting", no "this device has no magnetometer" — and nothing is
+ *     subscribed, since a listener there gets no events and only makes
+ *     the system notify the reader that the app tried.
  *   • Watchdog that restarts a stalled subscription.
  *   • AppState listener that restarts on resume.
  *
@@ -214,8 +220,35 @@ export function useCompassSensor(
       startSubscription();
     };
 
-    scheduleStartupTimeout();
-    startSubscription();
+    /**
+     * Start, unless the system has the sensors switched off for this app.
+     * The answer is a moment away (a native call), and until it comes the
+     * mode is `checking`, as it is while the first sample is awaited.
+     */
+    const begin = () => {
+      const ask = CompassModule?.sensorsAccess;
+      if (!ask) {
+        scheduleStartupTimeout();
+        startSubscription();
+        return;
+      }
+      void ask().then(access => {
+        if (cancelled) return;
+        if (access === 'denied') {
+          clearStartupTimeout();
+          subscriptionRef.current?.unsubscribe();
+          subscriptionRef.current = null;
+          setMode('permission_denied');
+          modeRef.current = 'permission_denied';
+          setSignalStrength(-2);
+          return;
+        }
+        scheduleStartupTimeout();
+        startSubscription();
+      });
+    };
+
+    begin();
 
     watchdogId = setInterval(() => {
       if (
@@ -232,7 +265,20 @@ export function useCompassSensor(
     }, WATCHDOG_INTERVAL_MS);
 
     appStateSub = AppState.addEventListener('change', state => {
-      if (state === 'active') restartSubscription();
+      if (state !== 'active') return;
+      // Back from the system's settings, perhaps with the switch turned:
+      // ask again before starting anything.
+      subscriptionRef.current?.unsubscribe();
+      subscriptionRef.current = null;
+      gotSampleRef.current = false;
+      headingHistoryRef.current = [];
+      lastSampleAt = 0;
+      setMode('checking');
+      modeRef.current = 'checking';
+      setSignalStrength(-1);
+      setSignalQuality('unknown');
+      setStability(100);
+      begin();
     });
 
     return () => {

@@ -754,6 +754,8 @@
     "openSettings": "Abrir configuración",
     "unsupportedTitle": "Brújula en vivo no disponible",
     "unsupportedBody": "Este dispositivo no proporciona un magnetómetro utilizable (o el acceso falló). La brújula en vivo está apagada. Utilice el rumbo a continuación con una brújula física o un mapa.",
+    "sensorsOffTitle": "Los sensores están desactivados para Mihrab",
+    "sensorsOffBody": "El sistema de tu teléfono no permite que Mihrab lea la brújula. Permite «Sensores» en los permisos de Mihrab y vuelve. El rumbo de arriba sigue sirviendo con una brújula física o un mapa.",
     "checkingCompass": "Brújula inicial…",
     "checkingCompassWithPrompt": "Iniciando brújula... Si se le solicita en iOS, permita el acceso a Motion & Fitness.",
     "north": "norte",

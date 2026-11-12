@@ -27,6 +27,19 @@ export type LocationPermissionResult = 'granted' | 'denied' | 'never_ask_again';
 export async function requestAndroidLocationPermission(): Promise<LocationPermissionResult> {
   if (Platform.OS !== 'android') return 'granted';
   try {
+    // WHAT IS ALREADY HELD IS NOT ASKED FOR AGAIN. Asking for both, of
+    // someone who had chosen Approximate, is asking for the one they
+    // declined: Android answers it with a second sheet — "Change Mihrab's
+    // location access? Change to precise location / Keep approximate" —
+    // straight after the first at set-up, and again at every later request
+    // for the place. Seen on an AOSP Android 12 emulator the moment
+    // "Approximate" and "While using the app" were tapped. The reader chose;
+    // approximate is all prayer times need.
+    const [hasFine, hasCoarse] = await Promise.all([
+      PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION),
+      PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION),
+    ]);
+    if (hasFine || hasCoarse) return 'granted';
     const res = await PermissionsAndroid.requestMultiple([
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,

@@ -753,6 +753,8 @@
     "openSettings": "Öffnen Sie Einstellungen",
     "unsupportedTitle": "Live-Kompass nicht verfügbar",
     "unsupportedBody": "Dieses Gerät bietet kein verwendbares Magnetometer (oder der Zugriff ist fehlgeschlagen). Der Live-Kompass ist ausgeschaltet. Verwenden Sie die unten angegebene Peilung mit einem physischen Kompass oder einer Karte.",
+    "sensorsOffTitle": "Sensoren sind für Mihrab ausgeschaltet",
+    "sensorsOffBody": "Das System Ihres Telefons lässt Mihrab den Kompass nicht lesen. Erlauben Sie „Sensoren“ in den Berechtigungen von Mihrab und kommen Sie dann zurück. Die Peilung oben funktioniert weiterhin mit einem echten Kompass oder einer Karte.",
     "checkingCompass": "Startkompass…",
     "checkingCompassWithPrompt": "Kompass starten... Wenn Sie unter iOS dazu aufgefordert werden, erlauben Sie den Zugriff auf Motion & Fitness.",
     "north": "N",

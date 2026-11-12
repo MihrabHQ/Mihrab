@@ -728,6 +728,13 @@ if [ -n "$AAPT" ]; then
     die "github APK contains Google Play Services / Firebase / Play Core classes"
   fi
   ok "github APK carries no Google Play Services"
+  # What a hardened Android holds an app to — no code loaded at run time,
+  # nothing writable and executable, 16 KB pages, memory tagging asked for
+  # (docs/grapheneos.md). Read off the artifact for the same reason as the
+  # two checks above: a dependency's update changes none of it in the log.
+  python3 "$ROOT/scripts/check-apk-hardening.py" "$APK" --aapt2 "$AAPT" >/dev/null \
+    || die "github APK breaks a hardening promise: run scripts/check-apk-hardening.py on it"
+  ok "github APK loads no code at run time, is W^X, 16 KB-aligned, and asks for memory tagging"
 fi
 
 if [ "${SKIP_CATALYST:-0}" = "1" ]; then

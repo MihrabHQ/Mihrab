@@ -754,6 +754,8 @@
     "openSettings": "Ouvrir les paramètres",
     "unsupportedTitle": "Boussole en direct indisponible",
     "unsupportedBody": "Cet appareil ne fournit pas de magnétomètre utilisable (ou accès échoué). La boussole en direct est éteinte. Utilisez le relèvement ci-dessous avec une boussole physique ou une carte.",
+    "sensorsOffTitle": "Les capteurs sont désactivés pour Mihrab",
+    "sensorsOffBody": "Le système de votre téléphone n’autorise pas Mihrab à lire la boussole. Autorisez « Capteurs » dans les autorisations de Mihrab, puis revenez. Le relèvement ci-dessus reste utilisable avec une vraie boussole ou une carte.",
     "checkingCompass": "Boussole de départ…",
     "checkingCompassWithPrompt": "Démarrage de la boussole… Si vous y êtes invité sur iOS, autorisez l'accès à Motion & Fitness.",
     "north": "N",

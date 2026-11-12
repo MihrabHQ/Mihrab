@@ -239,6 +239,11 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 296
         versionName "2.37.0"
+        // Hardware memory tagging (ARM MTE) for the app's native heap:
+        // see the note on `memtagMode` in AndroidManifest.xml.
+        // `-PmemtagMode=sync` makes a build that faults AT the bad access,
+        // for hunting one down; `off` opts out.
+        manifestPlaceholders.memtagMode = (project.findProperty("memtagMode") ?: "async")
     }
     flavorDimensions += "distribution"
     productFlavors {

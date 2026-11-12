@@ -753,6 +753,8 @@
     "openSettings": "Open Settings",
     "unsupportedTitle": "Live compass unavailable",
     "unsupportedBody": "This device does not provide a usable magnetometer (or access failed). The live compass is turned off. Use the bearing below with a physical compass or map.",
+    "sensorsOffTitle": "Sensors are turned off for Mihrab",
+    "sensorsOffBody": "Your phone's system is not letting Mihrab read the compass. Allow Sensors in Mihrab's permissions, then come back. The bearing above still works with a physical compass or a map.",
     "checkingCompass": "Starting compass…",
     "checkingCompassWithPrompt": "Starting compass… If prompted on iOS, allow Motion & Fitness access.",
     "north": "N",

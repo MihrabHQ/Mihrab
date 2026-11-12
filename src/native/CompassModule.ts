@@ -19,7 +19,16 @@ import { NativeModules, Platform } from 'react-native';
 type NativeCompass = {
   startUpdates(latitude?: number, longitude?: number): void;
   stopUpdates(): void;
+  /** Android only: see `sensorsAccess` below. */
+  sensorsAccess?: () => Promise<string>;
 };
+
+/**
+ * Whether the system lets the app read its sensors at all. `unknown` where
+ * the system has no such switch (stock Android, iOS — whose own motion
+ * permission is reported by the heading stream instead).
+ */
+export type SensorsAccess = 'granted' | 'denied' | 'unknown';
 
 const Native = (NativeModules.CompassModule as NativeCompass | null) ?? null;
 
@@ -34,6 +43,11 @@ export interface CompassModuleInterface {
   startUpdates(latitude: number, longitude: number): void;
   /** Stop streaming and release the sensors. */
   stopUpdates(): void;
+  /**
+   * GrapheneOS's Sensors switch for this app (android/.../CompassModule.kt).
+   * Never rejects: an older native side, or anything going wrong, is `unknown`.
+   */
+  sensorsAccess(): Promise<SensorsAccess>;
 }
 
 export const CompassModule: CompassModuleInterface | null = Native
@@ -47,6 +61,15 @@ export const CompassModule: CompassModuleInterface | null = Native
       },
       stopUpdates() {
         Native.stopUpdates();
+      },
+      async sensorsAccess() {
+        if (Platform.OS !== 'android' || typeof Native.sensorsAccess !== 'function') return 'unknown';
+        try {
+          const answer = await Native.sensorsAccess();
+          return answer === 'granted' || answer === 'denied' ? answer : 'unknown';
+        } catch {
+          return 'unknown';
+        }
       },
     }
   : null;

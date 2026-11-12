@@ -180,6 +180,49 @@ class CompassModule(reactContext: ReactApplicationContext) :
    * way to decide whether to offer the button at all: an offer that
    * opens nothing is worse than no offer.
    */
+  /**
+   * "granted", "denied" or "unknown": whether the system lets this app read
+   * its sensors at all.
+   *
+   * Stock Android has no such switch — the compass's sensors need no
+   * permission there — and the answer is "unknown". GrapheneOS has one
+   * (Settings → Apps → Mihrab → Permissions → Sensors): a runtime
+   * permission, `android.permission.OTHER_SENSORS`, which it adds to every
+   * app and grants unless the reader, or their default for new apps, says
+   * otherwise. Denied, the app is told nothing: listeners register, no
+   * event ever comes and the values read as zero. The screen used to wait
+   * its ten seconds and then say the phone had no usable magnetometer —
+   * of a Pixel, to someone who had turned a switch off. Seen on a Pixel 10
+   * Pro on GrapheneOS 2026110801.
+   *
+   * The permission is asked of the platform by name and only believed
+   * where the platform defines it: an unknown permission also reads as
+   * not granted.
+   */
+  @ReactMethod
+  fun sensorsAccess(promise: Promise) {
+    try {
+      val pm = reactApplicationContext.packageManager
+      val defined =
+        try {
+          pm.getPermissionInfo(OTHER_SENSORS, 0)
+          true
+        } catch (e: android.content.pm.PackageManager.NameNotFoundException) {
+          false
+        }
+      promise.resolve(
+        when {
+          !defined -> "unknown"
+          reactApplicationContext.checkSelfPermission(OTHER_SENSORS) ==
+            android.content.pm.PackageManager.PERMISSION_GRANTED -> "granted"
+          else -> "denied"
+        },
+      )
+    } catch (e: Exception) {
+      promise.resolve("unknown")
+    }
+  }
+
   @ReactMethod
   fun hasSystemCompass(promise: Promise) {
     promise.resolve(resolveSystemCompass() != null)
@@ -338,6 +381,9 @@ class CompassModule(reactContext: ReactApplicationContext) :
   }
 
   private companion object {
+    /** GrapheneOS's Sensors switch, as a permission. No such permission on stock Android. */
+    const val OTHER_SENSORS = "android.permission.OTHER_SENSORS"
+
     /**
      * The compass apps the major vendors ship, by package name.
      *

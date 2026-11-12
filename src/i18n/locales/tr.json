@@ -753,6 +753,8 @@
     "openSettings": "Ayarları Aç",
     "unsupportedTitle": "Canlı pusula kullanılamıyor",
     "unsupportedBody": "Bu cihaz kullanılabilir bir manyetometre sağlamıyor (veya erişim başarısız oldu). Canlı pusula kapatılır. Aşağıdaki yönü fiziksel bir pusula veya harita ile kullanın.",
+    "sensorsOffTitle": "Sensörler Mihrab için kapalı",
+    "sensorsOffBody": "Telefonunuzun sistemi Mihrab’ın pusulayı okumasına izin vermiyor. Mihrab’ın izinlerinden Sensörler’e izin verin, sonra geri dönün. Yukarıdaki açı, gerçek bir pusula veya haritayla yine kullanılabilir.",
     "checkingCompass": "Pusula başlatılıyor…",
     "checkingCompassWithPrompt": "Pusula başlatılıyor… iOS'ta istenirse Motion & Fitness erişimine izin verin.",
     "north": "N",

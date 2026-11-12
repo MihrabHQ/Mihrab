@@ -85,6 +85,29 @@ function StatusBannersImpl({
         </View>
       ) : null}
 
+      {/* GrapheneOS's Sensors switch, off for this app: said in its own
+          words, with the way to the switch. (Stock Android has no such
+          switch and never reaches this mode.) */}
+      {mode === 'permission_denied' && Platform.OS === 'android' ? (
+        <View style={styles.banner}>
+          <Text style={[styles.title, { color: palette.text }]}>
+            {t('compass.sensorsOffTitle')}
+          </Text>
+          <Text style={[styles.body, { color: palette.muted }]}>
+            {t('compass.sensorsOffBody')}
+          </Text>
+          <Text
+            accessibilityRole="link"
+            accessibilityLabel={t('compass.openSettings')}
+            style={[styles.link, { color: palette.accent }]}
+            onPress={() => {
+              void Linking.openSettings();
+            }}>
+            {t('compass.openSettings')}
+          </Text>
+        </View>
+      ) : null}
+
       {showWeak ? (
         <View style={styles.banner}>
           <Text style={[styles.title, { color: palette.text }]}>

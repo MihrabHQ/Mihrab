@@ -10,6 +10,165 @@ index aab4a31..7cec7dc 100644
  }
  
  if (isNewArchitectureEnabled()) {
+diff --git a/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java b/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java
+index 55d2619..ca7d685 100644
+--- a/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java
++++ b/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java
+@@ -66,6 +66,10 @@ public class AndroidLocationManager extends BaseLocationManager {
+         try {
+             LocationManager locationManager =
+                     (LocationManager) mReactContext.getSystemService(Context.LOCATION_SERVICE);
++            if (approximateOnly() && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
++                currentApproximateLocation(locationManager, locationOptions.timeout, success, error);
++                return;
++            }
+             String provider = getValidProvider(locationManager, locationOptions.highAccuracy);
+             if (provider == null) {
+                 error.invoke(
+@@ -82,7 +86,10 @@ public class AndroidLocationManager extends BaseLocationManager {
+             new AndroidLocationManager.SingleUpdateRequest(locationManager, provider, locationOptions.timeout, success, error)
+                     .invoke(location);
+         } catch (SecurityException e) {
+-            throw e;
++            // The permission went between the check and the call (revoked in
++            // the system's settings while the request was on its way): an
++            // answer for the caller, not a crash.
++            error.invoke(PositionError.buildError(PositionError.PERMISSION_DENIED, "Location permission was not granted."));
+         }
+     }
+ 
+@@ -121,26 +128,115 @@ public class AndroidLocationManager extends BaseLocationManager {
+         mWatchedProvider = null;
+     }
+ 
++    /** The reader chose "Approximate": the coarse permission and not the fine one. */
++    private boolean approximateOnly() {
++        return ContextCompat.checkSelfPermission(mReactContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
++                && ContextCompat.checkSelfPermission(mReactContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
++    }
++
++    /**
++     * One fix for a reader who chose "Approximate", on Android 12 and later.
++     *
++     * Asked of the platform's own `getCurrentLocation`, from the platform's
++     * fused provider where there is one (Android 12 brought one into the OS
++     * itself — AOSP's, nothing of Google's), else the network provider, else
++     * the satellites. The listener this file otherwise registers is not
++     * answered in useful time for such a reader: on an AOSP Android 12
++     * emulator with no network provider (what a GrapheneOS phone has by
++     * default) the registration on `gps` stood for 28 seconds and was given
++     * no location at all, and the request "timed out" on a phone whose GPS
++     * had a fix.
++     */
++    private void currentApproximateLocation(LocationManager locationManager, long timeout, final Callback success, final Callback error) {
++        String provider = null;
++        for (String candidate : new String[] {LocationManager.FUSED_PROVIDER, LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER}) {
++            if (isEnabled(locationManager, candidate)) {
++                provider = candidate;
++                break;
++            }
++        }
++        if (provider == null) {
++            error.invoke(PositionError.buildError(PositionError.POSITION_UNAVAILABLE, "No location provider available."));
++            return;
++        }
++        final java.util.concurrent.atomic.AtomicBoolean answered = new java.util.concurrent.atomic.AtomicBoolean(false);
++        final android.os.CancellationSignal cancel = new android.os.CancellationSignal();
++        final Handler handler = new Handler(android.os.Looper.getMainLooper());
++        final Runnable giveUp = new Runnable() {
++            @Override
++            public void run() {
++                if (answered.compareAndSet(false, true)) {
++                    cancel.cancel();
++                    error.invoke(PositionError.buildError(PositionError.TIMEOUT, "Location request timed out"));
++                }
++            }
++        };
++        handler.postDelayed(giveUp, timeout);
++        // High accuracy by name: the fused provider answers a "balanced"
++        // request from the network provider alone, and where there is none
++        // it answers at once with nothing.
++        android.location.LocationRequest request = new android.location.LocationRequest.Builder(0)
++                .setQuality(android.location.LocationRequest.QUALITY_HIGH_ACCURACY)
++                .setDurationMillis(Math.max(1000L, timeout))
++                .build();
++        locationManager.getCurrentLocation(provider, request, cancel, mReactContext.getMainExecutor(), new java.util.function.Consumer<Location>() {
++            @Override
++            public void accept(Location location) {
++                if (!answered.compareAndSet(false, true)) {
++                    return;
++                }
++                handler.removeCallbacks(giveUp);
++                if (location != null) {
++                    success.invoke(locationToMap(location));
++                } else {
++                    error.invoke(PositionError.buildError(PositionError.POSITION_UNAVAILABLE, "No location could be found."));
++                }
++            }
++        });
++    }
++
++    /**
++     * Which provider answers.
++     *
++     * The network provider where there is one and the request is not for
++     * high accuracy; otherwise the satellites. A phone without Google Play
++     * services very often has NO network provider at all — GrapheneOS ships
++     * without one unless the reader opts in to its own — so the fallback to
++     * the satellites is the ordinary case there, not the exception.
++     *
++     * WITH "APPROXIMATE" ONLY. Since Android 12 the permission sheet offers
++     * Approximate beside Precise, and the system lets an app holding only
++     * the coarse permission ask ANY provider: it hands back the fix
++     * coarsened. This method used to refuse the satellites to such an app
++     * (the rule before Android 12), so on a phone with no network provider
++     * a reader who chose Approximate — the careful choice, on exactly the
++     * phones that have no network provider — was told "No location provider
++     * available" and could not be located at all. A few kilometres are more
++     * than prayer times need. (A single fix for such a reader goes through
++     * `currentApproximateLocation`; this is what watching still uses.)
++     */
+     @Nullable
+     private String getValidProvider(LocationManager locationManager, boolean highAccuracy) {
+-        String provider =
+-                highAccuracy ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
+-        if (!locationManager.isProviderEnabled(provider)) {
+-            provider = provider.equals(LocationManager.GPS_PROVIDER)
+-                    ? LocationManager.NETWORK_PROVIDER
+-                    : LocationManager.GPS_PROVIDER;
+-            if (!locationManager.isProviderEnabled(provider)) {
+-                return null;
+-            }
++        boolean fine = ContextCompat.checkSelfPermission(mReactContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
++        boolean coarse = ContextCompat.checkSelfPermission(mReactContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
++        // Android 12+: the coarse permission is enough for the satellites (the fix comes back coarsened).
++        boolean gpsAllowed = fine || (coarse && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S);
++        boolean networkAllowed = fine || coarse;
++        boolean gps = gpsAllowed && isEnabled(locationManager, LocationManager.GPS_PROVIDER);
++        boolean network = networkAllowed && isEnabled(locationManager, LocationManager.NETWORK_PROVIDER);
++        if (highAccuracy) {
++            return gps ? LocationManager.GPS_PROVIDER : network ? LocationManager.NETWORK_PROVIDER : null;
+         }
+-        // If it's an enabled provider, but we don't have permissions, ignore it
+-        int finePermission = ContextCompat.checkSelfPermission(mReactContext, android.Manifest.permission.ACCESS_FINE_LOCATION);
+-        int coarsePermission = ContextCompat.checkSelfPermission(mReactContext, android.Manifest.permission.ACCESS_COARSE_LOCATION);
+-        if ((provider.equals(LocationManager.GPS_PROVIDER) && finePermission != PackageManager.PERMISSION_GRANTED) ||
+-                (provider.equals(LocationManager.NETWORK_PROVIDER) && coarsePermission != PackageManager.PERMISSION_GRANTED)) {
+-            return null;
++        return network ? LocationManager.NETWORK_PROVIDER : gps ? LocationManager.GPS_PROVIDER : null;
++    }
++
++    /** A provider the phone does not have at all is not enabled either, and asking must not throw. */
++    private static boolean isEnabled(LocationManager locationManager, String provider) {
++        try {
++            return locationManager.isProviderEnabled(provider);
++        } catch (RuntimeException e) {
++            return false;
+         }
+-        return provider;
+     }
+ 
+     private static class SingleUpdateRequest {
 diff --git a/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/GeolocationModule.java b/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/GeolocationModule.java
 index 5b42ba4..5df7ecf 100644
 --- a/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/GeolocationModule.java

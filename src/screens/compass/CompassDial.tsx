@@ -82,7 +82,7 @@ function CompassDialImpl({ mode, needleDeg, signalStrength = -1 }: CompassDialPr
         accessible
         accessibilityRole="image"
         accessibilityLabel={a11yLabel}
-        style={[styles.dial, mode === 'unsupported' && styles.unsupported]}>
+        style={[styles.dial, (mode === 'unsupported' || mode === 'permission_denied') && styles.unsupported]}>
         <Svg width={DIAL} height={DIAL} viewBox={`0 0 ${DIAL} ${DIAL}`}>
           {/* The signal, as an arc around the outside: a full circle is a
               clean reading, a short one says move away from the metal. */}
@@ -179,7 +179,7 @@ function CompassDialImpl({ mode, needleDeg, signalStrength = -1 }: CompassDialPr
           <Circle cx={C} cy={C} r={5} fill={live ? accent : quiet} />
           <Circle cx={C} cy={C} r={2} fill={palette.onAccent} />
 
-          {mode === 'unsupported' ? (
+          {mode === 'unsupported' || mode === 'permission_denied' ? (
             <Line x1={C - 40} y1={C} x2={C + 40} y2={C} stroke={quiet} strokeWidth={2} strokeLinecap="round" />
           ) : null}
         </Svg>

@@ -753,6 +753,8 @@
     "openSettings": "打开设置",
     "unsupportedTitle": "实时指南针不可用",
     "unsupportedBody": "该设备不提供可用的磁力计（或访问失败）。实时罗盘已关闭。将下面的方位与物理指南针或地图结合使用。",
+    "sensorsOffTitle": "Mihrab 的传感器权限已关闭",
+    "sensorsOffBody": "手机系统不允许 Mihrab 读取指南针。请在 Mihrab 的权限中允许“传感器”，然后返回。上方的方位角仍可配合实体指南针或地图使用。",
     "checkingCompass": "启动指南针...",
     "checkingCompassWithPrompt": "正在启动指南针...如果 iOS 上出现提示，请允许运动和健身访问。",
     "north": "氮",

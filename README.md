@@ -456,6 +456,8 @@ Every channel is at the top of this page: the store badges, Homebrew for the Mac
 | **Windows** | [Microsoft Store](https://apps.microsoft.com/detail/9N43KNMJHBWV) |
 | **Linux (preview)** | apt, dnf, zypper or pacman, from Mihrab's signed repositories at [mihrabhq.github.io/packages](https://mihrabhq.github.io/packages) — the commands are at the top of this page. Without any of those, [`install-linux.sh`](desktop/scripts/install-linux.sh) unpacks the AppImage. Testers and a maintainer are welcome ([desktop/MAINTAINING.md](desktop/MAINTAINING.md)) |
 
+On **GrapheneOS**: no Google Play services are used, the Network and Sensors switches are handled, and the APK is checked at every release for what its exploit protections expect — [what was checked, and how](docs/grapheneos.md).
+
 </details>
 
 ---

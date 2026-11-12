@@ -753,6 +753,8 @@
     "openSettings": "Öppna inställningar",
     "unsupportedTitle": "Livekompass otillgänglig",
     "unsupportedBody": "Enheten har ingen användbar magnetometer (eller åtkomst misslyckades). Livekompassen är avstängd. Använd riktningen nedan med fysisk kompass eller karta.",
+    "sensorsOffTitle": "Sensorer är avstängda för Mihrab",
+    "sensorsOffBody": "Telefonens system låter inte Mihrab läsa kompassen. Tillåt Sensorer i Mihrabs behörigheter och kom sedan tillbaka. Bäringen ovan fungerar fortfarande med en fysisk kompass eller en karta.",
     "checkingCompass": "Startar kompass…",
     "checkingCompassWithPrompt": "Startar kompass… Om iOS frågar, tillåt Rörelse och fitness.",
     "north": "N",

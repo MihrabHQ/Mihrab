@@ -753,6 +753,8 @@
     "openSettings": "Buka Pengaturan",
     "unsupportedTitle": "Kompas langsung tidak tersedia",
     "unsupportedBody": "Perangkat ini tidak menyediakan magnetometer yang dapat digunakan (atau akses gagal). Kompas hidup dimatikan. Gunakan arah di bawah ini dengan kompas atau peta fisik.",
+    "sensorsOffTitle": "Sensor dimatikan untuk Mihrab",
+    "sensorsOffBody": "Sistem ponsel Anda tidak mengizinkan Mihrab membaca kompas. Izinkan Sensor di izin aplikasi Mihrab, lalu kembali. Arah di atas tetap dapat dipakai dengan kompas fisik atau peta.",
     "checkingCompass": "Memulai kompas…",
     "checkingCompassWithPrompt": "Memulai kompas… Jika diminta di iOS, izinkan akses Motion & Fitness.",
     "north": "N",
