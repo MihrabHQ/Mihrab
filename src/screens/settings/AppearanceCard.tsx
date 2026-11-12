@@ -179,36 +179,6 @@ function AppearanceCardImpl() {
           </SettingsBlock>
         )}
 
-        {/* The hero's band: the painted sky, or the Track — the same band
-            as a chart of the sky, from the reader's own coordinates
-            (screens/home/trackModel.ts). Under every theme; the text, the
-            rail and the page stay where they are. */}
-        <SettingsBlock>
-          <Text style={[s.label, { color: palette.muted }]}>
-            {t('settings.heroLook', 'Sky band')}
-          </Text>
-          {/* Shown, as the layouts are: the hour's sky under the Sky theme,
-              the page's paper otherwise; the sun in its own light. */}
-          <HeroLookPicker
-            testID="appearance-heroLook"
-            value={settings.heroLook}
-            onChange={heroLook => updateSettings({ heroLook })}
-            minimal={minimalActive}
-            skyTop={previewSky ? previewSky.heroTop : String(palette.accentBg)}
-            skyFoot={previewSky ? previewSky.heroMid : String(palette.bg)}
-            sun={previewSky ? previewSky.bodyLight : SUN_SURFACE}
-            text={String(palette.text)}
-            muted={String(palette.muted)}
-            accent={String(palette.accent)}
-          />
-          <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
-            {t(
-              'settings.heroLookHelp',
-              "Painted shows the sun and the moon on the sky. Track draws the band as a chart: the horizon as a line, today's path of the sun (the moon's at night) to scale where you are, and a ring where it will be at the next prayer.",
-            )}
-          </Text>
-        </SettingsBlock>
-
         {/* The layout — the full page or Minimal (settings/types.ts
             `minimalUi`) — chosen by seeing it, as in the walkthrough: the
             same two pictures of Today in the reader's own colours, not a
@@ -258,6 +228,36 @@ function AppearanceCardImpl() {
             onValueChange={v => updateSettings({ minimalTabIcons: v })}
           />
         ) : null}
+
+        {/* The hero's band: the painted sky, or the Track — the same band
+            as a chart of the sky, from the reader's own coordinates
+            (screens/home/trackModel.ts). Under every theme; the text, the
+            rail and the page stay where they are. */}
+        <SettingsBlock>
+          <Text style={[s.label, { color: palette.muted }]}>
+            {t('settings.heroLook', 'Sky band')}
+          </Text>
+          {/* Shown, as the layouts are: the hour's sky under the Sky theme,
+              the page's paper otherwise; the sun in its own light. */}
+          <HeroLookPicker
+            testID="appearance-heroLook"
+            value={settings.heroLook}
+            onChange={heroLook => updateSettings({ heroLook })}
+            minimal={minimalActive}
+            skyTop={previewSky ? previewSky.heroTop : String(palette.accentBg)}
+            skyFoot={previewSky ? previewSky.heroMid : String(palette.bg)}
+            sun={previewSky ? previewSky.bodyLight : SUN_SURFACE}
+            text={String(palette.text)}
+            muted={String(palette.muted)}
+            accent={String(palette.accent)}
+          />
+          <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
+            {t(
+              'settings.heroLookHelp',
+              "Painted shows the sun and the moon on the sky. Track draws the band as a chart: the horizon as a line, today's path of the sun (the moon's at night) to scale where you are, and a ring where it will be at the next prayer.",
+            )}
+          </Text>
+        </SettingsBlock>
 
         {/* Colour theme — the alternative to system colours. Classic is the
             app's own paper and ink; a preset themes dark mode in that colour
