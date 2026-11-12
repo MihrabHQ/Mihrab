@@ -66,6 +66,8 @@ const OWN_SOURCE: Record<
   PK: { source: 'banuri', method: 1, yields: true },
   // the Emirates: the Authority's own timetable; the stand-in is AlAdhan's Dubai
   AE: { source: 'uae', method: 16, yields: true },
+  // Iran: the Institute of Geophysics' own method; the stand-in is AlAdhan's Tehran
+  IR: { source: 'tehran', method: 7, yields: true },
 };
 
 /** The country's own method, as listed under Calculation method (Bahrain, Oman, Iraq: not read off anything, MWL). */

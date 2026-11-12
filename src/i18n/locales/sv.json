@@ -717,6 +717,10 @@
     "uae": {
       "name": "Förenade Arabemiraten",
       "desc": "Tidtabellen från Allmänna myndigheten för islamiska frågor, stiftelser och zakat, beräknad på din enhet med dess egen metod för den zon du befinner dig i – den stämmer med de publicerade tiderna på minuten."
+    },
+    "tehran": {
+      "name": "Iran (Geofysiska institutet, Teheran)",
+      "desc": "Bönetiderna från Geofysiska institutet vid Teherans universitet, beräknade på din enhet med institutets egen metod – i provinshuvudstäderna stämmer de med institutets publicerade tabeller på minuten. Asr och isha, som tabellerna inte anger, beräknas med samma metod."
     }
   },
   "compass": {

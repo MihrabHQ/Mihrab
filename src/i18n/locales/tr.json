@@ -717,6 +717,10 @@
     "uae": {
       "name": "Birleşik Arap Emirlikleri",
       "desc": "İslam İşleri, Vakıflar ve Zekât Genel Otoritesi’nin vakit çizelgesi, cihazınızda kendi yöntemiyle bulunduğunuz bölge için hesaplanır; yayımlanan vakitlerle dakikası dakikasına örtüşür."
+    },
+    "tehran": {
+      "name": "İran (Jeofizik Enstitüsü, Tahran)",
+      "desc": "Tahran Üniversitesi Jeofizik Enstitüsü'nün namaz vakitleri, kendi yöntemiyle cihazınızda hesaplanır — eyalet merkezlerinde Enstitü'nün yayımladığı çizelgelerle dakikası dakikasına örtüşür. Çizelgelerde yer almayan ikindi ve yatsı aynı yöntemle hesaplanır."
     }
   },
   "compass": {

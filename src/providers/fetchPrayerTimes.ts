@@ -8,6 +8,7 @@ import { getAlbaniaTimes, getBulgariaTimes } from './balkanTimetables';
 import { MINISTRY_TIMETABLES } from './ministryTimetables';
 import { getBanuriTimes } from './banuriTimetable';
 import { getUaeTimes } from './uaeTimetable';
+import { getTehranTimes } from './tehranTimetable';
 import {
   computeNamazvaktiMethodTimes,
   getNamazvaktiTimes,
@@ -394,6 +395,24 @@ export async function fetchPrayerTimesUnified(
       // coverage, the general source.
       try {
         result = await MINISTRY_TIMETABLES[p.provider]({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+          school: p.school,
+        });
+        break;
+      } catch {
+        /* outside coverage */
+      }
+      return fetchPrayerTimesUnified({ ...p, provider: 'aladhan' });
+    }
+    case 'tehran': {
+      // The Institute of Geophysics' own method, computed on the phone: a
+      // province capital's times inside it, the reader's own spot
+      // elsewhere in Iran (`tehranTimetable.ts`). Outside Iran, the
+      // general source.
+      try {
+        result = await getTehranTimes({
           latitude: p.latitude,
           longitude: p.longitude,
           date: p.date,

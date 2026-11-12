@@ -717,6 +717,10 @@
     "uae": {
       "name": "Uni Emirat Arab",
       "desc": "Jadwal Otoritas Umum Urusan Islam, Wakaf, dan Zakat, dihitung di perangkat Anda dengan metodenya sendiri untuk zona tempat Anda berada — cocok dengan waktu yang diterbitkan hingga menitnya."
+    },
+    "tehran": {
+      "name": "Iran (Institut Geofisika, Teheran)",
+      "desc": "Waktu salat dari Institut Geofisika Universitas Teheran, dihitung di perangkat Anda dengan metodenya sendiri — di ibu kota provinsi cocok hingga menit dengan tabel yang diterbitkan Institut. Asar dan Isya, yang tidak tercantum dalam tabel, dihitung dengan metode yang sama."
     }
   },
   "compass": {

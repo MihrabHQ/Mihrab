@@ -426,5 +426,28 @@
       "sha256": "3bc4720857ef51e55061f59fe2521ce1fb00d2d6c864c897a5bd6b9976802b9b"
     },
     "revision": 1
+  },
+  "tehran": {
+    "certified": true,
+    "checkedAt": "2026-11-12",
+    "places": 31,
+    "checks": [
+      {
+        "tables": "Iran — the Institute of Geophysics’ sheets",
+        "places": 31,
+        "times": 90520,
+        "off": 0,
+        "offWithoutCorrections": 903,
+        "from": "2025-03-21",
+        "to": "2027-03-20"
+      }
+    ],
+    "corrections": {
+      "from": "2025-03-21",
+      "to": "2027-03-20",
+      "entries": 903,
+      "sha256": "793c04c2764da229798b4913bc387485fbe9e219a11c86e3d65b8ede8feac1ea"
+    },
+    "revision": 1
   }
 }

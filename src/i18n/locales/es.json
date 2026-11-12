@@ -718,6 +718,10 @@
     "uae": {
       "name": "Emiratos Árabes Unidos",
       "desc": "El horario de la Autoridad General de Asuntos Islámicos, Awqaf y Zakat, calculado en tu dispositivo con su propio método para la zona en la que estás: coincide con los horarios publicados al minuto."
+    },
+    "tehran": {
+      "name": "Irán (Instituto de Geofísica, Teherán)",
+      "desc": "Los horarios de oración del Instituto de Geofísica de la Universidad de Teherán, calculados en tu dispositivo con su propio método: en las capitales de provincia coinciden al minuto con las tablas publicadas por el Instituto. Asr e Isha, que las tablas no incluyen, se calculan con el mismo método."
     }
   },
   "compass": {

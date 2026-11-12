@@ -37,6 +37,7 @@ import { isCoordinateInKazakhstan } from '../utils/kazakhstanRegion';
 import { isCoordinateInBrunei } from '../utils/bruneiRegion';
 import { isCoordinateInPakistan } from '../utils/pakistanRegion';
 import { isCoordinateInUae } from '../utils/uaeRegion';
+import { isCoordinateInIran } from '../utils/iranRegion';
 import { isCoordinateInTurkmenistan } from '../utils/turkmenistanRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
@@ -106,6 +107,8 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   { id: 'banuri', covers: isCoordinateInPakistan, yieldsToChosenMethod: true },
   // The United Arab Emirates: the Authority's own timetable, zone by zone.
   { id: 'uae', covers: isCoordinateInUae, yieldsToChosenMethod: true },
+  // Iran: the Institute of Geophysics' own method, the one the "Tehran" angles are named after.
+  { id: 'tehran', covers: isCoordinateInIran, yieldsToChosenMethod: true },
 ];
 
 /**

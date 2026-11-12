@@ -717,6 +717,10 @@
     "uae": {
       "name": "United Arab Emirates",
       "desc": "The timetable of the General Authority of Islamic Affairs, Endowments and Zakat, calculated on your device by its own method for the zone you are in — it matches the published times to the minute."
+    },
+    "tehran": {
+      "name": "Iran (Institute of Geophysics, Tehran)",
+      "desc": "The prayer times of the University of Tehran's Institute of Geophysics, calculated on your device by its own method — in the province capitals they match the Institute's published sheets to the minute. Asr and Isha, which the sheets do not print, are calculated by the same method."
     }
   },
   "compass": {

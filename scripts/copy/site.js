@@ -47,6 +47,7 @@ const TABLE_WORDS = {
       bulgaria: ['Bulgaria', 'the Grand Mufti’s Office'],
       banuri: ['Pakistan', 'Jamia Uloom-ul-Islamia, Banuri Town'],
       uae: ['United Arab Emirates', 'the General Authority of Islamic Affairs, Endowments and Zakat'],
+      tehran: ['Iran', 'the Institute of Geophysics, University of Tehran'],
     },
   },
   sv: {
@@ -74,6 +75,7 @@ const TABLE_WORDS = {
       bulgaria: ['Bulgarien', 'Stormuftins kansli'],
       banuri: ['Pakistan', 'Jamia Uloom-ul-Islamia, Banuri Town'],
       uae: ['Förenade Arabemiraten', 'Allmänna myndigheten för islamiska frågor, stiftelser och zakat'],
+      tehran: ['Iran', 'Geofysiska institutet vid Teherans universitet'],
     },
   },
 };

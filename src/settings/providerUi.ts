@@ -39,6 +39,7 @@ export function providerHidesCalculationMethod(
     // Jamia Banuri Town's is its own method; the Hanafi Asr toggle still applies.
     id === 'banuri' ||
     id === 'uae' ||
+    id === 'tehran' ||
     // The calendar is its own method; the Hanafi Asr toggle still applies
     // (it picks the calendar's Asr-ı sânî).
     id === 'namazvakti' ||

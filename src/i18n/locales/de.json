@@ -717,6 +717,10 @@
     "uae": {
       "name": "Vereinigte Arabische Emirate",
       "desc": "Der Gebetszeitenplan der Allgemeinen Behörde für islamische Angelegenheiten, Stiftungen und Zakat, auf deinem Gerät nach ihrer eigenen Methode für die Zone berechnet, in der du bist – er stimmt mit den veröffentlichten Zeiten auf die Minute überein."
+    },
+    "tehran": {
+      "name": "Iran (Institut für Geophysik, Teheran)",
+      "desc": "Die Gebetszeiten des Instituts für Geophysik der Universität Teheran, auf deinem Gerät nach dessen eigener Methode berechnet – in den Provinzhauptstädten stimmen sie auf die Minute mit den veröffentlichten Tabellen des Instituts überein. Asr und Ischa, die in den Tabellen nicht stehen, werden nach derselben Methode berechnet."
     }
   },
   "compass": {

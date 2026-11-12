@@ -68,7 +68,13 @@ method for the reader's own spot. Dhuhr is the minute after the zenith
 Endowments and Zakat's own method (`uaeTimetable.ts`): its forty-one
 zones, each at its own point with its own horizons, the reader given the
 zone of the nearest of its towns (`data/uaeAreas.json`); the two summits, Jebel Jais and Jebel
-Hafeet, only on the mountain. **Turkmenistan** has no
+Hafeet, only on the mountain. And **Iran** — the University of Tehran's
+Institute of Geophysics' own method (`tehranTimetable.ts`, inside the
+country's outline): in one of the thirty-one province capitals its
+Calendar Center prints a sheet for, that capital's times; elsewhere in the
+country the same method for the reader's own spot. The sheets print no Asr
+and no Isha; those are the method's (one shadow length, 14°).
+**Turkmenistan** has no
 timetable of its own Muftiate's to follow; Automatic there is Diyanet's
 method throughout (Diyanet prints tables for some thirty Turkmen towns),
 for a listed town near the reader or the reader's own spot. In **South

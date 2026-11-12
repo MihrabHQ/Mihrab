@@ -175,6 +175,14 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.uae.desc',
   },
   {
+    id: 'tehran',
+    name: 'Iran (Institute of Geophysics, Tehran)',
+    description:
+      'The prayer times of the University of Tehran\'s Institute of Geophysics, calculated on your device by its own method — in the province capitals they match the Institute\'s published sheets to the minute. Asr and Isha, which the sheets do not print, are calculated by the same method.',
+    nameKey: 'providers.tehran.name',
+    descriptionKey: 'providers.tehran.desc',
+  },
+  {
     id: 'marw',
     name: 'Algeria',
     description:

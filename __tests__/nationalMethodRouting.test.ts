@@ -27,7 +27,7 @@ const NATIONAL: [string, number, number, string][] = [
   ['Mecca', 21.4225, 39.8262, 'SA'],
   ['Riyadh', 24.7136, 46.6753, 'SA'],
   ['Medina', 24.4672, 39.6111, 'SA'],
-  ['Tehran', 35.6892, 51.389, 'IR'],
+  // not Tehran: the Institute of Geophysics' own method is Automatic's in Iran (`tehranTimetable.test.ts`)
   ['Najaf', 32.0, 44.33, 'IQ'],
   ['Baghdad', 33.3152, 44.3661, 'IQ'],
   // not Dubai: the Emirates' own timetable is Automatic's there (`uaeTimetable.test.ts`)

@@ -52,6 +52,8 @@ import { egyptTimes } from './egyptMethod';
 import { banuriTimes } from './banuriMethod';
 import { BANURI_METHOD_ID } from './banuriTimetable';
 import { uaeTimes } from './uaeMethod';
+import { tehranTimes } from './tehranMethod';
+import { TEHRAN_INSTITUTE_METHOD_ID } from './tehranTimetable';
 import { UAE_METHOD_ID, uaeZoneAt } from './uaeTimetable';
 import { kuwaitTimes } from './kuwaitMethod';
 import { qatarTimes } from './qatarMethod';
@@ -646,6 +648,15 @@ export function computeLocalAdhanInstants(
         tatarstanCorrection(params.latitude, params.longitude, y, m, day),
         0,
       );
+  }
+  if (methodId === TEHRAN_INSTITUTE_METHOD_ID) {
+    // Iran — the Institute of Geophysics' own method (`tehranTimetable.ts`),
+    // on the minute its sheets print at a capital's point, then the few
+    // times on the other side of a minute. The sheets print neither Asr
+    // nor Isha, so the list touches neither; a Hanafi reader's Asr is the
+    // method's at two shadow lengths.
+    const at = tehranTimes(params.latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1);
+    if (at) return corrected(at, correctionFor('tehran', params.latitude, params.longitude, y, m, day), params.school ?? 0);
   }
   if (methodId === UAE_METHOD_ID) {
     // The United Arab Emirates — the Authority's own method
