@@ -147,7 +147,7 @@ describe('each of the hero’s words is inked where it stands', () => {
 
   it('the glow stands above the block, so no word of the block is written across it', () => {
     const hero = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'HeroToday.tsx'), 'utf8');
-    expect(hero).toMatch(/Math\.max\(SKY_GLOW_MIN_AT, Math\.min\(SKY_THEME_MID_AT, Math\.round\(\(blockTopY - SKY_GLOW_ABOVE_BLOCK\) \* 200\) \/ 200\)\)/);
+    expect(hero).toMatch(/glow: Math\.max\(SKY_GLOW_MIN_AT, Math\.min\(SKY_THEME_MID_AT, Math\.round\(\(blockTop - SKY_GLOW_ABOVE_BLOCK\) \* 200\) \/ 200\)\),/);
     // With the glow ON the eyebrow's line (0.62 of the sky, as it was) the best ink for the eyebrow is under AA…
     const on = { ...DUSK, mid: '#c25a68', midAt: 0.62 };
     const before = skyInkAt(on, 0.634, HERO_SPAN.eyebrow);
@@ -268,5 +268,23 @@ describe('the glow is a band, and the block stands under it', () => {
     expect(themedSkyFrame(base, mood, 0.62, 0.62).low).toBeUndefined();
     expect(skyStops(themedSkyFrame(base, mood, 0.52, 0.61, { at: 0.97, page: '#FAF7F2' }))).toHaveLength(6); // …and the turn's two
     expect(skyStops(themedSkyFrame(base, mood))).toHaveLength(3);
+  });
+});
+
+describe('the launch run rides the sky the hero then stands in', () => {
+  const hero = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'HeroToday.tsx'), 'utf8');
+
+  it('the heights the sky is painted by start from the last launch’s layout, not from their unmeasured defaults', () => {
+    // one rule for the three heights, used for the first frame and for every measured one
+    expect(hero).toMatch(/function skyHeights\(blockTop: number, blockFoot: number\): \{ turn: number; glow: number; block: number \}/);
+    expect(hero).toMatch(/const was = fill && layoutKey \? rememberedTodayLayout\(layoutKey\) : null;/);
+    expect(hero).toMatch(/return skyHeights\(\(top \+ was\.block\.y\) \/ sky, \(top \+ was\.block\.y \+ was\.block\.h\) \/ sky\);/);
+    expect(hero).toMatch(/useState\(startAts\?\.turn \?\? SKY_FADE_LOW_MID_AT\)/);
+    expect(hero).toMatch(/useState\(startAts\?\.glow \?\? SKY_THEME_MID_AT\)/);
+    expect(hero).toMatch(/useState<number \| undefined>\(startAts\?\.block\)/);
+    expect(hero).toMatch(/const at = measured \? skyHeights\(heroY\.eyebrow, footY\)\.turn : SKY_FADE_LOW_MID_AT;/);
+    // the states are declared before the painter that the run's keyframes are painted with
+    expect(hero.indexOf('const startAts = useMemo')).toBeLessThan(hero.indexOf('const paint = useCallback'));
+    expect(hero.indexOf('const startAts = useMemo')).toBeGreaterThan(-1);
   });
 });

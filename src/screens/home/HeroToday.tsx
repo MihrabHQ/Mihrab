@@ -82,6 +82,19 @@ const HERO_Y_STATUS_BAR = 0.02;
 /** The hour's glow stands this far above the block's top edge (a fraction of the sky), and never higher than this. */
 const SKY_GLOW_ABOVE_BLOCK = 0.09;
 const SKY_GLOW_MIN_AT = 0.45;
+/**
+ * The heights the sky is painted by, from where the block begins and ends
+ * (fractions of the sky): the turn into another's page a hundredth and a
+ * half under the block's foot, the glow above the block's top, the block's
+ * top itself — to half a hundredth, so a pixel of layout is not a repaint.
+ */
+function skyHeights(blockTop: number, blockFoot: number): { turn: number; glow: number; block: number } {
+  return {
+    turn: Math.max(SKY_FADE_LOW_MID_AT, Math.min(0.97, Math.round((blockFoot + 0.015) * 200) / 200)),
+    glow: Math.max(SKY_GLOW_MIN_AT, Math.min(SKY_THEME_MID_AT, Math.round((blockTop - SKY_GLOW_ABOVE_BLOCK) * 200) / 200)),
+    block: Math.round(blockTop * 200) / 200,
+  };
+}
 /** Half the eyebrow's line, dp: from the block's top edge to the middle of its words. */
 const EYEBROW_HALF_LINE = 9;
 /** Minimal's line under the figures: how far above the block's foot its middle is, and its half height, as fractions of the sky. */
@@ -511,7 +524,29 @@ export const HeroToday = memo(function HeroToday({
   // Where the sky starts fading into a page of the other polarity: just
   // under the countdown block's foot, once the growing hero has measured
   // it (set below), so the block is all on the sky.
-  const [lowMidAt, setLowMidAt] = useState(SKY_FADE_LOW_MID_AT);
+  /**
+   * The three heights the sky is painted by — where it turns into a page
+   * of the other polarity, where its glow stands, where the block begins —
+   * come from the hero's measured layout, and the layout of the last
+   * launch is kept (`rememberedTodayLayout`): so they start from it. They
+   * started from their unmeasured defaults instead, and were set right by
+   * an effect a frame later — but the launch run's keyframes are painted
+   * in that first frame. Under Light and Dark the run then rode a sky that
+   * turned into the page at 0.88 of the hero, a pale (or dark) shade over
+   * the rail and the names, and when the run ended the still sky, turning
+   * at 0.97, replaced it in one frame: the shade "abruptly disappeared".
+   */
+  const startAts = useMemo(() => {
+    const was = fill && layoutKey ? rememberedTodayLayout(layoutKey) : null;
+    const h = was?.heroH ?? 0;
+    if (!was || !(h > 0) || !was.block) return null;
+    const top = bleed?.top ?? 0;
+    const sky = h + top + (bleed?.bottom ?? 0);
+    return skyHeights((top + was.block.y) / sky, (top + was.block.y + was.block.h) / sky);
+    // Once, for the first frame: the measured values take over below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const [lowMidAt, setLowMidAt] = useState(startAts?.turn ?? SKY_FADE_LOW_MID_AT);
   /**
    * Where the hour's glow — the gradient's middle stop — stands: just
    * above the block, once the hero has measured it (set below). It stood
@@ -523,9 +558,9 @@ export const HeroToday = memo(function HeroToday({
    * every word of the block is on the side of it that runs into the
    * page.
    */
-  const [glowAt, setGlowAt] = useState(SKY_THEME_MID_AT);
+  const [glowAt, setGlowAt] = useState(startAts?.glow ?? SKY_THEME_MID_AT);
   // …and the top of the block itself, where the glow has fallen most of its way to the page (SKY_GLOW_FALL).
-  const [blockAt, setBlockAt] = useState<number | undefined>(undefined);
+  const [blockAt, setBlockAt] = useState<number | undefined>(startAts?.block);
   const paint = useCallback(
     (f: SkyFrame): SkyFrame => {
       const mood = skyMoodFor(f.passage, f.t, undefined, heroVariant, f.light);
@@ -759,18 +794,17 @@ export const HeroToday = memo(function HeroToday({
     : HERO_Y;
   const footY = heroY.foot;
   useEffect(() => {
-    const at = measured ? Math.min(0.97, Math.round((footY + 0.015) * 200) / 200) : SKY_FADE_LOW_MID_AT;
-    setLowMidAt(prev => (prev === at ? prev : Math.max(SKY_FADE_LOW_MID_AT, at)));
+    const at = measured ? skyHeights(heroY.eyebrow, footY).turn : SKY_FADE_LOW_MID_AT;
+    setLowMidAt(prev => (prev === at ? prev : at));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [measured, footY]);
   const blockTopY = heroY.eyebrow;
   useEffect(() => {
-    const at = measured
-      ? Math.max(SKY_GLOW_MIN_AT, Math.min(SKY_THEME_MID_AT, Math.round((blockTopY - SKY_GLOW_ABOVE_BLOCK) * 200) / 200))
-      : SKY_THEME_MID_AT;
+    const at = measured ? skyHeights(blockTopY, footY).glow : SKY_THEME_MID_AT;
     setGlowAt(prev => (prev === at ? prev : at));
-    const block = measured ? Math.round(blockTopY * 200) / 200 : undefined;
+    const block = measured ? skyHeights(blockTopY, footY).block : undefined;
     setBlockAt(prev => (prev === block ? prev : block));
-  }, [measured, blockTopY]);
+  }, [measured, blockTopY, footY]);
   /**
    * The band behind the status bar wears this sky — it is the one view
    * that has to know the gradient without being inside it. Published only
