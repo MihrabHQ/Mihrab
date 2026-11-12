@@ -9,15 +9,18 @@ Three Connect IQ apps, fed by the Android app through
   accent (which the phone sends, snapped to a colour the screen shows) for
   the next prayer and the way to it, grey only for what is read second,
   nothing anti-aliased, and nothing moving but the seconds and the
-  countdown. Top to bottom: the date (or the Hijri date, or both); the
+  countdown. **Every figure and every word is in the face's own fonts**,
+  made for this kind of screen (see "The fonts", below) — heavy, simple,
+  each stem a whole number of pixels — where the watch's own are thin and
+  smoothed with greys for an AMOLED one. Top to bottom: the date (or the Hijri date, or both); the
   weather — an icon drawn for the condition, the temperature now, the
   day's high and low — and beside it the battery as CyanogenMod drew it,
   a circle that fills round with the charge and has the percentage
-  inside; the time as large as the dial allows, in the app's
-  Roboto at whichever of a ladder of sizes fits, its colon in the accent,
+  inside; the time as large as the dial allows, at whichever of a ladder
+  of sizes fits, its colon in the accent,
   with am/pm and the seconds small to its right; the next prayer, its name
   in the accent and its time in white; the countdown to it in full,
-  "05:49:12", in the same Roboto; and at the foot, as Garmin's own faces
+  "05:49:12", in the same figures; and at the foot, as Garmin's own faces
   write theirs, a footprint with today's steps.
   **Round the edge are the twelve hours ahead**, read as a clock is read
   — the app's Track bent into the bezel: a bead where the hour hand would
@@ -30,7 +33,7 @@ Three Connect IQ apps, fed by the Android app through
   at the top; nobody reads the edge of a watch that way.)
   The seconds and the countdown are redrawn every second inside their own
   clips (a partial update), from values kept since the minute's draw and
-  in fonts whose box is exactly their figures (`garmin/tools/clockfont.py`),
+  in fonts whose box is exactly their figures (`garmin/tools/facefont.py`),
   so the lines the screen refreshes are no more than the ink: about 25 ms
   a second in the simulator's diagnostics against the 30 a face is
   allowed. If the watch says the budget was passed all the same, the face
@@ -44,7 +47,7 @@ Three Connect IQ apps, fed by the Android app through
   the stack reaches from the top of the dial to its foot instead of
   sitting in the middle of it. The sizes are four and every row is one of
   them: the time; the next prayer and its countdown, one size (the
-  countdown's Roboto figures as tall as the prayer line's own); the date,
+  countdown's figures as tall as the prayer line's own); the date,
   the weather, the steps and the battery, one size below that; and am/pm,
   the seconds and the day's high and low, the smallest. A row grows only
   with its rank, and nothing is as large as the time. After days without the phone the weather's row says the
@@ -175,6 +178,38 @@ change (`GarminWatch.FACE_APP_ID`, `FIELD_APP_ID`, `WIDGET_APP_ID`). The apps ar
 the Enduro 3; adding a device is a `<iq:product>` line in each manifest
 and a look at the face on that screen.
 
+## The fonts
+
+A memory-in-pixel screen shows a pixel on or off. A font drawn for an
+AMOLED screen — thin strokes, edges smoothed with greys — comes out on it
+dithered or ragged, which is why Garmin's own MIP faces are set in heavy,
+simple figures that sit on the pixel grid. The face carries its own, for
+everything it writes:
+
+- **Tektur** (SIL OFL 1.1; the font and its licence are in
+  `garmin/tools/fonts/`), a face built of horizontals, verticals and 45°
+  corners: nothing curved to break into steps.
+- At each size the **weight is chosen so the vertical stem is a whole
+  number of pixels** (Tektur is a variable font), about a fifth to a
+  quarter of the figure's height, and it is rendered one bit deep with
+  monochrome hinting, which puts the horizontals on whole rows too.
+- Letters stand a third of a stem further apart than Tektur sets them, so
+  two heavy stems do not close into one; the colon stands clear of the
+  figures; and where the figures change in place (the time, the countdown,
+  the seconds) all ten share one width and the 1 stands on a foot, as a
+  fixed-width 1 does, instead of in a hole.
+- The words' fonts hold Latin with its accents, Greek and Cyrillic (502
+  characters). Words they cannot write — the prayers' names in Arabic, a
+  date in Thai — are written in the watch's own font of the same size, and
+  the figures beside them stay the face's.
+
+`python3 garmin/tools/facefont.py` writes them all
+(`watchface/resources/fonts/`, and `watchface/source/MihrabFaceCover.mc`,
+the list of characters the words' fonts hold); `--specimen out.png` also
+writes a sheet to look at. On an AMOLED screen (one that asks for burn-in
+protection) the words are the watch's own anti-aliased fonts; the face is
+not yet built for any such watch.
+
 ## Layout
 
 ```
@@ -183,6 +218,7 @@ shared/source/MihrabHijri.mc    the Hijri months and night marks, by name
 shared/source/MihrabService.mc  the background service: receives the message
 shared/source/MihrabTests.mc    tests (compiled in with -t only)
 watchface/                      the face (manifest, resources, view)
+tools/facefont.py               the face's fonts, from tools/fonts/Tektur.ttf
 datafield/                      the field
 widget/                         the widget, glance and complications
 ```

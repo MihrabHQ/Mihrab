@@ -5,7 +5,8 @@
 // its own (the next prayer, the way to it); grey only for what is read
 // second (the seconds, am/pm, the day's high and low) and never for a
 // track's only ink; no anti-aliasing, no gradients, lines two pixels or
-// more; and nothing moving but the seconds and the countdown, each
+// more; every figure and every word in the face's own fonts, heavy and
+// simple, each stem a whole number of pixels (THE FONTS, below); and nothing moving but the seconds and the countdown, each
 // redrawn inside its own small clip (a partial update) from values kept
 // since the minute's full draw — no storage read, no layout, once a
 // second.
@@ -105,17 +106,33 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private const W_FOG = 7;
     private const W_WIND = 8;
 
-    // The clock's figures: the app's Roboto, tallest first
-    // (garmin/tools/clockfont.py), then Garmin's smallest number font
-    // should none fit.
+    // THE FONTS. A MIP panel shows a pixel on or off, and the fonts a
+    // watch carries are drawn for the other kind of screen: thin, and
+    // smoothed with greys that this one can only dither. So on a MIP
+    // screen (`_mip`) the face writes everything in its own
+    // (garmin/tools/facefont.py): Tektur — horizontals, verticals and 45°
+    // corners, nothing that breaks into steps — at weights chosen so each
+    // size's stem is a whole number of pixels, one bit deep. The figures
+    // (the time, the countdown, the seconds, the battery's) and the words
+    // (the date, the weather, the prayer, the steps, the messages) are
+    // one face. On an AMOLED screen the words are the watch's own
+    // anti-aliased fonts, as that screen is made to show them.
+    //
+    // WORDS the Text fonts cannot write — a date in Thai, the prayers'
+    // names in Arabic — are written in the watch's font of the same size
+    // rather than as blanks (`layout`); the figures beside them stay the
+    // face's own.
+    //
+    // The clock's figures, tallest first, then Garmin's smallest number
+    // font should none fit.
     private var _clockFontIds as Array<ResourceId> = [
         Rez.Fonts.Clock76, Rez.Fonts.Clock70, Rez.Fonts.Clock64, Rez.Fonts.Clock60, Rez.Fonts.Clock56,
         Rez.Fonts.Clock53, Rez.Fonts.Clock50, Rez.Fonts.Clock47, Rez.Fonts.Clock44, Rez.Fonts.Clock40
     ] as Array<ResourceId>;
-    // The countdown's figures and the seconds', the same Roboto: the two
-    // things redrawn every second, in fonts whose box is their ink, so
-    // the clip a partial update is charged for is no taller than what it
-    // draws (clockfont.py has the arithmetic).
+    // The countdown's figures and the seconds': the two things redrawn
+    // every second, in fonts whose box is their ink, so the clip a partial
+    // update is charged for is no taller than what it draws (facefont.py
+    // has the arithmetic).
     private var _countFontIds as Array<ResourceId> = [
         Rez.Fonts.Count18, Rez.Fonts.Count20, Rez.Fonts.Count24, Rez.Fonts.Count28
     ] as Array<ResourceId>;
@@ -136,13 +153,35 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // larger than rank 3 and both move as one, the countdown's figures
     // are the size that goes with the prayer's font, and nothing is as
     // large as the time.
+    //
+    // The rows' four sizes: the face's own Text fonts, named by the height
+    // of their capitals and figures, and — for a line they cannot write,
+    // and on an AMOLED screen — the watch's fonts of the same heights.
+    private var _textFontIds as Array<ResourceId> = [
+        Rez.Fonts.Text18, Rez.Fonts.Text20, Rez.Fonts.Text24, Rez.Fonts.Text28
+    ] as Array<ResourceId>;
+    private const TEXT_CAPS = [18, 20, 24, 28];
     private var _rowFonts as Array<Graphics.FontType> = [
         Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_SMALL, Graphics.FONT_MEDIUM
     ] as Array<Graphics.FontType>;
+    // The candidates for the rows while a layout is being made (`layout`
+    // sets and clears them: four loaded fonts are not kept for the two a
+    // layout ends up with), and whether each rank's WORDS — the prayer's
+    // name or the message in its place; the date and the word about old
+    // times — are in the watch's font because the face's cannot write them.
+    private var _rankFonts as Array<Graphics.FontType> = [] as Array<Graphics.FontType>;
+    private var _words2Own as Boolean = true;
+    private var _words3Own as Boolean = true;
+    // The height of rank 3's capitals in the face's own font (0 where the
+    // rows are the watch's, on an AMOLED screen): what the weather's icon,
+    // the footprint and the battery's circle are centred on and sized by.
+    private var _cap3 as Number = 0;
+    // The screen shows a pixel on or off: a MIP panel. (An AMOLED one is
+    // the kind that asks for burn-in protection.)
+    private var _mip as Boolean = true;
     // The countdown's size (into _countFontIds) beside each of the
-    // prayer's fonts: figures as tall as that font's own, as near as the
-    // simulator's copies of Garmin's fonts measure (18, 20, 24 and 28
-    // pixels for the four).
+    // prayer's fonts: figures as tall as that font's own (18, 20, 24 and
+    // 28 pixels for the four, in the face's fonts and the watch's).
     private var _countFor as Array<Number> = [0, 1, 2, 3] as Array<Number>;
     // [rank 2, rank 3] as indices into _rowFonts, best first. Whichever
     // fits is then grown, rank 2 first, as far as the dial has room.
@@ -152,7 +191,8 @@ class MihrabFaceView extends WatchUi.WatchFace {
         [0, 0]
     ] as Array<Array<Number>>;
     private const RANK2_MAX = 3;
-    private const F_SIDE = Graphics.FONT_XTINY;
+    // Rank 4 — am/pm, the high and low: the face's Side font on a MIP screen.
+    private var F_SIDE as Graphics.FontType = Graphics.FONT_XTINY;
 
     // What the face shows this minute.
     private var _w as Number = 0;
@@ -179,6 +219,9 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private var _fDate as Graphics.FontType = Graphics.FONT_XTINY;
     private var _fWeather as Graphics.FontType = Graphics.FONT_XTINY;
     private var _fPrayer as Graphics.FontType = Graphics.FONT_XTINY;
+    // The prayer's name (and the message in the row's place): _fPrayer,
+    // or the watch's font where the face's cannot write it.
+    private var _fName as Graphics.FontType = Graphics.FONT_XTINY;
     private var _fCount as Graphics.FontType = Graphics.FONT_XTINY;
     private var _fFoot as Graphics.FontType = Graphics.FONT_XTINY;
     // Baselines of the rows (a message's: its first line's).
@@ -214,6 +257,11 @@ class MihrabFaceView extends WatchUi.WatchFace {
         WatchFace.initialize();
         _fSeconds = WatchUi.loadResource(Rez.Fonts.Seconds15) as Graphics.FontReference;
         _fCell = WatchUi.loadResource(Rez.Fonts.Battery9) as Graphics.FontReference;
+        var settings = System.getDeviceSettings();
+        _mip = !((settings has :requiresBurnInProtection) && settings.requiresBurnInProtection);
+        if (_mip) {
+            F_SIDE = WatchUi.loadResource(Rez.Fonts.Side14) as Graphics.FontReference;
+        }
     }
 
     function onLayout(dc as Dc) as Void {
@@ -246,9 +294,10 @@ class MihrabFaceView extends WatchUi.WatchFace {
         if (dc has :clearClip) {
             dc.clearClip();
         }
-        // Solid pixels only: an anti-aliased edge is a dither on this panel.
+        // Solid pixels only on a MIP panel: an anti-aliased edge is a
+        // dither there.
         if (dc has :setAntiAlias) {
-            dc.setAntiAlias(false);
+            dc.setAntiAlias(!_mip);
         }
         dc.setColor(INK, Graphics.COLOR_BLACK);
         dc.clear();
@@ -307,7 +356,6 @@ class MihrabFaceView extends WatchUi.WatchFace {
             layout(dc);
             _key = key;
         }
-
         drawRing(dc, now, clock);
 
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
@@ -315,7 +363,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         // Under the date: the weather, or the word about old times.
         var staleLines = _staleLines;
         if (_staleText != null && staleLines != null) {
-            drawLines(dc, staleLines, _fWeather, _bWeather);
+            drawLines(dc, staleLines, _fDate, _bWeather);
         } else {
             drawWeather(dc);
         }
@@ -329,7 +377,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
             drawCountdown(dc, next[1] - now);
         } else if (reasonLines != null) {
             dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
-            drawLines(dc, reasonLines, _fPrayer, _bPrayer);
+            drawLines(dc, reasonLines, _fName, _bPrayer);
         }
 
         // At the foot: the steps, and the battery under them.
@@ -484,17 +532,58 @@ class MihrabFaceView extends WatchUi.WatchFace {
         for (var i = 0; i < _countFontIds.size(); i++) {
             counts.add(WatchUi.loadResource(_countFontIds[i]) as Graphics.FontReference);
         }
+        // The rows in the face's own fonts on a MIP screen; and each
+        // rank's words in them too where they can write all it may show.
+        _rankFonts = _mip ? textFonts() : _rowFonts;
+        _words2Own = !_mip || ownRank2();
+        _words3Own = !_mip || ownRank3();
         var worst = clocks - 1 + 2 * (sets - 1);
-        for (var cost = 0; cost <= worst; cost++) {
-            for (var s = 0; s < sets; s++) {
+        var done = false;
+        for (var cost = 0; cost <= worst && !done; cost++) {
+            for (var s = 0; s < sets && !done; s++) {
                 var c = cost - 2 * s;
                 if (c >= 0 && c < clocks && place(dc, c, cm[c], _sets[s], counts, 0, 0, false)) {
                     fill(dc, c, cm[c], _sets[s], counts);
-                    return;
+                    done = true;
                 }
             }
         }
-        place(dc, clocks - 1, cm[clocks - 1], _sets[sets - 1], counts, 0, 0, true);
+        if (!done) {
+            place(dc, clocks - 1, cm[clocks - 1], _sets[sets - 1], counts, 0, 0, true);
+        }
+        // The two fonts the layout chose are kept by the rows; the rest go.
+        _rankFonts = [] as Array<Graphics.FontType>;
+    }
+
+    // The face's Text fonts, smallest first, loaded.
+    private function textFonts() as Array<Graphics.FontType> {
+        var fonts = [] as Array<Graphics.FontType>;
+        for (var i = 0; i < _textFontIds.size(); i++) {
+            fonts.add(WatchUi.loadResource(_textFontIds[i]) as Graphics.FontReference);
+        }
+        return fonts;
+    }
+
+    // Rank 2 is the prayer's line — any of the day's names — or the
+    // message in its place.
+    private function ownRank2() as Boolean {
+        var reason = _reasonText;
+        if (reason != null) {
+            return MihrabFaceCover.holds(reason);
+        }
+        for (var i = 0; i < Mihrab.PER_DAY; i++) {
+            if (!MihrabFaceCover.holds(Mihrab.name(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Rank 3 is the date (the weather and the steps are figures) and the
+    // word about old times.
+    private function ownRank3() as Boolean {
+        var stale = _staleText;
+        return MihrabFaceCover.holds(_dateText) && (stale == null || MihrabFaceCover.holds(stale));
     }
 
     // An arrangement fits; now the rest of the dial. What stopped the
@@ -548,10 +637,13 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // above and below the clock opened by that much, and keeps the
     // arrangement if every row fits (or, forced, regardless).
     private function place(dc as Dc, c as Number, clock as Array<Number>, pick as Array<Number>, counts as Array<Graphics.FontType>, above as Number, below as Number, force as Boolean) as Boolean {
-        var fPrayer = _rowFonts[pick[0]];
+        var fPrayer = _rankFonts[pick[0]];
+        var fName = _words2Own ? fPrayer : _rowFonts[pick[0]];
         var fCount = counts[_countFor[pick[0]]];
-        var fDate = _rowFonts[pick[1]];
-        var fWeather = fDate;
+        var fWeather = _rankFonts[pick[1]];
+        var fDate = _words3Own ? fWeather : _rowFonts[pick[1]];
+        // Before anything is measured: the battery's circle is sized by it.
+        _cap3 = _mip ? TEXT_CAPS[pick[1]] : 0;
         var fFoot = fDate;
         var full = 2 * (_w / 2 - INSET);
         _lo = -10000;
@@ -572,18 +664,18 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var stale = _staleText;
         var weatherW = weatherWidth(dc, fWeather);
         if (stale != null) {
-            staleLines = wrap(dc, stale, fWeather, full * 2 / 3, 2);
+            staleLines = wrap(dc, stale, fDate, full * 2 / 3, 2);
             if (staleLines == null) {
                 if (!force) {
                     return false;
                 }
                 staleLines = [stale];
             }
-            var staleH = up(fWeather) + Graphics.getFontDescent(fWeather);
+            var staleH = up(fDate) + Graphics.getFontDescent(fDate);
             y += GAP_SMALL + above / 2;
-            bWeather = y + up(fWeather);
-            ok = fit(widest(dc, staleLines, fWeather) / 2, y, y + staleLines.size() * staleH) && ok;
-            y += staleLines.size() * staleH - Graphics.getFontDescent(fWeather);
+            bWeather = y + up(fDate);
+            ok = fit(widest(dc, staleLines, fDate) / 2, y, y + staleLines.size() * staleH) && ok;
+            y += staleLines.size() * staleH - Graphics.getFontDescent(fDate);
         } else if (weatherW + cellW(fWeather) > 0) {
             // The weather and, beside it, the battery's circle, which is
             // the line's own height.
@@ -615,26 +707,30 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var reason = _reasonText;
         if (reason == null) {
             y += GAP_UNDER + below;
-            bPrayer = y + up(fPrayer);
-            var prayerW = widestName(dc, fPrayer) + textW(dc, "  ", fPrayer) + textW(dc, _hour12 ? "12:88 pm" : "88:88", fPrayer);
-            ok = fit(prayerW / 2, y, bPrayer + Graphics.getFontDescent(fPrayer) / 2) && ok;
+            // The name's font may be the watch's: the row is as tall as the
+            // taller of the two, and both stand on its baseline.
+            var rowUp = up(fName) > up(fPrayer) ? up(fName) : up(fPrayer);
+            var rowDown = Graphics.getFontDescent(fName) > Graphics.getFontDescent(fPrayer) ? Graphics.getFontDescent(fName) : Graphics.getFontDescent(fPrayer);
+            bPrayer = y + rowUp;
+            var prayerW = widestName(dc, fName) + textW(dc, "  ", fPrayer) + textW(dc, _hour12 ? "12:88 pm" : "88:88", fPrayer);
+            ok = fit(prayerW / 2, y, bPrayer + rowDown / 2) && ok;
             y = bPrayer + GAP_COUNT + below / 2;
             bCount = y + up(fCount);
             ok = fit(textW(dc, "88:88:88", fCount) / 2, y, bCount) && ok;
             y = bCount;
         } else {
-            reasonLines = wrap(dc, reason, fPrayer, full * 3 / 4, 3);
+            reasonLines = wrap(dc, reason, fName, full * 3 / 4, 3);
             if (reasonLines == null) {
                 if (!force) {
                     return false;
                 }
                 reasonLines = [reason];
             }
-            var lineH = up(fPrayer) + Graphics.getFontDescent(fPrayer);
+            var lineH = up(fName) + Graphics.getFontDescent(fName);
             y += GAP_UNDER + below;
-            bPrayer = y + up(fPrayer);
-            ok = fit(widest(dc, reasonLines, fPrayer) / 2, y, y + reasonLines.size() * lineH) && ok;
-            y += reasonLines.size() * lineH - Graphics.getFontDescent(fPrayer);
+            bPrayer = y + up(fName);
+            ok = fit(widest(dc, reasonLines, fName) / 2, y, y + reasonLines.size() * lineH) && ok;
+            y += reasonLines.size() * lineH - Graphics.getFontDescent(fName);
         }
 
         // The foot: the steps. (After days without the phone the word
@@ -662,6 +758,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         _fDate = fDate;
         _fWeather = fWeather;
         _fPrayer = fPrayer;
+        _fName = fName;
         _fCount = fCount;
         _countW = textW(dc, "88:88:88", fCount);
         _countPairW = textW(dc, "88", fCount);
@@ -730,7 +827,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
         var b = _bWeather;
         var x = _w / 2 - total / 2;
-        var mid = b - up(f) / 2 + 2;
+        var mid = rowMid(b, f);
         if (weatherW > 0) {
             var kind = _weather[0] as Number;
             var nowText = _weather[1] as String;
@@ -764,8 +861,19 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // own height — the font's ascent — and a little over, and within what
     // a figure can be read inside.
     private function cellR(f as Graphics.FontType) as Number {
-        var r = up(f) / 2 + 2;
+        // In the face's own font the line is its capitals, and the circle
+        // stands a little over them; the watch's fonts carry that room in
+        // their ascent.
+        var r = _cap3 > 0 ? _cap3 / 2 + 4 : up(f) / 2 + 2;
         return r < 11 ? 11 : (r > 16 ? 16 : r);
+    }
+
+    // The middle of a rank-3 row's ink, for what stands beside its text:
+    // half the capitals' height above the baseline in the face's own
+    // font; in the watch's, whose ascent has room above the figures, a
+    // little under half of that.
+    private function rowMid(b as Number, f as Graphics.FontType) as Number {
+        return _cap3 > 0 ? b - _cap3 / 2 : b - up(f) / 2 + 2;
     }
 
     // The battery, as CyanogenMod drew it: a circle that fills round from
@@ -838,11 +946,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private function drawPrayer(dc as Dc, name as String, time as String) as Void {
         var f = _fPrayer;
         var gap = textW(dc, "  ", f);
-        var nameW = textW(dc, name, f);
+        var fName = _fName;
+        var nameW = textW(dc, name, fName);
         var x = _w / 2 - (nameW + gap + textW(dc, time, f)) / 2;
         var top = _bPrayer - up(f);
         dc.setColor(_accent, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x, top, f, name, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(x, _bPrayer - up(fName), fName, name, Graphics.TEXT_JUSTIFY_LEFT);
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
         dc.drawText(x + nameW + gap, top, f, time, Graphics.TEXT_JUSTIFY_LEFT);
     }
@@ -859,7 +968,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         var width = _overBudget ? _countW - _countPairW - _countColonW : _countW;
         var x = _w / 2 - width / 2;
         if (!_overBudget) {
-            // The figures' own height and no more: see clockfont.py.
+            // The figures' own height and no more: see facefont.py.
             _countdownBox = [x - 1, top, width + 2, up(f)];
         }
         dc.setColor(INK, Graphics.COLOR_TRANSPARENT);
@@ -886,7 +995,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
         var b = _bFoot;
         var x = _w / 2 - total / 2;
-        var mid = b - up(f) / 2 + 2;
+        var mid = rowMid(b, f);
         if (_showSteps) {
             dc.setColor(_accent, Graphics.COLOR_TRANSPARENT);
             drawFootprints(dc, x, mid - ICON / 2);

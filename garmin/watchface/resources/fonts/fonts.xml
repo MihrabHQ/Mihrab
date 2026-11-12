@@ -1,19 +1,24 @@
-<!-- garmin/tools/clockfont.py: the clock, countdown and seconds figures in the app's Roboto. -->
+<!-- garmin/tools/facefont.py: the face's fonts for a MIP screen — Tektur, one bit deep, every stem a whole pixel. -->
 <fonts>
-    <font id="Clock76" filename="clock76.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Clock70" filename="clock70.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Clock64" filename="clock64.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Clock60" filename="clock60.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Clock56" filename="clock56.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Clock53" filename="clock53.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Clock50" filename="clock50.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Clock47" filename="clock47.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Clock44" filename="clock44.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Clock40" filename="clock40.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Count28" filename="count28.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Count24" filename="count24.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Count20" filename="count20.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Count18" filename="count18.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Seconds15" filename="seconds15.fnt" antialias="false" filter="0123456789:"/>
-    <font id="Battery9" filename="battery9.fnt" antialias="false" filter="0123456789:"/>
+    <font id="Clock76" filename="clock76.fnt" antialias="false"/>
+    <font id="Clock70" filename="clock70.fnt" antialias="false"/>
+    <font id="Clock64" filename="clock64.fnt" antialias="false"/>
+    <font id="Clock60" filename="clock60.fnt" antialias="false"/>
+    <font id="Clock56" filename="clock56.fnt" antialias="false"/>
+    <font id="Clock53" filename="clock53.fnt" antialias="false"/>
+    <font id="Clock50" filename="clock50.fnt" antialias="false"/>
+    <font id="Clock47" filename="clock47.fnt" antialias="false"/>
+    <font id="Clock44" filename="clock44.fnt" antialias="false"/>
+    <font id="Clock40" filename="clock40.fnt" antialias="false"/>
+    <font id="Count28" filename="count28.fnt" antialias="false"/>
+    <font id="Count24" filename="count24.fnt" antialias="false"/>
+    <font id="Count20" filename="count20.fnt" antialias="false"/>
+    <font id="Count18" filename="count18.fnt" antialias="false"/>
+    <font id="Seconds15" filename="seconds15.fnt" antialias="false"/>
+    <font id="Battery9" filename="battery9.fnt" antialias="false"/>
+    <font id="Text28" filename="text28.fnt" antialias="false"/>
+    <font id="Text24" filename="text24.fnt" antialias="false"/>
+    <font id="Text20" filename="text20.fnt" antialias="false"/>
+    <font id="Text18" filename="text18.fnt" antialias="false"/>
+    <font id="Side14" filename="side14.fnt" antialias="false"/>
 </fonts>
