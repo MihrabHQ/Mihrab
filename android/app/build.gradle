@@ -401,6 +401,10 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    // Notifee's prebuilt core, for DownloadForegroundService to extend its
+    // foreground service. compileOnly: the notifee module already ships it,
+    // from the local repository its build.gradle adds to every project.
+    compileOnly(group: "app.notifee", name: "core", version: "+")
     /**
      * Stays at 1.12.0. 1.13.0 was tried for the Android 15 edge-to-edge
      * deprecations Play Console flags and does not fix them: its

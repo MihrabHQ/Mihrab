@@ -98,6 +98,8 @@
          `-PmemtagMode=off` builds without it, should a release need to. -->
     <application
       android:name=".MainApplication"
+      android:appComponentFactory=".MihrabComponentFactory"
+      tools:targetApi="28"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
@@ -110,7 +112,7 @@
       android:memtagMode="${memtagMode}"
       android:supportsRtl="true"
       android:enableOnBackInvokedCallback="false"
-      tools:replace="android:enableOnBackInvokedCallback">
+      tools:replace="android:enableOnBackInvokedCallback,android:appComponentFactory">
       <!-- WorkManager starts on demand, from MainApplication's configuration,
            not from androidx.startup at every process start — see
            MainApplication (Configuration.Provider). -->
@@ -332,7 +334,10 @@
       <!-- Notifee's own foreground service, which the Quran download runs
            in. It is declared in notifee's manifest without a type; Android
            14+ refuses to start an untyped one, so the type is merged in
-           here rather than forked into a service of our own. -->
+           here rather than forked into a service of our own. What runs
+           is DownloadForegroundService, a subclass that stops on Android
+           15's time limit; MihrabComponentFactory hands it over under this
+           name. -->
       <service
         android:name="app.notifee.core.ForegroundService"
         android:foregroundServiceType="dataSync"
