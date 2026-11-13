@@ -20,6 +20,16 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    code: 298,
+    version: '2.38.1',
+    date: '2026-11-13',
+    notes: {
+      en: '• Android 15 and later: a long Quran download in the background no longer ends in a crash. Android gives a download six hours a day in the background; at the limit the download now carries on without its notification instead of the app being closed.',
+      ar: '• أندرويد 15 وما بعده: تنزيل المصحف الطويل في الخلفية لم يعد ينتهي بإغلاق التطبيق. يمنح أندرويد التنزيل ست ساعات يوميًا في الخلفية؛ وعند بلوغ الحد يستمر التنزيل الآن دون إشعاره بدلًا من إغلاق التطبيق.',
+      sv: '• Android 15 och senare: en lång Korannedladdning i bakgrunden slutar inte längre i en krasch. Android ger en nedladdning sex timmar om dagen i bakgrunden; vid gränsen fortsätter nedladdningen nu utan sin avisering i stället för att appen stängs.',
+    },
+  },
+  {
     code: 297,
     version: '2.38.0',
     date: '2026-11-13',

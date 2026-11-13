@@ -1398,3 +1398,13 @@ Changed the release cycle itself:
   - `scripts/release/io.ts`
 
 **Lesson:** two aborts at the Catalyst step, neither in the build. The first was CocoaPods refusing to run in a shell with no `LANG` (the release was started from an agent's process): `release.sh` now sets a UTF-8 locale itself. The second was the widget gate doing its job: LaunchServices still had a backup copy of the Mac app, `~/Documents/Mihrab-mac-backup-2.35.0-1250.app`, registered as a provider of the widget extension. Unregistering that bundle (`lsregister -u` on the `.app`; on the `.appex` alone it fails with -10814) cleared it. Keep backup copies of the app zipped, not as a bare `.app` that Spotlight can register again. The 2.36.0 abort at the same step may have been the same locale failure.
+
+## 2.38.1 (298) — 2026-11-13
+
+Ran clean on the first attempt.
+
+Changed the release cycle itself:
+
+  - `scripts/release.sh`
+
+**Lesson:** _(unfilled)_
