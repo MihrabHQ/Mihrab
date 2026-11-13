@@ -93,6 +93,21 @@ describe('the Android service acts on it', () => {
     expect(module.match(/!windowHides\(/g)?.length).toBeGreaterThanOrEqual(2);
   });
 
+  it('is not started out of the window, so nothing flashes up and down (13 Nov 2026)', () => {
+    // A foreground service must post a notification, and Android raises its
+    // channel to at least LOW: the placeholder was seen each time the app
+    // sent a payload out of the window. The app and the restart receiver
+    // now arm the window alarm without a start.
+    const receiver = read(...KT, 'MihrabRestartReceiver.kt');
+    expect(module).toMatch(/if \(windowHides\(p, System\.currentTimeMillis\(\)\)\) \{\s*MihrabLiveActivityService\.hideUntilWindow\(reactContext, payloadJson\)/);
+    expect(receiver).toMatch(/if \(hides\) \{\s*MihrabLiveActivityService\.hideUntilWindow\(context, payload\)/);
+    expect(service).toMatch(/fun hideUntilWindow\(context: Context, payload: String\)/);
+    // A running card goes down with stopForeground, not by swapping in the placeholder.
+    expect(service).toMatch(/if \(inForeground\) \{\s*runCatching \{ stopForeground\(Service\.STOP_FOREGROUND_REMOVE\) \}/);
+    // A re-post after the clock moves checks the window too.
+    expect(service).toMatch(/private fun repostNow\(\) \{[\s\S]*?windowHides[\s\S]*?sleepUntilWindow\(payload, null\)/);
+  });
+
   it('sleeps on an exact alarm for the window, which onDestroy leaves armed', () => {
     expect(service).toMatch(/am\.setExactAndAllowWhileIdle\(AlarmManager\.RTC_WAKEUP, opens, pi\)/);
     expect(service).toMatch(/if \(!sleepingUntilWindow\) cancelWakeAlarm\(this\)/);

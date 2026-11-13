@@ -110,9 +110,13 @@ function DesignPreview({
           <View style={styles.pvMetrics}>
             <View style={styles.pvMetric}>
               <Text style={[styles.pvSmall, { color: muted }]}>At</Text>
+              {/* A miniature, drawn to its own scale: with the system's
+                  font size raised the time outgrew its half of the card and
+                  Android's fit left it cut ("22:1"). */}
               <Text
                 style={[styles.pvMetricValue, { color: text }]}
                 numberOfLines={1}
+                allowFontScaling={false}
                 adjustsFontSizeToFit
                 minimumFontScale={0.6}>
                 22:12
@@ -126,6 +130,7 @@ function DesignPreview({
               <Text
                 style={[styles.pvMetricValue, { color: accent }]}
                 numberOfLines={1}
+                allowFontScaling={false}
                 adjustsFontSizeToFit
                 minimumFontScale={0.6}>
                 2:18:42

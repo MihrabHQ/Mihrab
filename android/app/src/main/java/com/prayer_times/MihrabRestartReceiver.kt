@@ -85,6 +85,16 @@ class MihrabRestartReceiver : BroadcastReceiver() {
       return
     }
 
+    // "Show from", not yet: the window alarm, not a service start that would
+    // put a notification up only to take it down.
+    val hides = runCatching {
+      MihrabLiveActivityModule.windowHides(org.json.JSONObject(payload), System.currentTimeMillis())
+    }.getOrDefault(false)
+    if (hides) {
+      MihrabLiveActivityService.hideUntilWindow(context, payload)
+      Log.i(TAG, "$action — Live Activity out of sight until its window")
+      return
+    }
     Log.i(TAG, "$action — restarting Live Activity service")
     MihrabLiveActivityModule.ensureChannelExists(context)
     MihrabLiveActivityModule.ensureFgsChannelExists(context)

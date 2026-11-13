@@ -72,6 +72,13 @@ class MihrabLiveActivityService : Service() {
 
   /** Stopping until the "show from" window opens: the alarm for that moment stays armed (see `sleepUntilWindow`). */
   @Volatile private var sleepingUntilWindow = false
+  /**
+   * Whether this instance has a notification of its own up (rich or the
+   * placeholder). Going out of sight from there is `stopForeground`; only
+   * a fresh start, which Android holds to `startForeground`, needs the
+   * placeholder first.
+   */
+  private var inForeground = false
 
   private val handler = Handler(Looper.getMainLooper())
   private var ticker: Runnable? = null
@@ -151,6 +158,15 @@ class MihrabLiveActivityService : Service() {
   private fun repostNow() {
     if (richPending) return
     val payload = lastPayload ?: return
+    // The clock moved (or the screen came on) out of the "show from"
+    // window: down until it opens, rather than a card re-posted for it.
+    val hides = runCatching {
+      MihrabLiveActivityModule.windowHides(JSONObject(payload), System.currentTimeMillis())
+    }.getOrDefault(false)
+    if (hides) {
+      sleepUntilWindow(payload, null)
+      return
+    }
     runCatching {
       NotificationManagerCompat.from(this)
         .notify(MihrabLiveActivityModule.NOTIF_ID, build(payload))
@@ -170,6 +186,7 @@ class MihrabLiveActivityService : Service() {
       } else {
         startForeground(MihrabLiveActivityModule.NOTIF_ID, richNotif)
       }
+      inForeground = true
       Log.i(TAG, "startForeground posted rich notification id=${MihrabLiveActivityModule.NOTIF_ID}")
     } catch (t: Throwable) {
       Log.w(TAG, "startForeground failed", t)
@@ -189,6 +206,7 @@ class MihrabLiveActivityService : Service() {
       } else {
         startForeground(MihrabLiveActivityModule.FGS_NOTIF_ID, placeholder)
       }
+      inForeground = true
     }.onFailure { Log.w(TAG, "placeholder startForeground failed", it) }
   }
 
@@ -373,14 +391,26 @@ class MihrabLiveActivityService : Service() {
    * `onDestroy` leaves the window alarm armed when it sees this flag;
    * turning the feature off goes through `takeDown`, which cancels it.
    */
-  private fun sleepUntilWindow(payload: String, startId: Int?) {
+  internal fun sleepUntilWindow(payload: String, startId: Int?) {
     val opens = runCatching { MihrabLiveActivityModule.windowOpensAt(JSONObject(payload)) }.getOrDefault(0L)
     Log.i(TAG, "out of sight until the window opens at $opens")
     sleepingUntilWindow = true
     richPending = false
     ticker?.let { handler.removeCallbacks(it) }
     ticker = null
-    startOnPlaceholder()
+    // Already up (the card's "Now" moment ending, or the app sending a
+    // payload to a running service): down with what is showing. The
+    // placeholder only for a fresh start, which must reach startForeground —
+    // and it is seen: Android raises a foreground service's channel to at
+    // least LOW, so "Prayer countdown (system)" flashed in the shade and the
+    // status bar each time (reported 13 Nov 2026). Fresh starts out of the
+    // window are avoided where they come from (`hideUntilWindow`).
+    if (inForeground) {
+      runCatching { stopForeground(Service.STOP_FOREGROUND_REMOVE) }
+      inForeground = false
+    } else {
+      startOnPlaceholder()
+    }
     runCatching { NotificationManagerCompat.from(this).cancel(MihrabLiveActivityModule.NOTIF_ID) }
     runCatching {
       val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -936,6 +966,37 @@ class MihrabLiveActivityService : Service() {
     const val TAG = "MihrabLiveActivitySvc"
     /** The running instance, for `appPaused`. */
     @Volatile private var running: MihrabLiveActivityService? = null
+
+    /**
+     * The card is to stay out of sight: take it down and arm the alarm for the
+     * moment the window opens — WITHOUT starting the service. Starting it
+     * would have to put a notification up (`startForeground`) only to take it
+     * straight down again, and that one is seen. A running instance goes out
+     * of sight itself; otherwise the card and the minute alarm are cleared
+     * and the window alarm, the service's own restart, is armed.
+     */
+    fun hideUntilWindow(context: Context, payload: String) {
+      val instance = running
+      if (instance != null) {
+        Handler(Looper.getMainLooper()).post { instance.sleepUntilWindow(payload, null) }
+        return
+      }
+      val opens = runCatching { MihrabLiveActivityModule.windowOpensAt(org.json.JSONObject(payload)) }.getOrDefault(0L)
+      runCatching { NotificationManagerCompat.from(context).cancel(MihrabLiveActivityModule.NOTIF_ID) }
+      runCatching {
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        am.cancel(minuteAlarmPendingIntent(context))
+        if (opens > System.currentTimeMillis()) {
+          val pi = wakeAlarmPendingIntent(context)
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !am.canScheduleExactAlarms()) {
+            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, opens, pi)
+          } else {
+            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, opens, pi)
+          }
+        }
+      }.onFailure { Log.w(TAG, "arming the window alarm failed", it) }
+      Log.i(TAG, "out of sight until $opens, without a service start")
+    }
 
     /** MainActivity.onPause: a rich notification held back while the app was in front goes up. */
     fun appPaused() {

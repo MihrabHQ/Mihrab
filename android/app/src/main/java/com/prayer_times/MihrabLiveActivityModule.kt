@@ -94,6 +94,12 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
       // Persist before starting the service so the restart receiver can
       // revive the Live Activity after an app update or device reboot.
       savePayload(reactContext, payloadJson)
+      // "Show from", not yet: no service start (see `hideUntilWindow`).
+      if (windowHides(p, System.currentTimeMillis())) {
+        MihrabLiveActivityService.hideUntilWindow(reactContext, payloadJson)
+        promise.resolve(null)
+        return
+      }
       val intent = Intent(reactContext, MihrabLiveActivityService::class.java).apply {
         putExtra(MihrabLiveActivityService.EXTRA_PAYLOAD, payloadJson)
       }
