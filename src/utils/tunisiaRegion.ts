@@ -7,7 +7,17 @@
 import places from '../providers/data/tunisiaPlaces.json';
 import { memoByCoordinate } from './countryAt';
 
-export type TunisiaPlace = { id: number; name: string; lat: number; lon: number; dip: number; dipSunset: number };
+export type TunisiaPlace = {
+  id: number;
+  name: string;
+  lat: number;
+  lon: number;
+  dip: number;
+  dipSunset: number;
+  /** The allowance at Fajr and Isha the Institute used up to and including `dipEarlierUntil`, where it later changed. */
+  dipEarlier?: number;
+  dipEarlierUntil?: number;
+};
 export const TUNISIA_PLACES: readonly TunisiaPlace[] = places as TunisiaPlace[];
 
 /**

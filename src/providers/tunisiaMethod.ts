@@ -24,14 +24,28 @@
  * checked against anything.
  *
  * Two places (Kairouan, Sidi Bouzid) take their allowance at sunset only:
- * their Fajr and Isha are at a plain 18°.
+ * their Fajr and Isha are at a plain 18°. That is the Institute's practice
+ * from 2026; through 2025 it lowered their Fajr and Isha by the same
+ * allowance as their sunset, like every other place — so a place carries
+ * the earlier allowance and the last year it applies to (revision 2).
  *
- * From MihrabHQ/mihrab-methods, revision 1.
+ * From MihrabHQ/mihrab-methods, revision 2.
  */
 import { meeusApparentSun } from './moroccoMethod';
 
 const RAD = Math.PI / 180;
 const DAY_MS = 86_400_000;
+
+/** The allowance at Fajr and Isha for a place in a year: the earlier one up to its last year, then the current one. */
+export function tunisiaTwilightDip(
+  place: { dipDeg?: number; dipDegEarlier?: number; dipDegUntil?: number },
+  year: number,
+): number {
+  if (place.dipDegEarlier !== undefined && place.dipDegUntil !== undefined && year <= place.dipDegUntil) {
+    return place.dipDegEarlier;
+  }
+  return place.dipDeg ?? 0;
+}
 
 export type TunisiaInstants = {
   fajr: Date;

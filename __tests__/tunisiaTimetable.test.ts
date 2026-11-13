@@ -38,6 +38,8 @@ describe('Tunisia — Institut National de la Météorologie', () => {
     // its allowance at sunset only
     ['Kairouan', KAIROUAN, new Date(2026, 5, 21, 12), ['03:15', '12:28', '16:10', '19:42', '21:28']],
     ['Kairouan', KAIROUAN, new Date(2026, 10, 12, 12), ['05:24', '12:11', '14:54', '17:18', '18:43']],
+    // through 2025 the Institute lowered its Fajr and Isha too: two minutes either side
+    ['Kairouan', KAIROUAN, new Date(2025, 5, 21, 12), ['03:13', '12:28', '16:10', '19:42', '21:30']],
   ] as const)('gives %s the day as the Institute does', async (_name, at, date, five) => {
     const r = await getTunisiaTimes({ ...at, date, school: 0 });
     expect(r.source).toBe('local');

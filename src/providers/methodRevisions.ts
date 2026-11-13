@@ -26,5 +26,5 @@ export const METHOD_REVISION = {
   uae: 1,
   tehran: 1,
   wifaq: 2,
-  tunisia: 1,
+  tunisia: 2,
 } as const;

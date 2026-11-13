@@ -56,7 +56,7 @@ import { tehranTimes } from './tehranMethod';
 import { TEHRAN_INSTITUTE_METHOD_ID } from './tehranTimetable';
 import { wifaqTimes } from './wifaqMethod';
 import { WIFAQ_METHOD_ID } from './wifaqTimetable';
-import { tunisiaTimes } from './tunisiaMethod';
+import { tunisiaTimes, tunisiaTwilightDip } from './tunisiaMethod';
 import { TUNISIA_METHOD_ID } from './tunisiaTimetable';
 import { tunisiaPlaceAt } from '../utils/tunisiaRegion';
 import { UAE_METHOD_ID, uaeZoneAt } from './uaeTimetable';
@@ -661,8 +661,13 @@ export function computeLocalAdhanInstants(
     // side of a minute. The list is for the Institute's Asr, at one shadow
     // length; a Hanafi reader's is the method's own at two. It gives no
     // sunrise, so the list never touches the method's.
+    // Kairouan and Sidi Bouzid: the Institute lowered their Fajr and Isha
+    // through 2025 and not after, so the place says which year has which.
     const place = tunisiaPlaceAt(params.latitude, params.longitude);
-    const at = tunisiaTimes(params.latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1, place?.dip, place?.dipSunset);
+    const twilight = place
+      ? tunisiaTwilightDip({ dipDeg: place.dip, dipDegEarlier: place.dipEarlier, dipDegUntil: place.dipEarlierUntil }, y)
+      : undefined;
+    const at = tunisiaTimes(params.latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1, twilight, place?.dipSunset);
     if (at) return corrected(at, correctionFor('tunisia', params.latitude, params.longitude, y, m, day), params.school ?? 0);
   }
   if (methodId === WIFAQ_METHOD_ID) {
