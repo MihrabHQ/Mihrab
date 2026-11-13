@@ -21,8 +21,13 @@ const card = fs.readFileSync(path.join(root, 'src/screens/settings/LiveActivityC
 const native = fs.readFileSync(path.join(root, 'src/native/MihrabLiveActivity.ts'), 'utf8');
 
 describe('what keeps the chip and the always-on display', () => {
-  it('requests promotion directly on both builders, unless hidden from the lock screen', () => {
-    expect(moduleSrc).toContain('builder.setRequestPromotedOngoing(true)');
+  it('requests promotion on both builders, unless hidden from the lock screen', () => {
+    // By one reflected method, looked up once: a direct call does not compile
+    // on the android-36 platform F-Droid builds against (#131). Not the old
+    // walk over every Builder method on each post.
+    expect(moduleSrc).toMatch(/getMethod\("setRequestPromotedOngoing", Boolean::class\.javaPrimitiveType\)/);
+    expect(moduleSrc).toContain('method.invoke(builder, true)');
+    expect(moduleSrc).not.toContain('builder.setRequestPromotedOngoing(');
     expect(moduleSrc).toContain('if (!aodHidden) tryRequestPromotedOngoing(builder)');
     expect(moduleSrc.match(/tryRequestPromotedOngoing\(builder\)/g)!.length).toBeGreaterThanOrEqual(2);
     expect(moduleSrc).not.toContain('Notification.Builder::class.java.methods');

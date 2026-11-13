@@ -44,6 +44,20 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v5
 
+      # F-Droid builds against the SDK its recipe asks for, which lowers
+      # compileSdk (contrib/fdroid/com.prayer_times.yml, prebuild). A call to
+      # an API only the higher SDK has compiles here and fails there — 2.38.1
+      # did (#131). So this build takes the recipe's own sed lines first.
+      - name: Lower compileSdk as F-Droid's recipe does
+        working-directory: android/app
+        run: |
+          grep -E "^\s+- sed -i 's/(SdkVersion|\"37)" ../../contrib/fdroid/com.prayer_times.yml \
+            | sed -E 's/^\s+- //' > /tmp/fdroid-sdk.sh
+          cat /tmp/fdroid-sdk.sh
+          test -s /tmp/fdroid-sdk.sh
+          sh /tmp/fdroid-sdk.sh
+          grep -n "compileSdkVersion" ../build.gradle
+
       - name: Assemble the F-Droid debug APK
         working-directory: android
         run: >-

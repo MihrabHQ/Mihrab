@@ -1543,10 +1543,22 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         .onFailure { Log.w(NAME, "setShortCriticalText failed", it) }
     }
 
-    @SuppressLint("NewApi")
+    /**
+     * `setRequestPromotedOngoing` by reflection, looked up once. It is not in
+     * the public android-36 platform F-Droid compiles against (its recipe
+     * lowers compileSdk to 36), so a direct call fails their build (issue
+     * #131); on the phone it exists from Android 16.
+     */
+    private val requestPromotedOngoing: java.lang.reflect.Method? by lazy {
+      runCatching {
+        Notification.Builder::class.java.getMethod("setRequestPromotedOngoing", Boolean::class.javaPrimitiveType)
+      }.getOrNull()
+    }
+
     private fun tryRequestPromotedOngoing(builder: Notification.Builder) {
       if (Build.VERSION.SDK_INT < 36) return
-      runCatching { builder.setRequestPromotedOngoing(true) }
+      val method = requestPromotedOngoing ?: return
+      runCatching { method.invoke(builder, true) }
         .onFailure { Log.w(NAME, "setRequestPromotedOngoing failed", it) }
     }
 
