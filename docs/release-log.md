@@ -1407,4 +1407,4 @@ Changed the release cycle itself:
 
   - `scripts/release.sh`
 
-**Lesson:** _(unfilled)_
+**Lesson:** a clean first run, started from an agent's shell like 2.38.0's — the UTF-8 locale `release.sh` now sets itself was all the Catalyst step needed. A point release the day after a release is cheap when the cycle runs clean: notes, CI green, one command.
