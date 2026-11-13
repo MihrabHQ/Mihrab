@@ -1,0 +1,1 @@
+• Android 15 och senare: en lång Korannedladdning i bakgrunden slutar inte längre i en krasch. Android ger en nedladdning sex timmar om dagen i bakgrunden; vid gränsen fortsätter nedladdningen nu utan sin avisering i stället för att appen stängs.

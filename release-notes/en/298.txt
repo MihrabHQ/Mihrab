@@ -1,0 +1,1 @@
+• Android 15 and later: a long Quran download in the background no longer ends in a crash. Android gives a download six hours a day in the background; at the limit the download now carries on without its notification instead of the app being closed.
