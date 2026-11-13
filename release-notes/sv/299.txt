@@ -1,0 +1,4 @@
+• Android, Live-aktivitet med ”Visa från”: att öppna eller lämna appen innan fönstret öppnas visar inte längre en avisering ”Bönnedräkning” för ett ögonblick. Kortet kommer nu fram på fönstrets minut och inget före den.
+• Inställningar → Live-aktivitet: förhandsvisningen av stilen Nedräkning klipper inte längre av tiden (”22:1”) med en större systemtextstorlek.
+• Tunisien: datum under 2025 i Kairouan och Sidi Bouzid har nu institutets tider för 2025, i månadsvyn och i delade tidtabeller.
+• F-Droid: Mihrab byggs där igen — 2.38.1 kunde inte byggas av F-Droid, så detta är den första 2.38 där.

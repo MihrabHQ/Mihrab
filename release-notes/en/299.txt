@@ -1,0 +1,4 @@
+• Android, Live activity with "Show from": opening or leaving the app before the window opens no longer flashes up a "Prayer countdown" notification for a moment. The card now appears at the window's minute and nothing before it.
+• Settings → Live activity: the Countdown style's preview no longer cuts its time short ("22:1") with a larger system font.
+• Tunisia: dates in 2025 at Kairouan and Sidi Bouzid now have the Institute's 2025 times, in the month view and in shared timetables.
+• F-Droid: Mihrab builds there again — 2.38.1 could not be built by F-Droid, so this is the first 2.38 there.
