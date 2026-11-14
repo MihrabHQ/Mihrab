@@ -71,7 +71,7 @@ sudo pacman -Syu mihrab</pre>
 <!-- accuracy:start -->
 <div align="center">
 
-<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 77,658,583 times off the printed minute"></a>
+<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 77,658,595 times off the printed minute"></a>
 
 Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)**, the authorities’ own methods checked against every time they have published.
 
@@ -88,7 +88,7 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 | Spiritual Administration of Muslims of Kazakhstan | 551,880 | **0** |
 | Egyptian General Authority of Survey | 168,630 | **0** |
 | Brunei Ministry of Religious Affairs | 17,064 | **0** |
-| Qatar Calendar House | 720 | **0** |
+| Qatar Calendar House | 732 | **0** |
 | Kuwait Ministry of Awqaf and Islamic Affairs | 201,480 | **0** |
 | Jordan Ministry of Awqaf, Islamic Affairs and Holy Places | 37,230 | **0** |
 | Spiritual Administration of Muslims of the Republic of Tatarstan | 96,360 | **0** |
@@ -101,7 +101,7 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 | United Kingdom: Wifaqul Ulama (Britain) | 350,400 | **0** |
 | Tunisia: Institut National de la Météorologie | 94,855 | **0** |
 
-<sub>Last checked 13 November 2026. Generated from mihrab-methods’ <code>certification.json</code> by <code>scripts/build-copy.js</code>. Mihrab is independent and not affiliated with any of these authorities.</sub>
+<sub>Last checked 14 November 2026. Generated from mihrab-methods’ <code>certification.json</code> by <code>scripts/build-copy.js</code>. Mihrab is independent and not affiliated with any of these authorities.</sub>
 <!-- accuracy:end -->
 
 ---

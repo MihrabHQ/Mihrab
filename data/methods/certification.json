@@ -1,7 +1,7 @@
 {
   "sweden": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 108,
     "checks": [
       {
@@ -38,7 +38,7 @@
   },
   "diyanet": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 8318,
     "checks": [
       {
@@ -84,7 +84,7 @@
   },
   "algeria": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 68,
     "checks": [
       {
@@ -107,7 +107,7 @@
   },
   "indonesia": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 517,
     "checks": [
       {
@@ -130,7 +130,7 @@
   },
   "turkiyetakvimi": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 821,
     "checks": [
       {
@@ -153,7 +153,7 @@
   },
   "kazakhstan": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 84,
     "checks": [
       {
@@ -176,7 +176,7 @@
   },
   "egypt": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 77,
     "checks": [
       {
@@ -199,7 +199,7 @@
   },
   "brunei": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 4,
     "checks": [
       {
@@ -222,30 +222,30 @@
   },
   "qatar": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 1,
     "checks": [
       {
         "tables": "Qatar — the Calendar House’s times",
         "places": 1,
-        "times": 720,
+        "times": 732,
         "off": 0,
-        "offWithoutCorrections": 27,
+        "offWithoutCorrections": 28,
         "from": "2026-06-16",
-        "to": "2026-11-12"
+        "to": "2026-11-14"
       }
     ],
     "corrections": {
       "from": "2026-06-16",
-      "to": "2026-11-12",
-      "entries": 27,
-      "sha256": "0fd4b772e9d33346f35f841016b39ff4007ff24b6b03c9f37a6b011131e611f3"
+      "to": "2026-11-14",
+      "entries": 28,
+      "sha256": "1342d4f453663a819281c5945a322ebe049e4ee1e9f88451e38848839932db4c"
     },
     "revision": 1
   },
   "kuwait": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 46,
     "checks": [
       {
@@ -268,7 +268,7 @@
   },
   "jordan": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 17,
     "checks": [
       {
@@ -291,7 +291,7 @@
   },
   "tatarstan": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 44,
     "checks": [
       {
@@ -314,7 +314,7 @@
   },
   "cdum": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 18,
     "checks": [
       {
@@ -337,7 +337,7 @@
   },
   "albania": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 22,
     "checks": [
       {
@@ -360,7 +360,7 @@
   },
   "bulgaria": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 48,
     "checks": [
       {
@@ -383,7 +383,7 @@
   },
   "banuri": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 100,
     "checks": [
       {
@@ -406,7 +406,7 @@
   },
   "uae": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 41,
     "checks": [
       {
@@ -429,7 +429,7 @@
   },
   "tehran": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 31,
     "checks": [
       {
@@ -452,7 +452,7 @@
   },
   "wifaq": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 81,
     "checks": [
       {
@@ -475,7 +475,7 @@
   },
   "tunisia": {
     "certified": true,
-    "checkedAt": "2026-11-13",
+    "checkedAt": "2026-11-14",
     "places": 26,
     "checks": [
       {
