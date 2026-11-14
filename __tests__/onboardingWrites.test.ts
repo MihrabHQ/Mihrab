@@ -236,6 +236,12 @@ describe('the school screen', () => {
 describe('the location screen', () => {
   const src = read(LOCATION);
 
+  it('uses the unencrypted storage disclosure only in the web build', () => {
+    expect(src).toMatch(/IS_WEB_APP\s*\?\s*t\(\s*'onboarding\.location\.bodyWeb'/);
+    expect(src).toContain('Your location is kept in this browser, not encrypted');
+    expect(src).toMatch(/:\s*t\(\s*'onboarding\.location\.body'/);
+  });
+
   it('has no skip control', () => {
     // App Store guideline 5.1.1(iv): a location pre-permission screen
     // must lead to the prompt with no exit or delay affordance. The
