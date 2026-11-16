@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "builtAt": "2026-11-11T19:09:38.703Z",
+  "builtAt": "2026-11-16T09:55:07.776Z",
   "timezone": "Asia/Kuala_Lumpur",
   "source": "https://www.e-solat.gov.my",
   "serverStatus": "ok",
-  "firstDate": "2026-11-04",
+  "firstDate": "2026-11-09",
   "lastDate": "2026-12-31",
-  "minCoverageDays": 50,
+  "minCoverageDays": 45,
   "deadCities": [],
   "cities": [
     {

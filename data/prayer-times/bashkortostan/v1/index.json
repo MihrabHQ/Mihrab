@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "builtAt": "2026-11-11T22:53:35.468Z",
+  "builtAt": "2026-11-16T09:59:18.387Z",
   "timezone": "Asia/Yekaterinburg",
   "source": "https://dumrb.com/namaz",
   "serverStatus": "ok",
-  "firstDate": "2026-11-04",
+  "firstDate": "2026-11-09",
   "lastDate": "2026-12-31",
-  "minCoverageDays": 50,
+  "minCoverageDays": 45,
   "deadCities": [],
   "cities": [
     {
