@@ -71,7 +71,7 @@ sudo pacman -Syu mihrab</pre>
 <!-- accuracy:start -->
 <div align="center">
 
-<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 77,660,923 times off the printed minute"></a>
+<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 77,660,929 times off the printed minute"></a>
 
 Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)**, the authorities’ own methods checked against every time they have published.
 
@@ -88,7 +88,7 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 | Spiritual Administration of Muslims of Kazakhstan | 551,880 | **0** |
 | Egyptian General Authority of Survey | 168,630 | **0** |
 | Brunei Ministry of Religious Affairs | 17,064 | **0** |
-| Qatar Calendar House | 732 | **0** |
+| Qatar Calendar House | 738 | **0** |
 | Kuwait Ministry of Awqaf and Islamic Affairs | 201,480 | **0** |
 | Jordan Ministry of Awqaf, Islamic Affairs and Holy Places | 37,230 | **0** |
 | Spiritual Administration of Muslims of the Republic of Tatarstan | 96,360 | **0** |

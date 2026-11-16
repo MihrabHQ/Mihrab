@@ -222,17 +222,17 @@
   },
   "qatar": {
     "certified": true,
-    "checkedAt": "2026-11-14",
+    "checkedAt": "2026-11-16",
     "places": 1,
     "checks": [
       {
         "tables": "Qatar — the Calendar House’s times",
         "places": 1,
-        "times": 732,
+        "times": 738,
         "off": 0,
         "offWithoutCorrections": 28,
         "from": "2026-06-16",
-        "to": "2026-11-14"
+        "to": "2026-11-15"
       }
     ],
     "corrections": {
