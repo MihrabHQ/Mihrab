@@ -71,7 +71,7 @@ sudo pacman -Syu mihrab</pre>
 <!-- accuracy:start -->
 <div align="center">
 
-<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 77,658,595 times off the printed minute"></a>
+<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 77,660,923 times off the printed minute"></a>
 
 Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)**, the authorities’ own methods checked against every time they have published.
 
@@ -79,7 +79,7 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 
 | Matches the published timetable of | Times checked | Off the printed minute |
 |---|---:|---:|
-| Islamiska Förbundet (Sweden), and Diyanet’s tables for Sweden | 1,456,908 | **0** |
+| Islamiska Förbundet (Sweden), and Diyanet’s tables for Sweden | 1,459,236 | **0** |
 | Diyanet, Türkiye and worldwide | 71,630,078 | **0** |
 | Morocco’s Ministry of Habous and Islamic Affairs | 94,350 | **0** |
 | Algeria’s Ministry of Religious Affairs and Wakfs | 101,184 | **0** |
