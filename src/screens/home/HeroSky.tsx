@@ -442,7 +442,8 @@ type Scene = ReturnType<typeof skyScene>;
  *
  * A layer is dropped (opacity 0, which Android and iOS do not draw) once
  * the one above it is fully in, so at any moment two layers are drawn.
- * The bodies ride shared transforms through the keyframes' positions.
+ * Each body rides its own track through the keyframes — the sun under the
+ * horizon where a keyframe has none (runSunTrack) — and has its own halo.
  *
  * The gradient and halo layers are drawn at a quarter of the sky's size
  * and scaled up by the UI thread: react-native-svg backs each SVG view
@@ -453,6 +454,52 @@ type Scene = ReturnType<typeof skyScene>;
  * view; the moon its own small SVG.
  */
 const EPS = 1e-3;
+
+/**
+ * The run's sun, keyframe by keyframe: where the sky puts it, and at a
+ * keyframe with no sun, just under the horizon at the nearest sun's place —
+ * so a run across Maghrib takes it down into the line, and one across
+ * sunrise brings it up out of it, the line's clip hiding it below. Riding
+ * the one track the bodies shared, it was carried to whatever the next
+ * keyframe held: on a cold start between Maghrib and Isha it climbed from
+ * the horizon to the moon's place, after sunset (2.38). Null: no sun in the
+ * run. `under` is a sun's centre wholly under the line.
+ */
+export function runSunTrack(
+  bodies: ReadonlyArray<SkyFrame['body']>,
+  place: (b: Extract<SkyFrame['body'], { kind: 'sun' }>) => { x: number; y: number },
+  under: number,
+): { x: number; y: number }[] | null {
+  const at = bodies.map(b => (b.kind === 'sun' ? place(b) : null));
+  if (!at.some(p => p != null)) return null;
+  return at.map((p, i) => {
+    if (p) return p;
+    for (let d = 1; d < at.length; d++) {
+      const near = at[i - d] ?? at[i + d];
+      if (near) return { x: near.x, y: under };
+    }
+    return { x: 0, y: under };
+  });
+}
+
+/**
+ * A body's halo through the run: its keyframes' strength, and where it is
+ * not, none — each body's own, in its own light, on its own track. One halo
+ * for both, in the brightest keyframe's light on the shared track, left the
+ * sun's orange glow at the moon's place as the run settled (2.38).
+ */
+export function runHaloValues(
+  bodies: ReadonlyArray<SkyFrame['body'] | null>,
+  kind: 'sun' | 'moon',
+  reach: (halo: number) => number,
+): { light: string; opacity: number[]; scale: number[] } | null {
+  const own = bodies.map(b => (b && b.kind === kind ? b : null));
+  const peak = own.reduce<(typeof own)[number]>((m, b) => (b && (!m || b.halo > m.halo) ? b : m), null);
+  if (!peak) return null;
+  let held = reach(peak.halo);
+  const scale = own.map(b => (b ? (held = reach(b.halo)) : held));
+  return { light: peak.light, opacity: own.map(b => (b ? b.halo * b.alpha : 0)), scale };
+}
 
 function SkyRunLayersImpl({
   run,
@@ -504,29 +551,34 @@ function SkyRunLayersImpl({
       return raw.map(p => (last = p ?? last));
     };
     const body = frames.map(f => (f.body.kind === 'none' || scene.cramped ? null : f.body));
-    const bodyPos = frames.map(f => (f.body.kind === 'none' ? null : { x: f.body.x * width, y: f.body.kind === 'sun' ? sunY(f.body) : yPx(f.body.y) }));
     const anyBody = body.some(b => b != null);
-    let held = bodyPos.find(p => p != null) ?? { x: 0, y: 0 };
-    const bodyXs = bodyPos.map(p => (held = p ?? held).x);
-    held = bodyPos.find(p => p != null) ?? { x: 0, y: 0 };
-    const bodyYs = bodyPos.map(p => (held = p ?? held).y);
-    const bodyTx = through(bodyXs);
-    const bodyTy = through(bodyYs);
-    // One halo, in the colour of the keyframe that glows the most (the
-    // tint hardly moves across a run; the strength and the place do).
-    const haloScale = through(
-      body.map(b => (b ? (HALO_MIN_R + (HALO_MAX_R - HALO_MIN_R) * Math.sqrt(b.halo / SUN_GLOW_PEAK)) / HALO_MAX_R : 0.01)),
+    // The horizon the suns are clipped at, and the fade over the status
+    // bar — the same two things the live sky draws, see HeroSkyImpl.
+    const horizon = yPx(SUN_HORIZON_Y) + SUN_R * sunScaleAt(SUN_HORIZON_Y);
+    const sunPos = runSunTrack(
+      frames.map(f => f.body),
+      b => ({ x: b.x * width, y: sunY(b) }),
+      horizon + SUN_R * sunScaleAt(SUN_HORIZON_Y),
     );
-    const haloPeak = body.reduce<(typeof body)[number]>((m, b) => (b && (!m || b.halo > m.halo) ? b : m), null);
-    const haloOpacity = through(body.map(b => (b ? b.halo * b.alpha : 0)));
+    const moonPos = positions('moon');
+    const reach = (halo: number) => (HALO_MIN_R + (HALO_MAX_R - HALO_MIN_R) * Math.sqrt(halo / SUN_GLOW_PEAK)) / HALO_MAX_R;
+    const halo = (kind: 'sun' | 'moon') => {
+      const v = runHaloValues(body, kind, reach);
+      const pos = kind === 'sun' ? sunPos : moonPos;
+      if (!v || !pos) return null;
+      return {
+        light: v.light,
+        opacity: through(v.opacity),
+        scale: through(v.scale),
+        tx: through(pos.map(p => p.x)),
+        ty: through(pos.map(p => p.y)),
+      };
+    };
+    const halos = [halo('sun'), halo('moon')].filter(<T,>(h: T | null): h is T => h != null);
     const starsPeak = frames.reduce((m, f) => (f.stars > m.stars ? f : m), frames[0]);
     const starsOpacity = through(frames.map(f => (scene.cramped ? 0 : f.stars)));
     const moonFrame = frames.find(f => f.body.kind === 'moon');
     const moonOpacity = through(frames.map(f => (f.body.kind === 'moon' && !scene.cramped ? f.body.alpha : 0)));
-    const moonPos = positions('moon');
-    // The horizon the suns are clipped at, and the fade over the status
-    // bar — the same two things the live sky draws, see HeroSkyImpl.
-    const horizon = yPx(SUN_HORIZON_Y) + SUN_R * sunScaleAt(SUN_HORIZON_Y);
     const topFadeH = scene.top > 0 && height > 0 ? scene.top : 0;
     return {
       gradients: frames.map((f, i) => ({
@@ -543,13 +595,12 @@ function SkyRunLayersImpl({
       })),
       horizon,
       topFadeH,
-      halo: haloPeak ? { light: haloPeak.light, opacity: haloOpacity } : null,
+      halos,
       suns: body.map((b, i) => (b && b.kind === 'sun' ? { light: b.light, opacity: layerOpacity(i, b.alpha) } : null)),
       sunScale: through(body.map(b => (b && b.kind === 'sun' ? sunScaleAt(b.y) : 1))),
       anyBody,
-      bodyTx,
-      bodyTy,
-      haloScale,
+      sunTx: sunPos ? through(sunPos.map(p => p.x)) : null,
+      sunTy: sunPos ? through(sunPos.map(p => p.y)) : null,
       stars: starsPeak.stars > 0 && !scene.cramped ? { glow: starsPeak.glow, opacity: starsOpacity } : null,
       moon:
         moonFrame && moonFrame.body.kind === 'moon' && moonPos
@@ -587,21 +638,24 @@ function SkyRunLayersImpl({
           }}
         />
       ))}
-      {!noBodies && built.anyBody && built.halo ? (
-        <Animated.View
-          style={{
-            position: 'absolute',
-            left: -haloR,
-            top: -haloR,
-            width: haloR * 2,
-            height: haloR * 2,
-            opacity: built.halo.opacity,
-            backgroundImage: radialGlow(built.halo.light, 1),
-            transform: [{ translateX: built.bodyTx }, { translateY: built.bodyTy }, { scale: built.haloScale }],
-          }}
-        />
-      ) : null}
-      {!noBodies && built.anyBody && built.halo && built.topFadeH > 0
+      {!noBodies && built.anyBody
+        ? built.halos.map((h, i) => (
+            <Animated.View
+              key={`h${i}`}
+              style={{
+                position: 'absolute',
+                left: -haloR,
+                top: -haloR,
+                width: haloR * 2,
+                height: haloR * 2,
+                opacity: h.opacity,
+                backgroundImage: radialGlow(h.light, 1),
+                transform: [{ translateX: h.tx }, { translateY: h.ty }, { scale: h.scale }],
+              }}
+            />
+          ))
+        : null}
+      {!noBodies && built.anyBody && built.halos.length > 0 && built.topFadeH > 0
         ? built.gradients.map((g, i) =>
             g.fadeTo ? (
               <Animated.View
@@ -643,7 +697,7 @@ function SkyRunLayersImpl({
                   borderRadius: SUN_R,
                   backgroundColor: s.light,
                   opacity: s.opacity,
-                  transform: [{ translateX: built.bodyTx }, { translateY: built.bodyTy }, { scale: built.sunScale }],
+                  transform: [{ translateX: built.sunTx ?? 0 }, { translateY: built.sunTy ?? 0 }, { scale: built.sunScale }],
                 }}
               />
             ) : null,
