@@ -20,6 +20,16 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    code: 299,
+    version: '2.38.2',
+    date: '2026-11-13',
+    notes: {
+      en: '• Android, Live activity with "Show from": opening or leaving the app before the window opens no longer flashes up a "Prayer countdown" notification for a moment. The card now appears at the window\'s minute and nothing before it.\n• Settings → Live activity: the Countdown style\'s preview no longer cuts its time short ("22:1") with a larger system font.\n• Tunisia: dates in 2025 at Kairouan and Sidi Bouzid now have the Institute\'s 2025 times, in the month view and in shared timetables.\n• F-Droid: Mihrab builds there again — 2.38.1 could not be built by F-Droid, so this is the first 2.38 there.',
+      ar: '• أندرويد، النشاط المباشر مع «الإظهار قبل»: فتح التطبيق أو مغادرته قبل بدء النافذة لم يعد يُظهر إشعار «العد التنازلي للصلاة» لحظةً. تظهر البطاقة الآن في دقيقة بدء النافذة ولا شيء قبلها.\n• الإعدادات ← النشاط المباشر: معاينة نمط «العد التنازلي» لم تعد تقطع الوقت («22:1») مع حجم خط أكبر في النظام.\n• تونس: تواريخ عام 2025 في القيروان وسيدي بوزيد صارت بمواقيت المعهد لعام 2025، في عرض الشهر وفي الجداول المشتركة.\n• F-Droid: يُبنى Mihrab هناك من جديد — تعذّر على F-Droid بناء 2.38.1، فهذا أول إصدار 2.38 هناك.',
+      sv: '• Android, Live-aktivitet med ”Visa från”: att öppna eller lämna appen innan fönstret öppnas visar inte längre en avisering ”Bönnedräkning” för ett ögonblick. Kortet kommer nu fram på fönstrets minut och inget före den.\n• Inställningar → Live-aktivitet: förhandsvisningen av stilen Nedräkning klipper inte längre av tiden (”22:1”) med en större systemtextstorlek.\n• Tunisien: datum under 2025 i Kairouan och Sidi Bouzid har nu institutets tider för 2025, i månadsvyn och i delade tidtabeller.\n• F-Droid: Mihrab byggs där igen — 2.38.1 kunde inte byggas av F-Droid, så detta är den första 2.38 där.',
+    },
+  },
+  {
     code: 298,
     version: '2.38.1',
     date: '2026-11-13',
