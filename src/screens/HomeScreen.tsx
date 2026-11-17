@@ -2203,7 +2203,20 @@ export function HomeScreen() {
         status bar, clear of the screen's edges, the page untouched under
         them and still scrolling past their sides. */}
     {floatBanners && hasBanner ? (
-      <View pointerEvents="box-none" style={[styles.floatingNotices, { top: insets.top + SPACING.xs }]}>
+      <View
+        pointerEvents="box-none"
+        style={[
+          styles.floatingNotices,
+          { top: insets.top + SPACING.xs },
+          // Beside the Duo's vertical bar the cards end where the page does,
+          // clear of the column: running under it, a notice's Dismiss was
+          // drawn under the camera and the bar's clock. Off the Duo, as it was.
+          vbar
+            ? vbar.side === 'right'
+              ? { right: HOME_SCREEN_PADDING + vbar.width } // rtl-safe: the vertical bar is on a physical side
+              : { left: HOME_SCREEN_PADDING + vbar.width } // rtl-safe: the vertical bar is on a physical side
+            : null,
+        ]}>
         <PermissionBanners
           floating
           usingLocalFallback={state.usingLocalFallback ?? false}
