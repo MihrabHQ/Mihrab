@@ -1,0 +1,6 @@
+• Idag-himlen, öppnad efter Maghrib: solen går nu ner i horisonten där den gick ner, och månen kommer fram på sin egen plats. Förut bar inledningssvepet upp solen till månen och lämnade ett orange sken där.
+• Qatar: tiderna till och med slutet av 2026 stämmer med Calendar House publicerade tidtabell även innan appen har hämtat de senaste rättelserna.
+• Hjälptexter uppdaterade på alla språk: språkinställningen räknar upp alla språk appen har, och hjälptexten om Koranföljeslagaren säger vad den gör idag.
+• Android, Live-aktivitet med ”Visa från”: att öppna eller lämna appen innan fönstret öppnas visar inte längre en avisering ”Bönnedräkning” för ett ögonblick.
+• Inställningar → Live-aktivitet: förhandsvisningen av stilen Nedräkning klipper inte längre av tiden (”22:1”) med en större systemtextstorlek.
+• Tunisien: datum under 2025 i Kairouan och Sidi Bouzid har nu institutets tider för 2025.
