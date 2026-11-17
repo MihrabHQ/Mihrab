@@ -413,7 +413,7 @@
     "batteryWarning": "Alerts may be unreliable",
     "batteryWarningHelp": "Battery optimization can delay or silence adhan alerts while the app is closed. Tap to exclude Mihrab.",
     "themeRestartManualTitle": "Reopen the app",
-    "themeRestartManualBody": "iOS does not allow apps to restart themselves. Please force-quit Prayer Times and reopen it for the new theme to take effect.",
+    "themeRestartManualBody": "iOS does not allow apps to restart themselves. Please force-quit Mihrab and reopen it for the new theme to take effect.",
     "liquidGlass": "Liquid Glass",
     "liquidGlassHelp": "Adopt iOS system colours and translucent glass chrome. Follows Light/Dark automatically.",
     "themeRestartTitle": "Restart required",
