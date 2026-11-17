@@ -140,7 +140,8 @@ describe('a notice is a card over the page, not a row of it (the phone)', () => 
     // out of the column…
     expect(home).toMatch(/\}\) && !floatBanners \? \(\s*<View/);
     // …and over the page, after everything else in the root
-    expect(home).toMatch(/\{floatBanners && hasBanner \? \(\s*<View pointerEvents="box-none" style=\{\[styles\.floatingNotices, \{ top: insets\.top \+ SPACING\.xs \}\]\}>\s*<PermissionBanners\s*floating/);
+    // (beside the Duo's bar the cards also take its width — todayNoticesClearTheBar.test.ts)
+    expect(home).toMatch(/\{floatBanners && hasBanner \? \(\s*<View\s*pointerEvents="box-none"\s*style=\{\[\s*styles\.floatingNotices,\s*\{ top: insets\.top \+ SPACING\.xs \},[\s\S]*?\]\}>\s*<PermissionBanners\s*floating/);
     expect(home).toMatch(/floatingNotices: \{\s*position: 'absolute',/);
     // the sky keeps the status bar, the hero its tier and its top inset: nothing asks about a floating notice
     expect(home).toMatch(/topInset: bannerInFlow \? 0 : insets\.top,/);

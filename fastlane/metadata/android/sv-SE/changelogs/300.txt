@@ -1,6 +1,6 @@
-• Idag-himlen efter Maghrib: solen går ner i horisonten när appen öppnas i stället för att klättra upp till månen.
+• Idag-himlen efter Maghrib: solen går ner i horisonten i stället för att klättra upp till månen.
+• iPhone, iPad och Mac: dagraden byter en dag per tryck, ”Till idag” visar idag och Juz öppnar Juz.
 • Qatar: tiderna 2026 ut stämmer med Calendar House tidtabell även offline.
 • Hjälptexter uppdaterade på alla språk.
-• Android: Live-aktiviteten blinkar inte fram före ”Visa från”, och Nedräkningens förhandsvisning får plats med stor text.
-• Tunisien: 2025 i Kairouan och Sidi Bouzid har institutets tider för 2025.
-• F-Droid: byggs igen.
+• Android: Live-aktiviteten visas inte före ”Visa från”; Nedräkningens förhandsvisning ryms med stor text.
+• Tunisien: 2025 i Kairouan och Sidi Bouzid har institutets tider.

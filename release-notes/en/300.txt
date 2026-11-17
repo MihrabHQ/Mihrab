@@ -1,4 +1,6 @@
 • Today's sky, opened after Maghrib: the sun now sets into the horizon where it went down and the moon comes in at its own place. Before, the opening sweep carried the sun up to the moon and left an orange glow there.
+• iPhone, iPad and Mac: each tap on the day bar's arrows moves one day, and "Back to today" opens today — they had moved two, so after Isha today could not be reached. The Quran's Juz and Bookmarks tabs open themselves too.
+• iPhone Duo: Today's notices (the clocks changed, a permission that is off) end where the page does, clear of the bar down the side.
 • Qatar: the times through the end of 2026 match the Calendar House's published timetable even before the app has fetched the latest corrections.
 • Help texts brought up to date in every language: the language setting lists every language the app has, and the Quran companion's help says what it does today.
 • Android, Live activity with "Show from": opening or leaving the app before the window opens no longer flashes up a "Prayer countdown" notification.

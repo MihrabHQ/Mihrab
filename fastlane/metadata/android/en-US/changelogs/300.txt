@@ -1,6 +1,6 @@
 • Today's sky after Maghrib: the sun sets into the horizon on opening instead of climbing to the moon.
+• iPhone, iPad and Mac: the day bar moves one day a tap, "Back to today" opens today, and Juz opens Juz.
 • Qatar: times through 2026 match the Calendar House's timetable even offline.
-• Help texts up to date in every language.
-• Android: no Live activity flash before its "Show from" time, and the Countdown preview fits with large text.
-• Tunisia: 2025 dates at Kairouan and Sidi Bouzid have the Institute's 2025 times.
-• F-Droid: builds again.
+• Help texts updated in every language.
+• Android: no Live activity flash before "Show from"; the Countdown preview fits large text.
+• Tunisia: 2025 dates at Kairouan and Sidi Bouzid have the Institute's times.

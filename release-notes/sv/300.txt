@@ -1,4 +1,6 @@
 • Idag-himlen, öppnad efter Maghrib: solen går nu ner i horisonten där den gick ner, och månen kommer fram på sin egen plats. Förut bar inledningssvepet upp solen till månen och lämnade ett orange sken där.
+• iPhone, iPad och Mac: varje tryck på dagradens pilar byter en dag, och ”Till idag” visar idag — de hade bytt två, så efter Isha gick det inte att komma tillbaka till idag. Koranens flikar Juz och Bokmärken öppnar sig själva också.
+• iPhone Duo: meddelandena överst på Idag (klockan har ställts om, en behörighet som är av) slutar där sidan gör, fria från raden längs kanten.
 • Qatar: tiderna till och med slutet av 2026 stämmer med Calendar House publicerade tidtabell även innan appen har hämtat de senaste rättelserna.
 • Hjälptexter uppdaterade på alla språk: språkinställningen räknar upp alla språk appen har, och hjälptexten om Koranföljeslagaren säger vad den gör idag.
 • Android, Live-aktivitet med ”Visa från”: att öppna eller lämna appen innan fönstret öppnas visar inte längre en avisering ”Bönnedräkning” för ett ögonblick.
