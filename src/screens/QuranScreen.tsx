@@ -579,6 +579,17 @@ export function QuranScreen() {
     [],
   );
   const searching = searchOpen || query.trim() !== '' || results != null;
+  // Where the pager opens, and only that: worked out again for a new width
+  // or order, never for a new tab. Fabric writes a changed `contentOffset`
+  // onto the scroll view at once, and `goToTab` changes the tab in the same
+  // breath as it starts the animated scrollTo; on the Mac (Catalyst) the
+  // animation then went its whole distance on from where the jump put it,
+  // so Juz tapped from Surah settled on Bookmarks — the Today table's
+  // "every press moves two days" (TodayCard, "WHERE THE PAGER OPENS").
+  const openingX = useMemo(
+    () => order.indexOf(tabRef.current) * pageW,
+    [order, pageW],
+  );
   const goToTab = useCallback(
     (next: Tab) => {
       alignPages();
@@ -1474,7 +1485,7 @@ export function QuranScreen() {
             overScrollMode="never"
             decelerationRate="fast"
             keyboardShouldPersistTaps="handled"
-            contentOffset={{ x: order.indexOf(tab) * pageW, y: 0 }}
+            contentOffset={{ x: openingX, y: 0 }}
             scrollEventThrottle={16}
             onScroll={onPagerScroll}
             onScrollBeginDrag={alignPages}

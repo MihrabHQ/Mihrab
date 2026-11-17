@@ -624,6 +624,28 @@ function TodayCardImpl({
     [pageWidth, todayIndex, pagePosition],
   );
   /**
+   * ── WHERE THE PAGER OPENS, AND ONLY THAT ─────────────────────────────
+   *
+   * `contentOffset` is for the pager's first frame (see the FlatList). It
+   * must not follow the day: Fabric writes a changed `contentOffset` onto
+   * the scroll view at once, and a chevron or "Back to today" changes the
+   * day in the same breath as it starts the animated `scrollToDay`. On the
+   * Mac (Catalyst) that animation then carries on its full page from where
+   * the jump put it, so the table settled a day past the one pressed and
+   * the settle (`onPageSettled`) took that day as the reader's: every press
+   * moved two days, and after the night's last time — the card on
+   * Tomorrow — today could not be reached at all (2.38.2, Nov 17).
+   * So the offset is worked out from the day on show only when the pages'
+   * width or layout changes — a resized window, the days behind arriving —
+   * never because the day did.
+   */
+  const selectedNow = useRef(selected);
+  selectedNow.current = selected;
+  const openingOffset = useMemo(
+    () => ({ x: pagePosition(todayIndex + selectedNow.current) * pageWidth, y: 0 }),
+    [pageWidth, todayIndex, pagePosition],
+  );
+  /**
    * ── THE PAGES MOVE UNDER A PAGER THAT DOES NOT ──────────────────────
    *
    * The pager is told where to open once, at mount (`initialScrollIndex`),
@@ -1723,7 +1745,8 @@ function TodayCardImpl({
               // first frames — six of them on a Pixel (2.35) — were the
               // spacer: a table that blanked out for a fifth of a second as
               // the plain day under it was swapped for the pager.
-              contentOffset={{ x: pagePosition(todayIndex + selected) * pageWidth, y: 0 }}
+              // Not the day on show: see "WHERE THE PAGER OPENS".
+              contentOffset={openingOffset}
               // Left to right whatever the language: see `pagerPosition`.
               style={[styles.pager, pageHeights[selected] != null && { height: pageHeights[selected] }]}
               contentContainerStyle={styles.pagerContent}
