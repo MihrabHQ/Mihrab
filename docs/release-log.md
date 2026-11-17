@@ -1408,3 +1408,13 @@ Changed the release cycle itself:
   - `scripts/release.sh`
 
 **Lesson:** a clean first run, started from an agent's shell like 2.38.0's — the UTF-8 locale `release.sh` now sets itself was all the Catalyst step needed. A point release the day after a release is cheap when the cycle runs clean: notes, CI green, one command.
+
+## 2.38.3 (300) — 2026-11-17
+
+Took 3 aborted attempt(s) before it ran clean:
+
+  - 1 CI on main last concluded 'failure' on "Correction lists renewed: qatar" — fix it before releasing on top of it: https://github.com/MihrabHQ/Mihrab/actions/runs/44106789228
+  - 1 jest failed — run 'NODE_ENV=test npx jest'
+  - 1 pbxproj stamp did not take
+
+**Lesson:** _(unfilled)_
