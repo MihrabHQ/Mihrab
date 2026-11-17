@@ -2,7 +2,7 @@ import { memo, useMemo } from 'react';
 import { Animated, PixelRatio, StyleSheet, Text, View } from 'react-native';
 import { LABEL_FONT, LABEL_LINE, LABEL_MAX_SCALE, placeTrackLabels } from './trackLabels';
 import Svg, { Circle, ClipPath, Defs, G, Line, Path, Rect } from 'react-native-svg';
-import { MOON, Moon, moonLitPath, NEW_MOON_BELOW, SUN_R } from './HeroSky';
+import { MOON, moonLitPath, NEW_MOON_BELOW, SUN_R } from './HeroSky';
 import { type SkyFrame } from './skyModel';
 import { SUN_SURFACE, tintedBy } from './skyLight';
 import { acrossNight, TRACK_FLOOR, TRACK_STEP_MINUTES, type TrackBase, type TrackFrame } from './trackModel';
@@ -247,31 +247,31 @@ function HeroTrackImpl({
       tx: through(xs),
       ty: through(ys),
       up: through(ups),
+      light: runSunLight(run.tracks),
       // The end's stretch and its under-the-line outline come in over the last third.
       end: run.progress.interpolate({ inputRange: [0.66, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
     };
     // X and Y are closures over the layout numbers, which the deps carry.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [run, width, roomTop, room, horizon, deepRoom]);
-  const bodyView =
-    ride && body.kind !== 'none' ? (
-      <View style={[styles.clip, { width, height: Math.max(0, horizon) }]} pointerEvents="none">
-        <Animated.View
-          style={{
-            ...styles.origin,
-            opacity: Animated.multiply(ride.up, body.alpha),
-            transform: [{ translateX: ride.tx }, { translateY: ride.ty }],
-          }}>
-          {body.kind === 'sun' ? (
-            <View style={{ transform: [{ translateX: -sunR }, { translateY: -sunR }], width: sunR * 2, height: sunR * 2, borderRadius: sunR, backgroundColor: body.light }} />
-          ) : (
-            <View style={{ transform: [{ translateX: -MOON / 2 }, { translateY: -MOON / 2 }], width: MOON, height: MOON }}>
-              <Moon illuminated={body.illuminated} tilt={body.tilt} lit={body.light} />
-            </View>
-          )}
-        </Animated.View>
-      </View>
-    ) : null;
+  // THE BODY THAT RIDES IS THE SUN. The chart is the sun's, day and night
+  // (trackWindow), and the run's places are the sun's on it. It was drawn
+  // as the sky's body at the run's end — a moon, opened after sunset — so
+  // a run from Asr to the evening carried the moon along the sun's arc
+  // through the afternoon (2.38). The sun, in the light of its height on
+  // the chart; the moon is a landmark, in with the end (below).
+  const bodyView = ride ? (
+    <View style={[styles.clip, { width, height: Math.max(0, horizon) }]} pointerEvents="none">
+      <Animated.View
+        style={{
+          ...styles.origin,
+          opacity: ride.up,
+          transform: [{ translateX: ride.tx }, { translateY: ride.ty }],
+        }}>
+        <View style={{ transform: [{ translateX: -sunR }, { translateY: -sunR }], width: sunR * 2, height: sunR * 2, borderRadius: sunR, backgroundColor: ride.light }} />
+      </Animated.View>
+    </View>
+  ) : null;
   const svg = (
     <Svg width={width} height={height} viewBox={`0 ${svgTop} ${width} ${height}`} style={[styles.svg, { top: svgTop }]} pointerEvents="none">
       <Defs>
@@ -408,6 +408,18 @@ function HeroTrackImpl({
           {at && at.under ? (
             <Circle cx={X(at)} cy={Y(at)} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
           ) : null}
+          {track.moon && body.kind === 'moon' ? (
+            // The moon where it is at the end, in with the rest of the end's
+            // marks — not drawn through the run and then popped in.
+            <MoonDisc
+              cx={track.moon.x * width}
+              cy={roomTop + track.moon.y * room}
+              illuminated={body.illuminated}
+              tilt={body.tilt}
+              lit={body.light}
+              alpha={body.alpha}
+            />
+          ) : null}
         </Svg>
       </Animated.View>
       {bodyView}
@@ -444,6 +456,16 @@ const MoonDisc = memo(function TrackMoon({
     </G>
   );
 });
+
+/**
+ * The run's sun's light: the tint of the sun at its height on the chart,
+ * from the first keyframe it is up in (the run's start, where it is seen
+ * most) — the same tint the live chart gives a sun the sky does not draw.
+ */
+export function runSunLight(tracks: ReadonlyArray<TrackFrame | null>): string {
+  const up = tracks.find(t => t && t.body && !t.body.under);
+  return tintedBy(SUN_SURFACE, up?.body?.altitude ?? 0);
+}
 
 export const HeroTrack = memo(HeroTrackImpl);
 

@@ -61,3 +61,36 @@ describe('a run with one body', () => {
     expect(runSunTrack([sun(0.3, 0.2), sun(0.5, 0.1)], place, UNDER)).toEqual([{ x: 120, y: 160 }, { x: 200, y: 80 }]);
   });
 });
+
+// ── The Track look's run ───────────────────────────────────────────────
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { runSunLight } from '../src/screens/home/HeroTrack';
+import { SUN_SURFACE, tintedBy } from '../src/screens/home/skyLight';
+import type { TrackFrame } from '../src/screens/home/trackModel';
+
+const trackAt = (altitude: number, under = altitude < 0) =>
+  ({ body: { x: 0.5, y: 0.5, altitude, under, azimuth: 200, at: 0 } }) as unknown as TrackFrame;
+
+describe("the Track look's run", () => {
+  it("lights the riding sun by its height where it is up, from the run's start", () => {
+    expect(runSunLight([trackAt(12), trackAt(-4)])).toBe(tintedBy(SUN_SURFACE, 12));
+    expect(runSunLight([null, trackAt(-3), trackAt(30)])).toBe(tintedBy(SUN_SURFACE, 30));
+    expect(runSunLight([trackAt(-6), null])).toBe(tintedBy(SUN_SURFACE, 0));
+  });
+
+  const src = fs.readFileSync(path.join(__dirname, '../src/screens/home/HeroTrack.tsx'), 'utf8');
+  const view = src.slice(src.indexOf('const bodyView ='), src.indexOf('const svg ='));
+
+  it('rides the sun along the chart, never the moon the sky ends on', () => {
+    expect(view).toMatch(/backgroundColor: ride\.light/);
+    expect(view).not.toMatch(/<Moon\b/);
+    expect(view).not.toMatch(/body\.kind/);
+  });
+
+  it("fades the moon's landmark in with the end, rather than popping it in after", () => {
+    const end = src.slice(src.indexOf('// The run: the chart'), src.indexOf('{bodyView}'));
+    expect(end).toMatch(/track\.moon && body\.kind === 'moon'/);
+  });
+});
