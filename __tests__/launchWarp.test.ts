@@ -289,8 +289,9 @@ describe('wiring', () => {
     // backgrounds, with no bitmap behind them (skyPaint.ts).
     expect(sky).toMatch(/outputRange: \[0, peak, peak, 0\]/);
     expect(sky).toMatch(/backgroundImage: linearDown\(skyStops\(g\)\)/);
-    expect(sky).toMatch(/backgroundImage: radialGlow\(built\.halo\.light, 1\)/);
-    expect(sky).toMatch(/transform: \[\{ translateX: built\.bodyTx \}, \{ translateY: built\.bodyTy \}, \{ scale: built\.haloScale \}\]/);
+    expect(sky).toMatch(/backgroundImage: radialGlow\(h\.light, 1\)/);
+    // A halo per body, each on its own body's track (skyRunBodies.test.ts).
+    expect(sky).toMatch(/transform: \[\{ translateX: h\.tx \}, \{ translateY: h\.ty \}, \{ scale: h\.scale \}\]/);
   });
 
   it('re-reads the ink in steps over the run, and mounts the twin only after it', () => {
