@@ -8,7 +8,7 @@ import { generateKeyPairSync } from 'crypto';
 import { readFileSync } from 'fs';
 import path from 'path';
 import { Asc } from '../scripts/release/asc.ts';
-import { LOCALES, appstoreMetadataMain } from '../scripts/release/appstoreMetadata.ts';
+import { ASC_LOCALE, LOCALES, appstoreMetadataMain, ascLocale } from '../scripts/release/appstoreMetadata.ts';
 import type { MetaCtx } from '../scripts/release/appstoreMetadata.ts';
 import { GRADLE, HOME, ROOT, World } from './fixtures/releaseWorld';
 
@@ -42,10 +42,11 @@ function listing(opts: { state?: string; haveLocales?: string[]; cats?: [string,
   );
   const have = opts.haveLocales ?? Object.keys(LOCALES);
   // Everything already correct, except the English description.
+  // Apple answers with its own codes: bn-BD and ur-PK, not the folders' bn and ur.
   const verLoc = (loc: string) => ({
     id: `V-${loc}`,
     attributes: {
-      locale: loc,
+      locale: ascLocale(loc),
       description: loc === 'en-US' ? 'old words' : `${loc} description`,
       keywords: `${loc} keywords`,
       promotionalText: `${loc} promotional_text`,
@@ -57,7 +58,7 @@ function listing(opts: { state?: string; haveLocales?: string[]; cats?: [string,
   const infoLoc = (loc: string) => ({
     id: `I-${loc}`,
     attributes: {
-      locale: loc,
+      locale: ascLocale(loc),
       name: `${loc} name`,
       subtitle: `${loc} subtitle`,
       privacyPolicyUrl: 'https://github.com/MihrabHQ/Mihrab/blob/main/PRIVACY_POLICY.md',
@@ -106,7 +107,7 @@ describe('the listing writer', () => {
     const { m, writes } = listing({ haveLocales: Object.keys(LOCALES).filter(l => l !== 'ur') });
     await appstoreMetadataMain(m, []);
     const posts = writes().filter(r => r.method === 'POST');
-    expect(posts.map(r => JSON.parse(r.body ?? '').data.attributes.locale)).toEqual(['ur', 'ur']);
+    expect(posts.map(r => JSON.parse(r.body ?? '').data.attributes.locale)).toEqual(['ur-PK', 'ur-PK']);
     expect(JSON.parse(posts[0].body ?? '').data.relationships).toEqual({ appInfo: { data: { type: 'appInfos', id: 'INFO' } } });
   });
 
@@ -129,5 +130,17 @@ describe('the listing writer', () => {
     const py = readFileSync(path.join(__dirname, '..', 'scripts', 'appstore-metadata.py'), 'utf8');
     for (const [appStore, play] of Object.entries(LOCALES)) expect(py).toContain(`"${appStore}": "${play}"`);
     expect(Object.keys(LOCALES)).toHaveLength(13);
+  });
+
+  it('names Bangla and Urdu to Apple as the Python does: bn-BD and ur-PK', () => {
+    const py = readFileSync(path.join(__dirname, '..', 'scripts', 'appstore-metadata.py'), 'utf8');
+    expect(ASC_LOCALE).toEqual({ bn: 'bn-BD', ur: 'ur-PK' });
+    expect(py).toContain('ASC_LOCALE = {"bn": "bn-BD", "ur": "ur-PK"}');
+  });
+
+  it('finds Bangla and Urdu under Apple’s codes, so it does not create them twice', async () => {
+    const { m, writes } = listing();
+    await appstoreMetadataMain(m, []);
+    expect(writes().filter(r => r.method === 'POST')).toEqual([]);
   });
 });

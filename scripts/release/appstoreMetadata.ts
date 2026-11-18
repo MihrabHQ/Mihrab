@@ -38,6 +38,12 @@ export const LOCALES: Record<string, string> = {
   tr: 'tr-TR', ru: 'ru-RU', 'zh-Hans': 'zh-CN', hi: 'hi-IN',
   bn: 'bn-BD', ur: 'ur',
 };
+// App Store Connect names a few languages by language and region where the
+// app and its files use the language alone: Bangla is bn-BD, Urdu ur-PK.
+// The Python's ASC_LOCALE; without it Apple refuses 'bn' ("not a valid
+// 'locale'") and the run stops before any version text is written (2.38.3).
+export const ASC_LOCALE: Record<string, string> = { bn: 'bn-BD', ur: 'ur-PK' };
+export const ascLocale = (loc: string) => ASC_LOCALE[loc] ?? loc;
 export const PRIMARY_CATEGORY = 'LIFESTYLE';
 export const SECONDARY_CATEGORY = 'REFERENCE';
 export const MARKETING_URL = 'https://mihrab.elghamri.se/';
@@ -189,7 +195,7 @@ async function run(m: MetaCtx, argv: string[]): Promise<number> {
       let parent: [string, string, string];
       if (phase === 'appInfoLocalizations') {
         want = { name: text(m, loc, 'name'), subtitle: text(m, loc, 'subtitle'), privacyPolicyUrl: PRIVACY_URL };
-        have = infoLocs.get(loc);
+        have = infoLocs.get(ascLocale(loc));
         parent = ['appInfo', 'appInfos', info.id];
       } else {
         want = {
@@ -201,7 +207,7 @@ async function run(m: MetaCtx, argv: string[]): Promise<number> {
         };
         const wn = whatsNew(m, loc);
         if (wn) want.whatsNew = wn;
-        have = verLocs.get(loc);
+        have = verLocs.get(ascLocale(loc));
         parent = ['appStoreVersion', 'appStoreVersions', ver.id];
       }
       if (!have) {
@@ -210,7 +216,7 @@ async function run(m: MetaCtx, argv: string[]): Promise<number> {
           await m.asc.write('POST', `/v1/${phase}`, {
             data: {
               type: phase,
-              attributes: { ...want, locale: loc },
+              attributes: { ...want, locale: ascLocale(loc) },
               relationships: { [parent[0]]: { data: { type: parent[1], id: parent[2] } } },
             },
           });
