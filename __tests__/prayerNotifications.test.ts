@@ -329,7 +329,7 @@ describe('syncPrayerNotifications: notification channels', () => {
     );
     // Exactly the two channels we actually use.
     expect(new Set(createdIds)).toEqual(
-      new Set(['prayer-times-default', 'prayer-times-adhan-makkah']),
+      new Set(['prayer-times-tone', 'prayer-times-adhan-makkah']),
     );
 
     const deletedIds = (notifee.deleteChannel as jest.Mock).mock.calls.map(
@@ -337,7 +337,7 @@ describe('syncPrayerNotifications: notification channels', () => {
     );
     // Surplus adhan channels are cleaned up, never the two needed ones.
     expect(deletedIds).toContain('prayer-times-adhan-madina');
-    expect(deletedIds).not.toContain('prayer-times-default');
+    expect(deletedIds).not.toContain('prayer-times-tone');
     expect(deletedIds).not.toContain('prayer-times-adhan-makkah');
   });
 
@@ -352,7 +352,36 @@ describe('syncPrayerNotifications: notification channels', () => {
     const createdIds = (notifee.createChannel as jest.Mock).mock.calls.map(
       c => c[0].id,
     );
-    expect(new Set(createdIds)).toEqual(new Set(['prayer-times-default']));
+    expect(new Set(createdIds)).toEqual(new Set(['prayer-times-tone']));
+  });
+
+  // #134: Notifee makes a channel with no `sound` silent. The default
+  // channel names the phone's tone, and its silent predecessor is retired.
+  test('the default channel plays the phone\'s own tone, and the silent one before it is deleted', async () => {
+    await syncPrayerNotifications({
+      enabled: true,
+      prePrayerReminderMinutes: 10,
+      notificationSound: 'default',
+      today,
+      tomorrow: today,
+    });
+    const made = (notifee.createChannel as jest.Mock).mock.calls.map(c => c[0]);
+    expect(made.find(c => c.id === 'prayer-times-tone')?.sound).toBe('default');
+    const deleted = (notifee.deleteChannel as jest.Mock).mock.calls.map(c => c[0]);
+    expect(deleted).toContain('prayer-times-default');
+  });
+
+  test('an adhan channel keeps its own sound', async () => {
+    await syncPrayerNotifications({
+      enabled: true,
+      prePrayerReminderMinutes: 0,
+      notificationSound: 'adhan_makkah',
+      today,
+      tomorrow: today,
+    });
+    const made = (notifee.createChannel as jest.Mock).mock.calls.map(c => c[0]);
+    expect(made.find(c => c.id === 'prayer-times-adhan-makkah')?.sound).toBe('adhan_makkah');
+    expect(made.find(c => c.id === 'prayer-times-tone')?.sound).toBe('default');
   });
 });
 
@@ -376,7 +405,7 @@ describe('syncPrayerNotifications: Sunrise never plays the adhan', () => {
     const sunrise = findSalahCall('Sunrise');
     expect(sunrise).toBeDefined();
     // Plain default sound + channel, not the adhan ones.
-    expect(sunrise.android.channelId).toBe('prayer-times-default');
+    expect(sunrise.android.channelId).toBe('prayer-times-tone');
     expect(sunrise.ios.sound).toBe('default');
     // No adhan category (iOS) and no usesAdhan flag.
     expect(sunrise.ios.categoryId).toBeUndefined();

@@ -44,11 +44,13 @@ import { Platform } from 'react-native';
 import i18n from '../i18n';
 import { ROUTE_DUA_CATEGORY } from './notificationRoute';
 import type { TimingsMap } from '../types/prayer';
+import { SILENT_CHANNEL_IDS, SYSTEM_TONE, retireSilentChannel } from './systemTone';
 
 /** Stable prefix so a resync cancels only these. */
 const ID_PREFIX = 'dua-adhkar-';
 
-const CHANNEL_ID = 'prayer_app_dua_reminders';
+// 'prayer_app_dua_reminders' until #134: made without a sound, so silent (systemTone.ts).
+const CHANNEL_ID = 'prayer_app_dua_reminders_tone';
 
 /** How far after the opening prayer the reminder aims to land. */
 export const OFFSET_MINUTES = 20;
@@ -129,12 +131,15 @@ function ymd(d: Date): string {
 
 async function ensureChannel(): Promise<string> {
   if (Platform.OS !== 'android') return CHANNEL_ID;
-  return notifee.createChannel({
+  const id = await notifee.createChannel({
     id: CHANNEL_ID,
     name: i18n.t('duaReminders.channelName', 'Morning and evening duas'),
     // An invitation, not an alarm.
     importance: AndroidImportance.DEFAULT,
+    sound: SYSTEM_TONE,
   });
+  await retireSilentChannel(SILENT_CHANNEL_IDS.dua);
+  return id;
 }
 
 /** Cancel every pending adhkār reminder. */

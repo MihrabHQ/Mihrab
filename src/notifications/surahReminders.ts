@@ -32,6 +32,7 @@ import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
 import i18n from '../i18n';
 import { ROUTE_SURAH } from './notificationRoute';
 import { quiet } from '../utils/quiet';
+import { SILENT_CHANNEL_IDS, SYSTEM_TONE, retireSilentChannel } from './systemTone';
 
 /** Al-Kahf and Al-Mulk, by their numbers in the muṣḥaf. */
 export const KAHF = 18;
@@ -39,7 +40,8 @@ export const MULK = 67;
 
 const KAHF_ID_PREFIX = 'surah-kahf-';
 const MULK_ID_PREFIX = 'surah-mulk-';
-export const SURAH_REMINDER_CHANNEL_ID = 'prayer_app_surah_reminders';
+// 'prayer_app_surah_reminders' until #134: made without a sound, so silent (systemTone.ts).
+export const SURAH_REMINDER_CHANNEL_ID = 'prayer_app_surah_reminders_tone';
 
 /** Fridays ahead, and nights ahead. Both a fortnight of cover. */
 const KAHF_LOOK_AHEAD_WEEKS = 2;
@@ -157,7 +159,9 @@ export async function rescheduleSurahReminders(opts: {
       id: SURAH_REMINDER_CHANNEL_ID,
       name: i18n.t('settings.surahRemindersChannel', 'Surah reminders'),
       importance: AndroidImportance.DEFAULT,
+      sound: SYSTEM_TONE,
     });
+    await retireSilentChannel(SILENT_CHANNEL_IDS.surah);
   } catch (quietError) {
     quiet('notifications/surahReminders', quietError);
     // Non-fatal: Android creates a default channel, iOS has none.

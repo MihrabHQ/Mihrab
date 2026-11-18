@@ -158,13 +158,13 @@ describe('through the scheduler', () => {
     expect(maghrib.data.adhanSound).toBe('adhan_makkah');
     expect(String(maghrib.ios?.sound)).toContain('adhan_makkah');
     // The prayers nobody set keep the plain alert.
-    expect(fired('Dhuhr').android.channelId).toBe('prayer-times-default');
+    expect(fired('Dhuhr').android.channelId).toBe('prayer-times-tone');
     expect(fired('Dhuhr').data.usesAdhan).toBe('0');
   });
 
   it('with no prayer set to Adhan, no adhan channel is made for nothing', async () => {
     await sync({});
-    expect(channelsMade()).toEqual(['prayer-times-default']);
-    for (const name of ['Dhuhr', 'Asr', 'Maghrib', 'Isha']) expect(fired(name).android.channelId).toBe('prayer-times-default');
+    expect(channelsMade()).toEqual(['prayer-times-tone']);
+    for (const name of ['Dhuhr', 'Asr', 'Maghrib', 'Isha']) expect(fired(name).android.channelId).toBe('prayer-times-tone');
   });
 });

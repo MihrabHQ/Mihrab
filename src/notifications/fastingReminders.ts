@@ -21,12 +21,14 @@ import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
 import i18n from '../i18n';
 import { gregorianToHijri } from '../hijri/convert';
 import { quiet } from '../utils/quiet';
+import { SILENT_CHANNEL_IDS, SYSTEM_TONE, retireSilentChannel } from './systemTone';
 
 /** Stable prefix so we can cancel only fasting reminders without
  *  touching prayer notifications. */
 const FASTING_REMINDER_ID_PREFIX = 'fast-rem-';
 
-const FASTING_CHANNEL_ID = 'prayer_app_fasting_reminders';
+// 'prayer_app_fasting_reminders' until #134: made without a sound, so silent (systemTone.ts).
+const FASTING_CHANNEL_ID = 'prayer_app_fasting_reminders_tone';
 
 type CandidateDay = {
   /** ISO yyyy-mm-dd of the fast day itself. */
@@ -164,7 +166,9 @@ export async function rescheduleFastingReminders(opts: {
       id: FASTING_CHANNEL_ID,
       name: i18n.t('fasting.reminderChannelName', 'Fasting reminders'),
       importance: AndroidImportance.DEFAULT,
+      sound: SYSTEM_TONE,
     });
+    await retireSilentChannel(SILENT_CHANNEL_IDS.fasting);
   } catch (quietError) {
     quiet('notifications/fastingReminders', quietError);
     // Non-fatal.

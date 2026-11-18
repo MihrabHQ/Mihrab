@@ -39,9 +39,11 @@ import {
 } from '../quran/translations';
 import { loadTafsir, resolveTafsirEdition } from '../quran/tafsir';
 import { quiet } from '../utils/quiet';
+import { SILENT_CHANNEL_IDS, SYSTEM_TONE, retireSilentChannel } from './systemTone';
 
 const AYAH_DAY_ID_PREFIX = 'ayah-day-';
-const AYAH_DAY_CHANNEL_ID = 'prayer_app_ayah_of_day';
+// 'prayer_app_ayah_of_day' until #134: made without a sound, so silent (systemTone.ts).
+const AYAH_DAY_CHANNEL_ID = 'prayer_app_ayah_of_day_tone';
 const LOOK_AHEAD_DAYS = 14;
 
 /** Resolve the active edition outside React (same rule as useActiveEdition). */
@@ -172,7 +174,9 @@ export async function rescheduleAyahOfDay(opts: {
       id: AYAH_DAY_CHANNEL_ID,
       name: i18n.t('quran.ayahOfDayChannelName', 'Ayah of the day'),
       importance: AndroidImportance.DEFAULT,
+      sound: SYSTEM_TONE,
     });
+    await retireSilentChannel(SILENT_CHANNEL_IDS.ayahOfDay);
   } catch (quietError) {
     quiet('notifications/ayahOfDay', quietError);
     // Non-fatal.

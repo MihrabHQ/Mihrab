@@ -810,10 +810,9 @@ export function readWidgetContractLiveActivityAndroid(
     alertActionEnabled: wcBool(input.alertActionEnabled) ?? false,
     aodActionEnabled: wcBool(input.aodActionEnabled) ?? false,
     showBeforeMinutes: wcInt(input.showBeforeMinutes) ?? 0,
-    adhanChannelId: wcString(input.adhanChannelId) ?? 'prayer-times-default',
+    adhanChannelId: wcString(input.adhanChannelId) ?? 'prayer-times-tone',
     adhanSoundId: wcString(input.adhanSoundId) ?? 'default',
-    defaultChannelId:
-      wcString(input.defaultChannelId) ?? 'prayer-times-default',
+    defaultChannelId: wcString(input.defaultChannelId) ?? 'prayer-times-tone',
   };
   return out;
 }

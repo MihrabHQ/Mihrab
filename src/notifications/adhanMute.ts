@@ -58,6 +58,7 @@ import { isNonPrayerEvent } from '../types/prayer';
 import i18n from '../i18n';
 import { applyReaderLanguage } from '../i18n/readerLanguage';
 import { loadSettings } from '../settings/storage';
+import { DEFAULT_PRAYER_CHANNEL_ID } from './notificationSounds';
 import { resolveCoordsFromSettings } from '../settings/effectiveProvider';
 import { setActiveClockFormat, activeClock } from '../utils/activeClock';
 import {
@@ -84,7 +85,7 @@ export const MUTED_NEXT_ADHAN_KEY = 'mihrab.muted_next_adhan';
 
 /** Must match PRAYER_NOTIFICATION_ID_PREFIX in prayerNotifications.ts. */
 const PRAYER_NOTIFICATION_ID_PREFIX = 'pt-';
-const DEFAULT_CHANNEL = 'prayer-times-default';
+const DEFAULT_CHANNEL = DEFAULT_PRAYER_CHANNEL_ID;
 
 /** One occurrence, and the mode it was given. */
 export type NextAlertOverride = {

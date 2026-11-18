@@ -162,6 +162,6 @@ describe('tapping one opens the surah', () => {
     // These are reading reminders. Arriving in the adhan's channel would
     // put them on the adhan's sound and the adhan's importance.
     expect(SURAH_REMINDER_CHANNEL_ID).not.toContain('adhan');
-    expect(SURAH_REMINDER_CHANNEL_ID).toBe('prayer_app_surah_reminders');
+    expect(SURAH_REMINDER_CHANNEL_ID).toBe('prayer_app_surah_reminders_tone');
   });
 });

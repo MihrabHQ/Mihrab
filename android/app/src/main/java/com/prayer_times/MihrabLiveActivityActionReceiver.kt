@@ -145,8 +145,8 @@ class MihrabLiveActivityActionReceiver : BroadcastReceiver() {
         putExtra("adhanSoundId", payload?.optString("adhanSoundId", "default") ?: "default")
         putExtra(
           "defaultChannelId",
-          payload?.optString("defaultChannelId", "prayer-times-default")
-            ?: "prayer-times-default",
+          payload?.optString("defaultChannelId", "prayer-times-tone")
+            ?: "prayer-times-tone",
         )
       }
       ctx.startService(svc)

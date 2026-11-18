@@ -59,6 +59,7 @@ import {
   ymdLocal,
 } from './scheduling';
 import { quiet } from '../utils/quiet';
+import { SILENT_CHANNEL_IDS, SYSTEM_TONE, retireSilentChannel } from './systemTone';
 
 // Re-exported: this was its home before the Live Activity's button became
 // a second writer of the same alerts and the primitives had to move
@@ -251,13 +252,21 @@ async function ensureChannel(
             : 'Prayer times',
         importance: AndroidImportance.HIGH,
         vibration: true,
-        ...(option.androidSound ? { sound: option.androidSound } : {}),
+        // A bundled adhan by its res/raw name, otherwise the phone's own
+        // tone — said outright, because a channel that names no sound is
+        // silent (#134, `systemTone.ts`).
+        sound: option.androidSound ?? SYSTEM_TONE,
       });
     } else {
       // No-op when the channel was never created (e.g. fresh installs).
       await notifee.deleteChannel(option.androidChannelId).catch(() => {});
     }
   }
+
+  // Before #134 the default channel was `prayer-times-default`, created
+  // without a sound and so silent. Everything this sync schedules goes to
+  // its successor; nothing is left pointing at it.
+  await retireSilentChannel(SILENT_CHANNEL_IDS.prayerDefault);
 
   // ── THE ALARM-STREAM TWIN (issue #9) ────────────────────────────────
   //

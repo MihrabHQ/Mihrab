@@ -1001,11 +1001,11 @@ object WidgetContract {
      */
     val showBeforeMinutes: Int = 0,
     /** The notification channel an adhan alert posts to. */
-    val adhanChannelId: String = "prayer-times-default",
+    val adhanChannelId: String = "prayer-times-tone",
     /** The adhan chosen. */
     val adhanSoundId: String = "default",
     /** The channel a plain alert posts to. */
-    val defaultChannelId: String = "prayer-times-default",
+    val defaultChannelId: String = "prayer-times-tone",
   ) {
     fun toJson(): JSONObject = JSONObject().apply {
       put("alertActionEnabled", alertActionEnabled)
@@ -1023,9 +1023,9 @@ object WidgetContract {
           alertActionEnabled = o.wcBool("alertActionEnabled") ?: false,
           aodActionEnabled = o.wcBool("aodActionEnabled") ?: false,
           showBeforeMinutes = o.wcRaw("showBeforeMinutes").wcAsInt() ?: 0,
-          adhanChannelId = o.wcString("adhanChannelId") ?: "prayer-times-default",
+          adhanChannelId = o.wcString("adhanChannelId") ?: "prayer-times-tone",
           adhanSoundId = o.wcString("adhanSoundId") ?: "default",
-          defaultChannelId = o.wcString("defaultChannelId") ?: "prayer-times-default",
+          defaultChannelId = o.wcString("defaultChannelId") ?: "prayer-times-tone",
         )
       }
 

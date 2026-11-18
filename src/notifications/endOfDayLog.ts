@@ -53,6 +53,7 @@ import { flushRecordSync } from '../sync/recordChanged';
 import type { TimingsMap } from '../types/prayer';
 import { eventAt } from '../utils/prayerTimes';
 import { quiet } from '../utils/quiet';
+import { SILENT_CHANNEL_IDS, SYSTEM_TONE, retireSilentChannel } from './systemTone';
 
 /** The action's id — also the iOS category, one action inside it. */
 export const END_OF_DAY_ACTION_ID = 'log-day-all';
@@ -61,7 +62,8 @@ export const END_OF_DAY_CATEGORY_ID = 'end_of_day_log';
 /** Stable prefix so a resync cancels only these. */
 const ID_PREFIX = 'eod-log-';
 
-const CHANNEL_ID = 'prayer_app_end_of_day_log';
+// 'prayer_app_end_of_day_log' until #134: made without a sound, so silent (systemTone.ts).
+const CHANNEL_ID = 'prayer_app_end_of_day_log_tone';
 
 /**
  * Ten minutes after Isha. Long enough that the prayer itself is done and
@@ -106,12 +108,15 @@ export function ishaTriggerAt(
 
 async function ensureChannel(): Promise<string> {
   if (Platform.OS !== 'android') return CHANNEL_ID;
-  return notifee.createChannel({
+  const id = await notifee.createChannel({
     id: CHANNEL_ID,
     name: i18n.t('endOfDay.channelName', 'End-of-day log'),
     // A question, not an alarm: it must not interrupt, only wait.
     importance: AndroidImportance.DEFAULT,
+    sound: SYSTEM_TONE,
   });
+  await retireSilentChannel(SILENT_CHANNEL_IDS.endOfDayLog);
+  return id;
 }
 
 /** iOS needs the action declared on a category before it can be shown. */

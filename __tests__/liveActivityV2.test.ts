@@ -111,7 +111,7 @@ describe('Android, at a moment', () => {
     expect(p.tinted).toBe(true);
     expect(p.alertActionEnabled).toBe(true);
     expect(p.adhanChannelId).toBe('adhan-channel');
-    expect(p.defaultChannelId).toBe('prayer-times-default');
+    expect(p.defaultChannelId).toBe('prayer-times-tone');
     expect(p.nowWord).toBe('Now');
   });
 

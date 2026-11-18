@@ -36,7 +36,7 @@ describe('re-firing an alert from an older build', () => {
         { m: 30, l: 'Snooze 30 min' },
       ]),
     },
-    android: { channelId: 'prayer-times-default' },
+    android: { channelId: 'prayer-times-tone' },
   };
 
   it('puts the hour on the alarm screen', async () => {

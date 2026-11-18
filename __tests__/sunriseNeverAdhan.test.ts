@@ -85,7 +85,7 @@ describe('sunrise, through the scheduler that actually runs', () => {
   it('never lands on an adhan channel', async () => {
     await schedule();
     for (const n of forEvent('Sunrise')) {
-      expect(n.android.channelId).toBe('prayer-times-default');
+      expect(n.android.channelId).toBe('prayer-times-tone');
     }
   });
 
@@ -94,7 +94,7 @@ describe('sunrise, through the scheduler that actually runs', () => {
     // would be the same bug, louder: it would override a silenced phone.
     await schedule({ adhanUsesAlarmStream: true });
     for (const n of forEvent('Sunrise')) {
-      expect(n.android.channelId).toBe('prayer-times-default');
+      expect(n.android.channelId).toBe('prayer-times-tone');
       expect(String(n.android.channelId)).not.toMatch(/-alarm$/);
     }
   });
@@ -128,7 +128,7 @@ describe('sunrise, through the scheduler that actually runs', () => {
     await schedule({ adhanUsesAlarmStream: true });
     for (const key of ['Midnight', 'Lastthird']) {
       for (const n of forEvent(key)) {
-        expect(n.android.channelId).toBe('prayer-times-default');
+        expect(n.android.channelId).toBe('prayer-times-tone');
         expect(n.data.usesAdhan).toBe('0');
       }
     }
@@ -171,7 +171,7 @@ describe('the door that was actually open: "Mute next adhan"', () => {
       muted: false,
       adhanChannelId: 'prayer-times-adhan-makkah',
       adhanSoundId: 'adhan_makkah',
-      defaultChannelId: 'prayer-times-default',
+      defaultChannelId: 'prayer-times-tone',
     });
     const n = (notifee.createTriggerNotification as jest.Mock).mock
       .calls[0][0] as any;
@@ -190,11 +190,11 @@ describe('the door that was actually open: "Mute next adhan"', () => {
         // the moment, with nothing about them saying "not for this one".
         adhanChannelId: 'prayer-times-adhan-makkah',
         adhanSoundId: 'adhan_makkah',
-        defaultChannelId: 'prayer-times-default',
+        defaultChannelId: 'prayer-times-tone',
       });
       const n = (notifee.createTriggerNotification as jest.Mock).mock
         .calls[0][0] as any;
-      expect(n.android.channelId).toBe('prayer-times-default');
+      expect(n.android.channelId).toBe('prayer-times-tone');
       expect(n.data.usesAdhan).toBe('0');
       expect(n.data.adhanSound).toBe('default');
     },

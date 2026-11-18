@@ -54,6 +54,7 @@ import {
 } from '../liveActivity/liveActivityV2';
 import { loadSettings } from '../settings/storage';
 import {
+  DEFAULT_PRAYER_CHANNEL_ID,
   getNotificationSoundOption,
   resolveSoundTargets,
 } from './notificationSounds';
@@ -145,9 +146,9 @@ export async function loadLiveActivityOptions(): Promise<LiveActivityOptions> {
       alertActionEnabled: false,
       aodActionEnabled: true,
       showBeforeMinutes: 0,
-      adhanChannelId: 'prayer-times-default',
+      adhanChannelId: DEFAULT_PRAYER_CHANNEL_ID,
       adhanSoundId: 'default',
-      defaultChannelId: 'prayer-times-default',
+      defaultChannelId: DEFAULT_PRAYER_CHANNEL_ID,
     },
     words: {
       fgsText: i18n.t('liveActivity.fgsText', 'Prayer countdown active'),

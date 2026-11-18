@@ -31,6 +31,7 @@ import {
   type WidgetContractRow,
 } from '../widget/contract.generated';
 import type { WidgetPrayerPayload } from '../widget/buildWidgetPayload';
+import { DEFAULT_PRAYER_CHANNEL_ID } from '../notifications/notificationSounds';
 import {
   hhmm,
   timePair,
@@ -330,9 +331,9 @@ export function liveActivityAndroidPayload(
     alertActionEnabled: android?.alertActionEnabled ?? false,
     aodActionEnabled: android?.aodActionEnabled ?? false,
     showBeforeMinutes: android?.showBeforeMinutes ?? 0,
-    adhanChannelId: android?.adhanChannelId ?? 'prayer-times-default',
+    adhanChannelId: android?.adhanChannelId ?? DEFAULT_PRAYER_CHANNEL_ID,
     adhanSoundId: android?.adhanSoundId ?? 'default',
-    defaultChannelId: android?.defaultChannelId ?? 'prayer-times-default',
+    defaultChannelId: android?.defaultChannelId ?? DEFAULT_PRAYER_CHANNEL_ID,
     fgsText: w?.fgsText ?? '',
     alertLabelAdhan: w?.alertLabelAdhan ?? '',
     alertLabelNotification: w?.alertLabelNotification ?? '',

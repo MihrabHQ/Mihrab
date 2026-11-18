@@ -514,13 +514,13 @@ module.exports = {
         ],
         [
           'adhanChannelId',
-          t.string({ default: 'prayer-times-default' }),
+          t.string({ default: 'prayer-times-tone' }),
           'The notification channel an adhan alert posts to.',
         ],
         ['adhanSoundId', t.string({ default: 'default' }), 'The adhan chosen.'],
         [
           'defaultChannelId',
-          t.string({ default: 'prayer-times-default' }),
+          t.string({ default: 'prayer-times-tone' }),
           'The channel a plain alert posts to.',
         ],
       ],

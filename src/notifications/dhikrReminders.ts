@@ -41,9 +41,11 @@ import {
   type DhikrReminder,
 } from '../dhikr/dhikrReminders';
 import { quiet } from '../utils/quiet';
+import { SILENT_CHANNEL_IDS, SYSTEM_TONE, retireSilentChannel } from './systemTone';
 
 const DHIKR_ID_PREFIX = 'dhikr-rem-';
-export const DHIKR_REMINDER_CHANNEL_ID = 'prayer_app_dhikr_reminders';
+// 'prayer_app_dhikr_reminders' until #134: made without a sound, so silent (systemTone.ts).
+export const DHIKR_REMINDER_CHANNEL_ID = 'prayer_app_dhikr_reminders_tone';
 export const DHIKR_REMINDER_SILENT_CHANNEL_ID =
   'prayer_app_dhikr_reminders_silent';
 
@@ -182,7 +184,9 @@ export async function rescheduleDhikrReminders(opts: {
       id: DHIKR_REMINDER_CHANNEL_ID,
       name: i18n.t('settings.dhikrRemindersChannel', 'Dhikr reminders'),
       importance: AndroidImportance.DEFAULT,
+      sound: SYSTEM_TONE,
     });
+    await retireSilentChannel(SILENT_CHANNEL_IDS.dhikr);
     if (due.some(d => d.reminder.sound === 'silent')) {
       await notifee.createChannel({
         id: DHIKR_REMINDER_SILENT_CHANNEL_ID,

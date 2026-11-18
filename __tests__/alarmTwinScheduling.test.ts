@@ -60,7 +60,7 @@ describe('"Default notification", the alarm stream, a prayer set to Adhan', () =
     expect(made).toHaveBeenCalledWith('prayer-times-adhan-makkah-alarm', expect.any(String), 'adhan_makkah');
     expect(channelOf('Maghrib')).toBe('prayer-times-adhan-makkah-alarm');
     // A prayer left on the plain alert is not on the alarm stream.
-    expect(channelOf('Dhuhr')).toBe('prayer-times-default');
+    expect(channelOf('Dhuhr')).toBe('prayer-times-tone');
   });
 
   it('still arrives when the twin could not be made: the ordinary channel, never a missing one', async () => {
@@ -80,7 +80,7 @@ describe('"Default notification", the alarm stream, a prayer set to Adhan', () =
       tomorrow: today,
       baseDate: NOW,
     });
-    expect(made).toHaveBeenCalledWith('prayer-times-default-alarm', expect.any(String), '@default');
-    for (const name of ['Dhuhr', 'Asr', 'Maghrib', 'Isha']) expect(channelOf(name)).toBe('prayer-times-default');
+    expect(made).toHaveBeenCalledWith('prayer-times-tone-alarm', expect.any(String), '@default');
+    for (const name of ['Dhuhr', 'Asr', 'Maghrib', 'Isha']) expect(channelOf(name)).toBe('prayer-times-tone');
   });
 });

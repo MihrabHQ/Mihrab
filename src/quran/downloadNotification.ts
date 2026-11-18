@@ -102,6 +102,9 @@ function ensureChannel(): Promise<void> {
       // LOW: it is a progress bar, not news. It must appear in the shade
       // and never make a sound — this thing updates a hundred times.
       importance: AndroidImportance.LOW,
+      // Silent on purpose — said, because a channel that names no sound is
+      // silent whether it meant to be or not (#134, systemTone.ts).
+      sound: undefined,
     })
     .then(() => undefined)
     .catch(error => {

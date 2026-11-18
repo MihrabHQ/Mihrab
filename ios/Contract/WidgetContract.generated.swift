@@ -1028,9 +1028,9 @@ enum WidgetContract {
       alertActionEnabled: Bool = false,
       aodActionEnabled: Bool = false,
       showBeforeMinutes: Int = 0,
-      adhanChannelId: String = "prayer-times-default",
+      adhanChannelId: String = "prayer-times-tone",
       adhanSoundId: String = "default",
-      defaultChannelId: String = "prayer-times-default"
+      defaultChannelId: String = "prayer-times-tone"
     ) {
       self.alertActionEnabled = alertActionEnabled
       self.aodActionEnabled = aodActionEnabled
@@ -1054,9 +1054,9 @@ enum WidgetContract {
       alertActionEnabled = c.wcValue(Bool.self, .alertActionEnabled) ?? false
       aodActionEnabled = c.wcValue(Bool.self, .aodActionEnabled) ?? false
       showBeforeMinutes = c.wcInt(.showBeforeMinutes).flatMap(wcInt32) ?? 0
-      adhanChannelId = c.wcValue(String.self, .adhanChannelId) ?? "prayer-times-default"
+      adhanChannelId = c.wcValue(String.self, .adhanChannelId) ?? "prayer-times-tone"
       adhanSoundId = c.wcValue(String.self, .adhanSoundId) ?? "default"
-      defaultChannelId = c.wcValue(String.self, .defaultChannelId) ?? "prayer-times-default"
+      defaultChannelId = c.wcValue(String.self, .defaultChannelId) ?? "prayer-times-tone"
     }
   }
 

@@ -15,6 +15,7 @@ import i18n from '../i18n';
 import { loadSettings } from '../settings/storage';
 import { resolveCoordsFromSettings } from '../settings/effectiveProvider';
 import { ADHAN_CONTROLS_CATEGORY_ID } from './adhanActionIds';
+import { DEFAULT_PRAYER_CHANNEL_ID } from './notificationSounds';
 import { SNOOZE_PRESETS, prayerAlertActions } from './prayerAlertActions';
 import { resolveSnooze, snoozeMenu, type SnoozeMenu } from './snoozeWindow';
 import { buildTimestampTrigger, canUseExactAlarms } from './scheduling';
@@ -167,7 +168,7 @@ export async function snoozePrayerNotification(
       : target.lastChance
         ? { minutes: [], lastChanceAt: null }
         : snoozeMenu(at, deadline, SNOOZE_PRESETS);
-  const channelId = notification.android?.channelId ?? 'prayer-times-default';
+  const channelId = notification.android?.channelId ?? DEFAULT_PRAYER_CHANNEL_ID;
   const iosSound = notification.ios?.sound;
   const fullScreen = isFullScreenAlarm(data);
   // The re-fire may be built with the app's process dead, where nothing has

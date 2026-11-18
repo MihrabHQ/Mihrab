@@ -19,9 +19,11 @@ import { getQuranState, hydrateQuranState } from '../quran/quranState';
 import type { QuranState } from '../quran/quranTypes';
 import { budgetOf, dayOf, todaysRevision } from '../quran/hifz';
 import { quiet } from '../utils/quiet';
+import { SILENT_CHANNEL_IDS, SYSTEM_TONE, retireSilentChannel } from './systemTone';
 
 const HIFZ_REM_ID_PREFIX = 'hifz-rem-';
-const HIFZ_CHANNEL_ID = 'prayer_app_hifz_reminder';
+// 'prayer_app_hifz_reminder' until #134: made without a sound, so silent (systemTone.ts).
+const HIFZ_CHANNEL_ID = 'prayer_app_hifz_reminder_tone';
 const LOOK_AHEAD_DAYS = 7;
 
 export async function cancelAllHifzReminders(): Promise<void> {
@@ -70,7 +72,9 @@ export async function rescheduleHifzReminder(opts: {
       id: HIFZ_CHANNEL_ID,
       name: i18n.t('hifz.reminderChannelName', 'Hifz reminder'),
       importance: AndroidImportance.DEFAULT,
+      sound: SYSTEM_TONE,
     });
+    await retireSilentChannel(SILENT_CHANNEL_IDS.hifz);
   } catch (quietError) {
     quiet('notifications/hifzReminder', quietError);
     // Non-fatal.

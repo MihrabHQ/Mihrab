@@ -27,7 +27,7 @@ afterEach(() => {
 });
 
 describe('a notification is never addressed to a twin that was not made', () => {
-  const base = 'prayer-times-default';
+  const base = 'prayer-times-tone';
 
   it('trusts the twin before anyone has tried this run, as it always did', () => {
     expect(resolveSoundTargets('default', true).androidChannelId).toBe(alarmChannelId(base));

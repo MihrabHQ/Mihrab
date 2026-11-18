@@ -17,9 +17,11 @@ import type { KhatmahPlan, QuranState } from '../quran/quranTypes';
 import { activeKhatmah, khatmahCurrentPage } from '../quran/khatmahProgress';
 import { khatmahDay, khatmahPages } from '../quran/khatmahStatus';
 import { quiet } from '../utils/quiet';
+import { SILENT_CHANNEL_IDS, SYSTEM_TONE, retireSilentChannel } from './systemTone';
 
 const KHATMAH_REM_ID_PREFIX = 'khatmah-rem-';
-const KHATMAH_CHANNEL_ID = 'prayer_app_khatmah_reminder';
+// 'prayer_app_khatmah_reminder' until #134: made without a sound, so silent (systemTone.ts).
+const KHATMAH_CHANNEL_ID = 'prayer_app_khatmah_reminder_tone';
 const LOOK_AHEAD_DAYS = 7;
 
 function ymd(d: Date): string {
@@ -87,7 +89,9 @@ export async function rescheduleKhatmahReminder(opts: {
       id: KHATMAH_CHANNEL_ID,
       name: i18n.t('quran.khatmahReminderChannelName', 'Khatmah reminder'),
       importance: AndroidImportance.DEFAULT,
+      sound: SYSTEM_TONE,
     });
+    await retireSilentChannel(SILENT_CHANNEL_IDS.khatmah);
   } catch (quietError) {
     quiet('notifications/khatmahReminder', quietError);
     // Non-fatal.

@@ -19,6 +19,14 @@ export type NotificationSoundId =
   | 'adhan_sharif_doman'
   | 'adhan_yusuf_islam';
 
+/**
+ * The channel of the system's own tone: prayers on "Default notification",
+ * the reminder before a prayer and Sunrise. A new id since #134 — its
+ * predecessor, `prayer-times-default`, was created without a sound and so
+ * was silent (`systemTone.ts`).
+ */
+export const DEFAULT_PRAYER_CHANNEL_ID = 'prayer-times-tone';
+
 export type NotificationSoundOption = {
   id: NotificationSoundId;
   labelKey: string;
@@ -33,7 +41,7 @@ export const NOTIFICATION_SOUND_OPTIONS: NotificationSoundOption[] = [
     id: 'default',
     labelKey: 'settings.notificationSoundDefault',
     helpKey: 'settings.notificationSoundDefaultHelp',
-    androidChannelId: 'prayer-times-default',
+    androidChannelId: DEFAULT_PRAYER_CHANNEL_ID,
     iosSound: 'default',
   },
   {
@@ -183,7 +191,7 @@ export const NOTIFICATION_SOUND_OPTIONS: NotificationSoundOption[] = [
     // They are the default option's values so that a caller which reaches for
     // the raw fields anyway gets a working notification rather than a silent
     // one.
-    androidChannelId: 'prayer-times-default',
+    androidChannelId: DEFAULT_PRAYER_CHANNEL_ID,
     iosSound: 'default',
   },
 ];

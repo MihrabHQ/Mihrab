@@ -681,7 +681,7 @@ async function liveActivityCases() {
         aodActionEnabled: i % 2 === 0,
         adhanChannelId: 'adhan-makkah-alarm',
         adhanSoundId: 'makkah',
-        defaultChannelId: 'prayer-times-default',
+        defaultChannelId: 'prayer-times-tone',
       },
       words: {
         fgsText: 'Prayer countdown active',

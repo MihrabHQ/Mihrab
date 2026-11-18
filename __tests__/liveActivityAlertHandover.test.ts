@@ -266,7 +266,7 @@ describe('the alert still arrives when the channel does not', () => {
     name: 'Fajr',
     mode: 'adhan',
     adhanChannelId: 'prayer-times-adhan-makkah-alarm',
-    defaultChannelId: 'prayer-times-default',
+    defaultChannelId: 'prayer-times-tone',
     title: 'Fajr',
     body: 'Prayer time',
     adhanSoundId: 'adhan_makkah',
@@ -289,10 +289,10 @@ describe('the alert still arrives when the channel does not', () => {
     // names a channel that does not exist yet — which Android drops in
     // silence, so the prayer would not arrive at all. It arrives.
     (notifee.getChannel as jest.Mock).mockImplementation(id =>
-      Promise.resolve(id === 'prayer-times-default' ? { id } : null),
+      Promise.resolve(id === 'prayer-times-tone' ? { id } : null),
     );
     await adhanMuteToggleTask(base as never);
-    expect(created().android.channelId).toBe('prayer-times-default');
+    expect(created().android.channelId).toBe('prayer-times-tone');
     expect(created()).toBeTruthy();
   });
 
@@ -301,7 +301,7 @@ describe('the alert still arrives when the channel does not', () => {
       throw new Error('no such method on this build');
     });
     await adhanMuteToggleTask(base as never);
-    expect(created().android.channelId).toBe('prayer-times-default');
+    expect(created().android.channelId).toBe('prayer-times-tone');
   });
 });
 
@@ -325,7 +325,7 @@ describe('the heads-up goes with the prayer it belongs to', () => {
     epoch: FAJR,
     name: 'Fajr',
     adhanChannelId: 'prayer-times-adhan-makkah',
-    defaultChannelId: 'prayer-times-default',
+    defaultChannelId: 'prayer-times-tone',
     title: 'Fajr',
     body: 'Prayer time',
     adhanSoundId: 'adhan_makkah',
@@ -356,7 +356,7 @@ describe('the heads-up goes with the prayer it belongs to', () => {
     const pre = calls().find(n => n.id === preReminderId(FAJR, 'Fajr', 15));
     expect(pre).toBeTruthy();
     // The plain tone, never the adhan: a heads-up is not the call to prayer.
-    expect(pre.android.channelId).toBe('prayer-times-default');
+    expect(pre.android.channelId).toBe('prayer-times-tone');
   });
 
   it('addresses the id the scheduler wrote', () => {

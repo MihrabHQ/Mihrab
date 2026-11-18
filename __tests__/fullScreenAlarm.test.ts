@@ -145,7 +145,7 @@ describe('snooze', () => {
     title: 'Fajr',
     subtitle: '05:00',
     body: 'It is time for Fajr',
-    android: { channelId: 'prayer-times-default' },
+    android: { channelId: 'prayer-times-tone' },
   };
 
   test('a full-screen alert comes back full-screen, time and all', async () => {
@@ -179,7 +179,7 @@ describe('the alarm screen buttons', () => {
     id: 'pt-1-Dhuhr',
     title: 'Dhuhr',
     body: 'It is time for Dhuhr',
-    channelId: 'prayer-times-default',
+    channelId: 'prayer-times-tone',
     data: { prayer: 'Dhuhr', targetDate: '2026-06-14', fullScreen: '1' },
   };
 
