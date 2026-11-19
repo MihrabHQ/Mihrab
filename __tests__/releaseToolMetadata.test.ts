@@ -8,7 +8,7 @@ import { generateKeyPairSync } from 'crypto';
 import { readFileSync } from 'fs';
 import path from 'path';
 import { Asc } from '../scripts/release/asc.ts';
-import { ASC_LOCALE, LOCALES, appstoreMetadataMain, ascLocale } from '../scripts/release/appstoreMetadata.ts';
+import { ASC_LOCALE, LOCALES, appstoreMetadataMain, ascLocale, forAppStore } from '../scripts/release/appstoreMetadata.ts';
 import type { MetaCtx } from '../scripts/release/appstoreMetadata.ts';
 import { GRADLE, HOME, ROOT, World } from './fixtures/releaseWorld';
 
@@ -142,5 +142,29 @@ describe('the listing writer', () => {
     const { m, writes } = listing();
     await appstoreMetadataMain(m, []);
     expect(writes().filter(r => r.method === 'POST')).toEqual([]);
+  });
+
+  it('leaves Play’s lines about Android out of What’s New (App Review, 2.38.3)', () => {
+    const play = [
+      '• iPhone, iPad and Mac: the day bar moves one day a tap.',
+      '• Android: no Live activity flash before "Show from".',
+      '• أندرويد: لا يظهر النشاط المباشر.',
+      '• Tunisia: 2025 dates match the Institute.',
+    ].join('\n');
+    expect(forAppStore(play, 'x.txt')).toBe(
+      '• iPhone, iPad and Mac: the day bar moves one day a tap.\n• Tunisia: 2025 dates match the Institute.',
+    );
+  });
+
+  it('drops a line that names Android anywhere, and stops when nothing is left', () => {
+    expect(forAppStore('• Faster on iPhone and on Android.\n• Qatar offline.', 'x.txt')).toBe('• Qatar offline.');
+    expect(() => forAppStore('• Android: one.\n• Android: two.', 'x.txt')).toThrow(/nothing left/);
+  });
+
+  it('sends the App Store the notes without the Android line', async () => {
+    const { w, m, writes } = listing();
+    w.file(`${ROOT}/fastlane/metadata/android/en-US/changelogs/282.txt`, 'English notes\n• Android: only there.\n');
+    await appstoreMetadataMain(m, []);
+    expect(writes().some(r => r.url.includes('V-en-US') && String(r.body).includes('Android'))).toBe(false);
   });
 });

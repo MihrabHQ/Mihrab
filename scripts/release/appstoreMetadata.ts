@@ -13,7 +13,8 @@
  * branding/IDENTITY.md; __tests__/storeListings.test.ts holds them to
  * Apple's limits and to guideline 2.3.10. What's new is the Android
  * changelog for this build's versionCode — English, Swedish and Arabic
- * are the three the release writes, so the other ten use the English one.
+ * are the three the release writes, so the other ten use the English one —
+ * with its lines about Android left out (`forAppStore`).
  *
  * WHY THIRTEEN (2026-09-28): a search in Turkish, Urdu or Indonesian had
  * nothing to match on the iPhone. WHY LIFESTYLE: it was filed under
@@ -75,11 +76,40 @@ export function versionCode(m: MetaCtx): string {
   return hit[1];
 }
 
-/** This build's notes in the locale's language, or in English. */
+/**
+ * Another platform named, in the languages the notes are or may be written
+ * in. App Review turned 2.38.3 back under guideline 2.3.10 for one line of
+ * its What's New: "• Android: no Live activity flash before …" — the notes
+ * are Play's, and Play's notes have lines for Android alone.
+ */
+export const OTHER_PLATFORM =
+  /android|أندرويد|اندرويد|андроид|एंड्रॉ|অ্যান্ড্রয়েড|اینڈرائیڈ|安卓|f-droid|google play|play store|play butik|material you/i;
+
+/**
+ * Play's notes as the App Store's: every line that names Android (or Play,
+ * F-Droid …) left out, whole — the notes are one change a line. Notes that
+ * are nothing else stop the run: Apple wants What's New on an update.
+ */
+export function forAppStore(notes: string, file: string): string {
+  const kept = notes
+    .split('\n')
+    .filter(line => !OTHER_PLATFORM.test(line))
+    .join('\n')
+    .trim();
+  if (!kept) {
+    throw new AscExit(
+      `${file}: nothing left once the lines about Android are out — write one for the App Store ` +
+        '(guideline 2.3.10 refuses another platform in What’s New)',
+    );
+  }
+  return kept;
+}
+
+/** This build's notes in the locale's language, or in English — without Android's lines. */
 export function whatsNew(m: MetaCtx, locale: string): string | null {
   for (const d of [LOCALES[locale], 'en-US']) {
     const f = `${m.root}/fastlane/metadata/android/${d}/changelogs/${versionCode(m)}.txt`;
-    if (m.io.fs.exists(f)) return m.io.fs.readText(f).trim();
+    if (m.io.fs.exists(f)) return forAppStore(m.io.fs.readText(f), f);
   }
   return null;
 }

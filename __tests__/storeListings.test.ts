@@ -27,6 +27,7 @@
  */
 import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import path from 'path';
+import { LOCALES, OTHER_PLATFORM, forAppStore } from '../scripts/release/appstoreMetadata.ts';
 
 const ROOT = path.join(__dirname, '..');
 const I18N = path.join(ROOT, 'src', 'i18n', 'locales');
@@ -298,6 +299,23 @@ describe('the App Store copy fits App Store Connect', () => {
       expect(ios(loc, f)).not.toMatch(
         /Android|أندرويد|اینڈرائیڈ|Андроид|एंड्रॉ|অ্যান্ড্রয়েড|安卓|Google Play|F-Droid|Material You/i,
       );
+    }
+  });
+});
+
+describe('What’s New on the App Store', () => {
+  // The App Store's What's New is Play's changelog for this versionCode with
+  // the lines about Android left out (scripts/release/appstoreMetadata.ts).
+  // App Review turned 2.38.3 back for one of those lines (2.3.10).
+  const code = /versionCode\s+(\d+)/.exec(readFileSync(path.join(ROOT, 'android', 'app', 'build.gradle'), 'utf8'))![1];
+  it.each(Object.entries(LOCALES))('%s: this build’s notes, as sent, name no other platform', (_, play) => {
+    for (const d of [play, 'en-US']) {
+      const f = path.join(STORE, d, 'changelogs', `${code}.txt`);
+      if (!existsSync(f)) continue;
+      const sent = forAppStore(readFileSync(f, 'utf8'), f);
+      expect(sent).not.toMatch(OTHER_PLATFORM);
+      expect(sent.length).toBeGreaterThan(0);
+      return;
     }
   });
 });
