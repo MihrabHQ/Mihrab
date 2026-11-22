@@ -291,11 +291,11 @@ function nearestWithin(
  * COUNTRIES WITH A CALCULATION METHOD OF THEIR OWN.
  *
  * Saudi Arabia, the Gulf states, Iran, Iraq, Jordan, Egypt, Pakistan,
- * India, Bangladesh, Russia, Tunisia and Portugal: where AlAdhan's Automatic
- * picks the country's own method (Umm al-Qura, Egypt, Karachi, Tehran, Gulf,
- * Kuwait, Qatar, Dubai, Russia, Tunisia, Portugal, Jordan), which Automatic
- * must not trade for Diyanet's table only because Diyanet lists a place
- * nearby. Their outlines (`national` in the shapes file) are rough — a few
+ * India, Bangladesh, Russia, Tunisia and Portugal: where Automatic is the
+ * country's own method (`NATIONAL_AUTO_METHOD` in autoMethod.ts — Umm
+ * al-Qura, Egypt, Karachi, Tehran, Kuwait, Qatar, Dubai, Russia, Tunisia,
+ * Portugal, Jordan), asked of AlAdhan by number, which Automatic must not
+ * trade for Diyanet's table only because Diyanet lists a place nearby. Their outlines (`national` in the shapes file) are rough — a few
  * kilometres, Russia's ten — since nothing finer is needed: where the precise
  * outlines above reach, they answer; elsewhere a point within
  * `NATIONAL_REACH_KM` of a rough outline counts as inside, so an error on a

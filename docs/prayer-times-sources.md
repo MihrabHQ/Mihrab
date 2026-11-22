@@ -90,11 +90,16 @@ the method's.
 timetable of its own Muftiate's to follow; Automatic there is Diyanet's
 method throughout (Diyanet prints tables for some thirty Turkmen towns),
 for a listed town near the reader or the reader's own spot. In **South
-Africa** Automatic asks AlAdhan for the Muslim World League's angles by
-number (AlAdhan's own choice there is Umm al-Qura's), and in
-**KwaZulu-Natal** for 18° and 18°, the Jamiatul Ulama KwaZulu-Natal's
-Fajr and Isha, ahead of Diyanet's listed towns in the province
-(`autoMethod.ts`). In the **United States and Canada** it asks for 15° and
+Africa** Automatic asks AlAdhan for the Muslim World League's angles (the
+Muslim Judicial Council's Cape Town timetable), and in **KwaZulu-Natal**
+for 18° and 18°, the Jamiatul Ulama KwaZulu-Natal's Fajr and Isha — both
+ahead of Diyanet's listed towns, Johannesburg and Cape Town as well as
+Durban (`autoMethod.ts`). Wherever Automatic is AlAdhan, AlAdhan is asked
+for the method the phone computes offline, by number — never its own
+Automatic, which takes the method whose home is nearest (Tehran's for
+Grozny, the Shia Leva Institute's for Erbil, JAKIM's for Vladivostok).
+**Bahrain** is 18° and 18°, **Oman** Dubai's method and **Iraq**
+Kuwait's, the nearest of AlAdhan's to the times each publishes. In the **United States and Canada** it asks for 15° and
 15° (the Islamic Society of North America's, which the Fiqh Council of North
 America suggests), likewise ahead of the places Diyanet lists there. The
 certification of all of these is in mihrab-methods' `docs/status.md`.

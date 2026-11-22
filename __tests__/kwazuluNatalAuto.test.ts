@@ -52,9 +52,10 @@ describe('KwaZulu-Natal on Automatic', () => {
     expect(isCoordinateInKwaZuluNatal(latitude, longitude)).toBe(false);
     expect(autoMethodForCoords(latitude, longitude)).toBe(DEFAULT_AUTO_METHOD);
     // The rest of South Africa asks AlAdhan for the Muslim World League's by
-    // number (its own Automatic answers Umm al-Qura's there); the neighbours do not.
+    // number (its own Automatic answers Umm al-Qura's there); every place is
+    // asked for the method the phone computes.
     expect(isCoordinateInSouthAfrica(latitude, longitude)).toBe(southAfrica);
-    expect(autoMethodToAsk(latitude, longitude)).toBe(southAfrica ? 3 : 'auto');
+    expect(autoMethodToAsk(latitude, longitude)).toBe(southAfrica ? 3 : autoMethodForCoords(latitude, longitude));
   });
 
   it.each([
@@ -80,7 +81,7 @@ describe('KwaZulu-Natal on Automatic', () => {
     ['Lavumisa', -27.31, 31.89],
   ] as const)('%s is not', (_name, latitude, longitude) => {
     expect(isCoordinateInSouthAfrica(latitude, longitude)).toBe(false);
-    expect(autoMethodToAsk(latitude, longitude)).toBe('auto');
+    expect(autoMethodToAsk(latitude, longitude)).toBe(autoMethodForCoords(latitude, longitude));
   });
 
   it('AlAdhan is asked for the method by number', async () => {
@@ -100,8 +101,8 @@ describe('KwaZulu-Natal on Automatic', () => {
       await ask(-31.59, 28.78); // Mthatha
       expect(asked[0]).toContain('method=3&');
       asked.length = 0;
-      await ask(-24.65, 25.91); // Gaborone
-      expect(asked[0]).not.toContain('method=');
+      await ask(-24.65, 25.91); // Gaborone: the method the phone computes, by number too
+      expect(asked[0]).toContain('method=3&');
     } finally {
       global.fetch = fetchWas;
     }

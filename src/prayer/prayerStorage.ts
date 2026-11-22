@@ -180,6 +180,12 @@ function cacheKeyWith(p: Omit<StoredPrayerData, 'months'>, preferencesPart: stri
     // And the correction list in force: days stored under an older one are
     // computed again when a newer list arrives (`methodCurrency.ts`).
     ...correctionListKey(p),
+    // AlAdhan on Automatic: the method it is asked for (`autoMethodToAsk`).
+    // A day cached when AlAdhan chose its own (Tehran's for Grozny, Qum's
+    // for Erbil) is asked again, not kept.
+    ...(p.provider === 'aladhan' && p.calculationMethod === 'auto'
+      ? [`am=${autoMethodForCoords(p.latitude, p.longitude)}`]
+      : []),
   ].join('|');
 }
 

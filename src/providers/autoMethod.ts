@@ -49,9 +49,9 @@ type AutoMethodRegion = {
 };
 
 /**
- * Regions where Automatic is one of AlAdhan's methods, but not the one its
- * own Automatic would pick there — so AlAdhan is asked for it by number
- * (`autoMethodToAsk`), and the phone computes the same offline.
+ * Regions with a method of their own that no national table above names
+ * (AlAdhan is asked for every Automatic by number, `autoMethodToAsk`, and
+ * the phone computes the same offline).
  *
  * South Africa. AlAdhan's Automatic takes the method whose home is nearest,
  * which this far south is Umm al-Qura's (Fajr 18.5°, Isha ninety minutes
@@ -79,7 +79,11 @@ type AutoMethodRegion = {
  */
 const ASKED_BY_NUMBER: readonly AutoMethodRegion[] = [
   { method: 1, covers: isCoordinateInKwaZuluNatal, aheadOfListedPlaces: true },
-  { method: 3, covers: isCoordinateInSouthAfrica },
+  // Ahead of Diyanet's listed towns too (Johannesburg, Cape Town, Pretoria
+  // …): the Muslim Judicial Council's Cape Town timetable is these angles
+  // to the minute, and Diyanet's table is not (sunrise seven minutes
+  // earlier, Dhuhr, Asr and Maghrib four to seven later).
+  { method: 3, covers: isCoordinateInSouthAfrica, aheadOfListedPlaces: true },
   { method: 2, covers: isCoordinateInUsOrCanada, aheadOfListedPlaces: true },
 ];
 
@@ -105,9 +109,24 @@ const AUTO_METHOD_REGIONS: readonly AutoMethodRegion[] = [
 
 /**
  * The method each country with one of its own computes, as listed under
- * Calculation method. Bahrain, Oman and Iraq are left on MWL: which of the
- * Gulf's, Qatar's, Dubai's, Kuwait's or Tehran's AlAdhan gives them is not
- * read off anything here, and a guess would be a second, quieter error.
+ * Calculation method.
+ *
+ * Bahrain, Oman and Iraq (Nov 2026). They had MWL here while AlAdhan, asked
+ * for its own Automatic, gave them Qatar's, Dubai's and Kuwait's — and
+ * Iraqi Kurdistan the Shia Leva Institute's — so online and offline were
+ * two timetables. Read off what is published now:
+ *  - Bahrain: 18° and 18° (1). A Manama table that says it matches the
+ *    official calculations (tawkit.net, November 2026) is these angles to
+ *    within a minute or two on every prayer; Qatar's Isha ninety minutes
+ *    after Maghrib was ten minutes late, MWL's 17° four minutes early.
+ *  - Oman: Dubai's (16), 18.2° and 18.2° with three minutes after the
+ *    zenith and after sunset — the nearest of AlAdhan's to the Muscat times
+ *    in Al Watan (22 Nov 2026: Isha to the minute). The ministry's own
+ *    margins are a few minutes more (Maghrib three later still); no method
+ *    here carries them.
+ *  - Iraq: Kuwait's (9), 18° and 17.5° — what AlAdhan gave Baghdad and
+ *    Basra, now the whole country's: no endowment timetable was found to
+ *    read anything finer off.
  */
 const NATIONAL_AUTO_METHOD: Readonly<Record<string, number>> = {
   SA: 4, // Umm al-Qura
@@ -119,6 +138,9 @@ const NATIONAL_AUTO_METHOD: Readonly<Record<string, number>> = {
   KW: 9,
   QA: 10,
   AE: 16, // Dubai
+  BH: 1, // 18° / 18°
+  OM: 16, // Dubai's, the nearest to Muscat's published times
+  IQ: 9, // Kuwait
   RU: 14,
   TN: 18,
   PT: 22,
@@ -143,17 +165,20 @@ export function autoMethodForCoords(
 }
 
 /**
- * What to ask AlAdhan for when the reader's method is Automatic: its own
- * Automatic ('auto') nearly everywhere, a method by number where the app's
- * Automatic is not the one AlAdhan would choose (`ASKED_BY_NUMBER`).
+ * What to ask AlAdhan for when the reader's method is Automatic: the method
+ * the phone computes for the spot (`autoMethodForCoords`), by number,
+ * everywhere — never AlAdhan's own Automatic.
+ *
+ * AlAdhan's Automatic is the method whose home is nearest, and away from
+ * those homes that is somebody else's convention: Grozny was given the
+ * Institute of Geophysics' in Tehran (Maghrib 23 minutes after the
+ * Russian method's), Erbil the Shia Leva Institute's in Qum (Maghrib 17
+ * later), Vladivostok JAKIM's (Fajr 23 earlier), Limassol Jordan's — while
+ * the phone, offline, computed Russia's or MWL. The times moved when the
+ * connection did. Asked by number, they are one timetable.
  */
-export function autoMethodToAsk(
-  latitude: number,
-  longitude: number,
-): number | 'auto' {
-  return (
-    ASKED_BY_NUMBER.find(r => r.covers(latitude, longitude))?.method ?? 'auto'
-  );
+export function autoMethodToAsk(latitude: number, longitude: number): number {
+  return autoMethodForCoords(latitude, longitude);
 }
 
 /** Is Automatic here a calculation method the app has settled on, ahead of a place Diyanet lists nearby? */

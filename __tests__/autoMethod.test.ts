@@ -46,9 +46,10 @@ describe('autoMethodForCoords', () => {
     expect(autoMethodForCoords(36.8065, 10.1815)).toBe(18); // Tunis (Algiers is Algeria's own, #70)
     expect(autoMethodForCoords(38.7223, -9.1393)).toBe(22); // Lisbon
     expect(autoMethodForCoords(31.9539, 35.9106)).toBe(23); // Amman
-    // Not read off anything: MWL, as before.
-    expect(autoMethodForCoords(26.2285, 50.586)).toBe(DEFAULT_AUTO_METHOD); // Manama
-    expect(autoMethodForCoords(33.3152, 44.3661)).toBe(DEFAULT_AUTO_METHOD); // Baghdad
+    // Read off their published times (Nov 2026): 18° / 18°, Dubai's, Kuwait's.
+    expect(autoMethodForCoords(26.2285, 50.586)).toBe(1); // Manama
+    expect(autoMethodForCoords(23.588, 58.3829)).toBe(16); // Muscat
+    expect(autoMethodForCoords(33.3152, 44.3661)).toBe(9); // Baghdad
     // Across the border it is not: Badajoz is Spain's, a few km from Portugal.
     expect(autoMethodForCoords(38.8794, -6.9707)).toBe(DEFAULT_AUTO_METHOD);
   });

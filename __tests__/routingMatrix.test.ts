@@ -19,6 +19,8 @@
  *    method), never Diyanet for a place Diyanet lists nearby;
  *  - the Republic of Cyprus AlAdhan, though Northern Cyprus's districts
  *    are near;
+ *  - the United States, Canada and South Africa AlAdhan with the convention
+ *    their mosques print, though Diyanet lists places there;
  *  - anywhere else, Diyanet where it lists a place within 25 km, else
  *    AlAdhan;
  *  - offline, Automatic's method is the country's own where it has one.
@@ -72,7 +74,11 @@ const OWN_SOURCE: Record<
   IR: { source: 'tehran', method: 7, yields: true },
 };
 
-/** The country's own method, as listed under Calculation method (Bahrain, Oman, Iraq: not read off anything, MWL). */
+/**
+ * The country's own method, as listed under Calculation method. Bahrain
+ * 18° / 18°, Oman Dubai's and Iraq Kuwait's: read off their published
+ * times in November 2026 (`autoMethod.ts`).
+ */
 const NATIONAL_METHOD: Record<string, number> = {
   SA: 4,
   EG: 5,
@@ -87,9 +93,9 @@ const NATIONAL_METHOD: Record<string, number> = {
   TN: 18,
   PT: 22,
   JO: 23,
-  BH: 3,
-  OM: 3,
-  IQ: 3,
+  BH: 1,
+  OM: 16,
+  IQ: 9,
 };
 
 const SNAP_KM_ABROAD = 25;
@@ -194,11 +200,12 @@ describe('the routing matrix', () => {
         expect(row.method).toBe(3);
         expect(row.chosen3).toBe('aladhan');
       } else if (autoMethodAheadOfListedPlace(latitude, longitude)) {
-        // The United States, Canada, KwaZulu-Natal: the convention their
-        // mosques print, by AlAdhan, ahead of a place Diyanet lists (CHANGELOG).
+        // The United States, Canada, South Africa (KwaZulu-Natal its own):
+        // the convention their mosques print, by AlAdhan, ahead of a place
+        // Diyanet lists (CHANGELOG).
         expect(row.auto).toBe('aladhan');
         expect(row.method).toBe(autoMethodForCoords(latitude, longitude));
-        expect([1, 2]).toContain(row.method);
+        expect(country === 'ZA' ? [1, 3] : [2]).toContain(row.method);
         expect(row.chosen3).toBe('aladhan');
       } else if (isCoordinateInTunisiaPlace(latitude, longitude)) {
         // A place Tunisia's Institute's method is held to: its own times, on the phone.

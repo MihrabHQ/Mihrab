@@ -58,7 +58,7 @@ describe('The United States and Canada on Automatic', () => {
 
   it.each(OUTSIDE)('%s is outside', (_name, latitude, longitude) => {
     expect(isCoordinateInUsOrCanada(latitude, longitude)).toBe(false);
-    expect(autoMethodToAsk(latitude, longitude)).toBe('auto');
+    expect(autoMethodToAsk(latitude, longitude)).toBe(autoMethodForCoords(latitude, longitude));
     expect(autoMethodAheadOfListedPlace(latitude, longitude)).toBe(false);
   });
 

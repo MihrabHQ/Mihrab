@@ -145,15 +145,17 @@ export const HOME_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
  * any. A country's own published source still comes first, and so does a
  * country's own calculation method: in Saudi Arabia, the Gulf, Iran, Iraq,
  * Jordan, Egypt, Pakistan, India, Bangladesh, Russia, Tunisia and Portugal
- * (`nationalMethodCountryAt`) AlAdhan's Automatic computes the national
- * method, and a Diyanet place nearby — Mecca, Tehran, Cairo, Moscow — does
+ * (`nationalMethodCountryAt`) Automatic is the national method, asked of
+ * AlAdhan by number (`autoMethodToAsk`), and a Diyanet place nearby — Mecca, Tehran, Cairo, Moscow — does
  * not trade it for Diyanet's.
  *
  * Nor do the United States and Canada, where Automatic computes the 15° and
- * 15° their mosques print, nor KwaZulu-Natal (`autoMethodAheadOfListedPlace`): Durban,
- * Pietermaritzburg and Newcastle are on Diyanet's list, but the province's
- * own timetable is the Jamiatul Ulama KwaZulu-Natal's, and Automatic
- * computes its angles there.
+ * 15° their mosques print, nor South Africa (`autoMethodAheadOfListedPlace`):
+ * Durban, Pietermaritzburg and Newcastle are on Diyanet's list, but the
+ * province's own timetable is the Jamiatul Ulama KwaZulu-Natal's, and
+ * Automatic computes its angles there; Johannesburg, Cape Town and the rest
+ * take the Muslim World League's, which the Muslim Judicial Council's Cape
+ * Town timetable is to the minute.
  *
  * Nor does the Republic of Cyprus (`NOT_NEAR_DIYANET`): Diyanet lists
  * Northern Cyprus's districts, and Nicosia south of the line, Larnaca and
