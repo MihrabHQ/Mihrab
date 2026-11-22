@@ -1754,7 +1754,9 @@
     "previewReciter": "{{name}} anhören",
     "stopPreview": "Hörprobe beenden",
     "voiceHint": "Der Mushaf ist {{page}}; {{name}} rezitiert {{voice}}. In {{page}} hören:",
-    "voiceHintDismiss": "Diese Stimme behalten"
+    "voiceHintDismiss": "Diese Stimme behalten",
+    "hifzHideTafsir": "Tafsir bei Wiederholung ausblenden",
+    "hifzHideTafsirHelp": "Kommentare und Übersetzungen bei der Wiederholung ausblenden, um sich auf die Rezitation aus dem Gedächtnis zu konzentrieren."
   },
   "reading": {
     "textSize": "Schriftgröße",
@@ -2749,6 +2751,12 @@
     "undo": "Rückgängig",
     "practiseAhead": "Vor dem Termin üben",
     "neededHelpLast": "brauchte zuletzt Hilfe",
-    "practising": "{{name}} auswendig üben"
+    "practising": "{{name}} auswendig üben",
+    "gradeWrong": "Falsch",
+    "gradeCorrect": "Richtig",
+    "reviewWrongBadge": "{{count}} falsch",
+    "reviewWrongBadge_one": "{{count}} falsch",
+    "reviewWrongOnly": "{{count}} falsche wiederholen",
+    "reviewShowAll": "Alle anzeigen"
   }
 }

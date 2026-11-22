@@ -1754,7 +1754,9 @@
     "previewReciter": "{{name}} dinle",
     "stopPreview": "Önizlemeyi durdur",
     "voiceHint": "Mushaf {{page}}; {{name}} {{voice}} okuyor. {{page}} dinleyin:",
-    "voiceHintDismiss": "Bu sesi koru"
+    "voiceHintDismiss": "Bu sesi koru",
+    "hifzHideTafsir": "Tekrar sırasında tefsiri gizle",
+    "hifzHideTafsirHelp": "Ezber tekrarı sırasında okumaya odaklanmak için tefsir ve çevirileri gizleyin."
   },
   "reading": {
     "textSize": "Metin boyutu",
@@ -2749,6 +2751,12 @@
     "undo": "Geri al",
     "practiseAhead": "Vaktinden önce çalış",
     "neededHelpLast": "geçen sefer yardım gerekti",
-    "practising": "{{name}} ezberden çalışılıyor"
+    "practising": "{{name}} ezberden çalışılıyor",
+    "gradeWrong": "Yanlış",
+    "gradeCorrect": "Doğru",
+    "reviewWrongBadge": "{{count}} yanlış",
+    "reviewWrongBadge_one": "{{count}} yanlış",
+    "reviewWrongOnly": "{{count}} yanlışı tekrar et",
+    "reviewShowAll": "Tümünü göster"
   }
 }

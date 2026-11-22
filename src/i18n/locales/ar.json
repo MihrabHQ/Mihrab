@@ -1758,7 +1758,9 @@
     "previewReciter": "استمع إلى {{name}}",
     "stopPreview": "إيقاف المعاينة",
     "voiceHint": "المصحف برواية {{page}}، و{{name}} يقرأ برواية {{voice}}. استمع برواية {{page}}:",
-    "voiceHintDismiss": "الإبقاء على هذا الصوت"
+    "voiceHintDismiss": "الإبقاء على هذا الصوت",
+    "hifzHideTafsir": "إخفاء التفسير أثناء المراجعة",
+    "hifzHideTafsirHelp": "إخفاء التفسير والترجمة أثناء مراجعة الحفظ للتركيز على التلاوة من الذاكرة."
   },
   "reading": {
     "textSize": "حجم النص",
@@ -2793,6 +2795,12 @@
     "undo": "تراجع",
     "practiseAhead": "راجِع قبل موعدها",
     "neededHelpLast": "احتاجت عونًا في المرة الماضية",
-    "practising": "تمرين {{name}} غيبًا"
+    "practising": "تمرين {{name}} غيبًا",
+    "gradeWrong": "خطأ",
+    "gradeCorrect": "صحيح",
+    "reviewWrongBadge": "{{count}} خطأ",
+    "reviewWrongBadge_one": "{{count}} خطأ",
+    "reviewWrongOnly": "مراجعة الأخطاء ({{count}})",
+    "reviewShowAll": "عرض الكل"
   }
 }

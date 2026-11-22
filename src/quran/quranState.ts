@@ -168,6 +168,7 @@ export const DEFAULT_QURAN_STATE: QuranState = {
     touchLock: false,
     touchLockFreeze: false,
     lockButton: false,
+    hifzReviewHideTafsir: false,
     hideMode: 'none',
     repeat: { eachAyah: 1, range: 1, pauseFactor: 0 },
     votdMode: 'translation',
@@ -636,6 +637,8 @@ function mergeStored(raw: unknown): QuranState {
       // this was a setting, and the setting's default is off.
       verseOfDay:
         (r.prefs as { verseOfDay?: unknown } | undefined)?.verseOfDay === true,
+      hifzReviewHideTafsir:
+        (r.prefs as { hifzReviewHideTafsir?: unknown } | undefined)?.hifzReviewHideTafsir === true,
       // Only a known panel; anything else (or a blob from before) is none.
       ayahSheetPanel: coerceSheetPanel(
         (r.prefs as { ayahSheetPanel?: unknown } | undefined)?.ayahSheetPanel,

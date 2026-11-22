@@ -35,7 +35,7 @@ import { tajweedRule, type TajweedRule, type TajweedRuleId } from './rules';
 import { bundledAssetPath } from '../bundledAsset';
 
 type RawWord = string | [string, Array<[number, number, number]>] | null;
-type RawSurah = { v: number; rules: string[]; ayahs: RawWord[][] };
+export type RawSurah = { v: number; rules: string[]; ayahs: RawWord[][] };
 
 /** A word's colour runs, left to right in the string (not on screen). */
 export type WarshRun = { text: string; rule: TajweedRule | null };

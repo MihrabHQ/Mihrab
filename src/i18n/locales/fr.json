@@ -1755,7 +1755,9 @@
     "previewReciter": "Écouter {{name}}",
     "stopPreview": "Arrêter l’extrait",
     "voiceHint": "Le mushaf est en {{page}} ; {{name}} récite en {{voice}}. L’écouter en {{page}} :",
-    "voiceHintDismiss": "Garder cette voix"
+    "voiceHintDismiss": "Garder cette voix",
+    "hifzHideTafsir": "Masquer le tafsir pendant la révision",
+    "hifzHideTafsirHelp": "Masquer les commentaires et traductions pendant la révision de mémorisation pour se concentrer sur la récitation."
   },
   "reading": {
     "textSize": "Taille du texte",
@@ -2750,6 +2752,12 @@
     "undo": "Annuler",
     "practiseAhead": "S'exercer avant l'échéance",
     "neededHelpLast": "a demandé de l'aide la dernière fois",
-    "practising": "S'exercer à {{name}} de mémoire"
+    "practising": "S'exercer à {{name}} de mémoire",
+    "gradeWrong": "Faux",
+    "gradeCorrect": "Correct",
+    "reviewWrongBadge": "{{count}} erreurs",
+    "reviewWrongBadge_one": "{{count}} erreur",
+    "reviewWrongOnly": "Revoir {{count}} erreurs",
+    "reviewShowAll": "Tout afficher"
   }
 }

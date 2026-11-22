@@ -1754,7 +1754,9 @@
     "previewReciter": "试听 {{name}}",
     "stopPreview": "停止试听",
     "voiceHint": "穆斯哈夫为 {{page}}；{{name}} 以 {{voice}} 诵读。以 {{page}} 收听：",
-    "voiceHintDismiss": "保留此声音"
+    "voiceHintDismiss": "保留此声音",
+    "hifzHideTafsir": "复习时隐藏经注",
+    "hifzHideTafsirHelp": "背诵复习时隐藏经注和翻译，以专注文意与背诵。"
   },
   "reading": {
     "textSize": "文字大小",
@@ -2749,6 +2751,12 @@
     "undo": "撤销",
     "practiseAhead": "到期前先练习",
     "neededHelpLast": "上次需要提示",
-    "practising": "练习背诵 {{name}}"
+    "practising": "练习背诵 {{name}}",
+    "gradeWrong": "错误",
+    "gradeCorrect": "正确",
+    "reviewWrongBadge": "{{count}} 个错误",
+    "reviewWrongBadge_one": "{{count}} 个错误",
+    "reviewWrongOnly": "复习 {{count}} 个错误",
+    "reviewShowAll": "显示全部"
   }
 }

@@ -1754,7 +1754,9 @@
     "previewReciter": "Hear {{name}}",
     "stopPreview": "Stop the preview",
     "voiceHint": "The muṣḥaf is {{page}}; {{name}} recites {{voice}}. Hear it in {{page}}:",
-    "voiceHintDismiss": "Keep this voice"
+    "voiceHintDismiss": "Keep this voice",
+    "hifzHideTafsir": "Hide tafsir during revision",
+    "hifzHideTafsirHelp": "Hide commentary and translations during memorisation review to keep focus on recitation."
   },
   "reading": {
     "textSize": "Text size",
@@ -2749,6 +2751,12 @@
     "undo": "Undo",
     "practiseAhead": "Practise before it's due",
     "neededHelpLast": "needed help last time",
-    "practising": "Practising {{name}} from memory"
+    "practising": "Practising {{name}} from memory",
+    "gradeWrong": "Wrong",
+    "gradeCorrect": "Correct",
+    "reviewWrongBadge": "{{count}} wrong",
+    "reviewWrongBadge_one": "{{count}} wrong",
+    "reviewWrongOnly": "Review {{count}} wrong",
+    "reviewShowAll": "Show all"
   }
 }

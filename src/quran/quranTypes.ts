@@ -457,6 +457,11 @@ export type QuranPrefs = {
    * hidden.
    */
   lockButton: boolean;
+  /**
+   * Hide tafsir and translations during Hifz revision (additive).
+   * Allows focusing purely on memorisation and review without companion commentary.
+   */
+  hifzReviewHideTafsir?: boolean;
   /** Memorization masking in translation view. */
   hideMode: 'none' | 'arabic' | 'translation';
   repeat: RepeatSettings;

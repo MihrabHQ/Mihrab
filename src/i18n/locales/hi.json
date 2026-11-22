@@ -1754,7 +1754,9 @@
     "previewReciter": "{{name}} को सुनें",
     "stopPreview": "नमूना रोकें",
     "voiceHint": "मुसहफ़ {{page}} में है; {{name}} {{voice}} में तिलावत करते हैं। {{page}} में सुनें:",
-    "voiceHintDismiss": "यही आवाज़ रखें"
+    "voiceHintDismiss": "यही आवाज़ रखें",
+    "hifzHideTafsir": "समीक्षा के दौरान तफ़सीर छिपाएं",
+    "hifzHideTafsirHelp": "याद करने की समीक्षा के दौरान पाठ पर ध्यान केंद्रित करने के लिए तफ़सीर और अनुवाद छिपाएं।"
   },
   "reading": {
     "textSize": "पाठ का आकार",
@@ -2749,6 +2751,12 @@
     "undo": "पूर्ववत करें",
     "practiseAhead": "तय दिन से पहले अभ्यास करें",
     "neededHelpLast": "पिछली बार मदद चाहिए थी",
-    "practising": "{{name}} ज़बानी अभ्यास"
+    "practising": "{{name}} ज़बानी अभ्यास",
+    "gradeWrong": "गलत",
+    "gradeCorrect": "सही",
+    "reviewWrongBadge": "{{count}} गलत",
+    "reviewWrongBadge_one": "{{count}} गलत",
+    "reviewWrongOnly": "{{count}} गलत दोहराएं",
+    "reviewShowAll": "सभी दिखाएं"
   }
 }

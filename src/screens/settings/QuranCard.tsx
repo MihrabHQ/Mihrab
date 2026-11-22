@@ -204,6 +204,19 @@ function QuranCardImpl() {
           }
         />
       </SettingsGroup>
+      <SettingsGroup
+        title={t('hifz.title', 'Memorisation')}
+        footer={t('quran.hifzHideTafsirHelp', {
+          defaultValue:
+            'Hide commentary and translations during memorisation review to keep focus on recitation.',
+        })}>
+        <SettingsToggleRow
+          testID="settings-hifz-hide-tafsir"
+          title={t('quran.hifzHideTafsir', 'Hide tafsir during revision')}
+          value={quran.prefs.hifzReviewHideTafsir ?? false}
+          onValueChange={next => setQuranPrefs({ hifzReviewHideTafsir: next })}
+        />
+      </SettingsGroup>
       {/* The word reader: its own page, because it is a switch AND a
           reciter, and the reciter list is nine rows nobody needs to
           scroll past on the way to anything else. */}

@@ -87,6 +87,11 @@ import { useReadingText } from '../../hooks/useReadingText';
 import { TextSizeStepper } from '../../components/ui';
 import { TabBackButton } from '../../navigation/TabBackButton';
 import { RADIUS, SPACING } from '../../theme/tokens';
+import { resolveRiwayah, riwayahTextFontFamily } from '../../quran/riwayat';
+import { riwayahAyahText } from '../../quran/riwayahData';
+import { tajweedColoursShown } from '../../quran/tajweed/tajweedSupport';
+import { loadWarshSurah, warshAyahWords, shapedRuns, type RawSurah } from '../../quran/tajweed/warshTajweed';
+import { tajweedInk } from '../../quran/tajweed/rules';
 
 type AyahRow = {
   ayah: number; // 1-based
@@ -122,7 +127,7 @@ export function TranslationSurahScreen({
 }: Props) {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
-  const { palette } = useAppPalette();
+  const { palette, isDark } = useAppPalette();
   const readingText = useReadingText();
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
@@ -161,20 +166,58 @@ export function TranslationSurahScreen({
   // ── Async data: Arabic + translation (QR-2) ─────────────────────────
   const [rows, setRows] = useState<AyahRow[] | null>(null);
   const [translations, setTranslations] = useState<string[] | null>(null);
+  const riwayah = resolveRiwayah(quran.prefs.riwayah);
+  const riwayahFont = riwayahTextFontFamily(riwayah);
+  const coloursOn = tajweedColoursShown(riwayah, quran.prefs.tajweedColours);
+  const [warshData, setWarshData] = useState<RawSurah | null>(null);
+
+  useEffect(() => {
+    if (riwayah === 'warsh' && coloursOn) {
+      let alive = true;
+      void loadWarshSurah(surahNumber).then(data => {
+        if (alive) setWarshData(data ?? null);
+      });
+      return () => {
+        alive = false;
+      };
+    } else {
+      setWarshData(null);
+    }
+  }, [riwayah, coloursOn, surahNumber]);
 
   useEffect(() => {
     let cancelled = false;
     setRows(null);
     void loadSurah(surahNumber).then(loaded => {
       if (cancelled || !loaded) return;
-      setRows(
-        loaded.arabic.map((arabic, i) => ({ ayah: i + 1, arabic })),
-      );
+      const count = loaded.arabic.length;
+      const r: AyahRow[] = [];
+      for (let i = 1; i <= count; i++) {
+        const own = riwayahAyahText(riwayah, surahNumber, i);
+        r.push({ ayah: i, arabic: own ?? loaded.arabic[i - 1] });
+      }
+      setRows(r);
     });
     return () => {
       cancelled = true;
     };
-  }, [surahNumber]);
+  }, [surahNumber, riwayah]);
+
+  const [cardGrades, setCardGrades] = useState<Record<number, 'correct' | 'wrong'>>({});
+  const [reviewWrongsOnly, setReviewWrongsOnly] = useState(false);
+
+  useEffect(() => {
+    setCardGrades({});
+    setReviewWrongsOnly(false);
+  }, [hifzReview?.id, surahNumber]);
+
+  const wrongAyahs = useMemo(() => {
+    if (!hifzReview) return [];
+    return Object.entries(cardGrades)
+      .filter(([a, g]) => g === 'wrong' && Number(a) >= hifzReview.from && Number(a) <= hifzReview.to)
+      .map(([a]) => Number(a));
+  }, [cardGrades, hifzReview]);
+  const wrongCount = wrongAyahs.length;
 
   useEffect(() => {
     let cancelled = false;
@@ -526,10 +569,17 @@ export function TranslationSurahScreen({
   const LEAD_CHUNK = 40;
   const windowStart =
     landingIndex == null ? 0 : Math.max(0, landingIndex - leadRows);
-  const windowed = useMemo(
+  const windowedBase = useMemo(
     () => (rows == null ? null : windowStart > 0 ? rows.slice(windowStart) : rows),
     [rows, windowStart],
   );
+  const windowed = useMemo(() => {
+    if (!windowedBase) return null;
+    if (hifzReview && reviewWrongsOnly && wrongAyahs.length > 0) {
+      return windowedBase.filter(r => wrongAyahs.includes(r.ayah));
+    }
+    return windowedBase;
+  }, [windowedBase, hifzReview, reviewWrongsOnly, wrongAyahs]);
   const readEarlier = useCallback(() => {
     if (windowStart > 0) setLeadRows(n => n + LEAD_CHUNK);
   }, [windowStart]);
@@ -665,8 +715,15 @@ export function TranslationSurahScreen({
       hifzReview != null && ayah >= hifzReview.from && ayah <= hifzReview.to;
     const maskArabic = (inReview || hideMode === 'arabic') && !isRevealed;
     const maskTranslation = (inReview || hideMode === 'translation') && !isRevealed;
+    const hideCompanion = (inReview && !isRevealed) || (inReview && quran.prefs.hifzReviewHideTafsir);
 
-    const words = arabic.split(' ');
+    const ownArabic = riwayahAyahText(riwayah, surahNumber, ayah);
+    const displayArabic = ownArabic ?? arabic;
+    const warshWords = coloursOn && riwayah === 'warsh' && warshData
+      ? warshAyahWords(warshData, ayah, displayArabic)
+      : null;
+
+    const words = displayArabic.split(' ');
     // The timing counts QPC's words; the text is Tanzil's. Map one onto
     // the other, or the lit word drifts by one past every pause mark and
     // the basmalah lights on every first ayah — see `countedWords.ts`.
@@ -736,10 +793,33 @@ export function TranslationSurahScreen({
               ? t('hifz.reviewTapToCheck', 'Recite it, then tap to check')
               : t('quran.tapToReveal', 'Tap to reveal')}
           </Text>
-        ) : (
+        ) : warshWords ? (
           <Text
             style={[styles.ayahArabic, { color: palette.text }]}
-            accessibilityLabel={arabic}>
+            accessibilityLabel={displayArabic}>
+            {warshWords.map((w, wi) => (
+              <Text key={wi}>
+                {wi > 0 ? ' ' : ''}
+                {shapedRuns(w.runs).map((run, ri) =>
+                  run.rule ? (
+                    <Text key={ri} style={{ color: tajweedInk(run.rule, isDark) }}>
+                      {run.text}
+                    </Text>
+                  ) : (
+                    run.text
+                  ),
+                )}
+              </Text>
+            ))}
+          </Text>
+        ) : (
+          <Text
+            style={[
+              styles.ayahArabic,
+              { color: palette.text },
+              riwayahFont ? { fontFamily: riwayahFont } : undefined,
+            ]}
+            accessibilityLabel={displayArabic}>
             {litIndex >= 0
               ? words.map((w, i) => (
                   <Text
@@ -756,10 +836,72 @@ export function TranslationSurahScreen({
                     {i < words.length - 1 ? ' ' : ''}
                   </Text>
                 ))
-              : arabic}
+              : displayArabic}
           </Text>
         )}
-        {inReview && !isRevealed ? null : companionMode === 'tafsir' ? (
+        {inReview && isRevealed ? (
+          <View style={styles.gradingRow}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('hifz.gradeWrong', 'Wrong')}
+              onPress={() => setCardGrades(prev => ({ ...prev, [ayah]: 'wrong' }))}
+              style={[
+                styles.gradeBtn,
+                cardGrades[ayah] === 'wrong'
+                  ? {
+                      backgroundColor: palette.accentBg,
+                      borderColor: palette.accent,
+                    }
+                  : {
+                      backgroundColor: palette.card,
+                      borderColor: palette.border ?? palette.muted,
+                    },
+              ]}>
+              <Text
+                style={[
+                  styles.gradeBtnText,
+                  {
+                    color:
+                      cardGrades[ayah] === 'wrong'
+                        ? palette.accent
+                        : palette.muted,
+                  },
+                ]}>
+                ✕ {t('hifz.gradeWrong', 'Wrong')}
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('hifz.gradeCorrect', 'Correct')}
+              onPress={() => setCardGrades(prev => ({ ...prev, [ayah]: 'correct' }))}
+              style={[
+                styles.gradeBtn,
+                cardGrades[ayah] === 'correct'
+                  ? {
+                      backgroundColor: palette.accentBg,
+                      borderColor: palette.accentSolid,
+                    }
+                  : {
+                      backgroundColor: palette.card,
+                      borderColor: palette.border ?? palette.muted,
+                    },
+              ]}>
+              <Text
+                style={[
+                  styles.gradeBtnText,
+                  {
+                    color:
+                      cardGrades[ayah] === 'correct'
+                        ? palette.accentSolid
+                        : palette.muted,
+                  },
+                ]}>
+                ✓ {t('hifz.gradeCorrect', 'Correct')}
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
+        {hideCompanion ? null : companionMode === 'tafsir' ? (
           maskTranslation ? (
             <Text style={[styles.masked, { color: palette.muted }]}>
               {t('quran.tapToReveal', 'Tap to reveal')}
@@ -966,8 +1108,46 @@ export function TranslationSurahScreen({
                 done: reviewChecked,
                 total: hifzReview.to - hifzReview.from + 1,
               })}
+              {wrongCount > 0
+                ? ` · ${t('hifz.reviewWrongBadge', {
+                    count: wrongCount,
+                    defaultValue: '{{count}} wrong',
+                  })}`
+                : ''}
             </Text>
           </View>
+          {wrongCount > 0 ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={
+                reviewWrongsOnly
+                  ? t('hifz.reviewShowAll', 'Show all')
+                  : t('hifz.reviewWrongOnly', {
+                      count: wrongCount,
+                      defaultValue: 'Review {{count}} wrong',
+                    })
+              }
+              onPress={() => setReviewWrongsOnly(prev => !prev)}
+              style={({ pressed }) => [
+                styles.reviewFilterBtn,
+                {
+                  borderColor: palette.accent,
+                  backgroundColor: reviewWrongsOnly
+                    ? palette.accentBg
+                    : 'transparent',
+                },
+                pressed && { opacity: 0.7 },
+              ]}>
+              <Text style={[styles.reviewFilterText, { color: palette.accent }]}>
+                {reviewWrongsOnly
+                  ? t('hifz.reviewShowAll', 'Show all')
+                  : t('hifz.reviewWrongOnly', {
+                      count: wrongCount,
+                      defaultValue: 'Review {{count}} wrong',
+                    })}
+              </Text>
+            </Pressable>
+          ) : null}
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('hifz.reviewDone', 'Done')}
@@ -1209,6 +1389,37 @@ const styles = StyleSheet.create({
   skeleton: { height: 14, borderRadius: RADIUS.sm, opacity: 0.5, marginTop: SPACING.xs },
   comingSoon: { padding: SPACING.xl, borderRadius: RADIUS.md, alignItems: 'center', gap: SPACING.sm, marginTop: SPACING.md },
   comingSoonText: { fontSize: TYPE.callout.fontSize, textAlign: 'center', fontWeight: '400' },
+  gradingRow: {
+    flexDirection: 'row',
+    gap: SPACING.md,
+    marginTop: SPACING.xs,
+  },
+  gradeBtn: {
+    flex: 1,
+    minHeight: 44,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
+  },
+  gradeBtnText: {
+    fontSize: TYPE.callout.fontSize,
+    fontWeight: '600',
+  },
+  reviewFilterBtn: {
+    paddingHorizontal: SPACING.md,
+    minHeight: 44,
+    borderRadius: RADIUS.full,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reviewFilterText: {
+    fontSize: TYPE.footnote.fontSize,
+    fontWeight: '500',
+  },
 });
 
 

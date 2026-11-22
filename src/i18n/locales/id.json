@@ -1754,7 +1754,9 @@
     "previewReciter": "Dengarkan {{name}}",
     "stopPreview": "Hentikan contoh",
     "voiceHint": "Mushafnya {{page}}; {{name}} membaca {{voice}}. Dengarkan dalam {{page}}:",
-    "voiceHintDismiss": "Tetap pakai suara ini"
+    "voiceHintDismiss": "Tetap pakai suara ini",
+    "hifzHideTafsir": "Sembunyikan tafsir saat muraja'ah",
+    "hifzHideTafsirHelp": "Sembunyikan tafsir dan terjemahan saat muraja'ah hafalan agar fokus melafalkan dari ingatan."
   },
   "reading": {
     "textSize": "Ukuran teks",
@@ -2749,6 +2751,12 @@
     "undo": "Urungkan",
     "practiseAhead": "Latihan sebelum jadwalnya",
     "neededHelpLast": "terakhir perlu bantuan",
-    "practising": "Berlatih {{name}} dari hafalan"
+    "practising": "Berlatih {{name}} dari hafalan",
+    "gradeWrong": "Salah",
+    "gradeCorrect": "Benar",
+    "reviewWrongBadge": "{{count}} salah",
+    "reviewWrongBadge_one": "{{count}} salah",
+    "reviewWrongOnly": "Ulangi {{count}} salah",
+    "reviewShowAll": "Tampilkan semua"
   }
 }

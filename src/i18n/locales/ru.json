@@ -1817,7 +1817,9 @@
     "previewReciter": "Послушать {{name}}",
     "stopPreview": "Остановить отрывок",
     "voiceHint": "Мусхаф — {{page}}; {{name}} читает в {{voice}}. Послушать в {{page}}:",
-    "voiceHintDismiss": "Оставить этот голос"
+    "voiceHintDismiss": "Оставить этот голос",
+    "hifzHideTafsir": "Скрывать тафсир при повторении",
+    "hifzHideTafsirHelp": "Скрывать толкование и перевод при повторении заученного, чтобы сосредоточиться на чтении наизусть."
   },
   "reading": {
     "textSize": "Размер текста",
@@ -2848,6 +2850,15 @@
     "overdue_other": "Просрочено на {{count}} дн.",
     "practiseAhead": "Повторить заранее",
     "neededHelpLast": "в прошлый раз нужна была помощь",
-    "practising": "{{name}} наизусть: тренировка"
+    "practising": "{{name}} наизусть: тренировка",
+    "gradeWrong": "Неправильно",
+    "gradeCorrect": "Правильно",
+    "reviewWrongBadge": "{{count}} с ошибкой",
+    "reviewWrongBadge_one": "{{count}} с ошибкой",
+    "reviewWrongBadge_few": "{{count}} с ошибкой",
+    "reviewWrongBadge_many": "{{count}} с ошибками",
+    "reviewWrongBadge_other": "{{count}} с ошибками",
+    "reviewWrongOnly": "Повторить ошибки ({{count}})",
+    "reviewShowAll": "Показать все"
   }
 }

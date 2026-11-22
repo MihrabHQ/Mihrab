@@ -1754,7 +1754,9 @@
     "previewReciter": "Lyssna på {{name}}",
     "stopPreview": "Stoppa provlyssningen",
     "voiceHint": "Mushafen är {{page}}; {{name}} reciterar {{voice}}. Lyssna i {{page}}:",
-    "voiceHintDismiss": "Behåll den här rösten"
+    "voiceHintDismiss": "Behåll den här rösten",
+    "hifzHideTafsir": "Dölj tafsir vid repetition",
+    "hifzHideTafsirHelp": "Dölj kommentarer och översättningar vid repetition för att fokusera på recitation ur minnet."
   },
   "reading": {
     "textSize": "Textstorlek",
@@ -2749,6 +2751,12 @@
     "undo": "Ångra",
     "practiseAhead": "Öva innan det är dags",
     "neededHelpLast": "behövde hjälp förra gången",
-    "practising": "Övar {{name}} ur minnet"
+    "practising": "Övar {{name}} ur minnet",
+    "gradeWrong": "Fel",
+    "gradeCorrect": "Rätt",
+    "reviewWrongBadge": "{{count}} fel",
+    "reviewWrongBadge_one": "{{count}} fel",
+    "reviewWrongOnly": "Repetera {{count}} fel",
+    "reviewShowAll": "Visa alla"
   }
 }

@@ -1754,7 +1754,9 @@
     "previewReciter": "{{name}} کو سنیں",
     "stopPreview": "نمونہ روکیں",
     "voiceHint": "مصحف {{page}} میں ہے؛ {{name}} {{voice}} میں تلاوت کرتے ہیں۔ {{page}} میں سنیں:",
-    "voiceHintDismiss": "یہی آواز رکھیں"
+    "voiceHintDismiss": "یہی آواز رکھیں",
+    "hifzHideTafsir": "دہرائی کے دوران تفسیر چھپائیں",
+    "hifzHideTafsirHelp": "حفظ کی دہرائی کے دوران تلاوت پر توجہ مرکوز رکھنے کے لیے تفسیر اور ترجمہ چھپائیں۔"
   },
   "reading": {
     "textSize": "متن کا سائز",
@@ -2749,6 +2751,12 @@
     "undo": "واپس لیں",
     "practiseAhead": "مقررہ دن سے پہلے مشق کریں",
     "neededHelpLast": "پچھلی بار مدد درکار تھی",
-    "practising": "{{name}} زبانی مشق"
+    "practising": "{{name}} زبانی مشق",
+    "gradeWrong": "غلط",
+    "gradeCorrect": "صحیح",
+    "reviewWrongBadge": "{{count}} غلط",
+    "reviewWrongBadge_one": "{{count}} غلط",
+    "reviewWrongOnly": "غلطیوں کا اعادہ ({{count}})",
+    "reviewShowAll": "سب دکھائیں"
   }
 }
