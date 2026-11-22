@@ -58,6 +58,7 @@ class MainApplication : Application(), ReactApplication, androidx.work.Configura
           add(CompassPackage())
           add(DisplayCutoutPackage())
           add(FoldPosturePackage())
+          add(BackgroundLocationPackage())
           add(RotationCoverPackage())
           add(VolumeKeysPackage())
           add(LaunchSnapshotPackage())

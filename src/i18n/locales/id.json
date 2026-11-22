@@ -580,7 +580,12 @@
     "garminFieldProgressHelp": "Bilah dari salat terakhir ke salat berikutnya, di bawah hitung mundur.",
     "garminInstallWidget": "Pasang atau pasang ulang widget dan glance",
     "garminInstallField": "Pasang atau pasang ulang kolom data",
-    "garminInstallHelp": "Mengirim ulang waktu salat, lalu membuka Gadgetbridge untuk memasang aplikasi jam yang disertakan dengan versi Mihrab ini."
+    "garminInstallHelp": "Mengirim ulang waktu salat, lalu membuka Gadgetbridge untuk memasang aplikasi jam yang disertakan dengan versi Mihrab ini.",
+    "backgroundLocationTitle": "Perbarui lokasi saya di latar belakang",
+    "backgroundLocationHelp": "Opsional. Saat Anda bepergian, pengingat salat dan widget berpindah ke tempat baru tanpa membuka aplikasi. Aplikasi tidak mengikuti Anda: ia hanya memeriksa ketika ponsel berpindah jauh atau berganti negara jaringan atau zona waktu, sehingga hampir tidak memengaruhi baterai, dan tidak ada yang dikirim selain yang dikirim saat aplikasi dibuka. Tanpa ini, lokasi Anda diperbarui saat Anda membuka aplikasi.",
+    "backgroundLocationAskTitle": "Lokasi di latar belakang",
+    "backgroundLocationAsk": "Untuk memindahkan pengingat salat dan widget saat Anda bepergian, Mihrab perlu membaca lokasi Anda saat aplikasi ditutup. Android akan meminta Anda mengizinkan akses lokasi “sepanjang waktu”.\n\nIni opsional. Hanya digunakan untuk menjaga waktu salat sesuai tempat Anda berada, dan Mihrab tetap berfungsi tanpanya.",
+    "backgroundLocationDenied": "Android belum mengizinkan akses lokasi “sepanjang waktu”, jadi ini nonaktif. Anda dapat mengizinkannya di setelan Android untuk Mihrab, di Izin → Lokasi."
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",

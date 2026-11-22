@@ -580,7 +580,12 @@
     "garminFieldProgressHelp": "A bar from the last prayer to the next, under the countdown.",
     "garminInstallWidget": "Install or reinstall widget and glance",
     "garminInstallField": "Install or reinstall data field",
-    "garminInstallHelp": "Sends the prayer times again, then opens Gadgetbridge to install the watch app that came with this version of Mihrab."
+    "garminInstallHelp": "Sends the prayer times again, then opens Gadgetbridge to install the watch app that came with this version of Mihrab.",
+    "backgroundLocationTitle": "Update my location in the background",
+    "backgroundLocationHelp": "Optional. When you travel, your prayer alerts and widgets move to the new place without the app being opened. It does not follow you around: it looks only when your phone has moved far or changed network country or time zone, so it hardly touches the battery, and nothing more is sent than when the app is open. Without this, your location is updated when you open the app.",
+    "backgroundLocationAskTitle": "Location in the background",
+    "backgroundLocationAsk": "To move your prayer alerts and widgets when you travel, Mihrab needs to read your location while the app is closed. Android will ask you to allow location access “all the time”.\n\nThis is optional. It is used only to keep your prayer times on the place you are in, and Mihrab works without it.",
+    "backgroundLocationDenied": "Android has not allowed location access “all the time”, so this is off. You can allow it in Android’s settings for Mihrab, under Permissions → Location."
   },
   "locationSetup": {
     "headline": "Set your location",

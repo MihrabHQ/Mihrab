@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import type { RootStackParamList } from '../../../navigation/types';
+import { BackgroundLocationCard } from '../BackgroundLocationCard';
 import { LocationCard } from '../LocationCard';
 import { SavedLocationsCard } from '../SavedLocationsCard';
 import { SettingsPage } from '../SettingsPage';
@@ -27,6 +28,7 @@ export function LocationSettingsScreen() {
   return (
     <SettingsPage>
       <LocationCard />
+      <BackgroundLocationCard />
       <SavedLocationsCard
         highlightSignal={highlightSignal}
         // Only the home chip's "Add new location" sets this, so a place

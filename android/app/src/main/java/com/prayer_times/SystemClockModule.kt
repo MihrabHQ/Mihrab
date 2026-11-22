@@ -66,6 +66,27 @@ class SystemClockModule(private val reactContext: ReactApplicationContext) :
     promise.resolve(iso?.takeIf { it.length == 2 }?.uppercase(java.util.Locale.ROOT))
   }
 
+  /**
+   * The phone's time zone NOW — its id and its offset from UTC in minutes.
+   *
+   * Asked of the system each time, for the same comparison as the network's
+   * country (locationFreshness.ts). JavaScript's own idea of the zone can
+   * lag in a process that has been alive across a change of zone: a move
+   * found in the background was recorded under the old zone, and the app,
+   * opened, read the new one as a second journey ("still for Dubai", on an
+   * Android 17 emulator).
+   */
+  @ReactMethod
+  fun readTimeZone(promise: Promise) {
+    val zone = java.util.TimeZone.getDefault()
+    promise.resolve(
+      com.facebook.react.bridge.Arguments.createMap().apply {
+        putString("zone", zone.id)
+        putInt("offset", zone.getOffset(System.currentTimeMillis()) / 60_000)
+      },
+    )
+  }
+
   companion object {
     const val NAME = "SystemClock"
   }

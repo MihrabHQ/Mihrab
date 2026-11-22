@@ -40,6 +40,7 @@ type SystemClockNative = {
   getConstants?: () => { is24Hour?: unknown; timeZone?: unknown } | undefined;
   readIs24Hour?: () => Promise<boolean>;
   readNetworkCountryIso?: () => Promise<string | null>;
+  readTimeZone?: () => Promise<{ zone?: unknown; offset?: unknown } | null>;
 };
 
 const native: SystemClockNative | undefined = (
@@ -167,6 +168,25 @@ export async function networkCountry(): Promise<string | null> {
   try {
     const iso = await native?.readNetworkCountryIso?.();
     return typeof iso === 'string' && /^[A-Z]{2}$/.test(iso) ? iso : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The phone's time zone as the system has it this moment (Android), or
+ * null where only JavaScript can say. JavaScript's own zone can lag in a
+ * process that lived through a change of zone; the system's does not.
+ */
+export async function systemTimeZone(): Promise<{
+  zone: string;
+  offset: number;
+} | null> {
+  try {
+    const z = await native?.readTimeZone?.();
+    return z && typeof z.zone === 'string' && typeof z.offset === 'number'
+      ? { zone: z.zone, offset: z.offset }
+      : null;
   } catch {
     return null;
   }

@@ -14,6 +14,7 @@ import {
   type PrayerDay,
 } from '../prayer/prayerStorage';
 import { getPositionStaged } from '../utils/getPosition';
+import { onLiveMove } from '../location/liveMove';
 import {
   SLOW_AFTER_MS,
   isFreshFix,
@@ -847,6 +848,23 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       settings.customFajrAngle,
       settings.customIshaAngle,
     ],
+  );
+
+  // A move found while the app was in the background (Android, optional:
+  // `location/backgroundLocation.ts`) comes through the same loader as a
+  // position found on screen, so what Today holds is the new place.
+  useEffect(
+    () =>
+      onLiveMove(move => {
+        if (liveModeRef.current === 'manual') return;
+        freshnessCycleRef.current++;
+        setLocationFreshness({ status: 'ok', moved: false });
+        loadedCityIdRef.current = move.cityId;
+        loadTimes(move.latitude, move.longitude, true, move.label, true).catch(
+          () => {},
+        );
+      }),
+    [loadTimes],
   );
 
   const requestAndLoad = useCallback((isBackgroundRefresh: boolean = false) => {

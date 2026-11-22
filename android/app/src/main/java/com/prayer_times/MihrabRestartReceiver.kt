@@ -40,6 +40,14 @@ class MihrabRestartReceiver : BroadcastReceiver() {
     if (action != Intent.ACTION_MY_PACKAGE_REPLACED &&
         action != Intent.ACTION_BOOT_COMPLETED) return
 
+    // "My location" in the background, for a reader who asked for it: a
+    // restart of the phone and an update both drop the passive listener.
+    try {
+      BackgroundLocation.register(context)
+    } catch (t: Throwable) {
+      Log.w(TAG, "Failed to resume background location after $action", t)
+    }
+
     // The widgets first, and unconditionally.
     //
     // An app update kills the old process and leaves every placed widget

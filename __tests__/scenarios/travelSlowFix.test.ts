@@ -35,6 +35,7 @@ import { loadSettings, _resetSettingsStorageForTests } from '../../src/settings/
 import { _resetTimezoneShiftForTests } from '../../src/prayer/timezoneShift';
 import { _resetMethodCurrencyForTests } from '../../src/providers/methodCurrency';
 import { _resetCalculationPreferencesForTests } from '../../src/prayer/calculationPreferences';
+import { tellLiveMove } from '../../src/location/liveMove';
 import {
   ANCHOR_KEY,
   _resetLocationFreshnessForTests,
@@ -206,6 +207,19 @@ describe('and the screen says what it knows', () => {
     expect(getLocationFreshness()).toEqual({ status: 'ok', moved: false });
     probe.unmount();
   });
+});
+
+it('a move found in the background reaches Today when the app is alive', async () => {
+  // Nobody mounted: the stored place is all there is to change.
+  expect(tellLiveMove({ ...BERLIN, label: 'Berlin', cityId: 'DE:berlin' })).toBe(false);
+  const { probe } = await atHome();
+  expect(tellLiveMove({ ...BERLIN, label: 'Berlin', cityId: 'DE:berlin' })).toBe(true);
+  await until(near(probe, BERLIN), 'Berlin on screen', 20_000);
+  const c = probe.current();
+  expect(c.phase === 'ready' && c.cityName).toBe('Berlin');
+  expect(getLocationFreshness()).toEqual({ status: 'ok', moved: false });
+  probe.unmount();
+  expect(tellLiveMove({ ...BERLIN, label: 'Berlin', cityId: 'DE:berlin' })).toBe(false);
 });
 
 it('Android: a request whose wait runs out answers with the newest position the phone has', () => {

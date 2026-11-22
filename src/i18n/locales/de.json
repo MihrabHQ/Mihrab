@@ -580,7 +580,12 @@
     "garminFieldProgressHelp": "Ein Balken vom letzten Gebet zum nächsten, unter dem Countdown.",
     "garminInstallWidget": "Widget und Glance installieren oder neu installieren",
     "garminInstallField": "Datenfeld installieren oder neu installieren",
-    "garminInstallHelp": "Sendet die Gebetszeiten erneut und öffnet dann Gadgetbridge, um die Uhren-App aus dieser Mihrab-Version zu installieren."
+    "garminInstallHelp": "Sendet die Gebetszeiten erneut und öffnet dann Gadgetbridge, um die Uhren-App aus dieser Mihrab-Version zu installieren.",
+    "backgroundLocationTitle": "Meinen Standort im Hintergrund aktualisieren",
+    "backgroundLocationHelp": "Optional. Wenn Sie reisen, wechseln Ihre Gebetshinweise und Widgets zum neuen Ort, ohne dass die App geöffnet wird. Sie werden nicht verfolgt: Es wird nur nachgesehen, wenn sich Ihr Telefon weit bewegt oder das Netzland oder die Zeitzone gewechselt hat. Der Akku wird kaum belastet, und es wird nicht mehr gesendet als bei geöffneter App. Ohne diese Option wird Ihr Standort beim Öffnen der App aktualisiert.",
+    "backgroundLocationAskTitle": "Standort im Hintergrund",
+    "backgroundLocationAsk": "Um Ihre Gebetshinweise und Widgets auf Reisen umzustellen, muss Mihrab Ihren Standort lesen, während die App geschlossen ist. Android wird Sie bitten, den Standortzugriff „Immer“ zu erlauben.\n\nDas ist optional. Es dient nur dazu, Ihre Gebetszeiten an dem Ort zu halten, an dem Sie sind, und Mihrab funktioniert auch ohne.",
+    "backgroundLocationDenied": "Android hat den Standortzugriff „Immer“ nicht erlaubt, daher ist dies aus. Sie können ihn in den Android-Einstellungen für Mihrab unter Berechtigungen → Standort erlauben."
   },
   "locationSetup": {
     "headline": "Legen Sie Ihren Standort fest",

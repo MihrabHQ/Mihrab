@@ -33,6 +33,7 @@ import {
 import { onClockJump } from '../utils/clockJumps';
 import { usePrayerDay } from '../hooks/usePrayerDay';
 import { clearTimezoneShiftNotice } from '../prayer/timezoneShift';
+import { syncBackgroundLocation } from '../location/backgroundLocation';
 import { showsTravelNotice, useLocationFreshness } from '../prayer/locationFreshness';
 import { zoneDataNotice, zoneDataNoticeKey } from '../prayer/zoneDataNotice';
 import { refreshStoredPrayerData } from '../prayer/refreshStoredData';
@@ -1575,6 +1576,21 @@ export function HomeScreen() {
     updateSettings,
   ]);
 
+
+  // "My location" kept up while the app is closed (Android, optional): the
+  // native side listens only while the reader wishes it and the app is on
+  // "My location", and is told the place a later position is measured from.
+  useEffect(() => {
+    void syncBackgroundLocation({
+      locationMode: settings.locationMode,
+      lastFetchedLatitude: settings.lastFetchedLatitude,
+      lastFetchedLongitude: settings.lastFetchedLongitude,
+    });
+  }, [
+    settings.locationMode,
+    settings.lastFetchedLatitude,
+    settings.lastFetchedLongitude,
+  ]);
 
   // The day bar's words, formatted once a day and a language: every
   // `toLocaleDateString` builds a formatter (Hermes, 1–2 ms each), and the

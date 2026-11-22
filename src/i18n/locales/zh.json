@@ -580,7 +580,12 @@
     "garminFieldProgressHelp": "倒计时下方，从上一次礼拜到下一次礼拜的进度条。",
     "garminInstallWidget": "安装或重新安装小组件和速览",
     "garminInstallField": "安装或重新安装数据栏",
-    "garminInstallHelp": "重新发送礼拜时间，然后打开 Gadgetbridge 安装此版本 Mihrab 附带的手表应用。"
+    "garminInstallHelp": "重新发送礼拜时间，然后打开 Gadgetbridge 安装此版本 Mihrab 附带的手表应用。",
+    "backgroundLocationTitle": "在后台更新我的位置",
+    "backgroundLocationHelp": "可选。出行时，礼拜提醒和小组件无需打开应用即可切换到新地点。它不会跟踪您：只有当手机移动了很远，或网络所在国家或时区发生变化时才会查看，因此几乎不耗电，发送的内容也不会比应用打开时更多。不开启时，您的位置会在打开应用时更新。",
+    "backgroundLocationAskTitle": "后台位置",
+    "backgroundLocationAsk": "为了在您出行时切换礼拜提醒和小组件，Mihrab 需要在应用关闭时读取您的位置。Android 会请您允许“始终”访问位置。\n\n这是可选的。它只用于让礼拜时间与您所在的地点保持一致，不开启 Mihrab 也能正常使用。",
+    "backgroundLocationDenied": "Android 尚未允许“始终”访问位置，因此此项已关闭。您可以在 Mihrab 的 Android 设置中，通过 权限 → 位置 来允许。"
   },
   "locationSetup": {
     "headline": "设置您的位置",

@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- "My location" kept up while the app is closed: optional, asked for
+         only from Settings → Location, after the app has said what it is
+         for (BackgroundLocation.kt). Declared per flavor: this build may
+         offer it. Google Play's build declares it once the Play Console's
+         background-location declaration has been filed — until then that
+         build does not show the setting at all. -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+</manifest>

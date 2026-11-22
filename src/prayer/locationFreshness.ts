@@ -42,7 +42,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
-import { networkCountry } from '../native/SystemClock';
+import { networkCountry, systemTimeZone } from '../native/SystemClock';
 import { deviceZone } from '../utils/zoneClock';
 
 export type LocationStatus = 'ok' | 'searching' | 'slow' | 'notUpdated';
@@ -140,10 +140,17 @@ export function useLocationFreshness(): LocationFreshness {
 export const ANCHOR_KEY = 'mihrab.locationAnchor.v1';
 
 async function surroundings(): Promise<TravelAnchor> {
+  // The system's own zone where it can be asked (Android): this app's idea
+  // of it can lag in a process that lived through a change, and an anchor
+  // kept under the old zone reads as a second journey once it catches up.
+  const [system, country] = await Promise.all([
+    systemTimeZone(),
+    networkCountry(),
+  ]);
   return {
-    zone: deviceZone() ?? null,
-    offset: -new Date().getTimezoneOffset(),
-    country: await networkCountry(),
+    zone: system?.zone ?? deviceZone() ?? null,
+    offset: system?.offset ?? -new Date().getTimezoneOffset(),
+    country,
   };
 }
 

@@ -581,7 +581,12 @@
     "garminFieldProgressHelp": "Une barre de la dernière prière à la suivante, sous le compte à rebours.",
     "garminInstallWidget": "Installer ou réinstaller le widget et l’aperçu",
     "garminInstallField": "Installer ou réinstaller le champ de données",
-    "garminInstallHelp": "Renvoie les horaires de prière, puis ouvre Gadgetbridge pour installer l’app de montre fournie avec cette version de Mihrab."
+    "garminInstallHelp": "Renvoie les horaires de prière, puis ouvre Gadgetbridge pour installer l’app de montre fournie avec cette version de Mihrab.",
+    "backgroundLocationTitle": "Mettre à jour ma position en arrière-plan",
+    "backgroundLocationHelp": "Facultatif. Quand vous voyagez, vos alertes de prière et vos widgets passent au nouveau lieu sans ouvrir l’app. Elle ne vous suit pas : elle ne regarde que lorsque votre téléphone s’est beaucoup déplacé ou a changé de pays de réseau ou de fuseau horaire ; la batterie est à peine sollicitée, et rien de plus n’est envoyé que lorsque l’app est ouverte. Sans cela, votre position est mise à jour à l’ouverture de l’app.",
+    "backgroundLocationAskTitle": "Position en arrière-plan",
+    "backgroundLocationAsk": "Pour déplacer vos alertes de prière et vos widgets quand vous voyagez, Mihrab doit lire votre position lorsque l’app est fermée. Android vous demandera d’autoriser l’accès à la position « toujours ».\n\nC’est facultatif. Cela sert uniquement à garder vos horaires de prière sur le lieu où vous êtes, et Mihrab fonctionne sans.",
+    "backgroundLocationDenied": "Android n’a pas autorisé l’accès à la position « toujours », donc ceci est désactivé. Vous pouvez l’autoriser dans les réglages Android de Mihrab, sous Autorisations → Position."
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",

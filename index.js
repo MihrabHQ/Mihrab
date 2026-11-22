@@ -22,6 +22,7 @@ import { adhanMuteToggleTask } from './src/notifications/adhanMute';
 import { prayerAlarmActionTask } from './src/notifications/prayerAlarmTask';
 import { widgetRefreshTask } from './src/widget/widgetRefreshTask';
 import { alertsResyncTask } from './src/notifications/afterUpdate';
+import { locationMovedTask } from './src/location/backgroundLocation';
 // Side effect: subscribes to durable writes so a change to the record
 // schedules a sync round. See src/sync/recordChanged.ts.
 import './src/sync/recordChanged';
@@ -125,3 +126,9 @@ AppRegistry.registerHeadlessTask('PrayerAlarmAction', () => prayerAlarmActionTas
 // payload with them, without waiting for the app to be opened. Dispatched by
 // AlertsResyncHeadlessService; must match its task name.
 AppRegistry.registerHeadlessTask('AlertsResync', () => alertsResyncTask);
+
+// HeadlessJS task for "My location" kept up while the app is closed
+// (Android, optional): the phone has moved twenty kilometres or more, and
+// the place, the widgets and the alerts follow. Started by
+// LocationMovedWorker (BackgroundLocation.kt); must match its task name.
+AppRegistry.registerHeadlessTask('LocationMoved', () => locationMovedTask);
