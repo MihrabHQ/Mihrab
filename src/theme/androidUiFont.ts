@@ -29,12 +29,32 @@
  * TextInput the same, so a search field matches the labels around it.
  */
 import React from 'react';
-import { Platform } from 'react-native';
+import { PixelRatio, Platform, StyleSheet } from 'react-native';
+import { arabicScaledMetrics } from './arabicFontScale';
 
 /** The family name res/font/roboto.xml is registered under. */
 export const ANDROID_UI_FONT = 'Roboto';
 
 type Wrappable = React.ComponentType<{ style?: unknown }>;
+type TextProps = {
+  style?: unknown;
+  allowFontScaling?: boolean;
+  maxFontSizeMultiplier?: number | null;
+};
+
+/**
+ * A root Text in one of the app's Arabic faces, with a line height of its
+ * own, takes the system's font scale itself — size and leading by the same
+ * factor — and asks Android not to scale it again. See arabicFontScale.ts
+ * (the Play review of 22 Nov 2026: Arabic cut off and run into the shadda
+ * at a larger system text size).
+ */
+function withArabicLeading(props: TextProps): TextProps {
+  if (props.style == null || props.allowFontScaling === false) return props;
+  const flat = StyleSheet.flatten(props.style as never) as Record<string, unknown> | undefined;
+  const m = arabicScaledMetrics(flat, PixelRatio.getFontScale(), props);
+  return m ? { ...props, allowFontScaling: false, style: [props.style, m] } : props;
+}
 
 /**
  * A Text nested inside another Text inherits its parent's family — that
@@ -50,12 +70,14 @@ function withDefaultFamily<T extends Wrappable>(
   nestedIn?: React.Context<boolean>,
 ): T {
   const style = { fontFamily: ANDROID_UI_FONT };
-  const Wrapped = (props: { style?: unknown }) => {
+  const Wrapped = (props: TextProps) => {
     const nested = nestedIn ? React.use(nestedIn) : false;
-    return React.createElement(
-      Original,
-      nested ? props : { ...props, style: props.style == null ? style : [style, props.style] },
-    );
+    if (nested) return React.createElement(Original, props);
+    const own = nestedIn ? withArabicLeading(props) : props;
+    return React.createElement(Original, {
+      ...own,
+      style: own.style == null ? style : [style, own.style],
+    });
   };
   Wrapped.displayName = name;
   // The statics ride along: `TextInput.State.currentlyFocusedInput()` is
