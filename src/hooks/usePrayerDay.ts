@@ -341,6 +341,11 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
     lng: number | null | undefined;
     label: string | undefined;
   }>({ lat: undefined, lng: undefined, label: undefined });
+  // The mode as it is NOW, for a fix that lands after the reader has gone
+  // to a place of their own: the precise request may answer a minute after
+  // it was made, and a fix for "My location" must not replace that place.
+  const liveModeRef = useRef(settings.locationMode);
+  liveModeRef.current = settings.locationMode;
   autoRef.current = {
     lat: settings.lastFetchedLatitude,
     lng: settings.lastFetchedLongitude,
@@ -1033,7 +1038,11 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
 
       getPositionStaged(
         fix => {
-          if (watchdogFired) return;
+          // The watchdog only ends the wait of a reader with nothing on
+          // screen (it sends them to manual entry). With a place already
+          // shown, a late fix is still the news this was waiting for.
+          if (watchdogFired && !hasCached) return;
+          if (liveModeRef.current === 'manual') return;
           // A fix landed → the watchdog no longer needs to fire.
           gotAnyFix = true;
           clearTimeout(watchdog);
@@ -1057,6 +1066,17 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           // explicitly do NOT compute on-device times against GPS-less
           // coordinates (#125).
         },
+        // A PLACE ALREADY ON SCREEN CAN WAIT FOR THE SATELLITES. After a
+        // flight, or indoors, a first fix takes longer than twenty seconds,
+        // and the wait used to end just short of it at every launch and
+        // every pull to refresh: a reader who had travelled from Sweden to
+        // Germany kept Stockholm until the location was switched to a place
+        // and back (Nov 2026, reproduced on an Android 17 emulator with a
+        // fix thirty seconds in). Nothing is blocked meanwhile — the times
+        // of the last place are up — so the precise request gets a minute.
+        // With nothing on screen the wait stays short, for the watchdog's
+        // offer of manual entry.
+        hasCached ? { fineTimeoutMs: 60_000 } : undefined,
       );
     };
     run().catch(() => {});

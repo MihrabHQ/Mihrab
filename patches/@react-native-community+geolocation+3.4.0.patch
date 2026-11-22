@@ -11,7 +11,7 @@ index aab4a31..7cec7dc 100644
  
  if (isNewArchitectureEnabled()) {
 diff --git a/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java b/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java
-index 55d2619..ca7d685 100644
+index 55d2619..041257a 100644
 --- a/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java
 +++ b/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java
 @@ -66,6 +66,10 @@ public class AndroidLocationManager extends BaseLocationManager {
@@ -37,7 +37,7 @@ index 55d2619..ca7d685 100644
          }
      }
  
-@@ -121,26 +128,115 @@ public class AndroidLocationManager extends BaseLocationManager {
+@@ -121,26 +128,149 @@ public class AndroidLocationManager extends BaseLocationManager {
          mWatchedProvider = null;
      }
  
@@ -80,7 +80,12 @@ index 55d2619..ca7d685 100644
 +            public void run() {
 +                if (answered.compareAndSet(false, true)) {
 +                    cancel.cancel();
-+                    error.invoke(PositionError.buildError(PositionError.TIMEOUT, "Location request timed out"));
++                    Location last = newestLastKnown(locationManager);
++                    if (last != null) {
++                        success.invoke(locationToMap(last));
++                    } else {
++                        error.invoke(PositionError.buildError(PositionError.TIMEOUT, "Location request timed out"));
++                    }
 +                }
 +            }
 +        };
@@ -99,8 +104,9 @@ index 55d2619..ca7d685 100644
 +                    return;
 +                }
 +                handler.removeCallbacks(giveUp);
-+                if (location != null) {
-+                    success.invoke(locationToMap(location));
++                Location answer = location != null ? location : newestLastKnown(locationManager);
++                if (answer != null) {
++                    success.invoke(locationToMap(answer));
 +                } else {
 +                    error.invoke(PositionError.buildError(PositionError.POSITION_UNAVAILABLE, "No location could be found."));
 +                }
@@ -138,7 +144,6 @@ index 55d2619..ca7d685 100644
 -                    : LocationManager.GPS_PROVIDER;
 -            if (!locationManager.isProviderEnabled(provider)) {
 -                return null;
--            }
 +        boolean fine = ContextCompat.checkSelfPermission(mReactContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 +        boolean coarse = ContextCompat.checkSelfPermission(mReactContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 +        // Android 12+: the coarse permission is enough for the satellites (the fix comes back coarsened).
@@ -148,6 +153,34 @@ index 55d2619..ca7d685 100644
 +        boolean network = networkAllowed && isEnabled(locationManager, LocationManager.NETWORK_PROVIDER);
 +        if (highAccuracy) {
 +            return gps ? LocationManager.GPS_PROVIDER : network ? LocationManager.NETWORK_PROVIDER : null;
++        }
++        return network ? LocationManager.NETWORK_PROVIDER : gps ? LocationManager.GPS_PROVIDER : null;
++    }
++
++    /**
++     * The newest position any provider last had, or null.
++     *
++     * What a request answers with when its wait runs out. A reader who had
++     * travelled from Sweden to Germany kept Stockholm at every launch and
++     * every pull to refresh (Mihrab, Nov 2026): a first fix after a flight,
++     * or indoors, takes longer than the wait, the request "timed out", and
++     * the app stayed on the place it had — though the phone itself had a
++     * position in Germany, a minute and a half old, from a fix that landed
++     * after the app stopped listening. The phone's last position is never
++     * older than the app's own: the app's came from one.
++     */
++    @Nullable
++    private static Location newestLastKnown(LocationManager locationManager) {
++        Location best = null;
++        for (String provider : new String[] {"fused", LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER, LocationManager.PASSIVE_PROVIDER}) {
++            try {
++                Location location = locationManager.getLastKnownLocation(provider);
++                if (location != null && (best == null || location.getTime() > best.getTime())) {
++                    best = location;
++                }
++            } catch (RuntimeException e) {
++                // No such provider on this phone, or not this permission's to ask.
+             }
          }
 -        // If it's an enabled provider, but we don't have permissions, ignore it
 -        int finePermission = ContextCompat.checkSelfPermission(mReactContext, android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -155,7 +188,7 @@ index 55d2619..ca7d685 100644
 -        if ((provider.equals(LocationManager.GPS_PROVIDER) && finePermission != PackageManager.PERMISSION_GRANTED) ||
 -                (provider.equals(LocationManager.NETWORK_PROVIDER) && coarsePermission != PackageManager.PERMISSION_GRANTED)) {
 -            return null;
-+        return network ? LocationManager.NETWORK_PROVIDER : gps ? LocationManager.GPS_PROVIDER : null;
++        return best;
 +    }
 +
 +    /** A provider the phone does not have at all is not enabled either, and asking must not throw. */
@@ -169,6 +202,21 @@ index 55d2619..ca7d685 100644
      }
  
      private static class SingleUpdateRequest {
+@@ -157,7 +287,13 @@ public class AndroidLocationManager extends BaseLocationManager {
+             public void run() {
+                 synchronized (SingleUpdateRequest.this) {
+                     if (!mTriggered) {
+-                        mError.invoke(PositionError.buildError(PositionError.TIMEOUT, "Location request timed out"));
++                        // No fix in time: the newest position the phone has, if it has one (newestLastKnown).
++                        Location last = newestLastKnown(mLocationManager);
++                        if (last != null) {
++                            mSuccess.invoke(locationToMap(last));
++                        } else {
++                            mError.invoke(PositionError.buildError(PositionError.TIMEOUT, "Location request timed out"));
++                        }
+                         mLocationManager.removeUpdates(mLocationListener);
+                         FLog.i(ReactConstants.TAG, "LocationModule: Location request timed out");
+                         mTriggered = true;
 diff --git a/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/GeolocationModule.java b/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/GeolocationModule.java
 index 5b42ba4..5df7ecf 100644
 --- a/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/GeolocationModule.java
