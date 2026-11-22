@@ -71,6 +71,8 @@
     "savedLocationLabel": "{{name}}",
     "switchLocation": "تغيير الموقع",
     "autoBadge": "تلقائي",
+    "autoNotUpdated": "لم يُحدَّث",
+    "locationMovedNotice": "يبدو أنك سافرت. هذه المواقيت ما زالت لمدينة {{city}}؛ لم يُحدَّد موقعك الجديد بعد.",
     "locating": "جارٍ تحديد الموقع…",
     "backToToday": "العودة إلى اليوم",
     "updatedAt": "آخر تحديث {{when}}",

@@ -11,21 +11,35 @@ index aab4a31..7cec7dc 100644
  
  if (isNewArchitectureEnabled()) {
 diff --git a/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java b/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java
-index 55d2619..041257a 100644
+index 55d2619..e3534fa 100644
 --- a/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java
 +++ b/node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java
-@@ -66,6 +66,10 @@ public class AndroidLocationManager extends BaseLocationManager {
+@@ -66,6 +66,24 @@ public class AndroidLocationManager extends BaseLocationManager {
          try {
              LocationManager locationManager =
                      (LocationManager) mReactContext.getSystemService(Context.LOCATION_SERVICE);
-+            if (approximateOnly() && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
++            // Android 12 and later have a fused provider in the OS itself
++            // (Google's on a phone with Play services, the system's own on
++            // one without): satellites, Wi-Fi, cell towers and the sensors
++            // as one answer. The quick request (not high accuracy) asks it,
++            // for every reader and not only one who chose "Approximate" —
++            // beside the satellites alone, which the precise request still
++            // listens to. A phone with no network provider used to give the
++            // quick request the satellites too, so both waited on the sky.
++            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
++                    && (approximateOnly() || !locationOptions.highAccuracy)) {
++                Location recent = newestLastKnown(locationManager);
++                if (recent != null && (SystemClock.currentTimeMillis() - recent.getTime()) < locationOptions.maximumAge) {
++                    success.invoke(locationToMap(recent));
++                    return;
++                }
 +                currentApproximateLocation(locationManager, locationOptions.timeout, success, error);
 +                return;
 +            }
              String provider = getValidProvider(locationManager, locationOptions.highAccuracy);
              if (provider == null) {
                  error.invoke(
-@@ -82,7 +86,10 @@ public class AndroidLocationManager extends BaseLocationManager {
+@@ -82,7 +100,10 @@ public class AndroidLocationManager extends BaseLocationManager {
              new AndroidLocationManager.SingleUpdateRequest(locationManager, provider, locationOptions.timeout, success, error)
                      .invoke(location);
          } catch (SecurityException e) {
@@ -37,7 +51,7 @@ index 55d2619..041257a 100644
          }
      }
  
-@@ -121,26 +128,149 @@ public class AndroidLocationManager extends BaseLocationManager {
+@@ -121,26 +142,149 @@ public class AndroidLocationManager extends BaseLocationManager {
          mWatchedProvider = null;
      }
  
@@ -202,7 +216,7 @@ index 55d2619..041257a 100644
      }
  
      private static class SingleUpdateRequest {
-@@ -157,7 +287,13 @@ public class AndroidLocationManager extends BaseLocationManager {
+@@ -157,7 +301,13 @@ public class AndroidLocationManager extends BaseLocationManager {
              public void run() {
                  synchronized (SingleUpdateRequest.this) {
                      if (!mTriggered) {

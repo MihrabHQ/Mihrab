@@ -71,6 +71,8 @@
     "savedLocationLabel": "{{name}}",
     "switchLocation": "Switch location",
     "autoBadge": "Auto",
+    "autoNotUpdated": "Not updated",
+    "locationMovedNotice": "You seem to have travelled. These times are still for {{city}}; your new location has not been found yet.",
     "locating": "Locating…",
     "backToToday": "Back to today",
     "updatedAt": "Updated {{when}}",

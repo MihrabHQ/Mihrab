@@ -31,6 +31,13 @@ export type PositionFix = {
   longitude: number;
   accuracy: number | null;
   stage: PositionStage;
+  /**
+   * When the position was measured (ms since the epoch), or null where the
+   * platform does not say. A request whose wait ran out answers with the
+   * phone's last position, which may be hours old (Android): the caller
+   * tells a fresh fix from that one by this.
+   */
+  timestamp: number | null;
 };
 
 export type PositionError = { code?: number; message?: string };
@@ -69,7 +76,10 @@ export function getPositionStaged(
   };
 
   const deliver = (
-    pos: { coords: { latitude: number; longitude: number; accuracy?: number } },
+    pos: {
+      coords: { latitude: number; longitude: number; accuracy?: number };
+      timestamp?: number;
+    },
     stage: PositionStage,
   ) => {
     if (cancelled) return;
@@ -79,6 +89,10 @@ export function getPositionStaged(
       longitude: pos.coords.longitude,
       accuracy: pos.coords.accuracy ?? null,
       stage,
+      timestamp:
+        typeof pos.timestamp === 'number' && pos.timestamp > 0
+          ? pos.timestamp
+          : null,
     });
   };
 

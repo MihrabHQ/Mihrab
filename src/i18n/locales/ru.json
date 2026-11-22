@@ -71,6 +71,8 @@
     "savedLocationLabel": "{{name}}",
     "switchLocation": "Сменить местоположение",
     "autoBadge": "Авто",
+    "autoNotUpdated": "Не обновлено",
+    "locationMovedNotice": "Похоже, вы в поездке. Это время всё ещё для города {{city}}; ваше новое местоположение пока не определено.",
     "locating": "Определение…",
     "backToToday": "К сегодняшнему дню",
     "updatedAt": "Обновлено {{when}}",

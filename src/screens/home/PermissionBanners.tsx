@@ -56,6 +56,15 @@ type PermissionBannersProps = {
   zoneNote?: string | null;
   onDismissZoneNote?: () => void;
   /**
+   * The phone seems to have travelled and "My location" has not found
+   * where it is yet: the times below are still the last place's
+   * (`locationFreshness.ts`). Said first, above every other notice — it is
+   * the one that says the whole page may be another city's. Its button
+   * tries again; it goes by itself when a position is found.
+   */
+  locationNote?: string | null;
+  onRetryLocation?: () => void;
+  /**
    * The status bar's height, when these are the first thing on a page
    * that runs to the top edge of the screen — the phone's Today.
    *
@@ -82,6 +91,11 @@ type PermissionBannersProps = {
 /** Notices put away for this run of the app (floating cards only). */
 const putAway = new Set<string>();
 
+/** A notice put away may be shown again: the thing it was about ended, and the next one is news. */
+export function bringBackNotice(key: string): void {
+  putAway.delete(key);
+}
+
 /**
  * Whether any notice is drawn at all. The Home page asks it too: the
  * notices' wrapper is a child of a column with a gap, and a wrapper left
@@ -95,9 +109,11 @@ export function permissionBannersShown(p: {
   timezoneShift?: unknown;
   methodNote?: unknown;
   zoneNote?: unknown;
+  locationNote?: unknown;
 }): boolean {
   return Boolean(
-    p.usingLocalFallback ||
+    p.locationNote ||
+      p.usingLocalFallback ||
       p.exactAlarmDenied ||
       p.notifPermDenied ||
       p.timezoneShift ||
@@ -117,6 +133,8 @@ function PermissionBannersImpl({
   onDismissMethodNote,
   zoneNote,
   onDismissZoneNote,
+  locationNote,
+  onRetryLocation,
   topInset = 0,
   floating = false,
 }: PermissionBannersProps) {
@@ -151,6 +169,7 @@ function PermissionBannersImpl({
       timezoneShift,
       methodNote,
       zoneNote,
+      locationNote,
     })
   ) {
     return null;
@@ -191,6 +210,9 @@ function PermissionBannersImpl({
   };
   const dismiss = t('common.dismiss', 'Dismiss');
   const notices: Notice[] = [];
+  if (locationNote && !away('location')) {
+    notices.push({ key: 'location', text: locationNote, action: t('common.retry'), onAction: onRetryLocation, closable: true });
+  }
   if (timezoneShift) {
     notices.push({
       key: 'timezone',

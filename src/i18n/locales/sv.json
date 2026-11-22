@@ -71,6 +71,8 @@
     "savedLocationLabel": "{{name}}",
     "switchLocation": "Byt plats",
     "autoBadge": "Auto",
+    "autoNotUpdated": "Inte uppdaterad",
+    "locationMovedNotice": "Du verkar ha rest. Tiderna gäller fortfarande {{city}}; din nya plats har inte hittats än.",
     "locating": "Söker plats…",
     "backToToday": "Till idag",
     "updatedAt": "Uppdaterad {{when}}",

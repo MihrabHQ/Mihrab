@@ -71,6 +71,8 @@
     "savedLocationLabel": "{{name}}",
     "switchLocation": "অবস্থান পরিবর্তন",
     "autoBadge": "অটো",
+    "autoNotUpdated": "হালনাগাদ হয়নি",
+    "locationMovedNotice": "মনে হচ্ছে আপনি ভ্রমণ করেছেন। এই সময়গুলো এখনও {{city}}-এর; আপনার নতুন অবস্থান এখনও পাওয়া যায়নি।",
     "locating": "অবস্থান খোঁজা হচ্ছে…",
     "backToToday": "আজে ফিরুন",
     "updatedAt": "আপডেট {{when}}",

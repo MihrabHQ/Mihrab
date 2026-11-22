@@ -96,6 +96,7 @@ const STAYS: Record<string, string> = {
     'describes this phone — which cache schema its launch sweep last cleared up after',
   'prayerapp.prayer.v1': 'dead — named in resetAppData but written nowhere',
   'mihrab.cityRegistry.v1': 'describes this phone — where it has been',
+  'mihrab.locationAnchor.v1': 'describes this phone — its time zone and network country at its last position',
   'mihrab.dataStatus.v1': 'derived — diagnostics about the last fetch',
   'prayerapp.providerHealth.v1': 'describes this phone — which host failed here',
   'islamiska_forbundet.reverse.v1': 'derived cache, and holds coordinates',

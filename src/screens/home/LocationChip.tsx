@@ -1,6 +1,7 @@
 // hover-ok: list-row / settings-row / sheet pressables. Hover-state
 // treatment would visually noise these dense surfaces; the touch
 // feedback (pressed opacity / ripple) is the right affordance here.
+import { useLocationFreshness } from '../../prayer/locationFreshness';
 import { memo, useCallback, useMemo, useState } from 'react';
 import {
   Modal,
@@ -124,6 +125,13 @@ function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLoc
 
   // Automatic mode is anything that isn't explicit manual entry (GPS).
   const isAuto = settings.locationMode !== 'manual';
+  // "Auto" says the place follows the phone. When the last search for it
+  // ended with no fresh position, the place is only the last one known, and
+  // the badge says that instead (`locationFreshness.ts`).
+  const notUpdated = useLocationFreshness().status === 'notUpdated';
+  const autoBadge = notUpdated
+    ? t('home.autoNotUpdated', 'Not updated')
+    : t('home.autoBadge');
 
   const chipLabel = useMemo(() => {
     if (isAuto) {
@@ -259,11 +267,21 @@ function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLoc
               // city is not pushed off the row by its own badge.
               maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
               style={[styles.headerPinLabel, { color: ink ? ink.text : palette.text }]}>
+              {/* "Not updated" goes BEFORE the name: the row is one line,
+                  cut at its end, and after a long name the word that
+                  matters was cut to "N…" (City of Westminster, on an
+                  Android 17 emulator). The name is what may be shortened. */}
+              {isAuto && notUpdated ? (
+                <Text style={{ color: ink ? ink.muted : palette.accentSolid }}>
+                  {autoBadge}
+                  {'  '}
+                </Text>
+              ) : null}
               {chipLabel}
-              {isAuto ? (
+              {isAuto && !notUpdated ? (
                 <Text style={{ color: ink ? ink.muted : palette.accentSolid }}>
                   {'  '}
-                  {t('home.autoBadge')}
+                  {autoBadge}
                 </Text>
               ) : null}
             </Text>
@@ -285,7 +303,7 @@ function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLoc
                       backgroundColor: palette.accentBg,
                     },
                   ]}>
-                  {t('home.autoBadge')}
+                  {autoBadge}
                 </Text>
               ) : null}
             </View>

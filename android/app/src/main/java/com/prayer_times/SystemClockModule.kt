@@ -46,6 +46,26 @@ class SystemClockModule(private val reactContext: ReactApplicationContext) :
     promise.resolve(read())
   }
 
+  /**
+   * The country of the mobile network the phone is registered on (ISO
+   * 3166-1 alpha-2, upper case), or null: no SIM, flight mode, a tablet.
+   *
+   * A sign of travel, and only that (src/prayer/locationFreshness.ts): the
+   * phone knows it the moment it registers after landing, offline and with
+   * no permission, long before the satellites answer. It is compared on the
+   * phone with what it was at the last position and goes nowhere.
+   */
+  @ReactMethod
+  fun readNetworkCountryIso(promise: Promise) {
+    val iso = try {
+      (reactContext.getSystemService(android.content.Context.TELEPHONY_SERVICE)
+        as? android.telephony.TelephonyManager)?.networkCountryIso
+    } catch (e: Exception) {
+      null
+    }
+    promise.resolve(iso?.takeIf { it.length == 2 }?.uppercase(java.util.Locale.ROOT))
+  }
+
   companion object {
     const val NAME = "SystemClock"
   }

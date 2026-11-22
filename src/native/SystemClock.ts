@@ -39,6 +39,7 @@ type SystemClockNative = {
   timeZone?: unknown;
   getConstants?: () => { is24Hour?: unknown; timeZone?: unknown } | undefined;
   readIs24Hour?: () => Promise<boolean>;
+  readNetworkCountryIso?: () => Promise<string | null>;
 };
 
 const native: SystemClockNative | undefined = (
@@ -154,4 +155,19 @@ if (typeof native?.readIs24Hour === 'function') {
 /** Test seam. */
 export function _setSystemIs24HourForTests(value: boolean | null): void {
   publish(value);
+}
+
+/**
+ * The country of the mobile network the phone is on (ISO alpha-2, upper
+ * case), or null — Android only; no SIM, flight mode, a tablet, iOS and the
+ * desktop answer null. A sign of travel for `locationFreshness.ts`; it is
+ * compared on the phone and never sent anywhere.
+ */
+export async function networkCountry(): Promise<string | null> {
+  try {
+    const iso = await native?.readNetworkCountryIso?.();
+    return typeof iso === 'string' && /^[A-Z]{2}$/.test(iso) ? iso : null;
+  } catch {
+    return null;
+  }
 }

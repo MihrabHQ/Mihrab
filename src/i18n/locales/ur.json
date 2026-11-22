@@ -71,6 +71,8 @@
     "savedLocationLabel": "{{name}}",
     "switchLocation": "مقام تبدیل کریں",
     "autoBadge": "خودکار",
+    "autoNotUpdated": "تازہ نہیں ہوا",
+    "locationMovedNotice": "لگتا ہے آپ سفر پر ہیں۔ یہ اوقات اب بھی {{city}} کے ہیں؛ آپ کا نیا مقام ابھی نہیں ملا۔",
     "locating": "مقام تلاش…",
     "backToToday": "آج پر واپس",
     "updatedAt": "اپ ڈیٹ {{when}}",

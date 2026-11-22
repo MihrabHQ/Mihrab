@@ -71,6 +71,8 @@
     "savedLocationLabel": "{{name}}",
     "switchLocation": "Cambiar ubicación",
     "autoBadge": "Auto",
+    "autoNotUpdated": "Sin actualizar",
+    "locationMovedNotice": "Parece que has viajado. Estos horarios siguen siendo los de {{city}}; aún no se ha encontrado tu nueva ubicación.",
     "locating": "Ubicando…",
     "backToToday": "Volver a hoy",
     "updatedAt": "Actualizado {{when}}",

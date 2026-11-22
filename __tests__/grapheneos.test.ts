@@ -212,7 +212,10 @@ describe('location without Google, and with "Approximate"', () => {
   it('a single fix for an Approximate reader is asked of the platform itself, fused provider first', () => {
     // A listener on `gps` for such a reader stood 28 s on an AOSP Android 12
     // emulator and was handed nothing.
-    expect(added).toMatch(/if \(approximateOnly\(\) && android\.os\.Build\.VERSION\.SDK_INT >= android\.os\.Build\.VERSION_CODES\.S\) \{\s*\+\s*currentApproximateLocation\(/);
+    // And, since Nov 2026, for every reader's quick request (not only an
+    // Approximate one's): the fused provider beside the satellites.
+    expect(added).toMatch(/if \(android\.os\.Build\.VERSION\.SDK_INT >= android\.os\.Build\.VERSION_CODES\.S\s*\+\s*&& \(approximateOnly\(\) \|\| !locationOptions\.highAccuracy\)\) \{/);
+    expect(added).toMatch(/currentApproximateLocation\(locationManager, locationOptions\.timeout, success, error\);/);
     expect(added).toMatch(/new String\[\] \{LocationManager\.FUSED_PROVIDER, LocationManager\.NETWORK_PROVIDER, LocationManager\.GPS_PROVIDER\}/);
     expect(added).toMatch(/locationManager\.getCurrentLocation\(provider, request, cancel, mReactContext\.getMainExecutor\(\)/);
     // Asked for by name: a "balanced" request to the fused provider is the

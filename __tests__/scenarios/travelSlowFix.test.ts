@@ -16,7 +16,7 @@
  */
 jest.unmock('adhan');
 
-type Fix = { latitude: number; longitude: number };
+type Fix = { latitude: number; longitude: number; timestamp?: number | null; stage?: 'coarse' | 'fine' };
 const mockLocator: { opts: unknown[]; fire: ((f: Fix) => void)[] } = { opts: [], fire: [] };
 jest.mock('../../src/utils/getPosition', () => ({
   getPositionStaged: (onFix: (f: Fix) => void, _onError: unknown, opts: unknown) => {
@@ -35,6 +35,12 @@ import { loadSettings, _resetSettingsStorageForTests } from '../../src/settings/
 import { _resetTimezoneShiftForTests } from '../../src/prayer/timezoneShift';
 import { _resetMethodCurrencyForTests } from '../../src/providers/methodCurrency';
 import { _resetCalculationPreferencesForTests } from '../../src/prayer/calculationPreferences';
+import {
+  ANCHOR_KEY,
+  _resetLocationFreshnessForTests,
+  getLocationFreshness,
+  showsTravelNotice,
+} from '../../src/prayer/locationFreshness';
 import {
   aladhanServer,
   changeSettings,
@@ -65,6 +71,7 @@ beforeEach(async () => {
   _resetTimezoneShiftForTests();
   _resetMethodCurrencyForTests();
   _resetCalculationPreferencesForTests();
+  _resetLocationFreshnessForTests();
   prayerStorage._resetCacheSweepForTests();
   (NetInfo.addEventListener as jest.Mock).mockImplementation(() => () => {});
   jest.spyOn(prayerStorage, 'refreshPrayerDataCache').mockResolvedValue();
@@ -133,12 +140,82 @@ it('but not once the reader has gone to a place of their own', async () => {
   probe.unmount();
 });
 
+describe('and the screen says what it knows', () => {
+  /** The phone's surroundings at its last fresh position were another country's. */
+  const anchoredElsewhere = () =>
+    AsyncStorage.setItem(
+      ANCHOR_KEY,
+      JSON.stringify({ zone: 'Pacific/Kiritimati', offset: -new Date().getTimezoneOffset() + 300, country: null }),
+    );
+  const hoursOld = () => Date.now() - 5 * 3_600_000;
+
+  it('a fresh position: found, nothing to say', async () => {
+    const { probe } = await atHome();
+    mockLocator.fire[0]({ ...STOCKHOLM, timestamp: Date.now(), stage: 'coarse' });
+    await settle(10);
+    expect(getLocationFreshness()).toEqual({ status: 'ok', moved: false });
+    probe.unmount();
+  });
+
+  it('the phone’s old position after the precise wait ran out: "Not updated", in the same city', async () => {
+    const { probe } = await atHome();
+    mockLocator.fire[0]({ ...STOCKHOLM, timestamp: hoursOld(), stage: 'coarse' });
+    await settle(10);
+    expect(getLocationFreshness().status).toBe('searching');
+    mockLocator.fire[0]({ ...STOCKHOLM, timestamp: hoursOld(), stage: 'fine' });
+    await settle(10);
+    expect(getLocationFreshness()).toEqual({ status: 'notUpdated', moved: false });
+    expect(showsTravelNotice(getLocationFreshness())).toBe(false);
+    probe.unmount();
+  });
+
+  it('travelled and not found: Today’s notice, until a fresh position ends it', async () => {
+    await anchoredElsewhere();
+    const { probe } = await atHome();
+    await until(() => getLocationFreshness().moved, 'the journey noticed');
+    // Still searching: no notice yet, a position usually lands in a second.
+    expect(showsTravelNotice(getLocationFreshness())).toBe(false);
+    mockLocator.fire[0]({ ...STOCKHOLM, timestamp: hoursOld(), stage: 'fine' });
+    await settle(10);
+    expect(getLocationFreshness()).toEqual({ status: 'notUpdated', moved: true });
+    expect(showsTravelNotice(getLocationFreshness())).toBe(true);
+    mockLocator.fire[0]({ ...BERLIN, timestamp: Date.now(), stage: 'fine' });
+    await until(near(probe, BERLIN), 'Berlin on screen', 20_000);
+    expect(getLocationFreshness()).toEqual({ status: 'ok', moved: false });
+    probe.unmount();
+  });
+
+  it('travelled, and the phone’s last position is the new city: the place follows it, no notice', async () => {
+    await anchoredElsewhere();
+    const { probe } = await atHome();
+    await until(() => getLocationFreshness().moved, 'the journey noticed');
+    mockLocator.fire[0]({ ...BERLIN, timestamp: hoursOld(), stage: 'fine' });
+    await until(near(probe, BERLIN), 'Berlin on screen', 20_000);
+    await settle(5);
+    expect(getLocationFreshness()).toEqual({ status: 'notUpdated', moved: false });
+    probe.unmount();
+  });
+
+  it('a place of the reader’s own is never stale', async () => {
+    await anchoredElsewhere();
+    const { s, probe } = await atHome();
+    await until(() => getLocationFreshness().moved, 'the journey noticed');
+    const manual = await changeSettings(s, { locationMode: 'manual', manualLatitude: 48.1372, manualLongitude: 11.5756 });
+    await probe.rerender(manual);
+    await until(() => getLocationFreshness().status === 'ok', 'the chosen place taken');
+    expect(getLocationFreshness()).toEqual({ status: 'ok', moved: false });
+    probe.unmount();
+  });
+});
+
 it('Android: a request whose wait runs out answers with the newest position the phone has', () => {
   const root = path.join(__dirname, '..', '..');
   const patch = readFileSync(path.join(root, 'patches/@react-native-community+geolocation+3.4.0.patch'), 'utf8');
   expect(patch).toMatch(/\+\s+private static Location newestLastKnown\(LocationManager locationManager\)/);
   // The single request, and the "Approximate" one at its time limit and on an empty answer.
   expect(patch.match(/\+\s+Location last = newestLastKnown\(/g)).toHaveLength(2);
+  // Android 12+: the quick request asks the OS's fused provider, for every reader.
+  expect(patch).toMatch(/\+\s+&& \(approximateOnly\(\) \|\| !locationOptions\.highAccuracy\)\) \{/);
   expect(patch).toMatch(/\+\s+Location answer = location != null \? location : newestLastKnown\(locationManager\);/);
   const java = readFileSync(
     path.join(root, 'node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java'),

@@ -71,6 +71,8 @@
     "savedLocationLabel": "{{name}}",
     "switchLocation": "Konumu değiştir",
     "autoBadge": "Oto",
+    "autoNotUpdated": "Güncellenmedi",
+    "locationMovedNotice": "Seyahat etmiş görünüyorsunuz. Bu vakitler hâlâ {{city}} için; yeni konumunuz henüz bulunamadı.",
     "locating": "Konum bulunuyor…",
     "backToToday": "Bugüne dön",
     "updatedAt": "Güncellendi: {{when}}",

@@ -14,6 +14,13 @@ import {
   type PrayerDay,
 } from '../prayer/prayerStorage';
 import { getPositionStaged } from '../utils/getPosition';
+import {
+  SLOW_AFTER_MS,
+  isFreshFix,
+  recordFreshFix,
+  seemsToHaveTravelled,
+  setLocationFreshness,
+} from '../prayer/locationFreshness';
 import { recordLocationFix } from '../prayer/cityRegistry';
 import { reverseLocality, type ReverseLocality } from '../geocoding/nominatim';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
@@ -346,6 +353,9 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
   // it was made, and a fix for "My location" must not replace that place.
   const liveModeRef = useRef(settings.locationMode);
   liveModeRef.current = settings.locationMode;
+  // Which request for "My location" is the current one: an earlier one's
+  // late timers and answers must not speak for it (`locationFreshness.ts`).
+  const freshnessCycleRef = useRef(0);
   autoRef.current = {
     lat: settings.lastFetchedLatitude,
     lng: settings.lastFetchedLongitude,
@@ -843,6 +853,9 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
     const run = async () => {
       // ── Manual mode: simple, no GPS needed ──────────────────────────────────
       if (settings.locationMode === 'manual') {
+        // A place the reader chose needs no position: nothing to be stale.
+        freshnessCycleRef.current++;
+        setLocationFreshness({ status: 'ok', moved: false });
         // (0, 0) is the explicit "no location set" sentinel from
         // DEFAULT_SETTINGS — fetching prayer times for that point
         // hits the middle of the Atlantic and confuses every
@@ -904,6 +917,46 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           .catch(() => {});
       };
 
+      // IS THE PLACE ON SCREEN WHERE THE PHONE IS? Until a fresh position
+      // says so it is only the last one known, and the screen says which
+      // (`locationFreshness.ts`): "slow" once the quick request's wait has
+      // passed, "not updated" when the search ends with nothing fresh —
+      // and, from the first moment, whether the phone seems to have
+      // travelled (its network's country, its time zone), which Today's
+      // notice says while the search goes on.
+      const cycle = ++freshnessCycleRef.current;
+      const mine = () =>
+        cycle === freshnessCycleRef.current &&
+        liveModeRef.current !== 'manual';
+      let gotFresh = false;
+      setLocationFreshness({ status: 'searching' });
+      seemsToHaveTravelled()
+        .then(moved => {
+          if (mine() && !gotFresh) setLocationFreshness({ moved });
+        })
+        .catch(() => {});
+      const quiet = (timer: ReturnType<typeof setTimeout>) => {
+        // Node (the tests) would wait for it; the phone has no `unref`.
+        (timer as unknown as { unref?: () => void }).unref?.();
+        return timer;
+      };
+      const slowTimer = quiet(
+        setTimeout(() => {
+          if (mine() && !gotFresh) setLocationFreshness({ status: 'slow' });
+        }, SLOW_AFTER_MS),
+      );
+      const endSearch = () => {
+        clearTimeout(slowTimer);
+        if (mine() && !gotFresh) setLocationFreshness({ status: 'notUpdated' });
+      };
+      // The precise request answers within its minute, one way or another;
+      // this is for the request that never answers at all.
+      quiet(setTimeout(endSearch, 65_000));
+      const placeConfirmed = () => {
+        if (mine()) setLocationFreshness({ moved: false });
+        recordFreshFix().catch(() => {});
+      };
+
       if (hasCached) {
         // Instantly render last-known times while GPS resolves in background.
         // isBackgroundRefresh=true prevents the 'loading' flash. Seed the chip
@@ -929,6 +982,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
             // "permission denied" wall (#125).
             setState({ phase: 'permission_denied' });
           }
+          endSearch();
           settleOwedShift();
           return;
         }
@@ -1014,6 +1068,10 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           loadedCityIdRef.current !== summary.cityId && !sameAnchorAsLoaded;
         if (!cityChanged) loadedCityIdRef.current = summary.cityId;
         if (cityChanged) {
+          // The place on screen follows this position — a fresh one, or the
+          // phone's last after a wait ran out, newer than the app's own.
+          // Either way it is no longer the place travelled from.
+          placeConfirmed();
           loadedCityIdRef.current = summary.cityId;
           loadTimes(
             summary.anchorLat,
@@ -1043,6 +1101,16 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           // shown, a late fix is still the news this was waiting for.
           if (watchdogFired && !hasCached) return;
           if (liveModeRef.current === 'manual') return;
+          if (isFreshFix(fix.timestamp)) {
+            gotFresh = true;
+            clearTimeout(slowTimer);
+            if (mine()) setLocationFreshness({ status: 'ok', moved: false });
+            recordFreshFix().catch(() => {});
+          } else if (fix.stage === 'fine') {
+            // The precise request's wait ran out: this is the phone's last
+            // position, not a new one.
+            endSearch();
+          }
           // A fix landed → the watchdog no longer needs to fire.
           gotAnyFix = true;
           clearTimeout(watchdog);
@@ -1052,6 +1120,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         },
         err => {
           clearTimeout(watchdog);
+          endSearch();
           if (watchdogFired || gotAnyFix) return;
           settleOwedShift();
           if (!hasCached && !isBackgroundRefresh) {

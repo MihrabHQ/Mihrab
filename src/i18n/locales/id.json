@@ -71,6 +71,8 @@
     "savedLocationLabel": "{{name}}",
     "switchLocation": "Ganti lokasi",
     "autoBadge": "Auto",
+    "autoNotUpdated": "Belum diperbarui",
+    "locationMovedNotice": "Sepertinya Anda sedang bepergian. Waktu ini masih untuk {{city}}; lokasi baru Anda belum ditemukan.",
     "locating": "Mencari lokasi…",
     "backToToday": "Kembali ke hari ini",
     "updatedAt": "Diperbarui {{when}}",

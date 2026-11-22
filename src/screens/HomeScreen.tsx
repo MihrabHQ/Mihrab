@@ -33,6 +33,7 @@ import {
 import { onClockJump } from '../utils/clockJumps';
 import { usePrayerDay } from '../hooks/usePrayerDay';
 import { clearTimezoneShiftNotice } from '../prayer/timezoneShift';
+import { showsTravelNotice, useLocationFreshness } from '../prayer/locationFreshness';
 import { zoneDataNotice, zoneDataNoticeKey } from '../prayer/zoneDataNotice';
 import { refreshStoredPrayerData } from '../prayer/refreshStoredData';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
@@ -78,7 +79,7 @@ import { LocationChip } from './home/LocationChip';
 import { useHijriCalendarVersion } from '../hijri/useHijriCalendarVersion';
 import { formatHijriLabel } from '../hijri/formatHijriLabel';
 import { QuranCard } from './home/QuranCard';
-import { PermissionBanners, permissionBannersShown } from './home/PermissionBanners';
+import { PermissionBanners, bringBackNotice, permissionBannersShown } from './home/PermissionBanners';
 import { PracticeCard } from './home/PracticeCard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { TodaySummary } from './home/TodaySummary';
@@ -509,7 +510,27 @@ export function HomeScreen() {
     setZoneDismissed(zoneKey);
     AsyncStorage.setItem(ZONE_NOTE_DISMISSED_KEY, zoneKey).catch(() => undefined);
   }, [zoneKey]);
+  // "My location" has not found the phone since it travelled: the times
+  // are still the last place's, and the page says so (locationFreshness.ts).
+  const freshness = useLocationFreshness();
+  const travelNotice =
+    settings.locationMode !== 'manual' &&
+    state.phase === 'ready' &&
+    showsTravelNotice(freshness);
+  const locationNote = travelNotice
+    ? t('home.locationMovedNotice', {
+        defaultValue:
+          'You seem to have travelled. These times are still for {{city}}; your new location has not been found yet.',
+        city: (state.phase === 'ready' ? state.cityName : undefined) || settings.autoLocationLabel || '',
+      })
+    : null;
+  useEffect(() => {
+    // Found (or a place chosen): a later journey's notice is news again.
+    if (freshness.status === 'ok') bringBackNotice('location');
+  }, [freshness.status]);
+  const retryLocation = useCallback(() => retry(true), [retry]);
   const hasBanner =
+    locationNote != null ||
     (state.phase === 'ready' && state.usingLocalFallback === true) ||
     exactAlarmDenied ||
     notifPermDenied ||
@@ -1940,6 +1961,7 @@ export function HomeScreen() {
         timezoneShift,
         methodNote,
         zoneNote,
+        locationNote,
       }) && !floatBanners ? (
         <View
           style={
@@ -1957,6 +1979,8 @@ export function HomeScreen() {
             onDismissMethodNote={dismissMethodNote}
             zoneNote={zoneNote}
             onDismissZoneNote={dismissZoneNote}
+            locationNote={locationNote}
+            onRetryLocation={retryLocation}
             onDismissTimezoneShift={() => {
               // Both halves: the module stops offering it to the next load,
               // and this screen stops drawing it now.
@@ -2228,6 +2252,8 @@ export function HomeScreen() {
           onDismissMethodNote={dismissMethodNote}
           zoneNote={zoneNote}
           onDismissZoneNote={dismissZoneNote}
+          locationNote={locationNote}
+          onRetryLocation={retryLocation}
           onDismissTimezoneShift={() => {
             clearTimezoneShiftNotice();
             setTzNoticeDismissedAt(timezoneShift?.at ?? Date.now());
