@@ -25,7 +25,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 
-from warsh_tajweed import MARKS, NOISE, analyse_ayah  # noqa: E402
+from warsh_tajweed import ALEF_ATTACHED, MARKS, NOISE, analyse_ayah  # noqa: E402
 
 TATWEEL = "ـ"
 _DATA = None
@@ -40,7 +40,13 @@ def data():
 
 
 def bare(t: str) -> str:
-    return "".join(c for c in t if c not in MARKS and c not in NOISE and c != TATWEEL)
+    cleaned = []
+    for c in t:
+        if c in ALEF_ATTACHED or c == "\u0622":
+            cleaned.append("ا")
+        elif c not in MARKS and c not in NOISE and c != TATWEEL:
+            cleaned.append(c)
+    return "".join(cleaned)
 
 
 def find_word(skeleton: str, surah: int | None = None, needs: str = ""):
@@ -53,7 +59,7 @@ def find_word(skeleton: str, surah: int | None = None, needs: str = ""):
         for i, a in enumerate(A):
             ws = a["text"].split()
             for j, w in enumerate(ws):
-                if bare(w) == skeleton and needs in w:
+                if bare(w) == skeleton and (needs in w or needs in bare(w)):
                     words = analyse_ayah(
                         a["text"],
                         A[i + 1]["text"] if i + 1 < len(A) else None,
@@ -68,6 +74,10 @@ def basmalah_words():
 
 
 def rules_at(word, letter: str, nth: int = 1) -> set[str]:
+    matching = [L for L in word.letters if L.base == letter]
+    if len(matching) >= nth:
+        L = matching[nth - 1]
+        return {r for r, s, e in word.spans if s <= L.start < e}
     pos = -1
     for _ in range(nth):
         pos = word.text.index(letter, pos + 1)
@@ -85,8 +95,8 @@ def expect(label, where, word, letter, has=(), lacks=(), nth=1):
     print(f"{'ok  ' if ok else 'FAIL'} {label:12} {where:7} {word.text}  {letter}#{nth} → {sorted(got)} ;{want}")
 
 
-def case(label, skeleton, letter, has=(), lacks=(), nth=1, surah=None):
-    where, w = find_word(skeleton, surah, letter)
+def case(label, skeleton, letter, has=(), lacks=(), nth=1, surah=None, needs=""):
+    where, w = find_word(skeleton, surah, needs if needs else letter)
     expect(label, where, w, letter, has, lacks, nth)
 
 
@@ -204,9 +214,9 @@ def main() -> int:
     # The disjoined letters carry a madd lāzim, as in Ḥafṣ: الٓمٓ.
     case("muqattaat-l", "ألم", "ل", has=["madda_necessary"], surah=2)
     case("muqattaat-m", "ألم", "م", has=["madda_necessary"], surah=2)
-    # Issue #64 · جَآءَنَا at 67:9 is written with the precomposed آ, and is
-    # the same muttaṣil as جَآءَ written with alif + maddah.
-    case("mottasel-precomposed", "جآءنا", "آ", has=["madda_obligatory_mottasel"], surah=67)
+    # Issue #64 · جَآءَنَا at 67:9 is written with the precomposed آ (or alif + maddah), and is
+    # the same muttaṣil as جَآءَ.
+    case("mottasel-precomposed", "جاءنا", "ا", has=["madda_obligatory_mottasel"], surah=67)
 
     # Issue #64 · 46:21 · ikhfāʾ and iqlāb colour the nūn or tanwīn (or the
     # mīm of ikhfāʾ shafawī) alone. The letter after it was coloured too, so
@@ -238,6 +248,25 @@ def main() -> int:
     case("stop-taqleel-92", "الاشقي", "ق", has=["taqleel"], surah=92)
     case("stop-taqleel-79", "طوى", "و", has=["taqleel"], surah=79)
     case("stop-taqleel-raa", "الكبرى", "ر", has=["taqleel"], lacks=["tafkheem", "raa_tarqeeq"], surah=20)
+
+    # ── Warsh Tajweed Rules from Marwa El Gindy "Rules of Warsh Narration" ──
+    # Rāʾ preceded by a preposition (bi-, li-) with kasrah keeps tafkheem (p. 27):
+    case("W-RAA-PREP-01", "بربك", "ر", has=["tafkheem"], lacks=["raa_tarqeeq"], surah=17)
+    case("W-RAA-PREP-02", "برءوسكم", "ر", has=["tafkheem"], lacks=["raa_tarqeeq"], surah=5)
+    # بِشَرَرٍ (77:32): exception with tarqeeq of both rāʾs (p. 27):
+    case("W-RAA-BISHARAR-1", "بشرر", "ر", has=["raa_tarqeeq"], nth=1, surah=77)
+    case("W-RAA-BISHARAR-2", "بشرر", "ر", has=["raa_tarqeeq"], nth=2, surah=77)
+    # Madd al-Badal exceptions read with only 2 counts, so no madd_badal coloring (p. 9):
+    # A. إِسْرَائِيلَ
+    case("W-BADAL-ISRAEL", "إسراءيل", "ي", lacks=["madd_badal"], surah=2)
+    # B. يُؤَاخِذُ / يُوَاخِذُ
+    case("W-BADAL-YUAKHITH", "يواخذكم", "ا", lacks=["madd_badal"], surah=2)
+    # C. Preceded by true consonant sukoon (e.g. قُرْءَان, مَسْـُٔولًا)
+    case("W-BADAL-QURAN", "القرءان", "ا", lacks=["madd_badal"], surah=2)
+    case("W-BADAL-MASULA", "مسولا", "و", lacks=["madd_badal"], surah=17)
+    # Mutajānisayn across words in Warsh has ithhār on يَلْهَث ذَّلِكَ (7:176) and ارْكَب مَّعَنَا (11:42) (p. 22):
+    case("W-ITHHAAR-YALHATH", "يلهث", "ث", lacks=["idgham_mutajanisayn"], surah=7, needs="يَلْهَثْ")
+    case("W-ITHHAAR-ARKAB", "اركب", "ب", lacks=["idgham_mutajanisayn"], surah=11)
     RHYME_SURAHS = {20, 53, 70, 75, 79, 80, 87, 91, 92, 93, 96}
     ends = []
     for si, s_ in enumerate(data()["surahs"], start=1):

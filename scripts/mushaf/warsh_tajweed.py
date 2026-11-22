@@ -48,6 +48,7 @@ from dataclasses import dataclass, field
 FATHA, DAMMA, KASRA, SUKUN, SHADDA = "َ", "ُ", "ِ", "ْ", "ّ"
 FATHATAN, DAMMATAN, KASRATAN = "ً", "ٌ", "ٍ"           # stacked: iẓhār
 OPEN_FATHATAN, OPEN_DAMMATAN, OPEN_KASRATAN = "ٗ", "ٞ", "ٖ"  # open: not iẓhār
+OPEN_FATHATAN_EXT, OPEN_DAMMATAN_EXT, OPEN_KASRATAN_EXT = "\u08f0", "\u08f1", "\u08f2"
 MADDAH = "ٓ"
 SUP_ALEF = "ٰ"
 SMALL_WAW, SMALL_YEH, SMALL_HIGH_YEH, SMALL_HIGH_NOON = "ۥ", "ۦ", "ۧ", "ۨ"
@@ -55,19 +56,33 @@ SMALL_MEEM = "ۢ"     # iqlāb
 ZERO = "۟"           # rounded zero
 WASL_DOT = "۬"       # the filled dot: hamzat al-waṣl of ال
 LOW_DOT = "۪"        # the empty low dot: taqlīl, or a changed hamza
+LOW_DOTS = {"۪", "\u065c"}
 HAMZA_ABOVE, HAMZA_BELOW = "ٔ", "ٕ"
 TATWEEL = "ـ"
 ALEF_MADDA = "\u0622"  # آ precomposed
 YEH_BARREE = "ے"
 
+ALEF_ATTACHED = {
+    '\u0870': ('ا', FATHA),
+    '\u0871': ('ا', FATHA),
+    '\u0874': ('ا', FATHA),
+    '\u0875': ('ا', FATHA),
+    '\u0872': ('ا', DAMMA),
+    '\u0876': ('ا', DAMMA),
+    '\u0878': ('ا', DAMMA),
+    '\u0873': ('ا', KASRA),
+    '\u0877': ('ا', KASRA),
+    '\u0879': ('ا', KASRA),
+}
+
 VOWELS = {FATHA, DAMMA, KASRA}
 STACKED_TANWEEN = {FATHATAN, DAMMATAN, KASRATAN}
-OPEN_TANWEEN = {OPEN_FATHATAN, OPEN_DAMMATAN, OPEN_KASRATAN}
+OPEN_TANWEEN = {OPEN_FATHATAN, OPEN_DAMMATAN, OPEN_KASRATAN, OPEN_FATHATAN_EXT, OPEN_DAMMATAN_EXT, OPEN_KASRATAN_EXT}
 TANWEEN = STACKED_TANWEEN | OPEN_TANWEEN
 MARKS = VOWELS | TANWEEN | {SUKUN, SHADDA, MADDAH, SUP_ALEF, SMALL_WAW, SMALL_YEH, SMALL_HIGH_YEH,
-                            SMALL_HIGH_NOON, SMALL_MEEM, ZERO, WASL_DOT, LOW_DOT, HAMZA_ABOVE, HAMZA_BELOW}
+                            SMALL_HIGH_NOON, SMALL_MEEM, ZERO, WASL_DOT, LOW_DOT, HAMZA_ABOVE, HAMZA_BELOW, "\u065c", "\u0888", "\u0887"}
 # Not part of any word for the rules: stop signs, the hizb rosette, sajdah, RLM.
-NOISE = set("ۖۗۘۙۚۛۜ۞۩‏")
+NOISE = set("ۖۗۘۙۚۛۜ۞۩‏\u08c9\u08cc\u0888\u08cd")
 
 HAMZA_LETTERS = set("ءأإؤئ")
 GHUNNAH_IDGHAM = set("ينمو")
@@ -77,7 +92,9 @@ ISTILA = set("خصضغطقظ")
 LAM_HEAVY_BEFORE = set("صطظ")
 # Idghām of two letters across words: same makhraj (mutajānisayn) and near
 # (mutaqāribayn), as the text writes them — the first bare, the second with shadda.
-MUTAJANISAYN = [set("دتط"), set("ذثظ"), set("بم")]
+# In Warsh, mutajānisayn across words is د into ت/ط, and ت into د/ط (e.g. دتط);
+# ث into ذ (يللهث ذلك) and ب into م (اركب معنا) are read with ITHHAAR (El Gindy p. 22).
+MUTAJANISAYN = [set("دتط")]
 MUTAQARIBAYN = [set("قك"), set("لر")]
 
 
@@ -103,6 +120,8 @@ class Letter:
         return None
 
     def has(self, mark: str) -> bool:
+        if mark == LOW_DOT:
+            return any(m in self.marks for m in LOW_DOTS)
         return mark in self.marks
 
     @property
@@ -154,7 +173,10 @@ def tokenize(text: str) -> Word:
             # A bare kashīda stretches the line; it is not a letter.
             i = j
             continue
-        if ch == ALEF_MADDA:
+        if ch in ALEF_ATTACHED:
+            base, vowel = ALEF_ATTACHED[ch]
+            w.letters.append(Letter(base, vowel + text[i + 1:j], i, j))
+        elif ch == ALEF_MADDA:
             # جَآءَنَا at 67:9 is the one word in the text written with the
             # precomposed آ rather than alif + maddah; it is the same letter,
             # so the madd rules see it as one (issue #64).
@@ -419,7 +441,21 @@ def _madd(w: Word, k: int, L: Letter, prev: Letter | None, nxt: Letter | None, n
         nxt = w.letters[k + 2] if k + 2 < n else None
     # ءَا, إِي, أُو — badal, Warsh's own count. Q13.
     if prev is not None and prev.is_hamza and not has_maddah:
-        w.mark("madd_badal", prev, L); return
+        bare_w = "".join(c for c in w.text if c not in MARKS and c not in NOISE and c != TATWEEL)
+        # Exceptions to Madd al-Badal (read with 2 counts only; no 4/6 lengthening - El Gindy p. 9):
+        # A. إِسْرَائِيلَ in all occurrences
+        # B. يُؤَاخِذُ / يُوَاخِذُ in all forms
+        # C. Hamza preceded by pure true sukūn on a consonant: قُرْءَان, مَذْءُومًا, مَسْـُٔولًا
+        if any(x in bare_w for x in ("إسراءيل", "إسرآءيل", "اسراءيل", "إسرائيل", "اسرائيل", "إسرءيل", "اسرءيل")):
+            return
+        if "واخذ" in bare_w or "ؤاخذ" in bare_w:
+            return
+        if k >= 2:
+            before_hamza = w.letters[k - 2]
+            if before_hamza.sukun and before_hamza.base not in "اوىيے":
+                return
+        w.mark("madd_badal", prev, L)
+        return
     if L.base == "ا" and L.has(SUP_ALEF) and k == 0:
         w.mark("madd_badal", L); return
     if has_maddah:
@@ -472,12 +508,16 @@ def _raa(w: Word, k: int, L: Letter, prev: Letter | None, prev_word: Word | None
     """Tarqīq or tafkhīm of a rāʾ in Warsh. Q28–29 of the reference."""
     Ls = w.letters
     root = w.text_root()
+    bare_w = "".join(c for c in root if c not in MARKS and c not in NOISE and c != TATWEEL)
+    # Exception: بِشَرَرٍ (77:32) has tarqeeq on both rāʾs when stopping and continuing (El Gindy p. 27).
+    if "بشرر" in bare_w:
+        return "raa_tarqeeq"
     nxt = Ls[k + 1] if k + 1 < len(Ls) else None
     # The text puts the fatḥatan on the alif after the rāʾ (خَبِيراٗ): that
     # rāʾ is open, not sākin.
     open_by_alef = L.bare and nxt is not None and nxt.base in "اى" and nxt.tanween is not None
     # A kasra on the rāʾ itself: always thin.
-    if L.vowel == KASRA or L.tanween in (KASRATAN, OPEN_KASRATAN):
+    if L.vowel == KASRA or L.tanween in (KASRATAN, OPEN_KASRATAN, OPEN_KASRATAN_EXT):
         return "raa_tarqeeq"
     # A doubled rāʾ with fatḥa or ḍamma is thick (اَ۬لْبِرَّ).
     if L.shadda:
@@ -499,10 +539,17 @@ def _raa(w: Word, k: int, L: Letter, prev: Letter | None, prev_word: Word | None
         return "tafkheem"                                  # Q28 exc. 3: a second rāʾ in the word
     if followed_by_istila:
         return "tafkheem"                                  # صِرَٰطَ, فِرَاقُ
+    if any(bare_w == s or bare_w.endswith(s) for s in ("ذكرا", "سترا", "إمرا", "امرا", "وزرا", "حجرا", "صهرا")):
+        return "tafkheem"                                  # Q29 §4: ذِكْراً and its five
     if any(root.startswith(s) or root == s for s in SIX_NOUNS):
         return "tafkheem"                                  # Q29 §4: ذِكْراً and its five
     # Now the reasons to thin.
     if prev is None:
+        return "tafkheem"
+    # Preposition بِـ or لِـ with kasra before rāʾ is a separate particle (harf jar),
+    # not permanent to the word, so it does NOT cause tarqeeq (El Gindy p. 27).
+    is_preposition = (k == 1 and prev.base in ("ب", "ل") and prev.vowel == KASRA) or (k == 2 and prev.base in ("ب", "ل") and prev.vowel == KASRA and Ls[0].base in ("ف", "و"))
+    if is_preposition:
         return "tafkheem"
     if prev.vowel == KASRA and not (k >= 1 and is_wasl_alef(w, k - 1)):
         return "raa_tarqeeq"                               # كَرِيم… a kasra directly before
