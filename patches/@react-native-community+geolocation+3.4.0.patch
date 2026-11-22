@@ -419,3 +419,43 @@ index 423f7a5..0000000
 -        }
 -    }
 -}
+diff --git a/node_modules/@react-native-community/geolocation/ios/RNCGeolocation.mm b/node_modules/@react-native-community/geolocation/ios/RNCGeolocation.mm
+index 03df64d..f7e8000 100644
+--- a/node_modules/@react-native-community/geolocation/ios/RNCGeolocation.mm
++++ b/node_modules/@react-native-community/geolocation/ios/RNCGeolocation.mm
+@@ -448,15 +448,31 @@ RCT_REMAP_METHOD(getCurrentPosition, getCurrentPosition:(RNCGeolocationOptions)o
+     [self sendEventWithName:@"geolocationDidChange" body:_lastLocationEvent];
+   }
+ 
+-  // Fire all queued callbacks
++  // Fire the queued callbacks this fix is fresh enough for.
++  //
++  // Core Location often hands back its CACHED last location first when
++  // updates start — hours old, from wherever the phone last had a fix. This
++  // used to answer every request with it and stop, `maximumAge` unread: a
++  // reader who had flown from Stockholm to Berlin was told "Stockholm" at
++  // every launch and every pull to refresh (Mihrab, Nov 2026). A request
++  // now waits for a fix within its `maximumAge` (seconds here) or for its
++  // own timeout. A fix of the last few seconds is always fresh: one that
++  // has just been measured answers even `maximumAge: 0`, the default when
++  // a caller gives none.
++  NSTimeInterval age = -[location.timestamp timeIntervalSinceNow];
++  NSMutableArray<RNCGeolocationRequest *> *answered = [NSMutableArray new];
+   for (RNCGeolocationRequest *request in _pendingRequests) {
++    if (age > MAX(request.options.maximumAge, 10.0)) {
++      continue;
++    }
+     request.successBlock(@[_lastLocationEvent]);
+     [request.timeoutTimer invalidate];
++    [answered addObject:request];
+   }
+-  [_pendingRequests removeAllObjects];
++  [_pendingRequests removeObjectsInArray:answered];
+ 
+-  // Stop updating if not observing
+-  if (!_observingLocation) {
++  // Stop updating if not observing and nothing is still waiting.
++  if (!_observingLocation && _pendingRequests.count == 0) {
+     [self stopMonitoring];
+   }
+ 
