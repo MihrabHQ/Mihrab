@@ -1035,12 +1035,12 @@ export const DUAS: ReadonlyArray<Dua> = [
     category: 'travel',
     titleEn: 'For a journey — full text',
     arabic:
-      'ٱللَّٰهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَٰذَا ٱلْبِرَّ وَٱلتَّقْوَىٰ، وَمِنَ ٱلْعَمَلِ مَا تَرْضَىٰ. ٱللَّٰهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَٰذَا وَٱطْوِ عَنَّا بُعْدَهُ. ٱللَّٰهُمَّ أَنْتَ ٱلصَّاحِبُ فِي ٱلسَّفَرِ، وَٱلْخَلِيفَةُ فِي ٱلْأَهْلِ. ٱللَّٰهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ ٱلسَّفَرِ، وَكَآبَةِ ٱلْمَنْظَرِ، وَسُوءِ ٱلْمُنْقَلَبِ فِي ٱلْمَالِ وَٱلْأَهْلِ.',
+      'ٱللَّهُ أَكْبَرُ، ٱللَّهُ أَكْبَرُ، ٱللَّهُ أَكْبَرُ. سُبْحَانَ ٱلَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَىٰ رَبِّنَا لَمُنْقَلِبُونَ. ٱللَّٰهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَٰذَا ٱلْبِرَّ وَٱلتَّقْوَىٰ، وَمِنَ ٱلْعَمَلِ مَا تَرْضَىٰ. ٱللَّٰهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَٰذَا وَٱطْوِ عَنَّا بُعْدَهُ. ٱللَّٰهُمَّ أَنْتَ ٱلصَّاحِبُ فِي ٱلسَّفَرِ، وَٱلْخَلِيفَةُ فِي ٱلْأَهْلِ. ٱللَّٰهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ ٱلسَّفَرِ، وَكَآبَةِ ٱلْمَنْظَرِ، وَسُوءِ ٱلْمُنْقَلَبِ فِي ٱلْمَالِ وَٱلْأَهْلِ.',
     transliteration:
-      'Allāhumma innā nasʾaluka fī safarinā hādhā-l-birra wat-taqwā, wa minal-ʿamali mā tarḍā. Allāhumma hawwin ʿalaynā safaranā hādhā wa-ṭwi ʿannā buʿdah. Allāhumma anta-ṣ-ṣāḥibu fis-safar, wal-khalīfatu fil-ahl. Allāhumma innī aʿūdhu bika min waʿthāʾis-safar, wa kaʾābatil-manẓar, wa sūʾil-munqalabi fil-māli wal-ahl.',
+      'Allāhu akbar, Allāhu akbar, Allāhu akbar. Subḥānalladhī sakhkhara lanā hādhā wa mā kunnā lahu muqrinīn, wa innā ilā rabbinā la-munqalibūn. Allāhumma innā nasʾaluka fī safarinā hādhā-l-birra wat-taqwā, wa minal-ʿamali mā tarḍā. Allāhumma hawwin ʿalaynā safaranā hādhā wa-ṭwi ʿannā buʿdah. Allāhumma anta-ṣ-ṣāḥibu fis-safar, wal-khalīfatu fil-ahl. Allāhumma innī aʿūdhu bika min waʿthāʾis-safar, wa kaʾābatil-manẓar, wa sūʾil-munqalabi fil-māli wal-ahl.',
     translation:
-      'O Allah, we ask You on this journey of ours for righteousness, piety, and deeds that please You. O Allah, ease this journey for us and shorten its distance. O Allah, You are the Companion on the journey and the Successor over the family. O Allah, I seek refuge in You from the hardships of travel, the bleakness of sights, and any harmful return upon family or wealth.',
-    source: 'Sahih Muslim 1342. Recite when starting a journey, after saying "Allāhu Akbar" three times. On the return, add the next dua "Āyibūn tāʾibūn ʿābidūn li-rabbinā ḥāmidūn".',
+      'Allah is the Greatest, Allah is the Greatest, Allah is the Greatest. Glory be to the One who placed this at our service — we could never have done it ourselves — and to our Lord we shall return. O Allah, we ask You on this journey of ours for righteousness, piety, and deeds that please You. O Allah, ease this journey for us and shorten its distance. O Allah, You are the Companion on the journey and the Successor over the family. O Allah, I seek refuge in You from the hardships of travel, the bleakness of sights, and any harmful return upon family or wealth.',
+    source: 'Sahih Muslim 1342. Recite when setting off on a journey. On the return, say it again and add the next dua "Āyibūn tāʾibūn ʿābidūn li-rabbinā ḥāmidūn".',
     repeat: 1,
   },
   {

@@ -103,4 +103,22 @@ describe('the Eid takbir comes in both forms', () => {
     expect(full.source).toMatch(/al-Umm/);
     for (const l of LOCALES) expect(localeFile(l).duas.eid_takbir_full?.title).toBeTruthy();
   });
+
+  it('the journey dua is Sahih Muslim 1342 whole: three takbirs, the verses, then the dua', () => {
+    // The hadith: on setting off he said "Allāhu akbar" three times, then
+    // "Subḥāna lladhī sakhkhara lanā hādhā…", then "Allāhumma innā
+    // nasʾaluka…". The entry once began at the last and left the first two
+    // to its note.
+    const d = DUAS.find(x => x.id === 'travel_journey')!;
+    const takbir = 'ٱللَّهُ أَكْبَرُ';
+    expect(d.arabic.split(takbir).length - 1).toBe(3);
+    expect(d.arabic.startsWith(takbir)).toBe(true);
+    const verses = d.arabic.indexOf('سُبْحَانَ ٱلَّذِي سَخَّرَ لَنَا هَٰذَا');
+    const dua = d.arabic.indexOf('إِنَّا نَسْأَلُكَ فِي سَفَرِنَا');
+    expect(verses).toBeGreaterThan(d.arabic.lastIndexOf(takbir));
+    expect(dua).toBeGreaterThan(verses);
+    expect(d.transliteration.match(/Allāhu akbar/g)).toHaveLength(3);
+    expect(d.translation.match(/Allah is the Greatest/g)).toHaveLength(3);
+    expect(d.source).toMatch(/Sahih Muslim 1342/);
+  });
 });
