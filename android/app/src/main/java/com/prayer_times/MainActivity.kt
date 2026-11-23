@@ -106,6 +106,13 @@ class MainActivity : ReactActivity() {
   override fun onResume() {
     super.onResume()
     resumed = true
+    // The time zone changed while this was not in front: the JavaScript is
+    // started again now, with the screen there to take it (see
+    // reloadForNewTimeZone in BackgroundLocation.kt).
+    if (zoneReloadPending) {
+      zoneReloadPending = false
+      reloadJavaScript(this, "time zone changed while in the background")
+    }
   }
 
   override fun onPause() {
@@ -225,5 +232,8 @@ class MainActivity : ReactActivity() {
      * started by the system or by JS in the moment between the two.
      */
     @Volatile var resumed = false
+
+    /** A new time zone arrived while the app was not in front; reload at the next onResume. */
+    @Volatile var zoneReloadPending = false
   }
 }

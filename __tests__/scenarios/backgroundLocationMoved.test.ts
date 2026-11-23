@@ -33,7 +33,11 @@ import { loadSettings, _resetSettingsStorageForTests } from '../../src/settings/
 import { _resetTimezoneShiftForTests } from '../../src/prayer/timezoneShift';
 import { _resetMethodCurrencyForTests } from '../../src/providers/methodCurrency';
 import { _resetCalculationPreferencesForTests } from '../../src/prayer/calculationPreferences';
-import { MOVE_KM, WISH_KEY, locationMovedTask } from '../../src/location/backgroundLocation';
+import { MOVE_KM, NAME_WAIT_MS, WISH_KEY, locationMovedTask } from '../../src/location/backgroundLocation';
+import { onLiveRecheck } from '../../src/location/liveMove';
+import { ANCHOR_KEY } from '../../src/prayer/locationFreshness';
+import * as nominatim from '../../src/geocoding/nominatim';
+import * as SystemClock from '../../src/native/SystemClock';
 import { aladhanServer, changeSettings, goOnline, readCacheBlob, setZone } from '../fixtures/scenarioHarness';
 const EncryptedStorageMock = require('react-native-encrypted-storage');
 
@@ -111,6 +115,32 @@ it('a walk across town is not a move', async () => {
   expect(mockResync).not.toHaveBeenCalled();
 });
 
+it('handed over again after a new time zone: done again, though the place is already there', async () => {
+  await wish();
+  expect(await locationMovedTask({ ...BERLIN, timestamp: NOW.getTime() }, NOW)).toBe('moved');
+  mockRepublish.mockClear();
+  mockResync.mockClear();
+  expect(await locationMovedTask({ ...BERLIN, timestamp: NOW.getTime() }, NOW)).toBe('near');
+  expect(await locationMovedTask({ ...BERLIN, timestamp: NOW.getTime(), again: true }, NOW)).toBe('moved');
+  expect(mockResync).toHaveBeenCalledTimes(1);
+  expect(mockRepublish).toHaveBeenCalledTimes(1);
+});
+
+it('done again, it does not stamp the place "found now": a newer position must still count', async () => {
+  await wish();
+  expect(await locationMovedTask({ ...BERLIN, timestamp: NOW.getTime() }, NOW)).toBe('moved');
+  await AsyncStorage.removeItem(ANCHOR_KEY);
+  expect(await locationMovedTask({ ...BERLIN, timestamp: NOW.getTime(), again: true }, NOW)).toBe('moved');
+  expect(await AsyncStorage.getItem(ANCHOR_KEY)).toBeNull();
+});
+
+it('but not once the place has moved on since: that would put it back', async () => {
+  await wish();
+  // The place is Stockholm (the app found the phone there after the move).
+  expect(await locationMovedTask({ ...BERLIN, timestamp: NOW.getTime(), again: true }, NOW)).toBe('superseded');
+  expect((await place()).label).toBe('Stockholm');
+});
+
 it('a place of the reader’s own does not follow the phone', async () => {
   await wish();
   _resetSettingsStorageForTests();
@@ -118,10 +148,60 @@ it('a place of the reader’s own does not follow the phone', async () => {
   expect(await locationMovedTask(BERLIN, NOW)).toBe('own-place');
 });
 
-it('open on screen, Today finds the place itself', async () => {
+it('open on screen, Today finds the place itself — and is asked to', async () => {
   await wish();
   appState = 'active';
+  const asked = jest.fn();
+  const stop = onLiveRecheck(asked);
   expect(await locationMovedTask(BERLIN, NOW)).toBe('open');
+  expect(asked).toHaveBeenCalledTimes(1);
+  expect((await place()).label).toBe('Stockholm');
+  stop();
+});
+
+it('"active" with no Today to ask (an engine started again in the background): the task does the move itself', async () => {
+  await wish();
+  appState = 'active';
+  expect(await locationMovedTask({ ...BERLIN, timestamp: NOW.getTime() }, NOW)).toBe('moved');
+  expect((await place()).label).toBe('Berlin');
+});
+
+it('does not wait on a network that does not answer: the place moves, named from the app’s own list', async () => {
+  await wish();
+  (nominatim.reverseLocality as jest.Mock).mockImplementationOnce(() => new Promise(() => {}));
+  const started = Date.now();
+  expect(await locationMovedTask({ ...BERLIN, timestamp: NOW.getTime() }, NOW)).toBe('moved');
+  expect(Date.now() - started).toBeLessThan(NAME_WAIT_MS + 8_000);
+  const p = await place();
+  expect(p.lat).toBeCloseTo(BERLIN.latitude, 2);
+  expect(p.label).toBeTruthy();
+  expect(mockResync).toHaveBeenCalledTimes(1);
+});
+
+describe('the phone’s LAST position, hours old (the three-hourly check)', () => {
+  const hoursAgo = NOW.getTime() - 5 * 3_600_000;
+  const lastFoundInSweden = () =>
+    AsyncStorage.setItem(ANCHOR_KEY, JSON.stringify({ zone: 'Europe/Stockholm', offset: 60, country: 'SE' }));
+  const anchor = async () => JSON.parse((await AsyncStorage.getItem(ANCHOR_KEY)) ?? 'null');
+
+  it('in the country the phone is in now: the place follows, and it counts as found', async () => {
+    await wish();
+    await lastFoundInSweden();
+    jest.spyOn(SystemClock, 'networkCountry').mockResolvedValue('DE');
+    expect(await locationMovedTask({ ...BERLIN, timestamp: hoursAgo }, NOW)).toBe('moved');
+    expect((await place()).label).toBe('Berlin');
+    expect((await anchor()).country).toBe('DE');
+  });
+
+  it('in another country than the phone is in now: the place follows, but it is not written down as found', async () => {
+    await wish();
+    await lastFoundInSweden();
+    jest.spyOn(SystemClock, 'networkCountry').mockResolvedValue('TR');
+    expect(await locationMovedTask({ ...BERLIN, timestamp: hoursAgo }, NOW)).toBe('moved');
+    expect((await place()).label).toBe('Berlin');
+    // The app says "you seem to have travelled" when opened, and looks.
+    expect((await anchor()).country).toBe('SE');
+  });
 });
 
 it('a position that is none is refused, and nothing throws', async () => {

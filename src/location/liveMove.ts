@@ -18,6 +18,10 @@ export type LiveMove = {
   longitude: number;
   label: string;
   cityId: string;
+  /** When the position was measured (ms), where the phone said. */
+  measuredAt?: number | null;
+  /** False when that was too long ago to be where the phone is now. */
+  fresh?: boolean;
 };
 
 let handler: ((move: LiveMove) => void) | null = null;
@@ -37,6 +41,34 @@ export function tellLiveMove(move: LiveMove): boolean {
     handler(move);
   } catch {
     // The stored place stands; the next opening loads it.
+  }
+  return true;
+}
+
+// ── And a move found while the app is ON SCREEN ─────────────────────────
+//
+// The task does not move the place under a reader who is looking at it:
+// Today asks for the position itself, by the same road as a pull to
+// refresh, and shows what it finds. Without this the app, left open on a
+// journey, heard of the move and did nothing about it.
+
+let recheck: (() => void) | null = null;
+
+/** Today's "find my position again", while it is mounted. */
+export function onLiveRecheck(fn: () => void): () => void {
+  recheck = fn;
+  return () => {
+    if (recheck === fn) recheck = null;
+  };
+}
+
+/** True when Today was there to be asked. */
+export function askLiveRecheck(): boolean {
+  if (!recheck) return false;
+  try {
+    recheck();
+  } catch {
+    // The next opening asks anyway.
   }
   return true;
 }

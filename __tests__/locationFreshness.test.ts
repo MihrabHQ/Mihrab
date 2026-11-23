@@ -95,3 +95,31 @@ describe('the anchor', () => {
     expect(getLocationFreshness()).toBe(same);
   });
 });
+
+describe('staleFixAnswersJourney: a position that is not fresh has moved the place', () => {
+  const { staleFixAnswersJourney } = require('../src/prayer/locationFreshness') as typeof import('../src/prayer/locationFreshness');
+  const SE = { zone: 'Europe/Stockholm', offset: 60, country: 'SE' };
+  const DE = { zone: 'Europe/Berlin', offset: 60, country: 'DE' };
+  const TR = { zone: 'Europe/Istanbul', offset: 180, country: 'TR' };
+
+  it('no journey: nothing to answer', () => {
+    expect(staleFixAnswersJourney(null, DE, null)).toBe(true);
+    expect(staleFixAnswersJourney(SE, { ...SE }, null)).toBe(true);
+  });
+
+  it('a new country: answered by a position in that country, and only by one', () => {
+    expect(staleFixAnswersJourney(SE, DE, 'de')).toBe(true);
+    expect(staleFixAnswersJourney(SE, TR, 'TR')).toBe(true);
+    // The airport changed at on the way.
+    expect(staleFixAnswersJourney(SE, TR, 'de')).toBe(false);
+    // The town could not be named (offline).
+    expect(staleFixAnswersJourney(SE, DE, null)).toBe(false);
+  });
+
+  it('a new time zone alone cannot be checked: one country has several', () => {
+    const NY = { zone: 'America/New_York', offset: -300, country: 'US' };
+    const LA = { zone: 'America/Los_Angeles', offset: -480, country: 'US' };
+    expect(staleFixAnswersJourney(NY, LA, 'us')).toBe(false);
+    expect(staleFixAnswersJourney({ ...NY, country: null }, { ...LA, country: null }, 'us')).toBe(false);
+  });
+});

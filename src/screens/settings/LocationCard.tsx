@@ -134,6 +134,14 @@ function LocationCardImpl() {
             </Text>
           </Pressable>
         </View>
+        {settings.locationMode !== 'manual' && (
+          // What "Automatic" does, and what the reader sees when it could
+          // not: the page said neither, and "Not updated" on Today was a
+          // word with nothing behind it.
+          <Text style={[s.help, styles.autoHelp, { color: palette.muted }]}>
+            {t('settings.automaticLocationHelp')}
+          </Text>
+        )}
         {settings.locationMode === 'manual' && (
           <View style={styles.manualBlock}>
             <PlaceSearchSection
@@ -188,6 +196,9 @@ function LocationCardImpl() {
 export const LocationCard = memo(LocationCardImpl);
 
 const styles = StyleSheet.create({
+  autoHelp: {
+    marginTop: SPACING.md,
+  },
   manualBlock: {
     marginTop: SPACING.lg,
     gap: SPACING.md,

@@ -14,13 +14,14 @@ import {
   type PrayerDay,
 } from '../prayer/prayerStorage';
 import { getPositionStaged } from '../utils/getPosition';
-import { onLiveMove } from '../location/liveMove';
+import { onLiveMove, onLiveRecheck } from '../location/liveMove';
 import {
   SLOW_AFTER_MS,
   isFreshFix,
   recordFreshFix,
   seemsToHaveTravelled,
   setLocationFreshness,
+  staleFixSettlesJourney,
 } from '../prayer/locationFreshness';
 import { recordLocationFix } from '../prayer/cityRegistry';
 import { reverseLocality, type ReverseLocality } from '../geocoding/nominatim';
@@ -66,6 +67,35 @@ const WEEK_DAYS = 7;
  * stops. See the reload effect.
  */
 const LOCATION_SETTLE_MS = 300;
+
+/**
+ * How long a new position waits for its town's NAME before the place moves
+ * without it. The name comes from the network, and abroad the network is
+ * the part that is missing: roaming with no data, an airport's Wi-Fi before
+ * its sign-in page. The lookup then takes its four tries of seven seconds —
+ * most of a minute in which the position was known, the screen said
+ * "found", and the times were still the city left behind. The times need
+ * only the position: they move now, under the nearest name the app knows,
+ * and the name follows when the lookup answers.
+ */
+export const NAME_WAIT_MS = 4_000;
+
+/** An answer this much older than a position already taken is an old one. */
+const STALE_ANSWER_MS = 120_000;
+
+/**
+ * "Not updated", and the app still open: look again by itself — after two
+ * minutes, then five, then ten, and then leave it to the reader (Retry, a
+ * pull to refresh, the next return to the app). A phone just off a flight
+ * finds itself a few minutes after it finds a network, and the reader who
+ * opened the app at the gate should not have to know to pull the page
+ * down. Only while the app is on screen; three searches at most.
+ */
+let locationRetryMs: readonly number[] = [120_000, 300_000, 600_000];
+/** Tests only. */
+export function _setLocationRetryDelaysForTests(ms: readonly number[]): void {
+  locationRetryMs = ms;
+}
 
 
 export type PrayerDayState =
@@ -357,6 +387,16 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
   // Which request for "My location" is the current one: an earlier one's
   // late timers and answers must not speak for it (`locationFreshness.ts`).
   const freshnessCycleRef = useRef(0);
+  // When the newest position taken so far was measured. Requests overlap —
+  // a launch's precise one is still listening when a pull to refresh starts
+  // another — and an earlier request's answer may be the OLDER position:
+  // its wait ran out and it answers with the phone's last. That must not
+  // put the place back.
+  const newestFixAtRef = useRef(0);
+  // The app's own later tries after "Not updated" (`locationRetryMs`).
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retriesRef = useRef(0);
+  const requestAndLoadRef = useRef<(background?: boolean) => void>(() => {});
   autoRef.current = {
     lat: settings.lastFetchedLatitude,
     lng: settings.lastFetchedLongitude,
@@ -858,7 +898,14 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       onLiveMove(move => {
         if (liveModeRef.current === 'manual') return;
         freshnessCycleRef.current++;
-        setLocationFreshness({ status: 'ok', moved: false });
+        newestFixAtRef.current = Math.max(
+          newestFixAtRef.current,
+          move.measuredAt ?? Date.now(),
+        );
+        setLocationFreshness({
+          status: move.fresh === false ? 'notUpdated' : 'ok',
+          moved: false,
+        });
         loadedCityIdRef.current = move.cityId;
         loadTimes(move.latitude, move.longitude, true, move.label, true).catch(
           () => {},
@@ -870,8 +917,13 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
   const requestAndLoad = useCallback((isBackgroundRefresh: boolean = false) => {
     const run = async () => {
       // ── Manual mode: simple, no GPS needed ──────────────────────────────────
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = null;
+      }
       if (settings.locationMode === 'manual') {
         // A place the reader chose needs no position: nothing to be stale.
+        retriesRef.current = 0;
         freshnessCycleRef.current++;
         setLocationFreshness({ status: 'ok', moved: false });
         // (0, 0) is the explicit "no location set" sentinel from
@@ -963,13 +1015,30 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           if (mine() && !gotFresh) setLocationFreshness({ status: 'slow' });
         }, SLOW_AFTER_MS),
       );
-      const endSearch = () => {
+      let ended = false;
+      // `again: false` where looking again cannot help and would cost the
+      // reader something: without the permission, a later try is Android's
+      // question put to them a second time, unasked.
+      const endSearch = (again: boolean = true) => {
         clearTimeout(slowTimer);
-        if (mine() && !gotFresh) setLocationFreshness({ status: 'notUpdated' });
+        if (!mine() || gotFresh) return;
+        setLocationFreshness({ status: 'notUpdated' });
+        if (ended || !again) return;
+        ended = true;
+        const wait = locationRetryMs[retriesRef.current];
+        if (wait == null) return;
+        retriesRef.current++;
+        retryTimerRef.current = quiet(
+          setTimeout(() => {
+            retryTimerRef.current = null;
+            if (!mine() || AppState.currentState !== 'active') return;
+            requestAndLoadRef.current(true);
+          }, wait),
+        );
       };
       // The precise request answers within its minute, one way or another;
       // this is for the request that never answers at all.
-      quiet(setTimeout(endSearch, 65_000));
+      quiet(setTimeout(() => endSearch(), 65_000));
       const placeConfirmed = () => {
         if (mine()) setLocationFreshness({ moved: false });
         recordFreshFix().catch(() => {});
@@ -1000,7 +1069,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
             // "permission denied" wall (#125).
             setState({ phase: 'permission_denied' });
           }
-          endSearch();
+          endSearch(false);
           settleOwedShift();
           return;
         }
@@ -1030,13 +1099,22 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       // fix and a slightly-later fine fix don't interleave their registry
       // writes.
       let onFixChain: Promise<void> = Promise.resolve();
-      const handleFix = async (fixLat: number, fixLng: number) => {
+      const handleFix = async (
+        fixLat: number,
+        fixLng: number,
+        fresh: boolean,
+        // The town's name, when it arrived after the place had moved
+        // without it (NAME_WAIT_MS): the same steps again, named.
+        named?: ReverseLocality,
+      ) => {
         // Throttle reverse-geocoding: only re-geocode when we've moved
         // meaningfully (~1 km) from the last geocoded point; otherwise reuse
         // the cached locality (or null offline).
         let locality: ReverseLocality | null = null;
         const prev = lastGeocodeRef.current;
-        if (
+        if (named) {
+          locality = named;
+        } else if (
           prev &&
           prev.locality &&
           !coordsChangedSignificantly(fixLat, fixLng, prev.lat, prev.lng)
@@ -1046,13 +1124,35 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           // of sticking to coords until the device moves >1 km.
           locality = prev.locality;
         } else {
-          try {
-            locality = await reverseLocality(fixLat, fixLng);
-          } catch {
-            locality = null; // offline / geocoder down → registry falls back
-          }
-          if (locality) {
-            lastGeocodeRef.current = { lat: fixLat, lng: fixLng, locality };
+          // offline / geocoder down → null, and the registry falls back
+          const lookup = reverseLocality(fixLat, fixLng).then(
+            l => l,
+            () => null,
+          );
+          let waited: ReturnType<typeof setTimeout> | undefined;
+          const answer = await Promise.race([
+            lookup,
+            new Promise<'late'>(resolve => {
+              waited = quiet(setTimeout(() => resolve('late'), NAME_WAIT_MS));
+            }),
+          ]);
+          clearTimeout(waited);
+          if (answer === 'late') {
+            // The place moves now, unnamed; the name follows.
+            lookup
+              .then(late => {
+                if (!late || liveModeRef.current === 'manual') return;
+                lastGeocodeRef.current = { lat: fixLat, lng: fixLng, locality: late };
+                onFixChain = onFixChain.then(() =>
+                  handleFix(fixLat, fixLng, fresh, late).catch(() => {}),
+                );
+              })
+              .catch(() => {});
+          } else {
+            locality = answer;
+            if (locality) {
+              lastGeocodeRef.current = { lat: fixLat, lng: fixLng, locality };
+            }
           }
         }
 
@@ -1063,8 +1163,12 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           new Date(),
         );
 
-        // Purge the prayer cache of any city whose retention window lapsed.
+        // Purge the prayer cache of any city whose retention window lapsed
+        // — but never the one the reader is in: a place first taken without
+        // its name and then named is two entries on one anchor, and the
+        // unnamed one lapsing must not empty the named one's times.
         for (const a of summary.evictedAnchors) {
+          if (a.latitude === summary.anchorLat && a.longitude === summary.anchorLng) continue;
           purgeCachesNear(a.latitude, a.longitude).catch(() => {});
         }
 
@@ -1086,10 +1190,20 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           loadedCityIdRef.current !== summary.cityId && !sameAnchorAsLoaded;
         if (!cityChanged) loadedCityIdRef.current = summary.cityId;
         if (cityChanged) {
-          // The place on screen follows this position — a fresh one, or the
-          // phone's last after a wait ran out, newer than the app's own.
-          // Either way it is no longer the place travelled from.
-          placeConfirmed();
+          // The place on screen follows this position. A fresh one is where
+          // the phone is. The phone's last, after a wait ran out, is newer
+          // than the app's own but may be a stop on the way: it ends the
+          // notice only where it can be checked against the country the
+          // phone is in now (`staleFixAnswersJourney`).
+          if (fresh) {
+            placeConfirmed();
+          } else {
+            staleFixSettlesJourney(locality?.countryCode)
+              .then(settled => {
+                if (settled) placeConfirmed();
+              })
+              .catch(() => {});
+          }
           loadedCityIdRef.current = summary.cityId;
           loadTimes(
             summary.anchorLat,
@@ -1119,8 +1233,27 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           // shown, a late fix is still the news this was waiting for.
           if (watchdogFired && !hasCached) return;
           if (liveModeRef.current === 'manual') return;
-          if (isFreshFix(fix.timestamp)) {
+          // Measured well before a position already taken: not news.
+          // (Never later than now: a phone whose satellite clock runs
+          // ahead must not shut out every position after it. And "well
+          // before": the precise fix that refines a quick one may carry a
+          // time a moment earlier, and is still the better position.)
+          const measuredAt = Math.min(fix.timestamp ?? Date.now(), Date.now());
+          if (measuredAt < newestFixAtRef.current - STALE_ANSWER_MS) {
+            if (fix.stage === 'fine') endSearch();
+            gotAnyFix = true;
+            clearTimeout(watchdog);
+            return;
+          }
+          newestFixAtRef.current = measuredAt;
+          const fresh = isFreshFix(fix.timestamp);
+          if (fresh) {
             gotFresh = true;
+            retriesRef.current = 0;
+            if (retryTimerRef.current) {
+              clearTimeout(retryTimerRef.current);
+              retryTimerRef.current = null;
+            }
             clearTimeout(slowTimer);
             if (mine()) setLocationFreshness({ status: 'ok', moved: false });
             recordFreshFix().catch(() => {});
@@ -1133,7 +1266,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           gotAnyFix = true;
           clearTimeout(watchdog);
           onFixChain = onFixChain.then(() =>
-            handleFix(fix.latitude, fix.longitude).catch(() => {}),
+            handleFix(fix.latitude, fix.longitude, fresh).catch(() => {}),
           );
         },
         err => {
@@ -1177,6 +1310,25 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
     // cycle and race itself. Manual coords + mode stay as deps because a real
     // user change there SHOULD re-resolve.
   ]);
+
+  requestAndLoadRef.current = requestAndLoad;
+  useEffect(
+    () => () => {
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+    },
+    [],
+  );
+
+  // A move noticed in the background while the app is on screen
+  // (`liveMove.ts`): find the position again, as a pull to refresh does.
+  useEffect(
+    () =>
+      onLiveRecheck(() => {
+        if (liveModeRef.current === 'manual') return;
+        requestAndLoad(true);
+      }),
+    [requestAndLoad],
+  );
 
   // WiFi-triggered background sync: silently top up the 12-month cache
   // whenever the device connects to WiFi.  No backgroundRefreshing indicator

@@ -2,6 +2,7 @@
 // treatment would visually noise these dense surfaces; the touch
 // feedback (pressed opacity / ripple) is the right affordance here.
 import { useLocationFreshness } from '../../prayer/locationFreshness';
+import { askLiveRecheck } from '../../location/liveMove';
 import { memo, useCallback, useMemo, useState } from 'react';
 import {
   Modal,
@@ -182,12 +183,22 @@ function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLoc
    * app is following the phone.
    */
   const onUseAuto = useCallback(() => {
+    // Already on it: nothing changes in the settings, so nothing would
+    // look again — and "My location", tapped, should find the phone.
+    if (isAuto) askLiveRecheck();
     updateSettings({
       locationMode: 'automatic',
       activeLocationPresetId: undefined,
     });
     setOpen(false);
-  }, [updateSettings]);
+  }, [isAuto, updateSettings]);
+
+  // "Not updated", explained where the reader looks for it, with the way
+  // to try again (Today's own search, `liveMove.ts`).
+  const onRetryLocation = useCallback(() => {
+    askLiveRecheck();
+    setOpen(false);
+  }, []);
 
   const onPick = useCallback(
     (id: string) => {
@@ -216,7 +227,7 @@ function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLoc
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('home.switchLocation')}
-        accessibilityHint={chipLabel}
+        accessibilityHint={isAuto && notUpdated ? `${chipLabel}, ${autoBadge}` : chipLabel}
         onPress={onPressChip}
         hitSlop={compactHeader ? 10 : undefined}
         style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) =>
@@ -384,6 +395,26 @@ function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLoc
                 </Text>
               ) : null}
             </Pressable>
+            {isAuto && notUpdated ? (
+              <View style={styles.notUpdated}>
+                <Text style={[typeStyle('footnote'), { color: palette.muted }]}>
+                  {t('locations.notUpdatedHelp')}
+                </Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.retry')}
+                  onPress={onRetryLocation}
+                  style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [
+                    styles.notUpdatedRetry,
+                    pressed && { opacity: 0.6 },
+                    hovered && { opacity: 0.85 },
+                  ]}>
+                  <Text style={[typeStyle('callout'), { color: palette.accent }]}>
+                    {t('common.retry')}
+                  </Text>
+                </Pressable>
+              </View>
+            ) : null}
             {presets.length === 0 ? (
               <Text
                 style={[
@@ -455,6 +486,15 @@ function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLoc
 export const LocationChip = memo(LocationChipImpl);
 
 const styles = StyleSheet.create({
+  notUpdated: {
+    paddingHorizontal: SPACING.sm,
+    paddingTop: SPACING.xs,
+  },
+  notUpdatedRetry: {
+    alignSelf: 'flex-start',
+    minHeight: 44,
+    justifyContent: 'center',
+  },
   // Slim header-mounted variant: pin glyph + truncated location label,
   // sitting in the same icon-row context as HeaderToolbarIcons. The
   // maxWidth keeps a long preset name from pushing the Settings gear

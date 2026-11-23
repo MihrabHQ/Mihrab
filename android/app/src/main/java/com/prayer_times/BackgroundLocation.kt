@@ -62,10 +62,14 @@ import java.util.concurrent.TimeUnit
  *    last position (no request), its mobile network's country and its time
  *    zone. Milliseconds, no radio. The time zone changing runs it at once.
  *
- * 3. ONE REAL REQUEST, only when that check says the phone has changed
- *    country or time zone and no position shows it yet — a phone on which
- *    nothing else asks for a position. Thirty seconds at most, and not
- *    again for six hours: once a journey, not once an hour.
+ * 3. ONE REAL REQUEST, only when that check finds the phone knows too
+ *    little: it has changed country or time zone and no position shows it
+ *    yet, or it has had no position at all for half a day — a phone on
+ *    which nothing else asks for one, where a journey inside one country
+ *    and one time zone would otherwise go unseen until the app is opened.
+ *    Thirty seconds at most, and not again for six hours (three, after a
+ *    request that found nothing): a few times a day at the very most, and
+ *    on most phones never.
  *
  * Everything here is native and small. The JavaScript app is started only
  * for a move of twenty kilometres or more ([LocationMovedWorker]) — a new
@@ -92,6 +96,12 @@ object BackgroundLocation {
   /** A real request for a position: at most one in this long. */
   private const val ACTIVE_GAP_MS = 6 * 3_600_000L
   private const val ACTIVE_WAIT_MS = 30_000L
+  /** A move this recent is done again when the zone changes (see [checkNow]). */
+  private const val REDO_MS = 15 * 60_000L
+  /** After a request that found nothing: the next check may ask again. */
+  private const val ACTIVE_RETRY_MS = 3 * 3_600_000L
+  /** The phone's newest position is older than this: it knows too little. */
+  private const val STALE_MS = 12 * 3_600_000L
   private const val CHECK_HOURS = 3L
 
   private fun prefs(c: Context): SharedPreferences =
@@ -152,13 +162,7 @@ object BackgroundLocation {
       return
     }
     try {
-      val lm = c.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-      lm.requestLocationUpdates(
-        LocationManager.PASSIVE_PROVIDER,
-        PASSIVE_MIN_MS,
-        PASSIVE_MIN_METERS,
-        pendingIntent(c),
-      )
+      listen(c)
       WorkManager.getInstance(c).enqueueUniquePeriodicWork(
         WORK_CHECK,
         ExistingPeriodicWorkPolicy.KEEP,
@@ -167,6 +171,22 @@ object BackgroundLocation {
     } catch (t: Throwable) {
       Log.w(TAG, "could not start listening", t)
     }
+  }
+
+  /**
+   * The passive provider's positions, to the receiver. Asked again at every
+   * check as well: the registration does not outlive a restart of the
+   * phone, and the check — which does — puts it back if the restart's own
+   * broadcast was missed. Asking twice is one registration.
+   */
+  private fun listen(c: Context) {
+    val lm = c.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    lm.requestLocationUpdates(
+      LocationManager.PASSIVE_PROVIDER,
+      PASSIVE_MIN_MS,
+      PASSIVE_MIN_METERS,
+      pendingIntent(c),
+    )
   }
 
   fun unregister(c: Context) {
@@ -200,13 +220,37 @@ object BackgroundLocation {
       .putInt("offset", offsetMinutes(now))
   }
 
-  /** The place the app is on, told by the app whenever it changes or is confirmed. */
+  /**
+   * The place the app is on. The app says it at every launch, found or not,
+   * so the place it already has changes nothing here — above all not WHEN
+   * it was found: stamped "now" at every launch, a reader who opened the app
+   * indoors after a journey (no position, the old city still up) had every
+   * position the phone already held made "older than the place". A NEW
+   * place is as of now. The surroundings are written only by [confirmPlace].
+   */
   fun setPlace(c: Context, latitude: Double, longitude: Double) {
-    val now = System.currentTimeMillis()
-    val e = prefs(c).edit()
+    val p = prefs(c)
+    if (p.contains("placeLat") &&
+      java.lang.Double.longBitsToDouble(p.getLong("placeLat", 0L)) == latitude &&
+      java.lang.Double.longBitsToDouble(p.getLong("placeLng", 0L)) == longitude
+    ) {
+      return
+    }
+    p.edit()
       .putLong("placeLat", java.lang.Double.doubleToRawLongBits(latitude))
       .putLong("placeLng", java.lang.Double.doubleToRawLongBits(longitude))
-      .putLong("placeAt", now)
+      .putLong("placeAt", System.currentTimeMillis())
+      .apply()
+  }
+
+  /**
+   * A fresh position has just said the place is where the phone is: older
+   * positions are not news, and the network's country and the time zone
+   * now are the place's — what a later journey is told from.
+   */
+  fun confirmPlace(c: Context) {
+    val now = System.currentTimeMillis()
+    val e = prefs(c).edit().putLong("placeAt", now)
     rememberSurroundings(c, e, now)
     e.apply()
   }
@@ -231,31 +275,52 @@ object BackgroundLocation {
     val placeLng = java.lang.Double.longBitsToDouble(p.getLong("placeLng", 0L))
     if (meters(placeLat, placeLng, location.latitude, location.longitude) < MOVE_METERS) return false
     val now = System.currentTimeMillis()
-    if (now - p.getLong("handoffAt", 0L) < HANDOFF_GAP_MS) {
+    // Only while the place is still the one the app was started for: once
+    // it has moved since (the app opened somewhere else), the destination
+    // of half an hour ago is news again — seen on an Android 17 emulator,
+    // Istanbul → Dubai → Istanbul inside the half hour, the way back left
+    // unseen.
+    val handoffAt = p.getLong("handoffAt", 0L)
+    if (now - handoffAt < HANDOFF_GAP_MS && p.getLong("placeAt", 0L) <= handoffAt) {
       val lat = java.lang.Double.longBitsToDouble(p.getLong("handoffLat", 0L))
       val lng = java.lang.Double.longBitsToDouble(p.getLong("handoffLng", 0L))
       if (meters(lat, lng, location.latitude, location.longitude) < MOVE_METERS) return false
     }
     p.edit()
       .putLong("handoffAt", now)
+      .putLong("handoffFixAt", location.time)
       .putLong("handoffLat", java.lang.Double.doubleToRawLongBits(location.latitude))
       .putLong("handoffLng", java.lang.Double.doubleToRawLongBits(location.longitude))
       .apply()
     Log.i(TAG, "a move of 20 km or more: starting the app's own update")
+    startUpdate(c, location.latitude, location.longitude, location.time, again = false, delaySeconds = 0)
+    return true
+  }
+
+  /** The app's own update for a move ('LocationMoved' in index.js). */
+  private fun startUpdate(
+    c: Context,
+    latitude: Double,
+    longitude: Double,
+    time: Long,
+    again: Boolean,
+    delaySeconds: Long,
+  ) {
     WorkManager.getInstance(c).enqueueUniqueWork(
       WORK_MOVED,
       ExistingWorkPolicy.REPLACE,
       OneTimeWorkRequestBuilder<LocationMovedWorker>()
         .setInputData(
           workDataOf(
-            "latitude" to location.latitude,
-            "longitude" to location.longitude,
-            "timestamp" to location.time,
+            "latitude" to latitude,
+            "longitude" to longitude,
+            "timestamp" to time,
+            "again" to again,
           ),
         )
+        .setInitialDelay(delaySeconds, TimeUnit.SECONDS)
         .build(),
     )
-    return true
   }
 
   private fun newestLastKnown(lm: LocationManager): Location? {
@@ -339,6 +404,11 @@ object BackgroundLocation {
       return
     }
     val lm = c.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    try {
+      listen(c)
+    } catch (t: Throwable) {
+      Log.w(TAG, "could not listen again", t)
+    }
     val known = newestLastKnown(lm)
     if (known != null && consider(c, known)) return
 
@@ -351,21 +421,74 @@ object BackgroundLocation {
       (wasCountry != null && country != null && wasCountry != country) ||
         (wasZone != null && wasZone != TimeZone.getDefault().id &&
           p.getInt("offset", Int.MIN_VALUE) != offsetMinutes(now))
-    if (!journey) return
+    // Nothing newer than the app's own place, and nothing at all for half
+    // a day: a phone on which nobody else asks. A journey inside one
+    // country and one zone leaves no other trace.
+    val knowsNothing =
+      p.contains("placeLat") &&
+        (known == null ||
+          (now - known.time > STALE_MS && known.time <= p.getLong("placeAt", 0L)) ||
+          now - known.time > 2 * STALE_MS)
+    if (!journey && !knowsNothing) return
     if (now - p.getLong("activeAt", 0L) < ACTIVE_GAP_MS) return
+    // Location switched off in the phone's settings: nothing to ask, and
+    // nothing spent — the next check looks again.
+    if (enabledProvider(lm) == null) return
     p.edit().putLong("activeAt", now).apply()
-    Log.i(TAG, "another country or time zone, and no position shows it: asking once")
-    val fix = currentLocation(c, lm) ?: return
-    // Answered: these surroundings are now the known ones, whether or not
-    // it was a move — a border town's tower is not asked about again.
-    val e = p.edit()
-    rememberSurroundings(c, e, now)
-    e.apply()
-    consider(c, fix)
+    Log.i(TAG, if (journey) "another country or time zone, and no position shows it: asking once" else "no position for half a day: asking once")
+    val fix = currentLocation(c, lm)
+    if (fix == null) {
+      // Indoors, or no sky. On a journey that is not six hours' silence:
+      // the next check may ask again. A phone that merely knows nothing
+      // waits the six hours.
+      if (journey) p.edit().putLong("activeAt", now - ACTIVE_GAP_MS + ACTIVE_RETRY_MS).apply()
+      return
+    }
+    if (!consider(c, fix) && journey) {
+      // Answered, and not a move (a border town's tower, a zone changed by
+      // hand): these surroundings are the place's own now, and are not
+      // asked about again. A move writes them itself when the app has
+      // moved the place.
+      val e = p.edit()
+      rememberSurroundings(c, e, now)
+      e.apply()
+    }
   }
 
   fun checkNow(c: Context) {
     if (!enabled(c)) return
+    // ON LANDING the position and the new zone arrive together, in either
+    // order (an Android 17 emulator: a quarter of a second apart, and both
+    // ways round). An update for a move that started just BEFORE the zone
+    // changed is ended half done by the reload for the new zone, or ran to
+    // the end on the old clock and wrote the alerts an hour off. So a move
+    // handed over in the last quarter of an hour is handed over again, to
+    // the new engine, once it has started — and done again even though the
+    // place may already be there.
+    val p = prefs(c)
+    val handoffAt = p.getLong("handoffAt", 0L)
+    val handoffLat = java.lang.Double.longBitsToDouble(p.getLong("handoffLat", 0L))
+    val handoffLng = java.lang.Double.longBitsToDouble(p.getLong("handoffLng", 0L))
+    // Not where the phone has moved on since: the check below takes the
+    // newer position, and the old one must not be handed over after it.
+    val newer = try {
+      newestLastKnown(c.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
+    } catch (t: Throwable) {
+      null
+    }
+    val movedOn = newer != null && newer.time > handoffAt &&
+      meters(handoffLat, handoffLng, newer.latitude, newer.longitude) >= MOVE_METERS
+    if (handoffAt > 0 && System.currentTimeMillis() - handoffAt < REDO_MS && !movedOn) {
+      Log.i(TAG, "the zone changed just after a move: doing its update again on the new clock")
+      startUpdate(
+        c,
+        handoffLat,
+        handoffLng,
+        p.getLong("handoffFixAt", 0L),
+        again = true,
+        delaySeconds = 15,
+      )
+    }
     WorkManager.getInstance(c).enqueueUniqueWork(
       WORK_CHECK_NOW,
       ExistingWorkPolicy.REPLACE,
@@ -411,23 +534,49 @@ class BackgroundLocationReceiver : BroadcastReceiver() {
  * Android 17 emulator with 2.38.3, Nov 2026). Nothing in JavaScript can
  * see it — its own clock is the thing that is stale — so the native side,
  * which is told of the change, reloads React Native: a new engine, the
- * right clock. Only where an engine is running; a process without one
- * starts a fresh engine when it needs it.
+ * right clock.
+ *
+ * AND AGAIN WHEN IT COMES BACK TO THE SCREEN. Reloaded with its activity
+ * stopped (the app in the background — exactly where it is on a flight),
+ * React Native came back to a window it never drew again: opened, the app
+ * was a blank page until its process was ended (Android 17 emulator,
+ * Nov 2026). Not reloading then is no answer either: the engine left on
+ * the old clock is the one the background work runs in — the move to the
+ * new city, the alerts it writes — and wrote them an hour off. So away
+ * from the screen the engine is reloaded at once, for that work, and once
+ * more when the app is next in front ([MainActivity.onResume]), for the
+ * window. In front, once.
  */
 private fun reloadForNewTimeZone(context: Context) {
   try {
     val host = (context.applicationContext as? ReactApplication)?.reactHost ?: return
     if (host.currentReactContext == null) return
-    Log.i(BackgroundLocation.TAG, "time zone changed under a running app: reloading its JavaScript")
+    if (!MainActivity.resumed) {
+      Log.i(BackgroundLocation.TAG, "time zone changed while the app is away: reloading now and when it is opened")
+      MainActivity.zoneReloadPending = true
+    } else {
+      Log.i(BackgroundLocation.TAG, "time zone changed under a running app: reloading its JavaScript")
+    }
+    reloadJavaScript(context, "time zone changed")
+  } catch (t: Throwable) {
+    Log.w(BackgroundLocation.TAG, "could not reload for the new time zone", t)
+  }
+}
+
+/** A new JavaScript engine for the running app, on the main thread. */
+fun reloadJavaScript(context: Context, reason: String) {
+  try {
+    val host = (context.applicationContext as? ReactApplication)?.reactHost ?: return
+    if (host.currentReactContext == null) return
     UiThreadUtil.runOnUiThread {
       try {
-        host.reload("time zone changed")
+        host.reload(reason)
       } catch (t: Throwable) {
         Log.w(BackgroundLocation.TAG, "reload failed", t)
       }
     }
   } catch (t: Throwable) {
-    Log.w(BackgroundLocation.TAG, "could not reload for the new time zone", t)
+    Log.w(BackgroundLocation.TAG, "could not reload", t)
   }
 }
 
@@ -466,6 +615,7 @@ class LocationMovedWorker(context: Context, params: WorkerParameters) : Worker(c
           putDouble("latitude", inputData.getDouble("latitude", 0.0))
           putDouble("longitude", inputData.getDouble("longitude", 0.0))
           putDouble("timestamp", inputData.getLong("timestamp", 0L).toDouble())
+          putBoolean("again", inputData.getBoolean("again", false))
         }
         val config = HeadlessJsTaskConfig("LocationMoved", args, TASK_MS, true)
         val start = { reactContext: ReactContext ->
@@ -537,5 +687,10 @@ class BackgroundLocationModule(private val reactContext: ReactApplicationContext
   @ReactMethod
   fun setPlace(latitude: Double, longitude: Double) {
     BackgroundLocation.setPlace(reactContext, latitude, longitude)
+  }
+
+  @ReactMethod
+  fun confirmPlace() {
+    BackgroundLocation.confirmPlace(reactContext)
   }
 }

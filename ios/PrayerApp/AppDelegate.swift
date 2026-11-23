@@ -48,8 +48,58 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // server). MUST run before launch finishes. No-op when no activity exists.
     LiveActivityRefresher.registerTask()
 
+    // The time zone changed under a running app: start its JavaScript again.
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(timeZoneChanged),
+      name: NSNotification.Name.NSSystemTimeZoneDidChange,
+      object: nil
+    )
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(becameActive),
+      name: UIApplication.didBecomeActiveNotification,
+      object: nil
+    )
+
     return true
   }
+
+  /**
+   The JavaScript engine works out the zone's offset once and keeps it
+   (Hermes says so itself: its cache "does not automatically detect changes
+   to the system timezone", and React Native never clears it). An app left
+   in memory across a change of zone — a flight, the app not closed — goes
+   on reading every prayer time on the OLD clock, an hour or more wrong,
+   until the process happens to be restarted. Seen on Android (2.38.3,
+   Nov 2026; `BackgroundLocation.kt` reloads there); the engine is the same
+   one here. Nothing in JavaScript can see it — its own clock is the thing
+   that is stale — so the native side, which is told, reloads React Native:
+   a new engine, the right clock. iOS posts this for a new zone, not for
+   the clocks going forward or back within one.
+   */
+  ///
+  /// Away from the screen it is reloaded at once all the same — the
+  /// background update for a move runs in this engine, and on the old clock
+  /// would write the alerts an hour off — and once more when the app is
+  /// next active: on Android a reload with the window not shown came back
+  /// to a blank page, and a second reload in front mended it.
+  @objc private func timeZoneChanged() {
+    DispatchQueue.main.async {
+      if UIApplication.shared.applicationState != .active {
+        self.zoneReloadPending = true
+      }
+      RCTTriggerReloadCommandListeners("time zone changed")
+    }
+  }
+
+  @objc private func becameActive() {
+    guard zoneReloadPending else { return }
+    zoneReloadPending = false
+    RCTTriggerReloadCommandListeners("time zone changed while in the background")
+  }
+
+  private var zoneReloadPending = false
 }
 
 /**

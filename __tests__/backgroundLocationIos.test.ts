@@ -11,21 +11,44 @@ const read = (...p: string[]) => readFileSync(path.join(root, ...p), 'utf8');
 const swift = read('ios/PrayerApp/BackgroundLocation.swift');
 
 describe('background location on the iPhone (preview)', () => {
-  it('uses iOS’s significant-change service and nothing else', () => {
+  it('uses iOS’s two low-power services and nothing else', () => {
     expect(swift).toContain('m.startMonitoringSignificantLocationChanges()');
-    // No continuous updates, no region or visit monitoring, no one-off request.
-    expect(swift).not.toMatch(/startUpdatingLocation|requestLocation\(|startMonitoringVisits|startMonitoring\(for/);
+    // Arrivals: what reaches an iPad with no cellular radio.
+    expect(swift).toContain('m.startMonitoringVisits()');
+    expect(swift).toMatch(/guard visit\.departureDate == Date\.distantFuture,/);
+    // No continuous updates, no regions, no one-off request: no GPS of its own.
+    expect(swift).not.toMatch(/startUpdatingLocation|requestLocation\(|startMonitoring\(for/);
+  });
+
+  it('the place the app repeats at every launch is not stamped "found now"', () => {
+    // Only a fresh position says when (confirmPlace); see BackgroundLocation.ts.
+    expect(swift).toMatch(/func setPlace\(latitude: Double, longitude: Double\) \{\s+if defaults\.object\(forKey: Key\.placeLat\) != nil,\s+defaults\.double\(forKey: Key\.placeLat\) == latitude,\s+defaults\.double\(forKey: Key\.placeLng\) == longitude \{\s+return/);
+    expect(swift).toMatch(/func confirmPlace\(\) \{\s+defaults\.set\(Date\(\)\.timeIntervalSince1970, forKey: Key\.placeAt\)/);
+    expect(read('ios/PrayerApp/BackgroundLocation.m')).toContain('RCT_EXTERN_METHOD(confirmPlace)');
+  });
+
+  it('a new time zone under a running app starts its JavaScript again', () => {
+    const app = read('ios/PrayerApp/AppDelegate.swift');
+    expect(app).toContain('name: NSNotification.Name.NSSystemTimeZoneDidChange,');
+    expect(app).toContain('RCTTriggerReloadCommandListeners("time zone changed")');
   });
 
   it('listens only when the setting is on and iOS allows "Always"', () => {
-    expect(swift).toMatch(/if enabled && m\.authorizationStatus == \.authorizedAlways \{\s+m\.startMonitoringSignificantLocationChanges\(\)\s+\} else \{\s+m\.stopMonitoringSignificantLocationChanges\(\)/);
-    expect(swift).toMatch(/guard enabled, let location = locations\.last else \{ return \}/);
+    expect(swift).toMatch(/if enabled && m\.authorizationStatus == \.authorizedAlways \{\s+m\.startMonitoringSignificantLocationChanges\(\)\s+m\.startMonitoringVisits\(\)\s+\} else \{\s+m\.stopMonitoringSignificantLocationChanges\(\)\s+m\.stopMonitoringVisits\(\)/);
+    expect(swift).toMatch(/private func consider\(_ location: CLLocation\) \{\s+guard enabled else \{ return \}/);
   });
 
   it('hands over only a move of twenty kilometres or more, newer than the app’s own place', () => {
     expect(swift).toMatch(/moveMeters: CLLocationDistance = 20_000/);
     expect(swift).toMatch(/guard location\.timestamp\.timeIntervalSince1970 > defaults\.double\(forKey: Key\.placeAt\) else \{ return \}/);
     expect(swift).toMatch(/handoffGap: TimeInterval = 30 \* 60/);
+    expect(swift).toMatch(/if now - handoffAt < MihrabBackgroundLocation\.handoffGap,\s+defaults\.double\(forKey: Key\.placeAt\) <= handoffAt \{/);
+  });
+
+  it('a move is kept until JavaScript has written it, so a reload in between does not lose it', () => {
+    expect(swift).toMatch(/pending = move\s+onMove\?\(move\)/);
+    expect(swift).toMatch(/func takePending\(\) -> \[String: Double\]\? \{\s+pending\s+\}/);
+    expect(swift).toMatch(/func endTask\(\) \{\s+DispatchQueue\.main\.async \{\s+self\.pending = nil/);
   });
 
   it('is not offered on the Mac', () => {

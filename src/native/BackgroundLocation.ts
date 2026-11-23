@@ -20,6 +20,7 @@ type Native = {
   status?: () => Promise<BackgroundLocationStatus>;
   setEnabled?: (on: boolean) => Promise<boolean>;
   setPlace?: (latitude: number, longitude: number) => void;
+  confirmPlace?: () => void;
   // iOS only.
   requestAlways?: () => Promise<boolean>;
   takePending?: () => Promise<MovedPosition | null>;
@@ -63,13 +64,38 @@ export async function setBackgroundLocationEnabled(on: boolean): Promise<boolean
   }
 }
 
-/** The place "My location" is on: what a later position is measured against. */
+/**
+ * The place "My location" is on: what a later position is measured against.
+ * Telling it the place it already has changes nothing — above all not WHEN
+ * the place was found, which only a position can say (`confirmBackgroundPlace`).
+ */
 export function setBackgroundPlace(latitude: number, longitude: number): void {
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
   try {
     native?.setPlace?.(latitude, longitude);
   } catch {
     // Best effort: the next change of place tells it again.
+  }
+}
+
+/**
+ * A fresh position has just said the place is where the phone is: positions
+ * older than now are not news, and the phone's surroundings now (network
+ * country, time zone) are the place's.
+ *
+ * Kept apart from `setBackgroundPlace` because the app tells the native
+ * side its place at every launch, found or not. When that also stamped the
+ * place "as of now", a reader who opened the app indoors after a journey —
+ * no position found, the old city still up — had the journey wiped from
+ * the native side's memory: every position the phone already held was
+ * "older than the place", and the new country was written down as the old
+ * city's own.
+ */
+export function confirmBackgroundPlace(): void {
+  try {
+    native?.confirmPlace?.();
+  } catch {
+    // Best effort.
   }
 }
 

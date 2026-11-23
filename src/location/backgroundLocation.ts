@@ -36,7 +36,11 @@ import {
 } from '../native/BackgroundLocation';
 import { reverseLocality, type ReverseLocality } from '../geocoding/nominatim';
 import { recordLocationFix } from '../prayer/cityRegistry';
-import { recordFreshFix } from '../prayer/locationFreshness';
+import {
+  isFreshFix,
+  recordFreshFix,
+  staleFixSettlesJourney,
+} from '../prayer/locationFreshness';
 import { getOrFetchPrayerDay, purgeCachesNear } from '../prayer/prayerStorage';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
 import { applyLocationProviders } from '../settings/locationProviders';
@@ -49,11 +53,31 @@ import { prayerSyncsAsked } from '../notifications/prayerNotifications';
 import { resyncPrayerAlertsFromStorage } from '../notifications/afterUpdate';
 import { republishWidgetPayload } from '../widget/republishWidgetPayload';
 import { quiet } from '../utils/quiet';
-import { tellLiveMove } from './liveMove';
+import { askLiveRecheck, tellLiveMove } from './liveMove';
 
 export const WISH_KEY = 'mihrab.backgroundLocation.v1';
 /** A move the app is started for (the native side's MOVE_METERS). */
 export const MOVE_KM = 20;
+/**
+ * The task's waits on the network. It runs in time that is lent — half a
+ * minute on the iPhone — and abroad the network is the part that may be
+ * missing. Neither the town's name nor the provider's week is needed to
+ * move the alerts: the place is named from the app's own list and the times
+ * are computed on the phone until the network answers.
+ */
+export const NAME_WAIT_MS = 6_000;
+export const WEEK_WAIT_MS = 12_000;
+
+/** `work`, or `late` once `ms` have passed (the work is left to finish). */
+function within<T, L>(work: Promise<T>, ms: number, late: L): Promise<T | L> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  return Promise.race([
+    work,
+    new Promise<L>(resolve => {
+      timer = setTimeout(() => resolve(late), ms);
+    }),
+  ]).finally(() => clearTimeout(timer));
+}
 
 export async function backgroundLocationWished(): Promise<boolean> {
   try {
@@ -161,6 +185,13 @@ export type LocationMovedData = {
   latitude?: number;
   longitude?: number;
   timestamp?: number;
+  /**
+   * The same move handed over again after a change of time zone (Android,
+   * `checkNow`): the first update may have run on the old clock or been
+   * ended by the reload, so it is done again even where the place is
+   * already there.
+   */
+  again?: boolean;
 };
 
 export type LocationMovedResult =
@@ -169,6 +200,7 @@ export type LocationMovedResult =
   | 'off'
   | 'own-place'
   | 'near'
+  | 'superseded'
   | 'bad-position'
   | 'failed';
 
@@ -182,8 +214,13 @@ export async function locationMovedTask(
   now: Date = new Date(),
 ): Promise<LocationMovedResult> {
   try {
-    // Open on screen: Today finds the place itself, with a fresher position.
-    if (AppState.currentState === 'active') return 'open';
+    // Open on screen: Today finds the place itself, with a fresher position
+    // — and is asked to, or an app left open on a journey would hear of
+    // the move and keep the city it had. Only when Today is there to ask:
+    // an engine started again in the background (a new time zone) reports
+    // 'active' with no screen at all (Android 17 emulator), and the move
+    // was dropped.
+    if (AppState.currentState === 'active' && askLiveRecheck()) return 'open';
     if (!(await backgroundLocationWished())) return 'off';
     const { latitude, longitude } = data ?? {};
     if (
@@ -199,7 +236,19 @@ export async function locationMovedTask(
     if (settings.locationMode === 'manual') return 'own-place';
     const fromLat = settings.lastFetchedLatitude;
     const fromLng = settings.lastFetchedLongitude;
+    // Handed over again after a new zone: only while the place is still
+    // that move's. Since moved on (the app found the phone somewhere else
+    // in the meantime), doing it again would put the place back.
     if (
+      data.again === true &&
+      typeof fromLat === 'number' &&
+      typeof fromLng === 'number' &&
+      distanceKm(fromLat, fromLng, latitude, longitude) >= MOVE_KM
+    ) {
+      return 'superseded';
+    }
+    if (
+      data.again !== true &&
       typeof fromLat === 'number' &&
       typeof fromLng === 'number' &&
       distanceKm(fromLat, fromLng, latitude, longitude) < MOVE_KM
@@ -207,14 +256,19 @@ export async function locationMovedTask(
       return 'near';
     }
 
-    let locality: ReverseLocality | null = null;
-    try {
-      locality = await reverseLocality(latitude, longitude);
-    } catch {
-      locality = null; // offline: the registry names it as well as it can
-    }
+    // Offline, or too slow: the registry names it as well as it can.
+    const locality: ReverseLocality | null = await within(
+      reverseLocality(latitude, longitude).then(
+        l => l,
+        () => null,
+      ),
+      NAME_WAIT_MS,
+      null,
+    );
     const summary = await recordLocationFix(latitude, longitude, locality, now);
     for (const a of summary.evictedAnchors) {
+      // Never the place just moved to (two entries can share an anchor).
+      if (a.latitude === summary.anchorLat && a.longitude === summary.anchorLng) continue;
       purgeCachesNear(a.latitude, a.longitude).catch(() => {});
     }
 
@@ -226,14 +280,30 @@ export async function locationMovedTask(
     await saveSettings(next);
     // Alive in the background with Today mounted: its loader takes the
     // place too, or it would show the old one when opened (`liveMove.ts`).
+    // The three-hourly check may hand over the phone's LAST position,
+    // hours old: the place follows it, but it is not "found" — the app
+    // looks again when opened, and says so until it has.
+    const measuredAt =
+      typeof data.timestamp === 'number' && data.timestamp > 0
+        ? data.timestamp
+        : null;
+    const fresh = isFreshFix(measuredAt, now.getTime());
+    setBackgroundPlace(summary.anchorLat, summary.anchorLng);
+    const found =
+      fresh || (await staleFixSettlesJourney(locality?.countryCode));
+    // Not again for a move handed over again: its position is minutes old
+    // by then, and "found now" would hide a newer one the phone has.
+    if (found && data.again !== true) await recordFreshFix();
+    // Alive in the background with Today mounted: its loader takes the
+    // place too, or it would show the old one when opened (`liveMove.ts`).
     tellLiveMove({
       latitude: summary.anchorLat,
       longitude: summary.anchorLng,
       label: summary.displayName,
       cityId: summary.cityId,
+      measuredAt,
+      fresh: found,
     });
-    setBackgroundPlace(summary.anchorLat, summary.anchorLng);
-    await recordFreshFix();
 
     // The new place's week, from its source — as Today fetches it. A day
     // that cannot be had now is computed on the phone by what follows.
@@ -249,14 +319,17 @@ export async function locationMovedTask(
       calculationMethod: next.calculationMethod,
       school: next.school,
     };
-    for (let i = 0; i < 7; i++) {
-      try {
-        await getOrFetchPrayerDay({ ...params, date: addDays(now, i) });
-      } catch (quietError) {
-        quiet('location/backgroundLocation', quietError);
-        break;
+    const week = (async () => {
+      for (let i = 0; i < 7; i++) {
+        try {
+          await getOrFetchPrayerDay({ ...params, date: addDays(now, i) });
+        } catch (quietError) {
+          quiet('location/backgroundLocation', quietError);
+          break;
+        }
       }
-    }
+    })();
+    await within(week, WEEK_WAIT_MS, undefined);
 
     const asked = prayerSyncsAsked();
     await republishWidgetPayload('launch', now);

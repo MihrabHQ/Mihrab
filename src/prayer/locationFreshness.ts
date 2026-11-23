@@ -43,6 +43,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
 import { networkCountry, systemTimeZone } from '../native/SystemClock';
+import { confirmBackgroundPlace } from '../native/BackgroundLocation';
 import { deviceZone } from '../utils/zoneClock';
 
 export type LocationStatus = 'ok' | 'searching' | 'slow' | 'notUpdated';
@@ -95,6 +96,31 @@ export function hasTravelled(
     anchor.zone !== now.zone &&
     anchor.offset !== now.offset
   );
+}
+
+/**
+ * A position that is NOT fresh — the phone's last, after a wait ran out —
+ * has moved "My location". Does it answer the journey the phone shows?
+ *
+ * Only where it can be checked: the journey is a change of network country
+ * and the position lies in the country the phone is in now (`fixCountry`,
+ * from naming the town). A reader who flew Stockholm → Berlin and whose
+ * phone last had a position in Berlin half an hour ago is in Berlin, and
+ * the notice has nothing left to say. A last position in the airport
+ * changed at on the way — another country — is not where the phone is,
+ * and neither can a change of time zone alone be checked (one country,
+ * several zones): the notice stays until a fresh position is found.
+ */
+export function staleFixAnswersJourney(
+  anchor: TravelAnchor | null,
+  now: TravelAnchor,
+  fixCountry: string | null | undefined,
+): boolean {
+  if (!hasTravelled(anchor, now)) return true;
+  const countryChanged =
+    !!anchor?.country && !!now.country && anchor.country !== now.country;
+  if (!countryChanged) return false;
+  return !!fixCountry && fixCountry.toUpperCase() === now.country;
 }
 
 /** Today's notice is up: travelled, and the quick request has ended with nothing fresh. */
@@ -156,6 +182,9 @@ async function surroundings(): Promise<TravelAnchor> {
 
 /** A fresh position was found: this is where the phone is, remember its surroundings. */
 export async function recordFreshFix(): Promise<void> {
+  // The background watcher (optional) measures a later position against
+  // the place as of NOW, and takes these surroundings as the place's.
+  confirmBackgroundPlace();
   try {
     await AsyncStorage.setItem(ANCHOR_KEY, JSON.stringify(await surroundings()));
   } catch {
@@ -163,20 +192,40 @@ export async function recordFreshFix(): Promise<void> {
   }
 }
 
+async function readAnchor(): Promise<TravelAnchor | null> {
+  const raw = await AsyncStorage.getItem(ANCHOR_KEY);
+  if (!raw) return null;
+  const a = JSON.parse(raw) as Partial<TravelAnchor> | null;
+  if (!a || typeof a.offset !== 'number') return null;
+  return {
+    zone: typeof a.zone === 'string' ? a.zone : null,
+    offset: a.offset,
+    country: typeof a.country === 'string' ? a.country : null,
+  };
+}
+
 /** Does the phone seem to have travelled since its last fresh position? */
 export async function seemsToHaveTravelled(): Promise<boolean> {
   try {
-    const raw = await AsyncStorage.getItem(ANCHOR_KEY);
-    if (!raw) return false;
-    const a = JSON.parse(raw) as Partial<TravelAnchor> | null;
-    if (!a || typeof a.offset !== 'number') return false;
-    return hasTravelled(
-      {
-        zone: typeof a.zone === 'string' ? a.zone : null,
-        offset: a.offset,
-        country: typeof a.country === 'string' ? a.country : null,
-      },
+    return hasTravelled(await readAnchor(), await surroundings());
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * "My location" has just followed a position that is not fresh, in the
+ * country `fixCountry`: is the place on screen where the phone is, as far
+ * as the phone can tell (`staleFixAnswersJourney`)? Unknown reads as no.
+ */
+export async function staleFixSettlesJourney(
+  fixCountry: string | null | undefined,
+): Promise<boolean> {
+  try {
+    return staleFixAnswersJourney(
+      await readAnchor(),
       await surroundings(),
+      fixCountry,
     );
   } catch {
     return false;

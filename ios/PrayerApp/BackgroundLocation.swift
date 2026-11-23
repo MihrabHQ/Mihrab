@@ -9,12 +9,16 @@ import UIKit
  same rules as Android's (`BackgroundLocation.kt`) and not yet proven on
  many iPhones.
 
- WHAT IT COSTS. It uses one thing only: iOS's significant-change location
- service. iOS itself watches the cell towers the phone is already talking
- to and wakes the app when the phone has moved a long way — hundreds of
- metres at the least, usually kilometres. No GPS is turned on by this, and
- nothing is polled. iOS starts the app again for such a change even after
- it was closed.
+ WHAT IT COSTS. It uses iOS's two low-power location services and nothing
+ else. The significant-change service: iOS itself watches the cell towers
+ the phone is already talking to and wakes the app when the phone has moved
+ a long way — hundreds of metres at the least, usually kilometres. And the
+ visits service: iOS tells the app when the phone has arrived somewhere and
+ stayed — which is what reaches an iPad with no cellular radio, and a phone
+ whose towers did not change hands on the way. Both are iOS's own
+ watching, shared by every app that asks; this app never requests a
+ position in the background, and nothing is polled. iOS starts the app again for such a change
+ even after it was closed.
 
  WHAT IT DOES WITH ONE. Nothing, unless the reader turned the setting on
  and iOS allows "Always". Then: a position newer than the app's own place
@@ -90,8 +94,10 @@ final class MihrabBackgroundLocation: NSObject, CLLocationManagerDelegate {
     let m = locationManager()
     if enabled && m.authorizationStatus == .authorizedAlways {
       m.startMonitoringSignificantLocationChanges()
+      m.startMonitoringVisits()
     } else {
       m.stopMonitoringSignificantLocationChanges()
+      m.stopMonitoringVisits()
     }
   }
 
@@ -100,9 +106,23 @@ final class MihrabBackgroundLocation: NSObject, CLLocationManagerDelegate {
     DispatchQueue.main.async { self.apply() }
   }
 
+  /// The place the app is on. The app says it at every launch, found or
+  /// not, so the place it already has changes nothing — above all not WHEN
+  /// it was found (`confirmPlace`). A new place is as of now.
   func setPlace(latitude: Double, longitude: Double) {
+    if defaults.object(forKey: Key.placeLat) != nil,
+       defaults.double(forKey: Key.placeLat) == latitude,
+       defaults.double(forKey: Key.placeLng) == longitude {
+      return
+    }
     defaults.set(latitude, forKey: Key.placeLat)
     defaults.set(longitude, forKey: Key.placeLng)
+    defaults.set(Date().timeIntervalSince1970, forKey: Key.placeAt)
+  }
+
+  /// A fresh position has just said the place is where the phone is:
+  /// positions older than now are not news.
+  func confirmPlace() {
     defaults.set(Date().timeIntervalSince1970, forKey: Key.placeAt)
   }
 
@@ -145,7 +165,29 @@ final class MihrabBackgroundLocation: NSObject, CLLocationManagerDelegate {
   }
 
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    guard enabled, let location = locations.last else { return }
+    guard let location = locations.last else { return }
+    consider(location)
+  }
+
+  func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
+    // An arrival (no departure yet) at a place iOS could put on the map.
+    guard visit.departureDate == Date.distantFuture,
+          CLLocationCoordinate2DIsValid(visit.coordinate),
+          visit.horizontalAccuracy >= 0 else { return }
+    // As of now, not of the arrival: iOS tells of a visit some minutes in,
+    // and the phone is still there.
+    consider(CLLocation(
+      coordinate: visit.coordinate,
+      altitude: 0,
+      horizontalAccuracy: visit.horizontalAccuracy,
+      verticalAccuracy: -1,
+      timestamp: Date()
+    ))
+  }
+
+  /// A position iOS has handed over: is it a move the app should update for?
+  private func consider(_ location: CLLocation) {
+    guard enabled else { return }
     guard defaults.object(forKey: Key.placeLat) != nil else { return }
     // Older than the app's own place: not news.
     guard location.timestamp.timeIntervalSince1970 > defaults.double(forKey: Key.placeAt) else { return }
@@ -155,7 +197,11 @@ final class MihrabBackgroundLocation: NSObject, CLLocationManagerDelegate {
     )
     guard location.distance(from: place) >= MihrabBackgroundLocation.moveMeters else { return }
     let now = Date().timeIntervalSince1970
-    if now - defaults.double(forKey: Key.handoffAt) < MihrabBackgroundLocation.handoffGap {
+    // Only while the place is still the one the app was updated for: moved
+    // since (the app opened somewhere else), that destination is news again.
+    let handoffAt = defaults.double(forKey: Key.handoffAt)
+    if now - handoffAt < MihrabBackgroundLocation.handoffGap,
+       defaults.double(forKey: Key.placeAt) <= handoffAt {
       let last = CLLocation(
         latitude: defaults.double(forKey: Key.handoffLat),
         longitude: defaults.double(forKey: Key.handoffLng)
@@ -174,21 +220,21 @@ final class MihrabBackgroundLocation: NSObject, CLLocationManagerDelegate {
     // iOS gives a woken app a few seconds; ask for the half minute the
     // update needs, and give it back when JavaScript says it is done.
     beginTask()
-    if let tell = onMove {
-      tell(move)
-    } else {
-      pending = move
-    }
+    // Kept until JavaScript says the update is written (`finish`), not
+    // only until it is handed over: a reload of the JavaScript in between
+    // (a new time zone, on landing) ends the update half done, and the
+    // new engine asks for it again (`takePending`).
+    pending = move
+    onMove?(move)
   }
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
     // Nothing to do: the next change is delivered as usual.
   }
 
+  /// The move waiting for JavaScript, if any. Left in place until `finish`.
   func takePending() -> [String: Double]? {
-    let p = pending
-    pending = nil
-    return p
+    pending
   }
 
   private func beginTask() {
@@ -200,6 +246,7 @@ final class MihrabBackgroundLocation: NSObject, CLLocationManagerDelegate {
 
   func endTask() {
     DispatchQueue.main.async {
+      self.pending = nil
       guard self.task != .invalid else { return }
       UIApplication.shared.endBackgroundTask(self.task)
       self.task = .invalid
@@ -250,6 +297,10 @@ final class BackgroundLocation: RCTEventEmitter {
   @objc(setPlace:longitude:)
   func setPlace(_ latitude: Double, longitude: Double) {
     store.setPlace(latitude: latitude, longitude: longitude)
+  }
+
+  @objc func confirmPlace() {
+    store.confirmPlace()
   }
 
   @objc(requestAlways:rejecter:)
