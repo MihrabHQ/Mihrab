@@ -43,9 +43,9 @@ function agreement(slug: string, lat: number, lon: number, from: string, to: str
   for (const [date, row] of Object.entries(days)) {
     if (date < from || date > to) continue;
     const [y, m, d] = date.split('-').map(Number);
-    // The site's 2027 rows are its 2026 rows copied; compute them as 2026.
-    const at = computeLocalAdhanInstants({ latitude: lat, longitude: lon, date: new Date(2026, m - 1, d), calculationMethod: SWEDEN_METHOD_ID, school: 0 });
-    void y;
+    // Each row on its own date: the tables hold Islamiska Förbundet's real
+    // 2027 now, where they once held its 2026 rows copied under 2027.
+    const at = computeLocalAdhanInstants({ latitude: lat, longitude: lon, date: new Date(y, m - 1, d), calculationMethod: SWEDEN_METHOD_ID, school: 0 });
     const ours = [at.fajr, at.sunrise, at.dhuhr, at.asr, at.maghrib, at.isha];
     ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].forEach((p, k) => {
       let diff = minutes(clockIn(ours[k])) - minutes(row[k + 1]);
