@@ -1,5 +1,7 @@
 /**
- * Settings → Location: "Update my location in the background" (Android).
+ * Settings → Location: "Update my location in the background" (Android,
+ * and the iPhone as a preview — the row says "Preview", and its words name
+ * iOS's own "Always").
  *
  * Optional, off until asked for, and said to be optional in three places:
  * the row's own explanation, the question the app asks BEFORE Android's
@@ -7,8 +9,9 @@
  * works without it), and what it says when Android was told no. See
  * `location/backgroundLocation.ts` for what turning it on does.
  *
- * Shown only where it can work: an Android build that declares the
- * permission, and "My location" as the place (a place of the reader's own
+ * Shown only where it can work: a build that offers it (an Android build
+ * that declares the permission, an iPhone or iPad), and "My location" as
+ * the place (a place of the reader's own
  * does not follow the phone).
  */
 import { memo, useCallback, useEffect, useState } from 'react';
@@ -71,7 +74,9 @@ function BackgroundLocationCardImpl() {
     [read],
   );
 
-  if (Platform.OS !== 'android' || !state?.offered) return null;
+  if (!state?.offered) return null;
+  // The iPhone's is a preview, and says so; its words name iOS's own.
+  const ios = Platform.OS === 'ios';
   if (settings.locationMode === 'manual') return null;
   const on = state.wished && state.permitted;
   const refused = !on && (declined || (state.wished && !state.permitted));
@@ -81,7 +86,7 @@ function BackgroundLocationCardImpl() {
         visible={asking}
         title={t('settings.backgroundLocationAskTitle', 'Location in the background')}
         message={t(
-          'settings.backgroundLocationAsk',
+          Platform.OS === 'ios' ? 'settings.backgroundLocationAskIos' : 'settings.backgroundLocationAsk',
           'To move your prayer alerts and widgets when you travel, Mihrab needs to read your location while the app is closed. Android will ask you to allow location access “all the time”.\n\nThis is optional. It is used only to keep your prayer times on the place you are in, and Mihrab works without it.',
         )}
         confirmLabel={t('common.continue', 'Continue')}
@@ -93,15 +98,19 @@ function BackgroundLocationCardImpl() {
         }}
       />
       <SettingsToggleRow
-        title={t('settings.backgroundLocationTitle', 'Update my location in the background')}
+        title={
+          ios
+            ? `${t('settings.backgroundLocationTitle', 'Update my location in the background')} · ${t('settings.previewTag', 'Preview')}`
+            : t('settings.backgroundLocationTitle', 'Update my location in the background')
+        }
         help={
           refused
             ? t(
-                'settings.backgroundLocationDenied',
+                ios ? 'settings.backgroundLocationDeniedIos' : 'settings.backgroundLocationDenied',
                 'Android has not allowed location access “all the time”, so this is off. You can allow it in Android’s settings for Mihrab, under Permissions → Location.',
               )
             : t(
-                'settings.backgroundLocationHelp',
+                ios ? 'settings.backgroundLocationHelpIos' : 'settings.backgroundLocationHelp',
                 'Optional. When you travel, your prayer alerts and widgets move to the new place without the app being opened. It does not follow you around: it looks only when your phone has moved far or changed network country or time zone, so it hardly touches the battery, and nothing more is sent than when the app is open. Without this, your location is updated when you open the app.',
               )
         }

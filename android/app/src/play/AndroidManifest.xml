@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- "My location" kept up while the app is closed: optional, asked for
+         only from Settings → Location, after the app has said what it is
+         for (BackgroundLocation.kt). BEFORE A RELEASE WITH THIS IN IT IS
+         UPLOADED TO GOOGLE PLAY, the Play Console's background-location
+         declaration must be filed (App content → Sensitive permissions and
+         APIs → Location permissions, with a short video of the setting):
+         Play rejects the upload otherwise. -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+</manifest>

@@ -585,7 +585,11 @@
     "backgroundLocationHelp": "Valfritt. När du reser flyttas dina böneaviseringar och widgetar till den nya platsen utan att appen öppnas. Den följer dig inte: den tittar bara när telefonen har flyttat sig långt eller bytt nätverksland eller tidszon, så batteriet påverkas knappt, och inget mer skickas än när appen är öppen. Utan detta uppdateras din plats när du öppnar appen.",
     "backgroundLocationAskTitle": "Plats i bakgrunden",
     "backgroundLocationAsk": "För att flytta dina böneaviseringar och widgetar när du reser behöver Mihrab läsa din plats medan appen är stängd. Android kommer att be dig tillåta platsåtkomst ”alltid”.\n\nDetta är valfritt. Det används bara för att hålla dina bönetider på den plats där du är, och Mihrab fungerar utan det.",
-    "backgroundLocationDenied": "Android har inte tillåtit platsåtkomst ”alltid”, så detta är av. Du kan tillåta det i Androids inställningar för Mihrab, under Behörigheter → Plats."
+    "backgroundLocationDenied": "Android har inte tillåtit platsåtkomst ”alltid”, så detta är av. Du kan tillåta det i Androids inställningar för Mihrab, under Behörigheter → Plats.",
+    "previewTag": "Förhandsversion",
+    "backgroundLocationHelpIos": "Valfritt, och en förhandsversion på iPhone. När du reser flyttas dina böneaviseringar och widgetar till den nya platsen utan att appen öppnas. Den följer dig inte: iOS väcker Mihrab bara när telefonen har flyttat sig långt, så batteriet påverkas knappt, och inget mer skickas än när appen är öppen. Utan detta uppdateras din plats när du öppnar appen.",
+    "backgroundLocationAskIos": "För att flytta dina böneaviseringar och widgetar när du reser behöver Mihrab läsa din plats medan appen är stängd. iOS kommer att be dig ändra platsåtkomsten till ”Tillåt alltid”.\n\nDetta är valfritt. Det används bara för att hålla dina bönetider på den plats där du är, och Mihrab fungerar utan det.",
+    "backgroundLocationDeniedIos": "iOS har inte tillåtit platsåtkomst ”Alltid”, så detta är av. Du kan tillåta det i appen Inställningar, under Mihrab → Plats."
   },
   "locationSetup": {
     "headline": "Ange din plats",

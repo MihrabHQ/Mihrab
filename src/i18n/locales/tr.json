@@ -585,7 +585,11 @@
     "backgroundLocationHelp": "İsteğe bağlı. Seyahat ettiğinizde namaz uyarılarınız ve widget’larınız uygulama açılmadan yeni yere geçer. Sizi takip etmez: yalnızca telefonunuz uzağa gittiğinde veya ağ ülkesi ya da saat dilimi değiştiğinde bakar; pili neredeyse hiç etkilemez ve uygulama açıkken gönderilenden fazlası gönderilmez. Bu olmadan konumunuz uygulamayı açtığınızda güncellenir.",
     "backgroundLocationAskTitle": "Arka planda konum",
     "backgroundLocationAsk": "Seyahat ettiğinizde namaz uyarılarınızı ve widget’larınızı taşımak için Mihrab’ın uygulama kapalıyken konumunuzu okuması gerekir. Android sizden konum erişimine “her zaman” izin vermenizi isteyecek.\n\nBu isteğe bağlıdır. Yalnızca namaz vakitlerinizi bulunduğunuz yere göre tutmak için kullanılır ve Mihrab bu olmadan da çalışır.",
-    "backgroundLocationDenied": "Android “her zaman” konum erişimine izin vermedi, bu yüzden kapalı. Mihrab için Android ayarlarında İzinler → Konum altından izin verebilirsiniz."
+    "backgroundLocationDenied": "Android “her zaman” konum erişimine izin vermedi, bu yüzden kapalı. Mihrab için Android ayarlarında İzinler → Konum altından izin verebilirsiniz.",
+    "previewTag": "Önizleme",
+    "backgroundLocationHelpIos": "İsteğe bağlı ve iPhone’da önizleme aşamasında. Seyahat ettiğinizde namaz uyarılarınız ve widget’larınız uygulama açılmadan yeni yere geçer. Sizi takip etmez: iOS, Mihrab’ı yalnızca telefonunuz uzağa gittiğinde uyandırır; pili neredeyse hiç etkilemez ve uygulama açıkken gönderilenden fazlası gönderilmez. Bu olmadan konumunuz uygulamayı açtığınızda güncellenir.",
+    "backgroundLocationAskIos": "Seyahat ettiğinizde namaz uyarılarınızı ve widget’larınızı taşımak için Mihrab’ın uygulama kapalıyken konumunuzu okuması gerekir. iOS sizden konum erişimini “Her Zaman İzin Ver” olarak değiştirmenizi isteyecek.\n\nBu isteğe bağlıdır. Yalnızca namaz vakitlerinizi bulunduğunuz yere göre tutmak için kullanılır ve Mihrab bu olmadan da çalışır.",
+    "backgroundLocationDeniedIos": "iOS “Her Zaman” konum erişimine izin vermedi, bu yüzden kapalı. Ayarlar uygulamasında Mihrab → Konum altından izin verebilirsiniz."
   },
   "locationSetup": {
     "headline": "Konumunuzu ayarlayın",

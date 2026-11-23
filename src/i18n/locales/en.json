@@ -585,7 +585,11 @@
     "backgroundLocationHelp": "Optional. When you travel, your prayer alerts and widgets move to the new place without the app being opened. It does not follow you around: it looks only when your phone has moved far or changed network country or time zone, so it hardly touches the battery, and nothing more is sent than when the app is open. Without this, your location is updated when you open the app.",
     "backgroundLocationAskTitle": "Location in the background",
     "backgroundLocationAsk": "To move your prayer alerts and widgets when you travel, Mihrab needs to read your location while the app is closed. Android will ask you to allow location access “all the time”.\n\nThis is optional. It is used only to keep your prayer times on the place you are in, and Mihrab works without it.",
-    "backgroundLocationDenied": "Android has not allowed location access “all the time”, so this is off. You can allow it in Android’s settings for Mihrab, under Permissions → Location."
+    "backgroundLocationDenied": "Android has not allowed location access “all the time”, so this is off. You can allow it in Android’s settings for Mihrab, under Permissions → Location.",
+    "previewTag": "Preview",
+    "backgroundLocationHelpIos": "Optional, and a preview on iPhone. When you travel, your prayer alerts and widgets move to the new place without the app being opened. It does not follow you around: iOS wakes Mihrab only when your phone has moved a long way, so it hardly touches the battery, and nothing more is sent than when the app is open. Without this, your location is updated when you open the app.",
+    "backgroundLocationAskIos": "To move your prayer alerts and widgets when you travel, Mihrab needs to read your location while the app is closed. iOS will ask you to change location access to “Always Allow”.\n\nThis is optional. It is used only to keep your prayer times on the place you are in, and Mihrab works without it.",
+    "backgroundLocationDeniedIos": "iOS has not allowed location access “Always”, so this is off. You can allow it in the Settings app, under Mihrab → Location."
   },
   "locationSetup": {
     "headline": "Set your location",

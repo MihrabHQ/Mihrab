@@ -22,7 +22,10 @@ import { adhanMuteToggleTask } from './src/notifications/adhanMute';
 import { prayerAlarmActionTask } from './src/notifications/prayerAlarmTask';
 import { widgetRefreshTask } from './src/widget/widgetRefreshTask';
 import { alertsResyncTask } from './src/notifications/afterUpdate';
-import { locationMovedTask } from './src/location/backgroundLocation';
+import {
+  locationMovedTask,
+  startBackgroundMoveListener,
+} from './src/location/backgroundLocation';
 // Side effect: subscribes to durable writes so a change to the record
 // schedules a sync round. See src/sync/recordChanged.ts.
 import './src/sync/recordChanged';
@@ -132,3 +135,7 @@ AppRegistry.registerHeadlessTask('AlertsResync', () => alertsResyncTask);
 // the place, the widgets and the alerts follow. Started by
 // LocationMovedWorker (BackgroundLocation.kt); must match its task name.
 AppRegistry.registerHeadlessTask('LocationMoved', () => locationMovedTask);
+
+// The iPhone's side of the same (a preview): iOS wakes or starts the app
+// itself for a move, and this listens for it (BackgroundLocation.swift).
+startBackgroundMoveListener();

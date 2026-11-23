@@ -585,7 +585,11 @@
     "backgroundLocationHelp": "Opsional. Saat Anda bepergian, pengingat salat dan widget berpindah ke tempat baru tanpa membuka aplikasi. Aplikasi tidak mengikuti Anda: ia hanya memeriksa ketika ponsel berpindah jauh atau berganti negara jaringan atau zona waktu, sehingga hampir tidak memengaruhi baterai, dan tidak ada yang dikirim selain yang dikirim saat aplikasi dibuka. Tanpa ini, lokasi Anda diperbarui saat Anda membuka aplikasi.",
     "backgroundLocationAskTitle": "Lokasi di latar belakang",
     "backgroundLocationAsk": "Untuk memindahkan pengingat salat dan widget saat Anda bepergian, Mihrab perlu membaca lokasi Anda saat aplikasi ditutup. Android akan meminta Anda mengizinkan akses lokasi “sepanjang waktu”.\n\nIni opsional. Hanya digunakan untuk menjaga waktu salat sesuai tempat Anda berada, dan Mihrab tetap berfungsi tanpanya.",
-    "backgroundLocationDenied": "Android belum mengizinkan akses lokasi “sepanjang waktu”, jadi ini nonaktif. Anda dapat mengizinkannya di setelan Android untuk Mihrab, di Izin → Lokasi."
+    "backgroundLocationDenied": "Android belum mengizinkan akses lokasi “sepanjang waktu”, jadi ini nonaktif. Anda dapat mengizinkannya di setelan Android untuk Mihrab, di Izin → Lokasi.",
+    "previewTag": "Pratinjau",
+    "backgroundLocationHelpIos": "Opsional, dan masih pratinjau di iPhone. Saat Anda bepergian, pengingat salat dan widget berpindah ke tempat baru tanpa membuka aplikasi. Aplikasi tidak mengikuti Anda: iOS membangunkan Mihrab hanya ketika ponsel berpindah jauh, sehingga hampir tidak memengaruhi baterai, dan tidak ada yang dikirim selain yang dikirim saat aplikasi dibuka. Tanpa ini, lokasi Anda diperbarui saat Anda membuka aplikasi.",
+    "backgroundLocationAskIos": "Untuk memindahkan pengingat salat dan widget saat Anda bepergian, Mihrab perlu membaca lokasi Anda saat aplikasi ditutup. iOS akan meminta Anda mengubah akses lokasi menjadi “Selalu Izinkan”.\n\nIni opsional. Hanya digunakan untuk menjaga waktu salat sesuai tempat Anda berada, dan Mihrab tetap berfungsi tanpanya.",
+    "backgroundLocationDeniedIos": "iOS belum mengizinkan akses lokasi “Selalu”, jadi ini nonaktif. Anda dapat mengizinkannya di app Pengaturan, di Mihrab → Lokasi."
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",

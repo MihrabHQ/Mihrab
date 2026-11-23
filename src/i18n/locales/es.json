@@ -586,7 +586,11 @@
     "backgroundLocationHelp": "Opcional. Cuando viajas, tus avisos de oración y widgets pasan al nuevo lugar sin abrir la app. No te sigue: solo mira cuando tu teléfono se ha movido lejos o ha cambiado de país de red o de zona horaria, así que apenas afecta a la batería, y no se envía nada más que con la app abierta. Sin esto, tu ubicación se actualiza al abrir la app.",
     "backgroundLocationAskTitle": "Ubicación en segundo plano",
     "backgroundLocationAsk": "Para mover tus avisos de oración y widgets cuando viajas, Mihrab necesita leer tu ubicación con la app cerrada. Android te pedirá permitir el acceso a la ubicación «todo el tiempo».\n\nEs opcional. Solo se usa para mantener tus horarios de oración en el lugar donde estás, y Mihrab funciona sin ello.",
-    "backgroundLocationDenied": "Android no ha permitido el acceso a la ubicación «todo el tiempo», así que esto está desactivado. Puedes permitirlo en los ajustes de Android para Mihrab, en Permisos → Ubicación."
+    "backgroundLocationDenied": "Android no ha permitido el acceso a la ubicación «todo el tiempo», así que esto está desactivado. Puedes permitirlo en los ajustes de Android para Mihrab, en Permisos → Ubicación.",
+    "previewTag": "Vista previa",
+    "backgroundLocationHelpIos": "Opcional, y una vista previa en iPhone. Cuando viajas, tus avisos de oración y widgets pasan al nuevo lugar sin abrir la app. No te sigue: iOS despierta a Mihrab solo cuando tu teléfono se ha movido lejos, así que apenas afecta a la batería, y no se envía nada más que con la app abierta. Sin esto, tu ubicación se actualiza al abrir la app.",
+    "backgroundLocationAskIos": "Para mover tus avisos de oración y widgets cuando viajas, Mihrab necesita leer tu ubicación con la app cerrada. iOS te pedirá cambiar el acceso a la ubicación a «Permitir siempre».\n\nEs opcional. Solo se usa para mantener tus horarios de oración en el lugar donde estás, y Mihrab funciona sin ello.",
+    "backgroundLocationDeniedIos": "iOS no ha permitido el acceso a la ubicación «Siempre», así que esto está desactivado. Puedes permitirlo en la app Ajustes, en Mihrab → Ubicación."
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",

@@ -585,7 +585,11 @@
     "backgroundLocationHelp": "Optional. Wenn Sie reisen, wechseln Ihre Gebetshinweise und Widgets zum neuen Ort, ohne dass die App geöffnet wird. Sie werden nicht verfolgt: Es wird nur nachgesehen, wenn sich Ihr Telefon weit bewegt oder das Netzland oder die Zeitzone gewechselt hat. Der Akku wird kaum belastet, und es wird nicht mehr gesendet als bei geöffneter App. Ohne diese Option wird Ihr Standort beim Öffnen der App aktualisiert.",
     "backgroundLocationAskTitle": "Standort im Hintergrund",
     "backgroundLocationAsk": "Um Ihre Gebetshinweise und Widgets auf Reisen umzustellen, muss Mihrab Ihren Standort lesen, während die App geschlossen ist. Android wird Sie bitten, den Standortzugriff „Immer“ zu erlauben.\n\nDas ist optional. Es dient nur dazu, Ihre Gebetszeiten an dem Ort zu halten, an dem Sie sind, und Mihrab funktioniert auch ohne.",
-    "backgroundLocationDenied": "Android hat den Standortzugriff „Immer“ nicht erlaubt, daher ist dies aus. Sie können ihn in den Android-Einstellungen für Mihrab unter Berechtigungen → Standort erlauben."
+    "backgroundLocationDenied": "Android hat den Standortzugriff „Immer“ nicht erlaubt, daher ist dies aus. Sie können ihn in den Android-Einstellungen für Mihrab unter Berechtigungen → Standort erlauben.",
+    "previewTag": "Vorschau",
+    "backgroundLocationHelpIos": "Optional und auf dem iPhone eine Vorschau. Wenn Sie reisen, wechseln Ihre Gebetshinweise und Widgets zum neuen Ort, ohne dass die App geöffnet wird. Sie werden nicht verfolgt: iOS weckt Mihrab nur, wenn sich Ihr Telefon weit bewegt hat. Der Akku wird kaum belastet, und es wird nicht mehr gesendet als bei geöffneter App. Ohne diese Option wird Ihr Standort beim Öffnen der App aktualisiert.",
+    "backgroundLocationAskIos": "Um Ihre Gebetshinweise und Widgets auf Reisen umzustellen, muss Mihrab Ihren Standort lesen, während die App geschlossen ist. iOS wird Sie bitten, den Standortzugriff auf „Immer erlauben“ zu ändern.\n\nDas ist optional. Es dient nur dazu, Ihre Gebetszeiten an dem Ort zu halten, an dem Sie sind, und Mihrab funktioniert auch ohne.",
+    "backgroundLocationDeniedIos": "iOS hat den Standortzugriff „Immer“ nicht erlaubt, daher ist dies aus. Sie können ihn in der App Einstellungen unter Mihrab → Standort erlauben."
   },
   "locationSetup": {
     "headline": "Legen Sie Ihren Standort fest",

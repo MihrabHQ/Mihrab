@@ -3,7 +3,7 @@
  * (android/…/BackgroundLocation.kt), held by its text: what makes it cheap,
  * and that only the builds meant to offer it declare the permission.
  */
-import { existsSync, readFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import path from 'path';
 
 const root = path.join(__dirname, '..');
@@ -34,15 +34,15 @@ describe('background location on Android', () => {
     expect(kt).toMatch(/fun register\(c: Context\) \{\s+if \(!enabled\(c\) \|\| !permitted\(c\)\) \{/);
   });
 
-  it('the permission is declared by the GitHub and F-Droid builds, not in the shared manifest', () => {
+  it('the permission is declared by each store build, not in the shared manifest', () => {
     const perm = 'android.permission.ACCESS_BACKGROUND_LOCATION';
     expect(read('android/app/src/main/AndroidManifest.xml')).not.toContain(perm);
-    expect(read('android/app/src/github/AndroidManifest.xml')).toContain(perm);
-    expect(read('android/app/src/fdroid/AndroidManifest.xml')).toContain(perm);
-    // Google Play's build declares it once its declaration is filed; when
-    // that manifest is added this line is the reminder to say so here.
-    const play = path.join(root, 'android/app/src/play/AndroidManifest.xml');
-    if (existsSync(play)) expect(readFileSync(play, 'utf8')).toContain(perm);
+    for (const flavor of ['github', 'fdroid', 'play']) {
+      expect(read(`android/app/src/${flavor}/AndroidManifest.xml`)).toContain(perm);
+    }
+    // Play rejects an upload with this permission until its declaration
+    // is filed in the Play Console: the manifest says so where it is read.
+    expect(read('android/app/src/play/AndroidManifest.xml')).toMatch(/declaration\s+must be filed/);
   });
 
   it('the task name is the one index.js registers', () => {

@@ -14,7 +14,8 @@
  * the setting stays off and says where it can be allowed.
  *
  * WHAT IT COSTS is the native side's business, and almost nothing: it
- * never polls (BackgroundLocation.kt). This file is the part that runs
+ * never polls (BackgroundLocation.kt on Android; on the iPhone, a preview,
+ * iOS's own significant-change service — BackgroundLocation.swift). This file is the part that runs
  * when the phone HAS moved twenty kilometres or more: `locationMovedTask`,
  * the same steps Today takes for a new city — name the town, move "My
  * location", fetch the week, write the widgets and the alerts.
@@ -27,6 +28,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState, PermissionsAndroid, Platform } from 'react-native';
 import {
   backgroundLocationStatus,
+  onBackgroundMove,
+  requestAlwaysLocation,
   setBackgroundLocationEnabled,
   setBackgroundPlace,
   type BackgroundLocationStatus,
@@ -84,8 +87,17 @@ const BACKGROUND = 'android.permission.ACCESS_BACKGROUND_LOCATION';
 export async function turnOnBackgroundLocation(): Promise<
   'on' | 'declined' | 'unavailable'
 > {
-  if (Platform.OS !== 'android') return 'unavailable';
+  if (Platform.OS !== 'android' && Platform.OS !== 'ios') return 'unavailable';
   if (!(await backgroundLocationStatus()).offered) return 'unavailable';
+  if (Platform.OS === 'ios') {
+    // iOS asks once ("Change to Always Allow"); after that only the
+    // Settings app changes the answer, and this reports what it is.
+    await AsyncStorage.setItem(WISH_KEY, '1').catch(() => {});
+    if ((await requestAlwaysLocation()) && (await setBackgroundLocationEnabled(true)))
+      return 'on';
+    await turnOffBackgroundLocation();
+    return 'declined';
+  }
   if ((await requestAndroidLocationPermission()) !== 'granted') return 'declined';
   // The wish is kept BEFORE Android is asked. From Android 11 the question
   // is a page of the system's settings, and Android may end this app's
@@ -133,7 +145,7 @@ export async function syncBackgroundLocation(
     'locationMode' | 'lastFetchedLatitude' | 'lastFetchedLongitude'
   >,
 ): Promise<void> {
-  if (Platform.OS !== 'android') return;
+  if (Platform.OS !== 'android' && Platform.OS !== 'ios') return;
   const follows = s.locationMode !== 'manual';
   if (
     follows &&
@@ -254,4 +266,17 @@ export async function locationMovedTask(
     quiet('location/backgroundLocation', quietError);
     return 'failed';
   }
+}
+
+/**
+ * iOS has no headless task: the app itself is woken (or started) for a
+ * move, and this listens for it — from the app's entry, before any screen.
+ * The same task runs; iOS is given its background time back when it ends.
+ */
+export function startBackgroundMoveListener(): () => void {
+  return onBackgroundMove((position, done) => {
+    locationMovedTask(position)
+      .catch(() => 'failed' as const)
+      .then(done);
+  });
 }

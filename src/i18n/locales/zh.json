@@ -585,7 +585,11 @@
     "backgroundLocationHelp": "可选。出行时，礼拜提醒和小组件无需打开应用即可切换到新地点。它不会跟踪您：只有当手机移动了很远，或网络所在国家或时区发生变化时才会查看，因此几乎不耗电，发送的内容也不会比应用打开时更多。不开启时，您的位置会在打开应用时更新。",
     "backgroundLocationAskTitle": "后台位置",
     "backgroundLocationAsk": "为了在您出行时切换礼拜提醒和小组件，Mihrab 需要在应用关闭时读取您的位置。Android 会请您允许“始终”访问位置。\n\n这是可选的。它只用于让礼拜时间与您所在的地点保持一致，不开启 Mihrab 也能正常使用。",
-    "backgroundLocationDenied": "Android 尚未允许“始终”访问位置，因此此项已关闭。您可以在 Mihrab 的 Android 设置中，通过 权限 → 位置 来允许。"
+    "backgroundLocationDenied": "Android 尚未允许“始终”访问位置，因此此项已关闭。您可以在 Mihrab 的 Android 设置中，通过 权限 → 位置 来允许。",
+    "previewTag": "预览",
+    "backgroundLocationHelpIos": "可选，在 iPhone 上尚为预览功能。出行时，礼拜提醒和小组件无需打开应用即可切换到新地点。它不会跟踪您：只有当手机移动了很远时，iOS 才会唤醒 Mihrab，因此几乎不耗电，发送的内容也不会比应用打开时更多。不开启时，您的位置会在打开应用时更新。",
+    "backgroundLocationAskIos": "为了在您出行时切换礼拜提醒和小组件，Mihrab 需要在应用关闭时读取您的位置。iOS 会请您将位置访问权限改为“始终允许”。\n\n这是可选的。它只用于让礼拜时间与您所在的地点保持一致，不开启 Mihrab 也能正常使用。",
+    "backgroundLocationDeniedIos": "iOS 尚未允许“始终”访问位置，因此此项已关闭。您可以在“设置”应用中，通过 Mihrab → 位置 来允许。"
   },
   "locationSetup": {
     "headline": "设置您的位置",

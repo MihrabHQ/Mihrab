@@ -586,7 +586,11 @@
     "backgroundLocationHelp": "Facultatif. Quand vous voyagez, vos alertes de prière et vos widgets passent au nouveau lieu sans ouvrir l’app. Elle ne vous suit pas : elle ne regarde que lorsque votre téléphone s’est beaucoup déplacé ou a changé de pays de réseau ou de fuseau horaire ; la batterie est à peine sollicitée, et rien de plus n’est envoyé que lorsque l’app est ouverte. Sans cela, votre position est mise à jour à l’ouverture de l’app.",
     "backgroundLocationAskTitle": "Position en arrière-plan",
     "backgroundLocationAsk": "Pour déplacer vos alertes de prière et vos widgets quand vous voyagez, Mihrab doit lire votre position lorsque l’app est fermée. Android vous demandera d’autoriser l’accès à la position « toujours ».\n\nC’est facultatif. Cela sert uniquement à garder vos horaires de prière sur le lieu où vous êtes, et Mihrab fonctionne sans.",
-    "backgroundLocationDenied": "Android n’a pas autorisé l’accès à la position « toujours », donc ceci est désactivé. Vous pouvez l’autoriser dans les réglages Android de Mihrab, sous Autorisations → Position."
+    "backgroundLocationDenied": "Android n’a pas autorisé l’accès à la position « toujours », donc ceci est désactivé. Vous pouvez l’autoriser dans les réglages Android de Mihrab, sous Autorisations → Position.",
+    "previewTag": "Aperçu",
+    "backgroundLocationHelpIos": "Facultatif, et en aperçu sur iPhone. Quand vous voyagez, vos alertes de prière et vos widgets passent au nouveau lieu sans ouvrir l’app. Elle ne vous suit pas : iOS ne réveille Mihrab que lorsque votre téléphone s’est beaucoup déplacé ; la batterie est à peine sollicitée, et rien de plus n’est envoyé que lorsque l’app est ouverte. Sans cela, votre position est mise à jour à l’ouverture de l’app.",
+    "backgroundLocationAskIos": "Pour déplacer vos alertes de prière et vos widgets quand vous voyagez, Mihrab doit lire votre position lorsque l’app est fermée. iOS vous demandera de passer l’accès à la position sur « Toujours autoriser ».\n\nC’est facultatif. Cela sert uniquement à garder vos horaires de prière sur le lieu où vous êtes, et Mihrab fonctionne sans.",
+    "backgroundLocationDeniedIos": "iOS n’a pas autorisé l’accès à la position « Toujours », donc ceci est désactivé. Vous pouvez l’autoriser dans l’app Réglages, sous Mihrab → Position."
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",

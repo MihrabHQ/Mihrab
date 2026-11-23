@@ -39,6 +39,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     reactNativeDelegate = delegate
     reactNativeFactory = factory
 
+    // "My location" kept up while the app is closed (optional): iOS may be
+    // starting the app for a change of place, and the location manager has
+    // to be there, with its delegate, to be told (BackgroundLocation.swift).
+    MihrabBackgroundLocation.shared.resume()
+
     // Register the Live Activity background-refresh task (local rollover, no
     // server). MUST run before launch finishes. No-op when no activity exists.
     LiveActivityRefresher.registerTask()
