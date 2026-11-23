@@ -28,6 +28,16 @@ import UIKit
  the same code as when the app is opened. At most once in half an hour for
  the same destination. A walk across town is not a move.
 
+ ON THE MAC (a preview as well). macOS has neither service for an app,
+ and never starts a quit one for a move. But a Mac app keeps running with
+ its window closed (the React tree lives on: `SceneDelegate`), so while it
+ runs it asks macOS for positions directly — at the accuracy of a few
+ kilometres, which a Mac answers from the Wi-Fi networks around it, and
+ only when it has moved ten kilometres or more (`distanceFilter`). The same
+ `consider` decides what is a move. A new time zone needs nothing here:
+ the app delegate starts the JavaScript again, and Today looks for the
+ position as at any start.
+
  The store is separate from the React Native module on purpose: iOS may
  start the app for a change before any JavaScript exists, and the location
  manager must be there, with its delegate, when it does (`resume()` from
@@ -59,14 +69,21 @@ final class MihrabBackgroundLocation: NSObject, CLLocationManagerDelegate {
     static let handoffLng = "mihrab.bgLocation.handoffLng"
   }
 
-  /// iPhone and iPad only: the Mac has no significant-change service.
+  /// iPhone and iPad: the significant-change service. The Mac: positions
+  /// while the app runs (see the top of this file).
   var offered: Bool {
     #if targetEnvironment(macCatalyst)
-    return false
+    return CLLocationManager.locationServicesEnabled()
     #else
     return CLLocationManager.significantLocationChangeMonitoringAvailable()
     #endif
   }
+
+  #if targetEnvironment(macCatalyst)
+  /// How far the Mac must move before macOS says so. Under `moveMeters`,
+  /// so a move of twenty is never missed for being reported short of it.
+  static let macDistanceFilter: CLLocationDistance = 10_000
+  #endif
 
   var enabled: Bool { defaults.bool(forKey: Key.enabled) }
 
@@ -92,6 +109,16 @@ final class MihrabBackgroundLocation: NSObject, CLLocationManagerDelegate {
   private func apply() {
     guard offered else { return }
     let m = locationManager()
+    #if targetEnvironment(macCatalyst)
+    // macOS has one level of permission: allowed is "Always".
+    if enabled && m.authorizationStatus == .authorizedAlways {
+      m.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+      m.distanceFilter = MihrabBackgroundLocation.macDistanceFilter
+      m.startUpdatingLocation()
+    } else {
+      m.stopUpdatingLocation()
+    }
+    #else
     if enabled && m.authorizationStatus == .authorizedAlways {
       m.startMonitoringSignificantLocationChanges()
       m.startMonitoringVisits()
@@ -99,6 +126,7 @@ final class MihrabBackgroundLocation: NSObject, CLLocationManagerDelegate {
       m.stopMonitoringSignificantLocationChanges()
       m.stopMonitoringVisits()
     }
+    #endif
   }
 
   func setEnabled(_ on: Bool) {

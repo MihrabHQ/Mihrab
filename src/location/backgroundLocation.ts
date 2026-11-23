@@ -29,6 +29,7 @@ import { AppState, PermissionsAndroid, Platform } from 'react-native';
 import {
   backgroundLocationStatus,
   onBackgroundMove,
+  probeBackgroundPosition,
   requestAlwaysLocation,
   setBackgroundLocationEnabled,
   setBackgroundPlace,
@@ -111,8 +112,18 @@ const BACKGROUND = 'android.permission.ACCESS_BACKGROUND_LOCATION';
 export async function turnOnBackgroundLocation(): Promise<
   'on' | 'declined' | 'unavailable'
 > {
-  if (Platform.OS !== 'android' && Platform.OS !== 'ios') return 'unavailable';
+  if (Platform.OS !== 'android' && Platform.OS !== 'ios' && Platform.OS !== 'web') return 'unavailable';
   if (!(await backgroundLocationStatus()).offered) return 'unavailable';
+  if (Platform.OS === 'web') {
+    // The desktop: no question of the system's to ask. A computer that
+    // gives no position (no location service, or apps not allowed it) is
+    // told now, not after the journey.
+    if (!(await probeBackgroundPosition())) return 'declined';
+    await AsyncStorage.setItem(WISH_KEY, '1').catch(() => {});
+    if (await setBackgroundLocationEnabled(true)) return 'on';
+    await turnOffBackgroundLocation();
+    return 'declined';
+  }
   if (Platform.OS === 'ios') {
     // iOS asks once ("Change to Always Allow"); after that only the
     // Settings app changes the answer, and this reports what it is.
@@ -169,7 +180,7 @@ export async function syncBackgroundLocation(
     'locationMode' | 'lastFetchedLatitude' | 'lastFetchedLongitude'
   >,
 ): Promise<void> {
-  if (Platform.OS !== 'android' && Platform.OS !== 'ios') return;
+  if (Platform.OS !== 'android' && Platform.OS !== 'ios' && Platform.OS !== 'web') return;
   const follows = s.locationMode !== 'manual';
   if (
     follows &&
@@ -345,6 +356,8 @@ export async function locationMovedTask(
  * iOS has no headless task: the app itself is woken (or started) for a
  * move, and this listens for it — from the app's entry, before any screen.
  * The same task runs; iOS is given its background time back when it ends.
+ * The Mac (running, its window open or closed) and the desktop app (in the
+ * tray) hand their moves over the same way.
  */
 export function startBackgroundMoveListener(): () => void {
   return onBackgroundMove((position, done) => {

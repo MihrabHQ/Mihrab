@@ -23,6 +23,7 @@ import {
   SystemClock,
 } from './basics';
 import { SyncFolder } from './syncFolder';
+import { BackgroundLocation } from './backgroundLocation';
 import { WordPlayer } from './wordPlayer';
 
 Object.assign(NativeModules, {
@@ -38,6 +39,9 @@ Object.assign(NativeModules, {
   // Mihrab Web has no folders to sync through: without the module the app
   // offers no sync at all (`hasFolderPicker`), rather than a page that fails.
   ...(desktop()?.syncFolder ? { SyncFolder } : null),
+  // "Update my location in the background": the desktop app only — Mihrab
+  // Web is not running when its tab is closed (`electron/moveHints.js`).
+  ...(desktop()?.location ? { BackgroundLocation } : null),
   SystemClock,
   // The word reader's player (hold a word on the page to hear it).
   WordPlayer,

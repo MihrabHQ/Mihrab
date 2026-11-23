@@ -592,7 +592,12 @@
     "previewTag": "预览",
     "backgroundLocationHelpIos": "可选，在 iPhone 上尚为预览功能。出行时，礼拜提醒和小组件无需打开应用即可切换到新地点。它不会跟踪您：当手机移动了很远或到达某个地方时，由 iOS 自己通知 Mihrab，Mihrab 不会再请求别的，因此几乎不耗电，发送的内容也不会比应用打开时更多。不开启时，您的位置会在打开应用时更新。",
     "backgroundLocationAskIos": "为了在您出行时切换礼拜提醒和小组件，Mihrab 需要在应用关闭时读取您的位置。iOS 会请您将位置访问权限改为“始终允许”。\n\n这是可选的。它只用于让礼拜时间与您所在的地点保持一致，不开启 Mihrab 也能正常使用。",
-    "backgroundLocationDeniedIos": "iOS 尚未允许“始终”访问位置，因此此项已关闭。您可以在“设置”应用中，通过 Mihrab → 位置 来允许。"
+    "backgroundLocationDeniedIos": "iOS 尚未允许“始终”访问位置，因此此项已关闭。您可以在“设置”应用中，通过 Mihrab → 位置 来允许。",
+    "backgroundLocationHelpMac": "可选，在 Mac 上尚为预览功能。带着 Mac 出行时，礼拜提醒和小组件无需打开窗口即可切换到新地点：只要 Mihrab 在运行（窗口打开或关闭均可），当这台 Mac 移动了十公里或更远时，macOS 会根据周围的 Wi-Fi 网络判断并通知它。Mihrab 完全退出时则不会。发送的内容不会比应用打开时更多。不开启时，您的位置会在打开应用时更新。",
+    "backgroundLocationAskMac": "为了在出行时让礼拜提醒和小组件随您切换，Mihrab 会在窗口关闭、应用仍在运行时读取这台 Mac 的位置。macOS 可能会询问是否允许 Mihrab 使用您的位置。\n\n这是可选的。它只用于让礼拜时间保持在您所在的地点，没有它 Mihrab 也能正常使用。",
+    "backgroundLocationDeniedMac": "macOS 尚未允许 Mihrab 使用您的位置，因此此项已关闭。您可以在“系统设置”中，通过 隐私与安全性 → 定位服务 来允许。",
+    "backgroundLocationHelpDesktop": "可选，在电脑上尚为预览功能。带着电脑出行时，礼拜提醒无需打开窗口即可切换到新地点：只要 Mihrab 在运行（在窗口中或在托盘中），当电脑从睡眠中唤醒、解锁、连接到其他网络或更换时区时，它会重新查找自己的位置。Mihrab 完全退出时则不会。发送的内容不会比应用打开时更多。不开启时，您的位置会在打开窗口时更新。",
+    "backgroundLocationDeniedDesktop": "这台电脑没有向 Mihrab 提供位置，因此此项已关闭。在 Windows 上，请在“设置”中通过 隐私和安全性 → 位置 → 允许桌面应用访问你的位置 来允许。许多 Linux 电脑没有定位服务；在那里请直接在 Mihrab 中选择您的地点。"
   },
   "locationSetup": {
     "headline": "设置您的位置",

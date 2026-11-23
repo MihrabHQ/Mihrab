@@ -1,9 +1,10 @@
 /**
  * The native side of "My location kept up while the app is closed":
  * Android's (android/…/BackgroundLocation.kt) and the iPhone's
- * (ios/PrayerApp/BackgroundLocation.swift, a preview), under one name and
- * the same calls. Absent on the Mac and the desktop, where every call
- * answers "not offered".
+ * (ios/PrayerApp/BackgroundLocation.swift, a preview — the Mac's too), and
+ * the desktop app's (desktop/web/native/backgroundLocation.js, a preview),
+ * under one name and the same calls. Absent in Mihrab Web, where every
+ * call answers "not offered".
  */
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
@@ -21,8 +22,10 @@ type Native = {
   setEnabled?: (on: boolean) => Promise<boolean>;
   setPlace?: (latitude: number, longitude: number) => void;
   confirmPlace?: () => void;
-  // iOS only.
+  // iOS and the Mac.
   requestAlways?: () => Promise<boolean>;
+  // The desktop: whether the computer gives a position at all.
+  probe?: () => Promise<boolean>;
   takePending?: () => Promise<MovedPosition | null>;
   finish?: () => void;
 };
@@ -34,7 +37,7 @@ export type MovedPosition = {
 };
 
 const native: Native | undefined =
-  Platform.OS === 'android' || Platform.OS === 'ios'
+  Platform.OS === 'android' || Platform.OS === 'ios' || Platform.OS === 'web'
     ? (NativeModules as Record<string, Native | undefined>).BackgroundLocation
     : undefined;
 
@@ -99,6 +102,15 @@ export function confirmBackgroundPlace(): void {
   }
 }
 
+/** The desktop: true when the computer gives a position (asked before turning it on). */
+export async function probeBackgroundPosition(): Promise<boolean> {
+  try {
+    return (await native?.probe?.()) === true;
+  } catch {
+    return false;
+  }
+}
+
 /** iOS: ask for "Always". True when iOS allows it afterwards. */
 export async function requestAlwaysLocation(): Promise<boolean> {
   try {
@@ -116,7 +128,9 @@ export async function requestAlwaysLocation(): Promise<boolean> {
 export function onBackgroundMove(
   handle: (position: MovedPosition, done: () => void) => void,
 ): () => void {
-  if (Platform.OS !== 'ios' || !native) return () => {};
+  // Android runs a headless task instead; iOS, the Mac and the desktop
+  // hand the move to the running app.
+  if ((Platform.OS !== 'ios' && Platform.OS !== 'web') || !native) return () => {};
   const done = () => {
     try {
       native.finish?.();

@@ -30,6 +30,7 @@ const fsIpc = require('./fsIpc');
 const notifications = require('./notifications');
 const services = require('./services');
 const background = require('./background');
+const moveHints = require('./moveHints');
 
 let bg = null;
 const { readable } = require('./paths');
@@ -199,6 +200,7 @@ function registerIpc() {
   fsIpc.register();
   notifications.register(() => win);
   services.register(() => win);
+  moveHints.register(() => win);
 
   const info = () => ({
     version: app.getVersion(),

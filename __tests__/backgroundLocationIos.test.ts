@@ -9,6 +9,9 @@ import path from 'path';
 const root = path.join(__dirname, '..');
 const read = (...p: string[]) => readFileSync(path.join(root, ...p), 'utf8');
 const swift = read('ios/PrayerApp/BackgroundLocation.swift');
+// The iPhone's half of apply(): what is not the Mac's.
+const applyFn = swift.slice(swift.indexOf('private func apply()'), swift.indexOf('func setEnabled('));
+const iphoneApply = applyFn.slice(applyFn.indexOf('#else'), applyFn.indexOf('#endif'));
 
 describe('background location on the iPhone (preview)', () => {
   it('uses iOS’s two low-power services and nothing else', () => {
@@ -17,7 +20,10 @@ describe('background location on the iPhone (preview)', () => {
     expect(swift).toContain('m.startMonitoringVisits()');
     expect(swift).toMatch(/guard visit\.departureDate == Date\.distantFuture,/);
     // No continuous updates, no regions, no one-off request: no GPS of its own.
-    expect(swift).not.toMatch(/startUpdatingLocation|requestLocation\(|startMonitoring\(for/);
+    expect(iphoneApply).not.toMatch(/startUpdatingLocation|requestLocation\(|startMonitoring\(for/);
+    expect(swift).not.toMatch(/requestLocation\(|startMonitoring\(for/);
+    // The Mac's positions are asked for in its own branch only.
+    expect(swift.match(/startUpdatingLocation\(\)/g)).toHaveLength(1);
   });
 
   it('the place the app repeats at every launch is not stamped "found now"', () => {
@@ -51,8 +57,11 @@ describe('background location on the iPhone (preview)', () => {
     expect(swift).toMatch(/func endTask\(\) \{\s+DispatchQueue\.main\.async \{\s+self\.pending = nil/);
   });
 
-  it('is not offered on the Mac', () => {
-    expect(swift).toMatch(/#if targetEnvironment\(macCatalyst\)\s+return false/);
+  it('on the Mac: positions while the app runs, a few kilometres coarse, ten kilometres apart', () => {
+    expect(swift).toMatch(/#if targetEnvironment\(macCatalyst\)\s+return CLLocationManager\.locationServicesEnabled\(\)/);
+    expect(applyFn).toMatch(/#if targetEnvironment\(macCatalyst\)[\s\S]{0,200}if enabled && m\.authorizationStatus == \.authorizedAlways \{\s+m\.desiredAccuracy = kCLLocationAccuracyThreeKilometers\s+m\.distanceFilter = MihrabBackgroundLocation\.macDistanceFilter\s+m\.startUpdatingLocation\(\)\s+\} else \{\s+m\.stopUpdatingLocation\(\)/);
+    // Under the twenty that make a move: a move is never reported short of it.
+    expect(swift).toMatch(/macDistanceFilter: CLLocationDistance = 10_000/);
   });
 
   it('is resumed at launch, for the launches iOS makes for a move', () => {
@@ -73,6 +82,8 @@ describe('background location on the iPhone (preview)', () => {
   it('says "Preview" on the row', () => {
     const card = read('src/screens/settings/BackgroundLocationCard.tsx');
     expect(card).toMatch(/settings\.previewTag/);
-    expect(card).toMatch(/ios \? 'settings\.backgroundLocationHelpIos'/);
+    expect(card).toMatch(/const KEY_SUFFIX: Record<Words, string> = \{ android: '', ios: 'Ios', mac: 'Mac', desktop: 'Desktop' \}/);
+    expect(card).toMatch(/key\('backgroundLocationHelp'\)/);
+    expect(card).toMatch(/const preview = words !== 'android'/);
   });
 });

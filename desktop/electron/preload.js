@@ -65,6 +65,16 @@ contextBridge.exposeInMainWorld('mihrabDesktop', {
   power: {
     keepAwake: on => ipcRenderer.invoke('power:keepAwake', on),
   },
+  // "Update my location in the background": the main process says when the
+  // computer may have been moved (moveHints.js).
+  location: {
+    setWatching: on => ipcRenderer.invoke('location:setWatching', !!on),
+    onHint: fn => {
+      const h = (_e, reason) => fn(String(reason));
+      ipcRenderer.on('location:hint', h);
+      return () => ipcRenderer.removeListener('location:hint', h);
+    },
+  },
   syncFolder: {
     pick: () => ipcRenderer.invoke('sync:pick'),
     hasAccess: h => ipcRenderer.invoke('sync:hasAccess', h),
