@@ -3,3 +3,4 @@
 • Hifz revision in your own riwayah, with a mark for each ayah.
 • Warsh tajwīd colours corrected.
 • Android: default-sound alerts ring again, or pick one of the phone's alarm sounds.
+• Tunisia: Fajr and Isha stay right from 1 January 2027.

@@ -71,7 +71,7 @@ sudo pacman -Syu mihrab</pre>
 <!-- accuracy:start -->
 <div align="center">
 
-<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 77,661,385 times off the printed minute"></a>
+<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 78,062,849 times off the printed minute"></a>
 
 Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)**, the authorities’ own methods checked against every time they have published.
 
@@ -79,7 +79,7 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 
 | Matches the published timetable of | Times checked | Off the printed minute |
 |---|---:|---:|
-| Islamiska Förbundet (Sweden), and Diyanet’s tables for Sweden | 1,459,236 | **0** |
+| Islamiska Förbundet (Sweden), and Diyanet’s tables for Sweden | 1,859,790 | **0** |
 | Diyanet, Türkiye and worldwide | 71,630,078 | **0** |
 | Morocco’s Ministry of Habous and Islamic Affairs | 94,350 | **0** |
 | Algeria’s Ministry of Religious Affairs and Wakfs | 101,184 | **0** |
@@ -99,7 +99,7 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 | United Arab Emirates: General Authority of Islamic Affairs, Endowments and Zakat | 179,580 | **0** |
 | Iran: Institute of Geophysics, University of Tehran | 90,520 | **0** |
 | United Kingdom: Wifaqul Ulama (Britain) | 350,400 | **0** |
-| Tunisia: Institut National de la Météorologie | 94,855 | **0** |
+| Tunisia: Institut National de la Météorologie | 95,765 | **0** |
 
 <sub>Last checked 17 November 2026. Generated from mihrab-methods’ <code>certification.json</code> by <code>scripts/build-copy.js</code>. Mihrab is independent and not affiliated with any of these authorities.</sub>
 <!-- accuracy:end -->

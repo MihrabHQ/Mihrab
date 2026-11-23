@@ -35,6 +35,10 @@ import {
   until,
 } from '../fixtures/scenarioHarness';
 const EncryptedStorageMock = require('react-native-encrypted-storage');
+// The Sweden list this build carries, whatever its size today: read off the
+// bundled summary, so a renewed list (an entry more) does not fail these.
+const SWEDEN_LIST: { to: string; entries: number } =
+  require('../../src/providers/data/correctionsSummaries.json').sweden;
 
 jest.setTimeout(30_000);
 const NOW = new Date('2026-10-17T10:00:00Z');
@@ -361,7 +365,7 @@ describe('from 2.32', () => {
           STOCKHOLM,
           'auto',
           0,
-        )}||cl=2027-12-31#270`]: entry(
+        )}||cl=${SWEDEN_LIST.to}#${SWEDEN_LIST.entries}`]: entry(
           'islamiska_forbundet',
           STOCKHOLM,
           'auto',
@@ -419,7 +423,7 @@ describe('from 2.32', () => {
       const blob = await readCacheBlob();
       const keys = Object.keys(blob!.caches);
       expect(keys).toContain(`${key231('aladhan', BERLIN, 3, 0)}|`);
-      expect(keys.some(k => k.includes('cl=2027-12-31#270'))).toBe(true);
+      expect(keys.some(k => k.includes(`cl=${SWEDEN_LIST.to}#${SWEDEN_LIST.entries}`))).toBe(true);
       expect(keys.some(k => k.includes('cl=2026-12-31#200'))).toBe(false);
       probe.unmount();
     },

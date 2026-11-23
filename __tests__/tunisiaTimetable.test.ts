@@ -14,6 +14,7 @@ const minutes = (hhmm: string) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.sl
 const TUNIS = { latitude: 36.8, longitude: 10.183 };
 const LE_KEF = { latitude: 36.184, longitude: 8.715 };
 const KAIROUAN = { latitude: 35.677, longitude: 10.097 };
+const AIN_DRAHAM = { latitude: 36.776, longitude: 8.686 };
 
 describe('Tunisia — Institut National de la Météorologie', () => {
   it('lists the twenty-four governorates’ seats and two more', () => {
@@ -40,6 +41,12 @@ describe('Tunisia — Institut National de la Météorologie', () => {
     ['Kairouan', KAIROUAN, new Date(2026, 10, 12, 12), ['05:24', '12:11', '14:54', '17:18', '18:43']],
     // through 2025 the Institute lowered its Fajr and Isha too: two minutes either side
     ['Kairouan', KAIROUAN, new Date(2025, 5, 21, 12), ['03:13', '12:28', '16:10', '19:42', '21:30']],
+    // From 2027 no place's Fajr and Isha have the allowance (revision 3): the
+    // last day of 2026 with it, the first of 2027 without — Fajr four
+    // minutes later, Isha four earlier, the rest as they run.
+    ['Le Kef', LE_KEF, new Date(2026, 11, 31, 12), ['06:00', '12:35', '15:02', '17:27', '18:57']],
+    ['Le Kef', LE_KEF, new Date(2027, 0, 1, 12), ['06:04', '12:35', '15:03', '17:28', '18:53']],
+    ['Aïn Draham', AIN_DRAHAM, new Date(2027, 0, 7, 12), ['06:06', '12:38', '15:06', '17:31', '18:57']],
   ] as const)('gives %s the day as the Institute does', async (_name, at, date, five) => {
     const r = await getTunisiaTimes({ ...at, date, school: 0 });
     expect(r.source).toBe('local');
@@ -50,6 +57,17 @@ describe('Tunisia — Institut National de la Météorologie', () => {
     const sunset = minutes(t.Maghrib) - 2;
     const noon = minutes(t.Dhuhr) - 7;
     expect(Math.abs(noon - minutes(t.Sunrise) - (sunset - noon))).toBeLessThanOrEqual(2);
+  });
+
+  it('beyond the days the Institute has given, 2027 is still a plain 18° at a high place', async () => {
+    // Midsummer at Le Kef, 0.88° of horizon: with the allowance (2026) Fajr
+    // is earlier and Isha later by about five minutes each; sunset keeps it.
+    const with_ = (await getTunisiaTimes({ ...LE_KEF, date: new Date(2026, 5, 21, 12), school: 0 })).timings;
+    const without = (await getTunisiaTimes({ ...LE_KEF, date: new Date(2027, 5, 21, 12), school: 0 })).timings;
+    expect(minutes(without.Fajr) - minutes(with_.Fajr)).toBeGreaterThanOrEqual(4);
+    expect(minutes(with_.Isha) - minutes(without.Isha)).toBeGreaterThanOrEqual(4);
+    expect(Math.abs(minutes(without.Maghrib) - minutes(with_.Maghrib))).toBeLessThanOrEqual(1);
+    expect(Math.abs(minutes(without.Dhuhr) - minutes(with_.Dhuhr))).toBeLessThanOrEqual(1);
   });
 
   it('a Hanafi reader’s Asr is the method’s at two shadow lengths, later than the Institute’s', async () => {

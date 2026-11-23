@@ -7,3 +7,5 @@
 • Android: alerts on "Default notification", Sunrise and the reminders make a sound again.
 • Android: an alert can use one of the phone's own alarm sounds instead of an adhan.
 • Android: Arabic keeps its line spacing with a larger system text size.
+• Tunisia: from 1 January 2027 the Institut National de la Météorologie no longer adjusts Fajr and Isha for a town's height; the app follows, so Fajr and Isha stay on its minute in the high towns (Le Kef, Kasserine, Aïn Draham), where they would have been up to five minutes off. The calculation is closer in every year too.
+• Sweden: checked against Islamiska Förbundet's own 2027 timetable, at all 108 towns.

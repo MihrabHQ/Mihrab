@@ -3,3 +3,4 @@
 • Hifz-repetition i din egen riwaya, med en markering per vers.
 • Warsh-tajwidfärgerna rättade.
 • Android: aviseringar med standardljud hörs igen, eller välj ett av telefonens larmljud.
+• Tunisien: Fajr och Isha stämmer även från 1 januari 2027.

@@ -7,3 +7,5 @@
 • Android: aviseringar med ”Standardavisering”, soluppgången och påminnelserna hörs igen.
 • Android: en avisering kan använda ett av telefonens egna larmljud i stället för en adhan.
 • Android: arabisk text behåller sitt radavstånd med större systemtext.
+• Tunisien: från 1 januari 2027 justerar Institut National de la Météorologie inte längre Fajr och Isha efter ortens höjd; appen följer med, så Fajr och Isha ligger kvar på dess minut i de högt belägna städerna (Le Kef, Kasserine, Aïn Draham), där de annars hade hamnat upp till fem minuter fel. Beräkningen är också närmare alla år.
+• Sverige: kontrollerad mot Islamiska Förbundets egen tidtabell för 2027, på alla 108 orter.

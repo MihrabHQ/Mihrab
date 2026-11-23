@@ -6,16 +6,16 @@
     "checks": [
       {
         "tables": "Sweden — Islamiska Förbundet’s tables",
-        "places": 107,
-        "times": 65442,
+        "places": 108,
+        "times": 465996,
         "off": 0,
-        "offWithoutCorrections": 20,
-        "from": "2026-10-11",
-        "to": "2027-12-21",
+        "offWithoutCorrections": 83,
+        "from": "2026-01-01",
+        "to": "2027-12-28",
         "setAside": {
           "misplaced": [],
-          "sourceFaults": 35852,
-          "copiedRows": 710
+          "sourceFaults": 850,
+          "copiedRows": 0
         }
       },
       {
@@ -31,8 +31,8 @@
     "corrections": {
       "from": "2024-01-01",
       "to": "2027-12-31",
-      "entries": 270,
-      "sha256": "173d7145b5ec917882f8ac9890dd1fa5f3143bd714eb540482861bf8a6bac660"
+      "entries": 271,
+      "sha256": "2065826caf4147110a1b481866c35de9289da57b18ad3716785cae3df990cfd3"
     },
     "revision": 1
   },
@@ -475,25 +475,25 @@
   },
   "tunisia": {
     "certified": true,
-    "checkedAt": "2026-11-17",
+    "checkedAt": "2026-11-23",
     "places": 26,
     "checks": [
       {
         "tables": "Tunisia — the Institute’s times",
         "places": 26,
-        "times": 94855,
+        "times": 95765,
         "off": 0,
-        "offWithoutCorrections": 2156,
+        "offWithoutCorrections": 986,
         "from": "2025-01-01",
-        "to": "2026-12-31"
+        "to": "2027-01-07"
       }
     ],
     "corrections": {
       "from": "2025-01-01",
-      "to": "2026-12-31",
-      "entries": 2156,
-      "sha256": "451bb6b2913851fd7e6874b00b7ec1b5040d173c19052203ef972ab141b7e73b"
+      "to": "2027-01-07",
+      "entries": 986,
+      "sha256": "f37eac5ea83ec666c6f9163b26c7a4bd25bc4c1ca47ff57dc6b908de6cb60242"
     },
-    "revision": 2
+    "revision": 3
   }
 }
