@@ -40,6 +40,7 @@ import type {
 } from '../../../notifications/notificationSounds';
 import {
   pickCustomAdhan,
+  pickSystemAlarmSound,
   removeCustomAdhan,
   syncCustomAdhan,
 } from '../../../native/CustomAdhan';
@@ -125,6 +126,23 @@ export function NotificationSettingsScreen() {
       .finally(() => setImportingCustom(false));
   }, [updateSettings]);
 
+  // One of the phone's alarm sounds (#135): the system's own picker, and
+  // what it returns is imported as "Your own adhan", which is selected.
+  const handleImportSystemSound = useCallback(() => {
+    setImportingCustom(true);
+    void pickSystemAlarmSound(t('settings.notificationSoundSystem'))
+      .then(sound => {
+        if (!sound) return; // cancelled: what was there stays
+        setCustomAdhan(sound);
+        updateSettings(chooseAdhanVoice(settingsRef.current, 'custom'));
+      })
+      .catch(() => {
+        // The import failed; whatever was imported before is still there.
+        void syncCustomAdhan().then(setCustomAdhan);
+      })
+      .finally(() => setImportingCustom(false));
+  }, [t, updateSettings]);
+
   const handleRemoveCustom = useCallback(() => {
     void removeCustomAdhan().then(() => {
       void syncCustomAdhan().then(setCustomAdhan);
@@ -179,6 +197,7 @@ export function NotificationSettingsScreen() {
         importingCustom={importingCustom}
         onImportCustom={handleImportCustom}
         onRemoveCustom={handleRemoveCustom}
+        onImportSystemSound={handleImportSystemSound}
       />
       <PreReminderModal
         visible={preReminderModal}

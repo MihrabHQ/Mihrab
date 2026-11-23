@@ -338,6 +338,8 @@
     "notificationSoundCustomImporting": "আমদানি করা হচ্ছে…",
     "notificationSoundCustomRemove": "আপনার আজান সরান",
     "notificationSoundCustomTrimmed": "বিজ্ঞপ্তিতে প্রথম ৩০ সেকেন্ড বাজে; অ্যাপ খোলা থাকলে পুরো রেকর্ডিং বাজে।",
+    "notificationSoundSystem": "এই ফোনের একটি শব্দ",
+    "notificationSoundSystemHelp": "আজানের বদলে ফোনের অ্যালার্মের শব্দগুলোর একটি ব্যবহার করুন। এটি আপনার নিজের আজানের জায়গা নেবে।",
     "versionInstalled": "ইনস্টল করা সংস্করণ: {{version}}",
     "adhanPreviewTitle": "আজান পূর্বরূপ",
     "adhanPreviewBody": "",

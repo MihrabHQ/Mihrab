@@ -338,6 +338,8 @@
     "notificationSoundCustomImporting": "İçe aktarılıyor…",
     "notificationSoundCustomRemove": "Kendi ezanınızı kaldırın",
     "notificationSoundCustomTrimmed": "Bildirimler ilk 30 saniyeyi çalar; uygulama açıkken kaydın tamamı çalar.",
+    "notificationSoundSystem": "Bu telefondan bir ses",
+    "notificationSoundSystemHelp": "Ezan yerine telefonun alarm seslerinden birini kullanın. Kendi ezanınızın yerini alır.",
     "versionInstalled": "Yüklü sürüm: {{version}}",
     "adhanPreviewTitle": "Ezan önizleme",
     "adhanPreviewBody": "",

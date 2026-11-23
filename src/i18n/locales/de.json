@@ -338,6 +338,8 @@
     "notificationSoundCustomImporting": "Wird importiert…",
     "notificationSoundCustomRemove": "Eigenen Adhan entfernen",
     "notificationSoundCustomTrimmed": "Mitteilungen spielen die ersten 30 Sekunden; die vollständige Aufnahme läuft, wenn die App geöffnet ist.",
+    "notificationSoundSystem": "Ein Ton von diesem Telefon",
+    "notificationSoundSystemHelp": "Einen Weckton des Telefons statt eines Adhan verwenden. Er ersetzt Ihren eigenen Adhan.",
     "versionInstalled": "Installierte Version: {{version}}",
     "adhanPreviewTitle": "Adhan-Vorschau",
     "adhanPreviewBody": "",

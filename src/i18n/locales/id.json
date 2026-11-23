@@ -338,6 +338,8 @@
     "notificationSoundCustomImporting": "Mengimpor…",
     "notificationSoundCustomRemove": "Hapus azan Anda",
     "notificationSoundCustomTrimmed": "Notifikasi memutar 30 detik pertama; rekaman penuh diputar saat aplikasi terbuka.",
+    "notificationSoundSystem": "Suara dari ponsel ini",
+    "notificationSoundSystemHelp": "Gunakan salah satu suara alarm ponsel sebagai pengganti azan. Ini menggantikan azan Anda sendiri.",
     "versionInstalled": "Versi terinstal: {{version}}",
     "adhanPreviewTitle": "Pratinjau adzan",
     "adhanPreviewBody": "",

@@ -11,7 +11,10 @@ import {
   type CustomAdhanSound,
   type NotificationSoundId,
 } from '../../notifications/notificationSounds';
-import { CUSTOM_ADHAN_SUPPORTED } from '../../native/CustomAdhan';
+import {
+  CUSTOM_ADHAN_SUPPORTED,
+  SYSTEM_SOUND_SUPPORTED,
+} from '../../native/CustomAdhan';
 import { useSystemNavigationReserve } from '../../navigation/tabBarInset';
 import {
   previewAdhanSound,
@@ -34,7 +37,12 @@ type Props = {
   importingCustom: boolean;
   onImportCustom: () => void;
   onRemoveCustom: () => void;
+  /** Choose one of the phone's alarm sounds instead (Android, #135). */
+  onImportSystemSound?: () => void;
 };
+
+/** The row that opens the phone's own sound picker; not a sound of its own. */
+const SYSTEM_SOUND_ROW = '__system_sound__';
 
 export const SoundPickerModal = memo(function SoundPickerModal({
   visible,
@@ -48,6 +56,7 @@ export const SoundPickerModal = memo(function SoundPickerModal({
   importingCustom,
   onImportCustom,
   onRemoveCustom,
+  onImportSystemSound,
 }: Props) {
   const { t } = useTranslation();
   const sheetPad = useSheetPadding();
@@ -62,6 +71,14 @@ export const SoundPickerModal = memo(function SoundPickerModal({
   const options = NOTIFICATION_SOUND_OPTIONS.filter(
     option => option.id !== 'default' && (CUSTOM_ADHAN_SUPPORTED || option.id !== 'custom'),
   );
+  // Under the imported sound, a way to fill it from the phone's alarm
+  // sounds rather than a file (#135). Always a button: what it picks
+  // becomes "Your own adhan", named after the sound, and replaces it.
+  type Row = (typeof options)[number] | { id: typeof SYSTEM_SOUND_ROW };
+  const rows: Row[] =
+    SYSTEM_SOUND_SUPPORTED && onImportSystemSound
+      ? [...options, { id: SYSTEM_SOUND_ROW }]
+      : options;
 
   const handleClose = () => {
     stopAdhanPreview().catch(() => {});
@@ -100,10 +117,41 @@ export const SoundPickerModal = memo(function SoundPickerModal({
           <Text style={[modalStyles.title, { color: palette.text }]}>
             {t('settings.alertModeAdhan', 'Adhan')}
           </Text>
-          <FlatList
-            data={options}
+          <FlatList<Row>
+            data={rows}
             keyExtractor={item => item.id}
-            renderItem={({ item }) => {
+            renderItem={({ item: row }) => {
+              if (row.id === SYSTEM_SOUND_ROW) {
+                return (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={t('settings.notificationSoundSystem')}
+                    accessibilityHint={t('settings.notificationSoundSystemHelp')}
+                    accessibilityState={{ disabled: importingCustom, busy: importingCustom }}
+                    style={[modalStyles.row, rowDividerStyle(palette)]}
+                    onPress={() => {
+                      stopAdhanPreview().catch(() => {});
+                      onSetPreviewingId(null);
+                      if (!importingCustom) onImportSystemSound?.();
+                    }}
+                  >
+                    <View style={modalStyles.soundRowContent}>
+                      <View style={modalStyles.soundRowText}>
+                        <Text style={[modalStyles.rowLabel, { color: palette.text }]}>
+                          {t('settings.notificationSoundSystem')}
+                        </Text>
+                        <Text
+                          numberOfLines={2}
+                          style={[modalStyles.rowSub, { color: palette.muted }]}
+                        >
+                          {t('settings.notificationSoundSystemHelp')}
+                        </Text>
+                      </View>
+                    </View>
+                  </Pressable>
+                );
+              }
+              const item = row;
               const label = t(item.labelKey);
               const isPreviewing = previewingId === item.id;
               const isCustom = item.id === 'custom';

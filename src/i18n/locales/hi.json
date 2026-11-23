@@ -338,6 +338,8 @@
     "notificationSoundCustomImporting": "आयात हो रहा है…",
     "notificationSoundCustomRemove": "अपनी अज़ान हटाएँ",
     "notificationSoundCustomTrimmed": "सूचनाएँ पहले 30 सेकंड बजाती हैं; ऐप खुली होने पर पूरी रिकॉर्डिंग बजती है।",
+    "notificationSoundSystem": "इस फ़ोन की कोई आवाज़",
+    "notificationSoundSystemHelp": "अज़ान की जगह फ़ोन की अलार्म आवाज़ों में से कोई एक इस्तेमाल करें। यह आपकी अपनी अज़ान की जगह ले लेगी।",
     "versionInstalled": "स्थापित संस्करण: {{version}}",
     "adhanPreviewTitle": "अज़ान पूर्वावलोकन",
     "adhanPreviewBody": "",

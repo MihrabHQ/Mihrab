@@ -338,6 +338,8 @@
     "notificationSoundCustomImporting": "正在导入…",
     "notificationSoundCustomRemove": "移除自定义宣礼",
     "notificationSoundCustomTrimmed": "通知播放前 30 秒；应用打开时播放完整录音。",
+    "notificationSoundSystem": "本机的声音",
+    "notificationSoundSystemHelp": "使用手机的闹钟铃声代替宣礼。它会替换您自己的宣礼。",
     "versionInstalled": "安装版本：{{version}}",
     "adhanPreviewTitle": "宣礼预览",
     "adhanPreviewBody": "",

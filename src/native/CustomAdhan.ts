@@ -22,6 +22,7 @@ import {
 
 type CustomAdhanNative = {
   pick(): Promise<CustomAdhanSound | null>;
+  pickSystemSound?(title: string | null): Promise<CustomAdhanSound | null>;
   current(): Promise<CustomAdhanSound | null>;
   remove(): Promise<boolean>;
   ensureChannel(channelName: string): Promise<string | null>;
@@ -67,6 +68,21 @@ function normalise(value: unknown): CustomAdhanSound | null {
 export async function pickCustomAdhan(): Promise<CustomAdhanSound | null> {
   if (!native) return null;
   return normalise(await native.pick());
+}
+
+/**
+ * One of the phone's alarm sounds, chosen in the system's own sound picker
+ * and imported like a file (#135). Android only.
+ */
+export const SYSTEM_SOUND_SUPPORTED =
+  Platform.OS === 'android' && typeof native?.pickSystemSound === 'function';
+
+/** Resolves null when the reader cancels; rejects only when the import failed. */
+export async function pickSystemAlarmSound(
+  title: string | null,
+): Promise<CustomAdhanSound | null> {
+  if (!native?.pickSystemSound || Platform.OS !== 'android') return null;
+  return normalise(await native.pickSystemSound(title));
 }
 
 /** The recording currently imported, or null. */

@@ -54,10 +54,16 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
             resultCode: Int,
             data: Intent?,
         ) {
-          if (requestCode != PICK_REQUEST) return
+          if (requestCode != PICK_REQUEST && requestCode != SYSTEM_PICK_REQUEST) return
           val promise = pendingPick ?: return
           pendingPick = null
-          val uri = data?.data
+          val uri =
+              if (requestCode == SYSTEM_PICK_REQUEST) {
+                @Suppress("DEPRECATION")
+                data?.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+              } else {
+                data?.data
+              }
           if (resultCode != Activity.RESULT_OK || uri == null) {
             // A cancelled picker is not an error — it is the user changing
             // their mind, and the caller renders nothing.
@@ -65,7 +71,10 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
             return
           }
           try {
-            promise.resolve(importFrom(uri))
+            promise.resolve(
+                if (requestCode == SYSTEM_PICK_REQUEST) importFrom(uri, systemSoundName(uri))
+                else importFrom(uri),
+            )
           } catch (e: Exception) {
             promise.reject("custom_adhan_import_failed", e.message, e)
           }
@@ -111,6 +120,67 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
       pendingPick = null
       promise.reject("custom_adhan_no_picker", e.message, e)
     }
+  }
+
+  /**
+   * One of the phone's own alarm sounds instead of an adhan (#135: "in some
+   * places we might like to use an alarm instead of Adhan").
+   *
+   * The system's own sound picker, and what it returns is imported exactly
+   * like a file the reader chose: copied into the app's storage and played
+   * through the same channels, the alarm stream and the full-screen alarm
+   * included. Copied rather than pointed at, because a channel's sound is
+   * fixed once made and the system's sound can go away under it (a ROM
+   * update renames them) — a copy cannot. The phone's alarm sounds are
+   * readable by every app, so no permission is asked for.
+   *
+   * Android only: iOS gives an app no way to choose or play the phone's
+   * own sounds.
+   */
+  @ReactMethod
+  fun pickSystemSound(title: String?, promise: Promise) {
+    val activity = reactContext.currentActivity
+    if (activity == null) {
+      promise.reject("custom_adhan_no_activity", "No foreground activity")
+      return
+    }
+    pendingPick?.resolve(null)
+    pendingPick = promise
+    val intent =
+        Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+          putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
+          // A sound, not "the phone's default" (a setting that changes
+          // under the copy) and not silence (that is the Silent alert).
+          putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, false)
+          putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)
+          if (!title.isNullOrBlank()) putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, title)
+        }
+    try {
+      activity.startActivityForResult(intent, SYSTEM_PICK_REQUEST)
+    } catch (e: Exception) {
+      pendingPick = null
+      promise.reject("custom_adhan_no_picker", e.message, e)
+    }
+  }
+
+  /** What the phone calls a sound of its own ("Argon"), with the file's extension. */
+  private fun systemSoundName(uri: Uri): String {
+    val title =
+        try {
+          RingtoneManager.getRingtone(reactContext, uri)?.getTitle(reactContext)
+        } catch (_: Exception) {
+          null
+        }
+    val file = queryDisplayName(uri)
+    val extension =
+        file?.substringAfterLast('.', "")?.takeIf { it.isNotBlank() }
+            ?: when (reactContext.contentResolver.getType(uri)) {
+              "audio/mpeg" -> "mp3"
+              "audio/x-wav", "audio/wav" -> "wav"
+              else -> "ogg"
+            }
+    val base = title?.takeIf { it.isNotBlank() } ?: file?.substringBeforeLast('.') ?: "alarm"
+    return "$base.$extension"
   }
 
   /** The imported adhan, or null when the user has never picked one. */
@@ -324,9 +394,9 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
   private fun contentUriFor(file: File): Uri =
       FileProvider.getUriForFile(reactContext, "${reactContext.packageName}.adhan", file)
 
-  private fun importFrom(uri: Uri): WritableMap {
+  private fun importFrom(uri: Uri, knownName: String? = null): WritableMap {
     val resolver = reactContext.contentResolver
-    val name = queryDisplayName(uri) ?: "adhan"
+    val name = knownName ?: queryDisplayName(uri) ?: "adhan"
     val dir = storageDir()
     dir.mkdirs()
 
@@ -433,6 +503,7 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
     const val SYSTEM_DEFAULT_SOUND = "@default"
 
     private const val PICK_REQUEST = 0xADAA
+    private const val SYSTEM_PICK_REQUEST = 0xADAB
     private const val DIR_NAME = "custom_adhan"
     private const val BUFFER_BYTES = 64 * 1024
 

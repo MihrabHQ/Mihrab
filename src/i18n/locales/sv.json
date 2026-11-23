@@ -338,6 +338,8 @@
     "notificationSoundCustomImporting": "Importerar…",
     "notificationSoundCustomRemove": "Ta bort din adhan",
     "notificationSoundCustomTrimmed": "Aviseringar spelar de första 30 sekunderna; hela inspelningen spelas när appen är öppen.",
+    "notificationSoundSystem": "Ett ljud från telefonen",
+    "notificationSoundSystemHelp": "Använd ett av telefonens alarmljud i stället för en adhan. Det ersätter din egen adhan.",
     "versionInstalled": "Installerad version: {{version}}",
     "adhanPreviewTitle": "Förhandsvisning av adhan",
     "adhanPreviewBody": "",

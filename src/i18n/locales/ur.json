@@ -338,6 +338,8 @@
     "notificationSoundCustomImporting": "درآمد ہو رہی ہے…",
     "notificationSoundCustomRemove": "اپنی اذان ہٹائیں",
     "notificationSoundCustomTrimmed": "اطلاعات پہلے ۳۰ سیکنڈ چلاتی ہیں؛ ایپ کھلی ہو تو مکمل ریکارڈنگ چلتی ہے۔",
+    "notificationSoundSystem": "اس فون کی کوئی آواز",
+    "notificationSoundSystemHelp": "اذان کی جگہ فون کی الارم آوازوں میں سے کوئی ایک استعمال کریں۔ یہ آپ کی اپنی اذان کی جگہ لے لے گی۔",
     "versionInstalled": "انسٹال شدہ ورژن: {{version}}",
     "adhanPreviewTitle": "اذان پیش نظارہ",
     "adhanPreviewBody": "",

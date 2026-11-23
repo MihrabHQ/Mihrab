@@ -348,6 +348,8 @@
     "notificationSoundCustomImporting": "Импорт…",
     "notificationSoundCustomRemove": "Удалить свой азан",
     "notificationSoundCustomTrimmed": "В уведомлениях звучат первые 30 секунд; полная запись воспроизводится, когда приложение открыто.",
+    "notificationSoundSystem": "Звук этого телефона",
+    "notificationSoundSystemHelp": "Использовать один из звуков будильника телефона вместо азана. Он заменит ваш собственный азан.",
     "versionInstalled": "Установленная версия: {{version}}",
     "adhanPreviewTitle": "Предпросмотр азана",
     "adhanPreviewBody": "",

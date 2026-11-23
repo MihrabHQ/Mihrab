@@ -338,6 +338,8 @@
     "notificationSoundCustomImporting": "Importing…",
     "notificationSoundCustomRemove": "Remove your adhan",
     "notificationSoundCustomTrimmed": "Notifications play the first 30 seconds; the full recording plays when the app is open.",
+    "notificationSoundSystem": "A sound from this phone",
+    "notificationSoundSystemHelp": "Use one of the phone’s alarm sounds instead of an adhan. It replaces your own adhan.",
     "versionInstalled": "Installed version: {{version}}",
     "adhanPreviewTitle": "Adhan preview",
     "adhanPreviewBody": "",
