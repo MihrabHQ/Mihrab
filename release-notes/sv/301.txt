@@ -1,0 +1,9 @@
+• ”Min plats” följer med när du reser: den frågar alla platskällor telefonen har, ger inte upp när den första positionen dröjer, och Idag säger när den inte har hittat dig än i stället för att tyst behålla den förra staden.
+• Nytt, valfritt: ”Uppdatera min plats i bakgrunden”, under Inställningar → Plats och i introduktionen. När du reser flyttas dina böneaviseringar och widgetar till platsen där du är utan att appen öppnas. Av tills du slår på det. Android; en förhandsversion på iPhone och iPad, på Mac medan Mihrab körs, och i appen för Windows och Linux.
+• Automatiskt: samma beräkningsmetod med och utan nät, och Sydafrikas egen konvention.
+• Hifz: repetition i Warsh eller Qālūn visar din riwayas egen ordalydelse och tajwidfärger, varje vers på rätt kort. Markera varje vers ”Missade” eller ”Kunde den”, recitera de missade igen, och välj ”Bara arabiska vid repetition” på Hifz-sidan.
+• Warsh-tajwidfärger: rāʾ efter بِـ och لِـ, بِشَرَرٖ, de sex substantiven och de utländska namnen, och badal som läses kort — 214 ord rättade.
+• Duaer → Resa: resedua börjar med de tre takbir, som i Sahih Muslim.
+• Android: aviseringar med ”Standardavisering”, soluppgången och påminnelserna hörs igen.
+• Android: en avisering kan använda ett av telefonens egna larmljud i stället för en adhan.
+• Android: arabisk text behåller sitt radavstånd med större systemtext.

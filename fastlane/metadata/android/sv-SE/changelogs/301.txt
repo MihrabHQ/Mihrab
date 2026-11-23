@@ -1,0 +1,5 @@
+• Min plats följer med när du reser, och Idag säger när den inte har hittat dig än.
+• Nytt, valfritt: ”Uppdatera min plats i bakgrunden” (Inställningar → Plats) flyttar aviseringar och widgetar med dig. Förhandsversion på iPhone, iPad och Mac.
+• Hifz-repetition i din egen riwaya, med en markering per vers.
+• Warsh-tajwidfärgerna rättade.
+• Android: aviseringar med standardljud hörs igen, eller välj ett av telefonens larmljud.

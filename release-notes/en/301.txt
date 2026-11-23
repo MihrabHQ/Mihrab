@@ -1,0 +1,9 @@
+• "My location" follows you when you travel: it asks every location source the phone has, keeps going when the first fix is slow, and Today says when it has not found you yet instead of quietly keeping the last city.
+• New, optional: "Update my location in the background", in Settings → Location and in the walkthrough. When you travel, your prayer alerts and widgets move to the place you are in without the app being opened. Off until you turn it on. Android; a preview on iPhone and iPad, on the Mac while Mihrab is running, and in the Windows and Linux app.
+• Automatic: the same calculation method online and offline, and South Africa's own convention.
+• Hifz: revising in Warsh or Qālūn shows your riwayah's own wording and tajwīd colours, each ayah on its right card. Mark each ayah "Missed it" or "Knew it", recite the missed ones again, and choose "Arabic only while revising" on the Hifz page.
+• Warsh tajwīd colours: the rāʾ after بِـ and لِـ, بِشَرَرٖ, the six nouns and the foreign names, and the badal read short — 214 words corrected.
+• Du'as → Travel: the journey du'a begins with the three takbirs, as in Sahih Muslim.
+• Android: alerts on "Default notification", Sunrise and the reminders make a sound again.
+• Android: an alert can use one of the phone's own alarm sounds instead of an adhan.
+• Android: Arabic keeps its line spacing with a larger system text size.

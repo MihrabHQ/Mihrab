@@ -1,0 +1,5 @@
+• My location follows you when you travel, and Today says when it has not found you yet.
+• New, optional: "Update my location in the background" (Settings → Location) moves alerts and widgets with you. A preview on iPhone, iPad and Mac.
+• Hifz revision in your own riwayah, with a mark for each ayah.
+• Warsh tajwīd colours corrected.
+• Android: default-sound alerts ring again, or pick one of the phone's alarm sounds.
