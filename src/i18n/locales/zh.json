@@ -2764,6 +2764,15 @@
     "undo": "撤销",
     "practiseAhead": "到期前先练习",
     "neededHelpLast": "上次需要提示",
-    "practising": "练习背诵 {{name}}"
+    "practising": "练习背诵 {{name}}",
+    "markMissed": "出错",
+    "markKnew": "记住了",
+    "joinedAbove": "在{{riwayah}}中，这是上方第 {{ayah}} 节的一部分",
+    "hideCompanion": "复习时只显示阿拉伯文",
+    "hideCompanionHelp": "核对后的经文下方不显示译文或经注，让复习专注于背诵。",
+    "missedAgain": "↺ {{count}} 处出错",
+    "missedAgain_one": "↺ {{count}} 处出错",
+    "reciteMissedAgain": "重新背诵出错的 {{count}} 节",
+    "reciteMissedAgain_one": "重新背诵出错的那一节"
   }
 }

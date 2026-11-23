@@ -58,7 +58,8 @@ import { juzCoverage } from '../../quran/hifzProgress';
 import { TOTAL_AYAHS } from '../../quran/ayahIndex';
 import { findPageForAyah } from '../../quran/pages';
 import { SURAHS } from '../../quran/quran';
-import { updateHifz, useQuranPrefs, useQuranHifz } from '../../quran/quranState';
+import { setQuranPrefs, updateHifz, useQuranPrefs, useQuranHifz } from '../../quran/quranState';
+import { SettingsToggleRow } from '../settings/SettingsGroup';
 import { resolveRiwayah } from '../../quran/riwayat';
 import { CheckIcon } from '../../theme/icons';
 import { cardEdgeStyle } from '../../theme/chrome';
@@ -463,6 +464,18 @@ export function HifzScreen() {
             </Pressable>
           ))}
         </View>
+        {/* What a checked ayah shows while revising: the translation and
+            tafsir under it are a prompt the reader may not want (#138). */}
+        <SettingsToggleRow
+          testID="hifz-hide-companion"
+          title={t('hifz.hideCompanion', 'Arabic only while revising')}
+          help={t(
+            'hifz.hideCompanionHelp',
+            'A checked ayah shows no translation or tafsir under it, so the revision stays with the recitation.',
+          )}
+          value={quranPrefs.hifzReviewHideCompanion === true}
+          onValueChange={next => setQuranPrefs({ hifzReviewHideCompanion: next })}
+        />
       </View>
 
       <Modal visible={part !== null} transparent animationType="fade" onRequestClose={() => setPart(null)}>

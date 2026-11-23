@@ -2764,6 +2764,15 @@
     "undo": "पूर्ववत करें",
     "practiseAhead": "तय दिन से पहले अभ्यास करें",
     "neededHelpLast": "पिछली बार मदद चाहिए थी",
-    "practising": "{{name}} ज़बानी अभ्यास"
+    "practising": "{{name}} ज़बानी अभ्यास",
+    "markMissed": "चूक हुई",
+    "markKnew": "याद थी",
+    "joinedAbove": "{{riwayah}} में यह ऊपर की आयत {{ayah}} का हिस्सा है",
+    "hideCompanion": "दोहराते समय सिर्फ़ अरबी",
+    "hideCompanionHelp": "जाँची गई आयत के नीचे अनुवाद या तफ़सीर नहीं दिखती, ताकि दोहराना तिलावत पर ही रहे।",
+    "missedAgain": "↺ {{count}} में चूक",
+    "missedAgain_one": "↺ {{count}} में चूक",
+    "reciteMissedAgain": "चूकी हुई {{count}} आयतें फिर से सुनाएँ",
+    "reciteMissedAgain_one": "चूकी हुई आयत फिर से सुनाएँ"
   }
 }

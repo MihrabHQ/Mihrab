@@ -2863,6 +2863,21 @@
     "overdue_other": "Просрочено на {{count}} дн.",
     "practiseAhead": "Повторить заранее",
     "neededHelpLast": "в прошлый раз нужна была помощь",
-    "practising": "{{name}} наизусть: тренировка"
+    "practising": "{{name}} наизусть: тренировка",
+    "markMissed": "Ошибся",
+    "markKnew": "Помню",
+    "joinedAbove": "В {{riwayah}} это часть аята {{ayah}} выше",
+    "hideCompanion": "Только арабский при повторении",
+    "hideCompanionHelp": "Под проверенным аятом не показываются перевод и тафсир, чтобы повторение оставалось чтением наизусть.",
+    "missedAgain": "↺ {{count}} с ошибкой",
+    "missedAgain_one": "↺ {{count}} с ошибкой",
+    "missedAgain_few": "↺ {{count}} с ошибкой",
+    "missedAgain_many": "↺ {{count}} с ошибкой",
+    "missedAgain_other": "↺ {{count}} с ошибкой",
+    "reciteMissedAgain": "Прочитать снова аяты с ошибкой ({{count}})",
+    "reciteMissedAgain_one": "Прочитать снова аят с ошибкой",
+    "reciteMissedAgain_few": "Прочитать снова {{count}} аята с ошибкой",
+    "reciteMissedAgain_many": "Прочитать снова {{count}} аятов с ошибкой",
+    "reciteMissedAgain_other": "Прочитать снова аяты с ошибкой ({{count}})"
   }
 }

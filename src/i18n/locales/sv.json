@@ -2764,6 +2764,15 @@
     "undo": "Ångra",
     "practiseAhead": "Öva innan det är dags",
     "neededHelpLast": "behövde hjälp förra gången",
-    "practising": "Övar {{name}} ur minnet"
+    "practising": "Övar {{name}} ur minnet",
+    "markMissed": "Missade",
+    "markKnew": "Kunde den",
+    "joinedAbove": "I {{riwayah}} är detta en del av vers {{ayah}} ovanför",
+    "hideCompanion": "Bara arabiska vid repetition",
+    "hideCompanionHelp": "En kontrollerad vers visar ingen översättning eller tafsir under sig, så att repetitionen stannar vid reciteringen.",
+    "missedAgain": "↺ {{count}} missade",
+    "missedAgain_one": "↺ {{count}} missad",
+    "reciteMissedAgain": "Recitera de {{count}} missade verserna igen",
+    "reciteMissedAgain_one": "Recitera den missade versen igen"
   }
 }

@@ -2764,6 +2764,15 @@
     "undo": "ফিরিয়ে আনুন",
     "practiseAhead": "নির্ধারিত দিনের আগে অনুশীলন করুন",
     "neededHelpLast": "গতবার সাহায্য লেগেছিল",
-    "practising": "{{name}} মুখস্থ থেকে অনুশীলন"
+    "practising": "{{name}} মুখস্থ থেকে অনুশীলন",
+    "markMissed": "ভুল হয়েছে",
+    "markKnew": "মনে ছিল",
+    "joinedAbove": "{{riwayah}}-এ এটি উপরের আয়াত {{ayah}}-এর অংশ",
+    "hideCompanion": "পুনরাবৃত্তির সময় শুধু আরবি",
+    "hideCompanionHelp": "যাচাই করা আয়াতের নিচে অনুবাদ বা তাফসির দেখানো হয় না, যাতে পুনরাবৃত্তি তিলাওয়াতেই থাকে।",
+    "missedAgain": "↺ {{count}}টিতে ভুল",
+    "missedAgain_one": "↺ {{count}}টিতে ভুল",
+    "reciteMissedAgain": "ভুল হওয়া {{count}}টি আয়াত আবার তিলাওয়াত করুন",
+    "reciteMissedAgain_one": "ভুল হওয়া আয়াতটি আবার তিলাওয়াত করুন"
   }
 }

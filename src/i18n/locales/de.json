@@ -2764,6 +2764,15 @@
     "undo": "Rückgängig",
     "practiseAhead": "Vor dem Termin üben",
     "neededHelpLast": "brauchte zuletzt Hilfe",
-    "practising": "{{name}} auswendig üben"
+    "practising": "{{name}} auswendig üben",
+    "markMissed": "Nicht gewusst",
+    "markKnew": "Gewusst",
+    "joinedAbove": "In {{riwayah}} gehört dies zu Vers {{ayah}} darüber",
+    "hideCompanion": "Beim Wiederholen nur Arabisch",
+    "hideCompanionHelp": "Ein geprüfter Vers zeigt keine Übersetzung und keinen Tafsir darunter, damit die Wiederholung bei der Rezitation bleibt.",
+    "missedAgain": "↺ {{count}} nicht gewusst",
+    "missedAgain_one": "↺ {{count}} nicht gewusst",
+    "reciteMissedAgain": "Die {{count}} nicht gewussten Verse noch einmal aufsagen",
+    "reciteMissedAgain_one": "Den nicht gewussten Vers noch einmal aufsagen"
   }
 }

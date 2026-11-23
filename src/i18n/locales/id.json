@@ -2764,6 +2764,15 @@
     "undo": "Urungkan",
     "practiseAhead": "Latihan sebelum jadwalnya",
     "neededHelpLast": "terakhir perlu bantuan",
-    "practising": "Berlatih {{name}} dari hafalan"
+    "practising": "Berlatih {{name}} dari hafalan",
+    "markMissed": "Keliru",
+    "markKnew": "Hafal",
+    "joinedAbove": "Dalam {{riwayah}}, ini bagian dari ayat {{ayah}} di atas",
+    "hideCompanion": "Hanya teks Arab saat murajaah",
+    "hideCompanionHelp": "Ayat yang sudah diperiksa tidak menampilkan terjemahan atau tafsir di bawahnya, agar murajaah tetap pada bacaan.",
+    "missedAgain": "↺ {{count}} keliru",
+    "missedAgain_one": "↺ {{count}} keliru",
+    "reciteMissedAgain": "Baca lagi {{count}} ayat yang keliru",
+    "reciteMissedAgain_one": "Baca lagi ayat yang keliru"
   }
 }

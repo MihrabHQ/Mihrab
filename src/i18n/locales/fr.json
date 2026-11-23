@@ -2765,6 +2765,15 @@
     "undo": "Annuler",
     "practiseAhead": "S'exercer avant l'échéance",
     "neededHelpLast": "a demandé de l'aide la dernière fois",
-    "practising": "S'exercer à {{name}} de mémoire"
+    "practising": "S'exercer à {{name}} de mémoire",
+    "markMissed": "Raté",
+    "markKnew": "Su",
+    "joinedAbove": "En {{riwayah}}, ceci fait partie du verset {{ayah}}, au-dessus",
+    "hideCompanion": "Arabe seul pendant la révision",
+    "hideCompanionHelp": "Un verset vérifié n’affiche ni traduction ni tafsir en dessous, pour que la révision reste sur la récitation.",
+    "missedAgain": "↺ {{count}} ratés",
+    "missedAgain_one": "↺ {{count}} raté",
+    "reciteMissedAgain": "Réciter à nouveau les {{count}} versets ratés",
+    "reciteMissedAgain_one": "Réciter à nouveau le verset raté"
   }
 }

@@ -2808,6 +2808,21 @@
     "undo": "تراجع",
     "practiseAhead": "راجِع قبل موعدها",
     "neededHelpLast": "احتاجت عونًا في المرة الماضية",
-    "practising": "تمرين {{name}} غيبًا"
+    "practising": "تمرين {{name}} غيبًا",
+    "markMissed": "أخطأتُ",
+    "markKnew": "حفظتُها",
+    "joinedAbove": "في {{riwayah}} هذه جزء من الآية {{ayah}} أعلاه",
+    "hideCompanion": "العربية وحدها عند المراجعة",
+    "hideCompanionHelp": "لا تظهر تحت الآية بعد التحقق منها ترجمة ولا تفسير، لتبقى المراجعة مع التلاوة.",
+    "missedAgain": "↺ {{count}} أخطاء",
+    "missedAgain_one": "↺ {{count}} خطأ",
+    "missedAgain_two": "↺ {{count}} خطآن",
+    "missedAgain_few": "↺ {{count}} أخطاء",
+    "missedAgain_many": "↺ {{count}} خطأً",
+    "reciteMissedAgain": "سمِّع الآيات التي أخطأت فيها ({{count}}) مرة أخرى",
+    "reciteMissedAgain_one": "سمِّع الآية التي أخطأت فيها مرة أخرى",
+    "reciteMissedAgain_two": "سمِّع الآيتين اللتين أخطأت فيهما مرة أخرى",
+    "reciteMissedAgain_few": "سمِّع الآيات {{count}} التي أخطأت فيها مرة أخرى",
+    "reciteMissedAgain_many": "سمِّع الآيات التي أخطأت فيها ({{count}}) مرة أخرى"
   }
 }

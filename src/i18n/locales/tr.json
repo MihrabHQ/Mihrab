@@ -2764,6 +2764,15 @@
     "undo": "Geri al",
     "practiseAhead": "Vaktinden önce çalış",
     "neededHelpLast": "geçen sefer yardım gerekti",
-    "practising": "{{name}} ezberden çalışılıyor"
+    "practising": "{{name}} ezberden çalışılıyor",
+    "markMissed": "Hatalı",
+    "markKnew": "Bildim",
+    "joinedAbove": "{{riwayah}} rivayetinde bu, yukarıdaki {{ayah}}. ayetin parçasıdır",
+    "hideCompanion": "Tekrarda yalnızca Arapça",
+    "hideCompanionHelp": "Kontrol edilen ayetin altında meal veya tefsir gösterilmez; tekrar okumaya odaklı kalır.",
+    "missedAgain": "↺ {{count}} hatalı",
+    "missedAgain_one": "↺ {{count}} hatalı",
+    "reciteMissedAgain": "{{count}} hatalı ayeti yeniden okuyun",
+    "reciteMissedAgain_one": "Hatalı ayeti yeniden okuyun"
   }
 }

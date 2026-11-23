@@ -2764,6 +2764,15 @@
     "undo": "Undo",
     "practiseAhead": "Practise before it's due",
     "neededHelpLast": "needed help last time",
-    "practising": "Practising {{name}} from memory"
+    "practising": "Practising {{name}} from memory",
+    "markMissed": "Missed it",
+    "markKnew": "Knew it",
+    "joinedAbove": "In {{riwayah}} this is part of ayah {{ayah}}, above",
+    "hideCompanion": "Arabic only while revising",
+    "hideCompanionHelp": "A checked ayah shows no translation or tafsir under it, so the revision stays with the recitation.",
+    "missedAgain": "↺ {{count}} missed",
+    "missedAgain_one": "↺ {{count}} missed",
+    "reciteMissedAgain": "Recite the {{count}} missed ayahs again",
+    "reciteMissedAgain_one": "Recite the missed ayah again"
   }
 }

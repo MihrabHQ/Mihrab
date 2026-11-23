@@ -2765,6 +2765,15 @@
     "undo": "Deshacer",
     "practiseAhead": "Practica antes de que toque",
     "neededHelpLast": "la última vez necesitó ayuda",
-    "practising": "Practicando {{name}} de memoria"
+    "practising": "Practicando {{name}} de memoria",
+    "markMissed": "Fallé",
+    "markKnew": "La sabía",
+    "joinedAbove": "En {{riwayah}} esto forma parte de la aleya {{ayah}}, arriba",
+    "hideCompanion": "Solo árabe al repasar",
+    "hideCompanionHelp": "Una aleya comprobada no muestra traducción ni tafsir debajo, para que el repaso se quede en la recitación.",
+    "missedAgain": "↺ {{count}} falladas",
+    "missedAgain_one": "↺ {{count}} fallada",
+    "reciteMissedAgain": "Recitar de nuevo las {{count}} aleyas falladas",
+    "reciteMissedAgain_one": "Recitar de nuevo la aleya fallada"
   }
 }

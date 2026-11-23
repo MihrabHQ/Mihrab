@@ -457,6 +457,11 @@ export type QuranPrefs = {
    * hidden.
    */
   lockButton: boolean;
+  /**
+   * Hifz revision shows the Arabic alone once an ayah is checked — no
+   * translation or tafsir under it (#138). Additive; off when absent.
+   */
+  hifzReviewHideCompanion?: boolean;
   /** Memorization masking in translation view. */
   hideMode: 'none' | 'arabic' | 'translation';
   repeat: RepeatSettings;

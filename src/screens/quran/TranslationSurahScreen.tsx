@@ -19,7 +19,7 @@ import { NO_TEXT_SELECTION } from '../../quran/noTextSelection';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { ChoiceSheet } from '../../components/ui/ChoiceSheet';
-import { HIFZ_COLOR } from '../../quran/hifz';
+import { HIFZ_COLOR, hifzInk } from '../../quran/hifz';
 import { hifzSurahName } from '../../quran/hifzLabels';
 import { recite, useHifzGradeChoices } from './HifzEntry';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -87,6 +87,18 @@ import { useReadingText } from '../../hooks/useReadingText';
 import { TextSizeStepper } from '../../components/ui';
 import { TabBackButton } from '../../navigation/TabBackButton';
 import { RADIUS, SPACING } from '../../theme/tokens';
+import { resolveRiwayah, riwayahTextFontFamily } from '../../quran/riwayat';
+import { useRiwayahAvailability } from '../../quran/riwayahData';
+import { riwayahRows, type RiwayahRow } from '../../quran/riwayahRows';
+import { riwayahLabel } from '../../quran/quranDownloadManager';
+import { tajweedColoursShown } from '../../quran/tajweed/tajweedSupport';
+import {
+  loadWarshSurah,
+  shapedRuns,
+  warshAyahWords,
+  type WarshTajweedWord,
+} from '../../quran/tajweed/warshTajweed';
+import { tajweedInk } from '../../quran/tajweed/rules';
 
 type AyahRow = {
   ayah: number; // 1-based
@@ -122,7 +134,7 @@ export function TranslationSurahScreen({
 }: Props) {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
-  const { palette } = useAppPalette();
+  const { palette, isDark } = useAppPalette();
   const readingText = useReadingText();
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
@@ -176,6 +188,46 @@ export function TranslationSurahScreen({
     };
   }, [surahNumber]);
 
+  /**
+   * THE READER'S OWN RIWAYAH, WHILE REVISING (#138).
+   *
+   * Reciting from memory is reciting in the riwayah one memorised: a Warsh
+   * reader checked against the Ḥafṣ wording was checked against the wrong
+   * text (مَلِكِ for مَالِكِ, and every hamza and imāla). So under a review
+   * each row carries the riwayah's ayah(s) for that Ḥafṣ ayah — placed by
+   * the Ḥafṣ ayahs it is recited in, never by its number (`riwayahRows`) —
+   * in the riwayah's font, and with Warsh's tajwīd colours when they are
+   * on. Only under a review: the reading view is the Ḥafṣ text its
+   * translation, recitations and word timing are cut to.
+   */
+  useRiwayahAvailability();
+  const shownRiwayah = resolveRiwayah(quran.prefs.riwayah);
+  const rowCount = rows?.length ?? 0;
+  const reviewing = hifzReview != null;
+  const ownRows = useMemo<RiwayahRow[] | null>(
+    () => (reviewing && rowCount > 0 ? riwayahRows(shownRiwayah, surahNumber, rowCount) : null),
+    [reviewing, rowCount, shownRiwayah, surahNumber],
+  );
+  const ownFont = ownRows ? riwayahTextFontFamily(shownRiwayah) : null;
+  const warshColours =
+    ownRows != null &&
+    shownRiwayah === 'warsh' &&
+    tajweedColoursShown(shownRiwayah, quran.prefs.tajweedColours);
+  const [warshData, setWarshData] = useState<Awaited<ReturnType<typeof loadWarshSurah>>>(null);
+  useEffect(() => {
+    if (!warshColours) {
+      setWarshData(null);
+      return;
+    }
+    let alive = true;
+    void loadWarshSurah(surahNumber).then(data => {
+      if (alive) setWarshData(data);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [warshColours, surahNumber]);
+
   useEffect(() => {
     let cancelled = false;
     setTranslations(null);
@@ -205,6 +257,14 @@ export function TranslationSurahScreen({
   const [sheetScrollAudio, setSheetScrollAudio] = useState(false);
   const [editionPickerVisible, setEditionPickerVisible] = useState(false);
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
+  /**
+   * How each checked ayah went, as the reader marks it on its card (#138),
+   * for this sitting only. The portion's grade is still the one choice at
+   * Done — the schedule is per portion, not per ayah (`hifz.ts`) — but the
+   * marks are what it is chosen from, and the missed ayahs can be hidden
+   * again and recited once more before it is.
+   */
+  const [marks, setMarks] = useState<ReadonlyMap<number, 'missed' | 'knew'>>(new Map());
   /** The review's grade sheet, open once the reader says they are done. */
   const [reviewGrading, setReviewGrading] = useState(false);
   const reviewChoices = useHifzGradeChoices(
@@ -219,7 +279,8 @@ export function TranslationSurahScreen({
   useEffect(() => {
     // Reset per-surah reveal state when hide mode or surah changes.
     setRevealed(new Set());
-  }, [quran.prefs.hideMode, surahNumber]);
+    setMarks(new Map());
+  }, [quran.prefs.hideMode, surahNumber, hifzReview?.id]);
 
   const toggleMushaf = useCallback(() => {
     // The toggle swaps the ENTIRE screen (translation list ⇄ mushaf
@@ -622,6 +683,35 @@ export function TranslationSurahScreen({
           to: hifzReview.to,
         })
     : '';
+  /** The rows of a merge that belong to the riwayah ayah on row `a`. */
+  const joinedTo = (a: number): number[] => {
+    const out: number[] = [];
+    if (!ownRows) return out;
+    for (let h = a + 1; h <= ownRows.length; h++) {
+      const r = ownRows[h - 1];
+      if (r.kind === 'joined' && r.into === a) out.push(h);
+      else break;
+    }
+    return out;
+  };
+  const missed = hifzReview
+    ? [...marks]
+        .filter(([a, m]) => m === 'missed' && a >= hifzReview.from && a <= hifzReview.to)
+        .map(([a]) => a)
+    : [];
+  const markAyah = (a: number, m: 'missed' | 'knew') =>
+    setMarks(prev => new Map(prev).set(a, m));
+  const reciteMissedAgain = () =>
+    // Hidden again, to be recited once more; the mark stays until the
+    // reader marks the ayah anew.
+    setRevealed(prev => {
+      const next = new Set(prev);
+      for (const a of missed) {
+        next.delete(a);
+        for (const j of joinedTo(a)) next.delete(j);
+      }
+      return next;
+    });
   const reviewChecked = hifzReview
     ? [...revealed].filter(a => a >= hifzReview.from && a <= hifzReview.to).length
     : 0;
@@ -665,13 +755,28 @@ export function TranslationSurahScreen({
       hifzReview != null && ayah >= hifzReview.from && ayah <= hifzReview.to;
     const maskArabic = (inReview || hideMode === 'arabic') && !isRevealed;
     const maskTranslation = (inReview || hideMode === 'translation') && !isRevealed;
+    // Under a review: what sits under the ayah once it is checked — nothing,
+    // if the reader asked for the Arabic alone while revising.
+    const hideCompanion = inReview && (!isRevealed || quran.prefs.hifzReviewHideCompanion === true);
+
+    // The reader's riwayah, when revising in one (`ownRows`).
+    const own = ownRows?.[ayah - 1];
+    const ownText = own?.kind === 'text' ? own : null;
+    const joinedInto = own?.kind === 'joined' ? own.into : null;
+    const shownArabic = ownText ? ownText.text : arabic;
+    const ownWords: WarshTajweedWord[] | null =
+      ownText && warshData
+        ? ownText.ayahs.flatMap((a, i) => warshAyahWords(warshData, a, ownText.parts[i]))
+        : null;
 
     const words = arabic.split(' ');
     // The timing counts QPC's words; the text is Tanzil's. Map one onto
     // the other, or the lit word drifts by one past every pause mark and
     // the basmalah lights on every first ayah — see `countedWords.ts`.
+    // The lit word is counted in the Ḥafṣ words its timing is cut to: not
+    // on another riwayah's text.
     const litIndex =
-      wordIdx >= 0
+      wordIdx >= 0 && !ownText
         ? (countedWordIndices(surahNumber, ayah, words)[wordIdx] ?? -1)
         : -1;
 
@@ -684,7 +789,13 @@ export function TranslationSurahScreen({
         })}
         onPress={() => {
           if ((inReview || hideMode !== 'none') && !isRevealed) {
-            setRevealed(prev => new Set(prev).add(ayah));
+            // A row joined to the ayah above is checked with it, both ways.
+            const head = joinedInto ?? ayah;
+            setRevealed(prev => {
+              const next = new Set(prev).add(head);
+              for (const j of joinedTo(head)) next.add(j);
+              return next;
+            });
             return;
           }
           setSelectedAyah(ayah);
@@ -730,11 +841,45 @@ export function TranslationSurahScreen({
             {ayah}
           </Text>
         </View>
-        {maskArabic ? (
+        {joinedInto != null ? (
+          // In this riwayah the ayah above runs on through this one.
+          <Text style={[styles.masked, styles.maskedUpright, { color: palette.muted }]}>
+            {t('hifz.joinedAbove', {
+              defaultValue: 'In {{riwayah}} this is part of ayah {{ayah}}, above',
+              riwayah: riwayahLabel(shownRiwayah),
+              ayah: joinedInto,
+            })}
+          </Text>
+        ) : maskArabic ? (
           <Text style={[styles.masked, inReview && styles.maskedUpright, { color: inReview ? palette.text : palette.muted }]}>
             {inReview
               ? t('hifz.reviewTapToCheck', 'Recite it, then tap to check')
               : t('quran.tapToReveal', 'Tap to reveal')}
+          </Text>
+        ) : ownWords ? (
+          <Text
+            style={[styles.ayahArabic, { color: palette.text }, ownFont ? { fontFamily: ownFont } : null]}
+            accessibilityLabel={shownArabic}>
+            {ownWords.map((w, wi) => (
+              <Text key={wi}>
+                {wi > 0 ? ' ' : ''}
+                {shapedRuns(w.runs).map((run, ri) =>
+                  run.rule ? (
+                    <Text key={ri} style={{ color: tajweedInk(run.rule, isDark) }}>
+                      {run.text}
+                    </Text>
+                  ) : (
+                    run.text
+                  ),
+                )}
+              </Text>
+            ))}
+          </Text>
+        ) : ownText ? (
+          <Text
+            style={[styles.ayahArabic, { color: palette.text }, ownFont ? { fontFamily: ownFont } : null]}
+            accessibilityLabel={shownArabic}>
+            {shownArabic}
           </Text>
         ) : (
           <Text
@@ -759,7 +904,43 @@ export function TranslationSurahScreen({
               : arabic}
           </Text>
         )}
-        {inReview && !isRevealed ? null : companionMode === 'tafsir' ? (
+        {inReview && isRevealed && joinedInto == null ? (
+          // How it went, for this ayah: what the grade at Done is chosen
+          // from, and what "recite the missed again" hides once more.
+          <View style={styles.markRow}>
+            {(['missed', 'knew'] as const).map(m => {
+              const on = marks.get(ayah) === m;
+              const label =
+                m === 'missed' ? t('hifz.markMissed', 'Missed it') : t('hifz.markKnew', 'Knew it');
+              return (
+                <Pressable
+                  key={m}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: on }}
+                  accessibilityLabel={label}
+                  onPress={() => markAyah(ayah, m)}
+                  style={({ pressed }) => [
+                    styles.markBtn,
+                    {
+                      borderColor: on ? (m === 'knew' ? HIFZ_COLOR : palette.danger) : palette.border ?? palette.muted,
+                      backgroundColor: on ? palette.bg : palette.card,
+                    },
+                    pressed && { opacity: 0.7 },
+                  ]}>
+                  <Text
+                    style={[
+                      styles.markText,
+                      { color: on ? (m === 'knew' ? hifzInk(isDark) : palette.danger) : palette.muted },
+                    ]}>
+                    {m === 'missed' ? '✕ ' : '✓ '}
+                    {label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        ) : null}
+        {hideCompanion ? null : companionMode === 'tafsir' ? (
           maskTranslation ? (
             <Text style={[styles.masked, { color: palette.muted }]}>
               {t('quran.tapToReveal', 'Tap to reveal')}
@@ -968,6 +1149,24 @@ export function TranslationSurahScreen({
               })}
             </Text>
           </View>
+          {missed.length > 0 ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('hifz.reciteMissedAgain', {
+                defaultValue: 'Recite the {{count}} missed again',
+                count: missed.length,
+              })}
+              onPress={reciteMissedAgain}
+              style={({ pressed }) => [
+                styles.missedAgain,
+                { borderColor: palette.danger },
+                pressed && { opacity: 0.7 },
+              ]}>
+              <Text style={[styles.missedAgainText, { color: palette.danger }]} numberOfLines={1}>
+                {t('hifz.missedAgain', { defaultValue: '↺ {{count}} missed', count: missed.length })}
+              </Text>
+            </Pressable>
+          ) : null}
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('hifz.reviewDone', 'Done')}
@@ -1167,6 +1366,31 @@ const styles = StyleSheet.create({
   reviewTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
   reviewSub: { fontSize: TYPE.footnote.fontSize, marginTop: 1 },
   reviewDone: { paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm, borderRadius: RADIUS.full },
+  markRow: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    marginTop: SPACING.sm,
+  },
+  markBtn: {
+    flex: 1,
+    minHeight: 44,
+    borderRadius: RADIUS.md,
+    borderWidth: StyleSheet.hairlineWidth * 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: SPACING.sm,
+  },
+  markText: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  missedAgain: {
+    minHeight: 44,
+    borderRadius: RADIUS.full,
+    borderWidth: StyleSheet.hairlineWidth * 2,
+    paddingHorizontal: SPACING.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginEnd: SPACING.sm,
+  },
+  missedAgainText: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
   reviewDoneText: { color: '#fff', fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   ayahCard: { padding: SPACING.lg, borderRadius: RADIUS.md, gap: SPACING.md, marginTop: SPACING.md },
   ayahMetaRow: {

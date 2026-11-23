@@ -2764,6 +2764,15 @@
     "undo": "واپس لیں",
     "practiseAhead": "مقررہ دن سے پہلے مشق کریں",
     "neededHelpLast": "پچھلی بار مدد درکار تھی",
-    "practising": "{{name}} زبانی مشق"
+    "practising": "{{name}} زبانی مشق",
+    "markMissed": "غلطی ہوئی",
+    "markKnew": "یاد تھی",
+    "joinedAbove": "{{riwayah}} میں یہ اوپر والی آیت {{ayah}} کا حصہ ہے",
+    "hideCompanion": "دہراتے وقت صرف عربی",
+    "hideCompanionHelp": "جانچی گئی آیت کے نیچے ترجمہ یا تفسیر نہیں دکھائی جاتی، تاکہ دہرائی تلاوت ہی پر رہے۔",
+    "missedAgain": "↺ {{count}} میں غلطی",
+    "missedAgain_one": "↺ {{count}} میں غلطی",
+    "reciteMissedAgain": "غلطی والی {{count}} آیات دوبارہ سنائیں",
+    "reciteMissedAgain_one": "غلطی والی آیت دوبارہ سنائیں"
   }
 }
