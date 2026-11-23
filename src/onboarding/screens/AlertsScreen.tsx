@@ -418,9 +418,7 @@ export function AlertsScreen({
               />
             ) : null}
           </SettingsGroup>
-          <View style={styles.travel}>
-            <BackgroundLocationCard />
-          </View>
+          <BackgroundLocationCard />
         </>
       ) : null}
 
@@ -455,7 +453,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.md,
   },
-  travel: { marginTop: SPACING.md },
   more: {
     textAlign: 'center',
     marginTop: SPACING.sm,
