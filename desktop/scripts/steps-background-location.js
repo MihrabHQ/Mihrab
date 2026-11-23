@@ -45,6 +45,10 @@ module.exports = async ({ page, app, shot, log }) => {
   await toggle.click();
   await page.waitForTimeout(2000);
   await shot('bg-03-turned-on');
+  // Back to Today: the place is read off it, before and after.
+  await page.getByRole('button').first().click();
+  await page.waitForTimeout(1500);
+  await click(/^Today$/, 2500);
 
   // To the tray, then the journey and the wake.
   await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].hide());
@@ -53,16 +57,10 @@ module.exports = async ({ page, app, shot, log }) => {
     BrowserWindow.getAllWindows()[0].webContents.send('location:hint', 'wake'),
   );
   await page.waitForTimeout(20000);
-  const stored = await page.evaluate(() =>
-    Object.keys(localStorage)
-      .filter(k => /settings/i.test(k))
-      .map(k => localStorage.getItem(k))
-      .join(' ')
-      .match(/"autoLocationLabel":"[^"]*"/g),
-  );
-  log('stored label while hidden:', JSON.stringify(stored));
+  const hiddenText = await page.locator('body').innerText();
+  log('while hidden, Today says Gothenburg:', /Göteborg|Gothenburg/.test(hiddenText));
   await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].show());
-  await click(/^Today$/, 3000);
+  await page.waitForTimeout(1500);
   await shot('bg-04-after-journey');
   const text = await page.locator('body').innerText();
   log('home says Gothenburg:', /Göteborg|Gothenburg/.test(text), 'Stockholm:', text.includes('Stockholm'));
