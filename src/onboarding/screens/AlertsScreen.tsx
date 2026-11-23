@@ -27,6 +27,16 @@
  * adhan. Four are offered here — the rest stay in Settings, where the
  * import-your-own path and its native plumbing already live. A shortlist
  * is the point: this is a screen about whether the app speaks at all.
+ *
+ * ── AND WHETHER THEY FOLLOW YOU WHEN YOU TRAVEL ───────────────────────
+ *
+ * "Update my location in the background" is the Settings card itself,
+ * not a copy: the same row, the same question before the system's, the
+ * same words when it is refused. It decides whether these alerts move to
+ * the place you are in without the app being opened, so it is asked here,
+ * once alerts are on, and off until it is turned on. It shows itself only
+ * where it can work — a build that offers it, with My location as the
+ * place — and is absent on the web and the desktop.
  */
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -63,6 +73,7 @@ import {
 import { openFullScreenAlarmSettings } from '../../native/FullScreenAlarm';
 import { useFullScreenAlarmSwitch } from '../../notifications/useFullScreenAlarmSwitch';
 import { PreReminderModal } from '../../screens/settings/PreReminderModal';
+import { BackgroundLocationCard } from '../../screens/settings/BackgroundLocationCard';
 import type { PrePrayerReminderMinutes } from '../../settings/prePrayerReminder';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { typeStyle } from '../../theme/typography';
@@ -407,6 +418,9 @@ export function AlertsScreen({
               />
             ) : null}
           </SettingsGroup>
+          <View style={styles.travel}>
+            <BackgroundLocationCard />
+          </View>
         </>
       ) : null}
 
@@ -441,6 +455,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.md,
   },
+  travel: { marginTop: SPACING.md },
   more: {
     textAlign: 'center',
     marginTop: SPACING.sm,

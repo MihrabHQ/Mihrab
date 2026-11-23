@@ -165,6 +165,17 @@ describe('the alerts screen acts on the answer', () => {
     expect(src).not.toMatch(/setAnswer|setFace/);
   });
 
+  it('offers background location with the Settings card itself, once alerts are on', () => {
+    // A second copy of the row would be a second question to keep in step
+    // with Settings — its explanation before the system's, its words when
+    // refused. The card decides for itself where it can be shown.
+    expect(src).toMatch(/import \{ BackgroundLocationCard \} from '\.\.\/\.\.\/screens\/settings\/BackgroundLocationCard'/);
+    expect(src).not.toMatch(/turnOnBackgroundLocation|requestAlways/);
+    const granted = src.indexOf("{face === 'granted' ? (");
+    expect(granted).toBeGreaterThan(-1);
+    expect(src.indexOf('<BackgroundLocationCard />')).toBeGreaterThan(granted);
+  });
+
   it('folds the exact-alarm grant in rather than branching the step list', () => {
     expect(src).toMatch(/openAlarmPermissionSettings/);
     // The step list may still EXPLAIN why the platform branch went away;

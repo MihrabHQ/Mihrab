@@ -1,7 +1,8 @@
 /**
  * Settings → Location: "Update my location in the background" (Android,
  * and the iPhone as a preview — the row says "Preview", and its words name
- * iOS's own "Always").
+ * iOS's own "Always"). The walkthrough's alerts screen shows this same
+ * card once alerts are on (`onboarding/screens/AlertsScreen.tsx`).
  *
  * Optional, off until asked for, and said to be optional in three places:
  * the row's own explanation, the question the app asks BEFORE Android's
