@@ -101,7 +101,7 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 | United Kingdom: Wifaqul Ulama (Britain) | 350,400 | **0** |
 | Tunisia: Institut National de la Météorologie | 95,765 | **0** |
 
-<sub>Last checked 17 November 2026. Generated from mihrab-methods’ <code>certification.json</code> by <code>scripts/build-copy.js</code>. Mihrab is independent and not affiliated with any of these authorities.</sub>
+<sub>Last checked 23 November 2026. Generated from mihrab-methods’ <code>certification.json</code> by <code>scripts/build-copy.js</code>. Mihrab is independent and not affiliated with any of these authorities.</sub>
 <!-- accuracy:end -->
 
 ---
