@@ -93,8 +93,11 @@ describe('prayer-time sources, live', () => {
       const [h, m] = tm[k].split(':').map(Number);
       return h * 60 + m;
     });
+    // Two times on the same minute are in order: where the afternoon shadow
+    // never forms (Tromsø from late November), Diyanet prints Asr at Dhuhr's
+    // minute, and counting that as a wrap failed this every winter day.
     let wraps = 0;
-    for (let i = 1; i < 6; i++) if (mins[i] <= mins[i - 1]) wraps++;
+    for (let i = 1; i < 6; i++) if (mins[i] < mins[i - 1]) wraps++;
     if (mins[0] < mins[5]) wraps++; // Isha back round to Fajr
     expect(wraps).toBe(1);
   });
