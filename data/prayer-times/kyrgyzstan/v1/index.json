@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "builtAt": "2026-11-16T09:56:09.452Z",
+  "builtAt": "2026-11-23T10:56:52.325Z",
   "timezone": "Asia/Bishkek",
   "source": "https://muftiyat.kg/ru/calendar/api/",
   "serverStatus": "ok",
-  "firstDate": "2026-11-09",
-  "lastDate": "2027-01-08",
+  "firstDate": "2026-11-16",
+  "lastDate": "2027-01-15",
   "minCoverageDays": 53,
   "deadCities": [],
   "cities": [

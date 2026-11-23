@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "builtAt": "2026-11-16T09:56:55.295Z",
+  "builtAt": "2026-11-23T10:57:41.781Z",
   "timezone": "Europe/Moscow",
   "source": "https://islamdag.ru/vremya-namaza/mahachkala",
   "serverStatus": "ok",
-  "firstDate": "2026-11-09",
-  "lastDate": "2027-03-16",
+  "firstDate": "2026-11-16",
+  "lastDate": "2027-03-23",
   "minCoverageDays": 120,
   "deadCities": [],
   "cities": [

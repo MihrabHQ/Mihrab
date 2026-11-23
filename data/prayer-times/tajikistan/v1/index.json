@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "builtAt": "2026-11-16T09:56:14.861Z",
+  "builtAt": "2026-11-23T10:56:58.169Z",
   "timezone": "Asia/Dushanbe",
   "source": "https://shuroiulamo.tj/tj/namaz",
-  "serverStatus": "ok",
-  "firstDate": "2026-11-09",
+  "serverStatus": "warning",
+  "firstDate": "2026-11-16",
   "lastDate": "2026-11-30",
-  "minCoverageDays": 14,
+  "minCoverageDays": 7,
   "deadCities": [],
   "cities": [
     {
