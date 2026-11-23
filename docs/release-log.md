@@ -1433,3 +1433,13 @@ Changed the release cycle itself:
   - `scripts/release/appstoreMetadata.ts`
 
 **Lesson:** _(unfilled)_
+
+**Play has 302 too.** Play Console flagged `android.hardware.screen.portrait`
+(the QR scanner, locked to portrait) and `android.hardware.wifi` (from
+`ACCESS_WIFI_STATE`) as required features, so the 301 bundle was replaced
+on Play by 302: the same 2.39.0 with both declared `required="false"`,
+built from the tag with that change and the code raised by hand, not by
+this script. Everything else — GitHub, F-Droid, the App Store, the Mac —
+is 301. **The next release's versionCode must be 303 or higher**: set
+`versionCode 302` in `android/app/build.gradle` before running
+`release.sh`, which adds one.
