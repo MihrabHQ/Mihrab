@@ -1418,3 +1418,18 @@ Took 3 aborted attempt(s) before it ran clean:
   - 1 pbxproj stamp did not take
 
 **Lesson:** all three aborts, and the tap, came from 2.38.2 having been cut F-Droid-only on a branch: merged into `main` afterwards, it moved `build.gradle` to 2.38.2 (299) and left everything else on 2.38.1 — the site, `package.json`, the desktop package, the pbxproj and the Homebrew cask. The site tests failed on the mismatch, the pbxproj stamp looked for 2.38.2 and found 2.38.1, and after the push the tap step did the same and stopped: the cask was set to 2.38.3 and the zip's sha by hand (`homebrew-tap` 796a6cf), and the steps after it — the App Store build, the user install, CI — were run by hand. A release cut on a branch must carry every version stamp with it, or be followed on `main` by a commit that does (`sync-version.js`, `build-site.js`, the pbxproj). The CI abort was not a failure: three macOS jobs had sat queued for a runner and been cancelled, and a rerun was green. Xcode Cloud's workflow was paused, so `ensure` waited six minutes and could not start a run; iOS went up from this Mac (`build-ios-appstore.sh`). Two dry runs were also lost to the agent's connection dropping mid-Catalyst — run long steps in `screen`, and look for an orphaned `notarytool submit` before starting again: one was still waiting on Apple, in the same build folder, behind the next run.
+
+## 2.39.0 (301) — 2026-11-23
+
+Took 3 aborted attempt(s) before it ran clean:
+
+  - 1 CI on main last concluded 'failure' on "Sweden's method test: each row on its own date, now the tables hold I…" — fix it before releasing on top of it: https://github.com/MihrabHQ/Mihrab/actions/runs/45264058358
+  - 1 catalyst build failed — /tmp/release-catalyst.log
+  - 1 jest failed — run 'NODE_ENV=test npx jest'
+
+Changed the release cycle itself:
+
+  - `docs/DISTRIBUTION.md`
+  - `scripts/release/appstoreMetadata.ts`
+
+**Lesson:** _(unfilled)_
