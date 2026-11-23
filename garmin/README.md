@@ -50,7 +50,16 @@ Three Connect IQ apps, fed by the Android app through
   countdown's figures as tall as the prayer line's own); the date,
   the weather, the steps and the battery, one size below that; and am/pm,
   the seconds and the day's high and low, the smallest. A row grows only
-  with its rank, and nothing is as large as the time. After days without the phone the weather's row says the
+  with its rank, and nothing is as large as the time. **The search is made
+  once for each shape of face, not at every start**: a watch stops the
+  face whenever something else has the screen and starts it again from
+  nothing, and reading fonts from flash is most of what a start costs. So
+  what the search found is kept in Storage beside what it was found for
+  (the last six shapes — `MihrabFaceLayouts.mc`), and a start with the
+  same shape reads the four fonts it draws with and stacks the rows once,
+  where it used to read all eighteen and measure them; the search itself,
+  when the shape does change, reads a font only when it first measures
+  with it. After days without the phone the weather's row says the
   times may be out of date. Temperatures are in °F where the app's place
   reads Fahrenheit and °C elsewhere; the weather is the watch's own, which
   Gadgetbridge fills from the phone's weather app (Breezy Weather, say);

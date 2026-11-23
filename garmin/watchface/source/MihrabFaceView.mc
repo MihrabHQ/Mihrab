@@ -46,7 +46,19 @@
 // changes its shape (another language, a message, the weather coming or
 // going).
 //
+// AND FOUND ONCE, NOT EVERY TIME THE FACE STARTS. A watch stops the face
+// whenever something else has the screen — a glance, an activity, the
+// lock — and starts it again from nothing; the search above loads every
+// font it might use (on the watch a font is read from flash, and that is
+// most of what a start costs) and measures them all before the first
+// frame. So what the search found is kept in Storage beside what it was
+// found for (`arrange`), and a start whose face has the same shape loads
+// the four fonts it draws with and stacks the rows once. The search
+// itself loads a font only when it first measures with it.
+//
 import Toybox.ActivityMonitor;
+import Toybox.Application;
+import Toybox.Application.Storage;
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.Math;
@@ -164,12 +176,21 @@ class MihrabFaceView extends WatchUi.WatchFace {
     private var _rowFonts as Array<Graphics.FontType> = [
         Graphics.FONT_XTINY, Graphics.FONT_TINY, Graphics.FONT_SMALL, Graphics.FONT_MEDIUM
     ] as Array<Graphics.FontType>;
-    // The candidates for the rows while a layout is being made (`layout`
-    // sets and clears them: four loaded fonts are not kept for the two a
-    // layout ends up with), and whether each rank's WORDS — the prayer's
-    // name or the message in its place; the date and the word about old
-    // times — are in the watch's font because the face's cannot write them.
-    private var _rankFonts as Array<Graphics.FontType> = [] as Array<Graphics.FontType>;
+    // THE FONTS IN HAND. Each is loaded when something is first measured
+    // or drawn with it and no sooner (`rankFont`, `countFont`,
+    // `clockFont`); once the rows are arranged the ones no row uses are
+    // let go (`arrange`), and the ones in use stay for the next time.
+    private var _texts as Array<Graphics.FontType?> = [null, null, null, null] as Array<Graphics.FontType?>;
+    private var _counts as Array<Graphics.FontType?> = [null, null, null, null] as Array<Graphics.FontType?>;
+    // The clock's: one at a time, and which.
+    private var _clockAt as Number = -1;
+    private var _clockIn as Graphics.FontType = Graphics.FONT_NUMBER_MILD;
+    // The clock's measures in each of its fonts, as far as this
+    // arrangement has asked: [width, height] or null.
+    private var _cm as Array<Array<Number>?> = [] as Array<Array<Number>?>;
+    // Whether each rank's WORDS — the prayer's name or the message in its
+    // place; the date and the word about old times — are in the watch's
+    // font because the face's cannot write them.
     private var _words2Own as Boolean = true;
     private var _words3Own as Boolean = true;
     // The height of rank 3's capitals in the face's own font (0 where the
@@ -215,6 +236,19 @@ class MihrabFaceView extends WatchUi.WatchFace {
 
     // The layout, and what it was made for.
     private var _key as String = "";
+    // What the search came to (`layout`): the clock's font, the two
+    // ranks', how far the gaps above and below the clock were opened, and
+    // whether nothing fitted and the smallest was kept regardless. With
+    // the key, this is all a later start needs (`arrange`).
+    private var _atClock as Number = 0;
+    private var _atPick as Array<Number> = [0, 0] as Array<Number>;
+    private var _atAbove as Number = 0;
+    private var _atBelow as Number = 0;
+    private var _atForced as Boolean = false;
+    // Raised whenever the fonts or the rules of the arrangement change:
+    // it is part of the key, so nothing kept by an earlier build is used.
+    private const LAYOUT = 1;
+    private const KEY_LAYOUTS = "lay";
     private var _fClock as Graphics.FontType = Graphics.FONT_NUMBER_MILD;
     private var _fDate as Graphics.FontType = Graphics.FONT_XTINY;
     private var _fWeather as Graphics.FontType = Graphics.FONT_XTINY;
@@ -320,9 +354,11 @@ class MihrabFaceView extends WatchUi.WatchFace {
                 _dateText = dateStyle == 1 ? hijri : date.day.format("%d") + " " + date.month + " · " + hijri;
             }
         }
-        _showSteps = !Mihrab.option(MihrabStore.OPT_NO_STEPS);
-        _showBattery = !Mihrab.option(MihrabStore.OPT_NO_BATTERY);
-        _showSeconds = !Mihrab.option(MihrabStore.OPT_NO_SECONDS) && !_overBudget;
+        // One read of the store for all four switches.
+        var options = MihrabStore.options();
+        _showSteps = (options & MihrabStore.OPT_NO_STEPS) == 0;
+        _showBattery = (options & MihrabStore.OPT_NO_BATTERY) == 0;
+        _showSeconds = (options & MihrabStore.OPT_NO_SECONDS) == 0 && !_overBudget;
         _staleText = Mihrab.stale(now) ? WatchUi.loadResource(Rez.Strings.Stale) as String : null;
         _hour12 = Mihrab.hour12();
         var hour = clock.hour;
@@ -336,7 +372,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
         _hourText = hour.format("%d");
         // Left off, or none to show: no row for it.
-        _weather = Mihrab.option(MihrabStore.OPT_NO_WEATHER) ? [-1, "", "", 0] : weatherParts(nowMoment);
+        _weather = (options & MihrabStore.OPT_NO_WEATHER) != 0 ? [-1, "", "", 0] : weatherParts(nowMoment);
         _next = Mihrab.next(now);
         _nextAt = _next == null ? 0 : (_next as [Number, Number])[1];
         _accent = Mihrab.accent();
@@ -347,13 +383,13 @@ class MihrabFaceView extends WatchUi.WatchFace {
             _staleText = null;
         }
 
-        var key = (_w.toString() + "|" + _dateText + "|" + (_staleText == null ? "" : _staleText) + "|" + (_hour12 ? "12" : "24")
+        var key = (LAYOUT.toString() + "|" + _w.toString() + "x" + _h.toString() + "|" + _dateText + "|" + (_staleText == null ? "" : _staleText) + "|" + (_hour12 ? "12" : "24")
             + "|" + _hourText.length().toString() + "|" + (_weather[0] as Number).toString() + "|" + (_weather[1] as String)
             + "|" + (_weather[2] as String) + "|" + (_reasonText == null ? "" : _reasonText)
             + "|" + (_showSteps ? "s" : "") + (_showSeconds ? "c" : "") + (_showBattery ? "b" : "")
             + "|" + System.getDeviceSettings().systemLanguage.toString()) as String;
         if (!key.equals(_key)) {
-            layout(dc);
+            arrange(dc, key);
             _key = key;
         }
         drawRing(dc, now, clock);
@@ -411,13 +447,59 @@ class MihrabFaceView extends WatchUi.WatchFace {
 
     // ---- Measuring ----
 
-    // The clock's candidate c: one of the app's figures, loaded, or past
-    // them Garmin's smallest number font.
+    // The clock's candidate c: one of the app's figures, or past them
+    // Garmin's smallest number font. Loaded once and held until another
+    // is asked for: an arrangement is stacked a dozen times with the one
+    // clock (`fill`), and each used to read the font from flash again.
     private function clockFont(c as Number) as Graphics.FontType {
-        if (c < _clockFontIds.size()) {
-            return WatchUi.loadResource(_clockFontIds[c]) as Graphics.FontReference;
+        if (c >= _clockFontIds.size()) {
+            return Graphics.FONT_NUMBER_MILD;
         }
-        return Graphics.FONT_NUMBER_MILD;
+        if (c != _clockAt) {
+            // The one in hand is let go before the next is read.
+            _clockIn = Graphics.FONT_NUMBER_MILD;
+            _clockAt = -1;
+            _clockIn = WatchUi.loadResource(_clockFontIds[c]) as Graphics.FontReference;
+            _clockAt = c;
+        }
+        return _clockIn;
+    }
+
+    // The clock's figures in candidate c: [width for this hour and the
+    // widest minutes, height] — measured when first asked for, so the
+    // search reads only the fonts it gets as far as trying.
+    private function clockMeasure(dc as Dc, c as Number) as Array<Number> {
+        var m = _cm[c];
+        if (m == null) {
+            var f = clockFont(c);
+            m = [textW(dc, _hourText + ":88", f), up(f)] as Array<Number>;
+            _cm[c] = m;
+        }
+        return m;
+    }
+
+    // A rank's font at size i: the face's own on a MIP screen, read from
+    // flash when first asked for; the watch's on an AMOLED one.
+    private function rankFont(i as Number) as Graphics.FontType {
+        if (!_mip) {
+            return _rowFonts[i];
+        }
+        var f = _texts[i];
+        if (f == null) {
+            f = WatchUi.loadResource(_textFontIds[i]) as Graphics.FontReference;
+            _texts[i] = f;
+        }
+        return f;
+    }
+
+    // The countdown's figures at size i, likewise.
+    private function countFont(i as Number) as Graphics.FontType {
+        var f = _counts[i];
+        if (f == null) {
+            f = WatchUi.loadResource(_countFontIds[i]) as Graphics.FontReference;
+            _counts[i] = f;
+        }
+        return f;
     }
 
     private function textW(dc as Dc, s as String, f as Graphics.FontType) as Number {
@@ -512,56 +594,88 @@ class MihrabFaceView extends WatchUi.WatchFace {
         return _lo <= _hi;
     }
 
-    // Tries the arrangements best first and takes the first in which every
+    // The rows arranged for what the face shows now (`key`). If this
+    // shape of face has been arranged before — by this run or by one
+    // before the watch last stopped the face — what the search found then
+    // is taken: its fonts are read and the rows stacked once, and the
+    // stacking is the check (a kept arrangement that no longer fits is
+    // searched for again). Otherwise the search, and its answer kept.
+    private function arrange(dc as Dc, key as String) as Void {
+        _round = System.getDeviceSettings().screenShape == System.SCREEN_SHAPE_ROUND;
+        var clocks = _clockFontIds.size() + 1;
+        _cm = new [clocks] as Array<Array<Number>?>;
+        // Each rank's words in the face's own fonts where they can write
+        // all it may show.
+        _words2Own = !_mip || ownRank2();
+        _words3Own = !_mip || ownRank3();
+
+        var kept = MihrabFaceLayouts.read(Storage.getValue(KEY_LAYOUTS));
+        var at = MihrabFaceLayouts.find(kept, key);
+        var found = false;
+        if (at >= 0) {
+            var e = kept[at];
+            var c = e[1] as Number;
+            var pick = [e[2] as Number, e[3] as Number] as Array<Number>;
+            if (c < clocks && pick[0] <= RANK2_MAX && pick[1] <= RANK2_MAX) {
+                found = place(dc, c, clockMeasure(dc, c), pick, e[4] as Number, e[5] as Number, (e[6] as Number) == 1);
+                if (found) {
+                    _atClock = c;
+                    _atPick = pick;
+                }
+            }
+        }
+        if (!found) {
+            layout(dc);
+            Storage.setValue(KEY_LAYOUTS, MihrabFaceLayouts.put(kept, at,
+                [key, _atClock, _atPick[0], _atPick[1], _atAbove, _atBelow, _atForced ? 1 : 0]) as Array<Storage.ValueType>);
+        } else if (at > 0) {
+            // Newest first, so the shapes the face keeps returning to
+            // (the temperature a degree up and back) are the ones kept.
+            Storage.setValue(KEY_LAYOUTS, MihrabFaceLayouts.put(kept, at, kept[at]) as Array<Storage.ValueType>);
+        }
+
+        // The fonts the rows use stay in hand; the rest go.
+        for (var i = 0; i < _texts.size(); i++) {
+            if (i != _atPick[0] && i != _atPick[1]) {
+                _texts[i] = null;
+            }
+        }
+        for (var i = 0; i < _counts.size(); i++) {
+            if (i != _countFor[_atPick[0]]) {
+                _counts[i] = null;
+            }
+        }
+        _cm = [] as Array<Array<Number>?>;
+    }
+
+    // The search. Tries the arrangements best first and takes the first in which every
     // row lies inside the ring, then fills the dial from it (`fill`). A step down in the small rows costs as
     // much as two in the clock: the clock is read from furthest away, but
     // not at any price to the line that says which prayer is next. Should
     // none fit, the smallest of all is kept, placed as well as it can be.
     private function layout(dc as Dc) as Void {
-        _round = System.getDeviceSettings().screenShape == System.SCREEN_SHAPE_ROUND;
         var clocks = _clockFontIds.size() + 1;
         var sets = _sets.size();
-        // The clock's figures: [width for this hour and the widest minutes, height].
-        var cm = [] as Array<Array<Number>>;
-        for (var c = 0; c < clocks; c++) {
-            var f = clockFont(c);
-            cm.add([textW(dc, _hourText + ":88", f), up(f)]);
-        }
-        // The countdown's sizes, each loaded once for every arrangement.
-        var counts = [] as Array<Graphics.FontType>;
-        for (var i = 0; i < _countFontIds.size(); i++) {
-            counts.add(WatchUi.loadResource(_countFontIds[i]) as Graphics.FontReference);
-        }
-        // The rows in the face's own fonts on a MIP screen; and each
-        // rank's words in them too where they can write all it may show.
-        _rankFonts = _mip ? textFonts() : _rowFonts;
-        _words2Own = !_mip || ownRank2();
-        _words3Own = !_mip || ownRank3();
         var worst = clocks - 1 + 2 * (sets - 1);
         var done = false;
         for (var cost = 0; cost <= worst && !done; cost++) {
             for (var s = 0; s < sets && !done; s++) {
                 var c = cost - 2 * s;
-                if (c >= 0 && c < clocks && place(dc, c, cm[c], _sets[s], counts, 0, 0, false)) {
-                    fill(dc, c, cm[c], _sets[s], counts);
+                if (c >= 0 && c < clocks && place(dc, c, clockMeasure(dc, c), _sets[s], 0, 0, false)) {
+                    fill(dc, c, clockMeasure(dc, c), _sets[s]);
                     done = true;
                 }
             }
         }
         if (!done) {
-            place(dc, clocks - 1, cm[clocks - 1], _sets[sets - 1], counts, 0, 0, true);
+            var last = _sets[sets - 1];
+            place(dc, clocks - 1, clockMeasure(dc, clocks - 1), last, 0, 0, true);
+            _atClock = clocks - 1;
+            _atPick = [last[0], last[1]] as Array<Number>;
+            _atAbove = 0;
+            _atBelow = 0;
         }
-        // The two fonts the layout chose are kept by the rows; the rest go.
-        _rankFonts = [] as Array<Graphics.FontType>;
-    }
-
-    // The face's Text fonts, smallest first, loaded.
-    private function textFonts() as Array<Graphics.FontType> {
-        var fonts = [] as Array<Graphics.FontType>;
-        for (var i = 0; i < _textFontIds.size(); i++) {
-            fonts.add(WatchUi.loadResource(_textFontIds[i]) as Graphics.FontReference);
-        }
-        return fonts;
+        _atForced = !done;
     }
 
     // Rank 2 is the prayer's line — any of the day's names — or the
@@ -594,14 +708,14 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // rank 2 first, rank 3 only ever to the size below it — and then the
     // gaps are opened, above the clock and below it each as far as its
     // own end row still clears the ring.
-    private function fill(dc as Dc, c as Number, clock as Array<Number>, set as Array<Number>, counts as Array<Graphics.FontType>) as Void {
+    private function fill(dc as Dc, c as Number, clock as Array<Number>, set as Array<Number>) as Void {
         var pick = [set[0], set[1]] as Array<Number>;
         var grew = true;
         while (grew) {
             grew = false;
             if (pick[0] < RANK2_MAX) {
                 pick[0] += 1;
-                if (place(dc, c, clock, pick, counts, 0, 0, false)) {
+                if (place(dc, c, clock, pick, 0, 0, false)) {
                     grew = true;
                 } else {
                     pick[0] -= 1;
@@ -609,7 +723,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
             }
             if (pick[1] < pick[0] - 1) {
                 pick[1] += 1;
-                if (place(dc, c, clock, pick, counts, 0, 0, false)) {
+                if (place(dc, c, clock, pick, 0, 0, false)) {
                     grew = true;
                 } else {
                     pick[1] -= 1;
@@ -618,29 +732,33 @@ class MihrabFaceView extends WatchUi.WatchFace {
         }
         var above = 0;
         for (var a = AIR_MAX; a > 0 && above == 0; a -= 2) {
-            if (place(dc, c, clock, pick, counts, a, 0, false)) {
+            if (place(dc, c, clock, pick, a, 0, false)) {
                 above = a;
             }
         }
         var below = 0;
         for (var b = AIR_MAX; b > 0 && below == 0; b -= 2) {
-            if (place(dc, c, clock, pick, counts, above, b, false)) {
+            if (place(dc, c, clock, pick, above, b, false)) {
                 below = b;
             }
         }
         // Whatever was tried last and failed left nothing behind; this is
         // the arrangement that stands.
-        place(dc, c, clock, pick, counts, above, below, true);
+        place(dc, c, clock, pick, above, below, true);
+        _atClock = c;
+        _atPick = pick;
+        _atAbove = above;
+        _atBelow = below;
     }
 
     // Stacks the rows for clock c and the picked fonts, with the gaps
     // above and below the clock opened by that much, and keeps the
     // arrangement if every row fits (or, forced, regardless).
-    private function place(dc as Dc, c as Number, clock as Array<Number>, pick as Array<Number>, counts as Array<Graphics.FontType>, above as Number, below as Number, force as Boolean) as Boolean {
-        var fPrayer = _rankFonts[pick[0]];
+    private function place(dc as Dc, c as Number, clock as Array<Number>, pick as Array<Number>, above as Number, below as Number, force as Boolean) as Boolean {
+        var fPrayer = rankFont(pick[0]);
         var fName = _words2Own ? fPrayer : _rowFonts[pick[0]];
-        var fCount = counts[_countFor[pick[0]]];
-        var fWeather = _rankFonts[pick[1]];
+        var fCount = countFont(_countFor[pick[0]]);
+        var fWeather = rankFont(pick[1]);
         var fDate = _words3Own ? fWeather : _rowFonts[pick[1]];
         // Before anything is measured: the battery's circle is sized by it.
         _cap3 = _mip ? TEXT_CAPS[pick[1]] : 0;
