@@ -14,7 +14,7 @@ Reported privately in November 2026 and changed in response; recorded here so th
 
 ## Thanks
 
-People who reported a vulnerability responsibly, and what came of it:
+People who reported a vulnerability responsibly, and what came of it. Each is thanked in the release notes and named as a co-author in the history, so they appear among the contributors:
 
 - **Ahmad Al-Khasawneh** ([ahmadkhasawneh92](https://github.com/ahmadkhasawneh92)) — November 2026: sync trusted a device that merely announced itself in the shared folder, and a refused encrypted write fell back to a plaintext copy that Android backups could carry off. Both fixed in 2.37.0 (see "Sync and local storage" above).
 
