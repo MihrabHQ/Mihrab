@@ -419,7 +419,9 @@ def _madd(w: Word, k: int, L: Letter, prev: Letter | None, nxt: Letter | None, n
         nxt = w.letters[k + 2] if k + 2 < n else None
     # ءَا, إِي, أُو — badal, Warsh's own count. Q13.
     if prev is not None and prev.is_hamza and not has_maddah:
-        w.mark("madd_badal", prev, L); return
+        if not _badal_short(w, k):
+            w.mark("madd_badal", prev, L)
+        return
     if L.base == "ا" and L.has(SUP_ALEF) and k == 0:
         w.mark("madd_badal", L); return
     if has_maddah:
@@ -445,6 +447,35 @@ def _madd(w: Word, k: int, L: Letter, prev: Letter | None, nxt: Letter | None, n
         w.mark("madda_normal", L)
 
 
+def skeleton(w: Word) -> str:
+    """The word's letters alone: no vowels, signs or kashīda (اَ۬لْقُرْءَانُ → القرءان)."""
+    return "".join(c for c in w.text if c not in MARKS and c not in NOISE and c != TATWEEL)
+
+
+# The badal that al-Azraq reads SHORT, two counts like any natural madd —
+# the exceptions of the Shāṭibiyya to his long badal (issue #136):
+#   سِوَى يَاءِ إِسْرَائِيلَ أَوْ بَعْدَ سَاكِنٍ صَحِيحٍ كَقُرْآنٍ … مَسْئُولًا
+# and يُؤَاخِذُ in all its forms. In this text يُؤَاخِذُ is written with the
+# hamza already changed to wāw (يُوَ۬اخِذُكُمُ), so it never reaches here; it is
+# listed for a text that writes the hamza.
+_ISRAIL = re.compile(r"[اإ]سر[ا]?[ءئ]يل")
+_YUAKHIDH = re.compile(r"^[وف]?[يتن][ؤو]اخذ")
+
+
+def _badal_short(w: Word, k: int) -> bool:
+    """Is the badal on letter k one of al-Azraq's short ones?"""
+    sk = skeleton(w)
+    if _ISRAIL.search(sk) or _YUAKHIDH.search(sk):
+        return True
+    # The hamza after a sākin ṣaḥīḥ in its own word: اَ۬لْقُرْءَانُ, مَذْءُوماٗ,
+    # مَسْــُٔولاٗ. Not after a madd or līn letter (شَيْءٞ is līn, not this).
+    if k >= 2:
+        before = w.letters[k - 2]
+        if before.sukun and not before.shadda and before.base not in "اوىيے":
+            return True
+    return False
+
+
 def _is_allah(w: Word, k: int) -> bool:
     """The doubled lām of اللّه / لِلّه — the name, not any lām before a hā."""
     skeleton = "".join(x.base for x in w.letters)
@@ -464,15 +495,28 @@ def _vowel_before_allah(w: Word, k: int) -> str | None:
     return None
 
 
-FOREIGN_NAMES = ("إِبْرَٰهِ", "إِبْرَاهِ", "إِسْرَٰٓءِيل", "إِسْرَآءِيل", "عِمْرَٰنَ", "عِمْرَانَ", "إِرَمَ")
-SIX_NOUNS = ("ذِكْراٗ", "سِتْراٗ", "إِمْراٗ", "اِمْراٗ", "وِزْراٗ", "حِجْراٗ", "صِهْراٗ")
+# Matched on the letters alone, so a different order of marks or another
+# tanwīn glyph (ذِكْراٗ beside ذِكْراً at 18:82 and وِزْراً at 20:98) cannot
+# slip past — the vocalised strings missed those, and إِسْرَآءِيلَ
+# everywhere (issue #136).
+FOREIGN_NAMES = re.compile(r"[اإ]بر[ا]?هيم|[اإ]سر[ا]?[ءئ]يل|عمر[ا]?ن|^[وف]?[اإ]رم$")
+SIX_NOUNS = re.compile(r"^[وف]?(ذكرا|سترا|[اإ]مرا|وزرا|حجرا|صهرا)$")
+# بِـ and لِـ are words of their own joined in writing; their kasra does not
+# thin the rāʾ after it (بِرَبِّكَ, لِرَبِّهِمْ, بِرُءُوسِكُمْ; Shāṭibiyya: “… أَوِ الْكَسْرُ
+# مُوصَلَا”, the kasra must belong to the rāʾ's own word).
+PREPOSITIONS = ("ب", "ل")
 
 
 def _raa(w: Word, k: int, L: Letter, prev: Letter | None, prev_word: Word | None) -> str | None:
     """Tarqīq or tafkhīm of a rāʾ in Warsh. Q28–29 of the reference."""
     Ls = w.letters
-    root = w.text_root()
+    sk = skeleton(w)
     nxt = Ls[k + 1] if k + 1 < len(Ls) else None
+    # بِشَرَرٖ (77:32): al-Azraq thins BOTH rāʾs — the first for the kasra of
+    # the second, against his own rule that a second rāʾ thickens the first
+    # (Sirāj al-Qāriʾ on “وَفِي شَرَرٍ عَنْهُ يُرَقِّقُ كُلُّهُمْ”), in waṣl and at the stop.
+    if sk == "بشرر":
+        return "raa_tarqeeq"
     # The text puts the fatḥatan on the alif after the rāʾ (خَبِيراٗ): that
     # rāʾ is open, not sākin.
     open_by_alef = L.bare and nxt is not None and nxt.base in "اى" and nxt.tanween is not None
@@ -493,16 +537,21 @@ def _raa(w: Word, k: int, L: Letter, prev: Letter | None, prev_word: Word | None
             return "raa_tarqeeq"
         return "tafkheem"
     # Fatḥa or ḍamma. The exceptions first — each is thick despite a kasra.
-    if any(name in root for name in FOREIGN_NAMES):
+    if FOREIGN_NAMES.search(sk):
         return "tafkheem"                                  # Q28 exc. 1: foreign names
     if any(x.base == "ر" for x in Ls[k + 1:]):
         return "tafkheem"                                  # Q28 exc. 3: a second rāʾ in the word
     if followed_by_istila:
         return "tafkheem"                                  # صِرَٰطَ, فِرَاقُ
-    if any(root.startswith(s) or root == s for s in SIX_NOUNS):
+    if SIX_NOUNS.match(sk):
         return "tafkheem"                                  # Q29 §4: ذِكْراً and its five
     # Now the reasons to thin.
     if prev is None:
+        return "tafkheem"
+    # The kasra of a joined preposition: the rāʾ's word starts after it.
+    if prev.base in PREPOSITIONS and prev.vowel == KASRA and (
+        k == 1 or (k == 2 and Ls[0].base in ("و", "ف") and Ls[0].vowel == FATHA)
+    ):
         return "tafkheem"
     if prev.vowel == KASRA and not (k >= 1 and is_wasl_alef(w, k - 1)):
         return "raa_tarqeeq"                               # كَرِيم… a kasra directly before

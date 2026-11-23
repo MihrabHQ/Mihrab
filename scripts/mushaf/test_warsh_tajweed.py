@@ -63,6 +63,19 @@ def find_word(skeleton: str, surah: int | None = None, needs: str = ""):
     raise LookupError(f"no word {skeleton} in the muṣḥaf")
 
 
+def find_pair(first: str, second: str, surah: int):
+    """The word `first` where the next word is `second`, analysed in its āyah."""
+    for i, a in enumerate(data()["surahs"][surah - 1]["ayahs"]):
+        ws = a["text"].split()
+        for j in range(len(ws) - 1):
+            if bare(ws[j]) == first and bare(ws[j + 1]) == second:
+                A = data()["surahs"][surah - 1]["ayahs"]
+                words = analyse_ayah(a["text"], A[i + 1]["text"] if i + 1 < len(A) else None, A[i - 1]["text"] if i > 0 else None)
+                nth = sum(1 for x in ws[:j] if bare(x) == first)
+                return f"{surah}:{a['number']}", [x for x in words if bare(x.text) == first][nth]
+    raise LookupError(f"no {first} {second} in sūrah {surah}")
+
+
 def basmalah_words():
     return analyse_ayah(data()["bismillah"].strip())
 
@@ -238,6 +251,44 @@ def main() -> int:
     case("stop-taqleel-92", "الاشقي", "ق", has=["taqleel"], surah=92)
     case("stop-taqleel-79", "طوى", "و", has=["taqleel"], surah=79)
     case("stop-taqleel-raa", "الكبرى", "ر", has=["taqleel"], lacks=["tafkheem", "raa_tarqeeq"], surah=20)
+
+    # ── Issue #136 (al-Azraq, as the Shāṭibiyya and its commentaries have it) ──
+    # The kasra of a joined preposition is not the rāʾ's own: thick.
+    case("W136-prep-bi", "بربك", "ر", has=["tafkheem"], lacks=["raa_tarqeeq"], surah=17)
+    case("W136-prep-bi2", "برءوسكم", "ر", has=["tafkheem"], lacks=["raa_tarqeeq"], surah=5)
+    case("W136-prep-li", "لربهم", "ر", has=["tafkheem"], lacks=["raa_tarqeeq"], surah=13)
+    case("W136-prep-wa", "وبرسوله", "ر", has=["tafkheem"], lacks=["raa_tarqeeq"], surah=9)
+    # …but a kasra of the word itself still thins: كَرِيم-like, and the
+    # sākin between (اَ۬لذِّكْرُ) — unchanged.
+    # بِشَرَرٖ: both rāʾs thin.
+    case("W136-sharar-1", "بشرر", "ر", has=["raa_tarqeeq"], lacks=["tafkheem"], nth=1, surah=77)
+    case("W136-sharar-2", "بشرر", "ر", has=["raa_tarqeeq"], lacks=["tafkheem"], nth=2, surah=77)
+    # The six nouns, whatever glyph the tanwīn is written with.
+    where, w = find_word("ذكرا", 18, "\u064b")  # 18:82, ذِكْراًۖ with the stacked fatḥatan
+    expect("W136-dhikran-82", where, w, "ر", has=["tafkheem"], lacks=["raa_tarqeeq"])
+    case("W136-wizran", "وزرا", "ر", has=["tafkheem"], lacks=["raa_tarqeeq"], surah=20)
+    case("W136-sihran", "وصهرا", "ر", has=["tafkheem"], lacks=["raa_tarqeeq"], surah=25)
+    # The foreign names, however they are spelt: إِسْرَآءِيلَ, every إبراهيم, إِرَمَ.
+    case("W136-israil-raa", "إسراءيل", "ر", has=["tafkheem"], lacks=["raa_tarqeeq"], surah=2)
+    case("W136-iram", "ارم", "ر", has=["tafkheem"], lacks=["raa_tarqeeq"], surah=89)
+    # The badal al-Azraq reads short: the yāʾ of إسرائيل, and after a sākin ṣaḥīḥ.
+    case("W136-badal-israil", "إسراءيل", "ي", lacks=["madd_badal"], surah=2)
+    case("W136-badal-quran", "القرءان", "ا", lacks=["madd_badal"], surah=17, nth=2)
+    case("W136-badal-madhum", "مذءوما", "و", lacks=["madd_badal"], surah=7)
+    case("W136-badal-masul", "مسولا", "و", lacks=["madd_badal"], surah=17)
+    case("W136-badal-zaman", "الظمان", "ا", lacks=["madd_badal"], surah=24, nth=2)
+    # …and the long badal stays everywhere else: ءَامَنُواْ, إِيمَٰن, أُوتُواْ.
+    case("W136-badal-amanu", "ءامنوا", "ا", has=["madd_badal"], surah=2)
+    # يَلْهَثْ ذَّٰلِكَ (7:176) and اِ۪رْكَبْ مَّعَنَا (11:42): al-Azraq reads iẓhār, and
+    # the text writes it (sukūn, no shadda) — so no idghām is coloured.
+    where, w = find_pair("يلهث", "ذلك", 7)
+    expect("W136-yalhath", where, w, "ث", lacks=["idgham_mutajanisayn"])
+    where, w = find_pair("اركب", "معنا", 11)
+    expect("W136-arkab", where, w, "ب", lacks=["idgham_mutajanisayn"])
+    # …while إِذ ظَّلَمُوٓاْ, which every reader merges, stays idghām: the pair
+    # ذ/ظ must not be dropped to fix the two above.
+    where, w = find_pair("إذ", "ظلموا", 4)
+    expect("W136-idh-zalamu", where, w, "ذ", has=["idgham_mutajanisayn"])
     RHYME_SURAHS = {20, 53, 70, 75, 79, 80, 87, 91, 92, 93, 96}
     ends = []
     for si, s_ in enumerate(data()["surahs"], start=1):
