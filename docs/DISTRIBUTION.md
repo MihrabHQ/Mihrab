@@ -412,6 +412,41 @@ The Gradle `wantsPlayRelease` guard in `app/build.gradle` REFUSES to fall back t
 5. Paste the release notes from `CHANGELOG.md`.
 6. Roll out — typically Internal → Open → Production over a week.
 
+### Background location: the declaration (once, with the first release that has it)
+
+From the release after 2.38.3 the `play` flavor declares `ACCESS_BACKGROUND_LOCATION`
+(`android/app/src/play/AndroidManifest.xml`) for the optional "Update my
+location in the background". Play will not roll a release with it out
+until the **Location permissions** declaration is filed — and the form
+only appears after a bundle with the permission has been uploaded. So, at
+the first release that has it:
+
+1. Upload `app-play-release.aab` to the release as usual. Do not roll out yet.
+2. **App content** (Policy and programmes → App content) now lists
+   **Location permissions** under "Action required". Open it.
+3. Background location: **yes**. The feature (paste; 499 characters, the field takes 500):
+
+   > Mihrab shows the five daily Muslim prayer times and sends an alert at each one, and prayer times depend on where the user is. With the optional setting “Update my location in the background” (Settings → Location, off by default), when the user travels the app moves its prayer alerts and home-screen widgets to the city they are in without being opened, so the alarms do not go off at the times of the city they left. It acts only on a move of 20 km or more; location is never sent to the developer.
+
+4. The video (38 s, made 2026-11-23 on the Android 17 emulator, kept
+   outside the repository as a binary: the maintainer's
+   `~/Downloads/Mihrab-Play-background-location.mp4`) shows, captioned:
+   the widget on Stockholm, Settings → Location, the app's own explanation,
+   Android's "Allow all the time", the setting on, the app closed and the
+   phone moved, and the widget and alerts on Gothenburg with the app still
+   closed. To make it again: an emulator with a mock location, the
+   setting turned on while `adb shell screenrecord` runs, the app swiped
+   away, the mock location moved, and up to fifteen minutes' wait (the
+   passive listener's interval). Upload it to YouTube as **Unlisted** and
+   paste the link.
+5. Save, then send the release for review. Review of the declaration can
+   take longer than an ordinary update; the release waits on it.
+
+If Play turns the declaration down, the setting can ship off the Play build
+alone: remove the permission from `src/play/AndroidManifest.xml` — the
+row hides itself where the build does not offer it — and say so in the
+release notes.
+
 ### Listing copy
 
 `fastlane/metadata/android/en-US/`:
