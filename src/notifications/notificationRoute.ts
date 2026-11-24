@@ -35,7 +35,7 @@
  * end-of-day log prompt and the fasting reminders have their own action
  * handling and are deliberately not routed here.
  */
-import type { Notification } from '@notifee/react-native';
+import type { Notification } from '../native/Alerts';
 import { MIHRAB_SCHEME } from '../navigation/linking';
 import { findPageForAyah } from '../quran/pages';
 import { khatmahContinueTarget } from '../quran/khatmahTarget';

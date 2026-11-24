@@ -17,7 +17,7 @@
  * alert need it — the scheduler, the Live Activity's mode toggle and the
  * snooze — and they must not import each other.
  */
-import { AndroidCategory } from '@notifee/react-native';
+import { AndroidCategory } from '../native/Alerts';
 import i18n from '../i18n';
 import { LAST_CHANCE_MINUTES, hasSnooze, minutesUntil, type SnoozeMenu } from './snoozeWindow';
 import { type SkyPassage } from '../screens/home/skyModel';

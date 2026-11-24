@@ -9,7 +9,7 @@
  * settings page for a daily ayah would be a toll nothing here charges.
  */
 import { PermissionsAndroid, Platform } from 'react-native';
-import notifee, { AuthorizationStatus } from '@notifee/react-native';
+import notifee, { AuthorizationStatus } from '../native/Alerts';
 
 export async function ensureNotifPermission(): Promise<boolean> {
   if (Platform.OS === 'ios') {

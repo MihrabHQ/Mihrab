@@ -20,7 +20,7 @@ import { useWindowSize } from '../responsive/windowSize';
 import notifee, {
   AndroidNotificationSetting,
   AuthorizationStatus,
-} from '@notifee/react-native';
+} from '../native/Alerts';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useIsActive } from '../hooks/useIsActive';

@@ -51,7 +51,7 @@ import { useTranslation } from 'react-i18next';
 import notifee, {
   AndroidNotificationSetting,
   AuthorizationStatus,
-} from '@notifee/react-native';
+} from '../../native/Alerts';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { usePrayerSettings } from '../../context/PrayerSettingsContext';
 import { useIsActive } from '../../hooks/useIsActive';

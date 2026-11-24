@@ -17,7 +17,7 @@
  * style — so they don't sound an adhan. Just a gentle reminder.
  */
 
-import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
+import notifee, { AndroidImportance, TriggerType } from '../native/Alerts';
 import i18n from '../i18n';
 import { gregorianToHijri } from '../hijri/convert';
 import { quiet } from '../utils/quiet';

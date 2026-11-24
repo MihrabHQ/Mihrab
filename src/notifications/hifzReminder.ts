@@ -12,7 +12,7 @@
  * recited tomorrow moves on, and tomorrow's resync rewrites the window
  * with the new answer.
  */
-import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
+import notifee, { AndroidImportance, TriggerType } from '../native/Alerts';
 import i18n from '../i18n';
 import { ROUTE_HIFZ } from './notificationRoute';
 import { getQuranState, hydrateQuranState } from '../quran/quranState';

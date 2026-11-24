@@ -10,7 +10,7 @@
  * it never imports `prayerNotifications` / `adhanSafetyControls` — that keeps
  * the module graph acyclic (see `adhanActionIds.ts`).
  */
-import notifee, { AndroidStyle, type Notification } from '@notifee/react-native';
+import notifee, { AndroidStyle, type Notification } from '../native/Alerts';
 import i18n from '../i18n';
 import { loadSettings } from '../settings/storage';
 import { resolveCoordsFromSettings } from '../settings/effectiveProvider';

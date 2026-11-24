@@ -12,7 +12,7 @@
 import { memo, useEffect, useMemo, useState } from 'react';
 import { AppState, Linking, Platform, StyleSheet, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import notifee, { AndroidNotificationSetting } from '@notifee/react-native';
+import notifee, { AndroidNotificationSetting } from '../../native/Alerts';
 import { useNotificationsSettings } from '../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { getNotificationSoundOption } from '../../notifications/notificationSounds';

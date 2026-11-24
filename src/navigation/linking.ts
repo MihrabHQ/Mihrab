@@ -25,7 +25,7 @@ import {
   type LinkingOptions,
 } from '@react-navigation/native';
 import { WEB_BASE_PATH } from '../config/webApp';
-import notifee, { EventType } from '@notifee/react-native';
+import notifee, { EventType } from '../native/Alerts';
 import { Linking, Platform } from 'react-native';
 
 import { notificationRoute } from '../notifications/notificationRoute';

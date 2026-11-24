@@ -52,7 +52,7 @@
  */
 import { useEffect, useSyncExternalStore } from 'react';
 import { AppState } from 'react-native';
-import notifee, { AndroidImportance, AndroidStyle } from '@notifee/react-native';
+import notifee, { AndroidImportance, AndroidStyle } from '../native/Alerts';
 import AsyncStorage from '../storage/appStorage';
 import { isNonPrayerEvent } from '../types/prayer';
 import i18n from '../i18n';

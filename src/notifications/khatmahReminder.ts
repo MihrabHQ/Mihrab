@@ -9,7 +9,7 @@
  *
  * Default notification sound — never the adhan.
  */
-import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
+import notifee, { AndroidImportance, TriggerType } from '../native/Alerts';
 import i18n from '../i18n';
 import { ROUTE_KHATMAH } from './notificationRoute';
 import { getQuranState, hydrateQuranState } from '../quran/quranState';

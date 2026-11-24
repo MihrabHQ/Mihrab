@@ -56,7 +56,7 @@ import { Platform } from 'react-native';
 import notifee, {
   AndroidForegroundServiceType,
   AndroidImportance,
-} from '@notifee/react-native';
+} from '../native/Alerts';
 import i18n from '../i18n';
 
 /**

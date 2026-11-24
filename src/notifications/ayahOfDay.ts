@@ -26,7 +26,7 @@ import notifee, {
   AndroidImportance,
   AndroidStyle,
   TriggerType,
-} from '@notifee/react-native';
+} from '../native/Alerts';
 import i18n from '../i18n';
 import { ROUTE_AYAH_OF_DAY } from './notificationRoute';
 import { findSurah, loadSurah, SURAHS } from '../quran/quran';

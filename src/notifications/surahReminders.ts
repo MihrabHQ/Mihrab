@@ -28,7 +28,7 @@
  * Tapping either opens that surah — see `notificationRoute`. A reminder
  * to read something that does not open it is a reminder to go looking.
  */
-import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
+import notifee, { AndroidImportance, TriggerType } from '../native/Alerts';
 import i18n from '../i18n';
 import { ROUTE_SURAH } from './notificationRoute';
 import { quiet } from '../utils/quiet';

@@ -34,7 +34,7 @@ import notifee, {
   EventType,
   TriggerType,
   type Event,
-} from '@notifee/react-native';
+} from '../native/Alerts';
 import { Platform } from 'react-native';
 import i18n from '../i18n';
 import {

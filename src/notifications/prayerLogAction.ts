@@ -33,7 +33,7 @@
  * on (issue #74, off by default) a log made in the second half of the
  * prayer's window, or after it, is recorded `late`. See `journal/logTiming`.
  */
-import notifee, { EventType, type Event } from '@notifee/react-native';
+import notifee, { EventType, type Event } from '../native/Alerts';
 import {
   durableEncryptedGet,
   durableEncryptedSet,

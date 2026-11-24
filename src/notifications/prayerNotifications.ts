@@ -5,7 +5,7 @@ import notifee, {
   AndroidVisibility,
   AuthorizationStatus,
   TriggerType,
-} from '@notifee/react-native';
+} from '../native/Alerts';
 import { Platform } from 'react-native';
 import { makeClockFormatter } from '../utils/clockFormat';
 import { alertModeFor, type AlertModeMap } from '../settings/alertModes';

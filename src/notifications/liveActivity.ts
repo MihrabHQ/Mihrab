@@ -38,7 +38,7 @@ import notifee, {
   AndroidCategory,
   AndroidImportance,
   AndroidVisibility,
-} from '@notifee/react-native';
+} from '../native/Alerts';
 import i18n from '../i18n';
 import { getMihrabLiveActivityModule } from '../native/MihrabLiveActivity';
 import type {

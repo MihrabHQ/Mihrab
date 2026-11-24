@@ -27,7 +27,7 @@
  */
 import { IS_WEB_APP } from '../config/webApp';
 import { PermissionsAndroid, Platform } from 'react-native';
-import notifee, { AuthorizationStatus } from '@notifee/react-native';
+import notifee, { AuthorizationStatus } from '../native/Alerts';
 
 /**
  * Ask for permission to post notifications. True when we may.

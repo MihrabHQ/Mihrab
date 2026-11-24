@@ -89,7 +89,7 @@ try {
 // download is driven from JS, and resolving this is how the service is
 // told it may stop. See src/quran/downloadNotification.ts.
 try {
-  const notifee = require('@notifee/react-native').default;
+  const notifee = require('./src/native/Alerts').default;
   const { foregroundServiceTask } = require('./src/quran/downloadNotification');
   notifee.registerForegroundService(() => foregroundServiceTask());
 } catch (e) {

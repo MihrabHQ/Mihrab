@@ -32,7 +32,7 @@
  * so "silent" is a second channel rather than a flag. That is the same
  * reason `notificationSounds.ts` has one channel per adhan.
  */
-import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
+import notifee, { AndroidImportance, TriggerType } from '../native/Alerts';
 import i18n from '../i18n';
 import { ROUTE_DHIKR } from './notificationRoute';
 import { dhikrArabic, findDhikr } from '../dhikr/dhikr';

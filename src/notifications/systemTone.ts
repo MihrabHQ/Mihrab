@@ -20,7 +20,7 @@
  * where its notifications are scheduled again (`retireSilentChannel`),
  * which is also the moment nothing is left pointing at it.
  */
-import notifee from '@notifee/react-native';
+import notifee from '../native/Alerts';
 import { Platform } from 'react-native';
 
 /** Notifee's name for the phone's own notification sound. */

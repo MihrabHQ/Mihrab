@@ -8,7 +8,7 @@
  * prayer does. The activity has already cancelled the notification (that is
  * what stops the sound) by the time this runs.
  */
-import { EventType, type Notification } from '@notifee/react-native';
+import { EventType, type Notification } from '../native/Alerts';
 import { applyReaderLanguage } from '../i18n/readerLanguage';
 import { snoozePrayerNotification } from './notificationActions';
 import { SNOOZE_DEFAULT_MIN, SNOOZE_MAX_MIN } from './prayerAlertActions';

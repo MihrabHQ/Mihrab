@@ -3,7 +3,7 @@
 // feedback (pressed opacity / ripple) is the right affordance here.
 import { memo, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
-import notifee from '@notifee/react-native';
+import notifee from '../../native/Alerts';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { formatUtcOffset } from '../../utils/utcOffset';

@@ -2,7 +2,7 @@ import notifee, {
   EventType,
   type Event,
   type Notification,
-} from '@notifee/react-native';
+} from '../native/Alerts';
 import { Platform } from 'react-native';
 import i18n from '../i18n';
 import { loadSettings, saveSettings } from '../settings/storage';

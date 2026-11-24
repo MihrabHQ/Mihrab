@@ -40,7 +40,7 @@ import {
 import { useWindowSize } from '../responsive/windowSize';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
-import notifee, { EventType } from '@notifee/react-native';
+import notifee, { EventType } from '../native/Alerts';
 import { JOURNAL_LOG_ACTION_ID } from '../notifications/prayerNotifications';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useKeyboardAwareScroll } from '../hooks/useKeyboardAwareScroll';

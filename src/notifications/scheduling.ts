@@ -26,7 +26,7 @@ import notifee, {
   AlarmType,
   AndroidNotificationSetting,
   TriggerType,
-} from '@notifee/react-native';
+} from '../native/Alerts';
 
 /** Re-check exact-alarm permission. Android can revoke SCHEDULE_EXACT_ALARM
  *  at runtime; this MUST be called close to scheduling, not just at boot.

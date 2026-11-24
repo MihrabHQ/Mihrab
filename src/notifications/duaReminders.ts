@@ -39,7 +39,7 @@
  * which is the only place in the app holding real times for future days
  * anchored to the day they were fetched for.
  */
-import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
+import notifee, { AndroidImportance, TriggerType } from '../native/Alerts';
 import { Platform } from 'react-native';
 import i18n from '../i18n';
 import { ROUTE_DUA_CATEGORY } from './notificationRoute';
