@@ -979,14 +979,33 @@ export function AyahActionSheet({
               closed until asked for, and carrying its own edition picker
               so a reader can read an ayah in a language other than the
               one the app happens to be in. */}
+          {/* ONE BLOCK WHILE A SECTION IS OPEN. The tabs, what they opened
+              and the way to close it share a ground and an edge, so it
+              reads as one thing that was unfolded and can be folded away —
+              before, the text simply followed the tabs on the sheet's own
+              ground and "Hide" was a small link under it, easily taken for
+              part of the text. Closed, the tabs stand alone as they did. */}
+          <View
+            style={
+              panel !== 'none'
+                ? [
+                    styles.panelCard,
+                    { borderColor: palette.border, backgroundColor: palette.bg },
+                  ]
+                : null
+            }
+          >
           <View
             accessibilityRole="tablist"
             style={[
               styles.panelTabs,
               {
                 borderColor: palette.border,
-                backgroundColor: palette.bg,
+                // Inside the open block the strip takes the sheet's ground,
+                // so it still stands off from what is under it.
+                backgroundColor: panel !== 'none' ? palette.card : palette.bg,
               },
+              panel !== 'none' && styles.panelTabsInCard,
             ]}
           >
             {(
@@ -1022,6 +1041,8 @@ export function AyahActionSheet({
                     ]}
                   >
                     {label}
+                    {/* The open one says it closes: tapping it again does. */}
+                    {on ? ' ▴' : ''}
                   </Text>
                 </Pressable>
               );
@@ -1288,18 +1309,23 @@ export function AyahActionSheet({
             <TajweedAyahSection surah={surah} ayah={ayah} onClose={onClose} />
           ) : null}
           {panel !== 'none' ? (
+            // The block's foot, edge to edge: a bar, not a link in the text.
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={t('quran.hidePanel', 'Hide')}
-              hitSlop={8}
               onPress={() => setQuranPrefs({ ayahSheetPanel: 'none' })}
-              style={styles.hidePanel}
+              style={({ pressed }) => [
+                styles.hidePanel,
+                { borderTopColor: palette.border, backgroundColor: palette.card },
+                pressed && styles.stepPressed,
+              ]}
             >
-              <Text style={[styles.moreLink, { color: palette.accentSolid }]}>
-                {t('quran.hidePanel', 'Hide')} ▴
+              <Text style={[styles.hidePanelLabel, { color: palette.accentSolid }]}>
+                ▴  {t('quran.hidePanel', 'Hide')}
               </Text>
             </Pressable>
           ) : null}
+          </View>
 
           {/* Bookmark colours — one bookmark per ayah and ONE PER COLOUR:
               tap the active colour to remove, tap a colour that is on
@@ -1945,7 +1971,27 @@ const styles = StyleSheet.create({
   },
   tafsirRtl: { textAlign: 'right', writingDirection: 'rtl' },
   sizeStepper: { alignSelf: 'flex-end', marginTop: SPACING.sm },
-  hidePanel: { alignSelf: 'center', paddingVertical: SPACING.xs },
+  // The open section's block: its own ground and edge inside the sheet.
+  panelCard: {
+    marginTop: SPACING.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    overflow: 'hidden',
+  },
+  // The card carries the top margin while the block is open.
+  panelTabsInCard: { marginTop: 0 },
+  hidePanel: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
+    marginTop: SPACING.md,
+    // Out to the block's edges, past its padding.
+    marginHorizontal: -SPACING.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  hidePanelLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   moreLink: {
     fontSize: TYPE.label.fontSize,
     fontWeight: '500',

@@ -128,3 +128,32 @@ describe('"Hide while reviewing" is offered only where it does something', () =>
     }
   });
 });
+
+describe('an open section is one block that can be folded away', () => {
+  // Asked for 2026-11-24: the section's area was not apparent — its text
+  // followed the tabs on the sheet's own ground — nor that it could be
+  // hidden: "Hide" was a small link under the text.
+  const src = require('fs').readFileSync(
+    require('path').join(__dirname, '../src/quran/mushaf/AyahActionSheet.tsx'),
+    'utf8',
+  );
+
+  it('the tabs, the text and Hide share a ground and an edge, only while one is open', () => {
+    const card = src.slice(src.indexOf("panel !== 'none'\n                ? [\n                    styles.panelCard"));
+    expect(card.length).toBeGreaterThan(0);
+    expect(card.slice(0, 200)).toMatch(/backgroundColor: palette\.bg/);
+    expect(card.slice(0, 260)).toMatch(/: null/);
+    // The tab strip and Hide are both inside it.
+    const open = src.indexOf('styles.panelCard,');
+    expect(src.indexOf('accessibilityRole="tablist"')).toBeGreaterThan(open);
+    expect(src.indexOf('styles.hidePanel,')).toBeGreaterThan(open);
+  });
+
+  it('Hide is a bar across the block’s foot, a full touch target, and the open tab says it closes', () => {
+    const style = src.slice(src.indexOf('  hidePanel: {'), src.indexOf('  hidePanelLabel:'));
+    expect(style).toMatch(/minHeight: 44/);
+    expect(style).toMatch(/borderTopWidth/);
+    expect(style).toMatch(/marginHorizontal: -SPACING\.md/);
+    expect(src).toMatch(/\{on \? ' ▴' : ''\}/);
+  });
+});
