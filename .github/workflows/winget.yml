@@ -81,8 +81,10 @@ jobs:
           # is still waiting, show what is running and winget's own log.
           $w = Start-Process winget -ArgumentList 'install', '--manifest', "`"$dir`"", '--silent', '--accept-package-agreements', '--accept-source-agreements', '--disable-interactivity', '--verbose-logs' -PassThru -NoNewWindow
           if (-not $w.WaitForExit(300000)) {
-            Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'Mihrab|winget|nsis|setup|\.tmp' -or $_.CommandLine -match 'Mihrab' } |
+            $since = (Get-Date).AddMinutes(-6)
+            Get-CimInstance Win32_Process | Where-Object { $_.CreationDate -gt $since } |
               Format-List Name, ProcessId, ParentProcessId, CommandLine | Out-String -Width 400 | Write-Host
+            Get-Item -Stream * "$env:TEMP\WinGet\MihrabHQ.Mihrab.*\*.exe" -ErrorAction SilentlyContinue | Format-Table FileName, Stream | Out-String | Write-Host
             Get-ChildItem "$env:LOCALAPPDATA\Programs\Mihrab" -ErrorAction SilentlyContinue | Select-Object -First 10 | Out-String | Write-Host
             Get-ChildItem "$env:LOCALAPPDATA\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\DiagOutputDir" -Filter *.log -ErrorAction SilentlyContinue |
               Sort-Object LastWriteTime | Select-Object -Last 1 | ForEach-Object { Get-Content $_.FullName -Tail 60 | Write-Host }
