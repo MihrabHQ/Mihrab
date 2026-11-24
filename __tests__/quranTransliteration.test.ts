@@ -122,6 +122,14 @@ describe('it is shown with the reading it spells', () => {
     );
   });
 
+  it('can be switched on, and downloaded, from the ayah sheet and from "Under each verse"', () => {
+    expect(src('quran/mushaf/AyahActionSheet.tsx')).toMatch(/<TransliterationSwitch /);
+    expect(src('quran/CompanionTextControls.tsx')).toMatch(/<TransliterationSwitch \/>/);
+    const sw = src('quran/TransliterationSwitch.tsx');
+    expect(sw).toMatch(/queueQuranDownload\(\{ kind: 'translation', editionId: TRANSLITERATION_ID \}\)/);
+    expect(sw).toMatch(/setQuranPrefs\(\{ transliteration: next \}\)/);
+  });
+
   it('the verse-by-verse reader leaves it off a row in another riwayah, and hides it with the Arabic', () => {
     const reader = src('screens/quran/TranslationSurahScreen.tsx');
     expect(reader).toMatch(/!maskArabic && !ownText && joinedInto == null \? \(\s*<TransliterationLine/);

@@ -132,6 +132,7 @@ import { useVerticalBar } from '../../native/VerticalBar';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { tajweedColoursShown } from '../tajweed/tajweedSupport';
 import { TransliterationLine } from '../TransliterationLine';
+import { TransliterationSwitch } from '../TransliterationSwitch';
 import { transliterationFits, useAyahTransliteration } from '../transliteration';
 import { IS_WEB_APP } from '../../config/webApp';
 import { useSheetSides } from '../../responsive/sheetSides';
@@ -1095,6 +1096,9 @@ export function AyahActionSheet({
                   </Text>
                 </Pressable>
               ) : null}
+              {/* The muṣḥaf has no "Under each verse": this is where its
+                  reader turns the Latin line on, and gets it for offline. */}
+              <TransliterationSwitch style={styles.transliterationSwitch} />
             </View>
           ) : null}
 
@@ -1896,6 +1900,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.md,
   },
   transliteration: { marginTop: SPACING.sm, ...NO_TEXT_SELECTION },
+  transliterationSwitch: { marginTop: SPACING.lg, marginBottom: 0 },
   // Translation · Tafsir · Tajwīd: one row of tabs, none open to begin with.
   panelTabs: {
     flexDirection: 'row',

@@ -4,10 +4,12 @@
  *
  * It lives at the top of "Under each verse" (CompanionTextControls), which
  * is reached from the surah reader, the Qur'an tab and Settings → Quran —
- * so the aid is switched on where the reader chooses what they read with.
+ * so the aid is switched on where the reader chooses what they read with —
+ * and under the translation in the ayah sheet, which is the one place a
+ * reader of the muṣḥaf meets any text beside the page.
  */
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { IS_WEB_APP } from '../config/webApp';
 import { useAppPalette } from '../hooks/useAppPalette';
@@ -24,7 +26,7 @@ import {
   transliterationFits,
 } from './transliteration';
 
-export function TransliterationSwitch() {
+export function TransliterationSwitch({ style }: { style?: StyleProp<ViewStyle> } = {}) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const prefs = useQuranPrefs();
@@ -52,7 +54,7 @@ export function TransliterationSwitch() {
 
   const label = t('quran.transliteration', 'Transliteration');
   return (
-    <View style={styles.block}>
+    <View style={[styles.block, style]}>
       <View style={styles.row}>
         <Text style={[styles.label, { color: palette.text }]}>{label}</Text>
         <Switch
