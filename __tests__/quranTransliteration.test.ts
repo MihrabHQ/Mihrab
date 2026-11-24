@@ -5,8 +5,8 @@
  * It is an aid and has to stay one: off until asked for, never a
  * translation (not in the picker, never a default, never searched or
  * shared), shown only where the Arabic above it is the Ḥafṣ reading it
- * spells, and fetched from the host that serves it — not the mirror, which
- * has no licence to republish it.
+ * spells, in the spelling the reader was taught, and read from this
+ * repository's copy first and its own host second.
  */
 import { readFileSync } from 'fs';
 import path from 'path';
@@ -36,6 +36,13 @@ import {
 } from '../src/quran/transliteration';
 import { fetchWithRetry } from '../src/utils/fetchWithRetry';
 
+// A whole-edition download asks the mirror and then the host inside
+// `fetchMirrored`; here it is the host's answer that is under test.
+jest.mock('../src/config/mirrors', () => ({
+  ...jest.requireActual('../src/config/mirrors'),
+  fetchMirrored: (_mirror: string, original: string, init: unknown, opts: unknown) =>
+    jest.requireMock('../src/utils/fetchWithRetry').fetchWithRetry(original, init, opts),
+}));
 jest.mock('../src/utils/fetchWithRetry', () => ({ fetchWithRetry: jest.fn() }));
 
 const fetchMock = fetchWithRetry as unknown as jest.Mock;
@@ -104,8 +111,6 @@ describe('they are not translations', () => {
       expect(isTransliterationEdition(e.id)).toBe(true);
       expect(e.approxBytes).toBeGreaterThan(100_000);
       expect(Object.keys(TEXT_SOURCES)).toContain(e.source);
-      // From their hosts: this repository's mirror does not hold them.
-      expect(e.unmirrored).toBe(true);
     }
     expect(isTransliterationEdition('en.sahih')).toBe(false);
   });
@@ -207,18 +212,40 @@ describe('it is off until asked for', () => {
 });
 
 describe('where the text comes from', () => {
-  it('a generated edition has no one-ayah answer: the ayah is read out of its chapter, trimmed', async () => {
-    expect(await getAyahTransliteration(ID, 2, 3)).toBe('id-skb 2:3');
+  it('this repository’s copy is asked first, and the host is not asked when it answers', async () => {
+    fetchMock.mockImplementation(async (url: string) => {
+      const m = /\/releases\/download\/data-translation-(.+)\/(\d+)\.json$/.exec(url);
+      if (!m) return gone;
+      // The mirror holds the file as the source served it.
+      return m[1] === 'tr.transliteration'
+        ? ok({ data: { ayahs: [{ numberInSurah: 3, text: `mirror abay ${m[2]}:3` }] } })
+        : ok({ id: Number(m[2]), verses: [{ id: 3, transliteration: `mirror ${m[1]} ${m[2]}:3` }] });
+    });
+    expect(await getAyahTransliteration(ID, 2, 3)).toBe('mirror translit.id-skb 2:3');
+    expect(await getAyahTransliteration(TR, 2, 3)).toBe('mirror abay 2:3');
     const urls = fetchMock.mock.calls.map(c => String(c[0]));
-    expect(urls).toEqual(['https://quran-json.risanb.com/transliteration/id-skb/chapters/2.json']);
-    // The next ayah of the same surah is not another request.
-    expect(await getAyahTransliteration(ID, 2, 1)).toBe('id-skb 2:1');
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(urls).toEqual([
+      expect.stringMatching(/github\.com\/MihrabHQ\/Mihrab\/releases\/download\/data-translation-translit\.id-skb\/2\.json$/),
+      expect.stringMatching(/github\.com\/MihrabHQ\/Mihrab\/releases\/download\/data-translation-tr\.transliteration\/2\.json$/),
+    ]);
   });
 
-  it('the Turkish one comes from alquran.cloud, an ayah at a time', async () => {
+  it('the host answers when the mirror cannot; a generated edition’s ayah is read out of its chapter', async () => {
+    expect(await getAyahTransliteration(ID, 2, 3)).toBe('id-skb 2:3');
+    const urls = fetchMock.mock.calls.map(c => String(c[0]));
+    expect(urls).toEqual([
+      expect.stringMatching(/releases\/download\/data-translation-translit\.id-skb\/2\.json$/),
+      'https://quran-json.risanb.com/transliteration/id-skb/chapters/2.json',
+    ]);
+    // The next ayah of the same surah is not another request.
+    expect(await getAyahTransliteration(ID, 2, 1)).toBe('id-skb 2:1');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('the Turkish one falls back to alquran.cloud, an ayah at a time', async () => {
     expect(await getAyahTransliteration(TR, 2, 3)).toBe('abay-ayah 2:3');
-    for (const c of fetchMock.mock.calls) expect(String(c[0])).toMatch(/^https:\/\/api\.alquran\.cloud\//);
+    const urls = fetchMock.mock.calls.map(c => String(c[0]));
+    expect(urls[urls.length - 1]).toBe('https://api.alquran.cloud/v1/ayah/2:3/tr.transliteration');
   });
 
   it('never mixes spellings', async () => {
@@ -251,7 +278,7 @@ describe('where the text comes from', () => {
   });
 
   it.each(QURAN_TRANSLITERATIONS.map(e => e.id))(
-    '%s downloads whole from its host alone: 114 surahs, none asked of the mirror',
+    '%s downloads whole: 114 surahs, each in its source’s shape',
     async id => {
       const { complete } = await downloadTranslationEdition(id, {}).promise;
       expect(complete).toBe(true);

@@ -605,12 +605,17 @@ picks another:
   Devanagari, a Cyrillic or a Chinese transliteration of the whole Qur'an,
   and one in Swedish, German, French or Spanish spelling. Those readers get
   one of the Latin ones above.
-- **Fetched from the hosts only** (`unmirrored`): a surah as it is read, or
-  an edition's 114 surahs once at the reader's request. Neither host is
-  pinned, so a change upstream reaches readers unreviewed. CC BY-SA allows a
-  copy in this repository's mirror (a release per edition, credited), which
-  would pin the text that was checked; Abay's would need Tanzil's agreement.
-  Not done yet: it publishes releases, which is the maintainer's call.
+- **This repository's mirror first, the hosts second** (maintainer's
+  decision, 2026-11-24). Each edition has a release of its own,
+  `data-translation-<edition>`, 114 files exactly as the source served them
+  on 2026-11-24 — the text that was checked above, so a change upstream
+  does not reach readers until the mirror is rebuilt and looked at again.
+  The app asks the mirror, and the edition's own host only when the mirror
+  cannot answer (Mihrab Web always asks the host: a release asset has no
+  CORS header). Each release's notes carry the credit and the licence.
+  Rebuild: `MIRROR_ONLY=transliteration node scripts/mirror/build-mirror.js`,
+  then upload as for the translations. Abay's Turkish is mirrored on the
+  same footing as the Tanzil translations already are.
 - **Ḥafṣ only.** Shown only under an Arabic text that is Ḥafṣ
   (`transliterationFits`: the Madinah and IndoPak prints), never under
   Warsh, Qālūn or Shuʿbah.

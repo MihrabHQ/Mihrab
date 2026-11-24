@@ -11,7 +11,9 @@
  *   data-tafsir-<edition>       <surah>.json         (spa5k/tafsir_api, MIT; three
  *                                                     Tanzil editions via alquran.cloud)
  *   data-translation-<edition>  <surah>.json         (the translations that are
- *                                                     downloads: alquran.cloud, QuranEnc)
+ *                                                     downloads: alquran.cloud, QuranEnc;
+ *                                                     and the transliterations:
+ *                                                     risan/quran-json, alquran.cloud)
  *
  * A release takes at most 1,000 assets, so an edition gets a release of its
  * own and the asset is the surah — `editionMirrorTag` in src/config/mirrors.ts
@@ -48,6 +50,13 @@ function editionsOf(file, listName, defaultSource) {
 }
 const tafsirEditions = editionsOf('src/quran/tafsir.ts', 'TAFSIR_EDITIONS', 'quran.com');
 const translationEditions = editionsOf('src/quran/translations.ts', 'QURAN_TRANSLATIONS', null);
+// The transliterations are kept, and mirrored, as translations are
+// (`src/quran/transliteration.ts`): data-translation-<edition>.
+const transliterationEditions = editionsOf('src/quran/translations.ts', 'export const QURAN_TRANSLITERATIONS', null);
+if (transliterationEditions.length < 4) throw new Error('translations.ts: expected the transliterations');
+// MIRROR_ONLY=transliteration builds those alone, without asking every
+// source for every edition again.
+const ONLY = process.env.MIRROR_ONLY || '';
 
 /** The same answers the app parses (`src/quran/textSources.ts`). */
 const SOURCES = {
@@ -72,6 +81,12 @@ const SOURCES = {
     rows: json => json && json.result,
     // One server too, steadier than alquran.cloud but not a CDN.
     concurrency: 3,
+  },
+  'quran-json': {
+    urls: (id, s) => [`https://quran-json.risanb.com/transliteration/${id}/chapters/${s}.json`],
+    rows: json => json && json.verses,
+    // Static files behind a CDN.
+    concurrency: 6,
   },
 };
 
@@ -210,6 +225,11 @@ function have(tag, name) {
     );
     return { editions: list.length, missing, kept };
   };
+  report.transliterations = await mirrorEditions('translation', transliterationEditions);
+  if (ONLY === 'transliteration') {
+    console.log(JSON.stringify(report, null, 2));
+    return;
+  }
   report.tafsir = await mirrorEditions('tafsir', tafsirEditions);
   report.translations = await mirrorEditions('translation', translationEditions);
 

@@ -45,12 +45,6 @@ export type StoredEdition = {
   sourceId: string;
   /** The whole edition on disk, in bytes — for the offer and the space check. */
   approxBytes: number;
-  /**
-   * This repository's mirror does not hold the edition, and is not asked:
-   * the host answers at once instead of after a 404. For a text the
-   * mirror has no licence to republish (`transliteration.ts`).
-   */
-  unmirrored?: boolean;
 };
 
 export const STORE_SURAHS = 114;
@@ -180,7 +174,7 @@ async function mirrorSurah(
 ): Promise<SurahFile | null> {
   // A browser can't read a release download (no CORS header): the web app
   // goes to the host instead of failing loudly first.
-  if (IS_WEB_APP || ed.unmirrored) return null;
+  if (IS_WEB_APP) return null;
   const key = `${kind}:${ed.id}:${surah}`;
   const pending = mirrorInFlight.get(key);
   if (pending) return pending;
@@ -378,19 +372,16 @@ async function fetchSurahToDisk(kind: StoreKind, ed: StoredEdition, surah: numbe
   // edition's biggest surah is megabytes, which needs the long one.
   const small = ed.approxBytes < SMALL_EDITION_BYTES;
   const src = TEXT_SOURCES[ed.source];
-  const budget = {
-    maxAttempts: small ? 4 : 2,
-    baseDelayMs: 400,
-    timeoutMs: small ? CONTENT_DEADLINES.tafsirSurahSmall : CONTENT_DEADLINES.tafsirSurah,
-  };
-  const res = ed.unmirrored
-    ? await fetchWithRetry(src.surahUrl(ed.sourceId, surah), undefined, budget)
-    : await fetchMirrored(
-        mirrorSurahUrl(kind, ed.id, surah),
-        src.surahUrl(ed.sourceId, surah),
-        undefined,
-        budget,
-      );
+  const res = await fetchMirrored(
+    mirrorSurahUrl(kind, ed.id, surah),
+    src.surahUrl(ed.sourceId, surah),
+    undefined,
+    {
+      maxAttempts: small ? 4 : 2,
+      baseDelayMs: 400,
+      timeoutMs: small ? CONTENT_DEADLINES.tafsirSurahSmall : CONTENT_DEADLINES.tafsirSurah,
+    },
+  );
   let file: SurahFile = { v: 1, ayahs: {} };
   if (res.status === 404) {
     // A few surahs are simply missing from some editions upstream. Marking
