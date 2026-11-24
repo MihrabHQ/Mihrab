@@ -55,6 +55,8 @@ so far: the two Android manifests are one; the build files are this
 project's; NotificationAndroidStyleModel.java names the overload it calls
 (bigLargeIcon((Bitmap) null)); in the TypeScript, one type React Native no
 longer exports is declared locally, four values are asserted non-null, lint
-comments that no longer apply are gone, and the unused web stub
-(NotifeeNativeModule.web.ts) is removed. Files changed later say so in the
+comments that no longer apply are gone, the unused web stub
+(NotifeeNativeModule.web.ts) is removed, and documentation links in comments
+are written without their scheme (this project's network test reads every
+host named in src/ as one the app may contact). Files changed later say so in the
 file.

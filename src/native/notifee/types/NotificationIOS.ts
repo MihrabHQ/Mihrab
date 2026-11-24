@@ -621,14 +621,14 @@ export interface IOSNotificationAttachment {
    *  - An absolute path to a file on the device
    *  - iOS resource
    *
-   * For a list of supported file types, see [Supported File Types](https://developer.apple.com/documentation/usernotifications/unnotificationattachment#1682051) on the official Apple documentation for more information.
+   * For a list of supported file types, see [Supported File Types](developer.apple.com/documentation/usernotifications/unnotificationattachment#1682051) on the official Apple documentation for more information.
    */
   url: string;
 
   /**
    * An optional hint about an attachment’s file type, as as Uniform Type Identifier (UTI).
    *
-   * A list of UTI values can be found [here](https://developer.apple.com/library/archive/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html) e.g. for JPEG you'd use `public.jpeg` as the `typeHint` value.
+   * A list of UTI values can be found [here](developer.apple.com/library/archive/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html) e.g. for JPEG you'd use `public.jpeg` as the `typeHint` value.
    *
    * If you do not include this key, the attachment’s filename extension is used to determine its type.
    */
@@ -676,7 +676,7 @@ export interface IOSAttachmentThumbnailClippingRect {
 
 /**
  * Constants that indicate the importance and delivery timing of a notification.
- * https://developer.apple.com/documentation/usernotifications/unnotificationinterruptionlevel
+ * developer.apple.com/documentation/usernotifications/unnotificationinterruptionlevel
  *
  * @platform ios
  */

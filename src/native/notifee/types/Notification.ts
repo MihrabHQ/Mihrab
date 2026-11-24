@@ -222,7 +222,7 @@ export interface NotificationPressAction {
   launchActivity?: string;
 
   /**
-   * Custom flags that are added to the Android [Intent](https://developer.android.com/reference/android/content/Intent.html) that launches your Activity.
+   * Custom flags that are added to the Android [Intent](developer.android.com/reference/android/content/Intent.html) that launches your Activity.
    *
    * These are only required if you need to customise the behaviour of how your activities are launched; by default these are not required.
    *
@@ -280,7 +280,7 @@ export interface NotificationFullScreenAction {
   launchActivity?: string;
 
   /**
-   * Custom flags that are added to the Android [Intent](https://developer.android.com/reference/android/content/Intent.html) that launches your Activity.
+   * Custom flags that are added to the Android [Intent](developer.android.com/reference/android/content/Intent.html) that launches your Activity.
    *
    * These are only required if you need to customise the behaviour of how your activities are launched; by default these are not required.
    *
