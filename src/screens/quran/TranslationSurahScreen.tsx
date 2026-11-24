@@ -49,6 +49,7 @@ import { findTranslationEdition, getSurahTranslation } from '../../quran/transla
 import { TransliterationLine } from '../../quran/TransliterationLine';
 import { foreignText, ownSideAlign } from '../../i18n/foreignText';
 import { useLayoutRtl } from '../../i18n/useLayoutRtl';
+import { useVerticalBarInsets } from '../../native/VerticalBar';
 import { resolveTransliteration, useSurahTransliteration } from '../../quran/transliteration';
 import { useActiveEdition } from '../../quran/useActiveEdition';
 import { loadTafsir, resolveTafsirEdition } from '../../quran/tafsir';
@@ -173,6 +174,7 @@ export function TranslationSurahScreen({
   const edition = useActiveEdition();
   // Each line against its own edge in either layout: the Arabic on the
   // right, a Latin translation on the left (foreignText.ts).
+  const columnPad = useVerticalBarInsets();
   const layoutRtl = useLayoutRtl();
   const arabicAlign = ownSideAlign(true, layoutRtl);
   const translationSide = foreignText(findTranslationEdition(edition)?.rtl ? 'ar' : 'en', i18n.language);
@@ -1051,7 +1053,11 @@ export function TranslationSurahScreen({
 
   return (
     // Every ayah card's Arabic and translation: the app's actions, not a selection (noTextSelection).
-    <View style={[{ flex: 1, backgroundColor: palette.bg }, NO_TEXT_SELECTION]}>
+    // Beside an iPhone's vertical bar: clear of the column. This route opts
+    // out of the navigators' padding for the muṣḥaf, which draws its own
+    // column; the verse-by-verse cards ran on under the bar and its clock.
+    // Null on every other device (AGENTS.md §8).
+    <View style={[{ flex: 1, backgroundColor: palette.bg }, NO_TEXT_SELECTION, columnPad]}>
       {/* The download strip — the ayah sheet below starts the per-surah
           tilāwah download and then closes, so this is where it can be
           watched from. iOS floats its header over the content, so the

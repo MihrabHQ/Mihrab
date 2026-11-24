@@ -91,6 +91,7 @@ describe('the vertical bar is the iPhone Duo’s alone', () => {
       'src/screens/home/TodayCard.tsx',
       'src/screens/month/MonthTable.tsx',
       'src/screens/quran/MushafSurahScreen.tsx',
+      'src/screens/quran/TranslationSurahScreen.tsx',
       'src/settings/useMinimalOffered.ts',
     ]);
   });
@@ -123,6 +124,19 @@ describe('the vertical bar is the iPhone Duo’s alone', () => {
     const home = read('src/screens/HomeScreen.tsx');
     const notices = home.slice(home.indexOf('permissionBannersShown({'), home.indexOf('<PermissionBanners'));
     expect(notices).toContain('vbarPad]');
+  });
+
+  it('keeps the verse-by-verse reader and the muṣḥaf download page clear of the bar', () => {
+    // The surah route opts out of the navigators' padding for the muṣḥaf,
+    // which draws its own column. The verse-by-verse cards ran on under the
+    // bar and its clock, and the "Download the mushaf" page's lines under
+    // the column's buttons (seen on the Duo simulator, 2026-11-24).
+    const reader = read('src/screens/quran/TranslationSurahScreen.tsx');
+    expect(reader).toContain('const columnPad = useVerticalBarInsets();');
+    expect(reader).toMatch(/NO_TEXT_SELECTION, columnPad\]/);
+    const gate = read('src/quran/MushafReader.tsx');
+    expect(gate).toMatch(/const gateBeside =\s*vbar != null && deviceClass === 'phone' && !props\.isFullscreen/);
+    expect(gate).toContain("[styles.gate, { backgroundColor: palette.bg }, gateBeside]");
   });
 
   it('leaves no Modal in the app without a way clear of the bar', () => {

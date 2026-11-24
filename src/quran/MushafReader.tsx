@@ -259,6 +259,20 @@ export function MushafReader(props: Props) {
   useKeyPaging(turnForward, turnBack);
 
   // ── Gate screens ────────────────────────────────────────────────────
+  // Beside an iPhone's vertical bar the screen's buttons stand in the bar's
+  // column over this page (MushafSurahScreen); the gate keeps clear of it,
+  // or its lines ran on under the buttons. Padding, so the page's colour
+  // still runs under the column; the narrower margins keep the button's
+  // label on one line in what is left. Nothing elsewhere.
+  const gateBeside =
+    vbar != null && deviceClass === 'phone' && !props.isFullscreen
+      ? {
+          paddingHorizontal: SPACING.lg,
+          ...(vbar.side === 'right' // rtl-safe: the vertical bar is on a physical side
+            ? { paddingRight: vbar.width + SPACING.lg } // rtl-safe: the vertical bar is on a physical side
+            : { paddingLeft: vbar.width + SPACING.lg }), // rtl-safe: the vertical bar is on a physical side
+        }
+      : null;
   if (downloadStatus === 'checking' && !reading) {
     return (
       <View style={[styles.gate, { backgroundColor: palette.bg }]}>
@@ -275,7 +289,7 @@ export function MushafReader(props: Props) {
             size: FONT_SET_MB,
           });
     return (
-      <View style={[styles.gate, { backgroundColor: palette.bg }]}>
+      <View style={[styles.gate, { backgroundColor: palette.bg }, gateBeside]}>
         <Text style={[styles.gateTitle, { color: palette.text }]}>
           {t('quran.mushafDownloadTitle', 'Download the mushaf')}
         </Text>
@@ -312,7 +326,15 @@ export function MushafReader(props: Props) {
           accessibilityLabel={cta}
           onPress={startDownload}
           style={[styles.cta, { backgroundColor: palette.accentSolid }]}>
-          <Text style={[styles.ctaLabel, { color: palette.onAccent }]}>{cta}</Text>
+          <Text
+            style={[
+              styles.ctaLabel,
+              { color: palette.onAccent },
+              // If it still wraps beside the bar, it wraps centred.
+              gateBeside ? { textAlign: 'center' } : null,
+            ]}>
+            {cta}
+          </Text>
         </Pressable>
       </View>
     );
