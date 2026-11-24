@@ -68,6 +68,15 @@ jobs:
           }
           winget --version
           winget settings --enable LocalManifestFiles
+          # winget marks the installer it downloads as from the internet, and
+          # the installer is not code-signed, so SmartScreen stops it for a
+          # click nobody here can give (seen: CHXSmartScreen.exe, and winget
+          # waiting on it for the run's whole half hour). Off on this
+          # throwaway runner only, so the check is of the installer; a person
+          # installing with winget sees SmartScreen's "Run anyway" once.
+          New-Item -Force 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' | Out-Null
+          Set-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -Name EnableSmartScreen -Type DWord -Value 0
+          Set-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer' -Name SmartScreenEnabled -Value Off
 
       - name: Validate, install, start, remove
         shell: pwsh
