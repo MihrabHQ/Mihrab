@@ -8,6 +8,7 @@
  * legacy `MushafReader` keeps its own copies until image mode retires.
  */
 import React, {
+  useDeferredValue,
   useCallback,
   useEffect,
   useMemo,
@@ -265,6 +266,10 @@ export type MushafReaderCore = {
   resumeFollow: () => void;
   selected: AyahSelection | null;
   sheetVisible: boolean;
+  /** The same selection, a render behind: what the sheet is given. */
+  sheetSelected: AyahSelection | null;
+  sheetShown: boolean;
+  sheetAudio: boolean;
   sheetScrollAudio: boolean;
   openSelection: (ref: AyahRef, page: number) => void;
   closeSheet: () => void;
@@ -564,6 +569,21 @@ export function useMushafReaderCore({
   const closeSheet = useCallback(() => setSheetVisible(false), []);
 
   /**
+   * THE SHEET FOLLOWS THE TAP; IT DOES NOT HOLD IT UP.
+   *
+   * A tap on an ayah does two things: it marks the ayah on the page, and
+   * it mounts the sheet — a large tree, 150 ms of rendering the first
+   * time on a Pixel 10 Pro. Rendered together, the mark waited for the
+   * sheet: nothing on screen answered the finger for a quarter of a
+   * second. These are the same three values, deferred: React renders the
+   * mark first and the sheet straight after, and the readers hand the
+   * sheet these, never the urgent ones.
+   */
+  const sheetSelected = useDeferredValue(selected);
+  const sheetShown = useDeferredValue(sheetVisible);
+  const sheetAudio = useDeferredValue(sheetScrollAudio);
+
+  /**
    * Let the sheet go once it has finished leaving.
    *
    * `selected` is what keeps the <Modal> mounted, and closing only ever
@@ -729,6 +749,9 @@ export function useMushafReaderCore({
     resumeFollow,
     selected,
     sheetVisible,
+    sheetSelected,
+    sheetShown,
+    sheetAudio,
     sheetScrollAudio,
     openSelection,
     closeSheet,

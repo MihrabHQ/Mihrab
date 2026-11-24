@@ -10,8 +10,6 @@ import android.view.View
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.assets.ReactFontManager
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import kotlin.math.ceil
 
 /**
@@ -115,6 +113,9 @@ class MushafLineView(context: Context) : View(context) {
   }
 
   private val uiPens = Pens()
+  private val visibleProbe = android.graphics.Rect()
+  /** The page's lines this one is waiting to be shown with, while it is. */
+  private var reveal: Reveal? = null
   private val blitPaint = Paint(Paint.FILTER_BITMAP_FLAG)
 
   /** The line as last rasterised; valid only while `cacheGeneration` is current. */
@@ -158,6 +159,7 @@ class MushafLineView(context: Context) : View(context) {
     cacheGeneration = -1
     cacheInk = null
     waitingSince = 0L
+    reveal = null
   }
 
   override fun onDraw(canvas: Canvas) {
@@ -176,6 +178,19 @@ class MushafLineView(context: Context) : View(context) {
 
     val bitmap = cache
     val cached = bitmap != null && cacheGeneration == generation
+    // Painted, but the rest of its page is not: the page appears whole
+    // (see Reveal). Never on a capture, and never for long.
+    if (cached && canvas.isHardwareAccelerated) {
+      val r = reveal
+      if (r != null) {
+        val left = INK_WAIT_MS - (android.os.SystemClock.uptimeMillis() - r.since)
+        if (r.pending > 0 && left > 0) {
+          postInvalidateDelayed(left + 1)
+          return
+        }
+        reveal = null
+      }
+    }
     // A HARDWARE bitmap cannot be drawn on a software canvas (it throws):
     // a capture of the view into a Bitmap — a screenshot-to-share, a
     // drawing cache — gets the line drawn directly instead. Nothing does
@@ -186,7 +201,11 @@ class MushafLineView(context: Context) : View(context) {
       return
     }
     val line = snapshot(pieces, typeface)
-    if (!cached && pendingGeneration != generation) paintInBackground(line)
+    // An older picture of the same words can stand in while the new one is
+    // painted; a line with none is one of a page appearing for the first time.
+    val standIn =
+      bitmap != null && !bitmap.isRecycled && cacheInk == inkOf(line) && cacheWidth == width && cacheHeight == height
+    if (!cached && pendingGeneration != generation) paintInBackground(line, !standIn)
     // On the screen, the line waits for its picture (see the note at the
     // top). A software canvas — a capture — is never kept waiting.
     if (!cached && canvas.isHardwareAccelerated) {
@@ -195,9 +214,9 @@ class MushafLineView(context: Context) : View(context) {
       if (now - waitingSince < INK_WAIT_MS) {
         // The same words in the same place, with older marks: better than
         // nothing, and never another line's ink.
-        if (bitmap != null && !bitmap.isRecycled && cacheInk == inkOf(line) && cacheWidth == width && cacheHeight == height) {
+        if (standIn) {
           val m = -cacheMargin.toFloat()
-          canvas.drawBitmap(bitmap, m, m, blitPaint)
+          canvas.drawBitmap(bitmap!!, m, m, blitPaint)
         }
         // Looked at again when the wait is over, should no picture have come.
         postInvalidateDelayed(INK_WAIT_MS - (now - waitingSince) + 1)
@@ -259,16 +278,22 @@ class MushafLineView(context: Context) : View(context) {
     )
   }
 
-  private fun paintInBackground(line: Line) {
+  private fun paintInBackground(line: Line, firstInk: Boolean) {
     val gen = generation
     pendingGeneration = gen
+    // A line with nothing to show joins its page's reveal; the job reports
+    // back to it exactly once, whatever becomes of the picture.
+    val joined: Reveal? = if (firstInk) Reveal.join(fontFamily, this) else null
+    if (joined != null) reveal = joined
     // The view is sized for the ink, but calligraphy has outrun that sizing
     // before; a quarter-em margin keeps a stray swash from being cut at the
     // bitmap's edge, where before it simply landed outside the view.
     val margin = ceil(line.textPx * 0.25f).toInt()
     val w = width + margin * 2
     val h = height + margin * 2
-    PAINTERS.execute {
+    // On the screen now, or a neighbour page mounted for the next swipe?
+    val onScreen = isShown && getGlobalVisibleRect(visibleProbe)
+    PAINTERS.execute(PaintJob(onScreen) {
       val painted = try {
         val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         drawLine(Canvas(bitmap), line, Pens(), margin.toFloat())
@@ -285,7 +310,11 @@ class MushafLineView(context: Context) : View(context) {
         // straight onto the canvas, as it always used to.
         null
       }
-      post {
+      // The main looper, not `post`: on a view that has left the window
+      // `post` keeps the runnable for an attach that may never come — the
+      // bitmap with it, and the page's reveal would wait on this line.
+      MAIN.post {
+        joined?.done()
         if (painted == null) {
           // Free the slot, or this line would draw itself directly on every
           // frame until a prop changed: the next draw tries again, by when
@@ -315,7 +344,7 @@ class MushafLineView(context: Context) : View(context) {
         waitingSince = 0L
         invalidate()
       }
-    }
+    })
   }
 
   companion object {
@@ -330,16 +359,102 @@ class MushafLineView(context: Context) : View(context) {
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && b.config == Bitmap.Config.HARDWARE
 
     /**
-     * Two painters for every line in the app: a page turn brings fifteen
-     * lines at once, and the UI thread is the one thing they must not
-     * queue behind.
+     * THE PAINTERS, AND WHOSE LINE GOES FIRST.
+     *
+     * There were two of them, at background priority, taking lines in the
+     * order they asked. Opening the reader mounts the page and its
+     * neighbours — 88 lines on a Pixel 10 Pro, measured — and each takes
+     * about 17 ms on a background thread, which Android keeps to the small
+     * cores: the page on screen filled in a line at a time over a quarter
+     * of a second, its lines queued in among those of pages nobody could
+     * see yet, and the neighbours took half a second more.
+     *
+     * So: the lines on the screen go before the ones that are not, at the
+     * app's ordinary priority (the big cores); the ones waiting off screen
+     * stay at background priority, where they cannot take a frame from a
+     * swipe; and there are as many painters as the phone can spare, up to
+     * four. The UI thread still never paints a line.
      */
-    private val PAINTERS: ExecutorService = Executors.newFixedThreadPool(2) { task ->
-      Thread({
-        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND)
-        task.run()
-      }, "MushafLinePainter").apply { isDaemon = true }
+    private val MAIN = android.os.Handler(android.os.Looper.getMainLooper())
+
+    /**
+     * A PAGE APPEARS WHOLE.
+     *
+     * Each line swapped to its picture the frame it was painted, so a page
+     * opening filled in a line or two at a time for as long as the painters
+     * took — a tenth of a second and more on a Pixel 10 Pro, and it was
+     * seen as the ayahs loading in. The lines of a page that have nothing
+     * to show yet now wait for one another: they are counted in as they
+     * ask to be painted (all of them in the one draw pass a page first
+     * appears in) and shown together when the last is done, or when
+     * `INK_WAIT_MS` has gone by, whichever is first.
+     *
+     * Keyed by the page's font family, which is the page. A line that
+     * already shows an older picture of the same words (a selection, the
+     * recited ayah) never waits: it has something to show. Main thread only.
+     */
+    private class Reveal(val key: String) {
+      val since = android.os.SystemClock.uptimeMillis()
+      var pending = 0
+      val lines = ArrayList<java.lang.ref.WeakReference<MushafLineView>>()
+
+      fun done() {
+        pending -= 1
+        if (pending > 0) return
+        if (OPEN[key] === this) OPEN.remove(key)
+        for (ref in lines) {
+          val v = ref.get() ?: continue
+          if (v.reveal === this) {
+            v.reveal = null
+            v.invalidate()
+          }
+        }
+        lines.clear()
+      }
+
+      companion object {
+        private val OPEN = HashMap<String, Reveal>()
+
+        fun join(key: String, line: MushafLineView): Reveal {
+          var r = OPEN[key]
+          if (r == null || r.pending <= 0 || android.os.SystemClock.uptimeMillis() - r.since >= INK_WAIT_MS) {
+            r = Reveal(key)
+            OPEN[key] = r
+          }
+          r.pending += 1
+          r.lines.add(java.lang.ref.WeakReference(line))
+          return r
+        }
+      }
     }
+
+    private class PaintJob(val onScreen: Boolean, val work: () -> Unit) : Runnable, Comparable<PaintJob> {
+      val order = SEQUENCE.incrementAndGet()
+      override fun run() {
+        android.os.Process.setThreadPriority(
+          if (onScreen) android.os.Process.THREAD_PRIORITY_DEFAULT
+          else android.os.Process.THREAD_PRIORITY_BACKGROUND,
+        )
+        work()
+      }
+      override fun compareTo(other: PaintJob): Int =
+        if (onScreen != other.onScreen) (if (onScreen) -1 else 1) else order.compareTo(other.order)
+    }
+
+    private val SEQUENCE = java.util.concurrent.atomic.AtomicLong()
+    private val PAINTER_COUNT = (Runtime.getRuntime().availableProcessors() - 2).coerceIn(2, 4)
+
+    private val PAINTERS: java.util.concurrent.ThreadPoolExecutor =
+      java.util.concurrent.ThreadPoolExecutor(
+        PAINTER_COUNT,
+        PAINTER_COUNT,
+        0L,
+        java.util.concurrent.TimeUnit.MILLISECONDS,
+        // Jobs are PaintJobs and only ever handed over with `execute`.
+        java.util.concurrent.PriorityBlockingQueue<Runnable>(),
+      ) { task ->
+        Thread(task, "MushafLinePainter").apply { isDaemon = true }
+      }
 
     /** The line itself, offset by `inset` px on both axes. */
     private fun drawLine(canvas: Canvas, line: Line, pens: Pens, inset: Float) {

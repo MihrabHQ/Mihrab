@@ -77,13 +77,26 @@ const TABLES: Record<string, () => Table> = {
 
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
+/**
+ * Each character's six bits, by char code. This was `B64.indexOf(char)` — a
+ * search of the alphabet for every character of every table — and the
+ * tables are decoded, all of them, the first time anything asks which
+ * voices can be played: 80 ms on a Pixel 10 Pro, in the tap that opens the
+ * ayah sheet. A character outside the alphabet is -1, as `indexOf` gave.
+ */
+const B64_VALUE: number[] = (() => {
+  const out = new Array<number>(128).fill(-1);
+  for (let i = 0; i < B64.length; i++) out[B64.charCodeAt(i)] = i;
+  return out;
+})();
+
 function bytesOf(b64: string): number[] {
   const clean = b64.replace(/=+$/, '');
   const bytes: number[] = [];
   let bits = 0;
   let value = 0;
   for (let i = 0; i < clean.length; i++) {
-    value = ((value << 6) | B64.indexOf(clean[i])) & 0xffffff;
+    value = ((value << 6) | B64_VALUE[clean.charCodeAt(i)]) & 0xffffff;
     bits += 6;
     if (bits >= 8) {
       bits -= 8;

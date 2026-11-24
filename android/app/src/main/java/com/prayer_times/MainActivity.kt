@@ -62,6 +62,49 @@ class MainActivity : ReactActivity() {
   }
 
   /**
+   * A PROFILE OF SOMETHING OTHER THAN THE LAUNCH — tools/startup-trace/interaction.sh.
+   *
+   * The same sampler, started in the running app: `am start` the activity
+   * again with `--ez mihrab.profile true --ei mihrab.profileMs 8000` and do
+   * the thing to be measured (open the muṣḥaf, tap an ayah) inside the
+   * window. Without the extra the intent is handled as it always was.
+   */
+  override fun onNewIntent(intent: android.content.Intent) {
+    super.onNewIntent(intent)
+    if (intent.getBooleanExtra("mihrab.profile", false)) {
+      profileFor(intent.getIntExtra("mihrab.profileMs", 8000).coerceIn(500, 30000).toLong())
+    }
+  }
+
+  private fun profileFor(ms: Long) {
+    com.facebook.hermes.instrumentation.HermesSamplingProfiler.enable()
+    android.util.Log.i(
+      "MihrabProfile",
+      "enabled at uptime=" + android.os.SystemClock.uptimeMillis() + " epoch=" + System.currentTimeMillis(),
+    )
+    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ dumpProfile() }, ms)
+  }
+
+  private fun dumpProfile() {
+    com.facebook.hermes.instrumentation.HermesSamplingProfiler.disable()
+    val f = java.io.File(cacheDir, "launch.cpuprofile")
+    com.facebook.hermes.instrumentation.HermesSamplingProfiler.dumpSampledTraceToFile(f.absolutePath)
+    val bo = java.io.ByteArrayOutputStream()
+    java.util.zip.GZIPOutputStream(bo).use { it.write(f.readBytes()) }
+    f.delete()
+    val b64 = android.util.Base64.encodeToString(bo.toByteArray(), android.util.Base64.NO_WRAP)
+    var i = 0
+    var n = 0
+    while (i < b64.length) {
+      val e = minOf(i + 3000, b64.length)
+      android.util.Log.i("MihrabProfile", "[$n] " + b64.substring(i, e))
+      i = e
+      n++
+    }
+    android.util.Log.i("MihrabProfile", "DONE $n")
+  }
+
+  /**
    * A HERMES SAMPLING PROFILE OF THE LAUNCH — tools/startup-trace/profile.sh.
    *
    * Only when the activity is started with `--ez mihrab.profile true`
@@ -80,23 +123,7 @@ class MainActivity : ReactActivity() {
             "MihrabProfile",
             "enabled at uptime=" + android.os.SystemClock.uptimeMillis() + " epoch=" + System.currentTimeMillis(),
           )
-          android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-            com.facebook.hermes.instrumentation.HermesSamplingProfiler.disable()
-            val f = java.io.File(cacheDir, "launch.cpuprofile")
-            com.facebook.hermes.instrumentation.HermesSamplingProfiler.dumpSampledTraceToFile(f.absolutePath)
-            val bo = java.io.ByteArrayOutputStream()
-            java.util.zip.GZIPOutputStream(bo).use { it.write(f.readBytes()) }
-            f.delete()
-            val b64 = android.util.Base64.encodeToString(bo.toByteArray(), android.util.Base64.NO_WRAP)
-            var i = 0
-            var n = 0
-            while (i < b64.length) {
-              val e = minOf(i + 3000, b64.length)
-              android.util.Log.i("MihrabProfile", "[$n] " + b64.substring(i, e))
-              i = e
-              n++
-            }
-            android.util.Log.i("MihrabProfile", "DONE $n")
+          android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ dumpProfile()
           }, 2500)
         }
       },

@@ -15,7 +15,7 @@ describe('the muṣḥaf line cache', () => {
       'if (cached && (canvas.isHardwareAccelerated || !isHardwareBitmap(bitmap!!))) {',
     );
     // Drawn directly then, without queueing another paint of a line it has.
-    expect(view).toContain('if (!cached && pendingGeneration != generation) paintInBackground(line)');
+    expect(view).toContain('if (!cached && pendingGeneration != generation) paintInBackground(line, !standIn)');
     // And a capture is never kept waiting for the picture: the wait is the screen's.
     expect(view).toContain('if (!cached && canvas.isHardwareAccelerated) {');
   });
@@ -31,6 +31,7 @@ describe('the muṣḥaf line cache', () => {
     expect(draw).toMatch(/if \(now - waitingSince < INK_WAIT_MS\) \{[\s\S]*?postInvalidateDelayed\([\s\S]*?return\s*\}\s*\}\s*drawLine\(canvas, line, uiPens, 0f\)/);
     // Its own older picture only: the same words, the same size.
     expect(draw).toContain('cacheInk == inkOf(line) && cacheWidth == width && cacheHeight == height');
+    expect(draw).toMatch(/if \(standIn\) \{\s*val m = -cacheMargin\.toFloat\(\)\s*canvas\.drawBitmap\(bitmap!!, m, m, blitPaint\)/);
     // A paint that failed ends the wait.
     expect(view).toMatch(/if \(gen == generation\) \{\s*waitingSince = 1L\s*invalidate\(\)/);
     // And the picture arriving, or the view leaving, resets it.

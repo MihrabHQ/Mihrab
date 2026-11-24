@@ -739,11 +739,37 @@ export function sortedReciters(
   prefer?: RiwayahId,
 ): Reciter[] {
   const rank = (r: Reciter) => (prefer && reciterRiwayah(r) === prefer ? 0 : 1);
-  return [...list].sort(
-    (a, b) =>
-      rank(a) - rank(b) ||
-      a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }),
-  );
+  return [...list].sort((a, b) => {
+    const byReading = rank(a) - rank(b);
+    if (byReading) return byReading;
+    const ka = alphabetKey(a);
+    const kb = alphabetKey(b);
+    return ka < kb ? -1 : ka > kb ? 1 : 0;
+  });
+}
+
+/**
+ * A name as the alphabet compares it: case and accents folded, once.
+ *
+ * This was `a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })`
+ * inside the sort. On Android that call goes out to the platform's collator
+ * every time, and the list is sorted when the reader mounts (the voice hint)
+ * and again when the ayah sheet does (the picker inside it): profiled on a
+ * Pixel 10 Pro, 320 ms of the 540 ms the JavaScript thread was held after a
+ * tap on an ayah was this one comparison. The order is the same — a test
+ * holds it against the collator's — and a key is made once per name.
+ */
+const alphabetKeys = new Map<string, string>();
+function alphabetKey(r: Reciter): string {
+  let key = alphabetKeys.get(r.name);
+  if (key === undefined) {
+    key = r.name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+    alphabetKeys.set(r.name, key);
+  }
+  return key;
 }
 
 /**

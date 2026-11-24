@@ -812,14 +812,15 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
       </View>
       </View>
 
-      {core.selected ? (
+      {/* The deferred selection: the mark on the page is drawn first. */}
+      {core.sheetSelected ? (
         <AyahActionSheet
-          visible={core.sheetVisible}
+          visible={core.sheetShown}
           onClose={core.closeSheet}
-          surah={core.selected.surah}
-          ayah={core.selected.ayah}
-          page={core.selected.page}
-          scrollToAudio={core.sheetScrollAudio}
+          surah={core.sheetSelected.surah}
+          ayah={core.sheetSelected.ayah}
+          page={core.sheetSelected.page}
+          scrollToAudio={core.sheetAudio}
         />
       ) : null}
 
