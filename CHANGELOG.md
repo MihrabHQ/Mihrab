@@ -5,6 +5,7 @@ All notable changes to this project are documented here. The format is inspired 
 ## [Unreleased]
 
 ### Added
+- **The React Compiler, on the first folders.** Settings, onboarding, the tasbih, the duas and the shared components are now memoised by React's compiler instead of by hand. Nothing should look different; the tabs and Minimal's pager, Today and the muṣḥaf are not compiled yet and follow one at a time.
 - **Settings and reading state in a faster store.** On phones, tablets and the Mac, the app's plain storage (settings, Qur'an marks and khatmah, tasbih, the prayer-times cache) moves from the old database to a memory-mapped file that answers without waiting in a queue. The first launch after the update copies everything across once; the old copy is left in place, and a copy that is interrupted is simply done again at the next launch. The large downloadable prayer-time tables stay where they were.
 - **The encrypted store is the app's own.** The library that kept the saved place, the prayer journal, the fasting log and the sync identity encrypted is no longer maintained; the app now does it itself, in the same Keychain items on iPhone and Mac and the same encrypted file on Android, so nothing is moved and nothing is lost on update.
 - **Two unmaintained libraries gone.** The blur behind the Liquid Glass surfaces on iPhone is now the app's own view (it draws what the library drew), and the sensors library, which nothing had used since the compass got its own native module, is removed. Nothing looks or behaves differently.

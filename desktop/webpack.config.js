@@ -109,7 +109,9 @@ module.exports = (env = {}, argv) => {
                   { disableImportExportTransform: true },
                 ],
               ],
-              plugins: [],
+              // The React Compiler, on the folders the phones compile
+              // (babel.reactCompiler.js at the root).
+              plugins: [require(path.join(ROOT, 'babel.reactCompiler.js')).reactCompiler],
             },
           },
         },
