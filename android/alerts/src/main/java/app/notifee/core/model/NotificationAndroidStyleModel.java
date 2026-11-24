@@ -181,7 +181,9 @@ public class NotificationAndroidStyleModel {
 
             // largeIcon has been specified to be null for BigPicture
             if (largeIcon == null) {
-              bigPictureStyle.bigLargeIcon(null);
+              // (Bitmap): androidx.core has since gained bigLargeIcon(Icon), and a bare
+                // null no longer says which. This is the one the prebuilt core called.
+                bigPictureStyle.bigLargeIcon((Bitmap) null);
             }
           }
 

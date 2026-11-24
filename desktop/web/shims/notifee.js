@@ -1,5 +1,6 @@
 /**
- * @notifee/react-native on the desktop.
+ * The app's notifications (src/native/Alerts.ts) on the desktop and in the
+ * browser, where the phones' engine (src/native/notifee) does not run.
  *
  * The enums are notifee's own (its type modules are plain JS); the calls go
  * to the main process, which keeps the triggers and shows the notifications
@@ -10,10 +11,10 @@
 import { desktop } from './desktop';
 import { playNotificationSound } from '../native/notificationSound';
 
-export * from '@notifee/react-native/dist/types/Notification';
-export * from '@notifee/react-native/dist/types/NotificationAndroid';
-export * from '@notifee/react-native/dist/types/NotificationIOS';
-export * from '@notifee/react-native/dist/types/Trigger';
+export * from '../../../src/native/notifee/types/Notification';
+export * from '../../../src/native/notifee/types/NotificationAndroid';
+export * from '../../../src/native/notifee/types/NotificationIOS';
+export * from '../../../src/native/notifee/types/Trigger';
 
 const AUTHORIZED = 1;
 const ENABLED = 1;
