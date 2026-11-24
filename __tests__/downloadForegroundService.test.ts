@@ -34,8 +34,8 @@ describe('the download service stops when Android says so', () => {
     expect(service).toMatch(/class DownloadForegroundService : ForegroundService\(\)/);
     expect(service).toMatch(/override fun onTimeout\(startId: Int, fgsType: Int\)[\s\S]*?stopNow\(\)/);
     expect(service).toMatch(/ForegroundServiceStartNotAllowedException[\s\S]*?stopNow\(\)/);
-    expect(service).toMatch(/ForegroundService\.a = null/);
-    expect(service).toMatch(/ForegroundService\.b = -1/);
+    expect(service).toMatch(/ForegroundService\.mCurrentNotificationId = null/);
+    expect(service).toMatch(/ForegroundService\.mCurrentForegroundServiceType = -1/);
     expect(service).toMatch(/stopSelf\(\)/);
   });
 
