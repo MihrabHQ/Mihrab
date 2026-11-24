@@ -12,7 +12,6 @@
  *
  * NOT YET, AND ON PURPOSE. The places where a wasted or a missing render
  * has been felt and fixed by hand, each with its own measurements:
- *   src/navigation      the tabs and Minimal's pager (AGENTS.md §9)
  *   src/screens/home    Today, the hero, the launch run
  *   src/quran           the muṣḥaf, its reader and its sheets
  *   src/screens/quran   the Qur'an tab's lists
@@ -26,6 +25,7 @@ const path = require('path');
 
 const COMPILED = [
   'src/components/',
+  'src/navigation/',
   'src/onboarding/',
   'src/polish/',
   'src/practice/',
