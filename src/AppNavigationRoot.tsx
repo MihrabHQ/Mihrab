@@ -593,6 +593,19 @@ export function AppNavigationRoot() {
   // see `layoutDirection.ts` for why that matters.
   const layoutDir = layoutDirectionFor(settings.language);
 
+  // On the web (the browser and the Windows/Linux app) a Modal is drawn in
+  // an element of its own on <body> (react-native-web's portal), outside
+  // the View above, so it never inherited this direction: in Arabic every
+  // sheet was laid out left to right, while react-native-web still placed a
+  // switch's thumb for right to left — the thumb hung beside its track.
+  // <body> carries the app's direction, and the portals inherit it.
+  useEffect(() => {
+    // `document` is the browser's; this project is typed without the DOM.
+    const doc = (globalThis as { document?: { body?: { style: { direction: string } } } }).document;
+    if (Platform.OS !== 'web' || typeof doc === 'undefined' || !doc.body) return;
+    doc.body.style.direction = layoutDir;
+  }, [layoutDir]);
+
   return (
     <View
       style={{

@@ -43,7 +43,7 @@
  * `i18n/layoutDirection.ts` asks that nothing inside a mirrored tree
  * mirror itself a second time.
  */
-import type { TextStyle } from 'react-native';
+import { Platform, type TextStyle } from 'react-native';
 import { isRtlLanguage } from './layoutDirection';
 
 /** LEFT-TO-RIGHT ISOLATE, RIGHT-TO-LEFT ISOLATE, POP DIRECTIONAL ISOLATE.
@@ -95,9 +95,29 @@ export function foreignText(
     mismatched: true,
     style: {
       writingDirection: textIsRtl ? 'rtl' : 'ltr',
-      textAlign: ALIGN_TO_OWN_SIDE,
+      // The web is the exception to the header's rule: a browser takes
+      // `left` and `right` as the physical edges whatever the direction,
+      // so there the text's own side is named as it is.
+      textAlign: Platform.OS === 'web' ? (textIsRtl ? 'right' : 'left') : ALIGN_TO_OWN_SIDE,
     },
     open: textIsRtl ? RLI : LRI,
     close: PDI,
   };
+}
+
+/**
+ * The alignment that puts a line against its OWN starting edge — Arabic
+ * on the right, Latin on the left — whichever way the layout runs.
+ *
+ * `foreignText` covers the case where the two disagree. This also covers
+ * the case where they agree, which is not as obvious as it looks: under
+ * a mirrored layout iOS and Android both mirror `left` and `right` too,
+ * so an Arabic ayah set `right` in an Arabic or Urdu app went to the LEFT
+ * edge (seen on both, 2026-11-24, in the verse-by-verse reader). Where
+ * they agree it is `left` — the start, which the platform mirrors to the
+ * text's own side. The web takes the words as physical edges.
+ */
+export function ownSideAlign(textIsRtl: boolean, layoutIsRtl: boolean): 'left' | 'right' {
+  if (Platform.OS === 'web') return textIsRtl ? 'right' : 'left';
+  return textIsRtl === layoutIsRtl ? 'left' : ALIGN_TO_OWN_SIDE;
 }

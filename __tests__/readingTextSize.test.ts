@@ -200,7 +200,8 @@ describe('the surfaces it reaches, and the ones it must not', () => {
       }
     }
     const surah = read('screens', 'quran', 'TranslationSurahScreen.tsx');
-    expect(surah).toMatch(/styles\.ayahArabic, \{ color: palette\.text \}\]/);
+    // Its colour and the side it sits on (foreignText.ownSideAlign), and no size.
+    expect(surah).toMatch(/styles\.ayahArabic, \{ color: palette\.text, textAlign: arabicAlign \}\]/);
   });
 
   it('leaves the shared ayah image alone', () => {

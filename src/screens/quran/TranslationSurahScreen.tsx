@@ -45,8 +45,10 @@ import { desktopSize } from '../../responsive/desktop';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { loadSurah, type SurahIndex } from '../../quran/quran';
-import { getSurahTranslation } from '../../quran/translations';
+import { findTranslationEdition, getSurahTranslation } from '../../quran/translations';
 import { TransliterationLine } from '../../quran/TransliterationLine';
+import { foreignText, ownSideAlign } from '../../i18n/foreignText';
+import { useLayoutRtl } from '../../i18n/useLayoutRtl';
 import { resolveTransliteration, useSurahTransliteration } from '../../quran/transliteration';
 import { useActiveEdition } from '../../quran/useActiveEdition';
 import { loadTafsir, resolveTafsirEdition } from '../../quran/tafsir';
@@ -169,6 +171,11 @@ export function TranslationSurahScreen({
   const headerW = useSettledMeasure(Math.round(win.width));
   const headerH = useSettledMeasure(Math.round(win.height));
   const edition = useActiveEdition();
+  // Each line against its own edge in either layout: the Arabic on the
+  // right, a Latin translation on the left (foreignText.ts).
+  const layoutRtl = useLayoutRtl();
+  const arabicAlign = ownSideAlign(true, layoutRtl);
+  const translationSide = foreignText(findTranslationEdition(edition)?.rtl ? 'ar' : 'en', i18n.language);
   // Current companion choice caption (mode + edition) for the header row.
   const companionChoice = useCompanionChoice();
 
@@ -869,7 +876,7 @@ export function TranslationSurahScreen({
           </Text>
         ) : ownWords ? (
           <Text
-            style={[styles.ayahArabic, { color: palette.text }, ownFont ? { fontFamily: ownFont } : null]}
+            style={[styles.ayahArabic, { color: palette.text, textAlign: arabicAlign }, ownFont ? { fontFamily: ownFont } : null]}
             accessibilityLabel={shownArabic}>
             {ownWords.map((w, wi) => (
               <Text key={wi}>
@@ -888,13 +895,13 @@ export function TranslationSurahScreen({
           </Text>
         ) : ownText ? (
           <Text
-            style={[styles.ayahArabic, { color: palette.text }, ownFont ? { fontFamily: ownFont } : null]}
+            style={[styles.ayahArabic, { color: palette.text, textAlign: arabicAlign }, ownFont ? { fontFamily: ownFont } : null]}
             accessibilityLabel={shownArabic}>
             {shownArabic}
           </Text>
         ) : (
           <Text
-            style={[styles.ayahArabic, { color: palette.text }]}
+            style={[styles.ayahArabic, { color: palette.text, textAlign: arabicAlign }]}
             accessibilityLabel={arabic}>
             {litIndex >= 0
               ? words.map((w, i) => (
@@ -983,8 +990,9 @@ export function TranslationSurahScreen({
               styles.ayahTranslation,
               readingText.style(READING_BASE),
               { color: palette.muted },
+              translationSide.style,
             ]}>
-            {translation}
+            {translationSide.open + translation + translationSide.close}
           </Text>
         ) : null}
       </Pressable>
@@ -1253,6 +1261,7 @@ function TafsirRowText({
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const readingText = useReadingText();
+  const layoutRtl = useLayoutRtl();
   // undefined = loading, null = unavailable (offline + uncached).
   const [text, setText] = useState<string | null | undefined>(undefined);
   const [expanded, setExpanded] = useState(false);
@@ -1297,7 +1306,7 @@ function TafsirRowText({
           styles.ayahTranslation,
           readingText.style(READING_BASE),
           { color: palette.muted },
-          rtl && { writingDirection: 'rtl', textAlign: 'right' },
+          { writingDirection: rtl ? 'rtl' : 'ltr', textAlign: ownSideAlign(rtl, layoutRtl) },
         ]}>
         {text}
       </Text>
@@ -1433,7 +1442,8 @@ const styles = StyleSheet.create({
     // Amiri Quran carries tall stacked diacritics — ~2.2× line height
     // keeps fatha/kasra clusters unclipped (see arabicTextStyle docs).
     lineHeight: 54,
-    textAlign: 'right',
+    // textAlign is set where it is drawn: which word means the right edge
+    // depends on the layout's direction (foreignText.ownSideAlign).
     writingDirection: 'rtl',
     ...arabicTextStyle('quran'),
   },
