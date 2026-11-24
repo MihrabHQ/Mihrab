@@ -77,6 +77,12 @@ jobs:
           New-Item -Force 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' | Out-Null
           Set-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -Name EnableSmartScreen -Type DWord -Value 0
           Set-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer' -Name SmartScreenEnabled -Value Off
+          # …and the older "publisher could not be verified" prompt that a
+          # downloaded, unsigned .exe gets (seen: winget starting the
+          # installer and nothing running): no zone mark, no zone check.
+          New-Item -Force 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments' | Out-Null
+          Set-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments' -Name SaveZoneInformation -Type DWord -Value 1
+          "SEE_MASK_NOZONECHECKS=1" >> $env:GITHUB_ENV
 
       - name: Validate, install, start, remove
         shell: pwsh
