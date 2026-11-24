@@ -37,10 +37,17 @@
  * A surah at a time while the reader is online, or the whole edition
  * downloaded once (0.7 MB) and read from the device after that — the
  * store the fetched translations use, unchanged.
+ *
+ * ── CHECKED, AND PUT RIGHT WHERE WRONG ─────────────────────────────────
+ *
+ * The generated editions were checked against the Arabic, every ayah;
+ * the few that do not spell it are put right as they are read
+ * (`transliterationCorrections.ts`).
  */
 import { useEffect, useState } from 'react';
 import { riwayahById, type RiwayahId } from './riwayat';
 import { loadAyah, loadSurah } from './surahStore';
+import { correctSurahTransliteration, correctTransliteration } from './transliterationCorrections';
 import {
   QURAN_TRANSLITERATIONS,
   TRANSLATION_SURAHS,
@@ -95,7 +102,8 @@ export async function getAyahTransliteration(
   surah: number,
   ayah: number,
 ): Promise<string> {
-  return (await loadAyah('translation', storedTranslationEdition(edition), surah, ayah)) ?? '';
+  const text = (await loadAyah('translation', storedTranslationEdition(edition), surah, ayah)) ?? '';
+  return correctTransliteration(edition.id, surah, ayah, text);
 }
 
 /** A surah, by ayah number; empty when nothing answers. */
@@ -103,7 +111,8 @@ export async function getSurahTransliteration(
   edition: QuranTranslationEdition,
   surah: number,
 ): Promise<Record<string, string>> {
-  return (await loadSurah('translation', storedTranslationEdition(edition), surah)) ?? {};
+  const rows = (await loadSurah('translation', storedTranslationEdition(edition), surah)) ?? {};
+  return correctSurahTransliteration(edition.id, surah, rows);
 }
 
 /** Is the whole of this edition on this device? */

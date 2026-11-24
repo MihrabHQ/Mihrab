@@ -476,7 +476,7 @@
       },
       "content": {
         "h2": "المحتوى",
-        "p": "نص القرآن من Tanzil، وخطوط المصحف من مجمع الملك فهد. الإسناد كاملاً في ملف NOTICE."
+        "p": "نص القرآن من Tanzil، وخطوط المصحف من مجمع الملك فهد. النطق بالحروف اللاتينية من risan/quran-json، وبالتركية لـ Muhammet Abay (Tanzil). الإسناد كاملاً في ملف NOTICE."
       },
       "project": {
         "h2": "المشروع",
@@ -902,7 +902,7 @@
       },
       "content": {
         "h2": "İçerik",
-        "p": "Kur'an metni Tanzil'den, mushaf yazı tipleri Kral Fahd Kompleksi'nden. Tüm atıflar NOTICE dosyasında."
+        "p": "Kur'an metni Tanzil'den, mushaf yazı tipleri Kral Fahd Kompleksi'nden. Latin harfli okunuş risan/quran-json’dan, Türkçe okunuş Muhammet Abay’dan (Tanzil). Tüm atıflar NOTICE dosyasında."
       },
       "project": {
         "h2": "Proje",
@@ -1321,7 +1321,7 @@
       },
       "content": {
         "h2": "مواد",
-        "p": "قرآن کا متن Tanzil سے، مصحف کے فونٹ شاہ فہد کمپلیکس سے۔ مکمل حوالہ جات NOTICE فائل میں ہیں۔"
+        "p": "قرآن کا متن Tanzil سے، مصحف کے فونٹ شاہ فہد کمپلیکس سے۔ رومن تلفظ risan/quran-json سے، اور ترکی تلفظ Muhammet Abay (Tanzil) کا۔ مکمل حوالہ جات NOTICE فائل میں ہیں۔"
       },
       "project": {
         "h2": "منصوبہ",
@@ -1721,7 +1721,7 @@
       },
       "content": {
         "h2": "Konten",
-        "p": "Teks Al-Qur'an dari Tanzil, fon mushaf dari Kompleks Raja Fahd. Atribusi lengkap ada di berkas NOTICE."
+        "p": "Teks Al-Qur'an dari Tanzil, fon mushaf dari Kompleks Raja Fahd. Transliterasi Latin dari risan/quran-json, dan yang berbahasa Turki dari Muhammet Abay (Tanzil). Atribusi lengkap ada di berkas NOTICE."
       },
       "project": {
         "h2": "Proyek",
@@ -2140,7 +2140,7 @@
       },
       "content": {
         "h2": "Inhalte",
-        "p": "Korantext von Tanzil, Mushaf-Schriften vom König-Fahd-Komplex. Die vollständige Nennung steht in der NOTICE-Datei."
+        "p": "Korantext von Tanzil, Mushaf-Schriften vom König-Fahd-Komplex. Die Umschrift in lateinischen Buchstaben stammt von risan/quran-json, die türkische von Muhammet Abay (Tanzil). Die vollständige Nennung steht in der NOTICE-Datei."
       },
       "project": {
         "h2": "Projekt",
@@ -2540,7 +2540,7 @@
       },
       "content": {
         "h2": "Contenus",
-        "p": "Texte coranique de Tanzil, polices du mushaf du Complexe du Roi Fahd. L'attribution complète figure dans le fichier NOTICE."
+        "p": "Texte coranique de Tanzil, polices du mushaf du Complexe du Roi Fahd. La translittération en lettres latines vient de risan/quran-json, et la turque de Muhammet Abay (Tanzil). L'attribution complète figure dans le fichier NOTICE."
       },
       "project": {
         "h2": "Projet",
@@ -2966,7 +2966,7 @@
       },
       "content": {
         "h2": "Contenido",
-        "p": "Texto coránico de Tanzil, tipografías del mushaf del Complejo Rey Fahd. La atribución completa está en el archivo NOTICE."
+        "p": "Texto coránico de Tanzil, tipografías del mushaf del Complejo Rey Fahd. La transliteración en letras latinas procede de risan/quran-json, y la turca de Muhammet Abay (Tanzil). La atribución completa está en el archivo NOTICE."
       },
       "project": {
         "h2": "Proyecto",
@@ -3366,7 +3366,7 @@
       },
       "content": {
         "h2": "Содержимое",
-        "p": "Текст Корана — от Tanzil, шрифты мусхафа — от Комплекса имени короля Фахда. Полное указание авторства в файле NOTICE."
+        "p": "Текст Корана — от Tanzil, шрифты мусхафа — от Комплекса имени короля Фахда. Транслитерация латинскими буквами — из risan/quran-json, турецкая — Muhammet Abay (Tanzil). Полное указание авторства в файле NOTICE."
       },
       "project": {
         "h2": "Проект",
@@ -3766,7 +3766,7 @@
       },
       "content": {
         "h2": "বিষয়বস্তু",
-        "p": "কুরআনের পাঠ Tanzil থেকে, মুসহাফের ফন্ট বাদশাহ ফাহাদ কমপ্লেক্স থেকে। সম্পূর্ণ স্বীকৃতি NOTICE ফাইলে।"
+        "p": "কুরআনের পাঠ Tanzil থেকে, মুসহাফের ফন্ট বাদশাহ ফাহাদ কমপ্লেক্স থেকে। লাতিন হরফে প্রতিবর্ণীকরণ risan/quran-json থেকে, আর তুর্কি প্রতিবর্ণীকরণ Muhammet Abay (Tanzil)-এর। সম্পূর্ণ স্বীকৃতি NOTICE ফাইলে।"
       },
       "project": {
         "h2": "প্রকল্প",
@@ -4166,7 +4166,7 @@
       },
       "content": {
         "h2": "सामग्री",
-        "p": "क़ुरआन का पाठ Tanzil से, मुसहफ़ के फ़ॉन्ट किंग फ़हद कॉम्प्लेक्स से। पूरा श्रेय NOTICE फ़ाइल में है।"
+        "p": "क़ुरआन का पाठ Tanzil से, मुसहफ़ के फ़ॉन्ट किंग फ़हद कॉम्प्लेक्स से। लैटिन अक्षरों में लिप्यंतरण risan/quran-json से, और तुर्की लिप्यंतरण Muhammet Abay (Tanzil) का। पूरा श्रेय NOTICE फ़ाइल में है।"
       },
       "project": {
         "h2": "परियोजना",
@@ -4566,7 +4566,7 @@
       },
       "content": {
         "h2": "内容来源",
-        "p": "《古兰经》经文来自 Tanzil，经文字体来自法赫德国王古兰经印刷厂。完整署名见 NOTICE 文件。"
+        "p": "《古兰经》经文来自 Tanzil，经文字体来自法赫德国王古兰经印刷厂。拉丁字母音译来自 risan/quran-json，土耳其语音译出自 Muhammet Abay（Tanzil）。完整署名见 NOTICE 文件。"
       },
       "project": {
         "h2": "项目",

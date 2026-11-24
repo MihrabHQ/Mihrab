@@ -2038,7 +2038,7 @@
     "wordMeanings": "Sens arabes des mots difficiles",
     "surahHeaderFont": "Calligraphie des en-têtes de sourates",
     "recitationWholeSurah": "Récitations de sourates entières (15) : mp3quran.net · minutage des versets aligné sur l’audio par Mihrab",
-    "transliteration": "Translittérations du Coran, générées à partir du texte arabe et affichées telles que fournies"
+    "transliteration": "Translittérations du Coran, générées à partir du texte arabe ; vérifiées verset par verset, {{n}} versets corrigés"
   },
   "liveActivity": {
     "title": "Prochaine prière",

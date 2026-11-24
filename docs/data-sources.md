@@ -582,15 +582,35 @@ picks another:
   reading and pausal rules applied, then spelled by a table. `id-skb` is the
   SKB 1987 convention Kemenag itself writes in. The project says of them:
   "machine-generated; not yet reviewed by a qualified reader", and Settings →
-  About says they are generated. Kemenag's own Latin text is protected and is
+  About says they are generated, and that they were checked here. Kemenag's own Latin text is protected and is
   not used by them or by us.
-- **What was checked here (2026-11-24), on the full text of each:** 6,236
-  ayahs, none empty, no markup. The generated text against Abay's Turkish —
-  made by a person, independently — reduced to consonants, ayah by ayah:
-  mean agreement 0.997, and every one of the eighteen lowest was the
-  comparison's own doing (ṣḥ against sh, ḍḥ against dh), not a different
-  word. **Vowels and lengths were not compared** (Turkish writes them by
-  its own harmony), and nobody who reads the Qur'an read 6,236 lines.
+- **The full check (2026-11-24), every ayah of each** — `tools/transliteration-check`,
+  whose README has the method and the lists. The Latin text was derived a
+  second time from the bundled Arabic by a program written here, and each
+  edition compared with it letter for letter: consonants, vowels, lengths,
+  doubling, the joins between words.
+  - **The three generated editions are one text** (the Indonesian and the
+    plain English are the scholarly one respelt, in every ayah), and 6,222
+    of its 6,236 ayahs are what the Arabic says. **Fourteen are not**: ten
+    with a wrong word (7:196, 21:71, 21:88, 25:49, 26:14, 27:36, 46:33,
+    59:7, 75:40, 81:9) and four with a join unlike the edition's own
+    everywhere else (2:96, 3:30, 3:112, 74:40). The app puts these right
+    as it reads them (`src/quran/transliterationCorrections.ts`), from the
+    mirror or from the host alike; the stored and mirrored files stay as
+    served. CC BY-SA asks that a change be said: it is said here, in the
+    code and under Settings → About. Not yet reported upstream.
+  - **Abay's Turkish is less exact than the generated text.** 5,900 ayahs
+    match; 185 differ only in where he pauses; 23 write a length the script
+    shows and the reading does not; **113 have a wrong letter, length or
+    word** (emphatics, unassimilated articles, a singular for Ḥafṣ's
+    plural, and in 29:13 and 29:46 words that are not the ayah's). It is
+    shown as he wrote it, uncorrected — another author's work. **Open, for
+    the maintainer:** keep it as it is, or give Turkish readers the checked
+    text in Turkish spelling instead.
+  - **What the check is not:** a program checked a program and a second
+    text checked both; two of the ten errors were in the program too and
+    only the second text showed them. Nobody who recites the Qur'an has
+    read these lines.
 - **The edition tried first, and dropped.** alquran.cloud's
   `en.transliteration` ("English Transliteration", no author or licence
   named) went to `main` for a few hours on 2026-11-24 and was in no

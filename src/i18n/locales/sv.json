@@ -2037,7 +2037,7 @@
     "wordMeanings": "Arabiska betydelser av svårare ord",
     "surahHeaderFont": "Kalligrafi för surarubriker",
     "recitationWholeSurah": "Recitationer av hela suror (15): mp3quran.net · verstider anpassade till ljudet av Mihrab",
-    "transliteration": "Koranens translittereringar, genererade från den arabiska texten och visade som de levereras"
+    "transliteration": "Koranens translittereringar, genererade från den arabiska texten; kontrollerade mot den vers för vers, {{n}} verser rättade"
   },
   "liveActivity": {
     "title": "Nästa bön",

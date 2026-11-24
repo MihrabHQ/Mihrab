@@ -2037,7 +2037,7 @@
     "wordMeanings": "Arabic meanings of harder words",
     "surahHeaderFont": "Surah-header calligraphy",
     "recitationWholeSurah": "Whole-surah recitations (15): mp3quran.net · ayah timings aligned to the audio by Mihrab",
-    "transliteration": "Qur’an transliterations, generated from the Arabic text and shown as served"
+    "transliteration": "Qur’an transliterations, generated from the Arabic text; checked against it ayah by ayah, {{n}} ayahs corrected"
   },
   "liveActivity": {
     "title": "Next prayer",

@@ -34,6 +34,12 @@ mushaf page fonts (QPC v2, and the QPC V4 Tajweed colour fonts via the Quranic
 Universal Library), the tajweed rule data (quran.com API), the Amiri fonts and the MihrabMedallion font derived from
 Amiri Quran (SIL OFL 1.1), and the recitation audio are
 the property of their respective authors and are used under their own terms.
+The Latin-letter transliterations shown under an ayah are from risan/quran-json
+(https://github.com/risan/quran-json, CC BY-SA 4.0; generated from the Arabic,
+and corrected by this app in fourteen ayahs listed in
+src/quran/transliterationCorrections.ts) and, in Turkish, by Muhammet Abay
+(from Tanzil's list of translations, https://tanzil.net/trans/, under Tanzil's
+terms). They are downloaded on request and are not part of the app's source.
 The Garmin watch face's fonts (garmin/watchface/resources/fonts) are bitmaps
 made from Tektur, copyright 2023 The Tektur Project Authors, under the SIL Open
 Font License 1.1 (garmin/tools/fonts/OFL.txt).
