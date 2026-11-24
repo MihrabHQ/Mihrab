@@ -77,11 +77,9 @@ module.exports = (env = {}, argv) => {
         'react-native-share$': shim('share.js'),
         'react-native-view-shot$': shim('view-shot.js'),
         '@react-native-community/geolocation$': shim('geolocation.js'),
-        '@react-native-community/blur$': shim('blur.js'),
         '@react-native/assets-registry/registry$': shim('assets-registry.js'),
         'react-native-safe-area-context$': shim('safe-area.js'),
         '@sayem314/react-native-keep-awake$': shim('keep-awake.js'),
-        'react-native-sensors$': shim('sensors.js'),
         // gesture-handler probes for reanimated in a try/catch; there is none.
         'react-native-reanimated': false,
       },

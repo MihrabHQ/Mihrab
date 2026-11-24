@@ -10,14 +10,17 @@ import {
 } from 'react-native';
 import { useAppPalette } from '../hooks/useAppPalette';
 
-// The blur native module is iOS-only here (see the Platform.OS === 'ios' gate
-// below). It's excluded from Android autolinking (react-native.config.js) to
-// keep jitpack out of the Android/F-Droid build, so require it lazily on iOS
-// only — importing it on Android would try to resolve a native component that
-// isn't linked.
+// The blur is the app's own native view, on iOS only (ios/PrayerApp/
+// GlassBlur.m; see the Platform.OS === 'ios' gate below): a
+// UIVisualEffectView with a style, a radius and a plain colour for Reduce
+// Transparency. It took the place of @react-native-community/blur, which is
+// no longer maintained and whose Android half pulled a library from jitpack
+// that no Android build wanted. Asked for on iOS only — no other platform
+// has a view of that name, and react-native-web has no
+// `requireNativeComponent` to import, so it is reached for here.
 const BlurView: any =
   Platform.OS === 'ios'
-    ? require('@react-native-community/blur').BlurView
+    ? require('react-native').requireNativeComponent('GlassBlur')
     : null;
 
 /**
@@ -67,10 +70,10 @@ export function GlassSurface({
     );
   }
 
-  // Use the basic UIBlurEffect styles — the "systemMaterial*" variants are not
-  // honoured by @react-native-community/blur under the new architecture (they
-  // render dark regardless of appearance). 'xlight'/'light'/'dark' track the
-  // mode reliably. Intensity nudges the light-mode strength.
+  // The basic UIBlurEffect styles: the "systemMaterial*" variants rendered
+  // dark regardless of appearance under the new architecture, while
+  // 'xlight'/'light'/'dark' track the mode reliably — and they are the three
+  // GlassBlur.m knows. Intensity nudges the light-mode strength.
   const blurType = isDark
     ? 'dark'
     : intensity === 'thin'

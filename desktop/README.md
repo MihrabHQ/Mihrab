@@ -126,7 +126,7 @@ F-Droid's `npm ci` of it — never downloads an Electron binary.
 | Where | What |
 |---|---|
 | `webpack.config.js` | Builds `../index.js` + `../src` for the browser. `react-native` → `web/shims/react-native.js` (react-native-web plus what it lacks). |
-| `web/shims/` | Stand-ins for native libraries with no web build: notifee, track-player, blob-util, encrypted-storage, share, view-shot, geolocation, blur, keep-awake, sensors. |
+| `web/shims/` | Stand-ins for native libraries with no web build: notifee, track-player, blob-util, encrypted-storage, share, view-shot, geolocation, keep-awake. |
 | `web/native/` | Desktop implementations of the app's own native modules, installed onto `NativeModules` before the app loads. Absent modules (widgets, Live Activities, compass, QR) stay absent — every wrapper already handles "this device cannot". |
 | `electron/main.js` | The window, the `mihrab://` scheme (the page and its files), CORS for the app's own requests, IPC. |
 | `electron/notifications.js` | notifee's trigger notifications, kept on disk and checked by a clock tick (timers stop while a laptop sleeps). |

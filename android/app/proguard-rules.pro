@@ -21,10 +21,6 @@
 -keep class io.invertase.notifee.** { *; }
 -dontwarn io.invertase.notifee.**
 
-# ── react-native-sensors ──────────────────────────────────────────────────────
--keep class com.sensors.** { *; }
--dontwarn com.sensors.**
-
 # ── react-native-share ────────────────────────────────────────────────────────
 -keep class cl.json.** { *; }
 -dontwarn cl.json.**

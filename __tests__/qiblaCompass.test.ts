@@ -225,6 +225,11 @@ describe('the magnetometer path is gone, not merely unused', () => {
     expect(hook).not.toContain('headingFromMagnetometer');
   });
 
+  test('and the library is not shipped: nothing has used it since', () => {
+    const pkg = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'package.json'), 'utf-8'));
+    expect(Object.keys({ ...pkg.dependencies, ...pkg.devDependencies })).not.toContain('react-native-sensors');
+  });
+
   test('the helpers that produced a flat-phone bearing are deleted', () => {
     const math = code('src', 'screens', 'compass', 'sensorMath.ts');
     expect(math).not.toContain('export function headingFromMagnetometer');

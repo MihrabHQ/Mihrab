@@ -386,14 +386,6 @@ jest.mock('react-native-track-player', () => ({
   IOSCategoryMode: { SpokenAudio: 'spokenAudio' },
 }));
 
-jest.mock('react-native-sensors', () => ({
-  magnetometer: {
-    subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
-  },
-  setUpdateIntervalForType: jest.fn(),
-  SensorTypes: { magnetometer: 'magnetometer' },
-}));
-
 jest.mock('@notifee/react-native', () => ({
   __esModule: true,
   default: {

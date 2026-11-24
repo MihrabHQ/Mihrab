@@ -13233,13 +13233,6 @@ PLcom/sayem/keepawake/KCKeepAwakePackage;->getModule(Ljava/lang/String;Lcom/face
 SPLcom/sayem/keepawake/KCKeepAwakePackage;->getReactModuleInfoProvider()Lcom/facebook/react/module/model/ReactModuleInfoProvider;
 SPLcom/sayem/keepawake/KCKeepAwakePackage;->lambda$getReactModuleInfoProvider$0()Ljava/util/Map;
 PLcom/sayem/keepawake/NativeKCKeepAwakeSpec;-><init>(Lcom/facebook/react/bridge/ReactApplicationContext;)V
-Lcom/sensors/RNSensor;
-SPLcom/sensors/RNSensor;-><init>(Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/lang/String;I)V
-SPLcom/sensors/RNSensor;->getName()Ljava/lang/String;
-Lcom/sensors/RNSensorsPackage;
-SPLcom/sensors/RNSensorsPackage;-><init>()V
-SPLcom/sensors/RNSensorsPackage;->createNativeModules(Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
-SPLcom/sensors/RNSensorsPackage;->createViewManagers(Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
 Lcom/swmansion/common/GestureHandlerStateManager;
 Lcom/swmansion/gesturehandler/NativeRNGestureHandlerModuleSpec;
 SPLcom/swmansion/gesturehandler/NativeRNGestureHandlerModuleSpec;-><init>(Lcom/facebook/react/bridge/ReactApplicationContext;)V
