@@ -15,7 +15,7 @@
  * seconds — is kept with when it was taken. `deviceClockSkewSeconds()` is
  * synchronous, from memory, and 0 when nothing recent is known.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 
 const KEY = 'clock.skew.v1';
 /** A measurement older than this is not trusted: the clock may have been put right since. */

@@ -40,7 +40,7 @@
  * server costs the reader their address. A source that is confidently
  * wrong costs more trust than it earns.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { useSyncExternalStore } from 'react';
 import { networkCountry, systemTimeZone } from '../native/SystemClock';
 import { confirmBackgroundPlace } from '../native/BackgroundLocation';

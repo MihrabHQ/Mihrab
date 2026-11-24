@@ -29,7 +29,7 @@
  * sunrise, Dhuhr to Asr, Asr to Maghrib, Maghrib to Isha, Isha to the next
  * day's Fajr.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import type { JournalPrayer } from './journal';
 import { quiet } from '../utils/quiet';
 

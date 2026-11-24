@@ -17,7 +17,7 @@
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { IS_WEB_APP, webApp } from '../config/webApp';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { ResponsiveModal } from '../responsive/ResponsiveModal';

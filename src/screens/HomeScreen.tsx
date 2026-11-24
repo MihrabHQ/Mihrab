@@ -42,7 +42,7 @@ import { cityOf } from '../settings/cityName';
 import { getMethodLabel } from '../settings/methods';
 import { getProviderLabel } from '../settings/providersCatalog';
 import { providerHidesCalculationMethod } from '../settings/providerUi';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { useMethodCurrency } from '../hooks/useMethodCurrency';
 import { methodCurrencyNote } from '../prayer/methodCurrencyNote';
 import {

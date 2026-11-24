@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { bootMark } from '../boot/bootTimeline';
 import { asksAladhan, fetchAladhanMonth, fetchPrayerTimesUnified } from '../providers/fetchPrayerTimes';
 import { getIslamiskaForbundetDatasetTimes } from '../providers/islamiskaForbundetDataset';

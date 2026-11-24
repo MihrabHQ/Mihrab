@@ -82,7 +82,7 @@ import { MiniPlayer } from './audio/MiniPlayer';
 import { ActiveWordProbe } from './audio/ActiveWordProbe';
 import { readingLock, useVolumeKeyPaging } from './useVolumeKeyPaging';
 import { setQuranPrefs } from './quranState';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { volumeKeysAvailable } from '../native/volumeKeys';
 import { useTranslation } from 'react-i18next';
 import { useRegisterKeyPaging } from './useKeyPaging';

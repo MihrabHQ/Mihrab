@@ -21,7 +21,7 @@
  * start something new, or what is recommended now.
  */
 import { useSyncExternalStore } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../../storage/appStorage';
 import { getQuranState, hydrateQuranState } from '../quranState';
 import { DEFAULT_RIWAYAH, coerceRiwayahId, type RiwayahId } from '../riwayat';
 import { hafsSpan, riwayahAyahOf } from '../riwayahAudio';

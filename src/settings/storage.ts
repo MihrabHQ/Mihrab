@@ -1,7 +1,7 @@
 import { minimalLook } from './minimalLook';
 import { DEFAULT_SKY_VARIANT, isSkyVariant } from '../theme/skyMoods';
 import { MADHABS, madhabMatches, type Madhab } from '../prayer/madhab';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { launchRead, launchWrite, launchClear } from '../boot/launchReads';
 import { coerceNotificationSoundId } from '../notifications/notificationSounds';
 import { coerceSavedAccents } from './accentColors';

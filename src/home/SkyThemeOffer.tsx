@@ -28,7 +28,7 @@
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { SkyMoodStrip } from '../components/SkyMoodStrip';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import { useAppPalette } from '../hooks/useAppPalette';

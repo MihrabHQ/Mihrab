@@ -10,7 +10,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../../storage/appStorage';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { SPACING, RADIUS } from '../../theme/tokens';

@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { distanceKm } from '../utils/coords';
 import type { ReverseLocality } from '../geocoding/nominatim';
 import { isCoordinateLabel } from '../widget/shortPlaceLabel';

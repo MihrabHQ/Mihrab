@@ -60,7 +60,7 @@
  * whose Keychain comes back does not keep a plaintext copy around.
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from './appStorage';
 import EncryptedStorage from '../native/SecureStore';
 import {
   unprotectedGet,

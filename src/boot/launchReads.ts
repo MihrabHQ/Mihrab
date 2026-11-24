@@ -25,7 +25,7 @@
  * test, a broken native module) every call falls through to AsyncStorage
  * and the launch is what it was before.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 
 /** The keys read before the first frame. Each module names its own here. */
 export const LAUNCH_KEYS = {

@@ -53,7 +53,7 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { AppState } from 'react-native';
 import notifee, { AndroidImportance, AndroidStyle } from '@notifee/react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { isNonPrayerEvent } from '../types/prayer';
 import i18n from '../i18n';
 import { applyReaderLanguage } from '../i18n/readerLanguage';

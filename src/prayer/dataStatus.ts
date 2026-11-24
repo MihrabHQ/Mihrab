@@ -17,7 +17,7 @@
  * had polled most recently under a heading that named neither — one
  * country's coverage on another country's screen, with nothing to say so.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import type { DataSource } from '../providers/types';
 
 const KEY = 'mihrab.dataStatus.v1';

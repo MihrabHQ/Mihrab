@@ -25,7 +25,7 @@
  *     silently spans a week is a false statement, not a generous one.
  */
 import { useSyncExternalStore } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { TASBIH_PRESETS, findPreset, increment } from './tasbih';
 
 /** This feature's own blob, versioned like the Quran one. */

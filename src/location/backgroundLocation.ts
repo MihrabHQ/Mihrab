@@ -24,7 +24,7 @@
  * that sync: "all the time" is a permission of one phone, and a second
  * phone must be asked for itself.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { AppState, PermissionsAndroid, Platform } from 'react-native';
 import {
   backgroundLocationStatus,

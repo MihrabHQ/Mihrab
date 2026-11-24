@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../../storage/appStorage';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { RADIUS, SPACING } from '../../theme/tokens';

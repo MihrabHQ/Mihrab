@@ -10,7 +10,7 @@
  *
  * Persisted so the cooldown survives app restarts.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 
 const STORAGE_KEY = 'prayerapp.providerHealth.v1';
 

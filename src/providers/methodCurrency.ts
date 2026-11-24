@@ -23,7 +23,7 @@
  * the app: it is downloaded (certification.json names it; the file must
  * match what it names) and put in force within a day.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import {
   METHODS_CERTIFICATION_POLL_MS,
   METHODS_CERTIFICATION_URL,

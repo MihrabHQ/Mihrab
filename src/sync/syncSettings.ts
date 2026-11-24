@@ -28,7 +28,7 @@
  * coordinates are the one category where being wrong is worse than being
  * absent. Both are one toggle away for anyone who does want them.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import {
   coerceSelection,
   SYNC_CATEGORIES,

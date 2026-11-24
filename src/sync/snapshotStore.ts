@@ -16,7 +16,7 @@
  * earliest day it may offer, so importing it would let a phone claim days it
  * never saw.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { launchWrite } from '../boot/launchReads';
 import {
   durableEncryptedGet,

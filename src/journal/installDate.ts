@@ -32,7 +32,7 @@
  * invents months the user never had the app is a false record, and this
  * app's whole claim is that the record is theirs.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { NativeModules, Platform } from 'react-native';
 import { dayKeyOf, isDayKey } from './backfill';
 import { quiet } from '../utils/quiet';

@@ -17,7 +17,7 @@
  * exists.
  */
 import { NativeModules, Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { quiet } from '../utils/quiet';
 
 /**

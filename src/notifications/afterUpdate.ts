@@ -16,7 +16,7 @@
  * version it was done for is stored under its own key, apart from
  * `mihrab.lastSeenVersion`, which is the what's-new sheet's.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { Appearance } from 'react-native';
 import { AppVersionModule } from '../native/AppVersion';
 import { injectDaruriTimes } from '../prayer/daruriTimes';

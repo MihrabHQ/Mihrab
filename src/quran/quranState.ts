@@ -17,7 +17,7 @@
  */
 // tokens-ok: the five bookmark colours and the khatmah marker are a named, user-facing set the reader keys on
 import { useSyncExternalStore } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { TOTAL_AYAHS } from './ayahIndex';
 import { DEFAULT_RIWAYAH, coerceRiwayahId } from './riwayat';
 import {

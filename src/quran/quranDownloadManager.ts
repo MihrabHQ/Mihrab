@@ -49,7 +49,7 @@ import { downloadRiwayah } from './riwayahDownload';
 import { RIWAYAT, type RiwayahId } from './riwayat';
 import { riwayahProvenance } from './riwayahData';
 import { sizeLabel, spaceShortfall } from './downloadSpace';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import {
   downloadAyahs,
   downloadSurahAudio,

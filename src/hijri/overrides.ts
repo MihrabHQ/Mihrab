@@ -12,7 +12,7 @@
  * and the server's. A file that does not validate is ignored whole, so a
  * typo on the server cannot move a date.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import {
   HIJRI_OVERRIDES_URL,
   HIJRI_OVERRIDES_POLL_MS,

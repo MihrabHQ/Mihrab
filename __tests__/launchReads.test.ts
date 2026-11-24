@@ -35,9 +35,15 @@ import {
   primeLaunchReads,
 } from '../src/boot/launchReads';
 
+import { _setAppStorageBackendForTests } from '../src/storage/appStorage';
+
 const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
 
 beforeEach(async () => {
+  // "The database" behind the launch store is the app's storage. Here it is
+  // held to AsyncStorage, so the two stores of this test stay two (the MMKV
+  // stand-in above would otherwise serve both, as one map).
+  _setAppStorageBackendForTests(null);
   _resetLaunchReadsForTests();
   mockFastStore.clear();
   mockOpenings = 0;

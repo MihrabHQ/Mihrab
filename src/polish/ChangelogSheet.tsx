@@ -41,7 +41,7 @@ import {
   type ListRenderItemInfo,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '../storage/appStorage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useBreakpoint } from '../responsive/breakpoints';
