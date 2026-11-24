@@ -10,11 +10,11 @@
  * web build (desktop/webpack.config.js), so every platform runs the same
  * code and the tests run what ships.
  *
- * NOT YET, AND ON PURPOSE. The places where a wasted or a missing render
- * has been felt and fixed by hand, each with its own measurements:
- *   src/quran           the muṣḥaf, its reader and its sheets
- *   src/screens/quran   the Qur'an tab's lists
- * They come last, one at a time, each with its device pass.
+ * THE ORDER IT WENT ON IN. The plain folders first; then, one at a time
+ * and each after a pass on a phone, the places where a wasted or a missing
+ * render has been felt and tuned by hand: src/navigation (the tabs and
+ * Minimal's pager, AGENTS.md §9), Today (src/screens/home), and the muṣḥaf
+ * (src/quran, src/screens/quran). A new folder goes on the same way.
  *
  * A component the compiler cannot prove safe is left exactly as written
  * (it skips, it does not fail the build); hand-written memoisation in a
@@ -28,6 +28,11 @@ const COMPILED = [
   'src/screens/home/',
   'src/screens/HomeScreen.tsx',
   'src/home/',
+  'src/quran/',
+  'src/screens/quran/',
+  'src/screens/QuranScreen.tsx',
+  'src/screens/QuranSurahScreen.tsx',
+  'src/screens/QuranDownloadsScreen.tsx',
   'src/onboarding/',
   'src/polish/',
   'src/practice/',

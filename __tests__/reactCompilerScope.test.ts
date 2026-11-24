@@ -11,15 +11,16 @@ const ROOT = path.join(__dirname, '..');
 const { COMPILED, isCompiled, reactCompiler } = require('../babel.reactCompiler');
 
 describe('the React Compiler', () => {
-  it('leaves the muṣḥaf alone until it has had its device pass', () => {
-    for (const held of [
-      'src/quran/MushafPhoneReader.tsx',
-      'src/quran/mushaf/AyahActionSheet.tsx',
-      'src/screens/quran/SurahList.tsx',
-      'src/AppNavigationRoot.tsx',
-    ]) {
+  it('is not on for what has not been listed: a new folder is switched on deliberately', () => {
+    for (const held of ['src/AppNavigationRoot.tsx', 'src/screens/LogScreen.tsx', 'src/screens/CompassScreen.tsx', 'src/quranx/X.tsx']) {
       expect([held, isCompiled(path.join(ROOT, held))]).toEqual([held, false]);
     }
+  });
+
+  it('has the muṣḥaf on, after its pass on a phone', () => {
+    expect(isCompiled(path.join(ROOT, 'src/quran/MushafPhoneReader.tsx'))).toBe(true);
+    expect(isCompiled(path.join(ROOT, 'src/quran/mushaf/AyahActionSheet.tsx'))).toBe(true);
+    expect(isCompiled(path.join(ROOT, 'src/screens/quran/SurahList.tsx'))).toBe(true);
   });
 
   it('has src/navigation on, after its pass on a phone (the pager’s own files read refs while rendering, so the compiler leaves those three as written)', () => {

@@ -230,7 +230,10 @@ describe('MushafPhoneReader keeps its ayah sheet alive across a pop', () => {
       root.unmount();
     });
     jest.useRealTimers();
-  });
+    // The reader is required inside the test, so on a cold cache the test
+    // pays for transforming the whole muṣḥaf (through the React Compiler
+    // now): seconds on a loaded machine, against half a second warm.
+  }, 30000);
 });
 
 /**
