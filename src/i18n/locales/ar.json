@@ -1784,7 +1784,8 @@
     "transliterationHafsOnly": "تكتب رواية حفص، فلا تظهر إلا مع حفص، لا مع {{riwayah}}.",
     "transliterationDownloading": "جارٍ التنزيل · {{pct}}٪",
     "transliterationGet": "تُقرأ الآن عبر الإنترنت. تنزيل للقراءة بلا اتصال · {{size}}",
-    "transliterationDoneBody": "نطق كل آية بالحروف اللاتينية على هذا الجهاز الآن، ويُقرأ دون اتصال."
+    "transliterationDoneBody": "نطق كل آية بالحروف اللاتينية على هذا الجهاز الآن، ويُقرأ دون اتصال.",
+    "transliterationStyle": "طريقة الكتابة"
   },
   "reading": {
     "textSize": "حجم النص",
@@ -2040,7 +2041,7 @@
     "wordMeanings": "معاني الكلمات الصعبة",
     "surahHeaderFont": "خط عناوين السور",
     "recitationWholeSurah": "تلاوات السور كاملة (15): mp3quran.net · توقيت الآيات مطابَق مع الصوت بواسطة محراب",
-    "transliteration": "نطق القرآن بالحروف اللاتينية، كما يقدّمه المصدر"
+    "transliteration": "نطق القرآن بالحروف اللاتينية، مولَّد آليًّا من النص العربي ومعروض كما يقدّمه المصدر"
   },
   "liveActivity": {
     "title": "الصلاة التالية",

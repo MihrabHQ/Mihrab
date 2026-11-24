@@ -1781,7 +1781,8 @@
     "transliterationHafsOnly": "Sigue la lectura de Ḥafṣ, así que solo se muestra con Ḥafṣ, no con {{riwayah}}.",
     "transliterationDownloading": "Descargando · {{pct}} %",
     "transliterationGet": "Por ahora se lee en línea. Descargar para leer sin conexión · {{size}}",
-    "transliterationDoneBody": "La transliteración de cada aleya está en este dispositivo. Ahora se lee sin conexión."
+    "transliterationDoneBody": "La transliteración de cada aleya está en este dispositivo. Ahora se lee sin conexión.",
+    "transliterationStyle": "Grafía"
   },
   "reading": {
     "textSize": "Tamaño del texto",
@@ -2037,7 +2038,7 @@
     "wordMeanings": "Significados en árabe de palabras difíciles",
     "surahHeaderFont": "Caligrafía de encabezados de sura",
     "recitationWholeSurah": "Recitaciones de suras completas (15): mp3quran.net · tiempos de aleyas ajustados al audio por Mihrab",
-    "transliteration": "Transliteración del Corán, mostrada tal como se sirve"
+    "transliteration": "Transliteraciones del Corán, generadas a partir del texto árabe y mostradas tal como se sirven"
   },
   "liveActivity": {
     "title": "Próxima oración",

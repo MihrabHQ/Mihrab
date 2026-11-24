@@ -468,6 +468,11 @@ export type QuranPrefs = {
    * reader asks for, not something the Qur'an is shown with.
    */
   transliteration?: boolean;
+  /**
+   * Which spelling: a `QURAN_TRANSLITERATIONS` id, or '' / absent for the
+   * app language's own (`resolveTransliteration`). Additive.
+   */
+  transliterationStyle?: string;
   /** Memorization masking in translation view. */
   hideMode: 'none' | 'arabic' | 'translation';
   repeat: RepeatSettings;

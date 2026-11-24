@@ -1781,7 +1781,8 @@
     "transliterationHafsOnly": "Elle suit la lecture de Ḥafṣ ; elle n’est donc affichée qu’avec Ḥafṣ, pas avec {{riwayah}}.",
     "transliterationDownloading": "Téléchargement · {{pct}} %",
     "transliterationGet": "Lue en ligne pour l’instant. Télécharger pour le hors-ligne · {{size}}",
-    "transliterationDoneBody": "La translittération de chaque verset est sur cet appareil. Elle se lit désormais sans connexion."
+    "transliterationDoneBody": "La translittération de chaque verset est sur cet appareil. Elle se lit désormais sans connexion.",
+    "transliterationStyle": "Graphie"
   },
   "reading": {
     "textSize": "Taille du texte",
@@ -2037,7 +2038,7 @@
     "wordMeanings": "Sens arabes des mots difficiles",
     "surahHeaderFont": "Calligraphie des en-têtes de sourates",
     "recitationWholeSurah": "Récitations de sourates entières (15) : mp3quran.net · minutage des versets aligné sur l’audio par Mihrab",
-    "transliteration": "Translittération du Coran, affichée telle que fournie"
+    "transliteration": "Translittérations du Coran, générées à partir du texte arabe et affichées telles que fournies"
   },
   "liveActivity": {
     "title": "Prochaine prière",

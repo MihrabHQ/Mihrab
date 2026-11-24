@@ -133,7 +133,11 @@ import { RADIUS, SPACING } from '../../theme/tokens';
 import { tajweedColoursShown } from '../tajweed/tajweedSupport';
 import { TransliterationLine } from '../TransliterationLine';
 import { TransliterationSwitch } from '../TransliterationSwitch';
-import { transliterationFits, useAyahTransliteration } from '../transliteration';
+import {
+  resolveTransliteration,
+  transliterationFits,
+  useAyahTransliteration,
+} from '../transliteration';
 import { IS_WEB_APP } from '../../config/webApp';
 import { useSheetSides } from '../../responsive/sheetSides';
 import { drawableText } from '../maddaWajibFallback';
@@ -559,6 +563,7 @@ export function AyahActionSheet({
   // Arabic above is a Ḥafṣ text (`transliteration.ts`).
   const transliteration = useAyahTransliteration(
     visible && state.prefs.transliteration === true && transliterationFits(shownRiwayah),
+    resolveTransliteration(state.prefs.transliterationStyle, settings.language),
     surah,
     ayah,
   );

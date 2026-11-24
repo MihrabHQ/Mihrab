@@ -170,6 +170,7 @@ export const DEFAULT_QURAN_STATE: QuranState = {
     lockButton: false,
     hifzReviewHideCompanion: false,
     transliteration: false,
+    transliterationStyle: '',
     hideMode: 'none',
     repeat: { eachAyah: 1, range: 1, pauseFactor: 0 },
     votdMode: 'translation',
@@ -642,6 +643,11 @@ function mergeStored(raw: unknown): QuranState {
         (r.prefs as { hifzReviewHideCompanion?: unknown } | undefined)?.hifzReviewHideCompanion === true,
       transliteration:
         (r.prefs as { transliteration?: unknown } | undefined)?.transliteration === true,
+      transliterationStyle:
+        typeof (r.prefs as { transliterationStyle?: unknown } | undefined)?.transliterationStyle ===
+        'string'
+          ? (r.prefs as { transliterationStyle: string }).transliterationStyle
+          : '',
       // Only a known panel; anything else (or a blob from before) is none.
       ayahSheetPanel: coerceSheetPanel(
         (r.prefs as { ayahSheetPanel?: unknown } | undefined)?.ayahSheetPanel,

@@ -72,7 +72,8 @@ import {
   deleteTranslationEdition,
   findTranslationEdition,
   QURAN_TRANSLATIONS,
-  QURAN_TRANSLITERATION,
+  QURAN_TRANSLITERATIONS,
+  isTransliterationEdition,
   translationEditionStats,
   TRANSLATION_SURAHS,
 } from '../quran/translations';
@@ -158,8 +159,8 @@ export function QuranDownloadsContent() {
           })),
         ),
         Promise.all(
-          // The transliteration is kept beside them (`translations.ts`).
-          [...QURAN_TRANSLATIONS.filter(e => e.source), QURAN_TRANSLITERATION].map(async e => ({
+          // The transliterations are kept beside them (`translations.ts`).
+          [...QURAN_TRANSLATIONS.filter(e => e.source), ...QURAN_TRANSLITERATIONS].map(async e => ({
             id: e.id,
             ...(await translationEditionStats(e.id)),
           })),
@@ -465,10 +466,12 @@ export function QuranDownloadsContent() {
         : null;
     const surahs = live ? Math.max(e.surahs, live.done) : e.surahs;
     const whole = surahs >= TRANSLATION_SURAHS;
-    // The transliteration: named in the reader's language, and not called
-    // a translation.
-    const aid = e.id === QURAN_TRANSLITERATION.id;
-    const name = aid ? t('quran.transliteration', 'Transliteration') : edition.label;
+    // A transliteration: named in the reader's language with its spelling
+    // after it, and not called a translation.
+    const aid = isTransliterationEdition(e.id);
+    const name = aid
+      ? `${t('quran.transliteration', 'Transliteration')} · ${edition.label}`
+      : edition.label;
     items.push(
       <DownloadRow
         key={`translation-${e.id}`}

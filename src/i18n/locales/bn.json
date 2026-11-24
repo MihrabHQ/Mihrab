@@ -1780,7 +1780,8 @@
     "transliterationHafsOnly": "এটি হাফসের পাঠ অনুযায়ী লেখা, তাই শুধু হাফসের সঙ্গেই দেখানো হয়, {{riwayah}}-এর সঙ্গে নয়।",
     "transliterationDownloading": "ডাউনলোড হচ্ছে · {{pct}}%",
     "transliterationGet": "আপাতত অনলাইনে পড়া হচ্ছে। অফলাইনের জন্য ডাউনলোড করুন · {{size}}",
-    "transliterationDoneBody": "প্রতিটি আয়াতের প্রতিবর্ণীকরণ এখন এই ডিভাইসে আছে। এখন সংযোগ ছাড়াই পড়া যাবে।"
+    "transliterationDoneBody": "প্রতিটি আয়াতের প্রতিবর্ণীকরণ এখন এই ডিভাইসে আছে। এখন সংযোগ ছাড়াই পড়া যাবে।",
+    "transliterationStyle": "বানানরীতি"
   },
   "reading": {
     "textSize": "লেখার আকার",
@@ -2036,7 +2037,7 @@
     "wordMeanings": "কঠিন শব্দের আরবি অর্থ",
     "surahHeaderFont": "সূরা-শিরোনাম ক্যালিগ্রাফি",
     "recitationWholeSurah": "পূর্ণ-সূরা তিলাওয়াত (15): mp3quran.net · আয়াতের সময় Mihrab অডিওর সাথে মিলিয়েছে",
-    "transliteration": "কুরআনের প্রতিবর্ণীকরণ, উৎসে যেমন আছে তেমনই দেখানো"
+    "transliteration": "কুরআনের প্রতিবর্ণীকরণ, আরবি পাঠ থেকে তৈরি এবং উৎসে যেমন আছে তেমনই দেখানো"
   },
   "liveActivity": {
     "title": "পরবর্তী নামায",

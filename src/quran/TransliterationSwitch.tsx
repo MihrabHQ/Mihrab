@@ -19,10 +19,13 @@ import { useQuranDownloadRun } from './QuranDownloadStrip';
 import { queueQuranDownload, riwayahLabel } from './quranDownloadManager';
 import { setQuranPrefs, useQuranPrefs } from './quranState';
 import { resolveRiwayah } from './riwayat';
-import { QURAN_TRANSLITERATION, translationSizeLabel } from './translations';
+import { usePrayerSettings } from '../context/PrayerSettingsContext';
+import { RADIUS } from '../theme/tokens';
+import { QURAN_TRANSLITERATIONS, translationSizeLabel } from './translations';
 import {
-  TRANSLITERATION_ID,
+  TRANSLITERATION_SAMPLES,
   hasWholeTransliteration,
+  resolveTransliteration,
   transliterationFits,
 } from './transliteration';
 
@@ -33,9 +36,12 @@ export function TransliterationSwitch({ style }: { style?: StyleProp<ViewStyle> 
   const on = prefs.transliteration === true;
   const riwayah = resolveRiwayah(prefs.riwayah);
   const fits = transliterationFits(riwayah);
+  const { settings } = usePrayerSettings();
+  // The spelling in use: the reader's choice, or their language's own.
+  const edition = resolveTransliteration(prefs.transliterationStyle, settings.language);
   const dl = useQuranDownloadRun();
   const downloading =
-    dl.running?.kind === 'translation' && dl.running.editionId === TRANSLITERATION_ID;
+    dl.running?.kind === 'translation' && dl.running.editionId === edition.id;
   const pct = dl.progress.total > 0 ? Math.round((dl.progress.done / dl.progress.total) * 100) : 0;
   /** On this device in full? Null while the disk is answering. */
   const [whole, setWhole] = useState<boolean | null>(null);
@@ -43,14 +49,14 @@ export function TransliterationSwitch({ style }: { style?: StyleProp<ViewStyle> 
     if (!on || downloading) return;
     let cancelled = false;
     setWhole(null);
-    void hasWholeTransliteration().then(w => {
+    void hasWholeTransliteration(edition).then(w => {
       if (!cancelled) setWhole(w);
     });
     return () => {
       cancelled = true;
     };
     // The run ending flips `downloading` back — look again.
-  }, [on, downloading]);
+  }, [on, downloading, edition]);
 
   const label = t('quran.transliteration', 'Transliteration');
   return (
@@ -80,6 +86,39 @@ export function TransliterationSwitch({ style }: { style?: StyleProp<ViewStyle> 
           })}
         </Text>
       ) : null}
+      {on ? (
+        // Which spelling. Each choice is named in its own language and shows
+        // a word or two in itself, so it needs no translating to be chosen.
+        <View
+          accessibilityRole="radiogroup"
+          accessibilityLabel={t('quran.transliterationStyle', 'Spelling')}
+          style={styles.styles}>
+          {QURAN_TRANSLITERATIONS.map(e => {
+            const selected = e.id === edition.id;
+            return (
+              <Pressable
+                key={e.id}
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
+                accessibilityLabel={`${e.label}, ${TRANSLITERATION_SAMPLES[e.id] ?? ''}`}
+                onPress={() => setQuranPrefs({ transliterationStyle: e.id })}
+                style={[
+                  styles.style,
+                  { borderColor: selected ? palette.accentSolid : palette.border },
+                  selected && { backgroundColor: palette.accentBg },
+                ]}>
+                <Text
+                  style={[styles.styleName, { color: selected ? palette.accentSolid : palette.text }]}>
+                  {e.label}
+                </Text>
+                <Text style={[styles.styleSample, { color: palette.muted }]}>
+                  {TRANSLITERATION_SAMPLES[e.id] ?? ''}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : null}
       {!on || IS_WEB_APP ? null : downloading ? (
         <Text style={[styles.sub, { color: palette.muted }]}>
           {t('quran.transliterationDownloading', {
@@ -92,12 +131,12 @@ export function TransliterationSwitch({ style }: { style?: StyleProp<ViewStyle> 
           accessibilityRole="button"
           hitSlop={6}
           onPress={() => {
-            queueQuranDownload({ kind: 'translation', editionId: TRANSLITERATION_ID });
+            queueQuranDownload({ kind: 'translation', editionId: edition.id });
           }}>
           <Text style={[styles.get, { color: palette.accentSolid }]}>
             {t('quran.transliterationGet', {
               defaultValue: 'Read online for now. Download for offline · {{size}}',
-              size: translationSizeLabel(QURAN_TRANSLITERATION.approxBytes ?? 0),
+              size: translationSizeLabel(edition.approxBytes ?? 0),
             })}
           </Text>
         </Pressable>
@@ -116,5 +155,15 @@ const styles = StyleSheet.create({
   },
   label: { fontSize: TYPE.body.fontSize, flexShrink: 1 },
   sub: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginTop: SPACING.xs },
+  styles: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm, marginTop: SPACING.sm },
+  style: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+  },
+  styleName: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  // Latin letters in every app language: never laid out right to left.
+  styleSample: { fontSize: TYPE.caption.fontSize, fontStyle: 'italic', writingDirection: 'ltr' },
   get: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginTop: SPACING.sm, fontWeight: '500' },
 });

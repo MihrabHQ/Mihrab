@@ -1780,7 +1780,8 @@
     "transliterationHafsOnly": "یہ روایتِ حفص کے مطابق لکھا گیا ہے، اس لیے صرف حفص کے ساتھ دکھایا جاتا ہے، {{riwayah}} کے ساتھ نہیں۔",
     "transliterationDownloading": "ڈاؤن لوڈ ہو رہا ہے · {{pct}}٪",
     "transliterationGet": "فی الحال آن لائن پڑھا جا رہا ہے۔ آف لائن کے لیے ڈاؤن لوڈ کریں · {{size}}",
-    "transliterationDoneBody": "ہر آیت کا رومن تلفظ اب اس آلے پر ہے۔ یہ بغیر کنکشن کے پڑھا جا سکتا ہے۔"
+    "transliterationDoneBody": "ہر آیت کا رومن تلفظ اب اس آلے پر ہے۔ یہ بغیر کنکشن کے پڑھا جا سکتا ہے۔",
+    "transliterationStyle": "ہجے"
   },
   "reading": {
     "textSize": "متن کا سائز",
@@ -2036,7 +2037,7 @@
     "wordMeanings": "مشکل الفاظ کے عربی معنی",
     "surahHeaderFont": "سورت کے عنوان کی خطاطی",
     "recitationWholeSurah": "مکمل سورتوں کی تلاوتیں (15): mp3quran.net · آیات کے اوقات محراب نے آواز سے ملائے",
-    "transliteration": "قرآن کا رومن تلفظ، جیسا ماخذ فراہم کرتا ہے"
+    "transliteration": "قرآن کے رومن تلفظ، عربی متن سے تیار کردہ اور جیسا ماخذ فراہم کرتا ہے"
   },
   "liveActivity": {
     "title": "اگلی نماز",

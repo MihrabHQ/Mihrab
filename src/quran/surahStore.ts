@@ -268,13 +268,19 @@ export async function loadAyah(
       // deadline is what matters most here — before this, a stalled origin
       // left the sheet's spinner running with nothing to end it.
       const src = TEXT_SOURCES[ed.source];
-      const res = await fetchWithRetry(src.ayahUrl(ed.sourceId, surah, ayah), undefined, {
-        maxAttempts: 2,
-        baseDelayMs: 400,
-        timeoutMs: CONTENT_DEADLINES.tafsir,
-      });
-      if (!res.ok) return null;
-      text = src.ayahText(await res.json()) ?? undefined;
+      if (src.ayahUrl && src.ayahText) {
+        const res = await fetchWithRetry(src.ayahUrl(ed.sourceId, surah, ayah), undefined, {
+          maxAttempts: 2,
+          baseDelayMs: 400,
+          timeoutMs: CONTENT_DEADLINES.tafsir,
+        });
+        if (!res.ok) return null;
+        text = src.ayahText(await res.json()) ?? undefined;
+      } else {
+        // A source with no one-ayah answer: the surah, kept in memory, so
+        // the next ayah of it is not another request.
+        text = (await hostSurah(kind, ed, surah))?.ayahs[String(ayah)];
+      }
     }
     if (!text) return null;
     // Cache for offline re-reads (best effort).

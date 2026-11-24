@@ -1780,7 +1780,8 @@
     "transliterationHafsOnly": "Ini menuliskan bacaan Ḥafṣ, jadi hanya ditampilkan dengan Ḥafṣ, tidak dengan {{riwayah}}.",
     "transliterationDownloading": "Mengunduh · {{pct}}%",
     "transliterationGet": "Untuk saat ini dibaca secara online. Unduh untuk offline · {{size}}",
-    "transliterationDoneBody": "Transliterasi setiap ayat ada di perangkat ini. Sekarang bisa dibaca tanpa koneksi."
+    "transliterationDoneBody": "Transliterasi setiap ayat ada di perangkat ini. Sekarang bisa dibaca tanpa koneksi.",
+    "transliterationStyle": "Ejaan"
   },
   "reading": {
     "textSize": "Ukuran teks",
@@ -2036,7 +2037,7 @@
     "wordMeanings": "Arti kata-kata sulit dalam bahasa Arab",
     "surahHeaderFont": "Kaligrafi kepala surah",
     "recitationWholeSurah": "Tilawah surah utuh (15): mp3quran.net · waktu ayat diselaraskan dengan audio oleh Mihrab",
-    "transliteration": "Transliterasi Al-Qur’an, ditampilkan sebagaimana disajikan"
+    "transliteration": "Transliterasi Al-Qur’an, dibuat dari teks Arab dan ditampilkan sebagaimana disajikan"
   },
   "liveActivity": {
     "title": "Salat berikutnya",

@@ -1780,7 +1780,8 @@
     "transliterationHafsOnly": "यह हफ़्स की क़िराअत के अनुसार लिखा है, इसलिए केवल हफ़्स के साथ दिखता है, {{riwayah}} के साथ नहीं।",
     "transliterationDownloading": "डाउनलोड हो रहा है · {{pct}}%",
     "transliterationGet": "अभी ऑनलाइन पढ़ा जा रहा है। ऑफ़लाइन के लिए डाउनलोड करें · {{size}}",
-    "transliterationDoneBody": "हर आयत का लिप्यंतरण अब इस डिवाइस पर है। अब यह बिना कनेक्शन के पढ़ा जा सकता है।"
+    "transliterationDoneBody": "हर आयत का लिप्यंतरण अब इस डिवाइस पर है। अब यह बिना कनेक्शन के पढ़ा जा सकता है।",
+    "transliterationStyle": "वर्तनी"
   },
   "reading": {
     "textSize": "पाठ का आकार",
@@ -2036,7 +2037,7 @@
     "wordMeanings": "कठिन शब्दों के अरबी अर्थ",
     "surahHeaderFont": "सूरह शीर्षक कैलिग्राफी",
     "recitationWholeSurah": "पूरी सूरह की तिलावतें (15): mp3quran.net · आयतों का समय Mihrab ने ऑडियो से मिलाया",
-    "transliteration": "क़ुरआन का लिप्यंतरण, स्रोत जैसा देता है वैसा ही"
+    "transliteration": "क़ुरआन के लिप्यंतरण, अरबी पाठ से तैयार किए गए और स्रोत जैसा देता है वैसे ही"
   },
   "liveActivity": {
     "title": "अगली नमाज़",

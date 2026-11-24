@@ -73,7 +73,7 @@ import {
   downloadTranslationEdition,
   findTranslationEdition,
   isFetchedTranslation,
-  QURAN_TRANSLITERATION,
+  isTransliterationEdition,
   translationEditionStats,
   TRANSLATION_SURAHS,
 } from './translations';
@@ -239,6 +239,12 @@ export function fontSetOf(job: { kind: 'fonts'; set?: MushafFontSet }): MushafFo
 }
 
 /** A riwayah's name in the app's language, for the shade and the strip. */
+/** "Transliteration · Indonesia": the aid in the reader's language, the spelling by its own name. */
+export function transliterationJobName(editionId: string): string {
+  const label = findTranslationEdition(editionId)?.label ?? editionId;
+  return `${i18n.t('quran.transliteration', 'Transliteration')} · ${tafsirNameInSentence(label)}`;
+}
+
 export function riwayahLabel(id: RiwayahId): string {
   const def = RIWAYAT.find(r => r.id === id);
   return def ? i18n.t(def.nameKey, def.arabic) : id;
@@ -346,9 +352,9 @@ function notificationText(job: QuranDownloadJob) {
   if (job.kind === 'translation') {
     // The transliteration is kept as one of these (`translations.ts`), under
     // its own name and with its own word for what is now on the device.
-    const aid = job.editionId === QURAN_TRANSLITERATION.id;
+    const aid = isTransliterationEdition(job.editionId);
     const name = aid
-      ? i18n.t('quran.transliteration')
+      ? transliterationJobName(job.editionId)
       : tafsirNameInSentence(findTranslationEdition(job.editionId)?.label ?? job.editionId);
     return {
       label: i18n.t('quran.downloadingTranslation', { name }),
@@ -423,8 +429,8 @@ export function jobDisplayName(job: QuranDownloadJob): string {
     case 'tafsir':
       return findTafsirEdition(job.editionId)?.label ?? job.editionId;
     case 'translation':
-      return job.editionId === QURAN_TRANSLITERATION.id
-        ? i18n.t('quran.transliteration', 'Transliteration')
+      return isTransliterationEdition(job.editionId)
+        ? transliterationJobName(job.editionId)
         : (findTranslationEdition(job.editionId)?.label ?? job.editionId);
     case 'wordMeanings':
       return i18n.t('downloads.wordMeanings', 'Arabic word meanings');

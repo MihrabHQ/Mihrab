@@ -47,7 +47,7 @@ import { useAppPalette } from '../../hooks/useAppPalette';
 import { loadSurah, type SurahIndex } from '../../quran/quran';
 import { getSurahTranslation } from '../../quran/translations';
 import { TransliterationLine } from '../../quran/TransliterationLine';
-import { useSurahTransliteration } from '../../quran/transliteration';
+import { resolveTransliteration, useSurahTransliteration } from '../../quran/transliteration';
 import { useActiveEdition } from '../../quran/useActiveEdition';
 import { loadTafsir, resolveTafsirEdition } from '../../quran/tafsir';
 import {
@@ -258,6 +258,7 @@ export function TranslationSurahScreen({
   // riwayah (`ownRows`) goes without, since it is not what the line spells.
   const transliterations = useSurahTransliteration(
     quran.prefs.transliteration === true,
+    resolveTransliteration(quran.prefs.transliterationStyle, settings.language),
     surahNumber,
   );
 

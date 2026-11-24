@@ -1780,7 +1780,8 @@
     "transliterationHafsOnly": "Den återger Ḥafṣ-läsningen och visas därför bara med Ḥafṣ, inte med {{riwayah}}.",
     "transliterationDownloading": "Laddar ner · {{pct}} %",
     "transliterationGet": "Läses online tills vidare. Ladda ner för offline · {{size}}",
-    "transliterationDoneBody": "Varje ayahs translitterering finns på den här enheten. Den läses utan uppkoppling nu."
+    "transliterationDoneBody": "Varje ayahs translitterering finns på den här enheten. Den läses utan uppkoppling nu.",
+    "transliterationStyle": "Stavning"
   },
   "reading": {
     "textSize": "Textstorlek",
@@ -2036,7 +2037,7 @@
     "wordMeanings": "Arabiska betydelser av svårare ord",
     "surahHeaderFont": "Kalligrafi för surarubriker",
     "recitationWholeSurah": "Recitationer av hela suror (15): mp3quran.net · verstider anpassade till ljudet av Mihrab",
-    "transliteration": "Koranens translitterering, visad som den levereras"
+    "transliteration": "Koranens translittereringar, genererade från den arabiska texten och visade som de levereras"
   },
   "liveActivity": {
     "title": "Nästa bön",

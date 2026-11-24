@@ -1780,7 +1780,8 @@
     "transliterationHafsOnly": "Hafs kıraatine göre yazılmıştır; bu yüzden yalnızca Hafs ile gösterilir, {{riwayah}} ile değil.",
     "transliterationDownloading": "İndiriliyor · %{{pct}}",
     "transliterationGet": "Şimdilik çevrimiçi okunuyor. Çevrimdışı için indir · {{size}}",
-    "transliterationDoneBody": "Her ayetin okunuşu artık bu cihazda. Bağlantı olmadan okunur."
+    "transliterationDoneBody": "Her ayetin okunuşu artık bu cihazda. Bağlantı olmadan okunur.",
+    "transliterationStyle": "Yazım"
   },
   "reading": {
     "textSize": "Metin boyutu",
@@ -2036,7 +2037,7 @@
     "wordMeanings": "Zor kelimelerin Arapça anlamları",
     "surahHeaderFont": "Sure başlığı hattı",
     "recitationWholeSurah": "Tam sure tilavetleri (15): mp3quran.net · ayet zamanlamaları Mihrab tarafından sese hizalandı",
-    "transliteration": "Kur’an okunuşu, sunulduğu gibi gösterilir"
+    "transliteration": "Kur’an okunuşları, Arapça metinden üretilmiştir ve sunulduğu gibi gösterilir"
   },
   "liveActivity": {
     "title": "Sıradaki namaz",

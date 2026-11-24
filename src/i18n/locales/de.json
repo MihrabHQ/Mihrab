@@ -1780,7 +1780,8 @@
     "transliterationHafsOnly": "Sie gibt die Lesart Ḥafṣ wieder und wird deshalb nur mit Ḥafṣ gezeigt, nicht mit {{riwayah}}.",
     "transliterationDownloading": "Wird geladen · {{pct}} %",
     "transliterationGet": "Wird vorerst online gelesen. Für offline laden · {{size}}",
-    "transliterationDoneBody": "Die Umschrift jeder Aya ist jetzt auf diesem Gerät und ohne Verbindung lesbar."
+    "transliterationDoneBody": "Die Umschrift jeder Aya ist jetzt auf diesem Gerät und ohne Verbindung lesbar.",
+    "transliterationStyle": "Schreibweise"
   },
   "reading": {
     "textSize": "Schriftgröße",
@@ -2036,7 +2037,7 @@
     "wordMeanings": "Arabische Bedeutungen schwieriger Wörter",
     "surahHeaderFont": "Kalligrafie der Surenüberschriften",
     "recitationWholeSurah": "Rezitationen ganzer Suren (15): mp3quran.net · Verszeiten von Mihrab an den Ton angeglichen",
-    "transliteration": "Koran-Umschrift, unverändert wie bereitgestellt"
+    "transliteration": "Koran-Umschriften, aus dem arabischen Text erzeugt und unverändert wie bereitgestellt"
   },
   "liveActivity": {
     "title": "Nächstes Gebet",

@@ -23,26 +23,29 @@
  *               `{ result: { translation, footnotes } }`. Its footnotes are
  *               part of the text — the markers in the translation point
  *               at them — so they follow it, after a blank line.
- *   alquran.cloud  The same host and the same two answers as `tanzil`, for
- *               the one edition it serves that is NOT Tanzil's: its
- *               "English Transliteration" (`transliteration.ts`). It has
- *               an entry of its own so that nothing credits that text to
- *               Tanzil or puts Tanzil's licence on it.
+ *   quran-json  risan/quran-json's static files (quran-json.risanb.com),
+ *               for the transliterations it generates from the Arabic
+ *               (`transliteration.ts`). A chapter is `{ id, verses: [{ id,
+ *               transliteration }] }`; there is no one-ayah answer, so an
+ *               ayah is read out of its chapter (`surahStore.ts`).
  */
 
-export type TextSourceId = 'quran.com' | 'tanzil' | 'quranenc' | 'alquran.cloud';
+export type TextSourceId = 'quran.com' | 'tanzil' | 'quranenc' | 'quran-json';
 
 export type SurahRow = { ayah: number; text: string };
 
 export type TextSource = {
   /** The whole surah, for a download or the mirror. */
   surahUrl: (sourceId: string, surah: number) => string;
-  /** One ayah, for an open sheet when nothing else answers. */
-  ayahUrl: (sourceId: string, surah: number, ayah: number) => string;
+  /**
+   * One ayah, for an open sheet when nothing else answers. Absent where the
+   * source has no such answer: the ayah is then read out of its surah.
+   */
+  ayahUrl?: (sourceId: string, surah: number, ayah: number) => string;
   /** A surah answer's rows; null when the body is not that answer. */
   surahRows: (json: unknown) => SurahRow[] | null;
   /** An ayah answer's text; null when the body is not that answer. */
-  ayahText: (json: unknown) => string | null;
+  ayahText?: (json: unknown) => string | null;
   /** Shown beside the edition in Settings → About. */
   attribution: string;
   homepage: string;
@@ -56,25 +59,6 @@ function withFootnotes(translation: unknown, footnotes: unknown): string {
   const f = str(footnotes);
   return t && f ? `${t}\n\n${f}` : t;
 }
-
-/** alquran.cloud's two answers, whoever the text is by. */
-const ALQURAN_CLOUD: Pick<TextSource, 'surahUrl' | 'ayahUrl' | 'surahRows' | 'ayahText'> = {
-  surahUrl: (id, surah) => `https://api.alquran.cloud/v1/surah/${surah}/${id}`,
-  ayahUrl: (id, surah, ayah) =>
-    `https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/${id}`,
-  surahRows: json => {
-    const inner = (json as { data?: { ayahs?: unknown } } | null)?.data?.ayahs;
-    if (!Array.isArray(inner)) return null;
-    return inner.map(r => ({
-      ayah: Number((r as { numberInSurah?: unknown })?.numberInSurah),
-      text: str((r as { text?: unknown })?.text),
-    }));
-  },
-  ayahText: json => {
-    const t = str((json as { data?: { text?: unknown } } | null)?.data?.text);
-    return t || null;
-  },
-};
 
 export const TEXT_SOURCES: Record<TextSourceId, TextSource> = {
   'quran.com': {
@@ -100,7 +84,21 @@ export const TEXT_SOURCES: Record<TextSourceId, TextSource> = {
     homepage: 'https://github.com/spa5k/tafsir_api',
   },
   tanzil: {
-    ...ALQURAN_CLOUD,
+    surahUrl: (id, surah) => `https://api.alquran.cloud/v1/surah/${surah}/${id}`,
+    ayahUrl: (id, surah, ayah) =>
+      `https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/${id}`,
+    surahRows: json => {
+      const inner = (json as { data?: { ayahs?: unknown } } | null)?.data?.ayahs;
+      if (!Array.isArray(inner)) return null;
+      return inner.map(r => ({
+        ayah: Number((r as { numberInSurah?: unknown })?.numberInSurah),
+        text: str((r as { text?: unknown })?.text),
+      }));
+    },
+    ayahText: json => {
+      const t = str((json as { data?: { text?: unknown } } | null)?.data?.text);
+      return t || null;
+    },
     attribution: 'alquran.cloud · Tanzil-derived · CC BY 3.0',
     homepage: 'https://alquran.cloud/',
   },
@@ -126,9 +124,18 @@ export const TEXT_SOURCES: Record<TextSourceId, TextSource> = {
     attribution: 'Encyclopedia of the Noble Quran · QuranEnc.com',
     homepage: 'https://quranenc.com/',
   },
-  'alquran.cloud': {
-    ...ALQURAN_CLOUD,
-    attribution: 'alquran.cloud · Islamic Network',
-    homepage: 'https://alquran.cloud/',
+  'quran-json': {
+    surahUrl: (id, surah) =>
+      `https://quran-json.risanb.com/transliteration/${id}/chapters/${surah}.json`,
+    surahRows: json => {
+      const inner = (json as { verses?: unknown } | null)?.verses;
+      if (!Array.isArray(inner)) return null;
+      return inner.map(r => ({
+        ayah: Number((r as { id?: unknown })?.id),
+        text: str((r as { transliteration?: unknown })?.transliteration),
+      }));
+    },
+    attribution: 'risan/quran-json · CC BY-SA 4.0',
+    homepage: 'https://quran-json.risanb.com/',
   },
 };
