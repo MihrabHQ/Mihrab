@@ -60,7 +60,7 @@ jest.mock('react-native-gesture-handler', () => {
   };
 });
 
-jest.mock('@react-native-community/geolocation', () => ({
+jest.mock('./src/native/Geolocation', () => ({
   __esModule: true,
   default: {
     getCurrentPosition: jest.fn(success =>

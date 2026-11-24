@@ -57,6 +57,7 @@ class MainApplication : Application(), ReactApplication, androidx.work.Configura
           add(ScanQrPackage())
           add(CompassPackage())
           add(SecureStorePackage())
+          add(com.prayer_times.geolocation.GeolocationPackage())
           add(DisplayCutoutPackage())
           add(FoldPosturePackage())
           add(BackgroundLocationPackage())
