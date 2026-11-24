@@ -11,10 +11,8 @@ const ROOT = path.join(__dirname, '..');
 const { COMPILED, isCompiled, reactCompiler } = require('../babel.reactCompiler');
 
 describe('the React Compiler', () => {
-  it('leaves Today and the muṣḥaf alone until each has had its device pass', () => {
+  it('leaves the muṣḥaf alone until it has had its device pass', () => {
     for (const held of [
-      'src/screens/HomeScreen.tsx',
-      'src/screens/home/TodayCard.tsx',
       'src/quran/MushafPhoneReader.tsx',
       'src/quran/mushaf/AyahActionSheet.tsx',
       'src/screens/quran/SurahList.tsx',
@@ -27,6 +25,11 @@ describe('the React Compiler', () => {
   it('has src/navigation on, after its pass on a phone (the pager’s own files read refs while rendering, so the compiler leaves those three as written)', () => {
     expect(isCompiled(path.join(ROOT, 'src/navigation/RootNavigator.tsx'))).toBe(true);
     expect(COMPILED).toContain('src/navigation/');
+  });
+
+  it('has Today on, after its pass on a phone', () => {
+    expect(isCompiled(path.join(ROOT, 'src/screens/home/TodayCard.tsx'))).toBe(true);
+    expect(isCompiled(path.join(ROOT, 'src/screens/HomeScreen.tsx'))).toBe(true);
   });
 
   it('compiles what is listed, and only inside this repository', () => {
