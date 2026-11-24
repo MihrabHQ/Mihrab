@@ -22,9 +22,9 @@
  *      write from a store they could not read.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import EncryptedStorage from '../src/native/SecureStore';
 
-jest.mock('react-native-encrypted-storage', () => ({
+jest.mock('../src/native/SecureStore', () => ({
   __esModule: true,
   default: { getItem: jest.fn(), setItem: jest.fn(), removeItem: jest.fn() },
 }));

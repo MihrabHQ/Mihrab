@@ -56,7 +56,7 @@ import {
   until,
   type HookProbe,
 } from '../fixtures/scenarioHarness';
-const EncryptedStorageMock = require('react-native-encrypted-storage');
+const EncryptedStorageMock = require('../../src/native/SecureStore');
 
 jest.setTimeout(60_000);
 const STOCKHOLM = { latitude: 59.3293, longitude: 18.0686 };

@@ -61,7 +61,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import EncryptedStorage from '../native/SecureStore';
 import {
   unprotectedGet,
   unprotectedRemove,

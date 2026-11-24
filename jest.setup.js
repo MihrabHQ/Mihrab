@@ -86,31 +86,23 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
-// react-native-encrypted-storage — task #16. Provides the same async API as
-// AsyncStorage with a separate in-memory backing so tests can verify that
+// The encrypted store (src/native/SecureStore.ts). The same async API as
+// AsyncStorage with a separate in-memory backing, so tests can verify that
 // sensitive fields land HERE and never in the AsyncStorage mock above.
-//
-// `virtual: true` lets Jest mock a module that isn't present in node_modules.
-// This makes the test suite pass before the user runs
-// `npm install react-native-encrypted-storage` for the native build.
-jest.mock(
-  'react-native-encrypted-storage',
-  () => {
-    let secureStore = {};
-    return {
-      __esModule: true,
-      default: {
-        setItem: jest.fn(async (key, value) => { secureStore[key] = value; }),
-        getItem: jest.fn(async key => secureStore[key] ?? null),
-        removeItem: jest.fn(async key => { delete secureStore[key]; }),
-        clear: jest.fn(async () => { secureStore = {}; }),
-      },
-      __reset: () => { secureStore = {}; },
-      __peek: () => secureStore,
-    };
-  },
-  { virtual: true },
-);
+jest.mock('./src/native/SecureStore', () => {
+  let secureStore = {};
+  return {
+    __esModule: true,
+    default: {
+      setItem: jest.fn(async (key, value) => { secureStore[key] = value; }),
+      getItem: jest.fn(async key => secureStore[key] ?? null),
+      removeItem: jest.fn(async key => { delete secureStore[key]; }),
+      clear: jest.fn(async () => { secureStore = {}; }),
+    },
+    __reset: () => { secureStore = {}; },
+    __peek: () => secureStore,
+  };
+});
 
 jest.mock('adhan', () => {
   // Realistic in-order prayer times so validateTimings ordering checks pass

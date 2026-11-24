@@ -11,7 +11,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const EncryptedStorageMock = require('react-native-encrypted-storage');
+const EncryptedStorageMock = require('../src/native/SecureStore');
 import { loadSettings, saveSettings } from '../src/settings/storage';
 import { DEFAULT_SETTINGS } from '../src/settings/types';
 

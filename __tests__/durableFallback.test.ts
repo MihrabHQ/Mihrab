@@ -15,7 +15,7 @@
  * (Reported privately against 91cabca0.)
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import EncryptedStorage from '../src/native/SecureStore';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import {
   durableEncryptedGet,
@@ -28,7 +28,7 @@ import {
 } from '../src/storage/durableWrite';
 import { SENSITIVE_KEYS, SYNC_SECRET_KEY } from '../src/storage/sensitiveKeys';
 
-jest.mock('react-native-encrypted-storage', () => ({
+jest.mock('../src/native/SecureStore', () => ({
   __esModule: true,
   default: { getItem: jest.fn(), setItem: jest.fn(), removeItem: jest.fn() },
 }));

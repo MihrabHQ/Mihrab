@@ -8,7 +8,7 @@
 jest.unmock('adhan');
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const EncryptedStorageMock = require('react-native-encrypted-storage');
+const EncryptedStorageMock = require('../src/native/SecureStore');
 import { loadSettings } from '../src/settings/storage';
 import { getEffectiveDataProvider } from '../src/settings/effectiveProvider';
 import { isRegionalProvider } from '../src/settings/regionalProviders';

@@ -32,7 +32,7 @@ import {
   setZone,
   until,
 } from '../fixtures/scenarioHarness';
-const EncryptedStorageMock = require('react-native-encrypted-storage');
+const EncryptedStorageMock = require('../../src/native/SecureStore');
 
 const NOW = new Date('2026-10-17T10:00:00Z');
 

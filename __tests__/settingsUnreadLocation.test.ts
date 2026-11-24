@@ -15,7 +15,7 @@ import {
 } from '../src/settings/storage';
 import { applyLocationProviders } from '../src/settings/locationProviders';
 import type { LocationPreset } from '../src/settings/types';
-const Enc = require('react-native-encrypted-storage');
+const Enc = require('../src/native/SecureStore');
 
 const KEY = 'prayerapp.settings.v1';
 const SECURE_KEY = 'prayerapp.location.v1';

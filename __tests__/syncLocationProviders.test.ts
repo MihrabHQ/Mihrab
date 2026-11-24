@@ -20,7 +20,7 @@ import {
 } from '../src/sync/snapshot';
 import { loadSettings } from '../src/settings/storage';
 import { providerChoiceForPreset } from '../src/settings/locationProviders';
-const EncryptedStorageMock = require('react-native-encrypted-storage');
+const EncryptedStorageMock = require('../src/native/SecureStore');
 
 const NOW = '2026-10-17T12:00:00.000Z';
 const IF = { auto: false, provider: 'islamiska_forbundet' };

@@ -13,7 +13,7 @@ import {
   getEffectiveDataProvider,
   resolveCoordsFromSettings,
 } from '../src/settings/effectiveProvider';
-const Enc = require('react-native-encrypted-storage');
+const Enc = require('../src/native/SecureStore');
 
 const KEY = 'prayerapp.settings.v1';
 const SKEY = 'prayerapp.location.v1';

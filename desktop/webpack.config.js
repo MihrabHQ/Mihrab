@@ -73,7 +73,6 @@ module.exports = (env = {}, argv) => {
         '@notifee/react-native$': shim('notifee.js'),
         'react-native-track-player$': shim('track-player.js'),
         'react-native-blob-util$': shim('blob-util.js'),
-        'react-native-encrypted-storage$': shim('encrypted-storage.js'),
         'react-native-share$': shim('share.js'),
         'react-native-view-shot$': shim('view-shot.js'),
         '@react-native-community/geolocation$': shim('geolocation.js'),
@@ -153,6 +152,8 @@ module.exports = (env = {}, argv) => {
           ]
         : []),
       new webpack.NormalModuleReplacementPlugin(/\/MushafLineNativeComponent(\.ts)?$/, shim('mushaf-line.js')),
+      // The app's own secure store is native; here it is the OS keyring.
+      new webpack.NormalModuleReplacementPlugin(/\/native\/SecureStore(\.ts)?$/, shim('encrypted-storage.js')),
       new webpack.DefinePlugin({
         __DEV__: JSON.stringify(dev),
         'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production'),

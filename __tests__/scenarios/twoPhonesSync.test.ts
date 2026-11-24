@@ -37,7 +37,7 @@ import {
   providerChoiceForKey,
 } from '../../src/settings/locationProviders';
 import type { PrayerAppSettings } from '../../src/settings/types';
-const EncryptedStorageMock = require('react-native-encrypted-storage');
+const EncryptedStorageMock = require('../../src/native/SecureStore');
 
 jest.mock('../../src/widget/republishWidgetPayload', () => ({
   republishWidgetPayload: jest.fn(async () => {}),

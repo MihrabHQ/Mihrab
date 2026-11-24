@@ -39,7 +39,7 @@ import { ANCHOR_KEY } from '../../src/prayer/locationFreshness';
 import * as nominatim from '../../src/geocoding/nominatim';
 import * as SystemClock from '../../src/native/SystemClock';
 import { aladhanServer, changeSettings, goOnline, readCacheBlob, setZone } from '../fixtures/scenarioHarness';
-const EncryptedStorageMock = require('react-native-encrypted-storage');
+const EncryptedStorageMock = require('../../src/native/SecureStore');
 
 jest.setTimeout(30_000);
 const NOW = new Date('2026-11-20T10:00:00Z');

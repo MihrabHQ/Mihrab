@@ -9,7 +9,7 @@
  * queue so the most recent state always wins.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const EncryptedStorageMock = require('react-native-encrypted-storage');
+const EncryptedStorageMock = require('../src/native/SecureStore');
 import { saveSettings } from '../src/settings/storage';
 import { DEFAULT_SETTINGS } from '../src/settings/types';
 

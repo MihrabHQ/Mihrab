@@ -1,7 +1,8 @@
 /**
  * Secure storage abstraction — task #16.
  *
- * Wraps `react-native-encrypted-storage`, which uses platform-native APIs:
+ * Wraps the app's own secure store (src/native/SecureStore.ts), which uses
+ * platform-native APIs:
  *   • iOS: Keychain Services (kSecClassGenericPassword), encrypted at rest
  *     with a per-app key tied to the user's passcode/biometrics.
  *   • Android: EncryptedSharedPreferences from androidx.security.crypto, with
@@ -20,12 +21,12 @@
  *   ~10 ms per read on Android. AsyncStorage stays the home for those.
  *
  * F-Droid compatibility:
- *   `react-native-encrypted-storage` is MIT-licensed, Apache-2.0 deps only,
- *   no Google Play Services, no proprietary code. F-Droid build keeps working.
+ *   The store is the app's own code over androidx.security.crypto
+ *   (Apache-2.0): no Google Play Services, no proprietary code.
  */
 
 import { launchRead, launchWrite } from '../boot/launchReads';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import EncryptedStorage from '../native/SecureStore';
 import { markEncryptedStoreDegraded } from '../storage/durableWrite';
 import {
   unprotectedGet,

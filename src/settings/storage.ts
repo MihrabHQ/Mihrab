@@ -841,8 +841,7 @@ export async function resetAppData(): Promise<void> {
   // environments without the native module don't blow up.
   try {
     const EncryptedStorage =
-      require('react-native-encrypted-storage').default ||
-      require('react-native-encrypted-storage');
+      require('../native/SecureStore').default;
     const secureKeys = [
       'prayerapp.location.v1',
       'prayerapp.journal.v1',

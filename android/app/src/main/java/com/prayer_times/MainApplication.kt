@@ -56,6 +56,7 @@ class MainApplication : Application(), ReactApplication, androidx.work.Configura
           add(SyncFolderPackage())
           add(ScanQrPackage())
           add(CompassPackage())
+          add(SecureStorePackage())
           add(DisplayCutoutPackage())
           add(FoldPosturePackage())
           add(BackgroundLocationPackage())

@@ -1,5 +1,5 @@
 /**
- * react-native-encrypted-storage on the desktop: Electron's safeStorage,
+ * The secure store (src/native/SecureStore.ts) on the desktop: Electron's safeStorage,
  * which encrypts with the OS keychain (Windows DPAPI, the Linux secret
  * service / kwallet). Where no keyring exists — a bare Linux session —
  * the main process says so and the values are stored unencrypted in the

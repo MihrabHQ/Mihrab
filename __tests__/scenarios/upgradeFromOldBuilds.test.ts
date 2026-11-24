@@ -34,7 +34,7 @@ import {
   setZone,
   until,
 } from '../fixtures/scenarioHarness';
-const EncryptedStorageMock = require('react-native-encrypted-storage');
+const EncryptedStorageMock = require('../../src/native/SecureStore');
 // The Sweden list this build carries, whatever its size today: read off the
 // bundled summary, so a renewed list (an entry more) does not fail these.
 const SWEDEN_LIST: { to: string; entries: number } =

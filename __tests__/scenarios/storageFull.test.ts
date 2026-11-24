@@ -31,7 +31,7 @@ import {
   settle,
   until,
 } from '../fixtures/scenarioHarness';
-const EncryptedStorageMock = require('react-native-encrypted-storage');
+const EncryptedStorageMock = require('../../src/native/SecureStore');
 
 jest.setTimeout(30_000);
 const NOW = new Date('2026-10-17T10:00:00Z');
