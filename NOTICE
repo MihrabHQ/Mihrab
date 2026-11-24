@@ -43,3 +43,18 @@ terms). They are downloaded on request and are not part of the app's source.
 The Garmin watch face's fonts (garmin/watchface/resources/fonts) are bitmaps
 made from Tektur, copyright 2023 The Tektur Project Authors, under the SIL Open
 Font License 1.1 (garmin/tools/fonts/OFL.txt).
+
+THIRD-PARTY CODE KEPT IN THIS TREE
+----------------------------------
+The notification engine is Notifee 9.1.8, copyright 2016-present Invertase
+Limited, under the Apache License 2.0: its Android core and React Native
+bridge in android/alerts/, its iOS ones in ios/Alerts/, its JavaScript in
+src/native/notifee/, each with the licence beside it. It is no longer
+maintained upstream and is kept here so it can be. Changed from the release,
+so far: the two Android manifests are one; the build files are this
+project's; NotificationAndroidStyleModel.java names the overload it calls
+(bigLargeIcon((Bitmap) null)); in the TypeScript, one type React Native no
+longer exports is declared locally, four values are asserted non-null, lint
+comments that no longer apply are gone, and the unused web stub
+(NotifeeNativeModule.web.ts) is removed. Files changed later say so in the
+file.
