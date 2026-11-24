@@ -8,7 +8,7 @@
  * the five salāh get, and the alert at the time itself is no use to
  * someone who needs to be at the sink before it.
  */
-import notifee from '@notifee/react-native';
+import notifee from '../src/native/Alerts';
 import { Platform } from 'react-native';
 import { syncPrayerNotifications } from '../src/notifications/prayerNotifications';
 

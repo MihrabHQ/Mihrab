@@ -2,7 +2,7 @@
  * A snoozed alert is redrawn with TODAY's menu, even when the alert it
  * replaces was scheduled by an older build (no deadline, no hour chip).
  */
-import notifee from '@notifee/react-native';
+import notifee from '../src/native/Alerts';
 import { Platform } from 'react-native';
 import { snoozePrayerNotification } from '../src/notifications/notificationActions';
 

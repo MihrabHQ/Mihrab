@@ -9,7 +9,7 @@
  *      stays plain.
  *   4. The alarm screen's buttons reach the same JS as the notification's.
  */
-import notifee from '@notifee/react-native';
+import notifee from '../src/native/Alerts';
 import { Platform } from 'react-native';
 import { syncPrayerNotifications } from '../src/notifications/prayerNotifications';
 import { snoozePrayerNotification } from '../src/notifications/notificationActions';

@@ -5,7 +5,7 @@
  * a registered alarm still lands on the lock screen, and someone who
  * silenced Fajr is asking for it not to be there at 04:30.
  */
-import notifee from '@notifee/react-native';
+import notifee from '../src/native/Alerts';
 import { Platform } from 'react-native';
 import { syncPrayerNotifications } from '../src/notifications/prayerNotifications';
 import type { TimingsMap } from '../src/types/prayer';

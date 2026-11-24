@@ -30,7 +30,6 @@ const TRANSPILE = [
   '@react-native',
   '@react-navigation',
   '@sayem314',
-  '@notifee',
 ];
 
 module.exports = (env = {}, argv) => {
@@ -70,7 +69,6 @@ module.exports = (env = {}, argv) => {
         react: path.join(APP_MODULES, 'react'),
         'react-dom': path.join(OWN_MODULES, 'react-dom'),
         // Native libraries with no web build.
-        '@notifee/react-native$': shim('notifee.js'),
         'react-native-track-player$': shim('track-player.js'),
         'react-native-blob-util$': shim('blob-util.js'),
         'react-native-share$': shim('share.js'),
@@ -156,6 +154,9 @@ module.exports = (env = {}, argv) => {
       new webpack.NormalModuleReplacementPlugin(/\/MushafLineNativeComponent(\.ts)?$/, shim('mushaf-line.js')),
       // The app's own secure store is native; here it is the OS keyring.
       new webpack.NormalModuleReplacementPlugin(/\/native\/SecureStore(\.ts)?$/, shim('encrypted-storage.js')),
+      // Notifications: the app's door to them (src/native/Alerts.ts) is the
+      // browser's Notification API here, not the phones' engine.
+      new webpack.NormalModuleReplacementPlugin(/\/native\/Alerts(\.ts)?$/, shim('notifee.js')),
       new webpack.DefinePlugin({
         __DEV__: JSON.stringify(dev),
         'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production'),

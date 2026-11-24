@@ -378,7 +378,7 @@ jest.mock('react-native-track-player', () => ({
   IOSCategoryMode: { SpokenAudio: 'spokenAudio' },
 }));
 
-jest.mock('@notifee/react-native', () => ({
+jest.mock('./src/native/Alerts', () => ({
   __esModule: true,
   default: {
     cancelTriggerNotifications: jest.fn(() => Promise.resolve()),

@@ -2,7 +2,7 @@
  * The snooze deadline, as the scheduler stamps it (issue: snooze follows the
  * prayer's remaining time). End to end through `syncPrayerNotifications`.
  */
-import notifee from '@notifee/react-native';
+import notifee from '../src/native/Alerts';
 import { Platform } from 'react-native';
 import { syncPrayerNotifications } from '../src/notifications/prayerNotifications';
 

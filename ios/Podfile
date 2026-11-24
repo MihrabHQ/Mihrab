@@ -62,6 +62,9 @@ target 'PrayerApp' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  # The alerts' engine (notifee, in our tree): ios/Alerts/MihrabAlerts.podspec.
+  pod 'MihrabAlerts', :path => './Alerts'
+
   post_install do |installer|
     # Mac Catalyst (Path B, v2.7.38) is OPT-IN via MIHRAB_CATALYST=1 —
     # scripts/build-catalyst.sh sets it before its own `pod install`.

@@ -63,6 +63,8 @@ class MainApplication : Application(), ReactApplication, androidx.work.Configura
           add(RotationCoverPackage())
           add(VolumeKeysPackage())
           add(LaunchSnapshotPackage())
+          // The alerts' engine, in our tree (android/alerts): not autolinked.
+          add(io.invertase.notifee.NotifeePackage())
         },
     )
   }

@@ -1,0 +1,71 @@
+/**
+ * ── THE ALERTS' ENGINE, IN OUR TREE ──────────────────────────────────
+ *
+ * What posts, schedules and delivers every notification on Android. It is
+ * notifee 9.1.8 — its core (`app.notifee.core`, which the npm package
+ * shipped only as a prebuilt, minified AAR) and its React Native bridge
+ * (`io.invertase.notifee`) — built here from source, unchanged. Notifee
+ * is Apache-2.0 (LICENSE beside this file) and no longer maintained;
+ * here it is ours to fix.
+ *
+ * NOTHING IS RENAMED, ON PURPOSE. An installed app has alarms pending
+ * that name `app.notifee.core.NotificationAlarmReceiver`, WorkManager
+ * rows that name `app.notifee.core.Worker`, and a Room database
+ * (`notifee_core_database`, schemas/) holding every scheduled trigger.
+ * With the same names, an update finds all of it as it left it. Rename a
+ * class in here and a scheduled adhan does not ring after the update.
+ *
+ * The versions below are the ones notifee declared, so Gradle resolves
+ * what it resolved before (the app's own, newer, where it has them).
+ * consumer-rules.pro keeps every class in here from R8.
+ */
+apply plugin: 'com.android.library'
+
+android {
+    namespace 'app.notifee.core'
+    compileSdk rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        consumerProguardFiles 'consumer-rules.pro'
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                    "room.schemaLocation": "$projectDir/schemas".toString(),
+                    eventBusIndex        : 'app.notifee.core.EventBusIndex',
+                ]
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError false
+    }
+}
+
+dependencies {
+    // The version is set by the React Native Gradle Plugin, as for :app.
+    implementation("com.facebook.react:react-android")
+
+    api 'androidx.annotation:annotation:1.3.0'
+    api 'androidx.concurrent:concurrent-futures:1.1.0'
+    api 'androidx.work:work-runtime:2.8.0'
+    api 'com.facebook.fresco:fresco:2.6.0'
+    api 'org.greenrobot:eventbus:3.3.1'
+
+    implementation 'com.google.guava:guava:33.3.1-android'
+    implementation 'androidx.core:core:1.6.0'
+    implementation 'androidx.lifecycle:lifecycle-process:2.3.1'
+
+    def room_version = '2.5.0'
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    annotationProcessor 'org.greenrobot:eventbus-annotation-processor:3.3.1'
+}

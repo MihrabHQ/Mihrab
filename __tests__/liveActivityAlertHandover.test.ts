@@ -55,7 +55,7 @@ jest.mock('../src/settings/storage', () => ({
   loadSettings: jest.fn(async () => settings),
 }));
 
-import notifee from '@notifee/react-native';
+import notifee from '../src/native/Alerts';
 import { syncLiveActivity } from '../src/liveActivity/syncLiveActivity';
 import { adhanMuteToggleTask } from '../src/notifications/adhanMute';
 import { preReminderId } from '../src/notifications/scheduling';

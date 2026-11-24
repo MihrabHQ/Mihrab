@@ -20,7 +20,7 @@
 const mockRequestPermission = jest.fn();
 const mockAndroidRequest = jest.fn();
 
-jest.mock('@notifee/react-native', () => ({
+jest.mock('../src/native/Alerts', () => ({
   __esModule: true,
   default: {
     requestPermission: (...a: unknown[]) => mockRequestPermission(...(a as [])),
@@ -43,7 +43,7 @@ jest.mock('react-native', () => ({
 }));
 
 import { Platform } from 'react-native';
-import { AuthorizationStatus } from '@notifee/react-native';
+import { AuthorizationStatus } from '../src/native/Alerts';
 import { requestNotificationPermission } from '../src/notifications/requestNotificationAccess';
 
 const setPlatform = (os: string, version: number) => {

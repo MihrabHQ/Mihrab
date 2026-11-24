@@ -18,7 +18,7 @@
  * That mock gap is fixed in jest.setup.js, and this is what it enables.
  */
 import { Platform } from 'react-native';
-import notifee from '@notifee/react-native';
+import notifee from '../src/native/Alerts';
 
 // The module is Android-only by design: iOS has neither a progress
 // notification nor a way to keep a JS download alive once the app is

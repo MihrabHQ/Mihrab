@@ -2,7 +2,7 @@
  * Issue #74 — a log made from outside the app takes the clock's answer when
  * the reader has asked for it, and only then.
  */
-import { EventType } from '@notifee/react-native';
+import { EventType } from '../src/native/Alerts';
 
 const mockStore = new Map<string, string>();
 jest.mock('../src/storage/durableWrite', () => ({
@@ -15,7 +15,7 @@ jest.mock('../src/storage/durableWrite', () => ({
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
-jest.mock('@notifee/react-native', () => ({
+jest.mock('../src/native/Alerts', () => ({
   __esModule: true,
   default: {
     cancelNotification: async () => {},
