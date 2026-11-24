@@ -1,5 +1,5 @@
 /**
- * @react-native-community/geolocation on the desktop: the browser's own
+ * The geolocation module (src/native/Geolocation.ts) on the desktop: the browser's own
  * geolocation. It works where the OS offers a location service to apps;
  * where it does not (many Linux sessions), it fails with the ordinary
  * "position unavailable" error and the app offers its city search, as it

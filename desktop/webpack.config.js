@@ -75,7 +75,6 @@ module.exports = (env = {}, argv) => {
         'react-native-blob-util$': shim('blob-util.js'),
         'react-native-share$': shim('share.js'),
         'react-native-view-shot$': shim('view-shot.js'),
-        '@react-native-community/geolocation$': shim('geolocation.js'),
         '@react-native/assets-registry/registry$': shim('assets-registry.js'),
         'react-native-safe-area-context$': shim('safe-area.js'),
         '@sayem314/react-native-keep-awake$': shim('keep-awake.js'),
@@ -156,6 +155,8 @@ module.exports = (env = {}, argv) => {
       new webpack.NormalModuleReplacementPlugin(/\/MushafLineNativeComponent(\.ts)?$/, shim('mushaf-line.js')),
       // The app's own secure store is native; here it is the OS keyring.
       new webpack.NormalModuleReplacementPlugin(/\/native\/SecureStore(\.ts)?$/, shim('encrypted-storage.js')),
+      // …and the app's own geolocation module is the browser's.
+      new webpack.NormalModuleReplacementPlugin(/\/native\/Geolocation(\.ts)?$/, shim('geolocation.js')),
       new webpack.DefinePlugin({
         __DEV__: JSON.stringify(dev),
         'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production'),

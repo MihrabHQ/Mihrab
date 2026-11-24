@@ -13,26 +13,15 @@ import { readFileSync } from 'fs';
 import path from 'path';
 
 const root = path.join(__dirname, '..');
-const patch = readFileSync(
-  path.join(root, 'patches/@react-native-community+geolocation+3.4.0.patch'),
-  'utf8',
-);
+// Once a patch to the library; the file is the app's own now.
+const mm = readFileSync(path.join(root, 'ios/PrayerApp/MihrabGeolocation.mm'), 'utf8');
 
-describe('the iOS location patch', () => {
+describe('the iOS location module', () => {
   it('lets a fix answer only requests it is fresh enough for', () => {
-    expect(patch).toContain('ios/RNCGeolocation.mm');
-    expect(patch).toMatch(/\+\s+NSTimeInterval age = -\[location\.timestamp timeIntervalSinceNow\];/);
-    expect(patch).toMatch(/\+\s+if \(age > MAX\(request\.options\.maximumAge, 10\.0\)\) \{/);
-    // And keeps updating while a request still waits.
-    expect(patch).toMatch(/\+\s+if \(!_observingLocation && _pendingRequests\.count == 0\) \{/);
-  });
-
-  it('is what node_modules has', () => {
-    const mm = readFileSync(
-      path.join(root, 'node_modules/@react-native-community/geolocation/ios/RNCGeolocation.mm'),
-      'utf8',
-    );
+    expect(mm).toMatch(/NSTimeInterval age = -\[location\.timestamp timeIntervalSinceNow\];/);
     expect(mm).toContain('if (age > MAX(request.options.maximumAge, 10.0)) {');
+    // And keeps updating while a request still waits.
+    expect(mm).toMatch(/if \(!_observingLocation && _pendingRequests\.count == 0\) \{/);
   });
 
   it('the app asks for a fix no older than a minute', () => {

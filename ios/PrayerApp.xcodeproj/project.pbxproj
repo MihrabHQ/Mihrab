@@ -44,6 +44,7 @@
 		730120DC1F8F960B4D9B31BB /* MushafLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C29CB4341E0EECC7836179 /* MushafLine.m */; };
 		7301F0A11F8F960B4D9B3A01 /* GlassBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C2F0A2341E0EECC7836B02 /* GlassBlur.m */; };
 		7301F0B31F8F960B4D9B3A03 /* SecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C2F0B4341E0EECC7836B04 /* SecureStore.m */; };
+		7301F0C51F8F960B4D9B3A05 /* MihrabGeolocation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 63C2F0C6341E0EECC7836B06 /* MihrabGeolocation.mm */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		7B95C61E834EEEF5588B2D91 /* LiveActivityV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740F53BC32BAAD6E2D7AC76D /* LiveActivityV1.swift */; };
 		7E03A6352BAC52EEBCFDD0A5 /* WidgetPayloadV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDC072298C265946EC98634 /* WidgetPayloadV1.swift */; };
@@ -197,6 +198,8 @@
 		63C29CB4341E0EECC7836179 /* MushafLine.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MushafLine.m; path = PrayerApp/MushafLine.m; sourceTree = "<group>"; };
 		63C2F0A2341E0EECC7836B02 /* GlassBlur.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GlassBlur.m; path = PrayerApp/GlassBlur.m; sourceTree = "<group>"; };
 		63C2F0B4341E0EECC7836B04 /* SecureStore.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SecureStore.m; path = PrayerApp/SecureStore.m; sourceTree = "<group>"; };
+		63C2F0C6341E0EECC7836B06 /* MihrabGeolocation.mm */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.objcpp; name = MihrabGeolocation.mm; path = PrayerApp/MihrabGeolocation.mm; sourceTree = "<group>"; };
+		63C2F0C7341E0EECC7836B07 /* MihrabGeolocation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MihrabGeolocation.h; path = PrayerApp/MihrabGeolocation.h; sourceTree = "<group>"; };
 		69FB66EF55272B1AA6A61A69 /* PrayerBuildInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PrayerBuildInfo.m; path = PrayerApp/PrayerBuildInfo.m; sourceTree = "<group>"; };
 		6AD1D8EB060C0094B4668B9A /* MihrabLaunchSnapshot.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MihrabLaunchSnapshot.m; path = PrayerApp/MihrabLaunchSnapshot.m; sourceTree = "<group>"; };
 		6BDC072298C265946EC98634 /* WidgetPayloadV1.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetPayloadV1.swift; sourceTree = "<group>"; };
@@ -436,6 +439,8 @@
 				63C29CB4341E0EECC7836179 /* MushafLine.m */,
 				63C2F0A2341E0EECC7836B02 /* GlassBlur.m */,
 				63C2F0B4341E0EECC7836B04 /* SecureStore.m */,
+				63C2F0C6341E0EECC7836B06 /* MihrabGeolocation.mm */,
+				63C2F0C7341E0EECC7836B07 /* MihrabGeolocation.h */,
 				13C068400FE8DA49D224D1D2 /* MihrabRotationCover.swift */,
 				3724683D47039D24908609B2 /* MihrabRotationCover.m */,
 				9A651B99721F579DACF85F03 /* PrayerAlarms.swift */,
@@ -852,6 +857,7 @@
 				730120DC1F8F960B4D9B31BB /* MushafLine.m in Sources */,
 				7301F0A11F8F960B4D9B3A01 /* GlassBlur.m in Sources */,
 				7301F0B31F8F960B4D9B3A03 /* SecureStore.m in Sources */,
+				7301F0C51F8F960B4D9B3A05 /* MihrabGeolocation.mm in Sources */,
 				A2221144D790FD1729021523 /* MihrabRotationCover.swift in Sources */,
 				52E5157C94B284F6DC9D93E2 /* MihrabRotationCover.m in Sources */,
 				63F66A55A4230463C72B2391 /* WidgetContract.generated.swift in Sources */,

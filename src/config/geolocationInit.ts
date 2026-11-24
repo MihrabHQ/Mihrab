@@ -23,7 +23,7 @@
  * "Change to precise location?", straight after the first, and at every
  * later refresh of the place. Seen on an AOSP Android 12 emulator.
  */
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from '../native/Geolocation';
 import { Platform } from 'react-native';
 
 try {

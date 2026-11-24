@@ -1,4 +1,4 @@
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from '../native/Geolocation';
 
 /**
  * Staged geolocation — task: "use GPS but also whatever the device has".
