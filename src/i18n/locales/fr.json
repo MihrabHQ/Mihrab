@@ -1775,7 +1775,13 @@
     "previewReciter": "Écouter {{name}}",
     "stopPreview": "Arrêter l’extrait",
     "voiceHint": "Le mushaf est en {{page}} ; {{name}} récite en {{voice}}. L’écouter en {{page}} :",
-    "voiceHintDismiss": "Garder cette voix"
+    "voiceHintDismiss": "Garder cette voix",
+    "transliteration": "Translittération",
+    "transliterationSub": "Le verset en lettres latines, sous l’arabe. Une aide pour apprendre à lire : elle ne peut pas montrer le tajwid, et le Coran se récite à partir de l’arabe.",
+    "transliterationHafsOnly": "Elle suit la lecture de Ḥafṣ ; elle n’est donc affichée qu’avec Ḥafṣ, pas avec {{riwayah}}.",
+    "transliterationDownloading": "Téléchargement · {{pct}} %",
+    "transliterationGet": "Lue en ligne pour l’instant. Télécharger pour le hors-ligne · {{size}}",
+    "transliterationDoneBody": "La translittération de chaque verset est sur cet appareil. Elle se lit désormais sans connexion."
   },
   "reading": {
     "textSize": "Taille du texte",
@@ -2030,7 +2036,8 @@
     "tafsir": "Éditions de tafsir ({{n}}) : Ibn Kathir, Maarif-ul-Quran, al-Muyassar, al-Mukhtasar, as-Sa’di, Ahsanul Bayaan, Abu Bakr Zakaria, Bayan ul-Quran",
     "wordMeanings": "Sens arabes des mots difficiles",
     "surahHeaderFont": "Calligraphie des en-têtes de sourates",
-    "recitationWholeSurah": "Récitations de sourates entières (15) : mp3quran.net · minutage des versets aligné sur l’audio par Mihrab"
+    "recitationWholeSurah": "Récitations de sourates entières (15) : mp3quran.net · minutage des versets aligné sur l’audio par Mihrab",
+    "transliteration": "Translittération du Coran, affichée telle que fournie"
   },
   "liveActivity": {
     "title": "Prochaine prière",
@@ -2109,7 +2116,9 @@
     "storageFree": "Libre",
     "storageFooter": "Tout ce que Mihrab télécharge peut l’être à nouveau : le supprimer ici est donc toujours sans risque.",
     "groupDownloading": "Téléchargement en cours",
-    "groupOnDevice": "Sur cet appareil"
+    "groupOnDevice": "Sur cet appareil",
+    "transliterationWhole": "Translittération complète",
+    "transliterationSub": "Lignes de translittération en cache"
   },
   "dataStats": {
     "title": "Statistiques des données",

@@ -1774,7 +1774,13 @@
     "previewReciter": "{{name}} dinle",
     "stopPreview": "Önizlemeyi durdur",
     "voiceHint": "Mushaf {{page}}; {{name}} {{voice}} okuyor. {{page}} dinleyin:",
-    "voiceHintDismiss": "Bu sesi koru"
+    "voiceHintDismiss": "Bu sesi koru",
+    "transliteration": "Okunuş",
+    "transliterationSub": "Ayetin Latin harfleriyle okunuşu, Arapçanın altında. Okumayı öğrenirken bir yardımcı: tecvidi gösteremez, Kur’an Arapçasından okunur.",
+    "transliterationHafsOnly": "Hafs kıraatine göre yazılmıştır; bu yüzden yalnızca Hafs ile gösterilir, {{riwayah}} ile değil.",
+    "transliterationDownloading": "İndiriliyor · %{{pct}}",
+    "transliterationGet": "Şimdilik çevrimiçi okunuyor. Çevrimdışı için indir · {{size}}",
+    "transliterationDoneBody": "Her ayetin okunuşu artık bu cihazda. Bağlantı olmadan okunur."
   },
   "reading": {
     "textSize": "Metin boyutu",
@@ -2029,7 +2035,8 @@
     "tafsir": "Tefsir sürümleri ({{n}}): İbn Kesir, Maarif-ul-Kuran, el-Müyesser, el-Muhtasar, es-Sa’dî, Ahsenü’l-Beyân, Ebu Bekir Zekeriya, Beyânü’l-Kur’ân",
     "wordMeanings": "Zor kelimelerin Arapça anlamları",
     "surahHeaderFont": "Sure başlığı hattı",
-    "recitationWholeSurah": "Tam sure tilavetleri (15): mp3quran.net · ayet zamanlamaları Mihrab tarafından sese hizalandı"
+    "recitationWholeSurah": "Tam sure tilavetleri (15): mp3quran.net · ayet zamanlamaları Mihrab tarafından sese hizalandı",
+    "transliteration": "Kur’an okunuşu, sunulduğu gibi gösterilir"
   },
   "liveActivity": {
     "title": "Sıradaki namaz",
@@ -2108,7 +2115,9 @@
     "storageFree": "Boş",
     "storageFooter": "Mihrab’ın indirdiği her şey yeniden indirilebilir; bu yüzden buradan silmek her zaman güvenlidir.",
     "groupDownloading": "İndiriliyor",
-    "groupOnDevice": "Bu cihazda"
+    "groupOnDevice": "Bu cihazda",
+    "transliterationWhole": "Tam okunuş",
+    "transliterationSub": "Önbelleğe alınmış okunuş satırları"
   },
   "dataStats": {
     "title": "Veri istatistikleri",

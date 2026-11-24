@@ -1775,7 +1775,13 @@
     "previewReciter": "Escuchar a {{name}}",
     "stopPreview": "Detener la muestra",
     "voiceHint": "El mushaf es {{page}}; {{name}} recita en {{voice}}. Escúchalo en {{page}}:",
-    "voiceHintDismiss": "Mantener esta voz"
+    "voiceHintDismiss": "Mantener esta voz",
+    "transliteration": "Transliteración",
+    "transliterationSub": "La aleya en letras latinas, bajo el árabe. Una ayuda mientras se aprende a leer: no puede mostrar el taywid, y el Corán se recita desde el árabe.",
+    "transliterationHafsOnly": "Sigue la lectura de Ḥafṣ, así que solo se muestra con Ḥafṣ, no con {{riwayah}}.",
+    "transliterationDownloading": "Descargando · {{pct}} %",
+    "transliterationGet": "Por ahora se lee en línea. Descargar para leer sin conexión · {{size}}",
+    "transliterationDoneBody": "La transliteración de cada aleya está en este dispositivo. Ahora se lee sin conexión."
   },
   "reading": {
     "textSize": "Tamaño del texto",
@@ -2030,7 +2036,8 @@
     "tafsir": "Ediciones de tafsir ({{n}}): Ibn Kathir, Maarif-ul-Quran, al-Muyassar, al-Mukhtasar, as-Sa’di, Ahsanul Bayaan, Abu Bakr Zakaria, Bayan ul-Quran",
     "wordMeanings": "Significados en árabe de palabras difíciles",
     "surahHeaderFont": "Caligrafía de encabezados de sura",
-    "recitationWholeSurah": "Recitaciones de suras completas (15): mp3quran.net · tiempos de aleyas ajustados al audio por Mihrab"
+    "recitationWholeSurah": "Recitaciones de suras completas (15): mp3quran.net · tiempos de aleyas ajustados al audio por Mihrab",
+    "transliteration": "Transliteración del Corán, mostrada tal como se sirve"
   },
   "liveActivity": {
     "title": "Próxima oración",
@@ -2109,7 +2116,9 @@
     "storageFree": "Libre",
     "storageFooter": "Todo lo que descarga Mihrab se puede volver a descargar, así que borrarlo aquí siempre es seguro.",
     "groupDownloading": "Descargando",
-    "groupOnDevice": "En este dispositivo"
+    "groupOnDevice": "En este dispositivo",
+    "transliterationWhole": "Transliteración completa",
+    "transliterationSub": "Líneas de transliteración guardadas"
   },
   "dataStats": {
     "title": "Estadísticas de datos",

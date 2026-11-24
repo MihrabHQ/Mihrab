@@ -558,6 +558,42 @@ app goes to the sources, which all do send one. That is why
 `mirrorSurah` returns null under `IS_WEB_APP` rather than trying and
 failing.
 
+## The transliteration under each ayah — 2026-11-24
+
+Asked for in a Play review ("add pronunciation in the Quran menu like the
+pronunciation in the prayer and tasbih menu"). Code: `src/quran/transliteration.ts`,
+the edition itself `QURAN_TRANSLITERATION` in `src/quran/translations.ts`.
+
+- **What it is.** alquran.cloud's edition `en.transliteration` ("English
+  Transliteration", type `transliteration`): every ayah in plain ASCII
+  ("Bismillaahir Rahmaanir Raheem"), no markup. All 6,236 ayahs, none
+  empty; 692,690 bytes in the 114 files this app writes (measured
+  2026-11-24). Shown exactly as served, including its own slips (1:5 reads
+  "wa lyyaaka"): it is not edited here.
+- **Whose it is.** alquran.cloud names no author and no licence for this
+  edition, and it is **not** Tanzil's transliteration (Tanzil's carries
+  HTML and another spelling), so it is not credited to Tanzil and Tanzil's
+  CC BY is not put on it: it has a text source of its own, `alquran.cloud`,
+  credited as "alquran.cloud · Islamic Network" in Settings → About.
+  alquran.cloud's terms let an app use and display what the API serves and
+  ask that the source be credited; a full mirror needs their agreement.
+  So the text is **fetched from api.alquran.cloud only** (an ayah or a
+  surah as it is read, or all 114 surahs once at the reader's request) and
+  is **not** in this repository, its releases or the app: `unmirrored` on
+  the edition keeps `scripts/mirror/build-mirror.js` and the store away
+  from the mirror. If an author objects, or alquran.cloud withdraws the
+  edition, removing `QURAN_TRANSLITERATION` removes the feature and
+  nothing else.
+- **Ḥafṣ only.** It spells the Ḥafṣ reading, so it is shown only under an
+  Arabic text that is Ḥafṣ (`transliterationFits`: the Madinah and IndoPak
+  prints), never under Warsh, Qālūn or Shuʿbah.
+- **Not a translation.** Never in the picker, never a default, not
+  searched, not shared. Off until switched on ("Under each verse").
+- **Looked for and not found:** an openly licensed verse-by-verse
+  transliteration in the Indonesian (Kemenag) convention, which is what the
+  reviewer will know. If one turns up it can sit beside this one as a
+  second edition; the switch would then need a choice of style.
+
 ## The Isa García Spanish translation — issue #37, SHIPPED 2026-09-08
 
 The app shipped one Spanish edition, Julio Cortés. #37 asked for a

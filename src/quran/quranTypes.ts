@@ -462,6 +462,12 @@ export type QuranPrefs = {
    * translation or tafsir under it (#138). Additive; off when absent.
    */
   hifzReviewHideCompanion?: boolean;
+  /**
+   * The ayah in Latin letters under the Arabic, where the Arabic is a Ḥafṣ
+   * text (`transliteration.ts`). Additive; off when absent — an aid a
+   * reader asks for, not something the Qur'an is shown with.
+   */
+  transliteration?: boolean;
   /** Memorization masking in translation view. */
   hideMode: 'none' | 'arabic' | 'translation';
   repeat: RepeatSettings;

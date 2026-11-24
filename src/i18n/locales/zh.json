@@ -1774,7 +1774,13 @@
     "previewReciter": "试听 {{name}}",
     "stopPreview": "停止试听",
     "voiceHint": "穆斯哈夫为 {{page}}；{{name}} 以 {{voice}} 诵读。以 {{page}} 收听：",
-    "voiceHintDismiss": "保留此声音"
+    "voiceHintDismiss": "保留此声音",
+    "transliteration": "拉丁字母音译",
+    "transliterationSub": "经文的拉丁字母音译，显示在阿拉伯文下方。它是学习诵读时的辅助：无法体现泰吉威德规则，《古兰经》仍应依阿拉伯文诵读。",
+    "transliterationHafsOnly": "它按哈夫斯读法拼写，因此只随哈夫斯显示，不随{{riwayah}}显示。",
+    "transliterationDownloading": "正在下载 · {{pct}}%",
+    "transliterationGet": "目前在线读取。下载以便离线阅读 · {{size}}",
+    "transliterationDoneBody": "每节经文的音译已在此设备上，现在无需联网即可阅读。"
   },
   "reading": {
     "textSize": "文字大小",
@@ -2029,7 +2035,8 @@
     "tafsir": "经注版本（{{n}}）：伊本·凯西尔、Maarif-ul-Quran、简明经注、Al-Mukhtasar、As-Sa’di、Ahsanul Bayaan、Abu Bakr Zakaria、Bayan ul-Quran",
     "wordMeanings": "较难词语的阿拉伯语释义",
     "surahHeaderFont": "章名书法",
-    "recitationWholeSurah": "整章诵读（15 位）：mp3quran.net · 经文时间由 Mihrab 与音频对齐"
+    "recitationWholeSurah": "整章诵读（15 位）：mp3quran.net · 经文时间由 Mihrab 与音频对齐",
+    "transliteration": "《古兰经》音译，按来源原样显示"
   },
   "liveActivity": {
     "title": "下一次礼拜",
@@ -2108,7 +2115,9 @@
     "storageFree": "可用",
     "storageFooter": "Mihrab 下载的所有内容都可以重新下载，因此在这里删除始终是安全的。",
     "groupDownloading": "正在下载",
-    "groupOnDevice": "本设备上"
+    "groupOnDevice": "本设备上",
+    "transliterationWhole": "完整音译",
+    "transliterationSub": "已缓存的音译"
   },
   "dataStats": {
     "title": "数据统计",

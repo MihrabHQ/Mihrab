@@ -1774,7 +1774,13 @@
     "previewReciter": "{{name}} anhören",
     "stopPreview": "Hörprobe beenden",
     "voiceHint": "Der Mushaf ist {{page}}; {{name}} rezitiert {{voice}}. In {{page}} hören:",
-    "voiceHintDismiss": "Diese Stimme behalten"
+    "voiceHintDismiss": "Diese Stimme behalten",
+    "transliteration": "Umschrift",
+    "transliterationSub": "Die Aya in lateinischen Buchstaben unter dem Arabischen. Eine Hilfe beim Lesenlernen: Sie kann den Tadschwid nicht zeigen, und der Koran wird aus dem Arabischen rezitiert.",
+    "transliterationHafsOnly": "Sie gibt die Lesart Ḥafṣ wieder und wird deshalb nur mit Ḥafṣ gezeigt, nicht mit {{riwayah}}.",
+    "transliterationDownloading": "Wird geladen · {{pct}} %",
+    "transliterationGet": "Wird vorerst online gelesen. Für offline laden · {{size}}",
+    "transliterationDoneBody": "Die Umschrift jeder Aya ist jetzt auf diesem Gerät und ohne Verbindung lesbar."
   },
   "reading": {
     "textSize": "Schriftgröße",
@@ -2029,7 +2035,8 @@
     "tafsir": "Tafsir-Editionen ({{n}}): Ibn Kathir, Maarif-ul-Quran, al-Muyassar, al-Mukhtasar, as-Sa’di, Ahsanul Bayaan, Abu Bakr Zakaria, Bayan ul-Quran",
     "wordMeanings": "Arabische Bedeutungen schwieriger Wörter",
     "surahHeaderFont": "Kalligrafie der Surenüberschriften",
-    "recitationWholeSurah": "Rezitationen ganzer Suren (15): mp3quran.net · Verszeiten von Mihrab an den Ton angeglichen"
+    "recitationWholeSurah": "Rezitationen ganzer Suren (15): mp3quran.net · Verszeiten von Mihrab an den Ton angeglichen",
+    "transliteration": "Koran-Umschrift, unverändert wie bereitgestellt"
   },
   "liveActivity": {
     "title": "Nächstes Gebet",
@@ -2108,7 +2115,9 @@
     "storageFree": "Frei",
     "storageFooter": "Alles, was Mihrab herunterlädt, lässt sich erneut laden – Löschen ist hier also immer sicher.",
     "groupDownloading": "Wird geladen",
-    "groupOnDevice": "Auf diesem Gerät"
+    "groupOnDevice": "Auf diesem Gerät",
+    "transliterationWhole": "Vollständige Umschrift",
+    "transliterationSub": "Zwischengespeicherte Umschriftzeilen"
   },
   "dataStats": {
     "title": "Datenstatistik",

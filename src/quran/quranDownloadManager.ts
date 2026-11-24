@@ -73,6 +73,7 @@ import {
   downloadTranslationEdition,
   findTranslationEdition,
   isFetchedTranslation,
+  QURAN_TRANSLITERATION,
   translationEditionStats,
   TRANSLATION_SURAHS,
 } from './translations';
@@ -343,15 +344,18 @@ function notificationText(job: QuranDownloadJob) {
     };
   }
   if (job.kind === 'translation') {
-    const name = tafsirNameInSentence(
-      findTranslationEdition(job.editionId)?.label ?? job.editionId,
-    );
+    // The transliteration is kept as one of these (`translations.ts`), under
+    // its own name and with its own word for what is now on the device.
+    const aid = job.editionId === QURAN_TRANSLITERATION.id;
+    const name = aid
+      ? i18n.t('quran.transliteration')
+      : tafsirNameInSentence(findTranslationEdition(job.editionId)?.label ?? job.editionId);
     return {
       label: i18n.t('quran.downloadingTranslation', { name }),
       body: (done: number, total: number) =>
         i18n.t('quran.downloadProgressSurahs', { done, total }),
       doneTitle: i18n.t('quran.translationDoneTitle', { name }),
-      doneBody: i18n.t('quran.translationDoneBody'),
+      doneBody: i18n.t(aid ? 'quran.transliterationDoneBody' : 'quran.translationDoneBody'),
       incompleteTitle: i18n.t('quran.downloadIncompleteTitle'),
       incompleteBody: (failed: number) =>
         i18n.t('quran.wordMeaningsIncompleteBody', { count: failed }),
@@ -419,7 +423,9 @@ export function jobDisplayName(job: QuranDownloadJob): string {
     case 'tafsir':
       return findTafsirEdition(job.editionId)?.label ?? job.editionId;
     case 'translation':
-      return findTranslationEdition(job.editionId)?.label ?? job.editionId;
+      return job.editionId === QURAN_TRANSLITERATION.id
+        ? i18n.t('quran.transliteration', 'Transliteration')
+        : (findTranslationEdition(job.editionId)?.label ?? job.editionId);
     case 'wordMeanings':
       return i18n.t('downloads.wordMeanings', 'Arabic word meanings');
     case 'riwayah':

@@ -1774,7 +1774,13 @@
     "previewReciter": "{{name}} को सुनें",
     "stopPreview": "नमूना रोकें",
     "voiceHint": "मुसहफ़ {{page}} में है; {{name}} {{voice}} में तिलावत करते हैं। {{page}} में सुनें:",
-    "voiceHintDismiss": "यही आवाज़ रखें"
+    "voiceHintDismiss": "यही आवाज़ रखें",
+    "transliteration": "लिप्यंतरण",
+    "transliterationSub": "अरबी के नीचे लैटिन अक्षरों में आयत। पढ़ना सीखते समय की मदद: इसमें तजवीद नहीं दिखाई जा सकती, और क़ुरआन की तिलावत अरबी से ही की जाती है।",
+    "transliterationHafsOnly": "यह हफ़्स की क़िराअत के अनुसार लिखा है, इसलिए केवल हफ़्स के साथ दिखता है, {{riwayah}} के साथ नहीं।",
+    "transliterationDownloading": "डाउनलोड हो रहा है · {{pct}}%",
+    "transliterationGet": "अभी ऑनलाइन पढ़ा जा रहा है। ऑफ़लाइन के लिए डाउनलोड करें · {{size}}",
+    "transliterationDoneBody": "हर आयत का लिप्यंतरण अब इस डिवाइस पर है। अब यह बिना कनेक्शन के पढ़ा जा सकता है।"
   },
   "reading": {
     "textSize": "पाठ का आकार",
@@ -2029,7 +2035,8 @@
     "tafsir": "तफ़सीर संस्करण ({{n}}): इब्न कसीर, मआरिफ़-उल-क़ुरआन, अल-मुयस्सर, अल-मुख़्तसर, अस-सादी, अहसनुल बयान, अबू बकर ज़करिया, बयानुल क़ुरआन",
     "wordMeanings": "कठिन शब्दों के अरबी अर्थ",
     "surahHeaderFont": "सूरह शीर्षक कैलिग्राफी",
-    "recitationWholeSurah": "पूरी सूरह की तिलावतें (15): mp3quran.net · आयतों का समय Mihrab ने ऑडियो से मिलाया"
+    "recitationWholeSurah": "पूरी सूरह की तिलावतें (15): mp3quran.net · आयतों का समय Mihrab ने ऑडियो से मिलाया",
+    "transliteration": "क़ुरआन का लिप्यंतरण, स्रोत जैसा देता है वैसा ही"
   },
   "liveActivity": {
     "title": "अगली नमाज़",
@@ -2108,7 +2115,9 @@
     "storageFree": "खाली",
     "storageFooter": "मिहराब जो कुछ डाउनलोड करता है, वह फिर से डाउनलोड हो सकता है, इसलिए यहाँ से हटाना हमेशा सुरक्षित है।",
     "groupDownloading": "डाउनलोड हो रहा है",
-    "groupOnDevice": "इस डिवाइस पर"
+    "groupOnDevice": "इस डिवाइस पर",
+    "transliterationWhole": "पूरा लिप्यंतरण",
+    "transliterationSub": "सहेजी गई लिप्यंतरण पंक्तियाँ"
   },
   "dataStats": {
     "title": "डेटा आँकड़े",

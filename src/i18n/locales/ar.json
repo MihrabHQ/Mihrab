@@ -1778,7 +1778,13 @@
     "previewReciter": "استمع إلى {{name}}",
     "stopPreview": "إيقاف المعاينة",
     "voiceHint": "المصحف برواية {{page}}، و{{name}} يقرأ برواية {{voice}}. استمع برواية {{page}}:",
-    "voiceHintDismiss": "الإبقاء على هذا الصوت"
+    "voiceHintDismiss": "الإبقاء على هذا الصوت",
+    "transliteration": "النطق بالحروف اللاتينية",
+    "transliterationSub": "الآية بالحروف اللاتينية تحت النص العربي. عون لمن يتعلّم القراءة: لا تُظهر أحكام التجويد، والقرآن يُتلى من النص العربي.",
+    "transliterationHafsOnly": "تكتب رواية حفص، فلا تظهر إلا مع حفص، لا مع {{riwayah}}.",
+    "transliterationDownloading": "جارٍ التنزيل · {{pct}}٪",
+    "transliterationGet": "تُقرأ الآن عبر الإنترنت. تنزيل للقراءة بلا اتصال · {{size}}",
+    "transliterationDoneBody": "نطق كل آية بالحروف اللاتينية على هذا الجهاز الآن، ويُقرأ دون اتصال."
   },
   "reading": {
     "textSize": "حجم النص",
@@ -2033,7 +2039,8 @@
     "tafsir": "إصدارات التفسير ({{n}}): ابن كثير، معارف القرآن، الميسر، المختصر، السعدي، أحسن البيان، أبو بكر زكريا، بيان القرآن",
     "wordMeanings": "معاني الكلمات الصعبة",
     "surahHeaderFont": "خط عناوين السور",
-    "recitationWholeSurah": "تلاوات السور كاملة (15): mp3quran.net · توقيت الآيات مطابَق مع الصوت بواسطة محراب"
+    "recitationWholeSurah": "تلاوات السور كاملة (15): mp3quran.net · توقيت الآيات مطابَق مع الصوت بواسطة محراب",
+    "transliteration": "نطق القرآن بالحروف اللاتينية، كما يقدّمه المصدر"
   },
   "liveActivity": {
     "title": "الصلاة التالية",
@@ -2112,7 +2119,9 @@
     "storageFree": "متاح",
     "storageFooter": "كل ما ينزّله مِحراب يمكن تنزيله مجددًا، لذا فإن حذفه من هنا آمن دائمًا.",
     "groupDownloading": "جارٍ التنزيل",
-    "groupOnDevice": "على هذا الجهاز"
+    "groupOnDevice": "على هذا الجهاز",
+    "transliterationWhole": "النطق اللاتيني كاملًا",
+    "transliterationSub": "أسطر نطق لاتيني محفوظة"
   },
   "dataStats": {
     "title": "إحصائيات البيانات",

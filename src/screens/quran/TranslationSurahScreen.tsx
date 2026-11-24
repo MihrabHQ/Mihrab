@@ -46,6 +46,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { loadSurah, type SurahIndex } from '../../quran/quran';
 import { getSurahTranslation } from '../../quran/translations';
+import { TransliterationLine } from '../../quran/TransliterationLine';
+import { useSurahTransliteration } from '../../quran/transliteration';
 import { useActiveEdition } from '../../quran/useActiveEdition';
 import { loadTafsir, resolveTafsirEdition } from '../../quran/tafsir';
 import {
@@ -250,6 +252,14 @@ export function TranslationSurahScreen({
       clearTimeout(timer);
     };
   }, [edition, surahNumber]);
+
+  // The ayahs in Latin letters, for a reader who asked (`transliteration.ts`).
+  // Under the bundled Arabic only, which is Ḥafṣ: a row in the reader's own
+  // riwayah (`ownRows`) goes without, since it is not what the line spells.
+  const transliterations = useSurahTransliteration(
+    quran.prefs.transliteration === true,
+    surahNumber,
+  );
 
   // ── Selection / sheets ──────────────────────────────────────────────
   const [selectedAyah, setSelectedAyah] = useState<number | null>(null);
@@ -904,6 +914,11 @@ export function TranslationSurahScreen({
               : arabic}
           </Text>
         )}
+        {/* With the Arabic and hidden with it: a line that says the ayah
+            is as much a prompt as the ayah. */}
+        {!maskArabic && !ownText && joinedInto == null ? (
+          <TransliterationLine text={transliterations?.[String(ayah)] ?? ''} />
+        ) : null}
         {inReview && isRevealed && joinedInto == null ? (
           // How it went, for this ayah: what the grade at Done is chosen
           // from, and what "recite the missed again" hides once more.

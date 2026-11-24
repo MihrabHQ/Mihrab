@@ -1774,7 +1774,13 @@
     "previewReciter": "Hear {{name}}",
     "stopPreview": "Stop the preview",
     "voiceHint": "The muṣḥaf is {{page}}; {{name}} recites {{voice}}. Hear it in {{page}}:",
-    "voiceHintDismiss": "Keep this voice"
+    "voiceHintDismiss": "Keep this voice",
+    "transliteration": "Transliteration",
+    "transliterationSub": "The ayah in Latin letters, under the Arabic. A help while learning to read: it cannot show tajwīd, and the Qur’an is recited from the Arabic.",
+    "transliterationHafsOnly": "It spells the Ḥafṣ reading, so it is shown with Ḥafṣ only, not with {{riwayah}}.",
+    "transliterationDownloading": "Downloading · {{pct}}%",
+    "transliterationGet": "Read online for now. Download for offline · {{size}}",
+    "transliterationDoneBody": "Every ayah’s transliteration is on this device. It reads without a connection now."
   },
   "reading": {
     "textSize": "Text size",
@@ -2029,7 +2035,8 @@
     "tafsir": "Tafsir editions ({{n}}): Ibn Kathir, Maarif-ul-Quran, al-Muyassar, al-Mukhtasar, as-Sa’di, Ahsanul Bayaan, Abu Bakr Zakaria, Bayan ul-Quran",
     "wordMeanings": "Arabic meanings of harder words",
     "surahHeaderFont": "Surah-header calligraphy",
-    "recitationWholeSurah": "Whole-surah recitations (15): mp3quran.net · ayah timings aligned to the audio by Mihrab"
+    "recitationWholeSurah": "Whole-surah recitations (15): mp3quran.net · ayah timings aligned to the audio by Mihrab",
+    "transliteration": "Qur’an transliteration, shown as served"
   },
   "liveActivity": {
     "title": "Next prayer",
@@ -2108,7 +2115,9 @@
     "storageFree": "Free",
     "storageFooter": "Everything Mihrab downloads can be downloaded again, so deleting it here is always safe.",
     "groupDownloading": "Downloading",
-    "groupOnDevice": "On this device"
+    "groupOnDevice": "On this device",
+    "transliterationWhole": "Complete transliteration",
+    "transliterationSub": "Cached transliteration lines"
   },
   "dataStats": {
     "title": "Data statistics",

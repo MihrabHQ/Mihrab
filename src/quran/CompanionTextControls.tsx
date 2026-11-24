@@ -8,6 +8,7 @@
  *   mode              → quranState.prefs.companionMode
  *   translation ed.   → settings.quranTranslationEdition (useActiveEdition)
  *   tafsir ed.        → quranState.prefs.tafsirEditionId
+ *   transliteration   → quranState.prefs.transliteration (its own switch)
  *
  * Reached as a bottom sheet (`CompanionTextSheet`) from the Quran index
  * page, the surah reader, and the Settings → Quran summary row — change it
@@ -34,6 +35,7 @@ import { MODAL_ORIENTATIONS } from '../components/modalOrientations';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
 import { useSheetSides } from '../responsive/sheetSides';
+import { TransliterationSwitch } from './TransliterationSwitch';
 
 export type CompanionMode = 'translation' | 'tafsir';
 
@@ -131,6 +133,9 @@ export function CompanionTextControls({
 
   return (
     <View>
+      {/* Beside the Arabic rather than under it in place of a meaning: its
+          own switch, above the choice of what the meaning is. */}
+      <TransliterationSwitch />
       {/* Mode segmented toggle */}
       <View style={[styles.segments, { borderColor: palette.border }]}>
         {(

@@ -131,6 +131,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVerticalBar } from '../../native/VerticalBar';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { tajweedColoursShown } from '../tajweed/tajweedSupport';
+import { TransliterationLine } from '../TransliterationLine';
+import { transliterationFits, useAyahTransliteration } from '../transliteration';
 import { IS_WEB_APP } from '../../config/webApp';
 import { useSheetSides } from '../../responsive/sheetSides';
 import { drawableText } from '../maddaWajibFallback';
@@ -552,6 +554,13 @@ export function AyahActionSheet({
    * escape is the share text below, which fetches it again rather than
    * trusting this — see `shareText`.
    */
+  // The ayah in Latin letters, where the reader asked for it and the
+  // Arabic above is a Ḥafṣ text (`transliteration.ts`).
+  const transliteration = useAyahTransliteration(
+    visible && state.prefs.transliteration === true && transliterationFits(shownRiwayah),
+    surah,
+    ayah,
+  );
   const [translation, setTranslation] = useState('');
   useEffect(() => {
     if (!visible) return;
@@ -911,6 +920,7 @@ export function AyahActionSheet({
               {drawableText(arabic)}
             </Text>
           ) : null}
+          <TransliterationLine text={transliteration} style={styles.transliteration} />
           {/* ‹ Previous ayah · Next ayah › — a step either way without
               closing the sheet, right above the texts it changes. The
               chevrons point the way the reading goes in the app's
@@ -1885,6 +1895,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     marginTop: SPACING.md,
   },
+  transliteration: { marginTop: SPACING.sm, ...NO_TEXT_SELECTION },
   // Translation · Tafsir · Tajwīd: one row of tabs, none open to begin with.
   panelTabs: {
     flexDirection: 'row',

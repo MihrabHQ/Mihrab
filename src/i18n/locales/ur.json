@@ -1774,7 +1774,13 @@
     "previewReciter": "{{name}} کو سنیں",
     "stopPreview": "نمونہ روکیں",
     "voiceHint": "مصحف {{page}} میں ہے؛ {{name}} {{voice}} میں تلاوت کرتے ہیں۔ {{page}} میں سنیں:",
-    "voiceHintDismiss": "یہی آواز رکھیں"
+    "voiceHintDismiss": "یہی آواز رکھیں",
+    "transliteration": "رومن تلفظ",
+    "transliterationSub": "آیت لاطینی حروف میں، عربی کے نیچے۔ پڑھنا سیکھنے کے دوران ایک مدد: یہ تجوید نہیں دکھا سکتا، اور قرآن کی تلاوت عربی متن ہی سے کی جاتی ہے۔",
+    "transliterationHafsOnly": "یہ روایتِ حفص کے مطابق لکھا گیا ہے، اس لیے صرف حفص کے ساتھ دکھایا جاتا ہے، {{riwayah}} کے ساتھ نہیں۔",
+    "transliterationDownloading": "ڈاؤن لوڈ ہو رہا ہے · {{pct}}٪",
+    "transliterationGet": "فی الحال آن لائن پڑھا جا رہا ہے۔ آف لائن کے لیے ڈاؤن لوڈ کریں · {{size}}",
+    "transliterationDoneBody": "ہر آیت کا رومن تلفظ اب اس آلے پر ہے۔ یہ بغیر کنکشن کے پڑھا جا سکتا ہے۔"
   },
   "reading": {
     "textSize": "متن کا سائز",
@@ -2029,7 +2035,8 @@
     "tafsir": "تفسیر کے ایڈیشن ({{n}}): ابن کثیر، معارف القرآن، المیسر، المختصر، السعدی، احسن البیان، ابوبکر زکریا، بیان القرآن",
     "wordMeanings": "مشکل الفاظ کے عربی معنی",
     "surahHeaderFont": "سورت کے عنوان کی خطاطی",
-    "recitationWholeSurah": "مکمل سورتوں کی تلاوتیں (15): mp3quran.net · آیات کے اوقات محراب نے آواز سے ملائے"
+    "recitationWholeSurah": "مکمل سورتوں کی تلاوتیں (15): mp3quran.net · آیات کے اوقات محراب نے آواز سے ملائے",
+    "transliteration": "قرآن کا رومن تلفظ، جیسا ماخذ فراہم کرتا ہے"
   },
   "liveActivity": {
     "title": "اگلی نماز",
@@ -2108,7 +2115,9 @@
     "storageFree": "خالی",
     "storageFooter": "مِحراب جو کچھ ڈاؤن لوڈ کرتا ہے وہ دوبارہ ڈاؤن لوڈ ہو سکتا ہے، اس لیے یہاں سے حذف کرنا ہمیشہ محفوظ ہے۔",
     "groupDownloading": "ڈاؤن لوڈ ہو رہا ہے",
-    "groupOnDevice": "اس آلے پر"
+    "groupOnDevice": "اس آلے پر",
+    "transliterationWhole": "مکمل رومن تلفظ",
+    "transliterationSub": "محفوظ شدہ رومن تلفظ کی سطریں"
   },
   "dataStats": {
     "title": "ڈیٹا شماریات",

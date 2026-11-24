@@ -65,6 +65,8 @@ export type QuranTranslationEdition = {
   approxBytes?: number;
   /** Right-to-left script (Urdu). */
   rtl?: boolean;
+  /** Not in this repository's mirror, which is then not asked (`surahStore.ts`). */
+  unmirrored?: boolean;
 };
 
 export const QURAN_TRANSLATIONS: ReadonlyArray<QuranTranslationEdition> = [
@@ -128,6 +130,35 @@ export const QURAN_TRANSLATIONS: ReadonlyArray<QuranTranslationEdition> = [
 ] as const;
 
 export type QuranTranslationId = (typeof QURAN_TRANSLATIONS)[number]['id'];
+
+/**
+ * THE TRANSLITERATION — the Arabic in Latin letters, an aid to reading it
+ * aloud (`transliteration.ts`).
+ *
+ * Kept by the store the fetched translations are kept by, as one more
+ * edition under the same directory, so it downloads, resumes, is counted
+ * and is deleted by the code that already does all four. But it is NOT a
+ * translation and is deliberately not in `QURAN_TRANSLATIONS`: it can never
+ * be picked as the text under a verse, be a locale's default, be searched,
+ * or go out in a share. It is shown beside the Arabic and only there.
+ *
+ * alquran.cloud's "English Transliteration" (`en.transliteration`), plain
+ * ASCII, shown as served. Fetched from that host alone — whose terms let
+ * an app display what it serves, and which names no author or licence for
+ * this text, so the mirror, which republishes, does not hold it. Size: all
+ * 6,236 ayahs in the file this app writes, measured on 2026-11-24.
+ * Provenance in docs/data-sources.md.
+ */
+export const QURAN_TRANSLITERATION: QuranTranslationEdition = {
+  id: 'en.transliteration',
+  label: 'Transliteration',
+  language: 'Latin script',
+  locale: 'en',
+  source: 'alquran.cloud',
+  sourceId: 'en.transliteration',
+  approxBytes: 690000,
+  unmirrored: true,
+};
 
 /** Pick the best default edition for an app locale. Falls back to en.sahih. */
 export function defaultEditionForLocale(locale: string): QuranTranslationId {
@@ -273,22 +304,26 @@ async function readEdition(edition: QuranTranslationId): Promise<ChapterMap> {
 
 /** Is this edition a download rather than an asset? */
 export function isFetchedTranslation(edition: string): boolean {
-  return QURAN_TRANSLATIONS.find(e => e.id === edition)?.source != null;
+  return findTranslationEdition(edition)?.source != null;
 }
 
+/** An edition this store keeps, by id: a translation, or the transliteration. */
 export function findTranslationEdition(id: string): QuranTranslationEdition | undefined {
+  if (id === QURAN_TRANSLITERATION.id) return QURAN_TRANSLITERATION;
   return QURAN_TRANSLATIONS.find(e => e.id === id);
 }
 
 /** What the store needs of a fetched edition. */
-function stored(ed: QuranTranslationEdition): StoredEdition {
+export function storedTranslationEdition(ed: QuranTranslationEdition): StoredEdition {
   return {
     id: ed.id,
     source: ed.source ?? 'tanzil',
     sourceId: ed.sourceId ?? ed.id,
     approxBytes: ed.approxBytes ?? Infinity,
+    ...(ed.unmirrored ? { unmirrored: true } : null),
   };
 }
+const stored = storedTranslationEdition;
 
 /** Fetch a single ayah's translation. Returns empty string if missing. */
 export async function getAyahTranslation(

@@ -23,9 +23,14 @@
  *               `{ result: { translation, footnotes } }`. Its footnotes are
  *               part of the text — the markers in the translation point
  *               at them — so they follow it, after a blank line.
+ *   alquran.cloud  The same host and the same two answers as `tanzil`, for
+ *               the one edition it serves that is NOT Tanzil's: its
+ *               "English Transliteration" (`transliteration.ts`). It has
+ *               an entry of its own so that nothing credits that text to
+ *               Tanzil or puts Tanzil's licence on it.
  */
 
-export type TextSourceId = 'quran.com' | 'tanzil' | 'quranenc';
+export type TextSourceId = 'quran.com' | 'tanzil' | 'quranenc' | 'alquran.cloud';
 
 export type SurahRow = { ayah: number; text: string };
 
@@ -52,6 +57,25 @@ function withFootnotes(translation: unknown, footnotes: unknown): string {
   return t && f ? `${t}\n\n${f}` : t;
 }
 
+/** alquran.cloud's two answers, whoever the text is by. */
+const ALQURAN_CLOUD: Pick<TextSource, 'surahUrl' | 'ayahUrl' | 'surahRows' | 'ayahText'> = {
+  surahUrl: (id, surah) => `https://api.alquran.cloud/v1/surah/${surah}/${id}`,
+  ayahUrl: (id, surah, ayah) =>
+    `https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/${id}`,
+  surahRows: json => {
+    const inner = (json as { data?: { ayahs?: unknown } } | null)?.data?.ayahs;
+    if (!Array.isArray(inner)) return null;
+    return inner.map(r => ({
+      ayah: Number((r as { numberInSurah?: unknown })?.numberInSurah),
+      text: str((r as { text?: unknown })?.text),
+    }));
+  },
+  ayahText: json => {
+    const t = str((json as { data?: { text?: unknown } } | null)?.data?.text);
+    return t || null;
+  },
+};
+
 export const TEXT_SOURCES: Record<TextSourceId, TextSource> = {
   'quran.com': {
     surahUrl: (id, surah) =>
@@ -76,21 +100,7 @@ export const TEXT_SOURCES: Record<TextSourceId, TextSource> = {
     homepage: 'https://github.com/spa5k/tafsir_api',
   },
   tanzil: {
-    surahUrl: (id, surah) => `https://api.alquran.cloud/v1/surah/${surah}/${id}`,
-    ayahUrl: (id, surah, ayah) =>
-      `https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/${id}`,
-    surahRows: json => {
-      const inner = (json as { data?: { ayahs?: unknown } } | null)?.data?.ayahs;
-      if (!Array.isArray(inner)) return null;
-      return inner.map(r => ({
-        ayah: Number((r as { numberInSurah?: unknown })?.numberInSurah),
-        text: str((r as { text?: unknown })?.text),
-      }));
-    },
-    ayahText: json => {
-      const t = str((json as { data?: { text?: unknown } } | null)?.data?.text);
-      return t || null;
-    },
+    ...ALQURAN_CLOUD,
     attribution: 'alquran.cloud · Tanzil-derived · CC BY 3.0',
     homepage: 'https://alquran.cloud/',
   },
@@ -115,5 +125,10 @@ export const TEXT_SOURCES: Record<TextSourceId, TextSource> = {
     },
     attribution: 'Encyclopedia of the Noble Quran · QuranEnc.com',
     homepage: 'https://quranenc.com/',
+  },
+  'alquran.cloud': {
+    ...ALQURAN_CLOUD,
+    attribution: 'alquran.cloud · Islamic Network',
+    homepage: 'https://alquran.cloud/',
   },
 };

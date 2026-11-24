@@ -1774,7 +1774,13 @@
     "previewReciter": "Dengarkan {{name}}",
     "stopPreview": "Hentikan contoh",
     "voiceHint": "Mushafnya {{page}}; {{name}} membaca {{voice}}. Dengarkan dalam {{page}}:",
-    "voiceHintDismiss": "Tetap pakai suara ini"
+    "voiceHintDismiss": "Tetap pakai suara ini",
+    "transliteration": "Transliterasi",
+    "transliterationSub": "Ayat dalam huruf Latin, di bawah teks Arab. Bantuan saat belajar membaca: tidak dapat menunjukkan tajwid, dan Al-Qur’an dibaca dari teks Arabnya.",
+    "transliterationHafsOnly": "Ini menuliskan bacaan Ḥafṣ, jadi hanya ditampilkan dengan Ḥafṣ, tidak dengan {{riwayah}}.",
+    "transliterationDownloading": "Mengunduh · {{pct}}%",
+    "transliterationGet": "Untuk saat ini dibaca secara online. Unduh untuk offline · {{size}}",
+    "transliterationDoneBody": "Transliterasi setiap ayat ada di perangkat ini. Sekarang bisa dibaca tanpa koneksi."
   },
   "reading": {
     "textSize": "Ukuran teks",
@@ -2029,7 +2035,8 @@
     "tafsir": "Edisi tafsir ({{n}}): Ibnu Katsir, Maarif-ul-Quran, al-Muyassar, al-Mukhtashar, as-Sa’di, Ahsanul Bayaan, Abu Bakr Zakaria, Bayan ul-Quran",
     "wordMeanings": "Arti kata-kata sulit dalam bahasa Arab",
     "surahHeaderFont": "Kaligrafi kepala surah",
-    "recitationWholeSurah": "Tilawah surah utuh (15): mp3quran.net · waktu ayat diselaraskan dengan audio oleh Mihrab"
+    "recitationWholeSurah": "Tilawah surah utuh (15): mp3quran.net · waktu ayat diselaraskan dengan audio oleh Mihrab",
+    "transliteration": "Transliterasi Al-Qur’an, ditampilkan sebagaimana disajikan"
   },
   "liveActivity": {
     "title": "Salat berikutnya",
@@ -2108,7 +2115,9 @@
     "storageFree": "Kosong",
     "storageFooter": "Semua yang diunduh Mihrab bisa diunduh lagi, jadi menghapusnya di sini selalu aman.",
     "groupDownloading": "Sedang mengunduh",
-    "groupOnDevice": "Di perangkat ini"
+    "groupOnDevice": "Di perangkat ini",
+    "transliterationWhole": "Transliterasi lengkap",
+    "transliterationSub": "Baris transliterasi tersimpan"
   },
   "dataStats": {
     "title": "Statistik data",

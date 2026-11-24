@@ -20,7 +20,8 @@ import { SettingsGroup } from '../SettingsGroup';
 import { SettingsPage } from '../SettingsPage';
 import { SPACING } from '../../../theme/tokens';
 import { TYPE } from '../../../theme/typography';
-import { QURAN_TRANSLATIONS } from '../../../quran/translations';
+import { QURAN_TRANSLATIONS, QURAN_TRANSLITERATION } from '../../../quran/translations';
+import { TEXT_SOURCES } from '../../../quran/textSources';
 import { TAFSIR_EDITIONS } from '../../../quran/tafsir';
 
 /**
@@ -151,6 +152,13 @@ export function AttributionsSettingsScreen() {
           e => `${e.sourceId} ${QURANENC_VERSIONS[e.sourceId ?? e.id] ?? ''}`.trim(),
         ).join(' · '),
       url: 'https://quranenc.com/',
+    },
+    {
+      // Not Tanzil's, and credited to the host that serves it: alquran.cloud
+      // names no author for this text (docs/data-sources.md).
+      label: t('attributions.transliteration', 'Qur’an transliteration, shown as served'),
+      sub: `${TEXT_SOURCES['alquran.cloud'].attribution} · ${QURAN_TRANSLITERATION.sourceId}`,
+      url: TEXT_SOURCES['alquran.cloud'].homepage,
     },
     {
       label: t('attributions.tafsir', {

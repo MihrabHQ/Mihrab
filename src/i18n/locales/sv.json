@@ -1774,7 +1774,13 @@
     "previewReciter": "Lyssna på {{name}}",
     "stopPreview": "Stoppa provlyssningen",
     "voiceHint": "Mushafen är {{page}}; {{name}} reciterar {{voice}}. Lyssna i {{page}}:",
-    "voiceHintDismiss": "Behåll den här rösten"
+    "voiceHintDismiss": "Behåll den här rösten",
+    "transliteration": "Translitterering",
+    "transliterationSub": "Versen med latinska bokstäver, under arabiskan. En hjälp medan du lär dig läsa: den kan inte visa tajwid, och Koranen reciteras från arabiskan.",
+    "transliterationHafsOnly": "Den återger Ḥafṣ-läsningen och visas därför bara med Ḥafṣ, inte med {{riwayah}}.",
+    "transliterationDownloading": "Laddar ner · {{pct}} %",
+    "transliterationGet": "Läses online tills vidare. Ladda ner för offline · {{size}}",
+    "transliterationDoneBody": "Varje ayahs translitterering finns på den här enheten. Den läses utan uppkoppling nu."
   },
   "reading": {
     "textSize": "Textstorlek",
@@ -2029,7 +2035,8 @@
     "tafsir": "Tafsir-utgåvor ({{n}}): Ibn Kathir, Maarif-ul-Quran, al-Muyassar, al-Mukhtasar, as-Sa’di, Ahsanul Bayaan, Abu Bakr Zakaria, Bayan ul-Quran",
     "wordMeanings": "Arabiska betydelser av svårare ord",
     "surahHeaderFont": "Kalligrafi för surarubriker",
-    "recitationWholeSurah": "Recitationer av hela suror (15): mp3quran.net · verstider anpassade till ljudet av Mihrab"
+    "recitationWholeSurah": "Recitationer av hela suror (15): mp3quran.net · verstider anpassade till ljudet av Mihrab",
+    "transliteration": "Koranens translitterering, visad som den levereras"
   },
   "liveActivity": {
     "title": "Nästa bön",
@@ -2108,7 +2115,9 @@
     "storageFree": "Ledigt",
     "storageFooter": "Allt som Mihrab laddar ned kan laddas ned igen, så det är alltid säkert att radera det här.",
     "groupDownloading": "Laddar ned",
-    "groupOnDevice": "På den här enheten"
+    "groupOnDevice": "På den här enheten",
+    "transliterationWhole": "Fullständig translitterering",
+    "transliterationSub": "Cachade translitterationsrader"
   },
   "dataStats": {
     "title": "Datastatistik",

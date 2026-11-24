@@ -72,6 +72,7 @@ import {
   deleteTranslationEdition,
   findTranslationEdition,
   QURAN_TRANSLATIONS,
+  QURAN_TRANSLITERATION,
   translationEditionStats,
   TRANSLATION_SURAHS,
 } from '../quran/translations';
@@ -157,7 +158,8 @@ export function QuranDownloadsContent() {
           })),
         ),
         Promise.all(
-          QURAN_TRANSLATIONS.filter(e => e.source).map(async e => ({
+          // The transliteration is kept beside them (`translations.ts`).
+          [...QURAN_TRANSLATIONS.filter(e => e.source), QURAN_TRANSLITERATION].map(async e => ({
             id: e.id,
             ...(await translationEditionStats(e.id)),
           })),
@@ -463,26 +465,34 @@ export function QuranDownloadsContent() {
         : null;
     const surahs = live ? Math.max(e.surahs, live.done) : e.surahs;
     const whole = surahs >= TRANSLATION_SURAHS;
+    // The transliteration: named in the reader's language, and not called
+    // a translation.
+    const aid = e.id === QURAN_TRANSLITERATION.id;
+    const name = aid ? t('quran.transliteration', 'Transliteration') : edition.label;
     items.push(
       <DownloadRow
         key={`translation-${e.id}`}
-        title={`${edition.label} · ${edition.language}`}
+        title={aid ? name : `${edition.label} · ${edition.language}`}
         sub={
           whole
-            ? t('downloads.translationWhole', 'Complete translation')
+            ? aid
+              ? t('downloads.transliterationWhole', 'Complete transliteration')
+              : t('downloads.translationWhole', 'Complete translation')
             : surahs > 0
               ? t('downloads.tafsirPart', {
                   defaultValue: '{{done}} of {{total}} surahs',
                   done: surahs,
                   total: TRANSLATION_SURAHS,
                 })
-              : t('downloads.translationSub', 'Cached translation texts')
+              : aid
+                ? t('downloads.transliterationSub', 'Cached transliteration lines')
+                : t('downloads.translationSub', 'Cached translation texts')
         }
         bytes={e.bytes}
         progress={whole || surahs === 0 ? undefined : surahs / TRANSLATION_SURAHS}
         actions={itemActions(
-          edition.label,
-          () => confirmDelete(edition.label, () => deleteTranslationEdition(e.id)),
+          name,
+          () => confirmDelete(name, () => deleteTranslationEdition(e.id)),
           whole || live || surahs === 0
             ? undefined
             : () => {
