@@ -6,7 +6,7 @@
  * drawn with NSTextAlignmentNatural, which follows the app's localization —
  * so every unaligned label sat on the left of its box (titles beside the
  * chevron, "Dhuhr in" beside the heart, surah details hugging the name).
- * React Native is patched (patches/react-native+0.87.1.patch) to give an
+ * React Native is patched (patches/react-native+0.88.1.patch) to give an
  * unaligned root Text 'left', which iOS resolves against the layout
  * direction. And the Quran tab's pager tells its cards where it starts,
  * since iOS sends no scroll event for an initial offset.
@@ -18,7 +18,7 @@ const read = (p: string) => readFileSync(path.join(__dirname, '..', p), 'utf8');
 
 describe('iOS text alignment in a mirrored layout', () => {
   it('is patched into React Native and applied on install', () => {
-    const patch = read('patches/react-native+0.87.1.patch');
+    const patch = read('patches/react-native+0.88.1.patch');
     expect(patch).toMatch(/Libraries\/Text\/Text\.js/);
     expect(patch).toMatch(/Platform\.OS === 'ios' &&\s*\n\+\s*!hasTextAncestor/);
     expect(patch).toMatch(/iosLayoutStartAlign: \{textAlign: 'left'\} = \{textAlign: 'left'\}/);

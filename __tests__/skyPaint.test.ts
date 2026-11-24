@@ -22,12 +22,13 @@ describe('skyPaint', () => {
     expect(out[0].colorStops).toHaveLength(3);
   });
 
-  it('never asks the parser for a size and a place together, which it misreads', () => {
-    // RN 0.87 reads `circle 140px at 312px 88px` as a circle the size of
+  it('never asks the parser for a size and a place together, which 0.87 misread', () => {
+    // RN 0.87 read `circle 140px at 312px 88px` as a circle the size of
     // the place's numbers, at the view's middle: the halo in the middle of
-    // the screen. Pinned here so the day the parser is fixed is noticed.
-    const broken = processBackgroundImage('radial-gradient(circle 140px at 312px 88px, red 0%, blue 100%)') as any[];
-    expect(broken[0].position).toEqual({ top: '50%', left: '50%' });
+    // the screen. 0.88 reads the place (pinned here, so a regression is
+    // noticed); the sky keeps the form that was right under both.
+    const placed = processBackgroundImage('radial-gradient(circle 140px at 312px 88px, red 0%, blue 100%)') as any[];
+    expect(placed[0].position).toEqual({ top: 88, left: 312 });
     // What the sky asks for instead: a square view at the body, filled.
     const s = radialGlow('#FFEECC', 0.6);
     expect(s).toMatch(/^radial-gradient\(circle closest-side at 50% 50%, /);

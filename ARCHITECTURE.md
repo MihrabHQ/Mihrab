@@ -29,7 +29,7 @@ Bundle ids:
 
 | Layer | Detail |
 |---|---|
-| Runtime | React Native 0.87 (new architecture), Hermes, TypeScript strict |
+| Runtime | React Native 0.88 (new architecture), Hermes, TypeScript strict |
 | State | `PrayerSettingsContext` (AsyncStorage-backed) in `src/context/`, sliced into domain contexts (Appearance, Location, Notifications, DataSource, Widget, LiveActivity) |
 | Styling | `useAppPalette()` hook — never hardcode colours. Design tokens live in `src/theme/tokens.ts`; the palettes (light, dark, pure black, the six colour themes, Material You / Liquid Glass, and Sky — see §6) in `src/theme/` |
 | i18n | `src/i18n/` — 13 locales loaded statically; runtime switch via `i18n.changeLanguage(lang)` |

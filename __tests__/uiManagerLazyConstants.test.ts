@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 /**
- * React Native is patched (patches/react-native+0.87.1.patch) so that
+ * React Native is patched (patches/react-native+0.88.1.patch) so that
  * `UIManager.js` copies `BridgelessUIManager`'s view-manager properties as
  * the lazy getters they are, instead of spreading them — a spread read every
  * view manager's constants from the native side at launch, 33 ms on a
@@ -12,7 +12,7 @@ const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8
 
 describe('UIManager keeps the view-manager constants lazy', () => {
   it('is patched into React Native', () => {
-    const patch = read('patches/react-native+0.87.1.patch');
+    const patch = read('patches/react-native+0.88.1.patch');
     expect(patch).toMatch(/Libraries\/ReactNative\/UIManager\.js/);
     expect(patch).toMatch(/^-\s*\.\.\.UIManagerImpl,/m);
     expect(patch).toMatch(/Object\.getOwnPropertyDescriptor\(UIManagerImpl, key\)/);

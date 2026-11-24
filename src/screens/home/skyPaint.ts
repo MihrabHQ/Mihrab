@@ -32,12 +32,13 @@ export function linearDown(stops: ReadonlyArray<readonly [string, number]>): str
  * the view's nearest side — for a square view sized to the glow and
  * placed on the body.
  *
- * ALWAYS THIS FORM. React Native 0.87's parser misreads a radial
+ * ALWAYS THIS FORM. React Native 0.87's parser misread a radial
  * gradient given both a size and a place — `circle 140px at 312px 88px`
- * comes out a circle the size of the PLACE's numbers, at the view's
+ * came out a circle the size of the PLACE's numbers, at the view's
  * middle — and the moon's halo stood in the middle of the screen as a
- * pale wash while the moon sat unlit in its corner. A square view at
- * the body with `closest-side` needs neither (__tests__/skyPaint).
+ * pale wash while the moon sat unlit in its corner. 0.88 reads the place,
+ * but a square view at the body with `closest-side` needs neither and is
+ * right under both (__tests__/skyPaint).
  */
 export function radialGlow(color: string, opacity: number): string {
   return `radial-gradient(circle closest-side at 50% 50%, ${withAlpha(color, opacity)} 0%, ${withAlpha(color, 0)} 100%)`;

@@ -1,6 +1,6 @@
 # Privacy Policy — Mihrab: The Muslim Companion
 
-**Effective:** 2026-11-05
+**Effective:** 2026-11-24
 **Language:** English first, Swedish (Svenska) below.
 
 ## About this policy
@@ -60,7 +60,7 @@ Mihrab Web is the same app running in your browser. What differs:
 
 ## Third-party services
 
-When you use these features, your device contacts the service directly. The service may see technical data such as your IP address, the time of the request and the requested URL, under its own privacy policy. Mihrab sends no account identifier, advertising identifier or device identifier.
+When you use these features, your device contacts the service directly. The service may see technical data such as your IP address, the time of the request, the requested URL and the app's name and version (sent with each request as its User-Agent), under its own privacy policy. Mihrab sends no account identifier, advertising identifier or device identifier.
 
 - **Prayer times.** Sweden's (Islamiska Förbundet's), Diyanet's, Morocco's, Algeria's, Indonesia's, Tatarstan's, Russia's Central Muftiate's, Albania's, Bulgaria's, Egypt's, Kuwait's, Qatar's, Jordan's, Kazakhstan's, Brunei's, Pakistan's (Jamia Banuri Town's), the United Arab Emirates', Iran's (the Tehran Institute of Geophysics') , the United Kingdom's (Wifaqul Ulama's) and Tunisia's (the Institut National de la Météorologie's) times are calculated on your device and contact no prayer-time service. **Aladhan** (`api.aladhan.com`) is the source elsewhere unless you choose on-device calculation; it is sent your coordinates, the date and the calculation settings. Singapore's, Malaysia's, London's, Kyrgyzstan's, Tajikistan's, Dagestan's and Bashkortostan's tables come from Mihrab's own open datasets on GitHub (`raw.githubusercontent.com/MihrabHQ/Mihrab`), asked for by city; only when a day is missing there is the authority's own service asked (`www.e-solat.gov.my`, by zone code; `api-open.data.gov.sg`, with nothing about you) — for London, Kyrgyzstan and Tajikistan none is: a missing day is calculated on your device. For Türkiye Takvimi the city nearest you is looked up on your device from a map tile covering about 500 km, fetched from GitHub; its year comes from a GitHub release of the Mihrab repository, or, if missing there, from `www.namazvakti.com` by the city's id, never your coordinates.
 - **Calculation and calendar updates:** at start and every few hours the app reads `certification.json` and correction lists from `raw.githubusercontent.com/MihrabHQ/mihrab-methods`, and announced Hijri-date corrections from `raw.githubusercontent.com/MihrabHQ/Mihrab`. Sent: nothing beyond the request itself.
@@ -90,7 +90,7 @@ If the app's data handling changes, this policy and its effective date will be u
 
 # Integritetspolicy — Mihrab: The Muslim Companion
 
-**Gäller från:** 2026-11-05
+**Gäller från:** 2026-11-24
 
 ## Om policyn
 
@@ -149,7 +149,7 @@ Mihrab Web är samma app i din webbläsare. Det här skiljer sig:
 
 ## Tredje parter
 
-När du använder dessa funktioner kontaktar din enhet tjänsten direkt. Tjänsten kan se tekniska uppgifter som din IP-adress, tidpunkt och begärd URL, enligt sin egen integritetspolicy. Mihrab skickar inget kontoid, reklam-id eller enhets-id.
+När du använder dessa funktioner kontaktar din enhet tjänsten direkt. Tjänsten kan se tekniska uppgifter som din IP-adress, tidpunkt, begärd URL och appens namn och version (skickas med varje förfrågan som dess User-Agent), enligt sin egen integritetspolicy. Mihrab skickar inget kontoid, reklam-id eller enhets-id.
 
 - **Bönetider.** Sveriges (Islamiska Förbundets), Diyanets, Marockos, Algeriets, Indonesiens, Tatarstans, Rysslands centrala muftiats, Albaniens, Bulgariens, Egyptens, Kuwaits, Qatars, Jordaniens, Kazakstans, Bruneis, Pakistans (Jamia Banuri Towns) och Förenade Arabemiratens tider räknas ut på enheten och kontaktar ingen bönetidstjänst. **Aladhan** (`api.aladhan.com`) är källan på andra platser om du inte väljer beräkning på enheten; den får dina koordinater, datumet och beräkningsinställningarna. Singapores, Malaysias, Londons, Kirgizistans, Tadzjikistans, Dagestans och Basjkiriens tabeller kommer från Mihrabs egna öppna dataset på GitHub (`raw.githubusercontent.com/MihrabHQ/Mihrab`), per ort; bara när en dag saknas där frågas myndighetens egen tjänst (`www.e-solat.gov.my`, med zonkod; `api-open.data.gov.sg`, utan något om dig) – för London, Kirgizistan och Tadzjikistan ingen: en dag som saknas räknas ut på enheten. För Türkiye Takvimi slås närmaste stad upp på enheten i en kartruta på cirka 50 mil som hämtas från GitHub; året hämtas från en GitHub-release i Mihrab-repot, eller, om det saknas där, från `www.namazvakti.com` med stadens id, aldrig dina koordinater.
 - **Uppdateringar av beräkningar och kalender:** vid start och med några timmars mellanrum läser appen `certification.json` och korrigeringslistor från `raw.githubusercontent.com/MihrabHQ/mihrab-methods`, och aviserade rättelser av hijri-datumet från `raw.githubusercontent.com/MihrabHQ/Mihrab`. Skickas: inget utöver själva förfrågan.
