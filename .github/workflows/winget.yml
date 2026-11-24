@@ -77,8 +77,18 @@ jobs:
           Get-ChildItem $dir | ForEach-Object { Write-Host "== $($_.Name)"; Get-Content $_.FullName | Write-Host }
           winget validate --manifest $dir
           if ($LASTEXITCODE -ne 0) { throw "winget validate: $LASTEXITCODE" }
-          winget install --manifest $dir --silent --accept-package-agreements --accept-source-agreements --disable-interactivity
-          if ($LASTEXITCODE -ne 0) { throw "winget install: $LASTEXITCODE" }
+          # winget waits for the installer; give it five minutes, and if it
+          # is still waiting, show what is running and winget's own log.
+          $w = Start-Process winget -ArgumentList 'install', '--manifest', "`"$dir`"", '--silent', '--accept-package-agreements', '--accept-source-agreements', '--disable-interactivity', '--verbose-logs' -PassThru -NoNewWindow
+          if (-not $w.WaitForExit(300000)) {
+            Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'Mihrab|winget|nsis|setup|\.tmp' -or $_.CommandLine -match 'Mihrab' } |
+              Format-List Name, ProcessId, ParentProcessId, CommandLine | Out-String -Width 400 | Write-Host
+            Get-ChildItem "$env:LOCALAPPDATA\Programs\Mihrab" -ErrorAction SilentlyContinue | Select-Object -First 10 | Out-String | Write-Host
+            Get-ChildItem "$env:LOCALAPPDATA\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\DiagOutputDir" -Filter *.log -ErrorAction SilentlyContinue |
+              Sort-Object LastWriteTime | Select-Object -Last 1 | ForEach-Object { Get-Content $_.FullName -Tail 60 | Write-Host }
+            throw "winget install still waiting after five minutes"
+          }
+          if ($w.ExitCode -ne 0) { throw "winget install: $($w.ExitCode)" }
           $app = "$env:LOCALAPPDATA\Programs\Mihrab"
           if (-not (Test-Path "$app\Mihrab.exe")) { throw "not installed at $app" }
           $p = Start-Process "$app\Mihrab.exe" -PassThru
