@@ -36,6 +36,11 @@
 
   <p><a href="https://apps.microsoft.com/detail/9N43KNMJHBWV"><img src="branding/badges/microsoft.png" alt="Get it from the Microsoft Store" height="60"></a></p>
 
+  <p>winget (the Store's version): <code>winget install 9N43KNMJHBWV</code><br>
+  Scoop: <code>scoop bucket add mihrab https://github.com/MihrabHQ/scoop-bucket</code> then <code>scoop install mihrab/mihrab</code></p>
+
+  <p><sub>Or the installer (<code>.exe</code>, x64 or Arm64) from the <a href="https://github.com/MihrabHQ/Mihrab/releases/latest">latest release</a>. It is not code-signed, so Windows warns the first time: choose “More info”, then “Run anyway”. It does not update itself.</sub></p>
+
   <p><b>Linux</b> <sub>(preview)</sub></p>
 
   <p>From your package manager, with Mihrab's signed repositories — updates come with the rest of your system:</p>
@@ -441,7 +446,7 @@ The full list, from the code, is in the [privacy policy](PRIVACY_POLICY.md) and 
 
 ## Install
 
-Every channel is at the top of this page: the store badges, Homebrew for the Mac, the Linux package repositories, and Mihrab Web. Same app on each, built from the same `main` branch; no Android build carries Google Play Services, the Play Store one included.
+Every channel is at the top of this page: the store badges, Homebrew for the Mac, winget and Scoop for Windows, the Linux package repositories, and Mihrab Web. Same app on each, built from the same `main` branch; no Android build carries Google Play Services, the Play Store one included.
 
 <details><summary><b>Notes on each channel</b></summary>
 
@@ -453,7 +458,7 @@ Every channel is at the top of this page: the store badges, Homebrew for the Mac
 | **Android — Google Play** | [Google Play](https://play.google.com/store/apps/details?id=com.prayer_times) |
 | **Android — F-Droid** | [f-droid.org/packages/com.prayer_times](https://f-droid.org/packages/com.prayer_times/) |
 | **Android — APK** | [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases/latest) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
-| **Windows** | [Microsoft Store](https://apps.microsoft.com/detail/9N43KNMJHBWV) |
+| **Windows** | [Microsoft Store](https://apps.microsoft.com/detail/9N43KNMJHBWV), also as `winget install 9N43KNMJHBWV`; [Scoop](https://github.com/MihrabHQ/scoop-bucket); or the per-user installer `Mihrab-X.Y.Z-win-{x64,arm64}.exe` from [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases/latest) — not code-signed, so SmartScreen warns once (More info → Run anyway), and it does not update itself |
 | **Linux (preview)** | apt, dnf, zypper or pacman, from Mihrab's signed repositories at [mihrabhq.github.io/packages](https://mihrabhq.github.io/packages) — the commands are at the top of this page. Without any of those, [`install-linux.sh`](desktop/scripts/install-linux.sh) unpacks the AppImage. Testers and a maintainer are welcome ([desktop/MAINTAINING.md](desktop/MAINTAINING.md)) |
 
 On **GrapheneOS**: no Google Play services are used, the Network and Sensors switches are handled, and the APK is checked at every release for what its exploit protections expect — [what was checked, and how](docs/grapheneos.md).

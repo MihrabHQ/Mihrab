@@ -9,7 +9,11 @@ Chromium is the only way to know it does.
 ## Install it
 
 **Windows:** the [Microsoft Store](https://apps.microsoft.com/detail/9N43KNMJHBWV)
-(see [Microsoft Store](#microsoft-store) below for how it gets there).
+(see [Microsoft Store](#microsoft-store) below for how it gets there), which
+winget installs too (`winget install 9N43KNMJHBWV`); Scoop, from
+[MihrabHQ/scoop-bucket](https://github.com/MihrabHQ/scoop-bucket); or each
+release's installer, `Mihrab-X.Y.Z-win-{x64,arm64}.exe` (see
+[Windows package managers](#windows-package-managers)).
 **Linux:** the system's package manager, from Mihrab's repositories (below).
 `scripts/install-linux.sh` does the same in one line — it adds the repository
 for apt, dnf, zypper or pacman and installs, and with `uninstall` takes the
@@ -22,6 +26,31 @@ workflow** off the
 pre-release: on Windows `Mihrab-windows-x64.exe` (or `-arm64`) installs for
 the user into `%LOCALAPPDATA%\Programs\Mihrab`, and removes itself from
 Settings → Apps.
+
+## Windows package managers
+
+The release's `.exe` is electron-builder's assisted NSIS installer: per user,
+into `%LOCALAPPDATA%\Programs\Mihrab`, silent with `/S`. It is **not
+code-signed**, so SmartScreen warns on its first run (More info → Run
+anyway), and nothing updates it. The ways round that, besides the Store:
+
+- **Scoop** — [MihrabHQ/scoop-bucket](https://github.com/MihrabHQ/scoop-bucket).
+  Scoop unpacks the app from the installer instead of running it (no
+  SmartScreen), and `scoop update` updates it. The bucket follows the
+  releases by itself: hourly, a newer release with its installers attached is
+  installed, started and removed on x64 and Arm64 Windows runners there, and
+  only then pushed.
+- **winget** — `winget install 9N43KNMJHBWV` is the Store's package.
+  `MihrabHQ.Mihrab`, the installer itself, is proposed to
+  [microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs) by
+  `.github/workflows/winget.yml` on every release tag (called from
+  `desktop.yml` once the installers are attached): manifests from
+  `packaging/winget/make-manifests.js`, validated, installed, started and
+  removed with winget on a Windows runner, then a pull request from the fork
+  of the account whose token is the `WINGET_TOKEN` secret
+  (`packaging/winget/submit.sh`). Without the secret the run checks the
+  manifests and says it did not submit; Actions → winget → Run workflow does
+  the same for any released version.
 
 ## Linux package managers
 

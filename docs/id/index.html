@@ -350,6 +350,25 @@
         <ul class="badges">
           <li><a href="https://apps.microsoft.com/detail/9N43KNMJHBWV"><img src="../assets/img/badges/microsoft.png" width="564" height="168" alt="Microsoft Store"></a></li>
         </ul>
+        <details class="distro">
+          <summary dir="ltr">winget (Microsoft Store)</summary>
+          <p class="cmd-label">Pasang</p>
+          <pre dir="ltr"><code>winget install 9N43KNMJHBWV</code></pre>
+          <p class="cmd-label">Hapus, beserta pengaturannya</p>
+          <pre dir="ltr"><code>winget uninstall 9N43KNMJHBWV</code></pre>
+        </details>
+        <details class="distro">
+          <summary dir="ltr">Scoop</summary>
+          <p class="cmd-label">Pasang</p>
+          <pre dir="ltr"><code>scoop bucket add mihrab https://github.com/MihrabHQ/scoop-bucket
+scoop install mihrab/mihrab</code></pre>
+          <p class="cmd-label">Hapus, beserta pengaturannya</p>
+          <pre dir="ltr"><code>scoop uninstall mihrab; Remove-Item -Recurse "$env:APPDATA\Mihrab"</code></pre>
+        </details>
+        <details class="distro">
+          <summary dir="ltr">.exe (GitHub)</summary>
+          <p class="note" data-review="native">Penginstal dari rilis terbaru, untuk x64 atau Arm64. Penginstal ini tidak ditandatangani kode, jadi Windows memberi peringatan pada kali pertama: pilih “Info selengkapnya”, lalu “Tetap jalankan”. Ia tidak memperbarui dirinya sendiri. <a href="https://github.com/MihrabHQ/Mihrab/releases/latest">Unduh dari rilis terbaru</a></p>
+        </details>
       </div>
       <div class="platform linux">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 10 3 2-3 2M12 15h5"/></svg>Linux <span class="tag">Pratinjau</span></h3>

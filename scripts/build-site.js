@@ -392,6 +392,26 @@ const LINUX_COMMANDS = [
   },
 ];
 
+/**
+ * Windows besides the Store: winget (the Store's own package, so signed and
+ * updated by the Store), Scoop (MihrabHQ/scoop-bucket, which follows the
+ * releases hourly and installs nothing it has not installed itself first),
+ * and the release's installer, which is not code-signed.
+ */
+const WINDOWS_COMMANDS = [
+  {
+    name: 'winget (Microsoft Store)',
+    install: ['winget install 9N43KNMJHBWV'],
+    // The Store's package keeps its settings inside itself, so they go with it.
+    remove: 'winget uninstall 9N43KNMJHBWV',
+  },
+  {
+    name: 'Scoop',
+    install: ['scoop bucket add mihrab https://github.com/MihrabHQ/scoop-bucket', 'scoop install mihrab/mihrab'],
+    remove: 'scoop uninstall mihrab; Remove-Item -Recurse "$env:APPDATA\\Mihrab"',
+  },
+];
+
 function desktopCard(code, t, imgBase) {
   const d = t.install && t.install.desktop;
   if (!d) throw new Error(`${code}: no strings for the Windows and Linux cards`);
@@ -408,9 +428,25 @@ function desktopCard(code, t, imgBase) {
           <pre dir="ltr"><code>${esc(l.remove)}</code></pre>
         </details>`,
   ).join('\n');
+  if (!d.exeNote || !d.exeLink) throw new Error(`${code}: no words for the Windows installer`);
+  const windows = WINDOWS_COMMANDS.map(
+    w => `        <details class="distro">
+          <summary dir="ltr">${esc(w.name)}</summary>
+          <p class="cmd-label">${esc(d.install)}</p>
+          <pre dir="ltr"><code>${esc(w.install.join('\n'))}</code></pre>
+          <p class="cmd-label">${esc(d.remove)}</p>
+          <pre dir="ltr"><code>${esc(w.remove)}</code></pre>
+        </details>`,
+  ).join('\n');
+  const review = d.exeReview ? ` data-review="${d.exeReview}"` : '';
   return `      <div class="platform windows">
         <h3>${glyph('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 12h18M12 4v16"/>')}${esc(d.windows)}</h3>
 ${badgeList(['microsoft'], imgBase, '        ')}
+${windows}
+        <details class="distro">
+          <summary dir="ltr">.exe (GitHub)</summary>
+          <p class="note"${review}>${esc(d.exeNote)} <a href="https://github.com/MihrabHQ/Mihrab/releases/latest">${esc(d.exeLink)}</a></p>
+        </details>
       </div>
       <div class="platform linux">
         <h3>${glyph('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 10 3 2-3 2M12 15h5"/>')}${esc(d.linux)} <span class="tag">${esc(d.tag)}</span></h3>

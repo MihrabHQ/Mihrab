@@ -347,6 +347,20 @@ jobs:
           gh release edit desktop-preview --prerelease --latest=false \
             --notes "Installers for testing the Windows and Linux app, built from $(git rev-parse --short HEAD) on $(date -u +%Y-%m-%d). Install and remove with one command: see [desktop/README.md](https://github.com/MihrabHQ/Mihrab/blob/main/desktop/README.md)."
 
+  # winget: the release's installers proposed to microsoft/winget-pkgs as
+  # MihrabHQ.Mihrab, after winget itself has installed, started and removed
+  # them (winget.yml). Scoop needs nothing from here: MihrabHQ/scoop-bucket
+  # follows the releases on its own, hourly.
+  winget:
+    needs: build
+    if: github.ref_type == 'tag' && vars.DESKTOP_RELEASE == 'true'
+    uses: ./.github/workflows/winget.yml
+    with:
+      version: ${{ github.ref_name }}
+      submit: true
+    secrets:
+      WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
+
   # The package managers' way in, proved on the files this run built: the apt,
   # dnf and pacman repositories and the AUR recipe exactly as MihrabHQ/packages
   # publishes them (desktop/packaging/), signed with a throwaway key and

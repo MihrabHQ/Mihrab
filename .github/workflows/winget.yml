@@ -1,0 +1,109 @@
+name: winget
+
+# MihrabHQ.Mihrab in winget (microsoft/winget-pkgs): the manifests for a
+# release's Windows installers (desktop/packaging/winget/), validated and
+# installed, started and removed with winget itself on a Windows runner —
+# and, when asked and the WINGET_TOKEN secret is set, proposed to
+# winget-pkgs as a pull request from that token's fork.
+#
+#   tag v*    called by desktop.yml once the installers are attached, with
+#             submit on.
+#   by hand   Actions → winget → Run workflow: any released version, with
+#             or without submitting.
+#
+# WINGET_TOKEN: a classic personal access token with the public_repo scope
+# of the account that opens the pull requests (it forks winget-pkgs once,
+# and agrees to Microsoft's CLA on its first pull request there). Without
+# it the manifests are still checked, and the run says it did not submit.
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+      submit:
+        type: boolean
+        default: true
+    secrets:
+      WINGET_TOKEN:
+        required: false
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Released version, e.g. 2.39.0'
+        required: true
+      submit:
+        description: 'Open the pull request to microsoft/winget-pkgs'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  winget:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: desktop/packaging/winget
+
+      - name: Manifests
+        id: v
+        shell: bash
+        run: |
+          v="${{ inputs.version }}"; v="${v#v}"
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          node desktop/packaging/winget/make-manifests.js --version "$v" --out winget
+
+      - name: winget on the runner
+        shell: pwsh
+        run: |
+          if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+            Install-PackageProvider -Name NuGet -Force | Out-Null
+            Install-Module Microsoft.WinGet.Client -Force -Repository PSGallery | Out-Null
+            Repair-WinGetPackageManager -AllUsers -Latest
+          }
+          winget --version
+          winget settings --enable LocalManifestFiles
+
+      - name: Validate, install, start, remove
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $dir = (Resolve-Path "winget/manifests/m/MihrabHQ/Mihrab/${{ steps.v.outputs.version }}").Path
+          Get-ChildItem $dir | ForEach-Object { Write-Host "== $($_.Name)"; Get-Content $_.FullName | Write-Host }
+          winget validate --manifest $dir
+          if ($LASTEXITCODE -ne 0) { throw "winget validate: $LASTEXITCODE" }
+          winget install --manifest $dir --silent --accept-package-agreements --accept-source-agreements --disable-interactivity
+          if ($LASTEXITCODE -ne 0) { throw "winget install: $LASTEXITCODE" }
+          $app = "$env:LOCALAPPDATA\Programs\Mihrab"
+          if (-not (Test-Path "$app\Mihrab.exe")) { throw "not installed at $app" }
+          $p = Start-Process "$app\Mihrab.exe" -PassThru
+          Start-Sleep -Seconds 25
+          if ($p.HasExited) { throw "Mihrab exited at start with code $($p.ExitCode)" }
+          Get-Process mihrab -ErrorAction SilentlyContinue | Stop-Process -Force
+          Start-Sleep -Seconds 3
+          Start-Process "$app\Uninstall Mihrab.exe" -ArgumentList '/S', "_?=$app" -Wait
+          if (Test-Path "$app\Mihrab.exe") { throw "still installed after uninstall" }
+          Write-Host "validated, installed, started and removed: OK"
+
+      - name: Keep the manifests
+        uses: actions/upload-artifact@v4
+        with:
+          name: winget-manifests-${{ steps.v.outputs.version }}
+          path: winget/manifests
+
+      - name: Propose to winget-pkgs
+        if: inputs.submit
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.WINGET_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning::WINGET_TOKEN is not set: the manifests are checked but were not proposed to winget-pkgs"
+            exit 0
+          fi
+          bash desktop/packaging/winget/submit.sh winget "${{ steps.v.outputs.version }}"

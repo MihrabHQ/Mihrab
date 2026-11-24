@@ -342,6 +342,8 @@ person here: the Microsoft Store submission. What a `v*` tag sets going:
 | apt, dnf, zypper, pacman | `MihrabHQ/packages` (`publish.yml`, hourly) takes the deb and rpm from the latest release, builds the repositories with that tag's `desktop/packaging/`, signs them and serves them at mihrabhq.github.io/packages | within the hour after the installers |
 | AUR `mihrab-bin` | the same run, once `AUR_SSH_KEY` is set there — not yet: there is no AUR account | — |
 | Microsoft Store | **by hand**, like Play. The release fetches the tag's `.appx` packages (x64 and arm64) and `whats-new-{en,sv,ar}.txt` into `~/Downloads/mihrab-store-<version>` once the Desktop run is green, and its summary names the files; upload them in Partner Center as a new submission | once the Desktop run is green, then certification |
+| Scoop | `MihrabHQ/scoop-bucket` (`update.yml`, hourly) points `bucket/mihrab.json` at the latest release once its `.exe` installers are attached, installs, starts and removes it on x64 and Arm64 Windows runners, and pushes only then | within the hour after the installers |
+| winget `MihrabHQ.Mihrab` | `.github/workflows/winget.yml`, called by the tag's Desktop run after the installers are attached: manifests (`desktop/packaging/winget/`) validated and installed with winget, then a pull request to `microsoft/winget-pkgs` from the fork of the `WINGET_TOKEN` account. Microsoft's validation and a moderator merge it | the PR right after the installers; live after Microsoft merges it, usually days. `winget install 9N43KNMJHBWV` (the Store's package) needs nothing |
 | Mihrab Web | `MihrabHQ.github.io` (`publish.yml`, hourly) builds the web app from the latest release's tag, reusing the Qur'an files it already serves, and writes the tag to `version.txt` | within the hour after the release |
 
 The installers are attached only while the repository variable
@@ -358,8 +360,9 @@ not required: a change to the app that breaks the desktop still merges, and
 the red run goes to the desktop maintainer — but cut no release over a red
 one, or the tag's installers will not build.
 
-Not yet: code signing on Windows (SmartScreen warns on the .exe), winget,
-and the AUR.
+Not yet: code signing on Windows (SmartScreen warns on the .exe; Scoop
+unpacks it without running it, and the Store and winget's Store package are
+signed by Microsoft), and the AUR.
 
 ### F-Droid CI rules (`rewritemeta` linter)
 

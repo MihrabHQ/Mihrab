@@ -350,6 +350,25 @@
         <ul class="badges">
           <li><a href="https://apps.microsoft.com/detail/9N43KNMJHBWV"><img src="../assets/img/badges/microsoft.png" width="564" height="168" alt="Microsoft Store"></a></li>
         </ul>
+        <details class="distro">
+          <summary dir="ltr">winget (Microsoft Store)</summary>
+          <p class="cmd-label">安装</p>
+          <pre dir="ltr"><code>winget install 9N43KNMJHBWV</code></pre>
+          <p class="cmd-label">卸载（连同设置）</p>
+          <pre dir="ltr"><code>winget uninstall 9N43KNMJHBWV</code></pre>
+        </details>
+        <details class="distro">
+          <summary dir="ltr">Scoop</summary>
+          <p class="cmd-label">安装</p>
+          <pre dir="ltr"><code>scoop bucket add mihrab https://github.com/MihrabHQ/scoop-bucket
+scoop install mihrab/mihrab</code></pre>
+          <p class="cmd-label">卸载（连同设置）</p>
+          <pre dir="ltr"><code>scoop uninstall mihrab; Remove-Item -Recurse "$env:APPDATA\Mihrab"</code></pre>
+        </details>
+        <details class="distro">
+          <summary dir="ltr">.exe (GitHub)</summary>
+          <p class="note" data-review="native">最新版本中的安装程序，适用于 x64 或 Arm64。它没有代码签名，所以 Windows 第一次会发出警告：请选择“更多信息”，然后选择“仍要运行”。它不会自动更新。 <a href="https://github.com/MihrabHQ/Mihrab/releases/latest">从最新版本下载</a></p>
+        </details>
       </div>
       <div class="platform linux">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 10 3 2-3 2M12 15h5"/></svg>Linux <span class="tag">预览版</span></h3>

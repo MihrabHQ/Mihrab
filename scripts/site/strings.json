@@ -122,7 +122,9 @@
         "windows": "Windows",
         "linux": "Linux",
         "install": "Install",
-        "remove": "Remove, with its settings"
+        "remove": "Remove, with its settings",
+        "exeNote": "The installer from the latest release, for x64 or Arm64. It is not code-signed, so Windows warns the first time: choose “More info”, then “Run anyway”. It does not update itself.",
+        "exeLink": "Download it from the latest release"
       },
       "web": {
         "h3": "In your browser",
@@ -277,7 +279,10 @@
         "windows": "Windows",
         "linux": "Linux",
         "install": "Installera",
-        "remove": "Ta bort, med inställningarna"
+        "remove": "Ta bort, med inställningarna",
+        "exeNote": "Installationsprogrammet från den senaste versionen, för x64 eller Arm64. Det är inte kodsignerat, så Windows varnar första gången: välj ”Mer information” och sedan ”Kör ändå”. Det uppdaterar sig inte självt.",
+        "exeLink": "Ladda ned det från den senaste versionen",
+        "exeReview": "native"
       },
       "web": {
         "h3": "I webbläsaren",
@@ -367,7 +372,10 @@
         "windows": "ويندوز",
         "linux": "لينكس",
         "install": "التثبيت",
-        "remove": "الإزالة مع الإعدادات"
+        "remove": "الإزالة مع الإعدادات",
+        "exeNote": "برنامج التثبيت من أحدث إصدار، لمعالجات x64 أو Arm64. وهو غير موقَّع رقميًّا، لذا يحذّر ويندوز في المرة الأولى: اختر «مزيد من المعلومات» ثم «التشغيل على أي حال». ولا يحدّث نفسه تلقائيًّا.",
+        "exeLink": "نزّله من أحدث إصدار",
+        "exeReview": "native"
       },
       "web": {
         "h3": "في متصفحك",
@@ -793,7 +801,10 @@
         "windows": "Windows",
         "linux": "Linux",
         "install": "Kur",
-        "remove": "Ayarlarıyla birlikte kaldır"
+        "remove": "Ayarlarıyla birlikte kaldır",
+        "exeNote": "En son sürümdeki kurulum dosyası, x64 veya Arm64 için. Kod imzalı olmadığından Windows ilk seferde uyarır: “Ek bilgi”yi, ardından “Yine de çalıştır”ı seçin. Kendini güncellemez.",
+        "exeLink": "En son sürümden indirin",
+        "exeReview": "native"
       },
       "web": {
         "h3": "Tarayıcınızda",
@@ -1212,7 +1223,10 @@
         "windows": "ونڈوز",
         "linux": "لینکس",
         "install": "انسٹال کریں",
-        "remove": "ترتیبات سمیت ہٹائیں"
+        "remove": "ترتیبات سمیت ہٹائیں",
+        "exeNote": "تازہ ترین ریلیز سے انسٹالر، x64 یا Arm64 کے لیے۔ اس پر کوڈ سائننگ نہیں، اس لیے ونڈوز پہلی بار انتباہ دیتا ہے: ”مزید معلومات“ اور پھر ”بہرحال چلائیں“ منتخب کریں۔ یہ خود کو اپ ڈیٹ نہیں کرتا۔",
+        "exeLink": "تازہ ترین ریلیز سے ڈاؤن لوڈ کریں",
+        "exeReview": "native"
       },
       "web": {
         "h3": "اپنے براؤزر میں",
@@ -1612,7 +1626,10 @@
         "windows": "Windows",
         "linux": "Linux",
         "install": "Pasang",
-        "remove": "Hapus, beserta pengaturannya"
+        "remove": "Hapus, beserta pengaturannya",
+        "exeNote": "Penginstal dari rilis terbaru, untuk x64 atau Arm64. Penginstal ini tidak ditandatangani kode, jadi Windows memberi peringatan pada kali pertama: pilih “Info selengkapnya”, lalu “Tetap jalankan”. Ia tidak memperbarui dirinya sendiri.",
+        "exeLink": "Unduh dari rilis terbaru",
+        "exeReview": "native"
       },
       "web": {
         "h3": "Di peramban Anda",
@@ -2031,7 +2048,10 @@
         "windows": "Windows",
         "linux": "Linux",
         "install": "Installieren",
-        "remove": "Entfernen, samt Einstellungen"
+        "remove": "Entfernen, samt Einstellungen",
+        "exeNote": "Das Installationsprogramm aus der neuesten Version, für x64 oder Arm64. Es ist nicht codesigniert, daher warnt Windows beim ersten Mal: Wähle „Weitere Informationen“ und dann „Trotzdem ausführen“. Es aktualisiert sich nicht selbst.",
+        "exeLink": "Aus der neuesten Version herunterladen",
+        "exeReview": "native"
       },
       "web": {
         "h3": "Im Browser",
@@ -2431,7 +2451,10 @@
         "windows": "Windows",
         "linux": "Linux",
         "install": "Installer",
-        "remove": "Désinstaller, avec ses réglages"
+        "remove": "Désinstaller, avec ses réglages",
+        "exeNote": "Le programme d’installation de la dernière version, pour x64 ou Arm64. Il n’est pas signé, donc Windows avertit la première fois : choisissez « Informations complémentaires », puis « Exécuter quand même ». Il ne se met pas à jour tout seul.",
+        "exeLink": "Le télécharger depuis la dernière version",
+        "exeReview": "native"
       },
       "web": {
         "h3": "Dans votre navigateur",
@@ -2857,7 +2880,10 @@
         "windows": "Windows",
         "linux": "Linux",
         "install": "Instalar",
-        "remove": "Quitar, con sus ajustes"
+        "remove": "Quitar, con sus ajustes",
+        "exeNote": "El instalador de la última versión, para x64 o Arm64. No está firmado, así que Windows avisa la primera vez: elige «Más información» y luego «Ejecutar de todas formas». No se actualiza solo.",
+        "exeLink": "Descárgalo de la última versión",
+        "exeReview": "native"
       },
       "web": {
         "h3": "En tu navegador",
@@ -3257,7 +3283,10 @@
         "windows": "Windows",
         "linux": "Linux",
         "install": "Установить",
-        "remove": "Удалить вместе с настройками"
+        "remove": "Удалить вместе с настройками",
+        "exeNote": "Установщик из последнего выпуска, для x64 или Arm64. Он не подписан, поэтому в первый раз Windows предупредит: нажмите «Подробнее», затем «Выполнить в любом случае». Он не обновляется сам.",
+        "exeLink": "Скачать из последнего выпуска",
+        "exeReview": "native"
       },
       "web": {
         "h3": "В браузере",
@@ -3657,7 +3686,10 @@
         "windows": "উইন্ডোজ",
         "linux": "লিনাক্স",
         "install": "ইনস্টল",
-        "remove": "সেটিংসসহ সরান"
+        "remove": "সেটিংসসহ সরান",
+        "exeNote": "সর্বশেষ রিলিজের ইনস্টলার, x64 বা Arm64-এর জন্য। এটি কোড-সাইন করা নয়, তাই প্রথমবার উইন্ডোজ সতর্ক করে: “আরও তথ্য”, তারপর “তবুও চালান” বেছে নিন। এটি নিজে নিজে আপডেট হয় না।",
+        "exeLink": "সর্বশেষ রিলিজ থেকে ডাউনলোড করুন",
+        "exeReview": "native"
       },
       "web": {
         "h3": "আপনার ব্রাউজারে",
@@ -4057,7 +4089,10 @@
         "windows": "विंडोज़",
         "linux": "लिनक्स",
         "install": "इंस्टॉल करें",
-        "remove": "सेटिंग्स समेत हटाएँ"
+        "remove": "सेटिंग्स समेत हटाएँ",
+        "exeNote": "नवीनतम रिलीज़ का इंस्टॉलर, x64 या Arm64 के लिए। यह कोड-साइन नहीं है, इसलिए पहली बार विंडोज़ चेतावनी देता है: “अधिक जानकारी” और फिर “फिर भी चलाएँ” चुनें। यह अपने आप अपडेट नहीं होता।",
+        "exeLink": "नवीनतम रिलीज़ से डाउनलोड करें",
+        "exeReview": "native"
       },
       "web": {
         "h3": "आपके ब्राउज़र में",
@@ -4457,7 +4492,10 @@
         "windows": "Windows",
         "linux": "Linux",
         "install": "安装",
-        "remove": "卸载（连同设置）"
+        "remove": "卸载（连同设置）",
+        "exeNote": "最新版本中的安装程序，适用于 x64 或 Arm64。它没有代码签名，所以 Windows 第一次会发出警告：请选择“更多信息”，然后选择“仍要运行”。它不会自动更新。",
+        "exeLink": "从最新版本下载",
+        "exeReview": "native"
       },
       "web": {
         "h3": "在浏览器中",
