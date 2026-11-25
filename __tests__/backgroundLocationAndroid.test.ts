@@ -38,7 +38,7 @@ describe('background location on Android', () => {
     const confirm = kt.slice(kt.indexOf('fun confirmPlace(c: Context'), kt.indexOf('private fun meters'));
     expect(confirm).toContain('putLong("placeAt", now)');
     expect(confirm).toContain('rememberSurroundings(c, e, now)');
-    expect(kt).toMatch(/@ReactMethod\s+fun confirmPlace\(\)/);
+    expect(kt).toMatch(/override fun confirmPlace\(\)/);
   });
 
   it('a new time zone just after a move hands the move over again, to the new engine', () => {

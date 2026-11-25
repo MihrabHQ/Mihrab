@@ -70,7 +70,7 @@ describe('iOS', () => {
 
 describe('JavaScript', () => {
   it('reaches the native module by name and nothing else does the storing', () => {
-    expect(read('src/native/SecureStore.ts')).toContain('NativeModules.MihrabSecureStore');
+    expect(read('src/native/SecureStore.ts')).toContain("nativeModule(NativeMihrabSecureStore, 'MihrabSecureStore')");
     const pkg = JSON.parse(read('package.json'));
     expect(Object.keys({ ...pkg.dependencies, ...pkg.devDependencies })).not.toContain('react-native-encrypted-storage');
   });

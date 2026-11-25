@@ -14,10 +14,12 @@
  * layout is what it always was. iOS has no module and never has one.
  */
 import { useEffect, useState } from 'react';
-import { NativeEventEmitter, NativeModules, Platform, useWindowDimensions } from 'react-native';
+import { NativeEventEmitter, Platform, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { isRtlLanguage } from '../i18n/layoutDirection';
 import { useVerticalBar } from './VerticalBar';
+import NativeMihrabFoldPosture from './specs/NativeMihrabFoldPosture';
+import { nativeModule } from './nativeModule';
 
 export type Hinge = { left: number; top: number; right: number; bottom: number };
 
@@ -33,7 +35,7 @@ type Reading = {
 } & Partial<Hinge>;
 
 const Native: { read?: () => Promise<Reading> } | undefined =
-  Platform.OS === 'android' ? NativeModules.MihrabFoldPosture : undefined;
+  Platform.OS === 'android' ? nativeModule(NativeMihrabFoldPosture, 'MihrabFoldPosture') : undefined;
 
 export function postureFrom(r: Reading | null | undefined): FoldPosture {
   if (!r || r.state !== 'half') return null;

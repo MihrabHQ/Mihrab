@@ -5,7 +5,9 @@
  * to the system page that grants it. No-ops on iOS and on a build without the
  * module, so callers can simply call.
  */
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativeFullScreenAlarm from './specs/NativeFullScreenAlarm';
+import { nativeModule } from './nativeModule';
 
 type FullScreenAlarmNative = {
   canUse(): Promise<boolean>;
@@ -14,8 +16,7 @@ type FullScreenAlarmNative = {
 
 const native: FullScreenAlarmNative | undefined =
   Platform.OS === 'android'
-    ? (NativeModules as Record<string, FullScreenAlarmNative | undefined>)
-        .FullScreenAlarm
+    ? (nativeModule(NativeFullScreenAlarm, 'FullScreenAlarm') as FullScreenAlarmNative | undefined)
     : undefined;
 
 /** Whether this build can show a full-screen prayer alert at all. */

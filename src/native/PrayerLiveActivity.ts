@@ -11,7 +11,9 @@
  * and `getPrayerLiveActivityModule()` returns null, so the orchestrator
  * silently no-ops on iOS.
  */
-import { NativeModules, TurboModuleRegistry } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
+import NativePrayerLiveActivity from './specs/NativePrayerLiveActivity';
+import { nativeModule } from './nativeModule';
 
 export type PrayerLiveActivityContent = {
   /** Localised app-language code, e.g. 'en' | 'ar' — drives Activity layout direction. */
@@ -93,7 +95,7 @@ export interface PrayerLiveActivityInterface {
 }
 
 export function getPrayerLiveActivityModule(): PrayerLiveActivityInterface | null {
-  const legacy = NativeModules.PrayerLiveActivity as
+  const legacy = nativeModule(NativePrayerLiveActivity, 'PrayerLiveActivity') as
     | PrayerLiveActivityInterface
     | undefined;
   if (legacy?.start) return legacy;

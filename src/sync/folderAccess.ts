@@ -11,15 +11,16 @@
  * base64 bookmark data on the other, and nothing outside the native modules
  * may look inside it.
  */
-import { NativeModules } from 'react-native';
 import type { SyncFolder } from './folderSync';
 import type { FolderHandle } from './syncSettings';
 import { quiet } from '../utils/quiet';
+import NativeSyncFolder from '../native/specs/NativeSyncFolder';
+import { nativeModule } from '../native/nativeModule';
 
 /** What the native side returns for a folder. */
 type FolderPick = { handle: string; label: string; kind?: string };
 
-const Native = NativeModules.SyncFolder as
+const Native = nativeModule(NativeSyncFolder, 'SyncFolder') as
   | {
       defaultFolder(): Promise<FolderPick | null>;
       pick(): Promise<FolderPick | null>;

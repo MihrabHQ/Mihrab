@@ -4,7 +4,9 @@
  * Use `getPrayerWidgetModule()` rather than accessing NativeModules directly
  * so the TurboModule / legacy bridge fallback is handled in one place.
  */
-import { NativeModules, TurboModuleRegistry } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
+import NativePrayerWidget from './specs/NativePrayerWidget';
+import { nativeModule } from './nativeModule';
 
 /** One widget's sample, as `renderPreviews` hands it over. */
 export type WidgetPicture = { uri: string; width: number; height: number; kind: string };
@@ -129,7 +131,7 @@ export interface PrayerWidgetInterface {
  * (e.g. JS-only test environments).
  */
 export function getPrayerWidgetModule(): PrayerWidgetInterface | null {
-  const legacy = NativeModules.PrayerWidget as
+  const legacy = nativeModule(NativePrayerWidget, 'PrayerWidget') as
     | PrayerWidgetInterface
     | undefined;
   if (legacy?.setData) {

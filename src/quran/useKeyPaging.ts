@@ -28,7 +28,9 @@
  */
 import { useEffect, useMemo, useRef } from 'react';
 import type { MutableRefObject } from 'react';
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import { NativeEventEmitter } from 'react-native';
+import NativeMihrabKeyCommands from '../native/specs/NativeMihrabKeyCommands';
+import { nativeModule } from '../native/nativeModule';
 
 /** Turn a page. `dir` is READING direction: +1 is the next page of the book. */
 export type PageTurner = (dir: 1 | -1) => void;
@@ -70,7 +72,7 @@ export function useRegisterKeyPaging(
 
 type KeyCommandsModule = Record<string, unknown>;
 
-const Native = NativeModules.MihrabKeyCommands as
+const Native = nativeModule(NativeMihrabKeyCommands, 'MihrabKeyCommands') as
   | KeyCommandsModule
   | undefined;
 

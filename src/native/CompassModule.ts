@@ -14,7 +14,9 @@
  * rather than a no-op, so the platform branch lives here, once, instead
  * of at every call site.
  */
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativeCompassModule from './specs/NativeCompassModule';
+import { nativeModule } from './nativeModule';
 
 type NativeCompass = {
   startUpdates(latitude?: number, longitude?: number): void;
@@ -30,7 +32,7 @@ type NativeCompass = {
  */
 export type SensorsAccess = 'granted' | 'denied' | 'unknown';
 
-const Native = (NativeModules.CompassModule as NativeCompass | null) ?? null;
+const Native = (nativeModule(NativeCompassModule, 'CompassModule') as NativeCompass | null) ?? null;
 
 export interface CompassModuleInterface {
   /**
@@ -53,11 +55,9 @@ export interface CompassModuleInterface {
 export const CompassModule: CompassModuleInterface | null = Native
   ? {
       startUpdates(latitude: number, longitude: number) {
-        if (Platform.OS === 'android') {
-          Native.startUpdates(latitude, longitude);
-        } else {
-          Native.startUpdates();
-        }
+        // One contract for both platforms (specs/NativeCompassModule.ts):
+        // iOS corrects for declination itself and lets the place go by.
+        Native.startUpdates(latitude, longitude);
       },
       stopUpdates() {
         Native.stopUpdates();

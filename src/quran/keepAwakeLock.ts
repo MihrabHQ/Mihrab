@@ -18,8 +18,9 @@ import {
   activateKeepAwake,
   deactivateKeepAwake,
 } from '@sayem314/react-native-keep-awake';
-import { NativeModules } from 'react-native';
 import { useEffect } from 'react';
+import NativeMihrabKeepAwake from '../native/specs/NativeMihrabKeepAwake';
+import { nativeModule } from '../native/nativeModule';
 
 /**
  * WHAT THE LOCK ACTUALLY PULLS, which is not the same on every platform.
@@ -39,8 +40,7 @@ import { useEffect } from 'react';
  */
 type NativeKeepAwake = { activate(): void; deactivate(): void };
 
-const native = (NativeModules as { MihrabKeepAwake?: NativeKeepAwake })
-  .MihrabKeepAwake;
+const native = (nativeModule(NativeMihrabKeepAwake, 'MihrabKeepAwake') as NativeKeepAwake | undefined);
 
 function setAwake(on: boolean): void {
   if (native) {

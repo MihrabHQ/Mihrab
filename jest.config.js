@@ -8,6 +8,13 @@
 // means the same thing whatever shell starts it.
 process.env.NODE_ENV = 'test';
 
+// Our own modules' contracts, by name: a library's `./specs/Native…` (a
+// component of react-native-safe-area-context, say) is not ours to stand in for.
+const OUR_SPECS = require('fs')
+  .readdirSync(require('path').join(__dirname, 'src', 'native', 'specs'))
+  .filter(f => /^Native\w+\.ts$/.test(f))
+  .map(f => f.replace(/\.ts$/, ''));
+
 module.exports = {
   preset: '@react-native/jest-preset',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
@@ -24,6 +31,14 @@ module.exports = {
     '/__tests__/fixtures/',
   ],
   modulePathIgnorePatterns: ['/notifee_fork/'],
+  // The typed contracts of the native modules are "not there" in a test,
+  // and the wrappers fall back to `NativeModules.X` — jest/nativeSpecStandIn.js.
+  // (With the preset's own mappings: a key here replaces the preset's, it
+  // is not merged with it.)
+  moduleNameMapper: {
+    ...require('@react-native/jest-preset/jest-preset.js').moduleNameMapper,
+    [`/specs/(${OUR_SPECS.join('|')})$`]: '<rootDir>/jest/nativeSpecStandIn.js',
+  },
   // Bundled sounds — the drill's silent rests (src/quran/audio/rest.ts) —
   // are `require`d like images, and stand in for themselves the same way.
   // Merged with the preset's own transforms, not in place of them.

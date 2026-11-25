@@ -23,9 +23,10 @@
 import {
   DeviceEventEmitter,
   NativeEventEmitter,
-  NativeModules,
   Platform,
 } from 'react-native';
+import NativeWidgetQueueWatcher from './specs/NativeWidgetQueueWatcher';
+import { nativeModule } from './nativeModule';
 
 export const WIDGET_QUEUE_CHANGED_EVENT = 'MihrabWidgetQueueChanged';
 
@@ -59,7 +60,7 @@ export function onWidgetQueueChanged(onChange: () => void): () => void {
     };
   }
   if (Platform.OS !== 'ios') return () => {};
-  const mod = NativeModules.WidgetQueueWatcher;
+  const mod = nativeModule(NativeWidgetQueueWatcher, 'WidgetQueueWatcher');
   if (!mod) return () => {};
   try {
     const emitter = new NativeEventEmitter(mod);

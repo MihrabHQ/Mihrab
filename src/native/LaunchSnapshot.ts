@@ -14,9 +14,11 @@
  * Everything is a no-op on the Mac, on the web, and when the module is
  * missing (tests, an older native build).
  */
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { isMacCatalyst } from '../responsive/breakpoints';
 import { capturePoseHero, hasPoseHero, onPoseHeroChange } from '../boot/poseHero';
+import NativeMihrabLaunchSnapshot from './specs/NativeMihrabLaunchSnapshot';
+import { nativeModule } from './nativeModule';
 
 type Native = {
   setEligible(value: boolean): void;
@@ -45,7 +47,7 @@ type Native = {
 // was last dragged to, and a launch is not a moment anyone waits through.
 const native: Native | null =
   Platform.OS === 'android' || (Platform.OS === 'ios' && !isMacCatalyst)
-    ? ((NativeModules as { MihrabLaunchSnapshot?: Native }).MihrabLaunchSnapshot ?? null)
+    ? ((nativeModule(NativeMihrabLaunchSnapshot, 'MihrabLaunchSnapshot') as Native | undefined) ?? null)
     : null;
 
 let lastEligible: boolean | null = null;

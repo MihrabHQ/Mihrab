@@ -17,7 +17,9 @@
  * Both helpers degrade safely on iOS and on builds without the module.
  */
 
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativeSystemTheme from './specs/NativeSystemTheme';
+import { nativeModule } from './nativeModule';
 
 type SystemThemeNative = {
   restartApp?: () => void;
@@ -28,9 +30,7 @@ type SystemThemeNative = {
   buttonNavigationHeight?: () => number;
 };
 
-const native: SystemThemeNative | undefined = (
-  NativeModules as Record<string, SystemThemeNative | undefined>
-).SystemTheme;
+const native: SystemThemeNative | undefined = (nativeModule(NativeSystemTheme, 'SystemTheme') as SystemThemeNative | undefined);
 
 export function restartApp(): boolean {
   if (Platform.OS !== 'android' || !native?.restartApp) return false;

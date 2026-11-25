@@ -29,14 +29,16 @@
  * Everything here therefore reports what it COULD do rather than assuming
  * — a button that opens nothing is worse than no button.
  */
-import { Linking, NativeModules, Platform } from 'react-native';
+import { Linking, Platform } from 'react-native';
+import NativeCompassModule from '../native/specs/NativeCompassModule';
+import { nativeModule } from '../native/nativeModule';
 
 type CompassNative = {
   hasSystemCompass?: () => Promise<boolean>;
   openSystemCompass?: () => Promise<boolean>;
 };
 
-const Native = (NativeModules.CompassModule as CompassNative | null) ?? null;
+const Native = (nativeModule(NativeCompassModule, 'CompassModule') as CompassNative | null) ?? null;
 
 /**
  * Apple's Compass app. Undocumented, so it is probed rather than trusted:

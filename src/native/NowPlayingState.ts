@@ -12,13 +12,14 @@
  * PlaybackState itself, which track-player already publishes — so the
  * native module is iOS-only and this is a no-op there, and in tests.
  */
-import { NativeModules } from 'react-native';
+import NativeNowPlayingState from './specs/NativeNowPlayingState';
+import { nativeModule } from './nativeModule';
 
 export type NowPlayingPlaybackState = 'playing' | 'paused' | 'stopped';
 
 type Native = { setState(state: NowPlayingPlaybackState): void };
 
-const native = (NativeModules as { NowPlayingState?: Native }).NowPlayingState;
+const native = (nativeModule(NativeNowPlayingState, 'NowPlayingState') as Native | undefined);
 
 /** Whether the platform module is present (false on Android and in tests). */
 export const nowPlayingStateAvailable = native != null;

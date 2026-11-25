@@ -4,14 +4,15 @@
  * native modules say why. Absent on a build without it (tests, an older
  * native side), every call answers false.
  */
-import { NativeModules } from 'react-native';
+import NativeWordPlayer from './specs/NativeWordPlayer';
+import { nativeModule } from './nativeModule';
 
 type WordPlayerNative = {
   play(path: string, startMs: number, endMs: number): Promise<boolean>;
   stop(): Promise<boolean>;
 };
 
-const native = (NativeModules as { WordPlayer?: WordPlayerNative }).WordPlayer;
+const native = (nativeModule(NativeWordPlayer, 'WordPlayer') as WordPlayerNative | undefined);
 
 export const wordPlayerAvailable = native != null;
 

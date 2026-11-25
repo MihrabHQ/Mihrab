@@ -32,7 +32,9 @@
  * module object where the legacy bridge puts it, and a refresh is kicked
  * off at module load rather than waiting for a subscriber.
  */
-import { AppState, NativeModules, type AppStateStatus } from 'react-native';
+import { AppState, type AppStateStatus } from 'react-native';
+import NativeSystemClock from './specs/NativeSystemClock';
+import { nativeModule } from './nativeModule';
 
 type SystemClockNative = {
   is24Hour?: unknown;
@@ -43,9 +45,7 @@ type SystemClockNative = {
   readTimeZone?: () => Promise<{ zone?: unknown; offset?: unknown } | null>;
 };
 
-const native: SystemClockNative | undefined = (
-  NativeModules as Record<string, SystemClockNative | undefined>
-).SystemClock;
+const native: SystemClockNative | undefined = (nativeModule(NativeSystemClock, 'SystemClock') as SystemClockNative | undefined);
 
 function asBool(value: unknown): boolean | null {
   return typeof value === 'boolean' ? value : null;
