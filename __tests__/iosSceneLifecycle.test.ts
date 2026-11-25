@@ -61,7 +61,19 @@ describe('iOS scene life cycle', () => {
 
   it('hands a link that arrives while running to RCTLinkingManager', () => {
     expect(code).toMatch(/func scene\(_ scene: UIScene, openURLContexts/);
-    expect(code).toMatch(/RCTLinkingManager\.application\(/);
+    // By the scene's door. From React Native 0.88 the app delegate's
+    // (`RCTLinkingManager.application(_:open:options:)`) answers NO and does
+    // nothing in an app with a scene delegate: called from here, as it was,
+    // every link that found the app running was dropped.
+    expect(code).toMatch(/RCTLinkingManager\.scene\(scene, openURLContexts: URLContexts\)/);
+    expect(code).toMatch(/RCTLinkingManager\.scene\(scene, openURLContexts: connectionOptions\.urlContexts\)/);
+    expect(code).not.toMatch(/RCTLinkingManager\.application\(/);
+    // …and the library still has that door, and still shuts the other.
+    const rn = readFileSync(
+      path.join(__dirname, '..', 'node_modules/react-native/Libraries/LinkingIOS/RCTLinkingManager.mm'),
+      'utf8',
+    );
+    expect(rn).toMatch(/\+ \(void\)scene:\(UIScene \*\)scene openURLContexts:/);
   });
 
   it('is checked on the archived bundle before the App Store build is exported', () => {

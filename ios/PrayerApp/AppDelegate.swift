@@ -142,8 +142,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       self.window = window
       app.window = window
       window.makeKeyAndVisible()
-      if let url = connectionOptions.urlContexts.first?.url {
-        RCTLinkingManager.application(UIApplication.shared, open: url, options: [:])
+      if !connectionOptions.urlContexts.isEmpty {
+        RCTLinkingManager.scene(scene, openURLContexts: connectionOptions.urlContexts)
       }
       return
     }
@@ -179,14 +179,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   /// Hand `mihrab://…` to React Native's Linking module, which turns it into
   /// the `url` event React Navigation's linking config listens for.
+  ///
+  /// BY THE SCENE'S OWN DOOR. React Native 0.88 gave RCTLinkingManager one
+  /// (`scene:openURLContexts:`) and made the app delegate's
+  /// (`application:openURL:options:`) answer NO and do nothing in an app
+  /// that has a scene delegate — which this is. This method went on calling
+  /// the old one: every link that found the app already running was
+  /// accepted by the system and dropped, so a widget tap or a `mihrab://`
+  /// link changed nothing unless it also launched the app. Found on an
+  /// iPhone, with main installed over 2.39.0.
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    for context in URLContexts {
-      var options: [UIApplication.OpenURLOptionsKey: Any] = [:]
-      if let source = context.options.sourceApplication {
-        options[.sourceApplication] = source
-      }
-      RCTLinkingManager.application(UIApplication.shared, open: context.url, options: options)
-    }
+    RCTLinkingManager.scene(scene, openURLContexts: URLContexts)
   }
 
   /** Still on screen: the moment to keep it for the next launch's first frame. */
