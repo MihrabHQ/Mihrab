@@ -155,6 +155,77 @@ describe('iOS: each module is built against its contract', () => {
   });
 });
 
+describe('a method only one platform has', () => {
+  const { ANDROID_ONLY, IOS_ONLY } = require('../src/native/nativeModule') as {
+    ANDROID_ONLY: Record<string, string[]>;
+    IOS_ONLY: Record<string, string[]>;
+  };
+  const iosText = (name: string) => {
+    const mm = objc.find(o => o.text.includes(`Native${name}SpecJSI>(params)`));
+    const stem = mm ? mm.file.replace(/\.mm$/, '') : name;
+    const swiftFile = path.join(IOS, `${stem}.swift`);
+    return (mm ? mm.text : '') + (fs.existsSync(swiftFile) ? fs.readFileSync(swiftFile, 'utf8') : '');
+  };
+
+  it('is optional in the contract, and listed for the platform that has it — every one, and nothing else', () => {
+    for (const c of contracts) {
+      const listed = [...(ANDROID_ONLY[c.name] ?? []), ...(IOS_ONLY[c.name] ?? [])].sort();
+      expect(`${c.name}: ${listed.join(',')}`).toBe(`${c.name}: ${[...c.optional].sort().join(',')}`);
+    }
+    for (const name of [...Object.keys(ANDROID_ONLY), ...Object.keys(IOS_ONLY)]) {
+      expect(contracts.some(c => c.name === name)).toBe(true);
+    }
+  });
+
+  it('is implemented where the list says, and not where it says it is not', () => {
+    for (const [name, methods] of Object.entries(ANDROID_ONLY)) {
+      const kt = kotlin.find(k => new RegExp(`\\bNative${name}Spec\\(\\w+\\)`).test(k.text))!.text;
+      const ios = iosText(name);
+      for (const m of methods) {
+        expect(`${name}.${m} on Android: ${new RegExp(`override fun ${m}\\(`).test(kt)}`).toBe(`${name}.${m} on Android: true`);
+        expect(`${name}.${m} on iOS: ${new RegExp(`\\b${m}[:(]`).test(ios)}`).toBe(`${name}.${m} on iOS: false`);
+      }
+    }
+    for (const [name, methods] of Object.entries(IOS_ONLY)) {
+      const kt = kotlin.find(k => new RegExp(`\\bNative${name}Spec\\(\\w+\\)`).test(k.text))!.text;
+      const ios = iosText(name);
+      for (const m of methods) {
+        expect(`${name}.${m} on Android: ${new RegExp(`fun ${m}\\(`).test(kt)}`).toBe(`${name}.${m} on Android: false`);
+        expect(`${name}.${m} on iOS: ${new RegExp(`\\b${m}[:(\\]]|func ${m}\\(`).test(ios)}`).toBe(`${name}.${m} on iOS: true`);
+      }
+    }
+  });
+
+  it.each([
+    ['ios', 'SyncFolder', 'saveFile', 'pick'],
+    ['android', 'BackgroundLocation', 'takePending', 'status'],
+    ['android', 'PrayerWidget', 'setIosWidgetHighlightAppearance', 'setAndroidWidgetSky'],
+    ['ios', 'PrayerWidget', 'setAndroidWidgetSky', 'setIosWidgetHighlightAppearance'],
+  ])('on %s, %s.%s is not there for JavaScript, and %s is', (os, name, hidden, shown) => {
+    jest.resetModules();
+    const rn = require('react-native');
+    rn.Platform.OS = os;
+    const { nativeModule } = require('../src/native/nativeModule');
+    // A TurboModule hands over every method of its contract, on both platforms.
+    const typed = { [hidden]: () => 'no', [shown]: () => 'yes', addListener: () => {} };
+    const seen = nativeModule(typed, name);
+    expect(seen[hidden]).toBeUndefined();
+    expect(typeof seen[hidden]).toBe('undefined');
+    expect(hidden in seen).toBe(false);
+    expect(seen[hidden]?.()).toBeUndefined();
+    expect(seen[shown]()).toBe('yes');
+    expect(typeof seen.addListener).toBe('function');
+    // The same view each time, as the module itself was.
+    expect(nativeModule(typed, name)).toBe(seen);
+  });
+
+  it('a module with nothing to hide is handed over as it is', () => {
+    const { nativeModule } = require('../src/native/nativeModule');
+    const typed = { bytes: () => 1 };
+    expect(nativeModule(typed, 'SecureRandom')).toBe(typed);
+  });
+});
+
 describe('JavaScript', () => {
   it('reaches a module through its contract, never by name off NativeModules', () => {
     const offenders: string[] = [];
