@@ -219,6 +219,16 @@ describe('a method only one platform has', () => {
     expect(nativeModule(typed, name)).toBe(seen);
   });
 
+  it('the desktop and the browser are handed their own modules whole', () => {
+    jest.resetModules();
+    const rn = require('react-native');
+    rn.Platform.OS = 'web';
+    const { nativeModule } = require('../src/native/nativeModule');
+    const own = { saveFile: () => 1, takePending: () => 2 };
+    expect(nativeModule(own, 'SyncFolder')).toBe(own);
+    expect(nativeModule(own, 'BackgroundLocation')).toBe(own);
+  });
+
   it('a module with nothing to hide is handed over as it is', () => {
     const { nativeModule } = require('../src/native/nativeModule');
     const typed = { bytes: () => 1 };

@@ -33,7 +33,7 @@
  */
 import { NativeModules, Platform } from 'react-native';
 
-/** Methods only Android implements, by module. Hidden everywhere else. */
+/** Methods only Android implements, by module. Hidden on iOS. */
 export const ANDROID_ONLY: Record<string, readonly string[]> = {
   SystemClock: ['readNetworkCountryIso', 'readTimeZone'],
   SyncFolder: ['saveFile'],
@@ -59,7 +59,11 @@ const views = new Map<string, { of: object; view: object }>();
 
 /** `module` without the methods this platform does not implement. */
 function onThisPlatform(module: object, name: string): object {
-  const hidden = (Platform?.OS === 'android' ? IOS_ONLY : ANDROID_ONLY)[name];
+  // On the two platforms with contracts only. The desktop and the browser
+  // hand over modules of their own making (desktop/web/native), which have
+  // exactly the methods they have.
+  const os = Platform?.OS;
+  const hidden = os === 'android' ? IOS_ONLY[name] : os === 'ios' ? ANDROID_ONLY[name] : undefined;
   if (!hidden || hidden.length === 0) return module;
   const kept = views.get(name);
   if (kept && kept.of === module) return kept.view;
