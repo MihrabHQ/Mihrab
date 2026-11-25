@@ -156,6 +156,11 @@ class Catch extends React.Component<{ children: React.ReactNode; onError: (e: un
   }
 }
 
+// A screen's first render, with nothing transformed yet, is the whole of its
+// module graph through Babel: Today took over five seconds on CI's runner
+// and failed there on Jest's default, as did the reader.
+jest.setTimeout(120_000);
+
 describe('the tour', () => {
   beforeAll(() => {
     // The shared stand-in for the alerts module has no foreground events;
