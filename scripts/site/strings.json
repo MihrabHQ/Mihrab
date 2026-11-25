@@ -659,7 +659,7 @@
       "h2": "حتى الدقيقة المطبوعة",
       "lede": [
         "تحسب معظم تطبيقات الصلاة المواقيت بطريقة عامة، فتبتعد دقيقة أو أكثر عن الجدول الذي يتبعه مسجدك. وعند آخر وقت الفجر، وعند المغرب، وعند بدء الصيام، تلك الدقيقة هي التي يُعوَّل عليها.",
-        "لذلك يعيد محراب بناء طريقة كل جهة نفسها — زواياها واحتياطها وتقريبها — ويحسبها على هاتفك، ثم يقارن كل وقت بالجدول المنشور: كل مكان وكل يوم. ولا تُستعمل طريقة إلا إذا لم يخرج عنها وقت واحد."
+        "لذلك يعيد محراب بناء طريقة كل جهة نفسها — زواياها واحتياطها وتقريبها — ويحسبها على هاتفك، ثم يقارن كل وقت بالجدول المنشور: كل مكان وكل يوم. ولا تُستعمل طريقة إلا إذا لم يخالف الجدولَ منها وقتٌ واحد."
       ],
       "cards": [
         {
@@ -1045,7 +1045,7 @@
       "review": "native",
       "eyebrow": "Türkiye’de namaz vakitleri",
       "h2": "Diyanet’in takvimiyle, dakikası dakikasına",
-      "lede": "Çoğu namaz vakti uygulaması genel bir yöntemle hesaplar ve caminizin takip ettiği takvimden bir iki dakika sapar. Mihrab, Türkiye’de **Diyanet’in yayımladığı vakitlerle** eşleşir: Diyanet’in kendi hesaplama yöntemi telefonda uygulanır ve yayımlanan takvimlerle gün gün karşılaştırılır — {fig:diyanet.years} için kontrol edilen {fig:diyanet.timesCompact} vaktin {fig:diyanet.off} tanesi basılı dakikadan farklı.",
+      "lede": "Çoğu namaz vakti uygulaması genel bir yöntemle hesaplar ve caminizin takip ettiği takvimden bir iki dakika sapar. Mihrab, Türkiye’de **Diyanet’in yayımladığı vakitlerle** örtüşür: Diyanet’in kendi hesaplama yöntemi telefonda uygulanır ve yayımlanan takvimlerle gün gün karşılaştırılır — {fig:diyanet.years} için kontrol edilen {fig:diyanet.timesCompact} vaktin {fig:diyanet.off} tanesi basılı dakikadan farklı.",
       "cards": [
         {
           "h3": "Nasıl çalışır",
@@ -1080,7 +1080,7 @@
       "eyebrow": "Doğruluk",
       "h2": "Basılı dakikaya kadar",
       "lede": [
-        "Çoğu namaz uygulaması vakitleri genel bir yöntemle hesaplar ve caminizin izlediği takvimden bir dakika ya da daha fazla sapar. İmsakta, akşam namazında ve oruca başlarken önemli olan tam da o dakikadır.",
+        "Çoğu namaz uygulaması vakitleri genel bir yöntemle hesaplar ve caminizin izlediği takvimden bir dakika ya da daha fazla sapar. Sabah namazının son vaktinde, akşam namazında ve oruca başlarken önemli olan tam da o dakikadır.",
         "Bu yüzden Mihrab her kurumun kendi yöntemini — açılarını, temkin paylarını ve yuvarlamasını — yeniden kurar, telefonunuzda hesaplar ve her vakti yayımlanan takvimle karşılaştırır: her yer, her gün. Bir yöntem ancak hiçbir vakit sapmadığında kullanılır."
       ],
       "cards": [
@@ -3544,7 +3544,7 @@
       "h2": "До напечатанной минуты",
       "lede": [
         "Большинство приложений рассчитывают время намаза общим методом и расходятся на минуту и больше с расписанием, которому следует ваша мечеть. В конце фаджра, во время магриба и в начале поста важна именно эта минута.",
-        "Поэтому Mihrab воспроизводит собственный метод каждого ведомства — его углы, запасы и округление, — считает его на вашем телефоне и сверяет каждое время с опубликованным расписанием: каждое место, каждый день. Метод используется только тогда, когда не расходится ни одно время."
+        "Поэтому Mihrab воспроизводит собственный метод каждого ведомства — его углы, предохранительные поправки и округление, — считает его на вашем телефоне и сверяет каждое время с опубликованным расписанием: каждое место, каждый день. Метод используется только тогда, когда не расходится ни одно время."
       ],
       "cards": [
         {
@@ -4753,7 +4753,7 @@
       "h2": "精确到印出的那一分钟",
       "lede": [
         "多数礼拜应用用一种通用方法计算时间，结果与你的清真寺所依据的时间表相差一分钟或更多。在晨礼结束时、昏礼时和封斋开始时，要紧的正是这一分钟。",
-        "因此 Mihrab 重建每个机构自己的方法——它的角度、预留量和取整方式——在你的手机上计算，并把每一个时间与公布的时间表逐一核对：每个地点，每一天。只有没有任何时间出现偏差时，才会使用这种方法。"
+        "因此 Mihrab 重建每个机构自己的方法——它的角度、预留量和取整方式——在你的手机上计算，并把每一个时间与公布的时间表逐一核对：每个地点，每一天。只有没有任何时间出现偏差时，才会使用该方法。"
       ],
       "cards": [
         {
