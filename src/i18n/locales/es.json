@@ -17,7 +17,9 @@
     "fasting": "Ayuno",
     "today": "Hoy",
     "sync": "Sincronizar entre dispositivos",
-    "devices": "Dispositivos"
+    "devices": "Dispositivos",
+    "hadith": "Hadiz",
+    "dhikr": "Dhikr"
   },
   "a11y": {
     "openSettings": "Abrir configuración",
@@ -53,7 +55,8 @@
     "confirmDelete": "Toca otra vez para eliminar",
     "learnMore": "Más información",
     "dismiss": "Descartar",
-    "hide": "Ocultar"
+    "hide": "Ocultar",
+    "save": "Guardar"
   },
   "home": {
     "loadingPrayer": "Cargando tiempos de oración…",
@@ -467,7 +470,7 @@
     "sectionQuran": "Corán",
     "sectionQuranBlurb": "Lectura, traducción, tafsir",
     "sectionDownloads": "Descargas",
-    "sectionDownloadsBlurb": "Muṣḥaf, recitaciones, tafsir, almacenamiento",
+    "sectionDownloadsBlurb": "Muṣḥaf, recitaciones, tafsir, hadiz, almacenamiento",
     "sectionAbout": "Acerca de",
     "sectionAboutBlurb": "Versión, fuentes, licencias",
     "malikiRows": "Mostrarlos en las horas del día",
@@ -2038,7 +2041,11 @@
     "wordMeanings": "Significados en árabe de palabras difíciles",
     "surahHeaderFont": "Caligrafía de encabezados de sura",
     "recitationWholeSurah": "Recitaciones de suras completas (15): mp3quran.net · tiempos de aleyas ajustados al audio por Mihrab",
-    "transliteration": "Transliteraciones del Corán, generadas a partir del texto árabe; cotejadas con él aleya por aleya, {{n}} aleyas corregidas"
+    "transliteration": "Transliteraciones del Corán, generadas a partir del texto árabe; cotejadas con él aleya por aleya, {{n}} aleyas corregidas",
+    "groupHadith": "Hadiz",
+    "hadeethenc": "Textos de hadices, traducciones, explicaciones y enseñanzas, republicados sin modificar",
+    "nawawiArabic": "Los cuarenta hadices de an-Nawawi, texto árabe",
+    "openHadithData": "Los nueve libros de hadices, texto árabe"
   },
   "liveActivity": {
     "title": "Próxima oración",
@@ -2298,7 +2305,8 @@
       "dhikr": "Dhikr",
       "quran": "Corán",
       "settings": "Ajustes",
-      "location": "Ubicación"
+      "location": "Ubicación",
+      "hadith": "Hadiz"
     },
     "categoryHint": {
       "prayers": "Cada oración que has registrado, y tus notas",
@@ -2307,7 +2315,8 @@
       "dhikr": "Series de tasbih completadas",
       "quran": "Marcadores, ayat destacadas, planes de khatmah, última lectura, recitador y tafsir",
       "settings": "Apariencia, método de cálculo, notificaciones y widgets",
-      "location": "Lugares guardados y coordenadas"
+      "location": "Lugares guardados y coordenadas",
+      "hadith": "Hadices leídos, marcadores, tus notas y tu nivel"
     },
     "count": {
       "prayers": "Oraciones",
@@ -2315,7 +2324,8 @@
       "dhikr": "Días de dhikr",
       "sunnah": "Días de sunnah",
       "bookmarks": "Marcadores",
-      "khatmah": "Planes de khatmah"
+      "khatmah": "Planes de khatmah",
+      "hadith": "Hadices leídos"
     },
     "settingsRowHint": "Vincular otro dispositivo",
     "pairIntro": "La sincronización mantiene tu registro igual en todos tus dispositivos. Es de igual a igual (peer to peer): tus dispositivos intercambian archivos cifrados directamente entre sí, sin cuenta y sin ningún servidor nuestro, y solo tus propios dispositivos pueden leerlos.",
@@ -2790,5 +2800,188 @@
     "missedAgain_one": "↺ {{count}} fallada",
     "reciteMissedAgain": "Recitar de nuevo las {{count}} aleyas falladas",
     "reciteMissedAgain_one": "Recitar de nuevo la aleya fallada"
+  },
+  "hadith": {
+    "learn": "Aprender",
+    "browse": "Consultar",
+    "searchPlaceholder": "Buscar hadices, o {{example}}",
+    "searchExample": "Nawawi 14",
+    "searchScope": "Se busca en lo descargado en este dispositivo.",
+    "searchNeedsDownload": "Aún no hay nada descargado. Borra la búsqueda y descarga primero los hadices.",
+    "noResults": "No se encontró nada.",
+    "filterPlaceholder": "Filtrar esta lista",
+    "filterBookPlaceholder": "Busca en este libro o escribe un número",
+    "levelPrompt": "¿Desde dónde empiezas?",
+    "level": {
+      "starting": "Empezando con los hadices",
+      "building": "Ganando confianza",
+      "depth": "Estudio más profundo"
+    },
+    "welcomeTitle": "Descarga los hadices",
+    "welcomeBody": "Una sola descarga trae los hadices de HadeethEnc en tu idioma, cada uno con su significado y su explicación, y los Cuarenta de an-Nawawi. Después, todas las colecciones, los temas y la búsqueda funcionan sin conexión. Los nueve libros en árabe se descargan por separado.",
+    "continueReading": "Seguir leyendo",
+    "bookmarks": "Marcadores",
+    "noBookmarks": "Aún no hay marcadores. Toca la estrella bajo un hadiz para guardarlo aquí.",
+    "progress": "{{read}} de {{total}} leídos",
+    "markSetRead": "Marcar como ya leído",
+    "markSetUnread": "Desmarcar",
+    "completed": "Completados · {{count}}",
+    "topics": "Temas",
+    "entries": "Hadices: {{count}}",
+    "books": "Los libros",
+    "booksNote": "Las colecciones completas, en árabe, de Open-Hadith-Data. Cada una se descarga por separado.",
+    "onDevice": "Descargado",
+    "attribution": "Textos, traducciones y explicaciones: HadeethEnc.com. Los Cuarenta de an-Nawawi en árabe: fawazahmed0/hadith-api. Los nueve libros: Open-Hadith-Data (ODbL).",
+    "needsDownload": "Esta lista aún no está en tu dispositivo.",
+    "download": "Descargar",
+    "downloadSize": "Descargar · {{size}}",
+    "downloading": "Descargando…",
+    "downloadFailed": "La descarga no terminó. Comprueba tu conexión e inténtalo de nuevo.",
+    "downloadSourceNote": "Se descarga de la copia de Mihrab en GitHub o, si no se puede acceder a ella, de la fuente original. Elimínalo cuando quieras en Ajustes → Descargas.",
+    "notOnDevice": "Este hadiz no está en tu dispositivo. Ábrelo desde la pestaña Hadiz para descargarlo.",
+    "explanation": "Explicación",
+    "benefits": "Enseñanzas y beneficios",
+    "wordMeanings": "Significado de las palabras",
+    "fallbackNote": "Se muestra en inglés: este hadiz aún no se ha traducido a tu idioma.",
+    "arabicOnlyNote": "Este texto solo está disponible en árabe.",
+    "nawawiNumber": "Los Cuarenta de an-Nawawi · {{n}}",
+    "sourceHadeethenc": "Fuente: HadeethEnc.com",
+    "sourceNawawi": "Los cuarenta hadices de an-Nawawi (texto árabe)",
+    "sourceBook": "{{book}} · Open-Hadith-Data",
+    "markRead": "Marcar como leído",
+    "markUnread": "Marcar como no leído",
+    "readNext": "Marcar como leído y continuar",
+    "read": "Leído",
+    "bookmark": "Añadir marcador",
+    "removeBookmark": "Quitar marcador",
+    "addNote": "Añadir una nota",
+    "editNote": "Editar tu nota",
+    "yourNote": "Tu nota",
+    "notePlaceholder": "Escribe una reflexión, un recordatorio, dónde lo oíste…",
+    "share": "Compartir",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "previous": "Hadiz anterior",
+    "next": "Hadiz siguiente",
+    "set": {
+      "nawawi40": {
+        "title": "Los Cuarenta de an-Nawawi",
+        "blurb": "Los cuarenta y dos hadices que el imam an-Nawawi reunió como fundamentos de la religión."
+      },
+      "foundations": {
+        "title": "Fundamentos de la fe",
+        "blurb": "La fe, sus pilares y lo que pide al corazón."
+      },
+      "daily": {
+        "title": "La adoración diaria",
+        "blurb": "La purificación, la oración, el recuerdo de Allah y los pequeños actos de adoración del día."
+      },
+      "manners": {
+        "title": "Carácter y buenos modales",
+        "blurb": "Cómo el Profeta ﷺ enseñó a sus compañeros a hablar, tratar a los demás y comportarse."
+      },
+      "heart": {
+        "title": "Purificar el corazón",
+        "blurb": "La sinceridad, el arrepentimiento, la paciencia y la vida interior."
+      },
+      "family": {
+        "title": "Familia y vecinos",
+        "blurb": "Padres, parientes, cónyuges, hijos y quienes viven a nuestro lado."
+      },
+      "virtues": {
+        "title": "Virtudes de las obras",
+        "blurb": "La recompensa de las buenas obras y de quienes las hacen."
+      },
+      "creed": {
+        "title": "Credo",
+        "blurb": "La fe en Allah, Sus nombres y atributos, lo oculto y el Último Día."
+      },
+      "worship": {
+        "title": "La adoración en detalle",
+        "blurb": "Oración, ayuno, zakat y hajj: hadices con la explicación de los sabios."
+      },
+      "seerah": {
+        "title": "La vida del Profeta",
+        "blurb": "La Sira y la historia de los compañeros, a través de los hadices."
+      },
+      "book-bukhari": {
+        "title": "Sahih al-Bujari",
+        "blurb": "La colección completa, en árabe."
+      },
+      "book-muslim": {
+        "title": "Sahih Muslim",
+        "blurb": "La colección completa, en árabe."
+      }
+    },
+    "topic": {
+      "1": "El Corán y sus ciencias",
+      "2": "El hadiz y sus ciencias",
+      "3": "Credo",
+      "4": "Jurisprudencia",
+      "5": "Virtudes y buenos modales",
+      "6": "La invitación al islam",
+      "7": "Sira e historia"
+    },
+    "book": {
+      "bukhari": "Sahih al-Bujari",
+      "muslim": "Sahih Muslim",
+      "abudawud": "Sunan Abi Dawud",
+      "tirmidhi": "Jami' at-Tirmidhi",
+      "nasai": "Sunan an-Nasa'i",
+      "ibnmajah": "Sunan Ibn Majah",
+      "malik": "Al-Muwatta de Malik",
+      "darimi": "Sunan ad-Darimi",
+      "ahmad": "Musnad Ahmad"
+    },
+    "packStarter": "Colecciones iniciales",
+    "packCategories": "Índice de temas",
+    "packNawawi": "Los Cuarenta de an-Nawawi (árabe)",
+    "downloadsFooter": "Textos de hadices que descargaste desde la pestaña Hadiz. Elimina cualquiera y vuelve a descargarlo desde allí.",
+    "levelNote": "Esto solo decide qué se te sugiere primero. Nada queda bloqueado y puedes cambiarlo cuando quieras.",
+    "levelLine": "Sugerido para: {{level}}",
+    "change": "Cambiar",
+    "pickDirect": "Elige por tu cuenta",
+    "pickDirectNote": "Cualquier tema, o uno de los nueve libros.",
+    "allSets": "Todas las colecciones",
+    "allTopics": "Todos los temas",
+    "hub": {
+      "prayer": "Oración y purificación",
+      "fasting": "Ayuno",
+      "charity": "Zakat, caridad y bienes",
+      "hajj": "Hajj y Umrah",
+      "family": "Familia y padres",
+      "food": "Comida y bebida",
+      "character": "Carácter y palabra",
+      "etiquette": "Modales de cada día",
+      "supplications": "Súplicas y dhikr",
+      "heart": "El corazón y el arrepentimiento",
+      "faith": "Fe y credo",
+      "prophet": "La vida del Profeta ﷺ"
+    },
+    "rulingNote": "Un hadiz por sí solo no es un veredicto jurídico. Lo que se aplica en tu caso puede depender de otros textos y de cómo los entendieron los sabios. Si tu pregunta es qué debes hacer, consulta a un sabio cualificado o sigue tu escuela jurídica (madhhab).",
+    "filterTopicPlaceholder": "Buscar en este tema",
+    "filter": {
+      "all": "Todos",
+      "sahihayn": "al-Bujari o Muslim",
+      "books": "Los libros",
+      "topic": "Tema",
+      "clearTopic": "Quitar el tema: {{topic}}",
+      "grade": "Clasificación",
+      "sahih": "Sahih (auténtico)",
+      "hasan": "Hasan (bueno)",
+      "clearGrade": "Quitar la clasificación: {{grade}}",
+      "gradeNote": "Según la clasificación de HadeethEnc. Un hadiz que clasifica con alguna reserva no entra en ninguna de las dos y se encuentra sin este filtro."
+    },
+    "refHeading": "{{book}} · {{n}}",
+    "refNeedsBook": "{{book}} no está descargado. Ábrelo para descargarlo.",
+    "refNotFound": "No hay ningún hadiz con el número {{n}} en esta edición de {{book}}.",
+    "packAll": "Hadices y explicaciones",
+    "allHadith": "Todos los hadices",
+    "position": "{{n}} de {{total}}",
+    "report": "Informar de un problema con este hadiz",
+    "reportPrompt": "¿Qué está mal? (una palabra, la traducción, la clasificación, el número…)",
+    "arabicTag": "Árabe",
+    "refNeedsBookArabic": "{{book}} no está descargado y solo está en árabe. Ábrelo para descargarlo.",
+    "bookNeedsDownload": "Este libro solo está en árabe, sin traducción. Aún no está en tu dispositivo."
   }
 }

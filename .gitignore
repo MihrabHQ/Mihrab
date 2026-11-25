@@ -168,3 +168,6 @@ fastlane/screenshots/*/
 !fastlane/screenshots/ios/
 !fastlane/screenshots/ipad/
 !fastlane/screenshots/mac/
+
+# Hadith pack builder cache (scripts/hadith/build-packs.js)
+scripts/hadith/.cache/

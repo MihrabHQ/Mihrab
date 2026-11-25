@@ -21,7 +21,7 @@ import * as React from 'react';
 import { create } from 'react-test-renderer';
 import { act } from 'react';
 import { Path } from 'react-native-svg';
-import { TabSettingsIcon } from '../src/navigation/tabIcons';
+import { SettingsGearIcon } from '../src/theme/icons';
 
 /** The opening of Lucide's cog outline — the shared gear's own path. */
 const COG_PATH_PREFIX = 'M12.22 2h-.44';
@@ -32,13 +32,15 @@ type Renderer = ReturnType<typeof create>;
 async function renderIcon(color = '#123456', size = 24) {
   let tree!: Renderer;
   await act(async () => {
-    tree = create(<TabSettingsIcon color={color} size={size} />);
+    tree = create(<SettingsGearIcon color={color} size={size} />);
   });
   const ds = tree.root.findAllByType(Path).map(n => String(n.props.d ?? ''));
   return { tree, ds };
 }
 
-describe('the Settings tab icon', () => {
+// Settings left the tab bar for a cog on Today (`SettingsChip`); the
+// cog is still the one shared gear.
+describe('the Settings gear', () => {
   it('draws the same cog the header used to', async () => {
     const { tree, ds } = await renderIcon();
     expect(ds.some(d => d.startsWith(COG_PATH_PREFIX))).toBe(true);
@@ -78,5 +80,24 @@ describe('the Home header', () => {
 
   it('still carries the location chip — the one thing only it can say', () => {
     expect(source).toMatch(/<LocationChip/);
+  });
+});
+
+describe("Today's way into Settings", () => {
+  const chip = fs.readFileSync(
+    path.join(__dirname, '..', 'src', 'screens', 'home', 'SettingsChip.tsx'),
+    'utf-8',
+  );
+
+  it('draws the shared gear, not a glyph of its own', () => {
+    expect(chip).toMatch(/<SettingsGearIcon/);
+  });
+
+  it('is no longer a tab', () => {
+    const tabs = fs.readFileSync(
+      path.join(__dirname, '..', 'src', 'navigation', 'MainTabs.tsx'),
+      'utf-8',
+    );
+    expect(tabs).not.toMatch(/name="SettingsTab"/);
   });
 });

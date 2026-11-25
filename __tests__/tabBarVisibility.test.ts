@@ -127,14 +127,15 @@ describe('the bar can always be got back', () => {
   });
 
   it('every tab that scrolls is wired to move it', () => {
-    // Today, Quran, Duas, Log and Settings. Tasbih is deliberately absent:
-    // it is a counter, not a reading surface, and hiding the bar under a
-    // thumb that is tapping is the opposite of what was asked for.
+    // Today, Quran, Hadith, Duas (under Dhikr) and Log. Tasbih is
+    // deliberately absent: it is a counter, not a reading surface, and
+    // hiding the bar under a thumb that is tapping is the opposite of what
+    // was asked for. Settings is pushed over the tabs now, with no bar.
     for (const screen of [
       'QuranScreen',
+      'HadithScreen',
       'DuasScreen',
       'LogScreen',
-      'SettingsScreen',
     ]) {
       const src = readFileSync(
         path.join(__dirname, '..', 'src', 'screens', `${screen}.tsx`),

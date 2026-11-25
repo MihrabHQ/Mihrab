@@ -80,9 +80,16 @@ describe('SegmentedControl', () => {
       .findAllByProps({ accessibilityRole: 'radio' })
       .filter(n => typeof n.type === 'string');
     expect(radios).toHaveLength(3);
-    const filled = radios.filter(n => merged(n).backgroundColor === '#E8F0EC');
+    // The card, in the light: the surface furthest from the track. Not the
+    // light accent, which no theme sets apart from `controlBg`
+    // (segmentedControlVisible.test.ts).
+    const filled = radios.filter(n => merged(n).backgroundColor === '#FFFFFF');
     expect(filled).toHaveLength(1);
     expect(filled[0].props.accessibilityState.checked).toBe(true);
+    // And the label: the page's ink on the chosen one, muted on the rest.
+    const ink = (n: (typeof radios)[number]) => merged(n.findAllByType(Text)[0]).color;
+    expect(ink(filled[0])).toBe('#1A1814');
+    expect(radios.filter(n => ink(n) === '#6B6660')).toHaveLength(2);
   });
 });
 

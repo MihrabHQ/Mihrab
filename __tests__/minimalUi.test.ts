@@ -225,7 +225,8 @@ describe('the minimal Today', () => {
     // Animated, for the handler's native event (a plain View crashes on it).
     expect(card).toContain('const HeroWrap = Animated.View;');
     expect(card).toContain("if (e.nativeEvent.actionName === 'activate') onOpenTimes();");
-    expect(card).toContain("topRow={fullBleed ? (minimal ? { renderHelp } : { renderLocation, renderQibla, renderHelp }) : undefined}");
+    // The cog rides in the same row on both faces: Settings is no longer a tab.
+    expect(card).toContain("topRow={fullBleed ? (minimal ? { renderHelp, renderSettings } : { renderLocation, renderQibla, renderHelp, renderSettings }) : undefined}");
     expect(card).toContain('<TodayTimesSheet');
   });
 

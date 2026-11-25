@@ -41,8 +41,8 @@ const tabs = (name: string, params?: object) => ({
   name: 'Home',
   key: 'home',
   state: {
-    index: ['TodayTab', 'QuranTab', 'TasbihTab', 'DuasTab', 'LogTab', 'SettingsTab'].indexOf(name),
-    routes: ['TodayTab', 'QuranTab', 'TasbihTab', 'DuasTab', 'LogTab', 'SettingsTab'].map(n =>
+    index: ['TodayTab', 'QuranTab', 'HadithTab', 'DhikrTab', 'LogTab'].indexOf(name),
+    routes: ['TodayTab', 'QuranTab', 'HadithTab', 'DhikrTab', 'LogTab'].map(n =>
       n === name && params ? { name: n, params } : { name: n },
     ),
   },
@@ -61,9 +61,17 @@ describe('the place a state stands for', () => {
       tab: 'QuranTab',
       stack: [{ name: 'QuranSurah', params: { surahNumber: 20, initialPage: 316 } }],
     });
-    expect(placeOf(root(tabs('SettingsTab'), { name: 'SettingsNotifications' }))).toEqual({
-      tab: 'SettingsTab',
-      stack: [{ name: 'SettingsNotifications' }],
+    // Settings is pushed over Today now, not a tab of its own.
+    expect(placeOf(root(tabs('TodayTab'), { name: 'Settings' }, { name: 'SettingsNotifications' }))).toEqual({
+      tab: 'TodayTab',
+      stack: [{ name: 'Settings' }, { name: 'SettingsNotifications' }],
+    });
+    expect(placeOf(root(tabs('HadithTab'), { name: 'HadithList', params: { list: 'set:nawawi40' } }, { name: 'HadithReader', params: { id: 'h:5456', list: 'set:nawawi40' } }))).toEqual({
+      tab: 'HadithTab',
+      stack: [
+        { name: 'HadithList', params: { list: 'set:nawawi40' } },
+        { name: 'HadithReader', params: { id: 'h:5456', list: 'set:nawawi40' } },
+      ],
     });
   });
 
@@ -72,9 +80,9 @@ describe('the place a state stands for', () => {
   });
 
   it('keeps a Du\'as category, and no parameter it was not told of', () => {
-    expect(placeOf(root(tabs('DuasTab', { category: 'evening', other: 1 })))).toEqual({
-      tab: 'DuasTab',
-      tabParams: { category: 'evening' },
+    expect(placeOf(root(tabs('DhikrTab', { view: 'duas', category: 'evening', other: 1 })))).toEqual({
+      tab: 'DhikrTab',
+      tabParams: { view: 'duas', category: 'evening' },
       stack: [],
     });
     expect(

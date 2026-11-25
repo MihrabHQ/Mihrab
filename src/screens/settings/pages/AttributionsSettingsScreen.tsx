@@ -225,6 +225,31 @@ export function AttributionsSettingsScreen() {
     },
   ];
 
+  // Downloaded on request, never bundled (hadith/packs.ts).
+  const hadith: Credit[] = [
+    {
+      label: t('attributions.hadeethenc', {
+        defaultValue: 'Hadith texts, translations, explanations and lessons, republished unmodified',
+      }),
+      sub: 'Encyclopedia of Translated Prophetic Hadiths · HadeethEnc.com',
+      url: 'https://hadeethenc.com/',
+    },
+    {
+      label: t('attributions.nawawiArabic', {
+        defaultValue: "an-Nawawi's Forty Hadith, Arabic text",
+      }),
+      sub: 'fawazahmed0/hadith-api · via jsDelivr',
+      url: 'https://github.com/fawazahmed0/hadith-api',
+    },
+    {
+      label: t('attributions.openHadithData', {
+        defaultValue: 'The nine books of hadith, Arabic text',
+      }),
+      sub: 'mhashim6/Open-Hadith-Data · ODbL 1.0 (database), DbCL 1.0 (contents)',
+      url: 'https://github.com/mhashim6/Open-Hadith-Data',
+    },
+  ];
+
   const typefaces: Credit[] = [
     {
       label: t('attributions.amiriFonts', {
@@ -271,6 +296,11 @@ export function AttributionsSettingsScreen() {
       <SettingsGroup
         title={t('attributions.groupMeaning', 'Translation and tafsir')}>
         {meaning.map(c => (
+          <CreditRow key={c.url + c.label} credit={c} />
+        ))}
+      </SettingsGroup>
+      <SettingsGroup title={t('attributions.groupHadith', 'Hadith')}>
+        {hadith.map(c => (
           <CreditRow key={c.url + c.label} credit={c} />
         ))}
       </SettingsGroup>

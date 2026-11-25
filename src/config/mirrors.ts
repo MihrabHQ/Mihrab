@@ -25,7 +25,23 @@ export const MIRROR_TAGS = {
    * not be deleted while those versions are out there.
    */
   legacyTafsir: 'data-tafsir-v1',
+  /**
+   * The Hadith packs (`scripts/hadith/build-packs.js`, published by
+   * `scripts/hadith/upload-packs.sh`): every pack plus `manifest.json`,
+   * an asset each, named by `hadithAssetName`. The shape of a pack is
+   * read by installed apps — a change that breaks it is a new tag.
+   */
+  hadith: 'data-hadith-v1',
 } as const;
+
+/**
+ * A pack key's asset name. Release assets cannot hold a `/`, so the key's
+ * path separators become dots: `henc/cat-1/sv` → `henc.cat-1.sv.json`.
+ * No key segment contains a dot, so the mapping is one to one.
+ */
+export function hadithAssetName(key: string): string {
+  return `${key.split('/').join('.')}.json`;
+}
 
 /**
  * The tag that mirrors ONE text edition, a surah per asset.

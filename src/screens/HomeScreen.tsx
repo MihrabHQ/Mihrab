@@ -106,6 +106,7 @@ import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { HomeStatusBand } from './home/HomeStatusBand';
 import { setVerticalBarActions, useVerticalBar, useVerticalBarInsets } from '../native/VerticalBar';
 import { QiblaChip } from './home/QiblaChip';
+import { SettingsChip } from './home/SettingsChip';
 import { rescheduleEndOfDayLogReminders } from '../notifications/endOfDayLog';
 import { windowEdges } from '../notifications/snoozeWindow';
 import {
@@ -1711,6 +1712,8 @@ export function HomeScreen() {
     () => navigation.navigate('SettingsHelpMihrab'),
     [navigation],
   );
+  // The cog at the end of the hero's top row: Settings is not a tab.
+  const handleOpenSettings = useCallback(() => navigation.navigate('Settings'), [navigation]);
 
   /**
    * The Qibla bearing for wherever we are, for the hero chip.
@@ -1767,10 +1770,11 @@ export function HomeScreen() {
             }
           />
           <QiblaChip bearing={qiblaBearing} onPress={handleOpenQibla} ink={columnInk} column />
+          <SettingsChip onPress={handleOpenSettings} ink={columnInk} column />
         </>,
       );
       return () => setVerticalBarActions(null);
-    }, [vbar, columnInk, navigation, qiblaBearing, handleOpenQibla]),
+    }, [vbar, columnInk, navigation, qiblaBearing, handleOpenQibla, handleOpenSettings]),
   );
   const handleOpenQuran = useCallback(
     // The Quran is a TAB now, not a pushed page — jump to it rather than
@@ -2070,6 +2074,7 @@ export function HomeScreen() {
             qiblaBearing={qiblaBearing}
             onOpenQibla={handleOpenQibla}
             onHelpMihrab={settings.showHelpMihrabOnHome ? handleOpenHelpMihrab : undefined}
+            onOpenSettings={handleOpenSettings}
             minimal={minimal}
             footer={minimalFooter}
             footInset={tabBarInset}

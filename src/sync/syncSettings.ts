@@ -131,6 +131,7 @@ export function defaultSyncSelection(): SyncSelection {
     dhikr: true,
     sunnah: true,
     quran: true,
+    hadith: true,
     settings: false,
     location: false,
   };

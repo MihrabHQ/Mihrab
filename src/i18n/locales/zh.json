@@ -17,7 +17,9 @@
     "fasting": "斋戒",
     "today": "今天",
     "sync": "在设备之间同步",
-    "devices": "设备"
+    "devices": "设备",
+    "hadith": "圣训",
+    "dhikr": "赞念"
   },
   "a11y": {
     "openSettings": "打开设置",
@@ -53,7 +55,8 @@
     "confirmDelete": "再次点按以删除",
     "learnMore": "了解更多",
     "dismiss": "关闭",
-    "hide": "隐藏"
+    "hide": "隐藏",
+    "save": "保存"
   },
   "home": {
     "loadingPrayer": "正在加载祈祷时间...",
@@ -466,7 +469,7 @@
     "sectionQuran": "《古兰经》",
     "sectionQuranBlurb": "阅读、译文、经注",
     "sectionDownloads": "下载",
-    "sectionDownloadsBlurb": "经卷、诵读、经注、存储",
+    "sectionDownloadsBlurb": "经卷、诵读、经注、圣训、存储",
     "sectionAbout": "关于",
     "sectionAboutBlurb": "版本、来源、许可",
     "malikiRows": "在当天的时间中显示",
@@ -2037,7 +2040,11 @@
     "wordMeanings": "较难词语的阿拉伯语释义",
     "surahHeaderFont": "章名书法",
     "recitationWholeSurah": "整章诵读（15 位）：mp3quran.net · 经文时间由 Mihrab 与音频对齐",
-    "transliteration": "《古兰经》音译，由阿拉伯文原文生成；已逐节与原文核对，更正 {{n}} 节"
+    "transliteration": "《古兰经》音译，由阿拉伯文原文生成；已逐节与原文核对，更正 {{n}} 节",
+    "groupHadith": "圣训",
+    "hadeethenc": "圣训原文、译文、讲解与教益，未经改动转载",
+    "nawawiArabic": "《奈瓦维四十段圣训》，阿拉伯文原文",
+    "openHadithData": "九部圣训典籍，阿拉伯文原文"
   },
   "liveActivity": {
     "title": "下一次礼拜",
@@ -2297,7 +2304,8 @@
       "dhikr": "赞念",
       "quran": "古兰经",
       "settings": "设置",
-      "location": "位置"
+      "location": "位置",
+      "hadith": "圣训"
     },
     "categoryHint": {
       "prayers": "你记录过的每一番礼拜，以及你的笔记",
@@ -2306,7 +2314,8 @@
       "dhikr": "已完成的赞念轮次",
       "quran": "书签、收藏的经文、通读计划、上次读到的位置、诵读者和经注",
       "settings": "外观、计算方法、通知和小组件",
-      "location": "已保存的地点和坐标"
+      "location": "已保存的地点和坐标",
+      "hadith": "已读圣训、书签、你的笔记和你的程度"
     },
     "count": {
       "prayers": "礼拜",
@@ -2314,7 +2323,8 @@
       "dhikr": "赞念天数",
       "sunnah": "圣行天数",
       "bookmarks": "书签",
-      "khatmah": "通读计划"
+      "khatmah": "通读计划",
+      "hadith": "已读圣训"
     },
     "settingsRowHint": "配对另一台设备",
     "pairIntro": "同步让你的记录在每台设备上保持一致。它采用点对点方式：你的设备之间直接交换加密文件，无需账号，也没有我们的服务器，只有你自己的设备才能读取。",
@@ -2789,5 +2799,188 @@
     "missedAgain_one": "↺ {{count}} 处出错",
     "reciteMissedAgain": "重新背诵出错的 {{count}} 节",
     "reciteMissedAgain_one": "重新背诵出错的那一节"
+  },
+  "hadith": {
+    "learn": "学习",
+    "browse": "查阅",
+    "searchPlaceholder": "搜索圣训，或{{example}}",
+    "searchExample": "奈瓦维 14",
+    "searchScope": "正在搜索此设备上已下载的内容。",
+    "searchNeedsDownload": "尚未下载任何内容。请清除搜索内容，先下载圣训。",
+    "noResults": "未找到任何内容。",
+    "filterPlaceholder": "筛选此列表",
+    "filterBookPlaceholder": "在本书中搜索，或输入编号",
+    "levelPrompt": "你从哪里开始？",
+    "level": {
+      "starting": "初识圣训",
+      "building": "渐渐熟悉",
+      "depth": "深入学习"
+    },
+    "welcomeTitle": "下载圣训",
+    "welcomeBody": "一次下载，即可获得 HadeethEnc 提供的你所用语言的圣训，每段都附有释义和讲解，另含《奈瓦维四十段圣训》。此后，所有合集、主题和搜索均可离线使用。九部阿拉伯文典籍需分别单独下载。",
+    "continueReading": "继续阅读",
+    "bookmarks": "书签",
+    "noBookmarks": "还没有书签。点按圣训下方的星标，即可将其保存在这里。",
+    "progress": "已读 {{read}} / {{total}}",
+    "markSetRead": "标记为已读过",
+    "markSetUnread": "取消标记",
+    "completed": "已完成 · {{count}}",
+    "topics": "主题",
+    "entries": "{{count}} 段圣训",
+    "books": "典籍",
+    "booksNote": "完整的阿拉伯文合集，来自 Open-Hadith-Data。每部需单独下载。",
+    "onDevice": "已下载",
+    "attribution": "原文、译文和讲解：HadeethEnc.com。阿拉伯文《奈瓦维四十段圣训》：fawazahmed0/hadith-api。九部典籍：Open-Hadith-Data (ODbL)。",
+    "needsDownload": "此列表尚未保存在你的设备上。",
+    "download": "下载",
+    "downloadSize": "下载 · {{size}}",
+    "downloading": "正在下载…",
+    "downloadFailed": "下载未完成。请检查网络连接后重试。",
+    "downloadSourceNote": "从 Mihrab 在 GitHub 上的副本下载；若无法访问，则从原始来源下载。可随时在“设置 → 下载”中删除。",
+    "notOnDevice": "此段圣训不在你的设备上。请从“圣训”标签页打开以下载。",
+    "explanation": "讲解",
+    "benefits": "教益",
+    "wordMeanings": "词义",
+    "fallbackNote": "以英文显示：这段圣训尚未译成你的语言。",
+    "arabicOnlyNote": "此文本仅有阿拉伯文版本。",
+    "nawawiNumber": "《奈瓦维四十段圣训》 · {{n}}",
+    "sourceHadeethenc": "来源：HadeethEnc.com",
+    "sourceNawawi": "《奈瓦维四十段圣训》（阿拉伯文原文）",
+    "sourceBook": "{{book}} · Open-Hadith-Data",
+    "markRead": "标记为已读",
+    "markUnread": "标记为未读",
+    "readNext": "标记为已读并继续",
+    "read": "已读",
+    "bookmark": "添加书签",
+    "removeBookmark": "移除书签",
+    "addNote": "添加笔记",
+    "editNote": "编辑笔记",
+    "yourNote": "你的笔记",
+    "notePlaceholder": "写下感悟、提醒，或你在哪里听到的…",
+    "share": "分享",
+    "copy": "复制",
+    "copied": "已复制",
+    "previous": "上一段圣训",
+    "next": "下一段圣训",
+    "set": {
+      "nawawi40": {
+        "title": "《奈瓦维四十段圣训》",
+        "blurb": "奈瓦维伊玛目辑录的四十二段圣训，是宗教的根基。"
+      },
+      "foundations": {
+        "title": "信仰的根基",
+        "blurb": "信仰、信仰的要素，以及它对内心的要求。"
+      },
+      "daily": {
+        "title": "日常功修",
+        "blurb": "洁净、礼拜、赞念，以及一天中的细小功修。"
+      },
+      "manners": {
+        "title": "品德与礼仪",
+        "blurb": "先知ﷺ如何教导圣门弟子言谈、待人和举止。"
+      },
+      "heart": {
+        "title": "净化心灵",
+        "blurb": "真诚、忏悔、坚忍与内心生活。"
+      },
+      "family": {
+        "title": "家庭与邻里",
+        "blurb": "父母、亲属、配偶、子女，以及住在我们身边的人。"
+      },
+      "virtues": {
+        "title": "善功的尊贵",
+        "blurb": "善行的回赐，以及行善之人的回赐。"
+      },
+      "creed": {
+        "title": "认主学",
+        "blurb": "信仰真主及其尊名与属性、幽玄之事和末日。"
+      },
+      "worship": {
+        "title": "功修详解",
+        "blurb": "礼拜、斋戒、天课与朝觐——附学者讲解的圣训。"
+      },
+      "seerah": {
+        "title": "先知生平",
+        "blurb": "通过圣训了解先知传记与圣门弟子的历史。"
+      },
+      "book-bukhari": {
+        "title": "《布哈里圣训实录》",
+        "blurb": "阿拉伯文完整合集。"
+      },
+      "book-muslim": {
+        "title": "《穆斯林圣训实录》",
+        "blurb": "阿拉伯文完整合集。"
+      }
+    },
+    "topic": {
+      "1": "古兰经及古兰学",
+      "2": "圣训及圣训学",
+      "3": "认主学",
+      "4": "教法学",
+      "5": "美德与礼仪",
+      "6": "伊斯兰宣教",
+      "7": "先知传记与历史"
+    },
+    "book": {
+      "bukhari": "《布哈里圣训实录》",
+      "muslim": "《穆斯林圣训实录》",
+      "abudawud": "《艾布·达乌德圣训集》",
+      "tirmidhi": "《提尔密济圣训集》",
+      "nasai": "《奈萨仪圣训集》",
+      "ibnmajah": "《伊本·马哲圣训集》",
+      "malik": "《马立克穆宛塔圣训集》",
+      "darimi": "《达里米圣训集》",
+      "ahmad": "《艾哈迈德穆斯奈德圣训集》"
+    },
+    "packStarter": "入门合集",
+    "packCategories": "主题索引",
+    "packNawawi": "《奈瓦维四十段圣训》（阿拉伯文）",
+    "downloadsFooter": "你从“圣训”标签页下载的圣训文本。可删除其中任意一项，再从那里重新下载。",
+    "levelNote": "这只决定先向你推荐什么。没有任何内容被锁定，你可以随时更改。",
+    "levelLine": "推荐依据：{{level}}",
+    "change": "更改",
+    "pickDirect": "自行选择",
+    "pickDirectNote": "任一主题，或九部典籍之一。",
+    "allSets": "全部合集",
+    "allTopics": "全部主题",
+    "hub": {
+      "prayer": "礼拜与洁净",
+      "fasting": "斋戒",
+      "charity": "天课、施舍与财产",
+      "hajj": "朝觐与副朝",
+      "family": "家庭与父母",
+      "food": "饮食",
+      "character": "品德与言谈",
+      "etiquette": "日常礼仪",
+      "supplications": "祈祷与赞念",
+      "heart": "心灵与忏悔",
+      "faith": "信仰与认主学",
+      "prophet": "先知ﷺ生平"
+    },
+    "rulingNote": "单凭一段圣训，并不等于教法裁决。什么适用于你，可能还取决于其他经训，以及学者们对它们的理解。若想知道该怎么做，请请教有资格的学者，或遵循你的教法学派（麦兹海布）。",
+    "filterTopicPlaceholder": "在此主题中搜索",
+    "filter": {
+      "all": "全部",
+      "sahihayn": "布哈里或穆斯林辑录",
+      "books": "典籍",
+      "topic": "主题",
+      "clearTopic": "移除主题：{{topic}}",
+      "grade": "等级",
+      "sahih": "健全（萨希赫）",
+      "hasan": "良好（哈桑）",
+      "clearGrade": "移除等级：{{grade}}",
+      "gradeNote": "依 HadeethEnc 的评定。它附带保留意见评定的圣训不属于这两类，不用此筛选即可找到。"
+    },
+    "refHeading": "{{book}} · {{n}}",
+    "refNeedsBook": "{{book}}尚未下载。打开即可下载。",
+    "refNotFound": "此版本的{{book}}中没有第 {{n}} 段圣训。",
+    "packAll": "圣训与讲解",
+    "allHadith": "全部圣训",
+    "position": "第 {{n}} 段，共 {{total}} 段",
+    "report": "报告这段圣训的问题",
+    "reportPrompt": "哪里有误？（某个词、译文、等级、编号……）",
+    "arabicTag": "阿拉伯文",
+    "refNeedsBookArabic": "{{book}}尚未下载，且仅有阿拉伯文。打开即可下载。",
+    "bookNeedsDownload": "这部经典仅有阿拉伯文，没有译文。它尚未保存在你的设备上。"
   }
 }

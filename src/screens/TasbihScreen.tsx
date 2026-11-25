@@ -1,7 +1,7 @@
 // hover-ok: list-row / settings-row / sheet pressables. Hover-state
 // treatment would visually noise these dense surfaces; the touch
 // feedback (pressed opacity / ripple) is the right affordance here.
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { HostInstance } from 'react-native';
 import {
   Pressable,
@@ -64,7 +64,7 @@ import { solidColor } from '../theme/appPalette';
  * open-ended dhikr (`unboundedAfterTarget`) the cap is hidden and counting
  * continues.
  */
-export function TasbihScreen() {
+export function TasbihScreen({ header }: { header?: ReactNode } = {}) {
   // Subscribe to width changes so future master-detail layouts pick up
   // the new breakpoint without a forced remount. iPad/Mac (#33) baseline.
   const tasbihWide = useBreakpoint() !== 'compact';
@@ -120,9 +120,10 @@ export function TasbihScreen() {
       if (Number.isFinite(y)) setRootTop(prev => (prev === y ? prev : y));
     });
   }, []);
+  const [headerH, setHeaderH] = useState(0);
   const upperH =
     tabletop && rootTop != null
-      ? tabletop.top - rootTop - pageTop - SPACING.lg - SPACING.md
+      ? tabletop.top - rootTop - pageTop - SPACING.lg - SPACING.md - (header ? headerH + SPACING.lg : 0)
       : null;
   const split = upperH != null && upperH >= 220 ? upperH : null;
 
@@ -329,6 +330,9 @@ export function TasbihScreen() {
           paddingBottom: tabBarInset,
         },
       ]}>
+      {header ? (
+        <View onLayout={e => setHeaderH(e.nativeEvent.layout.height)}>{header}</View>
+      ) : null}
       {split != null && tabletop ? (
         <>
           <View style={[styles.upright, { height: split }]}>

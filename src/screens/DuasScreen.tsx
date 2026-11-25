@@ -1,7 +1,7 @@
 // hover-ok: list-row / settings-row / sheet pressables. Hover-state
 // treatment would visually noise these dense surfaces; the touch
 // feedback (pressed opacity / ripple) is the right affordance here.
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -117,6 +117,8 @@ export function surahBody(
 type DuasScreenProps = {
   /** `mihrab://duas/evening` arrives here — #39. */
   route?: { params?: { category?: string } };
+  /** Over the index only: the Dhikr tab's switcher. A category is a page of its own. */
+  header?: ReactNode;
   navigation?: {
     setParams?: (params: { category?: string }) => void;
     /** Returns its own unsubscribe, which is what the effect cleans up. */
@@ -124,7 +126,7 @@ type DuasScreenProps = {
   };
 };
 
-export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
+export function DuasScreen({ route, navigation, header }: DuasScreenProps = {}) {
   // Subscribe to width changes so future master-detail layouts pick up
   // the new breakpoint without a forced remount. iPad/Mac (#33) baseline.
   useBreakpoint();
@@ -483,6 +485,7 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
             pass-through on a phone and only grows its inner column on a
             tablet or a Mac. Same fix as LogScreen; see duaCardSpacing. */}
         <CenteredColumn innerStyle={styles.stack} style={styles.stack}>
+          {selected === null ? header : null}
           {selected === null
             ? /* ── THE INDEX ────────────────────────────────────────────
                Twenty-one categories in five groups, each group one card

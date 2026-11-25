@@ -17,7 +17,9 @@
     "fasting": "Fasting",
     "today": "Today",
     "sync": "Sync between devices",
-    "devices": "Devices"
+    "devices": "Devices",
+    "hadith": "Hadith",
+    "dhikr": "Dhikr"
   },
   "a11y": {
     "openSettings": "Open settings",
@@ -53,7 +55,8 @@
     "confirmDelete": "Tap again to delete",
     "learnMore": "Learn more",
     "dismiss": "Dismiss",
-    "hide": "Hide"
+    "hide": "Hide",
+    "save": "Save"
   },
   "home": {
     "loadingPrayer": "Loading prayer times…",
@@ -466,7 +469,7 @@
     "sectionQuran": "Quran",
     "sectionQuranBlurb": "Reading, translation, tafsir",
     "sectionDownloads": "Downloads",
-    "sectionDownloadsBlurb": "Mushaf, recitations, tafsir, storage",
+    "sectionDownloadsBlurb": "Mushaf, recitations, tafsir, hadith, storage",
     "sectionAbout": "About",
     "sectionAboutBlurb": "Version, sources, licences",
     "malikiRows": "Show them in the day’s times",
@@ -2037,7 +2040,11 @@
     "wordMeanings": "Arabic meanings of harder words",
     "surahHeaderFont": "Surah-header calligraphy",
     "recitationWholeSurah": "Whole-surah recitations (15): mp3quran.net · ayah timings aligned to the audio by Mihrab",
-    "transliteration": "Qur’an transliterations, generated from the Arabic text; checked against it ayah by ayah, {{n}} ayahs corrected"
+    "transliteration": "Qur’an transliterations, generated from the Arabic text; checked against it ayah by ayah, {{n}} ayahs corrected",
+    "groupHadith": "Hadith",
+    "hadeethenc": "Hadith texts, translations, explanations and lessons, republished unmodified",
+    "nawawiArabic": "an-Nawawi's Forty Hadith, Arabic text",
+    "openHadithData": "The nine books of hadith, Arabic text"
   },
   "liveActivity": {
     "title": "Next prayer",
@@ -2297,7 +2304,8 @@
       "dhikr": "Dhikr",
       "quran": "Quran",
       "settings": "Settings",
-      "location": "Location"
+      "location": "Location",
+      "hadith": "Hadith"
     },
     "categoryHint": {
       "prayers": "Every prayer you have logged, and your notes",
@@ -2306,7 +2314,8 @@
       "dhikr": "Completed tasbih sets",
       "quran": "Bookmarks, starred ayat, khatmah plans, last read, reciter and tafsir",
       "settings": "Appearance, calculation method, notifications and widgets",
-      "location": "Saved places and coordinates"
+      "location": "Saved places and coordinates",
+      "hadith": "Hadith read, bookmarks, your notes and your level"
     },
     "count": {
       "prayers": "Prayers",
@@ -2314,7 +2323,8 @@
       "dhikr": "Dhikr days",
       "sunnah": "Sunnah days",
       "bookmarks": "Bookmarks",
-      "khatmah": "Khatmah plans"
+      "khatmah": "Khatmah plans",
+      "hadith": "Hadith read"
     },
     "settingsRowHint": "Pair another device",
     "pairIntro": "Sync keeps your record the same on every device you use. It is peer to peer: your devices exchange encrypted files with each other, with no account and no server of ours, and only your own devices can read them.",
@@ -2789,5 +2799,188 @@
     "missedAgain_one": "↺ {{count}} missed",
     "reciteMissedAgain": "Recite the {{count}} missed ayahs again",
     "reciteMissedAgain_one": "Recite the missed ayah again"
+  },
+  "hadith": {
+    "learn": "Learn",
+    "browse": "Look up",
+    "searchPlaceholder": "Search hadith, or {{example}}",
+    "searchExample": "Nawawi 14",
+    "searchScope": "Searching what is downloaded on this device.",
+    "searchNeedsDownload": "Nothing is downloaded yet. Clear the search and download the hadith first.",
+    "noResults": "Nothing found.",
+    "filterPlaceholder": "Filter this list",
+    "filterBookPlaceholder": "Search this book, or type a number",
+    "levelPrompt": "Where are you starting from?",
+    "level": {
+      "starting": "New to hadith",
+      "building": "Getting comfortable",
+      "depth": "Deeper study"
+    },
+    "welcomeTitle": "Download the hadith",
+    "welcomeBody": "One download brings HadeethEnc's hadith in your language, each with its meaning and explanation, and an-Nawawi's Forty. Every set, topic and search then works offline. The nine books in Arabic are separate downloads.",
+    "continueReading": "Continue reading",
+    "bookmarks": "Bookmarks",
+    "noBookmarks": "Nothing bookmarked yet. Tap the star under a hadith to keep it here.",
+    "progress": "{{read}} of {{total}} read",
+    "markSetRead": "Mark as already read",
+    "markSetUnread": "Unmark",
+    "completed": "Completed · {{count}}",
+    "topics": "Topics",
+    "entries": "{{count}} hadith",
+    "books": "The books",
+    "booksNote": "The full collections, in Arabic, from Open-Hadith-Data. Each is a separate download.",
+    "onDevice": "Downloaded",
+    "attribution": "Texts, translations and explanations: HadeethEnc.com. an-Nawawi's Forty in Arabic: fawazahmed0/hadith-api. The nine books: Open-Hadith-Data (ODbL).",
+    "needsDownload": "This list is not on your device yet.",
+    "download": "Download",
+    "downloadSize": "Download · {{size}}",
+    "downloading": "Downloading…",
+    "downloadFailed": "The download did not finish. Check your connection and try again.",
+    "downloadSourceNote": "Downloaded from Mihrab's copy on GitHub, or from the original source if that cannot be reached. Remove it any time in Settings → Downloads.",
+    "notOnDevice": "This hadith is not on your device. Open it from the Hadith tab to download it.",
+    "explanation": "Explanation",
+    "benefits": "Lessons and benefits",
+    "wordMeanings": "Word meanings",
+    "fallbackNote": "Shown in English: this hadith has not been translated into your language yet.",
+    "arabicOnlyNote": "This text is available in Arabic only.",
+    "nawawiNumber": "an-Nawawi's Forty · {{n}}",
+    "sourceHadeethenc": "Source: HadeethEnc.com",
+    "sourceNawawi": "an-Nawawi's Forty Hadith (Arabic text)",
+    "sourceBook": "{{book}} · Open-Hadith-Data",
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
+    "readNext": "Mark as read and continue",
+    "read": "Read",
+    "bookmark": "Bookmark",
+    "removeBookmark": "Remove bookmark",
+    "addNote": "Add a note",
+    "editNote": "Edit your note",
+    "yourNote": "Your note",
+    "notePlaceholder": "Write a reflection, a reminder, where you heard it…",
+    "share": "Share",
+    "copy": "Copy",
+    "copied": "Copied",
+    "previous": "Previous hadith",
+    "next": "Next hadith",
+    "set": {
+      "nawawi40": {
+        "title": "an-Nawawi's Forty",
+        "blurb": "The forty-two hadith Imam an-Nawawi gathered as the foundations of the religion."
+      },
+      "foundations": {
+        "title": "Foundations of faith",
+        "blurb": "Faith, its pillars, and what it asks of the heart."
+      },
+      "daily": {
+        "title": "Everyday worship",
+        "blurb": "Purification, prayer, remembrance and the day's small acts of worship."
+      },
+      "manners": {
+        "title": "Character and manners",
+        "blurb": "How the Prophet ﷺ taught his companions to speak, deal and behave."
+      },
+      "heart": {
+        "title": "Purifying the heart",
+        "blurb": "Sincerity, repentance, patience and the inner life."
+      },
+      "family": {
+        "title": "Family and neighbours",
+        "blurb": "Parents, kin, spouses, children and those who live beside us."
+      },
+      "virtues": {
+        "title": "Virtues of deeds",
+        "blurb": "The reward of good deeds, and of those who do them."
+      },
+      "creed": {
+        "title": "Creed",
+        "blurb": "Belief in Allah, His names and attributes, the unseen and the Last Day."
+      },
+      "worship": {
+        "title": "Worship in detail",
+        "blurb": "Prayer, fasting, zakah and hajj — hadith with the scholars' explanation."
+      },
+      "seerah": {
+        "title": "The Prophet's life",
+        "blurb": "The Seerah, and the companions' history, through hadith."
+      },
+      "book-bukhari": {
+        "title": "Sahih al-Bukhari",
+        "blurb": "The whole collection, in Arabic."
+      },
+      "book-muslim": {
+        "title": "Sahih Muslim",
+        "blurb": "The whole collection, in Arabic."
+      }
+    },
+    "topic": {
+      "1": "The Qur'an and its sciences",
+      "2": "Hadith and its sciences",
+      "3": "Creed",
+      "4": "Jurisprudence",
+      "5": "Virtues and manners",
+      "6": "Calling to Islam",
+      "7": "Seerah and history"
+    },
+    "book": {
+      "bukhari": "Sahih al-Bukhari",
+      "muslim": "Sahih Muslim",
+      "abudawud": "Sunan Abi Dawud",
+      "tirmidhi": "Jami' at-Tirmidhi",
+      "nasai": "Sunan an-Nasa'i",
+      "ibnmajah": "Sunan Ibn Majah",
+      "malik": "Muwatta Malik",
+      "darimi": "Sunan ad-Darimi",
+      "ahmad": "Musnad Ahmad"
+    },
+    "packStarter": "Starter sets",
+    "packCategories": "Topic index",
+    "packNawawi": "an-Nawawi's Forty (Arabic)",
+    "downloadsFooter": "Hadith texts you downloaded from the Hadith tab. Delete any of them and download it again from there.",
+    "levelNote": "This only chooses what is suggested first. Nothing is locked, and you can change it at any time.",
+    "levelLine": "Suggested for: {{level}}",
+    "change": "Change",
+    "pickDirect": "Choose for yourself",
+    "pickDirectNote": "Any topic, or one of the nine books.",
+    "allSets": "All sets",
+    "allTopics": "All topics",
+    "hub": {
+      "prayer": "Prayer and purification",
+      "fasting": "Fasting",
+      "charity": "Zakah, charity and wealth",
+      "hajj": "Hajj and Umrah",
+      "family": "Family and parents",
+      "food": "Food and drink",
+      "character": "Character and speech",
+      "etiquette": "Everyday etiquette",
+      "supplications": "Supplications and dhikr",
+      "heart": "The heart and repentance",
+      "faith": "Faith and creed",
+      "prophet": "The Prophet's life ﷺ"
+    },
+    "rulingNote": "A hadith on its own is not a ruling. What applies to you can depend on other texts and on how the scholars understood them. For a question about what to do, ask a qualified scholar or follow your school (madhhab).",
+    "filterTopicPlaceholder": "Search this topic",
+    "filter": {
+      "all": "All",
+      "sahihayn": "al-Bukhari or Muslim",
+      "books": "The books",
+      "topic": "Topic",
+      "clearTopic": "Remove the topic: {{topic}}",
+      "grade": "Grade",
+      "sahih": "Sahih (authentic)",
+      "hasan": "Hasan (good)",
+      "clearGrade": "Remove the grade: {{grade}}",
+      "gradeNote": "As HadeethEnc grades them. A hadith it grades with a reservation is under neither, and is found without this filter."
+    },
+    "refHeading": "{{book}} · {{n}}",
+    "refNeedsBook": "{{book}} is not downloaded. Open it to download.",
+    "refNotFound": "No hadith numbered {{n}} in this edition of {{book}}.",
+    "packAll": "Hadith and explanations",
+    "allHadith": "All hadith",
+    "position": "{{n}} of {{total}}",
+    "report": "Report a problem with this hadith",
+    "reportPrompt": "What is wrong? (a word, the translation, the grade, the number…)",
+    "arabicTag": "Arabic",
+    "refNeedsBookArabic": "{{book}} is not downloaded, and is in Arabic only. Open it to download.",
+    "bookNeedsDownload": "This book is in Arabic only, with no translation. It is not on your device yet."
   }
 }

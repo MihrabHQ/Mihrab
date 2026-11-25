@@ -17,7 +17,9 @@
     "fasting": "Oruç",
     "today": "Bugün",
     "sync": "Cihazlar arasında eşitleme",
-    "devices": "Cihazlar"
+    "devices": "Cihazlar",
+    "hadith": "Hadis",
+    "dhikr": "Zikir"
   },
   "a11y": {
     "openSettings": "Ayarları aç",
@@ -53,7 +55,8 @@
     "confirmDelete": "Silmek için tekrar dokunun",
     "learnMore": "Daha fazla bilgi",
     "dismiss": "Kapat",
-    "hide": "Gizle"
+    "hide": "Gizle",
+    "save": "Kaydet"
   },
   "home": {
     "loadingPrayer": "Namaz vakitleri yükleniyor…",
@@ -466,7 +469,7 @@
     "sectionQuran": "Kur'an",
     "sectionQuranBlurb": "Okuma, meal, tefsir",
     "sectionDownloads": "İndirmeler",
-    "sectionDownloadsBlurb": "Mushaf, tilavetler, tefsir, depolama",
+    "sectionDownloadsBlurb": "Mushaf, tilavetler, tefsir, hadis, depolama",
     "sectionAbout": "Hakkında",
     "sectionAboutBlurb": "Sürüm, kaynaklar, lisanslar",
     "malikiRows": "Günün vakitleri arasında göster",
@@ -2037,7 +2040,11 @@
     "wordMeanings": "Zor kelimelerin Arapça anlamları",
     "surahHeaderFont": "Sure başlığı hattı",
     "recitationWholeSurah": "Tam sure tilavetleri (15): mp3quran.net · ayet zamanlamaları Mihrab tarafından sese hizalandı",
-    "transliteration": "Kur’an okunuşları, Arapça metinden üretilmiştir; ayet ayet metinle karşılaştırılmış, {{n}} ayet düzeltilmiştir"
+    "transliteration": "Kur’an okunuşları, Arapça metinden üretilmiştir; ayet ayet metinle karşılaştırılmış, {{n}} ayet düzeltilmiştir",
+    "groupHadith": "Hadis",
+    "hadeethenc": "Hadis metinleri, çevirileri, açıklamaları ve dersleri, değiştirilmeden yeniden yayımlanmıştır",
+    "nawawiArabic": "Nevevî’nin Kırk Hadisi, Arapça metin",
+    "openHadithData": "Dokuz hadis kitabı, Arapça metin"
   },
   "liveActivity": {
     "title": "Sıradaki namaz",
@@ -2297,7 +2304,8 @@
       "dhikr": "Zikir",
       "quran": "Kur’an",
       "settings": "Ayarlar",
-      "location": "Konum"
+      "location": "Konum",
+      "hadith": "Hadis"
     },
     "categoryHint": {
       "prayers": "Kaydettiğiniz her namaz ve notlarınız",
@@ -2306,7 +2314,8 @@
       "dhikr": "Tamamlanan tesbih turları",
       "quran": "Yer imleri, yıldızlı ayetler, hatim planları, kaldığınız yer, kari ve tefsir",
       "settings": "Görünüm, hesaplama yöntemi, bildirimler ve widget'lar",
-      "location": "Kayıtlı yerler ve koordinatlar"
+      "location": "Kayıtlı yerler ve koordinatlar",
+      "hadith": "Okunan hadisler, yer imleri, notlarınız ve seviyeniz"
     },
     "count": {
       "prayers": "Namazlar",
@@ -2314,7 +2323,8 @@
       "dhikr": "Zikir günleri",
       "sunnah": "Sünnet günleri",
       "bookmarks": "Yer imleri",
-      "khatmah": "Hatim planları"
+      "khatmah": "Hatim planları",
+      "hadith": "Okunan hadis"
     },
     "settingsRowHint": "Başka bir cihaz eşleştir",
     "pairIntro": "Eşitleme kaydını kullandığın her cihazda aynı tutar. Eşler arası (peer to peer) çalışır: cihazların şifreli dosyaları doğrudan birbiriyle paylaşır, hesap ve bize ait bir sunucu gerekmez; dosyaları yalnızca kendi cihazların okuyabilir.",
@@ -2789,5 +2799,188 @@
     "missedAgain_one": "↺ {{count}} hatalı",
     "reciteMissedAgain": "{{count}} hatalı ayeti yeniden okuyun",
     "reciteMissedAgain_one": "Hatalı ayeti yeniden okuyun"
+  },
+  "hadith": {
+    "learn": "Öğren",
+    "browse": "Bul",
+    "searchPlaceholder": "Hadis ara veya {{example}}",
+    "searchExample": "Nevevî 14",
+    "searchScope": "Bu cihaza indirilenler içinde aranıyor.",
+    "searchNeedsDownload": "Henüz hiçbir şey indirilmedi. Aramayı temizleyin ve önce hadisleri indirin.",
+    "noResults": "Hiçbir şey bulunamadı.",
+    "filterPlaceholder": "Bu listeyi filtrele",
+    "filterBookPlaceholder": "Bu kitapta ara veya bir numara yaz",
+    "levelPrompt": "Nereden başlıyorsunuz?",
+    "level": {
+      "starting": "Hadisle yeni tanışıyorum",
+      "building": "Giderek alışıyorum",
+      "depth": "Daha derin çalışma"
+    },
+    "welcomeTitle": "Hadisleri indirin",
+    "welcomeBody": "Tek bir indirmeyle HadeethEnc’in hadisleri kendi dilinizde, her biri anlamı ve açıklamasıyla, Nevevî’nin Kırk Hadisi ile birlikte gelir. Ardından tüm setler, konular ve arama çevrimdışı çalışır. Arapça dokuz kitap ayrı ayrı indirilir.",
+    "continueReading": "Okumaya devam et",
+    "bookmarks": "Yer imleri",
+    "noBookmarks": "Henüz yer imi yok. Bir hadisi burada tutmak için altındaki yıldıza dokunun.",
+    "progress": "{{total}} içinden {{read}} okundu",
+    "markSetRead": "Zaten okundu olarak işaretle",
+    "markSetUnread": "İşareti kaldır",
+    "completed": "Tamamlanan · {{count}}",
+    "topics": "Konular",
+    "entries": "{{count}} hadis",
+    "books": "Kitaplar",
+    "booksNote": "Tam koleksiyonlar, Arapça olarak, Open-Hadith-Data’dan. Her biri ayrı indirilir.",
+    "onDevice": "İndirildi",
+    "attribution": "Metinler, çeviriler ve açıklamalar: HadeethEnc.com. Arapça Nevevî’nin Kırk Hadisi: fawazahmed0/hadith-api. Dokuz kitap: Open-Hadith-Data (ODbL).",
+    "needsDownload": "Bu liste henüz cihazınızda değil.",
+    "download": "İndir",
+    "downloadSize": "İndir · {{size}}",
+    "downloading": "İndiriliyor…",
+    "downloadFailed": "İndirme tamamlanamadı. Bağlantınızı kontrol edip tekrar deneyin.",
+    "downloadSourceNote": "Mihrab’ın GitHub’daki kopyasından, ona ulaşılamazsa asıl kaynaktan indirilir. İstediğiniz zaman Ayarlar → İndirmeler bölümünden kaldırabilirsiniz.",
+    "notOnDevice": "Bu hadis cihazınızda yok. İndirmek için Hadis sekmesinden açın.",
+    "explanation": "Açıklama",
+    "benefits": "Dersler ve faydalar",
+    "wordMeanings": "Kelime anlamları",
+    "fallbackNote": "İngilizce gösteriliyor: bu hadis henüz dilinize çevrilmedi.",
+    "arabicOnlyNote": "Bu metin yalnızca Arapça olarak mevcut.",
+    "nawawiNumber": "Nevevî’nin Kırk Hadisi · {{n}}",
+    "sourceHadeethenc": "Kaynak: HadeethEnc.com",
+    "sourceNawawi": "Nevevî’nin Kırk Hadisi (Arapça metin)",
+    "sourceBook": "{{book}} · Open-Hadith-Data",
+    "markRead": "Okundu olarak işaretle",
+    "markUnread": "Okunmadı olarak işaretle",
+    "readNext": "Okundu olarak işaretle ve devam et",
+    "read": "Okundu",
+    "bookmark": "Yer imi ekle",
+    "removeBookmark": "Yer imini kaldır",
+    "addNote": "Not ekle",
+    "editNote": "Notunuzu düzenleyin",
+    "yourNote": "Notunuz",
+    "notePlaceholder": "Bir tefekkür, bir hatırlatma, nerede duyduğunuzu yazın…",
+    "share": "Paylaş",
+    "copy": "Kopyala",
+    "copied": "Kopyalandı",
+    "previous": "Önceki hadis",
+    "next": "Sonraki hadis",
+    "set": {
+      "nawawi40": {
+        "title": "Nevevî’nin Kırk Hadisi",
+        "blurb": "İmam Nevevî’nin dinin temelleri olarak derlediği kırk iki hadis."
+      },
+      "foundations": {
+        "title": "İmanın temelleri",
+        "blurb": "İman, rükünleri ve kalpten istedikleri."
+      },
+      "daily": {
+        "title": "Günlük ibadet",
+        "blurb": "Temizlik, namaz, zikir ve günün küçük ibadetleri."
+      },
+      "manners": {
+        "title": "Ahlak ve edep",
+        "blurb": "Peygamber ﷺ ashabına nasıl konuşmayı, muamele etmeyi ve davranmayı öğretti."
+      },
+      "heart": {
+        "title": "Kalbin arınması",
+        "blurb": "İhlas, tövbe, sabır ve iç dünya."
+      },
+      "family": {
+        "title": "Aile ve komşular",
+        "blurb": "Anne baba, akrabalar, eşler, çocuklar ve yanı başımızda yaşayanlar."
+      },
+      "virtues": {
+        "title": "Amellerin faziletleri",
+        "blurb": "Salih amellerin ve onları yapanların mükâfatı."
+      },
+      "creed": {
+        "title": "Akaid",
+        "blurb": "Allah’a, O’nun isim ve sıfatlarına, gayba ve ahiret gününe iman."
+      },
+      "worship": {
+        "title": "Ayrıntılı ibadet",
+        "blurb": "Namaz, oruç, zekât ve hac — âlimlerin açıklamasıyla hadisler."
+      },
+      "seerah": {
+        "title": "Peygamber’in hayatı",
+        "blurb": "Hadisler aracılığıyla siyer ve sahabe tarihi."
+      },
+      "book-bukhari": {
+        "title": "Sahîh-i Buhârî",
+        "blurb": "Koleksiyonun tamamı, Arapça."
+      },
+      "book-muslim": {
+        "title": "Sahîh-i Müslim",
+        "blurb": "Koleksiyonun tamamı, Arapça."
+      }
+    },
+    "topic": {
+      "1": "Kur’an ve Kur’an ilimleri",
+      "2": "Hadis ve hadis ilimleri",
+      "3": "Akaid",
+      "4": "Fıkıh",
+      "5": "Faziletler ve edep",
+      "6": "İslam’a davet",
+      "7": "Siyer ve tarih"
+    },
+    "book": {
+      "bukhari": "Sahîh-i Buhârî",
+      "muslim": "Sahîh-i Müslim",
+      "abudawud": "Sünen-i Ebû Dâvûd",
+      "tirmidhi": "Câmiu’t-Tirmizî",
+      "nasai": "Sünen-i Nesâî",
+      "ibnmajah": "Sünen-i İbn Mâce",
+      "malik": "Muvatta (İmam Mâlik)",
+      "darimi": "Sünen-i Dârimî",
+      "ahmad": "Müsned (Ahmed b. Hanbel)"
+    },
+    "packStarter": "Başlangıç setleri",
+    "packCategories": "Konu dizini",
+    "packNawawi": "Nevevî’nin Kırk Hadisi (Arapça)",
+    "downloadsFooter": "Hadis sekmesinden indirdiğiniz hadis metinleri. Herhangi birini silip oradan yeniden indirebilirsiniz.",
+    "levelNote": "Bu yalnızca ilk olarak neyin önerileceğini belirler. Hiçbir şey kilitli değildir ve bunu istediğiniz zaman değiştirebilirsiniz.",
+    "levelLine": "Öneriler şuna göre: {{level}}",
+    "change": "Değiştir",
+    "pickDirect": "Kendiniz seçin",
+    "pickDirectNote": "Herhangi bir konu veya dokuz kitaptan biri.",
+    "allSets": "Tüm setler",
+    "allTopics": "Tüm konular",
+    "hub": {
+      "prayer": "Namaz ve temizlik",
+      "fasting": "Oruç",
+      "charity": "Zekât, sadaka ve mal",
+      "hajj": "Hac ve Umre",
+      "family": "Aile ve anne baba",
+      "food": "Yiyecek ve içecek",
+      "character": "Ahlak ve konuşma",
+      "etiquette": "Günlük hayatta edep",
+      "supplications": "Dualar ve zikir",
+      "heart": "Kalp ve tövbe",
+      "faith": "İman ve akaid",
+      "prophet": "Peygamber’in hayatı ﷺ"
+    },
+    "rulingNote": "Bir hadis tek başına dinî bir hüküm değildir. Sizin için geçerli olan, başka metinlere ve âlimlerin bunları nasıl anladığına bağlı olabilir. Ne yapmanız gerektiğine dair bir sorunuz varsa ehil bir âlime danışın veya mezhebinize uyun.",
+    "filterTopicPlaceholder": "Bu konuda ara",
+    "filter": {
+      "all": "Tümü",
+      "sahihayn": "Buhârî veya Müslim",
+      "books": "Kitaplar",
+      "topic": "Konu",
+      "clearTopic": "Konuyu kaldır: {{topic}}",
+      "grade": "Derece",
+      "sahih": "Sahih",
+      "hasan": "Hasen",
+      "clearGrade": "Dereceyi kaldır: {{grade}}",
+      "gradeNote": "HadeethEnc’in değerlendirmesine göre. Kayıt düşerek değerlendirdiği bir hadis ikisine de girmez ve bu filtre olmadan bulunur."
+    },
+    "refHeading": "{{book}} · {{n}}",
+    "refNeedsBook": "{{book}} indirilmedi. İndirmek için açın.",
+    "refNotFound": "{{book}} kitabının bu baskısında {{n}} numaralı hadis yok.",
+    "packAll": "Hadisler ve açıklamalar",
+    "allHadith": "Tüm hadisler",
+    "position": "{{n}} / {{total}}",
+    "report": "Bu hadisle ilgili bir sorun bildir",
+    "reportPrompt": "Sorun nedir? (bir kelime, çeviri, hadisin derecesi, numara…)",
+    "arabicTag": "Arapça",
+    "refNeedsBookArabic": "{{book}} indirilmedi ve yalnızca Arapça. İndirmek için açın.",
+    "bookNeedsDownload": "Bu kitap yalnızca Arapça, çevirisi yok. Henüz cihazınızda değil."
   }
 }

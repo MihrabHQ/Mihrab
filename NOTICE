@@ -40,6 +40,17 @@ and corrected by this app in fourteen ayahs listed in
 src/quran/transliterationCorrections.ts) and, in Turkish, by Muhammet Abay
 (from Tanzil's list of translations, https://tanzil.net/trans/, under Tanzil's
 terms). They are downloaded on request and are not part of the app's source.
+The hadith are downloaded on request and are not part of the app: texts,
+translations, explanations and lessons from HadeethEnc.com (the Encyclopedia of
+Translated Prophetic Hadiths, https://hadeethenc.com), republished unmodified
+with credit; an-Nawawi's Forty in Arabic from fawazahmed0/hadith-api
+(https://github.com/fawazahmed0/hadith-api); and the nine books in Arabic from
+Open-Hadith-Data (https://github.com/mhashim6/Open-Hadith-Data), made available
+under the Open Database License 1.0 (https://opendatacommons.org/licenses/odbl/1-0/),
+its contents under the Database Contents License 1.0. Mihrab's copies, published
+as assets of the data-hadith-v1 release of this repository, are derived from
+those sources by scripts/hadith/build-packs.js and are offered under the same
+terms.
 The Garmin watch face's fonts (garmin/watchface/resources/fonts) are bitmaps
 made from Tektur, copyright 2023 The Tektur Project Authors, under the SIL Open
 Font License 1.1 (garmin/tools/fonts/OFL.txt).

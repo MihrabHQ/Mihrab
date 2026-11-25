@@ -17,7 +17,9 @@
     "fasting": "Jeûne",
     "today": "Aujourd'hui",
     "sync": "Synchroniser entre appareils",
-    "devices": "Appareils"
+    "devices": "Appareils",
+    "hadith": "Hadith",
+    "dhikr": "Dhikr"
   },
   "a11y": {
     "openSettings": "Ouvrir les paramètres",
@@ -53,7 +55,8 @@
     "confirmDelete": "Appuyez à nouveau pour supprimer",
     "learnMore": "En savoir plus",
     "dismiss": "Ignorer",
-    "hide": "Masquer"
+    "hide": "Masquer",
+    "save": "Enregistrer"
   },
   "home": {
     "loadingPrayer": "Chargement des heures de prière…",
@@ -467,7 +470,7 @@
     "sectionQuran": "Coran",
     "sectionQuranBlurb": "Lecture, traduction, tafsir",
     "sectionDownloads": "Téléchargements",
-    "sectionDownloadsBlurb": "Muṣḥaf, récitations, tafsir, stockage",
+    "sectionDownloadsBlurb": "Muṣḥaf, récitations, tafsir, hadith, stockage",
     "sectionAbout": "À propos",
     "sectionAboutBlurb": "Version, sources, licences",
     "malikiRows": "Les afficher dans les heures du jour",
@@ -2038,7 +2041,11 @@
     "wordMeanings": "Sens arabes des mots difficiles",
     "surahHeaderFont": "Calligraphie des en-têtes de sourates",
     "recitationWholeSurah": "Récitations de sourates entières (15) : mp3quran.net · minutage des versets aligné sur l’audio par Mihrab",
-    "transliteration": "Translittérations du Coran, générées à partir du texte arabe ; vérifiées verset par verset, {{n}} versets corrigés"
+    "transliteration": "Translittérations du Coran, générées à partir du texte arabe ; vérifiées verset par verset, {{n}} versets corrigés",
+    "groupHadith": "Hadith",
+    "hadeethenc": "Textes de hadiths, traductions, explications et enseignements, republiés sans modification",
+    "nawawiArabic": "Les quarante hadiths d'an-Nawawi, texte arabe",
+    "openHadithData": "Les neuf livres de hadiths, texte arabe"
   },
   "liveActivity": {
     "title": "Prochaine prière",
@@ -2298,7 +2305,8 @@
       "dhikr": "Dhikr",
       "quran": "Coran",
       "settings": "Réglages",
-      "location": "Position"
+      "location": "Position",
+      "hadith": "Hadith"
     },
     "categoryHint": {
       "prayers": "Chaque prière que vous avez notée, et vos remarques",
@@ -2307,7 +2315,8 @@
       "dhikr": "Séries de tasbih terminées",
       "quran": "Signets, ayat favorites, plans de khatma, dernière lecture, récitateur et tafsir",
       "settings": "Apparence, méthode de calcul, notifications et widgets",
-      "location": "Lieux enregistrés et coordonnées"
+      "location": "Lieux enregistrés et coordonnées",
+      "hadith": "Hadiths lus, signets, vos notes et votre niveau"
     },
     "count": {
       "prayers": "Prières",
@@ -2315,7 +2324,8 @@
       "dhikr": "Jours de dhikr",
       "sunnah": "Jours de sunna",
       "bookmarks": "Signets",
-      "khatmah": "Plans de khatma"
+      "khatmah": "Plans de khatma",
+      "hadith": "Hadiths lus"
     },
     "settingsRowHint": "Associer un autre appareil",
     "pairIntro": "La synchronisation garde votre historique identique sur tous vos appareils. Elle fonctionne en pair à pair : vos appareils échangent des fichiers chiffrés directement entre eux, sans compte et sans serveur de notre part, et seuls vos propres appareils peuvent les lire.",
@@ -2790,5 +2800,188 @@
     "missedAgain_one": "↺ {{count}} raté",
     "reciteMissedAgain": "Réciter à nouveau les {{count}} versets ratés",
     "reciteMissedAgain_one": "Réciter à nouveau le verset raté"
+  },
+  "hadith": {
+    "learn": "Apprendre",
+    "browse": "Consulter",
+    "searchPlaceholder": "Rechercher des hadiths, ou {{example}}",
+    "searchExample": "Nawawi 14",
+    "searchScope": "Recherche dans ce qui est téléchargé sur cet appareil.",
+    "searchNeedsDownload": "Rien n'est encore téléchargé. Effacez la recherche et téléchargez d'abord les hadiths.",
+    "noResults": "Aucun résultat.",
+    "filterPlaceholder": "Filtrer cette liste",
+    "filterBookPlaceholder": "Chercher dans ce livre, ou saisir un numéro",
+    "levelPrompt": "D'où partez-vous ?",
+    "level": {
+      "starting": "Découverte des hadiths",
+      "building": "Déjà quelques repères",
+      "depth": "Étude approfondie"
+    },
+    "welcomeTitle": "Téléchargez les hadiths",
+    "welcomeBody": "Un seul téléchargement apporte les hadiths de HadeethEnc dans votre langue, chacun avec son sens et son explication, ainsi que les Quarante d'an-Nawawi. Toutes les séries, tous les thèmes et la recherche fonctionnent ensuite hors ligne. Les neuf livres en arabe se téléchargent séparément.",
+    "continueReading": "Reprendre la lecture",
+    "bookmarks": "Signets",
+    "noBookmarks": "Aucun signet pour l'instant. Touchez l'étoile sous un hadith pour le garder ici.",
+    "progress": "{{read}} sur {{total}} lus",
+    "markSetRead": "Marquer comme déjà lu",
+    "markSetUnread": "Retirer la marque",
+    "completed": "Terminés · {{count}}",
+    "topics": "Thèmes",
+    "entries": "Hadiths : {{count}}",
+    "books": "Les livres",
+    "booksNote": "Les recueils complets, en arabe, issus d'Open-Hadith-Data. Chacun se télécharge séparément.",
+    "onDevice": "Téléchargé",
+    "attribution": "Textes, traductions et explications : HadeethEnc.com. Les Quarante d'an-Nawawi en arabe : fawazahmed0/hadith-api. Les neuf livres : Open-Hadith-Data (ODbL).",
+    "needsDownload": "Cette liste n'est pas encore sur votre appareil.",
+    "download": "Télécharger",
+    "downloadSize": "Télécharger · {{size}}",
+    "downloading": "Téléchargement…",
+    "downloadFailed": "Le téléchargement n'a pas abouti. Vérifiez votre connexion et réessayez.",
+    "downloadSourceNote": "Téléchargé depuis la copie de Mihrab sur GitHub, ou depuis la source d'origine si elle est inaccessible. Supprimez-le à tout moment dans Paramètres → Téléchargements.",
+    "notOnDevice": "Ce hadith n'est pas sur votre appareil. Ouvrez-le depuis l'onglet Hadith pour le télécharger.",
+    "explanation": "Explication",
+    "benefits": "Enseignements et bienfaits",
+    "wordMeanings": "Sens des mots",
+    "fallbackNote": "Affiché en anglais : ce hadith n'a pas encore été traduit dans votre langue.",
+    "arabicOnlyNote": "Ce texte n'est disponible qu'en arabe.",
+    "nawawiNumber": "Les Quarante d'an-Nawawi · {{n}}",
+    "sourceHadeethenc": "Source : HadeethEnc.com",
+    "sourceNawawi": "Les quarante hadiths d'an-Nawawi (texte arabe)",
+    "sourceBook": "{{book}} · Open-Hadith-Data",
+    "markRead": "Marquer comme lu",
+    "markUnread": "Marquer comme non lu",
+    "readNext": "Marquer comme lu et continuer",
+    "read": "Lu",
+    "bookmark": "Ajouter un signet",
+    "removeBookmark": "Retirer le signet",
+    "addNote": "Ajouter une note",
+    "editNote": "Modifier votre note",
+    "yourNote": "Votre note",
+    "notePlaceholder": "Écrivez une réflexion, un rappel, où vous l'avez entendu…",
+    "share": "Partager",
+    "copy": "Copier",
+    "copied": "Copié",
+    "previous": "Hadith précédent",
+    "next": "Hadith suivant",
+    "set": {
+      "nawawi40": {
+        "title": "Les Quarante d'an-Nawawi",
+        "blurb": "Les quarante-deux hadiths que l'imam an-Nawawi a réunis comme fondements de la religion."
+      },
+      "foundations": {
+        "title": "Les fondements de la foi",
+        "blurb": "La foi, ses piliers et ce qu'elle demande au cœur."
+      },
+      "daily": {
+        "title": "L'adoration au quotidien",
+        "blurb": "La purification, la prière, le rappel et les petits actes d'adoration de la journée."
+      },
+      "manners": {
+        "title": "Caractère et bonnes manières",
+        "blurb": "Comment le Prophète ﷺ a appris à ses compagnons à parler, à traiter avec autrui et à se conduire."
+      },
+      "heart": {
+        "title": "Purifier le cœur",
+        "blurb": "La sincérité, le repentir, la patience et la vie intérieure."
+      },
+      "family": {
+        "title": "Famille et voisins",
+        "blurb": "Les parents, les proches, les époux, les enfants et ceux qui vivent à nos côtés."
+      },
+      "virtues": {
+        "title": "Mérites des œuvres",
+        "blurb": "La récompense des bonnes œuvres et de ceux qui les accomplissent."
+      },
+      "creed": {
+        "title": "Croyance",
+        "blurb": "La foi en Allah, Ses noms et attributs, l'invisible et le Jour dernier."
+      },
+      "worship": {
+        "title": "L'adoration en détail",
+        "blurb": "La prière, le jeûne, la zakat et le hajj — des hadiths avec l’explication des savants."
+      },
+      "seerah": {
+        "title": "La vie du Prophète",
+        "blurb": "La Sîra et l'histoire des compagnons, à travers les hadiths."
+      },
+      "book-bukhari": {
+        "title": "Sahih al-Boukhari",
+        "blurb": "Le recueil complet, en arabe."
+      },
+      "book-muslim": {
+        "title": "Sahih Muslim",
+        "blurb": "Le recueil complet, en arabe."
+      }
+    },
+    "topic": {
+      "1": "Le Coran et ses sciences",
+      "2": "Le hadith et ses sciences",
+      "3": "Croyance",
+      "4": "Jurisprudence",
+      "5": "Vertus et bonnes manières",
+      "6": "L'appel à l'islam",
+      "7": "Sîra et histoire"
+    },
+    "book": {
+      "bukhari": "Sahih al-Boukhari",
+      "muslim": "Sahih Muslim",
+      "abudawud": "Sunan Abou Daoud",
+      "tirmidhi": "Jami' at-Tirmidhi",
+      "nasai": "Sunan an-Nasa'i",
+      "ibnmajah": "Sunan Ibn Majah",
+      "malik": "Al-Muwatta de Malik",
+      "darimi": "Sunan ad-Darimi",
+      "ahmad": "Musnad Ahmad"
+    },
+    "packStarter": "Séries de départ",
+    "packCategories": "Index des thèmes",
+    "packNawawi": "Les Quarante d'an-Nawawi (arabe)",
+    "downloadsFooter": "Textes de hadiths téléchargés depuis l'onglet Hadith. Supprimez-en un et téléchargez-le à nouveau depuis cet onglet.",
+    "levelNote": "Cela détermine seulement ce qui vous est suggéré en premier. Rien n'est verrouillé, et vous pouvez le modifier à tout moment.",
+    "levelLine": "Suggéré pour : {{level}}",
+    "change": "Modifier",
+    "pickDirect": "Choisir par vous-même",
+    "pickDirectNote": "N'importe quel thème, ou l'un des neuf livres.",
+    "allSets": "Toutes les séries",
+    "allTopics": "Tous les thèmes",
+    "hub": {
+      "prayer": "Prière et purification",
+      "fasting": "Jeûne",
+      "charity": "Zakat, aumône et biens",
+      "hajj": "Hajj et Omra",
+      "family": "Famille et parents",
+      "food": "Nourriture et boisson",
+      "character": "Caractère et parole",
+      "etiquette": "Bonnes manières au quotidien",
+      "supplications": "Invocations et dhikr",
+      "heart": "Le cœur et le repentir",
+      "faith": "Foi et croyance",
+      "prophet": "La vie du Prophète ﷺ"
+    },
+    "rulingNote": "Un hadith à lui seul n'est pas un avis juridique. Ce qui s'applique à vous peut dépendre d'autres textes et de la manière dont les savants les ont compris. Pour une question sur ce qu'il convient de faire, interrogez un savant qualifié ou suivez votre école juridique (madhhab).",
+    "filterTopicPlaceholder": "Chercher dans ce thème",
+    "filter": {
+      "all": "Tous",
+      "sahihayn": "al-Boukhari ou Muslim",
+      "books": "Les livres",
+      "topic": "Thème",
+      "clearTopic": "Retirer le thème : {{topic}}",
+      "grade": "Degré",
+      "sahih": "Sahih (authentique)",
+      "hasan": "Hasan (bon)",
+      "clearGrade": "Retirer le degré : {{grade}}",
+      "gradeNote": "Selon le classement de HadeethEnc. Un hadith qu'il classe avec une réserve n'entre dans aucun des deux et se trouve sans ce filtre."
+    },
+    "refHeading": "{{book}} · {{n}}",
+    "refNeedsBook": "{{book}} n'est pas téléchargé. Ouvrez-le pour le télécharger.",
+    "refNotFound": "Aucun hadith ne porte le numéro {{n}} dans cette édition de {{book}}.",
+    "packAll": "Hadiths et explications",
+    "allHadith": "Tous les hadiths",
+    "position": "{{n}} sur {{total}}",
+    "report": "Signaler un problème avec ce hadith",
+    "reportPrompt": "Qu'est-ce qui ne va pas ? (un mot, la traduction, le degré d'authenticité, le numéro…)",
+    "arabicTag": "Arabe",
+    "refNeedsBookArabic": "{{book}} n'est pas téléchargé et n'existe qu'en arabe. Ouvrez-le pour le télécharger.",
+    "bookNeedsDownload": "Ce livre n'existe qu'en arabe, sans traduction. Il n'est pas encore sur votre appareil."
   }
 }

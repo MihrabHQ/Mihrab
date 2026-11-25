@@ -64,6 +64,7 @@ const TRAVELS = new Set([
   'mihrab.quran.v1',
   'prayerapp.settings.v1',
   'prayerapp.location.v1',
+  'prayerapp.hadith.v1',
 ]);
 
 /**
@@ -74,6 +75,8 @@ const TRAVELS = new Set([
  * thing; "too large" means it is content, not record, and re-downloadable.
  */
 const STAYS: Record<string, string> = {
+  'mihrab.hadith.mode':
+    'which half of the Hadith tab (Learn or Browse) was on show — a view on this screen, not a record of reading (screens/HadithScreen.tsx)',
   '@mihrab/resume/v1':
     'device-local, and half an hour old at most — where THIS phone was left, for a start after the system closed the app (navigation/resumeWhereLeft.ts)',
   coveredUntil:
@@ -121,6 +124,8 @@ const STAYS: Record<string, string> = {
   'methods.certification.v1':
     'derived — the methods’ certification, re-downloadable from MihrabHQ/mihrab-methods',
   'methods.certification.v1.checkedAt': 'describes this phone — when it last asked for the certification',
+  'hadith.packs.v1.nextCheck':
+    'describes this phone — when it next asks whether a downloaded Hadith pack was corrected',
   'clock.skew.v1': 'describes this phone — how far its clock was from the server’s, and when',
   'methods.corrections.v1.':
     'derived — a newer correction list for a method this build computes, re-downloadable',
@@ -322,7 +327,7 @@ describe('every store is either carried or deliberately left', () => {
     expect(undecided).toEqual([]);
   });
 
-  it('carries exactly the seven the snapshot layer knows about', () => {
+  it('carries exactly the eight the snapshot layer knows about', () => {
     // The other direction: something in TRAVELS that snapshotStore forgot
     // would look decided here while never actually being written.
     const store = fs.readFileSync(
@@ -337,6 +342,7 @@ describe('every store is either carried or deliberately left', () => {
       'QURAN_STORAGE_KEY',
       'SETTINGS_KEY',
       'LOCATION_KEY',
+      'HADITH_KEY',
     ];
     for (const name of referenced) {
       // Once to read it, once to write it.

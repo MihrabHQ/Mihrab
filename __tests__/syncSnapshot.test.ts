@@ -83,6 +83,16 @@ function populated(): SnapshotData {
         hideMode: 'arabic',
       },
     },
+    hadith: {
+      v: 1,
+      items: {
+        'h:5456': { r: [1, 1_700_000_000_000], b: [1, 1_700_000_100_000], n: ['re-read in Ramadan', 1_700_000_200_000] },
+        'n:1': { r: [1, 1_700_000_000_000] },
+      },
+      sets: { nawawi40: [1, 1_700_000_300_000] },
+      level: ['building', 1_700_000_000_000],
+      last: [{ id: 'h:5456', list: 'set:nawawi40' }, 1_700_000_400_000],
+    },
     settings: { appearance: 'dark', language: 'sv', quranTranslationEdition: 'en.sahih' },
     location: { manualLatitude: 59.33, manualLongitude: 18.06, manualLocationLabel: 'Stockholm' },
   };

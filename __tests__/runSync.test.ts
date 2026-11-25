@@ -122,6 +122,7 @@ describe('running', () => {
         dhikr: true,
         sunnah: true,
         quran: true,
+        hadith: true,
         settings: false,
         location: false,
       },
@@ -167,6 +168,7 @@ describe('the stored settings', () => {
       dhikr: true,
       sunnah: true,
       quran: true,
+      hadith: true,
       settings: false,
       location: false,
     });

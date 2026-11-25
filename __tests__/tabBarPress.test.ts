@@ -37,7 +37,7 @@ describe('the store', () => {
     const open = jest.fn();
     registerTabActivation('LogTab', open);
     activateTab('LogTab');
-    activateTab('DuasTab');
+    activateTab('DhikrTab');
     expect(open).toHaveBeenCalledTimes(1);
   });
 
@@ -74,7 +74,7 @@ describe('the icon under a sliding finger', () => {
     const src = read('src/navigation/tabBarPress.ts');
     expect(src).toContain('if (focused || !press.held || press.hovered !== name || hoverTint == null) return color;');
     const icons = read('src/navigation/tabIcons.tsx');
-    for (const name of ['TodayTab', 'QuranTab', 'TasbihTab', 'DuasTab', 'LogTab', 'SettingsTab']) {
+    for (const name of ['TodayTab', 'QuranTab', 'HadithTab', 'DhikrTab', 'LogTab']) {
       expect(icons).toContain(`color={useTabHoverTint('${name}', color, focused ?? false)}`);
     }
     expect(read('src/navigation/MainTabs.tsx')).toContain('setHoverTint(palette.textSolid);');

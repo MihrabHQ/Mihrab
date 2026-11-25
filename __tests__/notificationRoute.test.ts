@@ -34,7 +34,6 @@ jest.mock('../src/quran/khatmahTarget', () => ({
   khatmahContinueTarget: jest.fn(() => mockTarget),
 }));
 
-import { getStateFromPath } from '@react-navigation/native';
 import {
   notificationRoute,
   ROUTE_AYAH_OF_DAY,
@@ -177,8 +176,10 @@ describe('the adhkār reminder opens its own category — issue #39', () => {
 });
 
 describe('mihrab://duas/<category> is a route the navigator knows', () => {
+  // Through the app's own resolver: Duas is a page of the Dhikr tab now,
+  // and the old path is rewritten to it there (`withDhikrAliases`).
   const duasRoute = (url: string) => {
-    const state = getStateFromPath(url, linkingOptions.config) as never;
+    const state = linkingOptions.getStateFromPath!(url, linkingOptions.config as never) as never;
     return JSON.parse(JSON.stringify(state)) as {
       routes: {
         name: string;
@@ -189,8 +190,8 @@ describe('mihrab://duas/<category> is a route the navigator knows', () => {
 
   it('carries the category into the tab', () => {
     const tab = duasRoute('duas/evening').routes[0].state?.routes[0];
-    expect(tab?.name).toBe('DuasTab');
-    expect(tab?.params).toEqual({ category: 'evening' });
+    expect(tab?.name).toBe('DhikrTab');
+    expect(tab?.params).toEqual({ view: 'duas', category: 'evening' });
   });
 
   it('and the bare tab still opens the index', () => {
@@ -198,7 +199,8 @@ describe('mihrab://duas/<category> is a route the navigator knows', () => {
     // every other sender uses, and a path that stopped matching it would
     // break them silently.
     const tab = duasRoute('duas').routes[0].state?.routes[0];
-    expect(tab?.name).toBe('DuasTab');
+    expect(tab?.name).toBe('DhikrTab');
+    expect((tab?.params as { view?: string } | undefined)?.view).toBe('duas');
     // React Navigation hands an optional segment through as an empty
     // params object rather than none; what matters is that it names no
     // category, which is what the screen reads as "the index".

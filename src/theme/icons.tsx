@@ -227,6 +227,35 @@ export function TasbihIcon({ size = 24, color }: IconProps) {
   );
 }
 
+/**
+ * Hadith — the Kutub al-Sittah on a shelf: two upright spines and a third
+ * volume leaning against them, one band across each spine. Stroke 1.8,
+ * the Quran tab's weight, so the two libraries read as a pair.
+ *
+ * The leaning book is drawn by its corners rather than a transform: it
+ * pivots 20° on its bottom-left corner until its top meets the middle
+ * spine (13.2, 7.3).
+ */
+export function HadithBooksIcon({ size = 24, color }: IconProps) {
+  const stroke = {
+    fill: 'none',
+    stroke: color,
+    strokeWidth: 1.8,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+  };
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M3 4h4v16H3z" {...stroke} />
+      <Path d="M3 8h4" {...stroke} />
+      <Path d="M9.2 6h4v14h-4z" {...stroke} />
+      <Path d="M9.2 10h4" {...stroke} />
+      <Path d="M17.82 20L13.2 7.31l3.76-1.37 4.62 12.69z" {...stroke} />
+      <Path d="M14.57 11.07l3.76-1.37" {...stroke} />
+    </Svg>
+  );
+}
+
 /** Open book — used for Quran nav button and reading-streak badge. */
 export function BookIcon({ size = 24, color }: IconProps) {
   return (

@@ -128,7 +128,11 @@ const HeroTopRow = memo(function HeroTopRow({
   ink,
   onLayout,
 }: {
-  topRow: { renderLocation?: (ink: SkyInkColors, column?: boolean) => ReactNode; renderQibla?: (ink: SkyInkColors, column?: boolean) => ReactNode };
+  topRow: {
+    renderLocation?: (ink: SkyInkColors, column?: boolean) => ReactNode;
+    renderQibla?: (ink: SkyInkColors, column?: boolean) => ReactNode;
+    renderSettings?: (ink: SkyInkColors) => ReactNode;
+  };
   ink: SkyInkColors;
   onLayout?: (e: LayoutChangeEvent) => void;
 }) {
@@ -136,6 +140,7 @@ const HeroTopRow = memo(function HeroTopRow({
     <View style={styles.heroTopRow} onLayout={onLayout}>
       <View style={styles.heroTopLeading}>{topRow.renderLocation?.(ink)}</View>
       {topRow.renderQibla?.(ink)}
+      {topRow.renderSettings?.(ink)}
     </View>
   );
 });
@@ -320,6 +325,8 @@ export const HeroToday = memo(function HeroToday({
     renderQibla?: (ink: SkyInkColors, column?: boolean) => ReactNode;
     /** Above the countdown, on the sky: the way into Help Mihrab. */
     renderHelp?: (ink: SkyInkColors) => ReactNode;
+    /** The trailing end of the row, on every face: the way into Settings. */
+    renderSettings?: (ink: SkyInkColors) => ReactNode;
   };
   /** The status bar's glyphs follow the sky while this hero is on screen. */
   ownsStatusBar?: boolean;
@@ -1124,13 +1131,15 @@ export const HeroToday = memo(function HeroToday({
           column it keeps is the hero's own, so nothing moves at rest. */}
       <Fore style={minimal ? [styles.heroFore, recess] : undefined}>
       {minimal ? (
-        // Minimal keeps the heart alone, at the trailing end of the top
-        // row where the Qibla chip stood — the way into Help Mihrab, and
-        // (as on the full page) the place to put it away.
-        topRow?.renderHelp ? (
+        // Minimal keeps the heart, at the trailing end of the top row
+        // where the Qibla chip stood — the way into Help Mihrab, and (as
+        // on the full page) the place to put it away — and the cog after
+        // it, the corner Settings has on every face of Today.
+        topRow?.renderHelp || topRow?.renderSettings ? (
           <View style={styles.heroTopRow} onLayout={banded ? onTopRowLayout : undefined}>
             <View style={styles.heroTopLeading} />
-            {topRow.renderHelp(inkRow)}
+            {topRow.renderHelp?.(inkRow)}
+            {topRow.renderSettings?.(inkRow)}
           </View>
         ) : null
       ) : topRow && fill && vbar ? null : topRow ? (

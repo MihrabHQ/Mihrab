@@ -112,9 +112,14 @@ describe('the automatic half', () => {
   });
 
   it('and waits for wifi, because a reciter is a gigabyte', () => {
+    // The rule is shared with the Hadith packs' update check now, and the
+    // watcher has to be using that one and not a copy that can drift.
     const watch = read('src', 'quran', 'quranDownloadResume.ts');
-    expect(watch).toMatch(/type !== 'wifi' && state\.type !== 'ethernet'/);
-    expect(watch).toMatch(/isConnectionExpensive !== true/);
+    expect(watch).toMatch(/import \{ isFreeConnection \} from '\.\.\/utils\/freeConnection'/);
+    expect(watch).not.toMatch(/function isFreeConnection/);
+    const rule = read('src', 'utils', 'freeConnection.ts');
+    expect(rule).toMatch(/type !== 'wifi' && state\.type !== 'ethernet'/);
+    expect(rule).toMatch(/isConnectionExpensive !== true/);
   });
 });
 

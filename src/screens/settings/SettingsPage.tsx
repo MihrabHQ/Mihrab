@@ -14,7 +14,7 @@
 import type { ReactNode, RefObject } from 'react';
 import { useLayoutEffect } from 'react';
 import { ScrollView, StyleSheet, Text, View, type ScrollViewInstance } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { CommonActions, useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppPalette } from '../../hooks/useAppPalette';
@@ -44,20 +44,14 @@ type NavState = {
 } | undefined;
 
 /**
- * Is the route under this one Settings — the tab, or another settings
+ * Is the route under this one Settings — the index, or another settings
  * page? Exported for its test.
  */
 export function previousIsSettings(state: NavState): boolean {
   if (!state || !state.routes.length) return false;
   const index = state.index ?? state.routes.length - 1;
   const prev = state.routes[index - 1];
-  if (!prev) return false;
-  if (prev.name.startsWith('Settings')) return true;
-  if (prev.name !== 'Home') return false;
-  const tabs = prev.state;
-  if (!tabs || !tabs.routes.length) return false;
-  const focused = tabs.routes[tabs.index ?? 0];
-  return focused?.name === 'SettingsTab';
+  return prev != null && prev.name.startsWith('Settings');
 }
 
 export function SettingsPage({ children, deferBackRef }: Props) {
@@ -78,8 +72,9 @@ export function SettingsPage({ children, deferBackRef }: Props) {
   // ref is, to the React Compiler, a ref read while rendering.
   const { ref: kbRef, contentPadding: kbPadding } = useKeyboardAwareScroll<ScrollViewInstance>();
 
+  const isIndex = route.name === 'Settings';
   const page = SETTINGS_STACK_PAGES.find(p => p.route === route.name);
-  const title = t(page?.titleKey ?? route.name);
+  const title = isIndex ? t('nav.settings') : t(page?.titleKey ?? route.name);
   // "‹ Settings" only when back really goes to Settings. A section opened
   // from elsewhere — Downloads from the Quran screen, the reader, a
   // notification — goes back THERE, and its control says so plainly.
@@ -88,14 +83,21 @@ export function SettingsPage({ children, deferBackRef }: Props) {
     ? t(page?.backTitleKey ?? 'nav.settings')
     : t('common.back', 'Back');
   // A page opened by a link on a cold start can be the only route on the
-  // stack (`linking.ts` puts the Settings tab under it, but a link the
-  // navigator could not read would not). Back must still lead somewhere.
+  // stack (`linking.ts` puts Today and the index under it, but a link the
+  // navigator could not read would not). Back must still lead somewhere:
+  // the index from a section, Today from the index.
   const goBack = () => {
     if (navigation.canGoBack()) navigation.goBack();
     else
-      (navigation as unknown as {
-        navigate: (name: 'Home', params: { screen: 'SettingsTab' }) => void;
-      }).navigate('Home', { screen: 'SettingsTab' });
+      navigation.dispatch(
+        CommonActions.reset({
+          index: route.name === 'Settings' ? 0 : 1,
+          routes:
+            route.name === 'Settings'
+              ? [{ name: 'Home' }]
+              : [{ name: 'Home' }, { name: 'Settings' }],
+        }),
+      );
   };
 
   // Own the system navigation band before paint: opaque page colour so

@@ -45,6 +45,7 @@
 import type { JournalEntry } from '../journal/journal';
 import type { FastEntry } from '../fasting/fasting';
 import type { SunnahDay, SunnahLog } from '../journal/sunnah';
+import { mergeHadith } from '../hadith/hadithRecord';
 import type { DhikrLog } from '../practice/practiceStore';
 import {
   applyMarks,
@@ -1036,6 +1037,8 @@ export function mergeData(
         : local.sunnah,
     quran:
       accept.quran && d.quran ? mergeQuran(local.quran, d.quran) : local.quran,
+    hadith:
+      accept.hadith && d.hadith ? mergeHadith(local.hadith, d.hadith) : local.hadith,
     settings:
       accept.settings && d.settings
         ? mergeSettings(local.settings, d.settings, {
@@ -1052,7 +1055,7 @@ export function mergeData(
 
 /** What a merge would change, for a confirmation screen that means it. */
 export type MergeSummary = Record<
-  'prayers' | 'fasting' | 'dhikr' | 'sunnah' | 'bookmarks' | 'khatmah',
+  'prayers' | 'fasting' | 'dhikr' | 'sunnah' | 'bookmarks' | 'khatmah' | 'hadith',
   { before: number; after: number }
 >;
 
@@ -1079,5 +1082,11 @@ export function summarise(
       before: before.quran.khatmah.length,
       after: after.quran.khatmah.length,
     },
+    hadith: { before: readCount(before.hadith), after: readCount(after.hadith) },
   };
+}
+
+/** Hadith marked read, for the summary. */
+function readCount(rec: SnapshotData['hadith']): number {
+  return Object.values(rec.items).filter(m => m.r?.[0] === 1).length;
 }
