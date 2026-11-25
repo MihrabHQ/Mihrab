@@ -74,6 +74,8 @@ const TRAVELS = new Set([
  * thing; "too large" means it is content, not record, and re-downloadable.
  */
 const STAYS: Record<string, string> = {
+  coveredUntil:
+    "not a store — a key in a prayer alert's own data, saying where its schedule ends (notifications/alertCoverage.ts)",
   'mihrab.voiceHint.dismissed':
     'a hint put away on THIS phone — "keep this voice" for a reading; a new phone may as well be told once',
   'log.graph': 'a view, not a record — which of the two graphs the Log draws on THIS phone',

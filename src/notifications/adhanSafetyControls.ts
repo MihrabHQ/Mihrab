@@ -29,6 +29,7 @@ import { syncWidgetTasbihQueue } from '../widget/syncWidgetTasbihQueue';
 import { republishWidgetPayload } from '../widget/republishWidgetPayload';
 import { applyReaderLanguage } from '../i18n/readerLanguage';
 import { anyRowSetToAdhan, withoutAdhan } from '../settings/adhanVoice';
+import { topUpAlertsIfLow } from './alertCoverage';
 
 // Re-exported for back-compat with existing importers.
 export { ADHAN_CONTROLS_CATEGORY_ID, ADHAN_ACTION_STOP, ADHAN_ACTION_DISABLE };
@@ -227,5 +228,9 @@ export function registerAdhanSafetyControls() {
     await applyReaderLanguage().catch(() => undefined);
     if (await handleJournalActions(event)) return;
     await handleAdhanAction(event, false);
+    // Last, and awaited — the task ends when this returns: an alert shown
+    // with little of its schedule left has the next days written
+    // (alertCoverage.ts). After the language, which the alerts are written in.
+    await topUpAlertsIfLow(event);
   });
 }

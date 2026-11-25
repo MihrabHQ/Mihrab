@@ -75,6 +75,7 @@ import {
   oneEventPerInstant,
   startOfLocalDay,
 } from '../utils/prayerTimes';
+import { COVERED_UNTIL_KEY, coveredUntilOf } from './alertCoverage';
 
 /** Sunrise + the two night times are not salāh: default sound, no adhan, no
  *  journal action. The predicate lives in types/prayer beside the list, so
@@ -889,6 +890,10 @@ async function syncPrayerNotificationsNow(params: {
     params.prayerAlertFullScreen === true &&
     (await prayerAlarmAccess()) === 'authorized';
 
+  // Where this schedule ends, carried by each of its alerts: the one shown
+  // with little of it left is what has the next days written (alertCoverage.ts).
+  const coveredUntil = coveredUntilOf(audibleEvents);
+
   for (let i = 0; i < audibleEvents.length; i++) {
     const e = audibleEvents[i];
     const notificationId = `${PRAYER_NOTIFICATION_ID_PREFIX}${e.at.getTime()}-${
@@ -1023,6 +1028,7 @@ async function syncPrayerNotificationsNow(params: {
           // uses it to play the FULL adhan on tap / when the app is open, since
           // iOS caps the notification sound itself at 30s.
           adhanSound: eventSound.id,
+          ...(coveredUntil ? { [COVERED_UNTIL_KEY]: coveredUntil } : {}),
           ...(fullScreen
             ? fullScreenAlarmData(e.name, nextLine, snoozeOptions, endsAt, e.at)
             : {}),

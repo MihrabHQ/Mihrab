@@ -32,7 +32,7 @@ class MainApplication : Application(), ReactApplication, androidx.work.Configura
     androidx.work.Configuration.Builder().build()
 
 
-  override val reactHost: ReactHost by lazy {
+  private val reactHostHolder = lazy {
     getDefaultReactHost(
       context = applicationContext,
       packageList =
@@ -47,11 +47,24 @@ class MainApplication : Application(), ReactApplication, androidx.work.Configura
     )
   }
 
+  override val reactHost: ReactHost
+    get() = reactHostHolder.value
+
+  /**
+   * Whether React Native is up in this process — asked without bringing
+   * it up: reading `reactHost` builds the host and its packages
+   * (AlertEventGate.kt).
+   */
+  fun reactIsRunning(): Boolean =
+    reactHostHolder.isInitialized() && reactHostHolder.value.currentReactContext != null
+
   override fun onCreate() {
     super.onCreate()
     val appStart = SystemClock.uptimeMillis()
     // First: the kept screen decodes while everything below runs.
     LaunchSnapshot.preload(this)
+    // Before any receiver of this process can post a notification's event.
+    AlertEventGate.install(this)
     // ── NO WEBVIEW IN THIS PROCESS ─────────────────────────────────────
     // React Native's HTTP client keeps cookies through android.webkit's
     // CookieManager, and the first fetch of the day (the times, an update

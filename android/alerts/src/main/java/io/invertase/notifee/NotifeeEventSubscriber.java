@@ -1,5 +1,8 @@
 /*
  * Copyright (c) 2016-present Invertase Limited
+ *
+ * Changed by Mihrab (2026-11-25): a notification event with the app not in
+ * front is put to BackgroundEvents before a headless task is started for it.
  */
 
 package io.invertase.notifee;
@@ -38,8 +41,14 @@ public class NotifeeEventSubscriber implements EventListener {
     WritableMap eventDetailMap = Arguments.createMap();
     eventMap.putInt(KEY_TYPE, notificationEvent.getType());
 
-    eventDetailMap.putMap(
-        KEY_NOTIFICATION, Arguments.fromBundle(notificationEvent.getNotification().toBundle()));
+    Bundle notificationBundle = notificationEvent.getNotification().toBundle();
+    // Mihrab: not in front, and nothing for JavaScript to do with this one.
+    if (!isAppInForeground()
+        && !BackgroundEvents.wantsJavaScript(notificationEvent.getType(), notificationBundle)) {
+      return;
+    }
+
+    eventDetailMap.putMap(KEY_NOTIFICATION, Arguments.fromBundle(notificationBundle));
 
     Bundle extras = notificationEvent.getExtras();
     if (extras != null) {
