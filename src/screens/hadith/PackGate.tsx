@@ -11,6 +11,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui';
 import { useAppPalette } from '../../hooks/useAppPalette';
+import { isGradedBook } from '../../hadith/bookGrades';
 import type { PackSummary } from '../../hadith/useHadith';
 import { cancelPack, ensurePacks, fetchManifest, manifestBytes } from '../../hadith/packs';
 import type { Manifest } from '../../hadith/packTypes';
@@ -49,6 +50,8 @@ export function PackGate({ packs, body }: { packs: PackSummary; body?: string })
   const bytes = packsBytes(manifest, packs);
   // "1.0 MB" kept whole in an Arabic sentence: it read "MB 1.0 · تنزيل".
   const rtl = i18n.dir() === 'rtl';
+  const oursOnly =
+    packs.missing.length > 0 && packs.missing.every(k => k.startsWith('books/') && isGradedBook(k.slice('books/'.length)));
 
   if (packs.downloading) {
     return (
@@ -79,7 +82,10 @@ export function PackGate({ packs, body }: { packs: PackSummary; body?: string })
         }
         onPress={() => void ensurePacks(packs.missing)}
       />
-      <Text style={[styles.note, { color: palette.muted }]}>{t('hadith.downloadSourceNote')}</Text>
+      {/* A graded book is our copy or nothing: its source has no grades (`bookGrades.ts`). */}
+      <Text style={[styles.note, { color: palette.muted }]}>
+        {t(oursOnly ? 'hadith.downloadGradedNote' : 'hadith.downloadSourceNote')}
+      </Text>
     </View>
   );
 }

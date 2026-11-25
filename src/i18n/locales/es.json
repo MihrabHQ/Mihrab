@@ -2045,7 +2045,8 @@
     "groupHadith": "Hadiz",
     "hadeethenc": "Textos de hadices, traducciones, explicaciones y enseñanzas, republicados sin modificar",
     "nawawiArabic": "Los cuarenta hadices de an-Nawawi, texto árabe",
-    "openHadithData": "Los nueve libros de hadices, texto árabe"
+    "openHadithData": "Los libros de hadices, texto árabe",
+    "hadithGrades": "Clasificaciones de los hadices de los cuatro Sunan y del Muwatta"
   },
   "liveActivity": {
     "title": "Próxima oración",
@@ -2818,7 +2819,7 @@
       "depth": "Estudio más profundo"
     },
     "welcomeTitle": "Descarga los hadices",
-    "welcomeBody": "Una sola descarga trae los hadices de HadeethEnc en tu idioma, cada uno con su significado y su explicación, y los Cuarenta de an-Nawawi. Después, todas las colecciones, los temas y la búsqueda funcionan sin conexión. Los nueve libros en árabe se descargan por separado.",
+    "welcomeBody": "Una sola descarga trae los hadices de HadeethEnc en tu idioma, cada uno con su significado y su explicación, y los Cuarenta de an-Nawawi. Después, todas las colecciones, los temas y la búsqueda funcionan sin conexión. Los libros en árabe se descargan por separado.",
     "continueReading": "Seguir leyendo",
     "bookmarks": "Marcadores",
     "noBookmarks": "Aún no hay marcadores. Toca la estrella bajo un hadiz para guardarlo aquí.",
@@ -2829,9 +2830,9 @@
     "topics": "Temas",
     "entries": "Hadices: {{count}}",
     "books": "Los libros",
-    "booksNote": "Las colecciones completas, en árabe, de Open-Hadith-Data. Cada una se descarga por separado.",
+    "booksNote": "En árabe, de Open-Hadith-Data. Sahih al-Bujari y Sahih Muslim están completos; los otros cinco contienen solo los hadices que sus sabios clasifican como sahih o hasan. Cada uno se descarga por separado.",
     "onDevice": "Descargado",
-    "attribution": "Textos, traducciones y explicaciones: HadeethEnc.com. Los Cuarenta de an-Nawawi en árabe: fawazahmed0/hadith-api. Los nueve libros: Open-Hadith-Data (ODbL).",
+    "attribution": "Textos, traducciones y explicaciones: HadeethEnc.com. Los Cuarenta de an-Nawawi en árabe: fawazahmed0/hadith-api. Los libros: Open-Hadith-Data (ODbL). Sus clasificaciones: fawazahmed0/hadith-api.",
     "needsDownload": "Esta lista aún no está en tu dispositivo.",
     "download": "Descargar",
     "downloadSize": "Descargar · {{size}}",
@@ -2929,9 +2930,7 @@
       "tirmidhi": "Jami' at-Tirmidhi",
       "nasai": "Sunan an-Nasa'i",
       "ibnmajah": "Sunan Ibn Majah",
-      "malik": "Al-Muwatta de Malik",
-      "darimi": "Sunan ad-Darimi",
-      "ahmad": "Musnad Ahmad"
+      "malik": "Al-Muwatta de Malik"
     },
     "packStarter": "Colecciones iniciales",
     "packCategories": "Índice de temas",
@@ -2941,7 +2940,7 @@
     "levelLine": "Sugerido para: {{level}}",
     "change": "Cambiar",
     "pickDirect": "Elige por tu cuenta",
-    "pickDirectNote": "Cualquier tema, o uno de los nueve libros.",
+    "pickDirectNote": "Cualquier tema, o uno de los libros.",
     "allSets": "Todas las colecciones",
     "allTopics": "Todos los temas",
     "hub": {
@@ -2982,6 +2981,10 @@
     "reportPrompt": "¿Qué está mal? (una palabra, la traducción, la clasificación, el número…)",
     "arabicTag": "Árabe",
     "refNeedsBookArabic": "{{book}} no está descargado y solo está en árabe. Ábrelo para descargarlo.",
-    "bookNeedsDownload": "Este libro solo está en árabe, sin traducción. Aún no está en tu dispositivo."
+    "bookNeedsDownload": "Este libro solo está en árabe, sin traducción. Aún no está en tu dispositivo.",
+    "gradedBookNote": "Este libro contiene aquí solo los hadices que todos los sabios que los clasificaron consideran sahih o hasan. Un hadiz que alguno de ellos considera débil, o que no tiene clasificación, queda fuera. En cada hadiz se muestra la clasificación de cada sabio, tal como figura en fawazahmed0/hadith-api.",
+    "sahihCollectionNote": "{{book}} está aceptado como auténtico (sahih) en su conjunto. Aquí sus hadices no se clasifican uno por uno.",
+    "refNotServed": "Aquí no hay ningún hadiz con el número {{n}} de {{book}}. Puede ser uno de los que quedan fuera: solo se incluyen los hadices que todos los sabios clasifican como sahih o hasan.",
+    "downloadGradedNote": "Se descarga de la copia de Mihrab en GitHub. Elimínalo cuando quieras en Ajustes → Descargas."
   }
 }

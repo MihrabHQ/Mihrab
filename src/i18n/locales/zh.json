@@ -2044,7 +2044,8 @@
     "groupHadith": "圣训",
     "hadeethenc": "圣训原文、译文、讲解与教益，未经改动转载",
     "nawawiArabic": "《奈瓦维四十段圣训》，阿拉伯文原文",
-    "openHadithData": "九部圣训典籍，阿拉伯文原文"
+    "openHadithData": "圣训典籍，阿拉伯文原文",
+    "hadithGrades": "四部《苏南》与《穆宛塔》中圣训的等级"
   },
   "liveActivity": {
     "title": "下一次礼拜",
@@ -2817,7 +2818,7 @@
       "depth": "深入学习"
     },
     "welcomeTitle": "下载圣训",
-    "welcomeBody": "一次下载，即可获得 HadeethEnc 提供的你所用语言的圣训，每段都附有释义和讲解，另含《奈瓦维四十段圣训》。此后，所有合集、主题和搜索均可离线使用。九部阿拉伯文典籍需分别单独下载。",
+    "welcomeBody": "一次下载，即可获得 HadeethEnc 提供的你所用语言的圣训，每段都附有释义和讲解，另含《奈瓦维四十段圣训》。此后，所有合集、主题和搜索均可离线使用。阿拉伯文典籍需分别单独下载。",
     "continueReading": "继续阅读",
     "bookmarks": "书签",
     "noBookmarks": "还没有书签。点按圣训下方的星标，即可将其保存在这里。",
@@ -2828,9 +2829,9 @@
     "topics": "主题",
     "entries": "{{count}} 段圣训",
     "books": "典籍",
-    "booksNote": "完整的阿拉伯文合集，来自 Open-Hadith-Data。每部需单独下载。",
+    "booksNote": "阿拉伯文，来自 Open-Hadith-Data。《布哈里圣训实录》和《穆斯林圣训实录》为全本；其余五部仅收录学者评为萨希赫（健全）或哈桑（良好）的圣训。每部需单独下载。",
     "onDevice": "已下载",
-    "attribution": "原文、译文和讲解：HadeethEnc.com。阿拉伯文《奈瓦维四十段圣训》：fawazahmed0/hadith-api。九部典籍：Open-Hadith-Data (ODbL)。",
+    "attribution": "原文、译文和讲解：HadeethEnc.com。阿拉伯文《奈瓦维四十段圣训》：fawazahmed0/hadith-api。典籍：Open-Hadith-Data (ODbL)。其等级：fawazahmed0/hadith-api。",
     "needsDownload": "此列表尚未保存在你的设备上。",
     "download": "下载",
     "downloadSize": "下载 · {{size}}",
@@ -2928,9 +2929,7 @@
       "tirmidhi": "《提尔密济圣训集》",
       "nasai": "《奈萨仪圣训集》",
       "ibnmajah": "《伊本·马哲圣训集》",
-      "malik": "《马立克穆宛塔圣训集》",
-      "darimi": "《达里米圣训集》",
-      "ahmad": "《艾哈迈德穆斯奈德圣训集》"
+      "malik": "《马立克穆宛塔圣训集》"
     },
     "packStarter": "入门合集",
     "packCategories": "主题索引",
@@ -2940,7 +2939,7 @@
     "levelLine": "推荐依据：{{level}}",
     "change": "更改",
     "pickDirect": "自行选择",
-    "pickDirectNote": "任一主题，或九部典籍之一。",
+    "pickDirectNote": "任一主题，或典籍之一。",
     "allSets": "全部合集",
     "allTopics": "全部主题",
     "hub": {
@@ -2981,6 +2980,10 @@
     "reportPrompt": "哪里有误？（某个词、译文、等级、编号……）",
     "arabicTag": "阿拉伯文",
     "refNeedsBookArabic": "{{book}}尚未下载，且仅有阿拉伯文。打开即可下载。",
-    "bookNeedsDownload": "这部经典仅有阿拉伯文，没有译文。它尚未保存在你的设备上。"
+    "bookNeedsDownload": "这部经典仅有阿拉伯文，没有译文。它尚未保存在你的设备上。",
+    "gradedBookNote": "本典籍在此仅收录每一位作出评定的学者都评为萨希赫（健全）或哈桑（良好）的圣训。凡有任何一位学者评为羸弱、或没有评定的圣训，均未收录。每段圣训都显示各位学者自己的评定，依 fawazahmed0/hadith-api 所载。",
+    "sahihCollectionNote": "{{book}}作为一部圣训集被公认为健全（萨希赫）。此处未对其中的圣训逐段评定。",
+    "refNotServed": "此处未收录{{book}}的第 {{n}} 段圣训。它可能属于未收录之列：仅收录每位学者都评为萨希赫（健全）或哈桑（良好）的圣训。",
+    "downloadGradedNote": "从 Mihrab 在 GitHub 上的副本下载。可随时在“设置 → 下载”中删除。"
   }
 }

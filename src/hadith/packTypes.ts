@@ -3,6 +3,7 @@
  * writes them and as `origin.ts` rebuilds them when our copy cannot be
  * reached. One shape, whichever of the two a file came from.
  */
+import { validBookFile, type BookRow } from './bookGrades';
 
 /**
  * A HadeethEnc entry, every value as HadeethEnc sent it; only the keys are
@@ -47,7 +48,20 @@ export type CategoriesFile = { lang: string; retrieved: string; items: CategoryR
 /** `[number | null, Arabic text]`. */
 export type NumberedText = [number | null, string];
 export type NawawiFile = { source: string; retrieved: string; hadiths: NumberedText[] };
-export type BookFile = { book: string; source: string; license: string; retrieved: string; hadiths: NumberedText[] };
+/**
+ * A book. `grades` is there in the five that are graded hadith by hadith
+ * (`bookGrades.ts`): who the graders are, where their verdicts are from
+ * and the rule a row was kept by; `of` is how many rows the source has.
+ */
+export type BookFile = {
+  book: string;
+  source: string;
+  license: string;
+  retrieved: string;
+  hadiths: BookRow[];
+  grades?: { source: string; rule: string; graders: string[] };
+  of?: number;
+};
 
 /** The packs, by their key — also their path under build/hadith/v1 and on the device, less `.json`. */
 export type PackKey =
@@ -64,7 +78,15 @@ export type PackFile = HencPack | CategoriesFile | NawawiFile | BookFile;
  * the one we publish (`packUpdates.ts`). Optional — a manifest written
  * before it had none, and a pack it does not name is left alone.
  */
-export type ManifestEntry = { bytes: number; sha256?: string; count?: number; retrieved?: string };
+export type ManifestEntry = {
+  bytes: number;
+  sha256?: string;
+  count?: number;
+  retrieved?: string;
+  /** A graded book: the rows its source has, and how many were left out, by why. */
+  of?: number;
+  left?: Record<string, number>;
+};
 
 export type Manifest = {
   v: 1;
@@ -83,5 +105,7 @@ export function validPack(key: PackKey, v: unknown): boolean {
     return Array.isArray(v.entries) && v.entries.every(e => isObj(e) && typeof e.id === 'string' && typeof e.h === 'string');
   }
   if (key.startsWith('categories/')) return Array.isArray(v.items) && v.items.length > 0;
+  // A book that is offered, and where it is graded, sound in every row.
+  if (key.startsWith('books/')) return validBookFile(key.slice('books/'.length), v);
   return Array.isArray(v.hadiths) && v.hadiths.length > 0 && v.hadiths.every(h => Array.isArray(h) && typeof h[1] === 'string');
 }

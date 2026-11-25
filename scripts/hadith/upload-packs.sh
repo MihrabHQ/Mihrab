@@ -26,6 +26,9 @@ TAG="data-hadith-v1"
 REPO="MihrabHQ/Mihrab"
 DRY=0
 [ "${1:-}" = "--dry-run" ] && DRY=1
+# Packs that are no longer built, and so are taken off the release: the two
+# books no open dataset grades (scripts/hadith/build-packs.js, "what is served").
+GONE="books.ahmad.json books.darimi.json"
 
 [ -f "$DIR/manifest.json" ] || { echo "no $DIR/manifest.json — run node scripts/hadith/build-packs.js first" >&2; exit 1; }
 
@@ -33,8 +36,10 @@ NOTES="Mihrab's copy of the Hadith packs the app downloads on request (Hadith ta
 
 Sources and terms:
 • HadeethEnc.com — Encyclopedia of Translated Prophetic Hadiths (https://hadeethenc.com): texts, translations, explanations, benefits, grades and topics, republished unmodified with credit. Packs henc.*.json and categories.*.json.
-• Open-Hadith-Data (https://github.com/mhashim6/Open-Hadith-Data): the nine books in vowelled Arabic, matn column only. Licensed under the Open Database License 1.0 (https://opendatacommons.org/licenses/odbl/1-0/), contents under the Database Contents License 1.0; packs books.*.json are a derived database under the ODbL.
-• fawazahmed0/hadith-api (https://github.com/fawazahmed0/hadith-api): the Arabic text and numbering of an-Nawawi's Forty only (public domain). Pack nawawi.ar.json.
+• Open-Hadith-Data (https://github.com/mhashim6/Open-Hadith-Data): seven books in vowelled Arabic, matn column only. Licensed under the Open Database License 1.0 (https://opendatacommons.org/licenses/odbl/1-0/), contents under the Database Contents License 1.0; packs books.*.json are a derived database under the ODbL.
+• fawazahmed0/hadith-api (https://github.com/fawazahmed0/hadith-api): the Arabic text and numbering of an-Nawawi's Forty (public domain; pack nawawi.ar.json), and the graders' verdicts on the hadith of the four Sunan and the Muwatta, as it records them (in packs books.abudawud, books.tirmidhi, books.nasai, books.ibnmajah and books.malik).
+
+What is served: only sound hadith. A HadeethEnc entry whose Arabic grade does not call it sound is left out. Sahih al-Bukhari and Sahih Muslim are whole, on the standing of the collections. Of the four Sunan and the Muwatta, a pack holds only the hadith that every grader who ruled on it calls sahih or hasan; manifest.json says how many of each book that is and how many were left out. Musnad Ahmad and Sunan ad-Darimi are not published: no open dataset grades them. The grades are as hadith-api records them and have not been checked against the printed works.
 
 Mihrab is independent and not affiliated with any of these projects."
 
@@ -88,6 +93,22 @@ if [ $failed -gt 0 ]; then
   exit 1
 fi
 upload "$STAGE/manifest.json"
+
+# After the manifest that stopped naming them. The release's notes are set
+# again too: they say what is served.
+removed=0
+for name in $GONE; do
+  grep -q "^$name " "$EXISTING" || continue
+  if [ $DRY -eq 1 ]; then
+    echo "would remove $name"
+  elif ! gh release delete-asset "$TAG" "$name" -R "$REPO" --yes >/dev/null 2>&1; then
+    echo "FAILED to remove $name" >&2
+    continue
+  fi
+  removed=$((removed + 1))
+done
+[ $DRY -eq 1 ] || gh release edit "$TAG" -R "$REPO" --notes "$NOTES" >/dev/null 2>&1 || echo "the release's notes were not updated" >&2
+[ $removed -eq 0 ] || echo "removed: $removed no longer published"
 
 echo "done: $uploaded uploaded, $skipped unchanged ($count assets)"
 [ $DRY -eq 1 ] || gh release view "$TAG" -R "$REPO" --json assets --jq '.assets | length' | xargs echo "assets on release:"

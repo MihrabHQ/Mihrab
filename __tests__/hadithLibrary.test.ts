@@ -98,7 +98,10 @@ beforeAll(() => {
     source: 'Open-Hadith-Data',
     license: 'ODbL-1.0',
     retrieved: '2026-11-25',
-    hadiths: [[11, MALIK_11]],
+    // A graded book: the row's place in the source's file, and each grader's verdict.
+    hadiths: [[11, MALIK_11, 27, [[0, 'Mauquf Sahih']]]],
+    grades: { source: 'fawazahmed0/hadith-api', rule: 'sound-by-all', graders: ['Salim al-Hilali'] },
+    of: 1594,
   };
 });
 

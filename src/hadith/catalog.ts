@@ -5,7 +5,8 @@
  *
  * An entry is `h:<HadeethEnc id>`, `n:<number>` for one of an-Nawawi's
  * Forty that HadeethEnc does not hold (Arabic only), or
- * `b:<book>:<index>` for a hadith of one of the nine books. A list is
+ * `b:<book>:<index>` for a hadith of one of the books — `index` is its
+ * place in Open-Hadith-Data's file, not in our pack. A list is
  * `set:<id>` (a curated set, `sets.json`), `hub:<id>` (one of Look up's
  * tiles: a few HadeethEnc topics under a name of ours), `cat:<id>` (a
  * HadeethEnc topic) or `book:<id>`. The reader's record keys on these, so
@@ -17,8 +18,12 @@
  * was eight — a starter set and a pack a topic — and every tile in Browse
  * met the reader with another download, and search found only what the
  * tiles already opened had happened to bring. One tap now, and every set,
- * topic and search has everything. The nine books stay a pack each: they
- * are 5–24 MB apiece and few readers want all nine.
+ * topic and search has everything. The books stay a pack each: they are
+ * megabytes apiece and few readers want all seven.
+ *
+ * Seven, of the nine: Musnad Aḥmad and Sunan ad-Dārimī are not offered,
+ * and five of the seven hold only the hadith their graders call sound
+ * (`bookGrades.ts`).
  *
  * A browser keeps nothing between visits and can only rebuild a pack from
  * HadeethEnc one entry a request (`origin.ts`), so there the packs stay
@@ -34,6 +39,7 @@
 import SETS from './sets.json';
 import NAWAWI from './nawawi40.json';
 import { IS_WEB_APP } from '../config/webApp';
+import { ALL_BOOKS, SAHIH_BOOKS } from './bookGrades';
 import type { CategoryRow, PackKey } from './packTypes';
 
 export type Level = 'starting' | 'building' | 'depth';
@@ -75,8 +81,12 @@ export const HADITH_HUBS: readonly HadithHub[] = SETS.hubs as HadithHub[];
 export const ROOT_TOPICS: readonly string[] = SETS.roots;
 /** HadeethEnc's root for jurisprudence: every list under it carries the note. */
 export const FIQH_ROOT = '4';
-/** The nine books, in the order Browse shows them. */
-export const BOOKS: readonly string[] = SETS.books;
+/**
+ * The books, in the order Browse shows them. A browser is offered the two
+ * it can fetch from their source; the graded five are our copy only, which
+ * it cannot read (`bookGrades.ts`).
+ */
+export const BOOKS: readonly string[] = IS_WEB_APP ? ALL_BOOKS.filter(b => SAHIH_BOOKS.includes(b)) : ALL_BOOKS;
 /** an-Nawawi's number → HadeethEnc id, where it has one. */
 export const NAWAWI_CROSSWALK: ReadonlyArray<{ n: number; henc: string | null }> = NAWAWI;
 

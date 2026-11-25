@@ -9,6 +9,14 @@
  * Open-Hadith-Data's vowelled matn column for the books. A HadeethEnc pack
  * is one request per entry, so this is slower than our copy by design; it
  * exists so a pack can still be had when GitHub cannot be.
+ *
+ * ── WHAT IS NOT REBUILT ────────────────────────────────────────────────
+ *
+ * Only what may be served (`bookGrades.ts`, `grade.ts`). The four Sunan
+ * and the Muwaṭṭaʾ are not rebuilt at all: Open-Hadith-Data's file is
+ * every hadith of the book with no grade, and which of them are sound is
+ * in our copy alone. A HadeethEnc entry its Arabic grade does not call
+ * sound is left out, as it is from our copy.
  */
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { Platform } from 'react-native';
@@ -25,7 +33,9 @@ import type {
   PackKey,
 } from './packTypes';
 import { findSet, NAWAWI_CROSSWALK, ROOT_TOPICS, WHOLE_PACK } from './catalog';
-import { gradeClass } from './grade';
+import { SAHIH_BOOKS } from './bookGrades';
+import { gradeClass, servedGrade } from './grade';
+import WITHHELD from './withheld.json';
 import { reportedInSahihayn } from './sahihayn';
 
 export const HADEETHENC_API = 'https://hadeethenc.com/api/v1';
@@ -33,18 +43,18 @@ export const NAWAWI_ARABIC_URL =
   'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-nawawi.min.json';
 export const OPEN_HADITH_DATA = 'https://raw.githubusercontent.com/mhashim6/Open-Hadith-Data/master';
 
-/** Open-Hadith-Data's folder and file for each book. */
+/**
+ * Open-Hadith-Data's folder and file for each book that is rebuilt from
+ * it: the two that are served whole. The graded five have no entry here,
+ * on purpose (the header).
+ */
 export const BOOK_FILES: Readonly<Record<string, string>> = {
   bukhari: 'Sahih_Al-Bukhari/sahih_al-bukhari_ahadith_mushakkala_mufassala',
   muslim: 'Sahih_Muslim/sahih_muslim_ahadith_mushakkala_mufassala',
-  abudawud: 'Sunan_Abu-Dawud/sunan_abu-dawud_ahadith_mushakkala_mufassala',
-  tirmidhi: 'Sunan_Al-Tirmidhi/sunan_al-tirmidhi_ahadith_mushakkala_mufassala',
-  nasai: 'Sunan_Al-Nasai/sunan_al-nasai_ahadith_mushakkala_mufassala',
-  ibnmajah: 'Sunan_Ibn-Maja/sunan_ibn-maja_ahadith_mushakkala_mufassala',
-  malik: 'Maliks_Muwataa/maliks_muwataa_ahadith_mushakkala_mufassala',
-  darimi: 'Sunan_Al-Darimi/sunan_al-darimi_ahadith_mushakkala_mufassala',
-  ahmad: 'Musnad_Ahmad_Ibn-Hanbal/musnad_ahmad_ibn-hanbal_ahadith_mushakkala',
 };
+
+/** The HadeethEnc ids not served on the day the packs were last built (`grade.ts`). */
+const WITHHELD_IDS: ReadonlySet<string> = new Set(WITHHELD.henc);
 
 type Progress = (done: number, total: number) => void;
 type Signal = { cancelled: boolean };
@@ -83,7 +93,19 @@ type ApiOne = {
   reference?: string;
   /** HadeethEnc's Arabic attribution, beside a translation's own. */
   attribution_ar?: string;
+  /** The Arabic grade a translation was made with. */
+  grade_ar?: string;
 };
+
+/**
+ * Is this entry served? Not one the builder found unsound in the Arabic,
+ * and not one whose own Arabic grade says so — a translation's, which can
+ * be an older one, is the nearest thing to the Arabic entry there is here.
+ */
+export function servedEntry(lang: string, d: ApiOne): boolean {
+  if (WITHHELD_IDS.has(String(d.id))) return false;
+  return servedGrade(lang === 'ar' ? d.grade : d.grade_ar);
+}
 
 /** The same mapping as the build script's `packEntry`. */
 export function packEntry(lang: string, d: ApiOne): HencEntry {
@@ -172,7 +194,7 @@ export async function buildHencPack(pack: string, lang: string, onProgress: Prog
       try {
         const d = (await getJson(`${HADEETHENC_API}/hadeeths/one/?language=${lang}&id=${id}`)) as ApiOne;
         // A list can name an entry the language does not have yet.
-        if (d?.id && d.hadeeth) entries.push(packEntry(lang, d));
+        if (d?.id && d.hadeeth && servedEntry(lang, d)) entries.push(packEntry(lang, d));
       } catch (e) {
         if (!(e instanceof SourceStatusError && e.status === 404)) holes++;
       }
@@ -287,8 +309,9 @@ export function cleanMatn(s: string): string {
 }
 
 async function buildBook(book: string, onProgress: Progress, signal: Signal): Promise<BookFile> {
-  const file = BOOK_FILES[book];
-  if (!file) throw new Error(`unknown book ${book}`);
+  const file = SAHIH_BOOKS.includes(book) ? BOOK_FILES[book] : undefined;
+  // A graded book is our copy or nothing: its source has no grades.
+  if (!file) throw new Error(`${book} is not rebuilt from its source`);
   const url = `${OPEN_HADITH_DATA}/${file}.utf8.csv`;
   const reader = new CsvMatnReader();
   if (Platform.OS === 'web') {

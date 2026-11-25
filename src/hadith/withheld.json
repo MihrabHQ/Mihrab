@@ -1,0 +1,8 @@
+{
+ "note": "HadeethEnc entries its Arabic grade does not call sound, and so not served. Written by scripts/hadith/build-packs.js; do not edit.",
+ "asOf": "2026-11-25",
+ "henc": [
+  "10877",
+  "65065"
+ ]
+}

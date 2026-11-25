@@ -18,18 +18,34 @@
  *     every field is copied as the API returns it: no trimming, no
  *     re-wording, no merging of fields. The retrieval date is the version
  *     the API offers, and it is written into every pack.
- *   • Open-Hadith-Data (github.com/mhashim6/Open-Hadith-Data) — the nine
- *     canonical books in vowelled Arabic, ODbL 1.0 / DbCL 1.0. Only the
- *     matn column is taken (the second column is a commentary), the
- *     direction marks the editors put round narrators' names are removed,
- *     and the result is ODbL like its source (the release's NOTICE.txt).
- *   • fawazahmed0/hadith-api — ONLY the Arabic of an-Nawawi's Forty, a
- *     public-domain classical text, and its numbering. Never its English
- *     or any other translation: those are scraped from print editions that
- *     are still under copyright.
+ *   • Open-Hadith-Data (github.com/mhashim6/Open-Hadith-Data) — seven of
+ *     the nine canonical books in vowelled Arabic, ODbL 1.0 / DbCL 1.0.
+ *     Only the matn column is taken (the second column is a commentary),
+ *     the direction marks the editors put round narrators' names are
+ *     removed, and the result is ODbL like its source (the release's
+ *     NOTICE.txt).
+ *   • fawazahmed0/hadith-api — the Arabic of an-Nawawi's Forty, a
+ *     public-domain classical text, and its numbering; and, for the four
+ *     Sunan and the Muwaṭṭaʾ, each hadith's GRADES: a grader's name and
+ *     his verdict (book-grades.js). Never its English or any other
+ *     translation: those are scraped from print editions that are still
+ *     under copyright.
  *
  * Nothing scraped from sunnah.com, Dorar, OpenITI or a print translation
  * is ever read here.
+ *
+ * WHAT IS SERVED — the maintainer's rule (2026-11-25): no hadith that is
+ * weak, disputed or ungraded.
+ *
+ *   • HadeethEnc: an entry whose Arabic grade today does not say it is
+ *     sound, or says anywhere that it is weak, is left out of every
+ *     language's pack (`servedGrade`). The ids go to
+ *     src/hadith/withheld.json for the app.
+ *   • al-Bukhārī and Muslim: whole, on the standing of the collections.
+ *   • The four Sunan and the Muwaṭṭaʾ: only a hadith every grader who
+ *     ruled on it calls ṣaḥīḥ or ḥasan (book-grades.js).
+ *   • Musnad Aḥmad and Sunan ad-Dārimī: no pack. No open dataset grades
+ *     them, and an ungraded book is not served.
  *
  * Every response is cached under scripts/hadith/.cache, so a run that is
  * stopped picks up where it was, and a second run costs nothing.
@@ -53,7 +69,11 @@ const WHOLE = 'all';
 /** The app's thirteen languages; HadeethEnc uses the same codes. */
 const APP_LANGS = ['en', 'sv', 'ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh'];
 
-/** The nine books, as Open-Hadith-Data names their folders and files. */
+/**
+ * The books there is a pack of, as Open-Hadith-Data names their folders
+ * and files. It has Musnad Aḥmad and Sunan ad-Dārimī as well; they are
+ * not built (above).
+ */
 const BOOKS = {
   bukhari: { dir: 'Sahih_Al-Bukhari', file: 'sahih_al-bukhari_ahadith_mushakkala_mufassala' },
   muslim: { dir: 'Sahih_Muslim', file: 'sahih_muslim_ahadith_mushakkala_mufassala' },
@@ -62,9 +82,10 @@ const BOOKS = {
   nasai: { dir: 'Sunan_Al-Nasai', file: 'sunan_al-nasai_ahadith_mushakkala_mufassala' },
   ibnmajah: { dir: 'Sunan_Ibn-Maja', file: 'sunan_ibn-maja_ahadith_mushakkala_mufassala' },
   malik: { dir: 'Maliks_Muwataa', file: 'maliks_muwataa_ahadith_mushakkala_mufassala' },
-  darimi: { dir: 'Sunan_Al-Darimi', file: 'sunan_al-darimi_ahadith_mushakkala_mufassala' },
-  ahmad: { dir: 'Musnad_Ahmad_Ibn-Hanbal', file: 'musnad_ahmad_ibn-hanbal_ahadith_mushakkala' },
 };
+const { GRADED_BOOKS, gradesUrl, gradeBook } = require('./book-grades');
+/** How a graded book's rows were chosen, as its pack says it. */
+const BOOK_RULE = 'sound-by-all';
 
 // ── Arguments ──────────────────────────────────────────────────────────
 
@@ -220,6 +241,23 @@ function agreedGradeClass(gradeAr, currentAr) {
   const q = gradeClass(gradeAr);
   return q && gradeClass(currentAr) === q ? q : 0;
 }
+
+/**
+ * Is an entry served at all — does HadeethEnc's Arabic grade say it is
+ * sound, and nowhere that it is weak? The same rule as `servedGrade` in
+ * src/hadith/grade.ts, which has what it is for
+ * (__tests__/hadithBookGrades.test.ts holds the two together).
+ */
+// served-rule:start
+const SERVED_WEAK = /ضعيف|ضعف|موضوع|منكر|باطل|شاذ|لا يصح|لم يصح|لا يثبت|لم يثبت|غير صحيح|ليس بصحيح|لا اصل/;
+const SERVED_SOUND = /صحيح|حسن|صحح/;
+function servedGrade(gradeAr) {
+  const g = String(gradeAr ?? '')
+    .replace(/[\u064B-\u0652\u0640]/g, '')
+    .replace(/[أإآ]/g, 'ا');
+  return SERVED_SOUND.test(g) && !SERVED_WEAK.test(g);
+}
+// served-rule:end
 
 const hencOne = (lang, id) =>
   cachedJson(`henc-one-${lang}-${id}.json`, `${HENC}/hadeeths/one/?language=${lang}&id=${id}`);
@@ -434,6 +472,11 @@ async function main() {
         url: 'https://github.com/fawazahmed0/hadith-api',
         license: 'Public-domain classical text; Arabic only.',
       },
+      bookGrades: {
+        name: "The graders' verdicts on the four Sunan and the Muwatta, as recorded in fawazahmed0/hadith-api",
+        url: 'https://github.com/fawazahmed0/hadith-api',
+        rule: 'A hadith is in its pack only when every grader who ruled on it calls it sahih or hasan.',
+      },
     },
     henc: old?.henc ?? {},
     books: old?.books ?? {},
@@ -521,6 +564,33 @@ async function main() {
     const translated = new Map(ids.map((id, i) => [id, arEntries[i]?.translations ?? []]));
     /** The Arabic entry's grade as it stands: a translation's class must agree with it. */
     const gradeNow = new Map(arEntries.filter(Boolean).map(d => [String(d.id), d.grade]));
+    // What is not served, in any language: by the Arabic entry's grade today.
+    const withheld = arEntries
+      .filter(d => d && d.id && d.hadeeth && !servedGrade(d.grade))
+      .map(d => String(d.id))
+      .sort((a, b) => Number(a) - Number(b));
+    const isWithheld = new Set(withheld);
+    for (const id of withheld) console.log(`  not served: ${id} — ${String(gradeNow.get(id)).replace(/\s+/g, ' ').slice(0, 80)}`);
+    for (const set of SETS.sets) {
+      const lost = (set.ids ?? []).filter(id => isWithheld.has(id));
+      if (lost.length) throw new Error(`set ${set.id} holds entries that are not served: ${lost.join(', ')}. Take them out of src/hadith/sets.json.`);
+    }
+    const lostForty = cross.filter(c => c.henc && isWithheld.has(c.henc));
+    if (lostForty.length) throw new Error(`an-Nawawi's Forty: HadeethEnc does not grade ${lostForty.map(c => c.n).join(', ')} sound.`);
+    // The app's copy: a pack rebuilt on the device from a translation has
+    // not got the Arabic entry to ask (src/hadith/grade.ts).
+    fs.writeFileSync(
+      path.join(ROOT, 'src', 'hadith', 'withheld.json'),
+      `${JSON.stringify(
+        {
+          note: 'HadeethEnc entries its Arabic grade does not call sound, and so not served. Written by scripts/hadith/build-packs.js; do not edit.',
+          asOf: today,
+          henc: withheld,
+        },
+        null,
+        1,
+      )}\n`,
+    );
     // The packs this replaced are not carried on: out of the manifest, out of the tree.
     for (const pack of Object.keys(manifest.henc)) {
       if (pack === WHOLE) continue;
@@ -532,7 +602,9 @@ async function main() {
       const want = lang === 'ar' ? ids : ids.filter(id => translated.get(id).includes(lang));
       console.log(`  ${lang}: ${want.length}`);
       const raw = lang === 'ar' ? arEntries.filter(Boolean) : (await pool(want, id => hencOne(lang, id))).filter(Boolean);
-      const entries = raw.filter(d => d && d.id && d.hadeeth).map(d => packEntry(lang, d, gradeNow.get(String(d.id))));
+      const entries = raw
+        .filter(d => d && d.id && d.hadeeth && !isWithheld.has(String(d.id)))
+        .map(d => packEntry(lang, d, gradeNow.get(String(d.id))));
       if (lang !== 'ar') {
         const moved = raw.filter(d => d && gradeClass(d.grade_ar) !== gradeClass(gradeNow.get(String(d.id))));
         if (moved.length) console.log(`    graded otherwise in the Arabic today, left out of the grade filter: ${moved.map(d => d.id).join(', ')}`);
@@ -548,19 +620,32 @@ async function main() {
     }
   }
 
+  // A book that is no longer built is not carried on: out of the manifest, out of the tree.
+  for (const id of Object.keys(manifest.books)) {
+    if (BOOKS[id]) continue;
+    delete manifest.books[id];
+    fs.rmSync(path.join(OUT, 'books', `${id}.json`), { force: true });
+  }
+
   if (!has('no-books')) {
     for (const id of Object.keys(BOOKS)) {
       if (ONLY_BOOKS && !ONLY_BOOKS.includes(id)) continue;
       console.log(`book ${id}`);
       const hadiths = await buildBook(id);
-      const bytes = write(`books/${id}.json`, {
-        book: id,
-        source: 'Open-Hadith-Data',
-        license: 'ODbL-1.0',
-        retrieved: today,
-        hadiths,
-      });
-      manifest.books[id] = { count: hadiths.length, bytes, retrieved: today };
+      const file = { book: id, source: 'Open-Hadith-Data', license: 'ODbL-1.0', retrieved: today, hadiths };
+      const entry = { count: hadiths.length, retrieved: today };
+      if (GRADED_BOOKS[id]) {
+        const api = await cachedJson(`hadith-api-${GRADED_BOOKS[id]}.json`, gradesUrl(id));
+        if (!api || !Array.isArray(api.hadiths)) throw new Error(`${id}: no grades from ${gradesUrl(id)}`);
+        const graded = gradeBook(hadiths, api.hadiths);
+        file.hadiths = graded.rows;
+        file.grades = { source: 'fawazahmed0/hadith-api', rule: BOOK_RULE, graders: graded.graders };
+        file.of = graded.of;
+        Object.assign(entry, { count: graded.rows.length, of: graded.of, left: graded.left });
+        console.log(`  ${graded.rows.length} of ${graded.of} served; left out: ${JSON.stringify(graded.left)}`);
+      }
+      entry.bytes = write(`books/${id}.json`, file);
+      manifest.books[id] = entry;
     }
   }
 

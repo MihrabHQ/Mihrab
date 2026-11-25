@@ -22,8 +22,11 @@ import {
   WHOLE_PACK,
   type HadithSet,
 } from './catalog';
+import { isSahihBook, rowIndex, rowVerdicts, type BookRow, type GraderVerdict } from './bookGrades';
+import { servedGrade } from './grade';
 import { loadPack, packsRevision, packStatus, readyPackKeys } from './packs';
 import type { BookFile, CategoriesFile, HencEntry, HencPack, NawawiFile, PackKey } from './packTypes';
+import WITHHELD from './withheld.json';
 
 export type HadithSource = 'hadeethenc' | 'nawawi' | 'book';
 
@@ -40,7 +43,12 @@ export type HadithItem = {
   /** True when the app's language had no translation and English stands in. */
   fallback: boolean;
   attribution?: string;
+  /** HadeethEnc's grade in its words; for a graded book, every grader's verdict on one line. */
   grade?: string;
+  /** A graded book's hadith: each grader and his verdict, as hadith-api records them. */
+  verdicts?: GraderVerdict[];
+  /** al-Bukhārī's or Muslim's: read on the standing of the collection, not graded one by one. */
+  sahihCollection?: boolean;
   explanation?: string;
   hints: string[];
   words: Array<{ word: string; meaning: string }>;
@@ -78,11 +86,26 @@ function readyHencKeys(lang: string): PackKey[] {
     .sort((a, b) => Number(b === whole) - Number(a === whole) || a.localeCompare(b));
 }
 
+/** The HadeethEnc ids not served on the day the packs were last built (`grade.ts`). */
+const WITHHELD_IDS: ReadonlySet<string> = new Set(WITHHELD.henc);
+
+/**
+ * Is an entry of a pack on this device read at all? A pack downloaded
+ * before the rule (`grade.ts`, `servedGrade`) still holds what the rule
+ * leaves out, until it is fetched again; and an Arabic pack says of each
+ * entry, in its own grade, whether it is sound.
+ */
+export function entryServed(e: Pick<HencEntry, 'id' | 'g'>, packLang: string): boolean {
+  if (WITHHELD_IDS.has(e.id)) return false;
+  return packLang !== 'ar' || servedGrade(e.g);
+}
+
 async function indexOf(keys: PackKey[]): Promise<Map<string, HencEntry>> {
   const out = new Map<string, HencEntry>();
   for (const key of keys) {
     const pack = await loadPack<HencPack>(key);
-    for (const e of pack?.entries ?? []) if (!out.has(e.id)) out.set(e.id, e);
+    const lang = key.slice(key.lastIndexOf('/') + 1);
+    for (const e of pack?.entries ?? []) if (!out.has(e.id) && entryServed(e, lang)) out.set(e.id, e);
   }
   return out;
 }
@@ -175,7 +198,7 @@ const SALAWAT = new RegExp(`(?:${['صلى', 'الله', 'عليه', 'وسلم'].
 const SAID = new RegExp(`^(?:[\\s:،.«"“]+|(?:${['قال', 'يقول'].map(written).join('|')})(?=[\\s:،«"“]))+`);
 
 /**
- * A row's title for a hadith of the nine books.
+ * A row's title for a hadith of the books.
  *
  * Open-Hadith-Data gives each hadith as one text, chain of narrators
  * first, and a chain opens the same way seven thousand times ("حدثنا عبد
@@ -200,11 +223,32 @@ export function bookRowTitle(text: string, words = 12): string {
 }
 
 const bookRowsCache = new WeakMap<object, ListRow[]>();
+const bookPlacesCache = new WeakMap<object, Map<number, BookRow>>();
+
+/**
+ * The row an id's index names. An index is the row's place in
+ * Open-Hadith-Data's file (`rowIndex`): in a graded book, which holds
+ * some of that file's rows, not where the row stands in the pack.
+ */
+function bookRowAt(file: BookFile, index: number): BookRow | undefined {
+  let places = bookPlacesCache.get(file);
+  if (!places) {
+    places = new Map(file.hadiths.map((h, at) => [rowIndex(h, at), h]));
+    bookPlacesCache.set(file, places);
+  }
+  return places.get(index);
+}
+
+/** Every grader's verdict on one line: "Al-Albani: Sahih · Zubair Ali Zai: Isnaad Hasan". */
+export function verdictsLine(verdicts: readonly GraderVerdict[]): string | undefined {
+  return verdicts.length ? verdicts.map(v => `${v.grader}: ${v.grade}`).join(' · ') : undefined;
+}
 
 async function bookItem(book: string, index: number): Promise<HadithItem | null> {
   const file = await loadPack<BookFile>(bookKey(book));
-  const row = file?.hadiths[index];
+  const row = file ? bookRowAt(file, index) : undefined;
   if (!row) return null;
+  const verdicts = rowVerdicts(row, file?.grades?.graders);
   return {
     id: `b:${book}:${index}`,
     source: 'book',
@@ -213,6 +257,9 @@ async function bookItem(book: string, index: number): Promise<HadithItem | null>
     text: null,
     textLang: null,
     fallback: false,
+    grade: verdictsLine(verdicts),
+    verdicts: verdicts.length ? verdicts : undefined,
+    sahihCollection: isSahihBook(book) || undefined,
     hints: [],
     words: [],
     categories: [],
@@ -368,7 +415,7 @@ export async function bookRows(book: string): Promise<ListRow[]> {
   if (!file) return [];
   let rows = bookRowsCache.get(file);
   if (!rows) {
-    rows = file.hadiths.map((h, i) => ({ id: `b:${book}:${i}`, title: bookRowTitle(h[1]), number: h[0] }));
+    rows = file.hadiths.map((h, i) => ({ id: `b:${book}:${rowIndex(h, i)}`, title: bookRowTitle(h[1]), number: h[0] }));
     bookRowsCache.set(file, rows);
   }
   return rows;
@@ -667,7 +714,7 @@ export async function searchHadith(query: string, appLang: string, options: Sear
         await breathe();
         if (matches(folded(rows[i], () => rows[i][1]))) {
           hits.push({
-            id: `b:${book}:${i}`,
+            id: `b:${book}:${rowIndex(rows[i], i)}`,
             title: bookRowTitle(rows[i][1]),
             number: rows[i][0],
             where: 'book',

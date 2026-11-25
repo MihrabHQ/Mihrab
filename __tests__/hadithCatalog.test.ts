@@ -65,9 +65,10 @@ describe('the catalog', () => {
     expect(new Set(nawawiIds()).size).toBe(42);
   });
 
-  it('names a source file for each of the nine books', () => {
-    expect(BOOKS).toHaveLength(9);
-    for (const b of BOOKS) expect(BOOK_FILES[b]).toBeTruthy();
+  it('names a source file for the two books that are rebuilt from their source, and for no other', () => {
+    expect(BOOKS).toEqual(['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah', 'malik']);
+    // A graded book is our copy or nothing (`bookGrades.ts`): its source has every hadith and no grade.
+    expect(Object.keys(BOOK_FILES).sort()).toEqual(['bukhari', 'muslim']);
   });
 
   it('has an English title and blurb for every set, topic and book', () => {

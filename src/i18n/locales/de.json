@@ -2044,7 +2044,8 @@
     "groupHadith": "Hadith",
     "hadeethenc": "Hadith-Texte, Übersetzungen, Erläuterungen und Lehren, unverändert wiederveröffentlicht",
     "nawawiArabic": "an-Nawawis vierzig Hadithe, arabischer Text",
-    "openHadithData": "Die neun Hadith-Bücher, arabischer Text"
+    "openHadithData": "Die Hadith-Bücher, arabischer Text",
+    "hadithGrades": "Einstufungen der Hadithe in den vier Sunan und im Muwatta"
   },
   "liveActivity": {
     "title": "Nächstes Gebet",
@@ -2817,7 +2818,7 @@
       "depth": "Vertieftes Studium"
     },
     "welcomeTitle": "Lade die Hadithe herunter",
-    "welcomeBody": "Ein einziger Download bringt die Hadithe von HadeethEnc in deiner Sprache, jeweils mit Bedeutung und Erläuterung, sowie an-Nawawis Vierzig. Danach funktionieren alle Sammlungen, Themen und die Suche offline. Die neun Bücher auf Arabisch werden einzeln heruntergeladen.",
+    "welcomeBody": "Ein einziger Download bringt die Hadithe von HadeethEnc in deiner Sprache, jeweils mit Bedeutung und Erläuterung, sowie an-Nawawis Vierzig. Danach funktionieren alle Sammlungen, Themen und die Suche offline. Die Bücher auf Arabisch werden einzeln heruntergeladen.",
     "continueReading": "Weiterlesen",
     "bookmarks": "Lesezeichen",
     "noBookmarks": "Noch keine Lesezeichen. Tippe auf den Stern unter einem Hadith, um ihn hier aufzubewahren.",
@@ -2828,9 +2829,9 @@
     "topics": "Themen",
     "entries": "Hadithe: {{count}}",
     "books": "Die Bücher",
-    "booksNote": "Die vollständigen Sammlungen auf Arabisch, von Open-Hadith-Data. Jede wird einzeln heruntergeladen.",
+    "booksNote": "Auf Arabisch, von Open-Hadith-Data. Sahih al-Bukhari und Sahih Muslim sind vollständig; die übrigen fünf enthalten nur die Hadithe, die ihre Gelehrten als sahih oder hasan einstufen. Jedes Buch wird einzeln heruntergeladen.",
     "onDevice": "Heruntergeladen",
-    "attribution": "Texte, Übersetzungen und Erläuterungen: HadeethEnc.com. an-Nawawis Vierzig auf Arabisch: fawazahmed0/hadith-api. Die neun Bücher: Open-Hadith-Data (ODbL).",
+    "attribution": "Texte, Übersetzungen und Erläuterungen: HadeethEnc.com. an-Nawawis Vierzig auf Arabisch: fawazahmed0/hadith-api. Die Bücher: Open-Hadith-Data (ODbL). Ihre Einstufungen: fawazahmed0/hadith-api.",
     "needsDownload": "Diese Liste ist noch nicht auf deinem Gerät.",
     "download": "Herunterladen",
     "downloadSize": "Herunterladen · {{size}}",
@@ -2928,9 +2929,7 @@
       "tirmidhi": "Jami' at-Tirmidhi",
       "nasai": "Sunan an-Nasa'i",
       "ibnmajah": "Sunan Ibn Majah",
-      "malik": "Muwatta Malik",
-      "darimi": "Sunan ad-Darimi",
-      "ahmad": "Musnad Ahmad"
+      "malik": "Muwatta Malik"
     },
     "packStarter": "Einstiegssammlungen",
     "packCategories": "Themenverzeichnis",
@@ -2940,7 +2939,7 @@
     "levelLine": "Vorgeschlagen für: {{level}}",
     "change": "Ändern",
     "pickDirect": "Selbst auswählen",
-    "pickDirectNote": "Ein beliebiges Thema oder eines der neun Bücher.",
+    "pickDirectNote": "Ein beliebiges Thema oder eines der Bücher.",
     "allSets": "Alle Sammlungen",
     "allTopics": "Alle Themen",
     "hub": {
@@ -2981,6 +2980,10 @@
     "reportPrompt": "Was stimmt nicht? (ein Wort, die Übersetzung, die Einstufung, die Nummer …)",
     "arabicTag": "Arabisch",
     "refNeedsBookArabic": "{{book}} ist nicht heruntergeladen und nur auf Arabisch vorhanden. Öffne das Buch, um es herunterzuladen.",
-    "bookNeedsDownload": "Dieses Buch gibt es nur auf Arabisch, ohne Übersetzung. Es ist noch nicht auf deinem Gerät."
+    "bookNeedsDownload": "Dieses Buch gibt es nur auf Arabisch, ohne Übersetzung. Es ist noch nicht auf deinem Gerät.",
+    "gradedBookNote": "Dieses Buch enthält hier nur die Hadithe, die jeder Gelehrte, der sie eingestuft hat, als sahih oder hasan bezeichnet. Ein Hadith, den einer von ihnen als schwach einstuft oder der keine Einstufung hat, ist ausgelassen. Bei jedem Hadith stehen die Einstufungen der Gelehrten selbst, wie sie in fawazahmed0/hadith-api verzeichnet sind.",
+    "sahihCollectionNote": "{{book}} gilt als Sammlung als authentisch (sahih). Die einzelnen Hadithe werden hier nicht gesondert eingestuft.",
+    "refNotServed": "Aus {{book}} ist hier kein Hadith mit der Nummer {{n}} enthalten. Er kann zu den ausgelassenen gehören: Enthalten sind nur Hadithe, die jeder Gelehrte als sahih oder hasan einstuft.",
+    "downloadGradedNote": "Heruntergeladen von Mihrabs Kopie auf GitHub. Jederzeit entfernbar unter Einstellungen → Downloads."
   }
 }

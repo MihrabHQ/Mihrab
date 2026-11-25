@@ -70,6 +70,39 @@ export function agreedGradeClass(gradeAr: string | null | undefined, currentAr: 
   return q && gradeClass(currentAr) === q ? q : 0;
 }
 
+/**
+ * Is a HadeethEnc entry SERVED at all?
+ *
+ * The maintainer's rule (2026-11-25): no hadith that is weak or ungraded.
+ * Of 3,574 entries that is two — one HadeethEnc grades "ضعيف", and one
+ * that is two narrations of which it grades one weak — and they are left
+ * out of the packs, of a pack rebuilt on the device (`origin.ts`) and of
+ * what is read from a pack downloaded before the rule (`library.ts`).
+ *
+ * Wider than `gradeClass` on purpose. That one answers "is this ṣaḥīḥ, or
+ * ḥasan, outright?" for a filter, and says nothing of "إسناده حسن" or
+ * "صحيح موقوفًا على ابن عباس"; this one asks only whether HadeethEnc's
+ * grade says the hadith is sound and nowhere that it is weak, and those
+ * are sound. A grade with neither word is not served: ungraded.
+ *
+ * By the ARABIC entry's grade as it stands — a translation carries the
+ * grade it was translated with (above). The ids it leaves out on the day
+ * the packs were built are `withheld.json`, written by the builder, for
+ * the two places that have a translation and not its Arabic entry.
+ *
+ * Leaving an entry out changes nothing in the ones that are republished.
+ */
+// served-rule:start
+const SERVED_WEAK = /ضعيف|ضعف|موضوع|منكر|باطل|شاذ|لا يصح|لم يصح|لا يثبت|لم يثبت|غير صحيح|ليس بصحيح|لا اصل/;
+const SERVED_SOUND = /صحيح|حسن|صحح/;
+export function servedGrade(gradeAr: string | null | undefined): boolean {
+  const g = String(gradeAr ?? '')
+    .replace(/[\u064B-\u0652\u0640]/g, '')
+    .replace(/[أإآ]/g, 'ا');
+  return SERVED_SOUND.test(g) && !SERVED_WEAK.test(g);
+}
+// served-rule:end
+
 export type GradeClass = 1 | 2;
 /** The filter's two choices, and the key each is named by (`hadith.filter.*`). */
 export const GRADE_CLASSES: ReadonlyArray<{ q: GradeClass; key: 'sahih' | 'hasan' }> = [

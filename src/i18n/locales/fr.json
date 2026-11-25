@@ -2045,7 +2045,8 @@
     "groupHadith": "Hadith",
     "hadeethenc": "Textes de hadiths, traductions, explications et enseignements, republiés sans modification",
     "nawawiArabic": "Les quarante hadiths d'an-Nawawi, texte arabe",
-    "openHadithData": "Les neuf livres de hadiths, texte arabe"
+    "openHadithData": "Les livres de hadiths, texte arabe",
+    "hadithGrades": "Degrés des hadiths des quatre Sunan et du Muwatta"
   },
   "liveActivity": {
     "title": "Prochaine prière",
@@ -2818,7 +2819,7 @@
       "depth": "Étude approfondie"
     },
     "welcomeTitle": "Téléchargez les hadiths",
-    "welcomeBody": "Un seul téléchargement apporte les hadiths de HadeethEnc dans votre langue, chacun avec son sens et son explication, ainsi que les Quarante d'an-Nawawi. Toutes les séries, tous les thèmes et la recherche fonctionnent ensuite hors ligne. Les neuf livres en arabe se téléchargent séparément.",
+    "welcomeBody": "Un seul téléchargement apporte les hadiths de HadeethEnc dans votre langue, chacun avec son sens et son explication, ainsi que les Quarante d'an-Nawawi. Toutes les séries, tous les thèmes et la recherche fonctionnent ensuite hors ligne. Les livres en arabe se téléchargent séparément.",
     "continueReading": "Reprendre la lecture",
     "bookmarks": "Signets",
     "noBookmarks": "Aucun signet pour l'instant. Touchez l'étoile sous un hadith pour le garder ici.",
@@ -2829,9 +2830,9 @@
     "topics": "Thèmes",
     "entries": "Hadiths : {{count}}",
     "books": "Les livres",
-    "booksNote": "Les recueils complets, en arabe, issus d'Open-Hadith-Data. Chacun se télécharge séparément.",
+    "booksNote": "En arabe, issus d'Open-Hadith-Data. Sahih al-Boukhari et Sahih Muslim sont complets ; les cinq autres ne contiennent que les hadiths que leurs savants jugent sahih ou hasan. Chacun se télécharge séparément.",
     "onDevice": "Téléchargé",
-    "attribution": "Textes, traductions et explications : HadeethEnc.com. Les Quarante d'an-Nawawi en arabe : fawazahmed0/hadith-api. Les neuf livres : Open-Hadith-Data (ODbL).",
+    "attribution": "Textes, traductions et explications : HadeethEnc.com. Les Quarante d'an-Nawawi en arabe : fawazahmed0/hadith-api. Les livres : Open-Hadith-Data (ODbL). Leurs degrés : fawazahmed0/hadith-api.",
     "needsDownload": "Cette liste n'est pas encore sur votre appareil.",
     "download": "Télécharger",
     "downloadSize": "Télécharger · {{size}}",
@@ -2929,9 +2930,7 @@
       "tirmidhi": "Jami' at-Tirmidhi",
       "nasai": "Sunan an-Nasa'i",
       "ibnmajah": "Sunan Ibn Majah",
-      "malik": "Al-Muwatta de Malik",
-      "darimi": "Sunan ad-Darimi",
-      "ahmad": "Musnad Ahmad"
+      "malik": "Al-Muwatta de Malik"
     },
     "packStarter": "Séries de départ",
     "packCategories": "Index des thèmes",
@@ -2941,7 +2940,7 @@
     "levelLine": "Suggéré pour : {{level}}",
     "change": "Modifier",
     "pickDirect": "Choisir par vous-même",
-    "pickDirectNote": "N'importe quel thème, ou l'un des neuf livres.",
+    "pickDirectNote": "N'importe quel thème, ou l'un des livres.",
     "allSets": "Toutes les séries",
     "allTopics": "Tous les thèmes",
     "hub": {
@@ -2982,6 +2981,10 @@
     "reportPrompt": "Qu'est-ce qui ne va pas ? (un mot, la traduction, le degré d'authenticité, le numéro…)",
     "arabicTag": "Arabe",
     "refNeedsBookArabic": "{{book}} n'est pas téléchargé et n'existe qu'en arabe. Ouvrez-le pour le télécharger.",
-    "bookNeedsDownload": "Ce livre n'existe qu'en arabe, sans traduction. Il n'est pas encore sur votre appareil."
+    "bookNeedsDownload": "Ce livre n'existe qu'en arabe, sans traduction. Il n'est pas encore sur votre appareil.",
+    "gradedBookNote": "Ce livre ne contient ici que les hadiths que tous les savants qui les ont classés jugent sahih ou hasan. Un hadith que l'un d'eux juge faible, ou qui n'a pas de degré, est laissé de côté. Chaque hadith affiche le jugement de chaque savant, tel qu'il figure dans fawazahmed0/hadith-api.",
+    "sahihCollectionNote": "{{book}} est reconnu comme authentique (sahih) en tant que recueil. Ses hadiths ne sont pas classés un par un ici.",
+    "refNotServed": "Aucun hadith portant le numéro {{n}} de {{book}} n'est inclus ici. Il fait peut-être partie de ceux qui sont laissés de côté : seuls les hadiths que tous les savants jugent sahih ou hasan sont inclus.",
+    "downloadGradedNote": "Téléchargé depuis la copie de Mihrab sur GitHub. Supprimez-le à tout moment dans Paramètres → Téléchargements."
   }
 }

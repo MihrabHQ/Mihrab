@@ -27,7 +27,7 @@
  *
  * A translation the app's language does not have is shown in English and
  * says so; an Arabic reader gets the Arabic and the explanation, no
- * translation. The texts of the nine books are Arabic only.
+ * translation. The texts of the books are Arabic only.
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
@@ -251,9 +251,21 @@ export function HadithReaderScreen() {
                     <Text style={[styles.note, { color: palette.muted }]}>{t('hadith.arabicOnlyNote')}</Text>
                   ) : null}
 
+                  {/* al-Bukhārī's and Muslim's: what stands behind the text, since no grade does. */}
+                  {item.sahihCollection && item.book ? (
+                    <Text style={[styles.note, { color: palette.muted }]} testID="hadith-sahih-collection">
+                      {t('hadith.sahihCollectionNote', { book: t(`hadith.book.${item.book}`) })}
+                    </Text>
+                  ) : null}
+
                   <View style={styles.badges}>
                     {read ? <Badge text={t('hadith.read')} solid /> : null}
-                    {item.grade ? <Badge text={item.grade} /> : null}
+                    {/* A graded book: each grader's own verdict, in the source's words. */}
+                    {item.verdicts
+                      ? item.verdicts.map(v => <Badge key={v.grader} text={`${v.grader}: ${v.grade}`} />)
+                      : item.grade
+                        ? <Badge text={item.grade} />
+                        : null}
                     {item.attribution ? <Badge text={item.attribution} muted /> : null}
                     {item.number != null && item.source === 'hadeethenc' ? (
                       <Badge text={t('hadith.nawawiNumber', { n: item.number })} muted />

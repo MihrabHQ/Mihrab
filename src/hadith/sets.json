@@ -36,5 +36,5 @@
     "42": "5456"
   },
   "roots": ["3","4","5","1","7","6","2"],
-  "books": ["bukhari","muslim","abudawud","tirmidhi","nasai","ibnmajah","malik","darimi","ahmad"]
+  "books": ["bukhari","muslim","abudawud","tirmidhi","nasai","ibnmajah","malik"]
 }

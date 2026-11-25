@@ -44,7 +44,9 @@ The hadith are downloaded on request and are not part of the app: texts,
 translations, explanations and lessons from HadeethEnc.com (the Encyclopedia of
 Translated Prophetic Hadiths, https://hadeethenc.com), republished unmodified
 with credit; an-Nawawi's Forty in Arabic from fawazahmed0/hadith-api
-(https://github.com/fawazahmed0/hadith-api); and the nine books in Arabic from
+(https://github.com/fawazahmed0/hadith-api), which is also where the graders'
+verdicts shown on the hadith of the four Sunan and the Muwatta are recorded; and
+seven books in Arabic from
 Open-Hadith-Data (https://github.com/mhashim6/Open-Hadith-Data), made available
 under the Open Database License 1.0 (https://opendatacommons.org/licenses/odbl/1-0/),
 its contents under the Database Contents License 1.0. Mihrab's copies, published

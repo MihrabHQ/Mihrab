@@ -243,10 +243,17 @@ export function AttributionsSettingsScreen() {
     },
     {
       label: t('attributions.openHadithData', {
-        defaultValue: 'The nine books of hadith, Arabic text',
+        defaultValue: 'Books of hadith, Arabic text',
       }),
       sub: 'mhashim6/Open-Hadith-Data · ODbL 1.0 (database), DbCL 1.0 (contents)',
       url: 'https://github.com/mhashim6/Open-Hadith-Data',
+    },
+    {
+      label: t('attributions.hadithGrades', {
+        defaultValue: 'Grades of the hadith in the four Sunan and the Muwatta',
+      }),
+      sub: 'fawazahmed0/hadith-api',
+      url: 'https://github.com/fawazahmed0/hadith-api',
     },
   ];
 

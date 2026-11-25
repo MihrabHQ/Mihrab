@@ -29,7 +29,9 @@ import {
   cancelPack,
   downloadPack,
   ensurePacks,
+  loadPack,
   packStatus,
+  refreshPacks,
   utf8Length,
   type PackStatus,
 } from '../src/hadith/packs';
@@ -37,13 +39,21 @@ import {
 const files = (jest.requireMock('react-native-blob-util') as { __files: Map<string, string> }).__files;
 const config = ReactNativeBlobUtil.config as unknown as jest.Mock;
 
+const MATN = 'إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى';
+/** A book's pack: whole for al-Bukhārī and Muslim, with each row's grades for the graded five. */
 const book = (name: string) =>
   JSON.stringify({
     book: name,
     source: 'Open-Hadith-Data',
     license: 'ODbL-1.0',
     retrieved: '2026-11-25',
-    hadiths: [[1, 'إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى']],
+    ...(name === 'bukhari' || name === 'muslim'
+      ? { hadiths: [[1, MATN]] }
+      : {
+          hadiths: [[1, MATN, 0, [[0, 'Sahih']]]],
+          grades: { source: 'fawazahmed0/hadith-api', rule: 'sound-by-all', graders: ['Al-Albani'] },
+          of: 1,
+        }),
   });
 
 type Transfer = { url: string; path: string; finish: (status?: number) => void; fail: (e: Error) => void; cancelled: boolean; progress?: (received: number, total: number) => void };
@@ -142,7 +152,7 @@ describe('our copy, fetched onto the disk', () => {
 
   it('does not keep what is not the pack', async () => {
     holdTransfers(() => '{"message":"Not Found"}');
-    const done = downloadPack('books/darimi');
+    const done = downloadPack('books/muslim');
     await settle();
     transfers[0].finish();
     await settle();
@@ -150,8 +160,79 @@ describe('our copy, fetched onto the disk', () => {
     expect(transfers[1].url).toContain('raw.githubusercontent.com/mhashim6/Open-Hadith-Data');
     transfers[1].finish(404);
     await expect(done).resolves.toBe(false);
-    expect(packStatus('books/darimi').state).toBe('failed');
-    expect(files.has('/mock/documents/hadith/v1/books/darimi.json')).toBe(false);
+    expect(packStatus('books/muslim').state).toBe('failed');
+    expect(files.has('/mock/documents/hadith/v1/books/muslim.json')).toBe(false);
+  });
+});
+
+describe('a pack that may no longer be read', () => {
+  const at = (key: string) => `/mock/documents/hadith/v1/${key}.json`;
+  /** A book as it was before the rule: every hadith of it, and no grade. */
+  const ungraded = (name: string) =>
+    JSON.stringify({ book: name, source: 'Open-Hadith-Data', license: 'ODbL-1.0', retrieved: '2026-11-20', hadiths: [[1, MATN]] });
+
+  // The shared mock lists a folder's files and not the folders in it; the packs are a tree.
+  const lstat = ReactNativeBlobUtil.fs.lstat as unknown as jest.Mock;
+  const flat = lstat.getMockImplementation();
+  beforeEach(() => {
+    lstat.mockImplementation(async (dir: string) => {
+      const prefix = `${String(dir).replace(/\/$/, '')}/`;
+      const out = new Map<string, { filename: string; size: number; type: string }>();
+      for (const [file, data] of files) {
+        if (!file.startsWith(prefix)) continue;
+        const [name, ...deeper] = file.slice(prefix.length).split('/');
+        out.set(name, deeper.length ? { filename: name, size: 0, type: 'directory' } : { filename: name, size: data.length, type: 'file' });
+      }
+      return [...out.values()];
+    });
+  });
+  afterEach(() => {
+    lstat.mockImplementation(flat);
+  });
+
+  it('is removed when the packs are looked for, where its book is not offered any more', async () => {
+    files.set(at('books/ahmad'), ungraded('ahmad'));
+    files.set(at('books/darimi'), ungraded('darimi'));
+    files.set(at('books/bukhari'), book('bukhari'));
+    await refreshPacks();
+    expect(packStatus('books/ahmad').state).toBe('absent');
+    expect(packStatus('books/darimi').state).toBe('absent');
+    expect(files.has(at('books/ahmad'))).toBe(false);
+    expect(files.has(at('books/darimi'))).toBe(false);
+    // What is still offered is left where it is.
+    expect(packStatus('books/bukhari').state).toBe('ready');
+    expect(files.has(at('books/bukhari'))).toBe(true);
+  });
+
+  it('is removed the moment it is read, where it is a graded book without its grades', async () => {
+    files.set(at('books/abudawud'), ungraded('abudawud'));
+    await refreshPacks();
+    expect(packStatus('books/abudawud').state).toBe('ready');
+    // Not one hadith of it is handed on — the weak ones are in there.
+    await expect(loadPack('books/abudawud')).resolves.toBeNull();
+    expect(files.has(at('books/abudawud'))).toBe(false);
+    // And the book's page offers the download again.
+    expect(packStatus('books/abudawud').state).toBe('absent');
+  });
+
+  it('is not fetched from the source in its place: a graded book is our copy or nothing', async () => {
+    // Our copy answers with the book as it was, ungraded.
+    holdTransfers(() => ungraded('tirmidhi'));
+    const done = downloadPack('books/tirmidhi');
+    await settle();
+    transfers[0].finish();
+    await expect(done).resolves.toBe(false);
+    expect(transfers).toHaveLength(1);
+    expect(mockRequests.filter(u => u.includes('Open-Hadith-Data'))).toEqual([]);
+    expect(packStatus('books/tirmidhi').state).toBe('failed');
+    expect(files.has(at('books/tirmidhi'))).toBe(false);
+  });
+
+  it('is read as before where it is the pack: a graded book with every row sound', async () => {
+    files.set(at('books/malik'), book('malik'));
+    await refreshPacks();
+    await expect(loadPack('books/malik')).resolves.toMatchObject({ book: 'malik', grades: { rule: 'sound-by-all' } });
+    expect(files.has(at('books/malik'))).toBe(true);
   });
 });
 
@@ -182,7 +263,7 @@ describe('Cancel', () => {
 });
 
 describe('a pack rebuilt from HadeethEnc', () => {
-  const entry = (id: string) => ({ id, title: `Title ${id}`, hadeeth: `Text ${id}`, categories: ['88'], hadeeth_ar: 'نص' });
+  const entry = (id: string) => ({ id, title: `Title ${id}`, hadeeth: `Text ${id}`, categories: ['88'], hadeeth_ar: 'نص', grade: 'Authentic', grade_ar: 'صحيح' });
 
   /** No copy of ours: the release answers 404 both ways. */
   function noMirror() {

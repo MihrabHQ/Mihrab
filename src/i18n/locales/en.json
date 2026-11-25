@@ -2044,7 +2044,8 @@
     "groupHadith": "Hadith",
     "hadeethenc": "Hadith texts, translations, explanations and lessons, republished unmodified",
     "nawawiArabic": "an-Nawawi's Forty Hadith, Arabic text",
-    "openHadithData": "The nine books of hadith, Arabic text"
+    "openHadithData": "Books of hadith, Arabic text",
+    "hadithGrades": "Grades of the hadith in the four Sunan and the Muwatta"
   },
   "liveActivity": {
     "title": "Next prayer",
@@ -2817,7 +2818,7 @@
       "depth": "Deeper study"
     },
     "welcomeTitle": "Download the hadith",
-    "welcomeBody": "One download brings HadeethEnc's hadith in your language, each with its meaning and explanation, and an-Nawawi's Forty. Every set, topic and search then works offline. The nine books in Arabic are separate downloads.",
+    "welcomeBody": "One download brings HadeethEnc's hadith in your language, each with its meaning and explanation, and an-Nawawi's Forty. Every set, topic and search then works offline. The books in Arabic are separate downloads.",
     "continueReading": "Continue reading",
     "bookmarks": "Bookmarks",
     "noBookmarks": "Nothing bookmarked yet. Tap the star under a hadith to keep it here.",
@@ -2828,9 +2829,9 @@
     "topics": "Topics",
     "entries": "{{count}} hadith",
     "books": "The books",
-    "booksNote": "The full collections, in Arabic, from Open-Hadith-Data. Each is a separate download.",
+    "booksNote": "In Arabic, from Open-Hadith-Data. Sahih al-Bukhari and Sahih Muslim are whole; the other five hold only the hadith their graders call sahih or hasan. Each is a separate download.",
     "onDevice": "Downloaded",
-    "attribution": "Texts, translations and explanations: HadeethEnc.com. an-Nawawi's Forty in Arabic: fawazahmed0/hadith-api. The nine books: Open-Hadith-Data (ODbL).",
+    "attribution": "Texts, translations and explanations: HadeethEnc.com. an-Nawawi's Forty in Arabic: fawazahmed0/hadith-api. The books: Open-Hadith-Data (ODbL). Their grades: fawazahmed0/hadith-api.",
     "needsDownload": "This list is not on your device yet.",
     "download": "Download",
     "downloadSize": "Download · {{size}}",
@@ -2928,9 +2929,7 @@
       "tirmidhi": "Jami' at-Tirmidhi",
       "nasai": "Sunan an-Nasa'i",
       "ibnmajah": "Sunan Ibn Majah",
-      "malik": "Muwatta Malik",
-      "darimi": "Sunan ad-Darimi",
-      "ahmad": "Musnad Ahmad"
+      "malik": "Muwatta Malik"
     },
     "packStarter": "Starter sets",
     "packCategories": "Topic index",
@@ -2940,7 +2939,7 @@
     "levelLine": "Suggested for: {{level}}",
     "change": "Change",
     "pickDirect": "Choose for yourself",
-    "pickDirectNote": "Any topic, or one of the nine books.",
+    "pickDirectNote": "Any topic, or one of the books.",
     "allSets": "All sets",
     "allTopics": "All topics",
     "hub": {
@@ -2981,6 +2980,10 @@
     "reportPrompt": "What is wrong? (a word, the translation, the grade, the number…)",
     "arabicTag": "Arabic",
     "refNeedsBookArabic": "{{book}} is not downloaded, and is in Arabic only. Open it to download.",
-    "bookNeedsDownload": "This book is in Arabic only, with no translation. It is not on your device yet."
+    "bookNeedsDownload": "This book is in Arabic only, with no translation. It is not on your device yet.",
+    "gradedBookNote": "This book holds only the hadith that every grader who ruled on it calls sahih or hasan. A hadith any of them calls weak, or that has no grade, is left out. Each hadith shows the graders' own verdicts, as recorded in fawazahmed0/hadith-api.",
+    "sahihCollectionNote": "{{book}} is accepted as authentic (sahih) as a collection. Its hadith are not graded one by one here.",
+    "refNotServed": "No hadith numbered {{n}} is included here from {{book}}. It may be one that is left out: only the hadith every grader calls sahih or hasan are included.",
+    "downloadGradedNote": "Downloaded from Mihrab's copy on GitHub. Remove it any time in Settings → Downloads."
   }
 }

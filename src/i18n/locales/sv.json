@@ -2044,7 +2044,8 @@
     "groupHadith": "Hadith",
     "hadeethenc": "Hadithtexter, översättningar, förklaringar och lärdomar, återpublicerade oförändrade",
     "nawawiArabic": "an-Nawawis fyrtio hadither, arabisk text",
-    "openHadithData": "De nio hadithböckerna, arabisk text"
+    "openHadithData": "Hadithböckerna, arabisk text",
+    "hadithGrades": "Graderingar av haditherna i de fyra Sunan-samlingarna och Muwatta"
   },
   "liveActivity": {
     "title": "Nästa bön",
@@ -2817,7 +2818,7 @@
       "depth": "Djupare studier"
     },
     "welcomeTitle": "Ladda ner haditherna",
-    "welcomeBody": "En enda nedladdning ger dig HadeethEncs hadither på ditt språk, var och en med sin betydelse och förklaring, samt an-Nawawis fyrtio. Sedan fungerar alla samlingar, ämnen och sökningar offline. De nio böckerna på arabiska laddas ner var för sig.",
+    "welcomeBody": "En enda nedladdning ger dig HadeethEncs hadither på ditt språk, var och en med sin betydelse och förklaring, samt an-Nawawis fyrtio. Sedan fungerar alla samlingar, ämnen och sökningar offline. Böckerna på arabiska laddas ner var för sig.",
     "continueReading": "Fortsätt läsa",
     "bookmarks": "Bokmärken",
     "noBookmarks": "Inga bokmärken än. Tryck på stjärnan under en hadith för att spara den här.",
@@ -2828,9 +2829,9 @@
     "topics": "Ämnen",
     "entries": "Hadither: {{count}}",
     "books": "Böckerna",
-    "booksNote": "De fullständiga samlingarna, på arabiska, från Open-Hadith-Data. Varje bok laddas ner för sig.",
+    "booksNote": "På arabiska, från Open-Hadith-Data. Sahih al-Bukhari och Sahih Muslim är fullständiga; de fem övriga innehåller bara de hadither som deras granskare kallar sahih eller hasan. Varje bok laddas ner för sig.",
     "onDevice": "Nedladdad",
-    "attribution": "Texter, översättningar och förklaringar: HadeethEnc.com. an-Nawawis fyrtio på arabiska: fawazahmed0/hadith-api. De nio böckerna: Open-Hadith-Data (ODbL).",
+    "attribution": "Texter, översättningar och förklaringar: HadeethEnc.com. an-Nawawis fyrtio på arabiska: fawazahmed0/hadith-api. Böckerna: Open-Hadith-Data (ODbL). Deras graderingar: fawazahmed0/hadith-api.",
     "needsDownload": "Den här listan finns inte på din enhet än.",
     "download": "Ladda ner",
     "downloadSize": "Ladda ner · {{size}}",
@@ -2928,9 +2929,7 @@
       "tirmidhi": "Jami' at-Tirmidhi",
       "nasai": "Sunan an-Nasa'i",
       "ibnmajah": "Sunan Ibn Majah",
-      "malik": "Muwatta Malik",
-      "darimi": "Sunan ad-Darimi",
-      "ahmad": "Musnad Ahmad"
+      "malik": "Muwatta Malik"
     },
     "packStarter": "Startsamlingar",
     "packCategories": "Ämnesregister",
@@ -2940,7 +2939,7 @@
     "levelLine": "Föreslås för: {{level}}",
     "change": "Ändra",
     "pickDirect": "Välj själv",
-    "pickDirectNote": "Vilket ämne som helst, eller en av de nio böckerna.",
+    "pickDirectNote": "Vilket ämne som helst, eller en av böckerna.",
     "allSets": "Alla samlingar",
     "allTopics": "Alla ämnen",
     "hub": {
@@ -2981,6 +2980,10 @@
     "reportPrompt": "Vad är fel? (ett ord, översättningen, graderingen, numret …)",
     "arabicTag": "Arabiska",
     "refNeedsBookArabic": "{{book}} är inte nedladdad och finns bara på arabiska. Öppna den för att ladda ner den.",
-    "bookNeedsDownload": "Den här boken finns bara på arabiska, utan översättning. Den finns inte på din enhet än."
+    "bookNeedsDownload": "Den här boken finns bara på arabiska, utan översättning. Den finns inte på din enhet än.",
+    "gradedBookNote": "Den här boken innehåller bara de hadither som varje granskare som har bedömt dem kallar sahih eller hasan. En hadith som någon av dem kallar svag, eller som saknar gradering, är utelämnad. Vid varje hadith visas granskarnas egna bedömningar, så som de står i fawazahmed0/hadith-api.",
+    "sahihCollectionNote": "{{book}} är erkänd som autentisk (sahih) som samling. Dess hadither graderas inte var för sig här.",
+    "refNotServed": "Ingen hadith med nummer {{n}} ur {{book}} finns med här. Den kan vara utelämnad: bara de hadither som varje granskare kallar sahih eller hasan finns med.",
+    "downloadGradedNote": "Laddas ner från Mihrabs kopia på GitHub. Ta bort den när du vill under Inställningar → Nedladdningar."
   }
 }

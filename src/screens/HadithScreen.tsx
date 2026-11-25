@@ -12,7 +12,7 @@
  *     has been begun, and a finished one folds into "Completed".
  *   • LOOK UP — someone who has a question, or knows the book. Tiles
  *     named for the question (prayer, fasting, family…), HadeethEnc's own
- *     tree under "All topics", and the nine books.
+ *     tree under "All topics", and the books.
  *
  * The field searches everything on the device, reads "Bukhari 2345" as
  * the hadith it names (`reference.ts`), and narrows to al-Bukhārī and
@@ -44,8 +44,9 @@
  * at its top, because then there is something to read and to search.
  *
  * Sources: HadeethEnc.com (texts, translations, explanations); an-Nawawi's
- * Arabic from fawazahmed0/hadith-api; the nine books from
- * mhashim6/Open-Hadith-Data (ODbL). Named at the foot of Look up and in
+ * Arabic from fawazahmed0/hadith-api; the books from
+ * mhashim6/Open-Hadith-Data (ODbL), and the grades of five of them from
+ * fawazahmed0/hadith-api (`bookGrades.ts`). Named at the foot of Look up and in
  * Settings → About.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
@@ -83,6 +84,7 @@ import {
   type Level,
 } from '../hadith/catalog';
 import { Column } from './hadith/Column';
+import { isGradedBook } from '../hadith/bookGrades';
 import { bookmarkedIds, isBookmarked, isRead, setLevel } from '../hadith/hadithRecord';
 import { updateHadithRecord, useHadithRecord } from '../hadith/hadithStore';
 import { gradesKnown, loadItem, searchHadith, setRows, warmSearch, type HadithItem, type SearchHit } from '../hadith/library';
@@ -786,7 +788,8 @@ function SearchResults({
         </View>
       ) : !answer.rows.length && !answer.missing ? (
         <Text style={[styles.small, styles.scope, { color: palette.muted }]}>
-          {t('hadith.refNotFound', { book: collection, n: answer.ref.n })}
+          {/* In a graded book the number may be one that is left out, not one the edition lacks. */}
+          {t(isGradedBook(answer.ref.book) ? 'hadith.refNotServed' : 'hadith.refNotFound', { book: collection, n: answer.ref.n })}
         </Text>
       ) : null}
     </View>

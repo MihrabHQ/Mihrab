@@ -18,7 +18,7 @@ import { BOOKS, bookKey, HADITH_SETS, nawawiIds } from './catalog';
 import { bookRows, foldForSearch, latinDigits, loadItem, type SearchHit } from './library';
 import { packStatus } from './packs';
 
-/** an-Nawawi's Forty, beside the nine books. */
+/** an-Nawawi's Forty, beside the books. */
 export const NAWAWI_REF = 'nawawi';
 
 export type Reference = { book: string; n: number };
@@ -49,8 +49,6 @@ const ALIASES: Readonly<Record<string, readonly string[]>> = {
   nasai: ['nasai', 'nasa i', 'an nasai', 'an nasa i', 'al nasai', 'sunan an nasai', 'sunan an nasa i', 'النسائي', 'سنن النسائي'],
   ibnmajah: ['ibn majah', 'ibn maja', 'ibnmajah', 'sunan ibn majah', 'ابن ماجه', 'سنن ابن ماجه'],
   malik: ['malik', 'muwatta', 'al muwatta', 'muwatta malik', 'مالك', 'الموطا', 'موطا مالك'],
-  darimi: ['darimi', 'ad darimi', 'al darimi', 'sunan ad darimi', 'الدارمي', 'سنن الدارمي'],
-  ahmad: ['ahmad', 'musnad', 'musnad ahmad', 'احمد', 'مسند احمد'],
   [NAWAWI_REF]: [
     'nawawi',
     'an nawawi',

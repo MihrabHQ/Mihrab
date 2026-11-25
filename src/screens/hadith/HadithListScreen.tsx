@@ -1,6 +1,6 @@
 /**
  * One list of hadith: a curated set, one of Look up's tiles, a HadeethEnc
- * topic, one of the nine books, or the reader's bookmarks (`catalog.ts`,
+ * topic, one of the books, or the reader's bookmarks (`catalog.ts`,
  * list ids).
  *
  * Rows are titles — HadeethEnc's, or the first words of an Arabic matn —
@@ -49,6 +49,7 @@ import {
   topicContents,
   type CategoryTree,
 } from '../../hadith/catalog';
+import { isGradedBook } from '../../hadith/bookGrades';
 import { isBookmarked, isRead, isSetMarked, setSetMarked } from '../../hadith/hadithRecord';
 import { updateHadithRecord, useHadithRecord } from '../../hadith/hadithStore';
 import {
@@ -224,6 +225,16 @@ export function HadithListScreen() {
           testID="hadith-ruling-note"
         >
           {t('hadith.rulingNote')}
+        </Text>
+      ) : null}
+      {/* A graded book says what it holds, and what it has left out (`bookGrades.ts`). */}
+      {bookId && isGradedBook(bookId) ? (
+        <Text
+          style={[styles.ruling, { color: palette.text, backgroundColor: palette.controlBg }]}
+          accessibilityRole="text"
+          testID="hadith-graded-book-note"
+        >
+          {t('hadith.gradedBookNote')}
         </Text>
       ) : null}
       {set ? (

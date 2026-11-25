@@ -199,7 +199,8 @@ describe('a reference typed into the search field', () => {
     expect(parseReference("Nasa'i 12")).toEqual({ book: 'nasai', n: 12 });
     expect(parseReference('Ibn Mājah 224')).toEqual({ book: 'ibnmajah', n: 224 });
     expect(parseReference('muwatta 11')).toEqual({ book: 'malik', n: 11 });
-    expect(parseReference('musnad ahmad 3')).toEqual({ book: 'ahmad', n: 3 });
+    // Not offered (no open dataset grades it), so not a reference either.
+    expect(parseReference('musnad ahmad 3')).toBeNull();
     expect(parseReference('Nawawi 14')).toEqual({ book: NAWAWI_REF, n: 14 });
   });
 

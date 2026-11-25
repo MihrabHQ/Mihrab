@@ -37,6 +37,18 @@
  * names (its SHA-256), whichever of the two ways it came. The pack stays readable throughout: it is `ready`
  * before, during and after, and a transfer that fails leaves the old file
  * where it was. When to do it is `packUpdates.ts`.
+ *
+ * ── A PACK THAT MAY NO LONGER BE READ ──────────────────────────────────
+ *
+ * Since 2026-11-25 only sound hadith are served (`bookGrades.ts`). A
+ * device may hold what that rule leaves out: Musnad Aḥmad or Sunan
+ * ad-Dārimī, which are no longer offered, or one of the Sunan as it was
+ * before it carried grades — every hadith of the book, weak ones too.
+ * Neither waits for an update check. A book that is not offered is
+ * removed when the packs are looked for (`refreshPacks`), and a file that
+ * is not the pack as it must be now is removed the moment it is read
+ * (`loadPack`): the book is then simply not downloaded, and its page
+ * offers the download.
  */
 import { useSyncExternalStore } from 'react';
 import ReactNativeBlobUtil from 'react-native-blob-util';
@@ -45,6 +57,7 @@ import { IS_WEB_APP } from '../config/webApp';
 import { mkdirDeep } from '../quran/mushafDownload';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
 import { quiet } from '../utils/quiet';
+import { ALL_BOOKS } from './bookGrades';
 import { buildFromOrigin } from './origin';
 import { validPack, type Manifest, type ManifestEntry, type PackFile, type PackKey } from './packTypes';
 
@@ -127,6 +140,9 @@ export function scanPacks(): Promise<void> {
   return scanned;
 }
 
+/** A book there is no longer a pack of (the header). */
+const notOffered = (key: string) => key.startsWith('books/') && !ALL_BOOKS.includes(key.slice('books/'.length));
+
 export async function refreshPacks(): Promise<void> {
   if (noDisk) return;
   const found: Record<string, PackStatus> = {};
@@ -141,7 +157,9 @@ export async function refreshPacks(): Promise<void> {
       const name = String(e.filename);
       if (e.type === 'directory') await walk(`${dir}/${name}`, `${prefix}${name}/`);
       else if (name.endsWith('.json')) {
-        found[`${prefix}${name.slice(0, -5)}`] = { state: 'ready', bytes: Number(e.size) || 0 };
+        const key = `${prefix}${name.slice(0, -5)}`;
+        if (notOffered(key)) await ReactNativeBlobUtil.fs.unlink(`${dir}/${name}`).catch(() => undefined);
+        else found[key] = { state: 'ready', bytes: Number(e.size) || 0 };
       }
     }
   };
@@ -213,7 +231,14 @@ export async function loadPack<T extends PackFile>(key: PackKey): Promise<T | nu
     const path = filePath(key);
     if (!(await ReactNativeBlobUtil.fs.exists(path))) return null;
     const parsed = JSON.parse(String(await ReactNativeBlobUtil.fs.readFile(path, 'utf8')));
-    if (!validPack(key, parsed)) return null;
+    if (!validPack(key, parsed)) {
+      // Not the pack as it must be now (the header): gone, and to be downloaded again.
+      if (!running.has(key)) {
+        await ReactNativeBlobUtil.fs.unlink(path).catch(() => undefined);
+        if (isPackReady(key)) setStatus(key, { state: 'absent' });
+      }
+      return null;
+    }
     remember(key, parsed);
     return parsed as T;
   } catch (e) {

@@ -2044,7 +2044,8 @@
     "groupHadith": "Hadis",
     "hadeethenc": "Hadis metinleri, çevirileri, açıklamaları ve dersleri, değiştirilmeden yeniden yayımlanmıştır",
     "nawawiArabic": "Nevevî’nin Kırk Hadisi, Arapça metin",
-    "openHadithData": "Dokuz hadis kitabı, Arapça metin"
+    "openHadithData": "Hadis kitapları, Arapça metin",
+    "hadithGrades": "Dört Sünen ve Muvatta’daki hadislerin dereceleri"
   },
   "liveActivity": {
     "title": "Sıradaki namaz",
@@ -2817,7 +2818,7 @@
       "depth": "Daha derin çalışma"
     },
     "welcomeTitle": "Hadisleri indirin",
-    "welcomeBody": "Tek bir indirmeyle HadeethEnc’in hadisleri kendi dilinizde, her biri anlamı ve açıklamasıyla, Nevevî’nin Kırk Hadisi ile birlikte gelir. Ardından tüm setler, konular ve arama çevrimdışı çalışır. Arapça dokuz kitap ayrı ayrı indirilir.",
+    "welcomeBody": "Tek bir indirmeyle HadeethEnc’in hadisleri kendi dilinizde, her biri anlamı ve açıklamasıyla, Nevevî’nin Kırk Hadisi ile birlikte gelir. Ardından tüm setler, konular ve arama çevrimdışı çalışır. Arapça kitaplar ayrı ayrı indirilir.",
     "continueReading": "Okumaya devam et",
     "bookmarks": "Yer imleri",
     "noBookmarks": "Henüz yer imi yok. Bir hadisi burada tutmak için altındaki yıldıza dokunun.",
@@ -2828,9 +2829,9 @@
     "topics": "Konular",
     "entries": "{{count}} hadis",
     "books": "Kitaplar",
-    "booksNote": "Tam koleksiyonlar, Arapça olarak, Open-Hadith-Data’dan. Her biri ayrı indirilir.",
+    "booksNote": "Arapça olarak, Open-Hadith-Data’dan. Sahîh-i Buhârî ve Sahîh-i Müslim tamdır; diğer beşinde yalnızca âlimlerin sahih veya hasen dediği hadisler yer alır. Her biri ayrı indirilir.",
     "onDevice": "İndirildi",
-    "attribution": "Metinler, çeviriler ve açıklamalar: HadeethEnc.com. Arapça Nevevî’nin Kırk Hadisi: fawazahmed0/hadith-api. Dokuz kitap: Open-Hadith-Data (ODbL).",
+    "attribution": "Metinler, çeviriler ve açıklamalar: HadeethEnc.com. Arapça Nevevî’nin Kırk Hadisi: fawazahmed0/hadith-api. Kitaplar: Open-Hadith-Data (ODbL). Dereceleri: fawazahmed0/hadith-api.",
     "needsDownload": "Bu liste henüz cihazınızda değil.",
     "download": "İndir",
     "downloadSize": "İndir · {{size}}",
@@ -2928,9 +2929,7 @@
       "tirmidhi": "Câmiu’t-Tirmizî",
       "nasai": "Sünen-i Nesâî",
       "ibnmajah": "Sünen-i İbn Mâce",
-      "malik": "Muvatta (İmam Mâlik)",
-      "darimi": "Sünen-i Dârimî",
-      "ahmad": "Müsned (Ahmed b. Hanbel)"
+      "malik": "Muvatta (İmam Mâlik)"
     },
     "packStarter": "Başlangıç setleri",
     "packCategories": "Konu dizini",
@@ -2940,7 +2939,7 @@
     "levelLine": "Öneriler şuna göre: {{level}}",
     "change": "Değiştir",
     "pickDirect": "Kendiniz seçin",
-    "pickDirectNote": "Herhangi bir konu veya dokuz kitaptan biri.",
+    "pickDirectNote": "Herhangi bir konu veya kitaplardan biri.",
     "allSets": "Tüm setler",
     "allTopics": "Tüm konular",
     "hub": {
@@ -2981,6 +2980,10 @@
     "reportPrompt": "Sorun nedir? (bir kelime, çeviri, hadisin derecesi, numara…)",
     "arabicTag": "Arapça",
     "refNeedsBookArabic": "{{book}} indirilmedi ve yalnızca Arapça. İndirmek için açın.",
-    "bookNeedsDownload": "Bu kitap yalnızca Arapça, çevirisi yok. Henüz cihazınızda değil."
+    "bookNeedsDownload": "Bu kitap yalnızca Arapça, çevirisi yok. Henüz cihazınızda değil.",
+    "gradedBookNote": "Bu kitapta burada yalnızca, hakkında hüküm veren her âlimin sahih veya hasen dediği hadisler yer alır. İçlerinden birinin zayıf dediği veya derecesi bulunmayan hadis alınmamıştır. Her hadiste âlimlerin kendi hükümleri, fawazahmed0/hadith-api’de kayıtlı olduğu şekliyle gösterilir.",
+    "sahihCollectionNote": "{{book}} bir bütün olarak sahih kabul edilir. Hadisleri burada tek tek derecelendirilmemiştir.",
+    "refNotServed": "{{book}} kitabından {{n}} numaralı hadis burada yer almıyor. Alınmayanlardan biri olabilir: yalnızca her âlimin sahih veya hasen dediği hadisler yer alır.",
+    "downloadGradedNote": "Mihrab’ın GitHub’daki kopyasından indirilir. İstediğiniz zaman Ayarlar → İndirmeler bölümünden kaldırabilirsiniz."
   }
 }
