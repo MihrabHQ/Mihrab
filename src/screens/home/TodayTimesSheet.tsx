@@ -538,6 +538,8 @@ function DayPager({
       {width > 0 ? (
         <FlatList
           ref={listRef}
+          // On the list itself too, as the full page's is: see `pager` below.
+          style={styles.pageLtr}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
@@ -560,14 +562,14 @@ function DayPager({
           {...webSettle}
           nestedScrollEnabled
           renderItem={({ item }) => (
-            <View style={[styles.page, { width }]}>
+            <View style={[styles.page, { width }, rtl ? styles.pageRtl : styles.pageLtr]}>
               <DayRows rows={item.rows} onBackToToday={item.offset === 0 ? undefined : onBackToToday} />
             </View>
           )}
         />
       ) : (
         // Before the width is known: the day on show, on its own.
-        <View style={styles.page}>
+        <View style={[styles.page, rtl ? styles.pageRtl : styles.pageLtr]}>
           <DayRows
             rows={days.find(d => d.offset === offset)?.rows ?? []}
             onBackToToday={offset === 0 ? undefined : onBackToToday}
@@ -628,8 +630,16 @@ const styles = StyleSheet.create({
   backMeasure: { position: 'absolute', opacity: 0, left: 0, top: 0 },
   rows: { gap: SPACING.xs, marginTop: SPACING.xs },
   // The sheet's card padding (MinimalSheet, SPACING.lg), undone and redone.
-  pager: { marginHorizontal: -SPACING.lg },
+  // LEFT TO RIGHT WHATEVER THE LANGUAGE, as the full page's pager is
+  // (`pagerPosition`): the pages are stored backwards in a right-to-left
+  // language, and a list the system mirrors as well opens one page early —
+  // in Arabic the sheet rose on YESTERDAY's times under today's date, with
+  // "Back to today" on them. Each page is then given the language's own
+  // direction back, so its rows read as they should.
+  pager: { marginHorizontal: -SPACING.lg, direction: 'ltr' },
   page: { paddingHorizontal: SPACING.lg },
+  pageLtr: { direction: 'ltr' },
+  pageRtl: { direction: 'rtl' },
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: SPACING.xs, gap: SPACING.sm },
   check: { width: LOG_CHECK_SIZE, height: LOG_CHECK_SIZE, alignItems: 'center', justifyContent: 'center' },
   name: { flex: 1, fontSize: TYPE.body.fontSize, fontWeight: '400' },

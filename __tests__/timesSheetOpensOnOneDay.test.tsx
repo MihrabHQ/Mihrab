@@ -107,3 +107,27 @@ describe('the sheet opens on one day', () => {
     await act(async () => root.unmount());
   });
 });
+
+/**
+ * In a right-to-left language the pages are stored backwards and the list
+ * must NOT be mirrored as well (`pagerPosition`): mirrored, it opened one
+ * page early — yesterday's times under today's date, in Arabic and Urdu.
+ * The full page's pager has said so since it was written; the sheet's did not.
+ */
+describe('the sheet\'s pager is left to right in every language', () => {
+  const src = require('fs').readFileSync(
+    require('path').join(__dirname, '../src/screens/home/TodayTimesSheet.tsx'),
+    'utf8',
+  ) as string;
+
+  it('lays the pages left to right, and gives each page its language back', () => {
+    expect(src).toMatch(/pager: \{ marginHorizontal: -SPACING\.lg, direction: 'ltr' \}/);
+    expect(src).toMatch(/pageRtl: \{ direction: 'rtl' \}/);
+    expect(src.match(/rtl \? styles\.pageRtl : styles\.pageLtr/g)?.length).toBe(2);
+  });
+
+  it('stores the pages backwards and counts from the other end', () => {
+    expect(src).toMatch(/const data = rtl \? days\.slice\(\)\.reverse\(\) : days;/);
+    expect(src).toMatch(/initialScrollIndex=\{positionOf\(offset\)\}/);
+  });
+});
