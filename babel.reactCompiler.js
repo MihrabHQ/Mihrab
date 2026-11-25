@@ -48,11 +48,57 @@ const COMPILED = [
 
 const ROOT = `${__dirname}${path.sep}`;
 
-/** Is `filename` (absolute) in a compiled folder? */
-function isCompiled(filename) {
+/**
+ * OFF, since 2026-11-25, a day after it went on and before any release
+ * carried it. Nothing is compiled while this is false; the list above is
+ * kept as the list to come back to.
+ *
+ * WHY. The compiler takes rendering to be pure — the same props and state,
+ * the same result — and keeps a result until a prop or state it was worked
+ * out from changes. The app reads things while rendering that are neither,
+ * and compiled, those reads go stale:
+ *
+ *  - THE SHOWN RIWAYAH (AGENTS.md §3). `resolveRiwayah(prefs.riwayah)`
+ *    answers from what the device can draw, which changes when a muṣḥaf's
+ *    data arrives. The screens subscribe to that and render again — and
+ *    the compiled screen, rendering again, kept the answer it had for the
+ *    same preference: Ḥafṣ, for a reader of Warsh, until the preference
+ *    itself changed (src/screens/quran/MushafSurahScreen.tsx, and twenty
+ *    more callers).
+ *  - THE DAY. `const today = dayKey()` in `usePracticeToday` was asked once
+ *    for the component's life: Today's "logged today" read yesterday's
+ *    date from the first midnight the app stayed open through. The khatmah
+ *    card's day, the Hifz review's, the verse of the day's the same.
+ *  - And a hundred and more calls, from compiled components, into helpers
+ *    that answer from a cache filled as data loads (a page's layout, a
+ *    font, a reciter's table). Each is right only if what fills the cache
+ *    is also something the component depends on, and none has been read
+ *    for that.
+ *
+ * None of it is a fault in the compiler: the hand-written `useMemo`s it
+ * was to replace name their dependencies and recompute everything else on
+ * every render, which is what made those reads safe. They are all still in
+ * the code, so with this off the app is what 2.39 was.
+ *
+ * BEFORE IT GOES BACK ON: the branch `compiler-hot` has the tools that
+ * found these (tools/compiler-impure.js for the clock, a first cut of the
+ * same for module state) and the clock handed on as a value
+ * (`useRenderClock`). Every read of changing state while rendering has to
+ * be found and made a dependency React can see — a subscription, a prop —
+ * and held by a test, folder by folder, as it went on.
+ */
+const ON = false;
+
+/** Is `filename` (absolute) in a listed folder? */
+function isListed(filename) {
   if (!filename || !filename.startsWith(ROOT)) return false;
   const rel = filename.slice(ROOT.length).split(path.sep).join('/');
   return COMPILED.some(p => rel.startsWith(p));
+}
+
+/** Is `filename` compiled? Listed, and the compiler on. */
+function isCompiled(filename) {
+  return ON && isListed(filename);
 }
 
 /** The Babel plugin entry. It must run before every other plugin. */
@@ -61,4 +107,4 @@ const reactCompiler = [
   { target: '19', sources: isCompiled },
 ];
 
-module.exports = { COMPILED, isCompiled, reactCompiler };
+module.exports = { COMPILED, ON, isCompiled, isListed, reactCompiler };
