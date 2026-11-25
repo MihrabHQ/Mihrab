@@ -246,6 +246,6 @@ describe('the edges', () => {
     expect(card).toMatch(/dayBar: \{[\s\S]*?paddingHorizontal: SPACING\.lg,/);
     // The month is a glyph on the day bar now, not a row under the table.
     expect(card).not.toMatch(/monthRow:/);
-    expect(card).toMatch(/<MonthGlyph color=\{String\(palette\.muted\)\} \/>/);
+    expect(card).toMatch(/<MonthGlyph color=\{palette\.mutedSolid\} \/>/);
   });
 });

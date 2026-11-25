@@ -104,6 +104,7 @@ import {
   type WarshTajweedWord,
 } from '../../quran/tajweed/warshTajweed';
 import { tajweedInk } from '../../quran/tajweed/rules';
+import { solidColor } from '../../theme/appPalette';
 
 type AyahRow = {
   ayah: number; // 1-based
@@ -313,6 +314,8 @@ export function TranslationSurahScreen({
   }, [onToggleMode]);
 
   // ── Header ──────────────────────────────────────────────────────────
+  // As a string the header can be given (appPalette.ts, `solidColor`).
+  const headerBg = solidColor(palette, 'bg');
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -332,8 +335,8 @@ export function TranslationSurahScreen({
         ? { headerBlurEffect: (palette.isDark ? 'dark' : 'light') as 'dark' | 'light' }
         : // Back in the flow: the muṣḥaf floats its Android header over the
           // page (see MushafSurahScreen); this list wants it above.
-          { headerTransparent: false, headerStyle: { backgroundColor: String(palette.bg) } }),
-      headerTintColor: String(palette.text),
+          { headerTransparent: false, headerStyle: { backgroundColor: headerBg } }),
+      headerTintColor: palette.textSolid,
       // writingDirection is a valid TextStyle prop that react-navigation's
       // narrower title-style type omits — the same cast RootNavigator makes.
       headerTitleStyle: {
@@ -369,7 +372,7 @@ export function TranslationSurahScreen({
                 <Text
                   numberOfLines={1}
                   style={{
-                    color: String(palette.text),
+                    color: palette.textSolid,
                     fontSize: TYPE.headline.fontSize,
                     fontWeight: '400',
                     writingDirection: isArabic ? 'rtl' : 'ltr',
@@ -503,8 +506,10 @@ export function TranslationSurahScreen({
     isArabic,
     sessionColor,
     palette.accentSolid,
+    headerBg,
     palette.bg,
     palette.text,
+    palette.textSolid,
     palette.isDark,
     insets.bottom,
     t,

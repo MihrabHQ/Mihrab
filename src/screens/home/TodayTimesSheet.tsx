@@ -125,7 +125,7 @@ function TodayTimesSheetImpl({
 }) {
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
-  const muted = String(palette.muted);
+  const muted = palette.mutedSolid;
   // The chevrons point the way the day goes, as the full page's do: in a
   // right-to-left language the day before is on the right, and its
   // chevron points right. The glyph is a drawn path, not a character, so

@@ -39,6 +39,7 @@ import { useTabPageTop } from '../navigation/useTabPageTop';
 import { useFoldPosture } from '../native/FoldPosture';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
+import { solidColor } from '../theme/appPalette';
 
 /**
  * TasbihScreen — task #19, reworked under #80, redesigned under the design
@@ -209,7 +210,7 @@ export function TasbihScreen() {
         size={ringSize}
         progress={target > 0 ? count / target : 0}
         color={targetReached ? palette.accentSolid : palette.accentSolid}
-        trackColor={String(palette.controlBg)}>
+        trackColor={solidColor(palette, 'controlBg')}>
         <Text
           style={[
             styles.count,

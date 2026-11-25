@@ -112,7 +112,9 @@ describe('the strip', () => {
   });
 
   it('still hands every scroll event to the history hook', () => {
-    expect(strip).toMatch(/look\(\);\s*scroll\.onScroll\(e\);/);
+    expect(strip).toMatch(/note\(e\);\s*scroll\.onScroll\(e\);/);
+    // …and the start of a drag, which the strip now notes for itself too.
+    expect(strip).toMatch(/touched\.current = true;\s*scroll\.onScrollBeginDrag\(\);/);
     expect(strip).toMatch(/scroll\.onLayout\(e\);/);
     expect(strip).toMatch(/scroll\.onContentSizeChange\(w\);/);
   });

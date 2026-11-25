@@ -41,6 +41,7 @@ import { isMacCatalyst } from '../responsive/breakpoints';
 import { ResponsiveModal } from '../responsive/ResponsiveModal';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { typeStyle } from '../theme/typography';
+import { solidColor } from '../theme/appPalette';
 
 export type HomeFeature = 'fullScreen' | 'silence' | 'liveActivity';
 
@@ -250,7 +251,7 @@ export function HomeFeaturesOffer({ ready }: { ready: boolean }) {
                   testID={`home-offer-switch-${f}`}
                   value={picked[f]}
                   onValueChange={v => setPicked(p => ({ ...p, [f]: v }))}
-                  trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+                  trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
                   thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
                 />
               }

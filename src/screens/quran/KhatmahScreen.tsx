@@ -254,7 +254,7 @@ export function KhatmahScreen() {
             maxLength={3}
             accessibilityLabel={t('quran.khatmahLengthTitle', 'Khatmah length (days)')}
             placeholder="1–604"
-            placeholderTextColor={String(palette.muted)}
+            placeholderTextColor={palette.mutedSolid}
             style={[
               styles.customDaysInput,
               { color: palette.text, borderColor: palette.border },
@@ -282,7 +282,7 @@ export function KhatmahScreen() {
             placeholder={t('quran.khatmahFromPageHint', {
               defaultValue: 'From the beginning',
             })}
-            placeholderTextColor={String(palette.muted)}
+            placeholderTextColor={palette.mutedSolid}
             style={[
               styles.customDaysInput,
               { color: palette.text, borderColor: palette.border },

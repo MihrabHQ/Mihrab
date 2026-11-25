@@ -54,6 +54,7 @@ import { RowDivider } from '../../components/ui';
 import { HelpText } from '../../components/ui/InfoSheet';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
+import { solidColor } from '../../theme/appPalette';
 
 /**
  * A titled family of settings, in one card.
@@ -154,7 +155,7 @@ export function SettingsToggleRow({
         value={value}
         disabled={disabled}
         onValueChange={onValueChange}
-        trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+        trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
         thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
       />
     </View>

@@ -271,7 +271,7 @@ function DataStatsPanelImpl() {
       case 'warning':
         return { color: WARN_AMBER, label: t('dataStats.serverWarning') };
       default:
-        return { color: String(palette.muted), label: t('dataStats.serverUnknown') };
+        return { color: palette.mutedSolid, label: t('dataStats.serverUnknown') };
     }
   };
 

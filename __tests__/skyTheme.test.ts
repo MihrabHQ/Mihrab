@@ -452,7 +452,7 @@ describe('the sky\'s small life', () => {
 describe('the reader', () => {
   it('paints a night page in the hour\'s dark ground under the theme, and nothing else', () => {
     const chrome = read('src/quran/useScrubberChrome.ts');
-    expect(chrome).toMatch(/if \(slice\.appearance === 'sky' && isThemedDarkPage\(tone, pagePalette\)\) return String\(pagePalette\.bg\);/);
+    expect(chrome).toMatch(/if \(slice\.appearance === 'sky' && isThemedDarkPage\(tone, pagePalette\)\) return solidColor\(pagePalette, 'bg'\);/);
     expect(chrome).toMatch(/return TONE_PAGE_BG\[tone\];/);
     const core = read('src/quran/mushafReaderCore.tsx');
     expect(core).toMatch(/const ground = usePageGround\(tone\);/);

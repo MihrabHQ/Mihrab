@@ -37,6 +37,7 @@ import {
 import { sharedSettingsStyles as s } from './sharedStyles';
 import { SPACING } from '../../theme/tokens';
 import { isMacCatalyst } from '../../responsive/breakpoints';
+import { solidColor } from '../../theme/appPalette';
 
 /**
  * Appearance card: theme picker (System / Light / Dark), the colour theme
@@ -166,9 +167,9 @@ function AppearanceCardImpl() {
               testID="appearance-skyVariant"
               value={settings.skyVariant}
               onChange={skyVariant => updateSettings({ skyVariant })}
-              accent={String(palette.accent)}
-              text={String(palette.text)}
-              muted={String(palette.muted)}
+              accent={palette.accentSolid}
+              text={palette.textSolid}
+              muted={palette.mutedSolid}
             />
             <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
               {t(
@@ -204,13 +205,13 @@ function AppearanceCardImpl() {
                 else if (Platform.OS === 'android') setPendingLayout(on);
                 else updateSettings({ minimalUi: on });
               }}
-              skyTop={previewSky ? previewSky.heroTop : String(palette.accentBg)}
-              skyFoot={previewSky ? previewSky.heroMid : String(palette.bg)}
-              page={String(palette.bg)}
-              text={String(palette.text)}
-              muted={String(palette.muted)}
-              accent={String(palette.accent)}
-              border={String(palette.border)}
+              skyTop={previewSky ? previewSky.heroTop : solidColor(palette, 'accentBg')}
+              skyFoot={previewSky ? previewSky.heroMid : solidColor(palette, 'bg')}
+              page={solidColor(palette, 'bg')}
+              text={palette.textSolid}
+              muted={palette.mutedSolid}
+              accent={palette.accentSolid}
+              border={solidColor(palette, 'border')}
             />
             <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
               {t('settings.minimalUiHelp')}
@@ -244,12 +245,12 @@ function AppearanceCardImpl() {
             value={settings.heroLook}
             onChange={heroLook => updateSettings({ heroLook })}
             minimal={minimalActive}
-            skyTop={previewSky ? previewSky.heroTop : String(palette.accentBg)}
-            skyFoot={previewSky ? previewSky.heroMid : String(palette.bg)}
+            skyTop={previewSky ? previewSky.heroTop : solidColor(palette, 'accentBg')}
+            skyFoot={previewSky ? previewSky.heroMid : solidColor(palette, 'bg')}
             sun={previewSky ? previewSky.bodyLight : SUN_SURFACE}
-            text={String(palette.text)}
-            muted={String(palette.muted)}
-            accent={String(palette.accent)}
+            text={palette.textSolid}
+            muted={palette.mutedSolid}
+            accent={palette.accentSolid}
           />
           <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
             {t(

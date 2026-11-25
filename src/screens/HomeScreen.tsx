@@ -125,6 +125,7 @@ import {
 import { SPACING } from '../theme/tokens';
 import { useFoldPosture } from '../native/FoldPosture';
 import type { HostInstance } from 'react-native';
+import { solidColor } from '../theme/appPalette';
 
 
 /** The calculation note last dismissed on Today (`state:to`). */
@@ -2236,7 +2237,7 @@ export function HomeScreen() {
       <HomeStatusBand
         scrollY={scrollY}
         insetTop={insets.top}
-        pageColor={String(palette.bg)}
+        pageColor={solidColor(palette, 'bg')}
       />
     ) : null}
     {/* The notices, over the page (see `floatBanners`): cards under the

@@ -1600,7 +1600,7 @@ function TodayCardImpl({
               !canGoBack && styles.dayStepOff,
               pressed && canGoBack && styles.dayStepPressed,
             ]}>
-            <Chevron back={!rtl} color={String(palette.muted)} />
+            <Chevron back={!rtl} color={palette.mutedSolid} />
           </Pressable>
 
           {/* Not under the system's colours either: Minimal takes them
@@ -1615,7 +1615,7 @@ function TodayCardImpl({
               onPress={() => switchLayout(!settings.minimalUi)}
               hitSlop={14}
               style={({ pressed }) => [styles.dayStep, pressed && styles.dayStepPressed]}>
-              <MinimalGlyph color={String(palette.muted)} />
+              <MinimalGlyph color={palette.mutedSolid} />
             </Pressable>
           ) : onOpenMonth ? (
             // An empty slot the calendar's size, so the day stands in the
@@ -1695,7 +1695,7 @@ function TodayCardImpl({
               onPress={onOpenMonth}
               hitSlop={14}
               style={({ pressed }) => [styles.dayStep, pressed && styles.dayStepPressed]}>
-              <MonthGlyph color={String(palette.muted)} />
+              <MonthGlyph color={palette.mutedSolid} />
             </Pressable>
           ) : settings.showDataStats && minimalOffered && !settings.useSystemDynamicTheme ? (
             <DayBarSlot />
@@ -1712,7 +1712,7 @@ function TodayCardImpl({
               !canGoForward && styles.dayStepOff,
               pressed && canGoForward && styles.dayStepPressed,
             ]}>
-            <Chevron back={rtl} color={String(palette.muted)} />
+            <Chevron back={rtl} color={palette.mutedSolid} />
           </Pressable>
           {/* THE MONTH, as a glyph at the bar's trailing end. It was a row
               of its own under the table — "Prayer times for the whole

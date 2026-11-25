@@ -101,6 +101,7 @@ import { RADIUS, SPACING } from '../theme/tokens';
 import { tajweedColoursShown } from '../quran/tajweed/tajweedSupport';
 import { useSheetSides } from '../responsive/sheetSides';
 import { IS_WEB_APP } from '../config/webApp';
+import { solidColor } from '../theme/appPalette';
 
 type Tab = 'surah' | 'juz' | 'bookmarks';
 const TABS: Tab[] = ['surah', 'juz', 'bookmarks'];
@@ -825,7 +826,7 @@ export function QuranScreen() {
           value={query}
           onChangeText={setQuery}
           placeholder={t('quran.searchPlaceholder', 'Search surahs, ayahs, translation…')}
-          placeholderTextColor={String(palette.muted)}
+          placeholderTextColor={palette.mutedSolid}
           accessibilityLabel={t('quran.searchPlaceholder', 'Search surahs, ayahs, translation…')}
           clearButtonMode="while-editing"
           style={[
@@ -1272,7 +1273,7 @@ export function QuranScreen() {
               value={!!b.follows}
               onValueChange={next => setBookmarkFollows(b.id, next)}
               style={styles.followSwitch}
-              trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+              trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
               thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
             />
           </View>
@@ -1288,7 +1289,7 @@ export function QuranScreen() {
               value={!!b.shortcut}
               onValueChange={next => setBookmarkShortcut(b.id, next)}
               style={styles.followSwitch}
-              trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+              trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
               thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
             />
           </View>
@@ -1606,7 +1607,7 @@ export function QuranScreen() {
             maxLength={3}
             accessibilityLabel={t('quran.jumpToPage', 'Go to page')}
             placeholder={`1–${totalPagesForRiwayah(listRiwayah)}`}
-            placeholderTextColor={String(palette.muted)}
+            placeholderTextColor={palette.mutedSolid}
             style={[
               styles.customDaysInput,
               { color: palette.text, borderColor: palette.border },

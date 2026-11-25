@@ -327,7 +327,7 @@ function KhatmahDoor({
             // sits right under this line on the tab and says the day.
             name={left}
             page={khatmah.target.page}
-            pageColor={String(palette.accent)}
+            pageColor={palette.accentSolid}
             half={column}
           />
         </Door>

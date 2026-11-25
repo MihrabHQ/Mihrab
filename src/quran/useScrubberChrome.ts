@@ -11,7 +11,7 @@
  */
 import { useMemo } from 'react';
 import { useAppearanceSettings } from '../context/PrayerSettingsContext';
-import { resolveThemePaletteForMode, type AppPalette } from '../theme/appPalette';
+import { resolveThemePaletteForMode, type AppPalette, solidColor } from '../theme/appPalette';
 import { useSkyTheme } from '../theme/skyTheme';
 import {
   isThemedDarkPage,
@@ -82,6 +82,6 @@ export function useScrubberChrome(tone: MushafTone): ToneChrome {
 export function usePageGround(tone: MushafTone): string {
   const { slice } = useAppearanceSettings();
   const pagePalette = usePagePalette(tone);
-  if (slice.appearance === 'sky' && isThemedDarkPage(tone, pagePalette)) return String(pagePalette.bg);
+  if (slice.appearance === 'sky' && isThemedDarkPage(tone, pagePalette)) return solidColor(pagePalette, 'bg');
   return TONE_PAGE_BG[tone];
 }

@@ -28,6 +28,7 @@ import {
   resolveTransliteration,
   transliterationFits,
 } from './transliteration';
+import { solidColor } from '../theme/appPalette';
 
 export function TransliterationSwitch({ style }: { style?: StyleProp<ViewStyle> } = {}) {
   const { t } = useTranslation();
@@ -67,7 +68,7 @@ export function TransliterationSwitch({ style }: { style?: StyleProp<ViewStyle> 
           accessibilityLabel={label}
           value={on}
           onValueChange={next => setQuranPrefs({ transliteration: next })}
-          trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+          trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
           thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
         />
       </View>

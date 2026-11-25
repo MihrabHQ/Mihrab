@@ -460,7 +460,7 @@ function RiwayahCard({
             keyboardType="url"
             editable={!busy}
             placeholder="https://…"
-            placeholderTextColor={String(palette.muted)}
+            placeholderTextColor={palette.mutedSolid}
             accessibilityLabel={t('downloads.riwayahLink', 'Link to the data file')}
             style={[
               styles.input,
