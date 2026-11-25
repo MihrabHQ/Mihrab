@@ -615,6 +615,13 @@ picks another:
     stored and mirrored files stay as served, and Settings → About gives
     the count. His text is used under Tanzil's terms for translations;
     the change is to what is shown, and is said.
+  - **Left to readers, with a way to say it.** No reciter has read these
+    lines and there is none to ask. In the sheet that opens on an ayah,
+    under the Transliteration switch, "A word spelled wrong in this ayah?
+    Report it" opens a GitHub issue (label `transliteration`) already
+    holding the edition, the ayah and the line as shown
+    (`src/quran/transliterationReport.ts`); the app itself sends nothing.
+    A report that holds becomes a row in the corrections.
   - **What the check is not:** a program checked a program and a second
     text checked both; two of the ten errors were in the program too and
     only the second text showed them. Nobody who recites the Qur'an has

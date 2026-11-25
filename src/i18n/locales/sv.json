@@ -1771,6 +1771,7 @@
     "downloadingAudioMegabytes": "Laddar ner… {{done}}/{{total}} MB",
     "wholeSurahTrackingShort": "En inspelning per sura, uppdelad i verser så nära som den tillåter: versföljningen är ett bästa försök.",
     "reportAyahBoundary": "Börjar eller slutar en vers på fel ställe? Rapportera det",
+    "reportTransliteration": "Är ett ord felstavat i den här versen? Rapportera det",
     "previewReciter": "Lyssna på {{name}}",
     "stopPreview": "Stoppa provlyssningen",
     "voiceHint": "Mushafen är {{page}}; {{name}} reciterar {{voice}}. Lyssna i {{page}}:",

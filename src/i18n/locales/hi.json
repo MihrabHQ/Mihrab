@@ -1771,6 +1771,7 @@
     "downloadingAudioMegabytes": "डाउनलोड हो रहा है… {{done}}/{{total}} MB",
     "wholeSurahTrackingShort": "हर सूरह की एक रिकॉर्डिंग, जितना संभव हो उतनी सटीकता से आयतों में बाँटी गई: आयत ट्रैकिंग सबसे अच्छा प्रयास है।",
     "reportAyahBoundary": "कोई आयत ग़लत जगह शुरू या ख़त्म होती है? रिपोर्ट करें",
+    "reportTransliteration": "इस आयत में कोई शब्द ग़लत लिखा है? रिपोर्ट करें",
     "previewReciter": "{{name}} को सुनें",
     "stopPreview": "नमूना रोकें",
     "voiceHint": "मुसहफ़ {{page}} में है; {{name}} {{voice}} में तिलावत करते हैं। {{page}} में सुनें:",

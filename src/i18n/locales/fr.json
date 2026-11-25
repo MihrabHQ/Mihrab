@@ -1772,6 +1772,7 @@
     "downloadingAudioMegabytes": "Téléchargement… {{done}}/{{total}} Mo",
     "wholeSurahTrackingShort": "Un enregistrement par sourate, découpé en versets aussi fidèlement qu’il le permet : le suivi des versets est une meilleure tentative.",
     "reportAyahBoundary": "Un verset commence ou finit au mauvais endroit ? Signalez-le",
+    "reportTransliteration": "Un mot mal écrit dans ce verset ? Signalez-le",
     "previewReciter": "Écouter {{name}}",
     "stopPreview": "Arrêter l’extrait",
     "voiceHint": "Le mushaf est en {{page}} ; {{name}} récite en {{voice}}. L’écouter en {{page}} :",

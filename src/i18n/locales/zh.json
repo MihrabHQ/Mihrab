@@ -1771,6 +1771,7 @@
     "downloadingAudioMegabytes": "正在下载… {{done}}/{{total}} MB",
     "wholeSurahTrackingShort": "每章一段录音，尽可能精确地切分为经文：经文跟踪为尽力而为。",
     "reportAyahBoundary": "有经文的开始或结束位置不对？报告问题",
+    "reportTransliteration": "这节经文里有词拼写不对？报告问题",
     "previewReciter": "试听 {{name}}",
     "stopPreview": "停止试听",
     "voiceHint": "穆斯哈夫为 {{page}}；{{name}} 以 {{voice}} 诵读。以 {{page}} 收听：",

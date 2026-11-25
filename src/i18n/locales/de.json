@@ -1771,6 +1771,7 @@
     "downloadingAudioMegabytes": "Wird geladen… {{done}}/{{total}} MB",
     "wholeSurahTrackingShort": "Eine Aufnahme pro Sure, so genau in Verse geteilt, wie sie es zulässt: Die Versverfolgung ist ein bestmöglicher Versuch.",
     "reportAyahBoundary": "Ein Vers beginnt oder endet an der falschen Stelle? Melden",
+    "reportTransliteration": "Ein Wort in diesem Vers falsch geschrieben? Melden",
     "previewReciter": "{{name}} anhören",
     "stopPreview": "Hörprobe beenden",
     "voiceHint": "Der Mushaf ist {{page}}; {{name}} rezitiert {{voice}}. In {{page}} hören:",

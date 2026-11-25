@@ -97,6 +97,15 @@ each corrected word follows how he writes it, or its like, elsewhere.
 
     python3 check_tr.py && python3 fixes_tr.py     # "ALL OK"
 
+`vowels_tr.py` is the check of that last part: over the 5,900 ayahs that
+match, which of e/a and ü/u he writes beside which consonants; then every
+short vowel in or next to a corrected place (131 of them) is held to it.
+Four went against his majority habit, and all four are his own letters in
+words he spells that way everywhere (yaḳḍi, yüżâhir, taḫruc): none is a
+vowel the correction chose.
+
+    python3 vowels_tr.py
+
 ## What this is not
 
 A program checked a program, and a second text checked both. No ḥāfiẓ or

@@ -9,7 +9,7 @@
  * reader of the muṣḥaf meets any text beside the page.
  */
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Switch, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Linking, Pressable, StyleSheet, Switch, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { IS_WEB_APP } from '../config/webApp';
 import { useAppPalette } from '../hooks/useAppPalette';
@@ -29,8 +29,20 @@ import {
   transliterationFits,
 } from './transliteration';
 import { solidColor } from '../theme/appPalette';
+import { transliterationReportUrl } from './transliterationReport';
 
-export function TransliterationSwitch({ style }: { style?: StyleProp<ViewStyle> } = {}) {
+export function TransliterationSwitch({
+  style,
+  report,
+}: {
+  style?: StyleProp<ViewStyle>;
+  /**
+   * The ayah this switch stands under and its line as shown (the ayah's
+   * sheet): the reader is offered a way to say a word of it is wrong
+   * (`transliterationReport.ts`). Not in the settings, where there is no ayah.
+   */
+  report?: { surah: number; ayah: number; text: string };
+} = {}) {
   // Left as written, not compiled: while rendering this reads what React
   // cannot see change — resolveRiwayah() (pageCache); riwayahLabel() (i18n.t  [src/i18n/index.ts)
   // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
@@ -64,6 +76,10 @@ export function TransliterationSwitch({ style }: { style?: StyleProp<ViewStyle> 
   }, [on, downloading, edition]);
 
   const label = t('quran.transliteration', 'Transliteration');
+  const reportUrl =
+    on && fits && report
+      ? transliterationReportUrl(edition.id, report.surah, report.ayah, report.text)
+      : null;
   return (
     <View style={[styles.block, style]}>
       <View style={styles.row}>
@@ -143,6 +159,16 @@ export function TransliterationSwitch({ style }: { style?: StyleProp<ViewStyle> 
               defaultValue: 'Read online for now. Download for offline · {{size}}',
               size: translationSizeLabel(edition.approxBytes ?? 0),
             })}
+          </Text>
+        </Pressable>
+      ) : null}
+      {reportUrl ? (
+        <Pressable
+          accessibilityRole="link"
+          hitSlop={8}
+          onPress={() => void Linking.openURL(reportUrl).catch(() => undefined)}>
+          <Text style={[styles.get, { color: palette.accentSolid }]}>
+            {t('quran.reportTransliteration', 'A word spelled wrong in this ayah? Report it')}
           </Text>
         </Pressable>
       ) : null}

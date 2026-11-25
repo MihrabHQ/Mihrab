@@ -1775,6 +1775,7 @@
     "downloadingAudioMegabytes": "جارٍ التنزيل… {{done}}/{{total}} ميغابايت",
     "wholeSurahTrackingShort": "تسجيل واحد لكل سورة، مقسَّم إلى آيات بأقرب ما يسمح به: تتبّع الآيات أفضل محاولة.",
     "reportAyahBoundary": "آية تبدأ أو تنتهي في غير موضعها؟ أبلغ عنها",
+    "reportTransliteration": "كلمة كُتبت خطأً في هذه الآية؟ أبلغ عنها",
     "previewReciter": "استمع إلى {{name}}",
     "stopPreview": "إيقاف المعاينة",
     "voiceHint": "المصحف برواية {{page}}، و{{name}} يقرأ برواية {{voice}}. استمع برواية {{page}}:",

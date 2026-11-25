@@ -1771,6 +1771,7 @@
     "downloadingAudioMegabytes": "Mengunduh… {{done}}/{{total}} MB",
     "wholeSurahTrackingShort": "Satu rekaman per surah, dipotong menjadi ayat sedekat yang dimungkinkan: pelacakan ayat adalah upaya terbaik.",
     "reportAyahBoundary": "Ada ayat yang mulai atau berakhir di tempat yang salah? Laporkan",
+    "reportTransliteration": "Ada kata yang salah tulis di ayat ini? Laporkan",
     "previewReciter": "Dengarkan {{name}}",
     "stopPreview": "Hentikan contoh",
     "voiceHint": "Mushafnya {{page}}; {{name}} membaca {{voice}}. Dengarkan dalam {{page}}:",

@@ -1132,7 +1132,10 @@ export function AyahActionSheet({
               ) : null}
               {/* The muṣḥaf has no "Under each verse": this is where its
                   reader turns the Latin line on, and gets it for offline. */}
-              <TransliterationSwitch style={styles.transliterationSwitch} />
+              <TransliterationSwitch
+                style={styles.transliterationSwitch}
+                report={{ surah, ayah, text: transliteration }}
+              />
             </View>
           ) : null}
 

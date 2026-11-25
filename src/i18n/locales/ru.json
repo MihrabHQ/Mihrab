@@ -1834,6 +1834,7 @@
     "downloadingAudioMegabytes": "Загрузка… {{done}}/{{total}} МБ",
     "wholeSurahTrackingShort": "Одна запись на суру, разделённая на аяты настолько точно, насколько она позволяет: отслеживание аятов — лучшая попытка.",
     "reportAyahBoundary": "Аят начинается или заканчивается не там? Сообщите",
+    "reportTransliteration": "Слово в этом аяте написано неверно? Сообщите",
     "previewReciter": "Послушать {{name}}",
     "stopPreview": "Остановить отрывок",
     "voiceHint": "Мусхаф — {{page}}; {{name}} читает в {{voice}}. Послушать в {{page}}:",

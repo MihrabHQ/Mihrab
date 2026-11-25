@@ -1771,6 +1771,7 @@
     "downloadingAudioMegabytes": "Downloading… {{done}}/{{total}} MB",
     "wholeSurahTrackingShort": "One recording per surah, cut into ayahs as closely as it allows: ayah tracking is a best attempt.",
     "reportAyahBoundary": "An ayah starts or ends in the wrong place? Report it",
+    "reportTransliteration": "A word spelled wrong in this ayah? Report it",
     "previewReciter": "Hear {{name}}",
     "stopPreview": "Stop the preview",
     "voiceHint": "The muṣḥaf is {{page}}; {{name}} recites {{voice}}. Hear it in {{page}}:",

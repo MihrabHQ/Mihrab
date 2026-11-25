@@ -1771,6 +1771,7 @@
     "downloadingAudioMegabytes": "ডাউনলোড হচ্ছে… {{done}}/{{total}} MB",
     "wholeSurahTrackingShort": "প্রতিটি সূরার একটি রেকর্ডিং, যতটা সম্ভব নিখুঁতভাবে আয়াতে ভাগ করা: আয়াত অনুসরণ যথাসাধ্য চেষ্টা।",
     "reportAyahBoundary": "কোনো আয়াত ভুল জায়গায় শুরু বা শেষ হচ্ছে? জানান",
+    "reportTransliteration": "এই আয়াতে কোনো শব্দের বানান ভুল? জানান",
     "previewReciter": "{{name}} শুনুন",
     "stopPreview": "প্রিভিউ থামান",
     "voiceHint": "মুসহাফটি {{page}}; {{name}} তিলাওয়াত করেন {{voice}}। {{page}}-তে শুনুন:",

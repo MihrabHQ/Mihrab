@@ -1771,6 +1771,7 @@
     "downloadingAudioMegabytes": "ڈاؤن لوڈ ہو رہا ہے… {{done}}/{{total}} MB",
     "wholeSurahTrackingShort": "ہر سورت کی ایک ریکارڈنگ، جتنی درستی سے ممکن ہو آیات میں تقسیم: آیات کی پیروی بہترین کوشش ہے۔",
     "reportAyahBoundary": "کوئی آیت غلط جگہ شروع یا ختم ہوتی ہے؟ اطلاع دیں",
+    "reportTransliteration": "اس آیت میں کوئی لفظ غلط لکھا ہے؟ اطلاع دیں",
     "previewReciter": "{{name}} کو سنیں",
     "stopPreview": "نمونہ روکیں",
     "voiceHint": "مصحف {{page}} میں ہے؛ {{name}} {{voice}} میں تلاوت کرتے ہیں۔ {{page}} میں سنیں:",

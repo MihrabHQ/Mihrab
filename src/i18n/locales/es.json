@@ -1772,6 +1772,7 @@
     "downloadingAudioMegabytes": "Descargando… {{done}}/{{total}} MB",
     "wholeSurahTrackingShort": "Una grabación por sura, dividida en aleyas tan fielmente como lo permite: el seguimiento de aleyas es un mejor intento.",
     "reportAyahBoundary": "¿Una aleya empieza o termina en el lugar equivocado? Infórmalo",
+    "reportTransliteration": "¿Una palabra mal escrita en esta aleya? Infórmalo",
     "previewReciter": "Escuchar a {{name}}",
     "stopPreview": "Detener la muestra",
     "voiceHint": "El mushaf es {{page}}; {{name}} recita en {{voice}}. Escúchalo en {{page}}:",

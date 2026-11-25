@@ -186,7 +186,7 @@ describe('it is shown with the reading it spells', () => {
   });
 
   it('can be switched on, and downloaded, from the ayah sheet and from "Under each verse"', () => {
-    expect(src('quran/mushaf/AyahActionSheet.tsx')).toMatch(/<TransliterationSwitch /);
+    expect(src('quran/mushaf/AyahActionSheet.tsx')).toMatch(/<TransliterationSwitch\s/);
     expect(src('quran/CompanionTextControls.tsx')).toMatch(/<TransliterationSwitch \/>/);
     const sw = src('quran/TransliterationSwitch.tsx');
     expect(sw).toMatch(/queueQuranDownload\(\{ kind: 'translation', editionId: edition\.id \}\)/);

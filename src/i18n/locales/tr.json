@@ -1771,6 +1771,7 @@
     "downloadingAudioMegabytes": "İndiriliyor… {{done}}/{{total}} MB",
     "wholeSurahTrackingShort": "Her sure için tek kayıt, izin verdiği kadar yakından ayetlere bölünmüş: ayet takibi en iyi denemedir.",
     "reportAyahBoundary": "Bir ayet yanlış yerde mi başlıyor ya da bitiyor? Bildirin",
+    "reportTransliteration": "Bu ayette bir kelime yanlış mı yazılmış? Bildirin",
     "previewReciter": "{{name}} dinle",
     "stopPreview": "Önizlemeyi durdur",
     "voiceHint": "Mushaf {{page}}; {{name}} {{voice}} okuyor. {{page}} dinleyin:",
