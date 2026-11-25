@@ -263,6 +263,10 @@ const SpreadColumn = React.memo(function SpreadColumn({
 export const MushafSpreadReader = React.memo(function MushafSpreadReader(
   props: MushafReaderProps,
 ) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — volumeKeysAvailable() (Dimensions.get)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { isFullscreen, onToggleFullscreen } = props;
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();

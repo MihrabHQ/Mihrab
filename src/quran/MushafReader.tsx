@@ -76,6 +76,10 @@ type Props = Omit<MushafReaderProps, 'keyTurn'>;
 const FONT_SET_MB = 180;
 
 export function MushafReader(props: Props) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — resolveRiwayah() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const quranPrefs = useQuranPrefs();

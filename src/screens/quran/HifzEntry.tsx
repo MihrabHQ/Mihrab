@@ -46,6 +46,7 @@ import { CheckIcon, HifzIcon } from '../../theme/icons';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
+import { useRenderClock } from '../../hooks/useRenderClock';
 
 /**
  * The three grades as sheet choices; shared with the Hifz page and the
@@ -98,6 +99,10 @@ export function recite(id: string, grade: HifzGrade) {
  * step from learning a range to keeping it (#121).
  */
 function DrillOffer() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — hifzSurahName() (i18n.language  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const drill = useLastDrill();
@@ -146,6 +151,9 @@ function DrillOffer() {
 }
 
 export function HifzEntry() {
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -182,7 +190,7 @@ export function HifzEntry() {
     );
   }
 
-  const today = dayOf(Date.now());
+  const today = dayOf(clock);
   const { shown, more } = todaysRevision(hifz, today);
   const done = recitedToday(hifz, today).length;
   const stock = hifzStock(hifz);

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode, useRef } from 'react';
 import { Animated, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import {
@@ -37,6 +37,7 @@ import {
   usePagerWarmth,
   wantPagerReachNow,
 } from './minimalPager';
+import { useKeepLatest } from '../hooks/useLatest';
 
 /**
  * Under Minimal (settings.minimalUi) the tabs are pages: the page moves
@@ -97,7 +98,7 @@ export function MinimalSwipe({
   // The app's direction, not the device's (minimalPager.ts).
   const rtl = useLayoutRtl();
   const live = useRef({ routes, index, width, rtl });
-  live.current = { routes, index, width, rtl };
+  useKeepLatest(live, { routes, index, width, rtl });
   // The graphs that scroll sideways themselves: the swipe waits for them.
   const blockers = usePagerBlockers();
 

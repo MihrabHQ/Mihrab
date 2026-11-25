@@ -159,7 +159,9 @@ describe('the swipe', () => {
 
   it('places the pages on the tab on show before the dots and pages attach', () => {
     // Turned on from Settings, the dots were built from 0 and lit Today's.
-    expect(bar).toMatch(/if \(!placed\.current\) \{\s*placed\.current = true;\s*settlePagerBase\(state\.index, false\);\s*\}/);
+    // In the first render, before the children attach: as a made-once value's
+    // initialiser, which runs there (and which the React Compiler can follow).
+    expect(bar).toMatch(/useConst\(\(\) => \{\s*settlePagerBase\(state\.index, false\);\s*return null;\s*\}\);/);
     expect(bar).not.toContain('settlePagerBase(state.index, !first.current);');
   });
 

@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, Easing, I18nManager, type LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { useVerticalBar } from '../../native/VerticalBar';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
@@ -8,6 +8,7 @@ import { skyColorAt, skyStops, SUN_HORIZON_Y, type SkyFrame } from './skyModel';
 import { SUN_GLOW_PEAK } from './skyLight';
 import { HeroTrack, type TrackLabels } from './HeroTrack';
 import type { TrackFrame } from './trackModel';
+import { useConst } from '../../hooks/useConst';
 
 /**
  * How wide the halo reaches, as a percentage of the sky, at no light and
@@ -855,7 +856,7 @@ function TwinkleImpl({
   height: number;
 }) {
   const reduceMotion = useReduceMotion();
-  const values = useRef(TWINKLERS.map(() => new Animated.Value(0, { useNativeDriver: true }))).current;
+  const values = useConst(() => TWINKLERS.map(() => new Animated.Value(0, { useNativeDriver: true })));
   useEffect(() => {
     if (reduceMotion) return undefined;
     const loops = TWINKLERS.map((tw, i) =>

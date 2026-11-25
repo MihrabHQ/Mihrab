@@ -19,12 +19,20 @@ import { useMethodCurrency } from '../../hooks/useMethodCurrency';
 import { methodCurrencyNote } from '../../prayer/methodCurrencyNote';
 import { zoneDataNotice } from '../../prayer/zoneDataNotice';
 import { refreshStoredPrayerData } from '../../prayer/refreshStoredData';
+import { useRenderClock } from '../../hooks/useRenderClock';
 
 type DataSourceCardProps = {
   onOpenProviderPicker: () => void;
 };
 
 function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — diyanetCoverage() (placesCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const { t, i18n } = useTranslation();
   const { settings } = usePrayerSettings();
 
@@ -100,7 +108,7 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
   // A phone in Morocco whose zone data still runs it at GMT+1 (#82), or in
   // a zone that keeps one offset all year now (#117): its owner should
   // know, since every app's times are affected.
-  const zoneDataStale = zoneDataNotice(t, 'settings');
+  const zoneDataStale = zoneDataNotice(t, 'settings', clock);
   const tableFallback =
     useTableFallback(
       effectiveProvider,

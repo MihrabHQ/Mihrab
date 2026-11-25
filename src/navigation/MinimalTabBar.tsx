@@ -22,6 +22,8 @@ import {
   pagerRowIndex,
   turnPagerTo,
 } from './minimalPager';
+import { useKeepLatest } from '../hooks/useLatest';
+import { useConst } from '../hooks/useConst';
 
 /**
  * The tab bar under Minimal (settings.minimalUi): a row of dots, one a
@@ -97,11 +99,13 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
   // attach, and the children attach before this bar's effects run. Turned
   // on from Settings, the dots were built from the 0 the value starts at
   // and stayed on Today's dot over the Settings page.
-  const placed = useRef(false);
-  if (!placed.current) {
-    placed.current = true;
+  // As a made-once value's initialiser: it runs in the first render, where
+  // the assignment to a ref it replaces ran, and the React Compiler can
+  // follow it (a ref read and written while rendering kept it out).
+  useConst(() => {
     settlePagerBase(state.index, false);
-  }
+    return null;
+  });
   const first = useRef(true);
   useEffect(() => {
     if (first.current) {
@@ -131,7 +135,7 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
   // The hold-and-slide. Read in the gesture's callbacks without
   // rebuilding the gesture on every tab change.
   const live = useRef({ index: state.index, count: state.routes.length, width, rtl });
-  live.current = { index: state.index, count: state.routes.length, width, rtl };
+  useKeepLatest(live, { index: state.index, count: state.routes.length, width, rtl });
   const lastSlot = useRef(state.index);
   // Whether this hold ever began: a tap on a dot is a pan that fails
   // before its long press, and still finalizes — with nothing to let go.

@@ -62,6 +62,10 @@ export function RecitationControls({
   onStartPlayback,
   showHideForReview = false,
 }: Props) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — ayahCountForRiwayah() (pageCache); resolveRiwayah() (pageCache); surahName() (i18n.language  [src/i18n/index.ts); isJobRunning() (state); and 1 more
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
   const prefs = useQuranPrefs();

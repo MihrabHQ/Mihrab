@@ -18,6 +18,7 @@ import { Animated, Pressable, type StyleProp, type ViewStyle } from 'react-nativ
 import { useTranslation } from 'react-i18next';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import type { TrackKind } from './trackModel';
+import { useConst } from '../../hooks/useConst';
 
 /** How long the names stay if nobody taps them away, ms. */
 const EXPLAIN_MS = 6000;
@@ -29,7 +30,7 @@ const EXPLAIN_MS = 6000;
 export function useTrackExplain(): { opacity: Animated.Value; toggle: () => void; open: boolean } {
   const reduceMotion = useReduceMotion();
   const [open, setOpen] = useState(false);
-  const opacity = useRef(new Animated.Value(0)).current;
+  const opacity = useConst(() => new Animated.Value(0));
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const close = useCallback(() => {
     if (timer.current) clearTimeout(timer.current);

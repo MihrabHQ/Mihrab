@@ -31,6 +31,10 @@ import {
 import { solidColor } from '../theme/appPalette';
 
 export function TransliterationSwitch({ style }: { style?: StyleProp<ViewStyle> } = {}) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — resolveRiwayah() (pageCache); riwayahLabel() (i18n.t  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const prefs = useQuranPrefs();

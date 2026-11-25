@@ -31,7 +31,7 @@ import { useTranslation } from 'react-i18next';
 import { Animated, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useWindowSize } from '../responsive/windowSize';
 import type { ViewStyle } from 'react-native';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { translucentSurface } from '../theme/chrome';
@@ -73,6 +73,7 @@ import { MinimalTabBar } from './MinimalTabBar';
 import { MinimalSwipe } from './MinimalSwipe';
 import { MinimalScreens } from './MinimalScreens';
 import { PAGER_TRANSITION_MS, pagerEasing } from './minimalPager';
+import { useConst } from '../hooks/useConst';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -140,7 +141,7 @@ export function MainTabs() {
    */
   const hidden = useTabBarHidden();
   const reduceMotion = useReduceMotion();
-  const slide = useRef(new Animated.Value(0)).current;
+  const slide = useConst(() => new Animated.Value(0));
   useEffect(() => {
     // A spring, not a timing: the bar is a thing that MOVES, and the
     // `spatial` track lets it settle like one. Under Reduce Motion the same

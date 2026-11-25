@@ -133,6 +133,10 @@ export function useActiveWordIndex(): {
   ayah: number;
   wordIndex: number;
 } | null {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — resolveRiwayah() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { active, playing, reciterId, resting } = usePlaybackStatus();
   const riwayah = resolveRiwayah(useQuranPrefs().riwayah);
   // Four times a second, and only while a human can see the word it

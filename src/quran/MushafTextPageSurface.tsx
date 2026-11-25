@@ -451,6 +451,10 @@ function GlyphPageSurface({
   prefetchRadius = 0,
   tight = false,
 }: MushafTextPageSurfaceProps) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — getPageLayout() (glyphSet)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const nightMode = toneIsDark(tone);
   // The set before the layout: `getPageLayout` measures with the set's
   // advances, and the tajwīd faces are cut a little wider than V2's.

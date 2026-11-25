@@ -58,6 +58,7 @@ These are **non-negotiable**. The `reviewer` subagent in `.claude/agents/reviewe
 - **Every network provider response goes through `validateTimings()`.** Local adhan (on-device math) is the only exempt path.
 - **Re-check exact-alarm permission immediately before scheduling**, not just at boot.
 - **Schema migrations are additive only.** Removing or repurposing fields in `prayerapp.settings.v1` breaks upgraders.
+- **A compiled component reads nothing that changes behind React's back.** The React Compiler memoises the folders listed in `babel.reactCompiler.js` and keeps a component's output until its props, state or hook results change. A read of the clock (`Date.now()`, `new Date()`), of a module-level value or cache that is written to, or of a live singleton (`i18n.language`, `Dimensions.get`) while rendering — directly or through a helper — goes stale without an error. Take the render's clock from `useRenderClock()` and hand it on as an argument, subscribe (`useFontScale()`), or put `'use no memo';` at the top of the component with a line saying what it reads. `node tools/compiler-impure.js` lists the reads (the test `reactCompilerScope` fails on one); `node tools/compiler-report.js` says what is compiled and what is left as written, and why.
 
 ### Religious content
 

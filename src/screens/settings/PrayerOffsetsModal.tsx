@@ -27,6 +27,7 @@ import { typeStyle } from '../../theme/typography';
 import { useSystemNavigationReserve } from '../../navigation/tabBarInset';
 import { modalStyles } from './modalStyles';
 import { useSheetPadding } from '../../responsive/sheetSides';
+import { useKeepLatest } from '../../hooks/useLatest';
 
 /**
  * Per-prayer offsets modal — task #22.
@@ -74,7 +75,7 @@ export const PrayerOffsetsModal = memo(function PrayerOffsetsModal({
   // The offsets as last changed here: a held button steps faster than the
   // parent re-renders, and each step must build on the one before.
   const latest = useRef(current);
-  latest.current = current;
+  useKeepLatest(latest, current);
   const setOffset = useCallback(
     (key: keyof PrayerOffsetMinutes, delta: number) => {
       const prev = latest.current[key] ?? 0;
@@ -220,7 +221,7 @@ function StepperButton({
 }) {
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const step = useRef(onStep);
-  step.current = onStep;
+  useKeepLatest(step, onStep);
   const stop = useCallback(() => {
     if (timer.current) clearInterval(timer.current);
     timer.current = null;

@@ -49,6 +49,7 @@ import {
   liftRotationCover,
   rotationCoverAvailable,
 } from '../native/RotationCover';
+import { useConst } from '../hooks/useConst';
 
 export type RotationFadeInput = {
   /** The reader's own cover is up: its geometry does not fit the window. */
@@ -71,7 +72,7 @@ export function useRotationFade({
   color,
   active,
 }: RotationFadeInput): Animated.Value {
-  const opacity = useRef(new Animated.Value(0)).current;
+  const opacity = useConst(() => new Animated.Value(0));
   /** Has a page been shown yet? Until it has, a cover is the opening. */
   const shown = useRef(false);
   /** Which way up the window was when a page was last shown. */

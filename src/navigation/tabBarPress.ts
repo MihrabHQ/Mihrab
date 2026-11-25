@@ -170,6 +170,10 @@ export function useTabBarPress(): TabBarPress {
  * focus keeps its accent either way.
  */
 export function useTabHoverTint(name: string, color: string, focused: boolean): string {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — hoverTint (reassigned, src/navigation/tabBarPress.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const press = useTabBarPress();
   if (focused || !press.held || press.hovered !== name || hoverTint == null) return color;
   return hoverTint;

@@ -60,8 +60,16 @@ import { cardEdgeStyle } from '../../theme/chrome';
 import { TYPE } from '../../theme/typography';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { useSheetSides } from '../../responsive/sheetSides';
+import { useRenderClock } from '../../hooks/useRenderClock';
 
 export function KhatmahCard() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — khatmahUnreadPages() (pageCache); totalPagesForRiwayah() (pageCache); khatmahReachAyah() (pageCache); planDays() (published); and 1 more
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
@@ -77,15 +85,15 @@ export function KhatmahCard() {
   // turns with it.
   useIslamicDay();
   // The day's portion, how much of it is read, and anything read past it.
-  const day = plan ? khatmahDay(plan) : null;
+  const day = plan ? khatmahDay(plan, clock) : null;
   // The day "done" would finish, or null when pressing would do nothing
   // (only skipped pages left: `khatmahCanFinish`). Worked out once.
-  const finishDay = plan && khatmahCanFinish(plan) ? khatmahFinishTarget(plan).day : null;
+  const finishDay = plan && khatmahCanFinish(plan, clock) ? khatmahFinishTarget(plan, clock).day : null;
   // And the same thing in pages, of the muṣḥaf this reader is in — see
   // `khatmahPages`. A page is the unit a reader plans in; an ayah count
   // is a number nobody can picture.
-  const pages = plan ? khatmahPages(plan, quran.prefs.riwayah) : null;
-  const daysLeft = plan ? khatmahDaysLeft(plan) : 0;
+  const pages = plan ? khatmahPages(plan, quran.prefs.riwayah, clock) : null;
+  const daysLeft = plan ? khatmahDaysLeft(plan, clock) : 0;
   /**
    * THE ONE NUMBER ON THIS CARD THAT IS THE CALENDAR'S (issue #53).
    *
@@ -101,7 +109,7 @@ export function KhatmahCard() {
    * never reached the screen the reader is looking at, which left the
    * widget the more honest of the two surfaces.
    */
-  const behindPages = plan ? khatmahBehindBy(plan) : 0;
+  const behindPages = plan ? khatmahBehindBy(plan, clock) : 0;
   /**
    * THE DEADLINE MODE'S OWN NUMBERS (issue #53).
    *
@@ -120,14 +128,14 @@ export function KhatmahCard() {
    * page here and there all the way down the book.
    */
   const perDayPages =
-    plan && deadline ? khatmahPerDayPages(plan, Date.now(), quran.prefs.riwayah) : 0;
+    plan && deadline ? khatmahPerDayPages(plan, clock, quran.prefs.riwayah) : 0;
   const unreadPages = plan
     ? khatmahUnreadPages(plan, quran.prefs.riwayah)
     : totalPagesForRiwayah(quran.prefs.riwayah);
   // Asked of the DATE. `daysLeft` is zero for a finished khatmah too, and
   // deriving it from that told a reader who had just completed one that
   // they were late for it.
-  const deadlinePassed = plan != null && khatmahDatePassed(plan);
+  const deadlinePassed = plan != null && khatmahDatePassed(plan, clock);
   /**
    * WHEN THE PACE HAS OUTGROWN THE READER, SAY SO — AND OFFER A DATE.
    *
@@ -137,7 +145,7 @@ export function KhatmahCard() {
    * All this line does is decide whether to say it.
    */
   const paceOutgrown =
-    plan != null && !deadlinePassed && khatmahPaceOutgrown(plan);
+    plan != null && !deadlinePassed && khatmahPaceOutgrown(plan, clock);
   const deadlineLabel = useMemo(
     () => (deadline ? formatDeadline(deadline, i18n.language) : ''),
     [deadline, i18n.language],
@@ -351,6 +359,7 @@ export function KhatmahCard() {
                               // from the start would call tomorrow today.
                               khatmahDayAnchor(plan),
                               finishDay,
+                              clock,
                             ),
                             (key: string, opts: { defaultValue: string }) =>
                               t(key, opts) as string,

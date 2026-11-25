@@ -19,6 +19,7 @@ import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { hapticTick } from '../polish/haptics';
+import { useConst } from '../hooks/useConst';
 
 /** How long the badge must be held to unlock. */
 export const HOLD_MS = 1500;
@@ -43,7 +44,7 @@ type Props = {
  * the badge's; a caller without one can ignore `fill`.
  */
 export function useHoldToUnlock(onUnlock: () => void, onHint: () => void) {
-  const fill = useRef(new Animated.Value(0)).current;
+  const fill = useConst(() => new Animated.Value(0));
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const done = useRef(false);
 

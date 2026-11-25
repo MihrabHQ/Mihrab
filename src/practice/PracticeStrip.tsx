@@ -85,6 +85,12 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
 
   const scroll = useHistoryScroll({ columns: days.length, columnWidth: COLUMN, rtl, onReachOldest });
 
+  // By its own name: read off `scroll` in the JSX it is, to the React
+
+  // Compiler, a ref read while rendering.
+
+  const stripRef = scroll.scrollRef;
+
   // Only the weeks on show and a few either side are drawn; the rest are
   // blanks of the same width (stripWindow.ts has the why and the sums).
   const weeks = useMemo(() => {
@@ -211,7 +217,7 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
       </View>
       <KeepsSideways>
       <ScrollView
-        ref={scroll.scrollRef}
+        ref={stripRef}
         horizontal
         showsHorizontalScrollIndicator={false}
         onContentSizeChange={onContentSizeChange}

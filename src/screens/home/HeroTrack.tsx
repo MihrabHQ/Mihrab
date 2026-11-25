@@ -1,11 +1,12 @@
-import { memo, useMemo } from 'react';
-import { Animated, PixelRatio, StyleSheet, Text, View } from 'react-native';
+import { useCallback, memo, useMemo } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { LABEL_FONT, LABEL_LINE, LABEL_MAX_SCALE, placeTrackLabels } from './trackLabels';
 import Svg, { Circle, ClipPath, Defs, G, Line, Path, Rect } from 'react-native-svg';
 import { MOON, moonLitPath, NEW_MOON_BELOW, SUN_R } from './HeroSky';
 import { type SkyFrame } from './skyModel';
 import { SUN_SURFACE, tintedBy } from './skyLight';
 import { acrossNight, TRACK_FLOOR, TRACK_STEP_MINUTES, type TrackBase, type TrackFrame } from './trackModel';
+import { useFontScale } from '../../hooks/useFontScale';
 
 /**
  * The Track look's drawing — see trackModel.ts for what it is and why.
@@ -97,6 +98,8 @@ function HeroTrackImpl({
    */
   labelInk?: string;
 }) {
+  // The system's text size, from a subscription (hooks/useFontScale.ts).
+  const fontScale = useFontScale();
   const body = frame.body;
   const margin = MOON / 2;
   const roomTop = bandTop + margin;
@@ -117,13 +120,20 @@ function HeroTrackImpl({
    */
   const svgTop = Math.max(0, Math.floor(bandTop - 2));
   const height = Math.max(1, Math.ceil(floor + UNDER_R + 2) - svgTop);
-  const X = (p: TrackBase) => p.x * width;
-  const Y = (p: TrackBase) =>
-    !p.under
-      ? roomTop + p.y * room
-      : depth
-        ? horizon + Math.min(1, -p.altitude / below) * deepRoom
-        : horizon;
+  // Memoised on the layout numbers they close over, and named in the lists
+  // below in place of those numbers. The lists used to carry the numbers
+  // and suppress the lint for leaving X and Y out — which is a list the
+  // React Compiler cannot check, so it left this whole component alone.
+  const X = useCallback((p: TrackBase) => p.x * width, [width]);
+  const Y = useCallback(
+    (p: TrackBase) =>
+      !p.under
+        ? roomTop + p.y * room
+        : depth
+          ? horizon + Math.min(1, -p.altitude / below) * deepRoom
+          : horizon,
+    [roomTop, room, depth, horizon, below, deepRoom],
+  );
 
   /**
    * THE DAY'S LINES ARE BUILT ONCE. The tinted track is the window's
@@ -160,9 +170,7 @@ function HeroTrackImpl({
     }
     flush();
     return out;
-    // X and Y are closures over the layout numbers, which the deps carry.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [track.base, track.kind, width, roomTop, room, horizon, ink, moonLight]);
+  }, [track.base, track.kind, X, Y, ink, moonLight]);
   /**
    * Under the line, with the depth: the track on down to the floor, in the
    * ink, fainter than the sky's part — the sun is not seen there, only
@@ -170,7 +178,10 @@ function HeroTrackImpl({
    * floor, a gap in the samples) and at a circumpolar seam.
    */
   const step = TRACK_STEP_MINUTES * 60_000;
-  const breaks = (p: TrackBase, prev: TrackBase) => Math.abs(p.x - prev.x) > 0.5 || p.at - prev.at > step * 1.5;
+  const breaks = useCallback(
+    (p: TrackBase, prev: TrackBase) => Math.abs(p.x - prev.x) > 0.5 || p.at - prev.at > step * 1.5,
+    [step],
+  );
   const under = useMemo(() => {
     if (!depth) return '';
     const pts = track.base;
@@ -182,9 +193,7 @@ function HeroTrackImpl({
       parts.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
     }
     return parts.join(' ');
-    // X, Y and breaks are closures over the layout numbers, which the deps carry.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [depth, track.base, width, roomTop, room, horizon, deepRoom]);
+  }, [depth, track.base, X, Y, breaks]);
   const drawn = useMemo(() => {
     const stretch: string[] = [];
     const alongLine: { x1: number; x2: number }[] = [];
@@ -216,8 +225,7 @@ function HeroTrackImpl({
       floorStretch = { x1: track.deep * width, x2: acrossNight(night, Math.min(track.nextAt, night.at2)) * width };
     }
     return { above, stretch: stretch.join(' '), alongLine, floorLine, floorStretch };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [above, track.points, track.deep, track.night, track.nextAt, width, roomTop, room, horizon, depth, deepRoom]);
+  }, [above, track.points, track.deep, track.night, track.nextAt, width, depth, X, Y, breaks]);
 
   const ring = track.ring;
   const at = track.body;
@@ -251,9 +259,7 @@ function HeroTrackImpl({
       // The end's stretch and its under-the-line outline come in over the last third.
       end: run.progress.interpolate({ inputRange: [0.66, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
     };
-    // X and Y are closures over the layout numbers, which the deps carry.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [run, width, roomTop, room, horizon, deepRoom]);
+  }, [run, X, Y, horizon]);
   // THE BODY THAT RIDES IS THE SUN. The chart is the sun's, day and night
   // (trackWindow), and the run's places are the sun's on it. It was drawn
   // as the sky's body at the run's end — a moon, opened after sunset — so
@@ -359,7 +365,7 @@ function HeroTrackImpl({
       track,
       { width, bandTop, horizon, bottom: depth ? floor : undefined, X, Y },
       { path: labels.path, below: labels.below, horizon: labels.horizon, prayer: labels.prayer },
-      PixelRatio.getFontScale(),
+      fontScale,
     );
     return (
       <Animated.View style={[StyleSheet.absoluteFill, { opacity: labels.opacity }]} pointerEvents="none">

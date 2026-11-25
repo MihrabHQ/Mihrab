@@ -24,14 +24,22 @@ export function utcOffsetLabel(minutes: number): string {
   return `UTC${minutes < 0 ? '−' : '+'}${Math.floor(a / 60)}${m ? `:${String(m).padStart(2, '0')}` : ''}`;
 }
 
-/** The key that changes when the notice would say something new: the zone and how far it is out. */
-export function zoneDataNoticeKey(): string | null {
+/**
+ * The key that changes when the notice would say something new: the zone and how far it is out.
+ *
+ * `_asOf` (here and below) is not read: the answer follows the phone's zone
+ * and its clock, which a render cannot see change. A component passes the
+ * time of its render (hooks/useRenderClock.ts) so that the React Compiler
+ * asks again each time, where a call with nothing that changes is asked
+ * once and kept.
+ */
+export function zoneDataNoticeKey(_asOf?: number): string | null {
   const clock = deviceZoneClock();
   if (!clock || !phoneClockRunsOnStaleZone(clock)) return null;
   return `${clock.zone}:${zoneDataLagMinutes(clock)}`;
 }
 
-export function zoneDataNotice(t: TFunction, where: 'home' | 'settings'): string | null {
+export function zoneDataNotice(t: TFunction, where: 'home' | 'settings', _asOf?: number): string | null {
   const clock = deviceZoneClock();
   if (!clock || !phoneClockRunsOnStaleZone(clock)) return null;
   if (clock.zone === MOROCCO_CLOCK.zone)

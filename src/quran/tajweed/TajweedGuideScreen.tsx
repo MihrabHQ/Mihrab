@@ -48,6 +48,10 @@ const LEGEND: ReadonlyArray<{ rule: TajweedRule['id']; family: TajweedFamilyId }
 ];
 
 export function TajweedGuideScreen() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — resolveRiwayah() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette, isDark } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

@@ -9,7 +9,7 @@
  * `accessory` slot, so turning one off for a week does not mean opening
  * it, and opening one does not mean touching the switch by accident.
  */
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import { Switch, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../../i18n';
@@ -34,6 +34,7 @@ import { SettingsPage } from '../SettingsPage';
 import { DhikrReminderEditor, type DhikrDraft } from '../DhikrReminderEditor';
 import { sharedSettingsStyles as s } from '../sharedStyles';
 import { solidColor } from '../../../theme/appPalette';
+import { useKeepLatest } from '../../../hooks/useLatest';
 
 /** "Every day", or the days themselves, in the app's language. */
 function daysLabel(reminder: DhikrReminder, everyDay: string): string {
@@ -63,8 +64,8 @@ export function DhikrRemindersSettingsScreen() {
   const [editing, setEditing] = useState<DhikrReminder | 'new' | null>(null);
 
   // Android's back button belongs to the sheet while the sheet is open.
-  const deferBack = useRef(false);
-  deferBack.current = editing != null;
+  const deferBack = useRef(editing != null);
+  useKeepLatest(deferBack, editing != null);
 
   const full = reminders.length >= MAX_DHIKR_REMINDERS;
 

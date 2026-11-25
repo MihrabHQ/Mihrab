@@ -32,6 +32,7 @@ import { ResumeDoors } from '../../quran/ResumeDoors';
 import type { KhatmahTarget } from '../../quran/khatmahTarget';
 import { HOME_SCREEN_PADDING, HOME_TABLE_RADIUS } from './tokens';
 import { tajweedColoursShown } from '../../quran/tajweed/tajweedSupport';
+import { useRenderClock } from '../../hooks/useRenderClock';
 
 type Props = {
   /** Open the reader at a place — surah, and the page or the ayah. */
@@ -60,12 +61,15 @@ type Props = {
 };
 
 function QuranCardImpl({ onOpenAt, onOpenQuran, onOpenHifz, bare = false, dense = false }: Props) {
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const { palette } = useAppPalette();
   const quran = useQuranState();
   // The day's portion is keyed on the Islamic day, so the card has to
   // hear the boundary pass — nothing in `quran` changes at maghrib.
   useIslamicDay();
-  const card = selectQuranCardState(quran);
+  const card = selectQuranCardState(quran, clock);
   // A card that says "Continue" into the muṣḥaf is a reader about to open
   // it. Bring the page-layout data in now, after the home screen has
   // settled, rather than in the middle of the push transition when the

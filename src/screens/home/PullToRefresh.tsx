@@ -53,11 +53,13 @@
  */
 import {
   useCallback,
+  useInsertionEffect,
   useMemo,
   useRef,
   useSyncExternalStore,
   type ReactNode,
 } from 'react';
+import { useConst } from '../../hooks/useConst';
 import {
   Animated,
   StyleSheet,
@@ -211,10 +213,13 @@ export class PullStore {
  * every render and nothing it passes down changes identity because of it.
  */
 export function usePullToRefresh(onRefresh: RefreshWork): PullStore {
-  const store = useRef<PullStore | null>(null);
-  if (!store.current) store.current = new PullStore();
-  store.current.setWork(onRefresh);
-  return store.current;
+  // Made once, and told of the newest work when a render is committed
+  // (hooks/useLatest.ts has why not while rendering).
+  const store = useConst(() => new PullStore());
+  useInsertionEffect(() => {
+    store.setWork(onRefresh);
+  });
+  return store;
 }
 
 function usePull(store: PullStore): Snapshot {

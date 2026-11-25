@@ -268,8 +268,10 @@ describe('the location screen', () => {
     // before the school question. A location set here advances at once;
     // the times are only for someone who comes back to this screen.
     expect(src).not.toMatch(/setTimeout\(onAdvance/);
-    expect(src).toMatch(/if \(done && !wasDoneOnMount\.current\) onAdvance\(\)/);
-    expect(src).toMatch(/const armed = done && wasDoneOnMount\.current/);
+    expect(src).toMatch(/if \(done && !wasDoneOnMount\) onAdvance\(\)/);
+    expect(src).toMatch(/const armed = done && wasDoneOnMount;/);
+    // What was so at mount, kept as state that is never set.
+    expect(src).toMatch(/const \[wasDoneOnMount\] = useState\(done\);/);
   });
 });
 

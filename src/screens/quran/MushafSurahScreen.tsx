@@ -97,6 +97,10 @@ export function MushafSurahScreen({
   onToggleMode,
   onBackAnswer,
 }: Props) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — resolveRiwayah() (pageCache); surahName() (i18n.language  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const sessionColor = useSessionColor();

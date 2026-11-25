@@ -102,6 +102,9 @@ import { tajweedColoursShown } from '../quran/tajweed/tajweedSupport';
 import { useSheetSides } from '../responsive/sheetSides';
 import { IS_WEB_APP } from '../config/webApp';
 import { solidColor } from '../theme/appPalette';
+import { useConst } from '../hooks/useConst';
+import { useKeepLatest } from '../hooks/useLatest';
+import { useRenderClock } from '../hooks/useRenderClock';
 
 type Tab = 'surah' | 'juz' | 'bookmarks';
 const TABS: Tab[] = ['surah', 'juz', 'bookmarks'];
@@ -164,6 +167,13 @@ function RowLine({ palette }: { palette: AppPalette }) {
 }
 
 export function QuranScreen() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — resolveRiwayah() (pageCache); totalPagesForRiwayah() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const quranWide = useBreakpoint() !== 'compact';
   const listCap = quranWide ? styles.listWide : null;
   const { t, i18n } = useTranslation();
@@ -237,8 +247,8 @@ export function QuranScreen() {
   }, [riwayahForWarm, tajweedForWarm]);
 
   const [tab, setTab] = useState<Tab>('surah');
-  const tabRef = useRef<Tab>('surah');
-  tabRef.current = tab;
+  const tabRef = useRef<Tab>(tab);
+  useKeepLatest(tabRef, tab);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<QuranSearchResult[] | null>(null);
   // Go-to-page (v2.8.5) — a page number typed here opens the mushaf there.
@@ -440,7 +450,7 @@ export function QuranScreen() {
   // to the boundary because the day's portion turns at maghrib and no
   // state this screen holds turns with it.
   useIslamicDay();
-  const doors = selectQuranCardState(quran);
+  const doors = selectQuranCardState(quran, clock);
   const plan = activeKhatmah(quran);
   // Bar widths. Clamped because a plan synced from another device can
   // claim more read than the book holds, and a negative width crashes.
@@ -487,7 +497,7 @@ export function QuranScreen() {
   const order = useMemo<Tab[]>(() => (layoutRtl ? [...TABS].reverse() : TABS), [layoutRtl]);
   const [pageW, setPageW] = useState(0);
   const pagerRef = useRef<ScrollViewInstance>(null);
-  const scrollX = useRef(new Animated.Value(0)).current;
+  const scrollX = useConst(() => new Animated.Value(0));
   const pageRefs = useRef<Record<Tab, FlatList | null>>({ surah: null, juz: null, bookmarks: null });
   /** Each list's ref: kept per page, and `listRef` follows the one in front. */
   const pageRef = useMemo(() => {
@@ -520,8 +530,8 @@ export function QuranScreen() {
     bookmarks: new Animated.Value(0),
   }).current;
   const lastY = useRef<Record<Tab, number>>({ surah: 0, juz: 0, bookmarks: 0 });
-  const topHRef = useRef(0);
-  topHRef.current = topH;
+  const topHRef = useRef(topH);
+  useKeepLatest(topHRef, topH);
   const alignPages = useCallback(() => {
     const from = tabRef.current;
     const y = lastY.current[from];

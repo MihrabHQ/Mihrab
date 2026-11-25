@@ -107,6 +107,8 @@ import {
   type Hsv,
 } from '../settings/accentColors';
 import { useSheetPadding } from '../responsive/sheetSides';
+import { useKeepLatest } from '../hooks/useLatest';
+import { useConst } from '../hooks/useConst';
 
 /** Shown in the empty hex field — an example colour CODE, not chrome. */
 const EXAMPLE_HEX = '#22C55E'; // tokens-ok-line: example text, not a painted colour
@@ -168,7 +170,7 @@ export function ColorPickerModal({
   // capture — a theme change while the sheet is open would otherwise
   // clamp against the ground it opened on.
   const groundRef = useRef(ground);
-  groundRef.current = ground;
+  useKeepLatest(groundRef, ground);
 
   // Re-seed whenever the sheet opens, so it always starts on the colour
   // the caller passed rather than on wherever it was left last time.
@@ -225,7 +227,7 @@ export function ColorPickerModal({
   const svWRef = useRef(0);
   const hueWRef = useRef(0);
   const hsvRef = useRef(hsv);
-  hsvRef.current = hsv;
+  useKeepLatest(hsvRef, hsv);
   /**
    * The shape of the usable colours, in the square's own pixels — which
    * is why it waits for the measured width. Percentages do for the
@@ -315,7 +317,10 @@ export function ColorPickerModal({
     );
   };
 
-  const svResponder = useMemo(
+  // Made once (hooks/useConst.ts), not memoised: its handlers read refs,
+  // and handed to `PanResponder.create` inside a `useMemo` that is, to the
+  // React Compiler, refs read while rendering.
+  const svResponder = useConst(
     () =>
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
@@ -332,12 +337,9 @@ export function ColorPickerModal({
           pickSv(e.nativeEvent.locationX, e.nativeEvent.locationY);
         },
       }),
-    // `pickSv` is stable — it only reads refs and setState.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
   );
 
-  const hueResponder = useMemo(
+  const hueResponder = useConst(
     () =>
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
@@ -352,8 +354,6 @@ export function ColorPickerModal({
           pickHue(e.nativeEvent.locationX);
         },
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
   );
 
   const commitDraft = () => {

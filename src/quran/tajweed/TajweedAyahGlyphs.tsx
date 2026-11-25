@@ -119,6 +119,10 @@ export function TajweedAyahGlyphs({
    */
   glyphs?: AyahGlyphSet;
 }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — findPageForAyah() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { isDark } = useAppPalette();
   const set = glyphs === 'v2' ? 'v2' : tajweedFontSet(isDark);
   const [width, setWidth] = useState(0);

@@ -38,7 +38,7 @@ describe('the card says which question it is answering', () => {
     // The rule itself lives in the store, where it can be walked through
     // a whole khatmah day by day (`khatmahDeadline.test.ts`); the screen
     // only decides whether to say it.
-    expect(screen).toContain('khatmahPaceOutgrown(plan)');
+    expect(screen).toContain('khatmahPaceOutgrown(plan, clock)');
     // Never a modal, never a count of missed days: it is a line on the
     // card with a link in it.
     expect(screen).not.toMatch(/missedDays|daysMissed/);
@@ -49,7 +49,7 @@ describe('the card says which question it is answering', () => {
     // Asked of the DATE, not of `daysLeft` — which is also zero for a
     // khatmah that has been FINISHED, and telling someone who has just
     // completed one that they were late for it is the bug this pins.
-    expect(screen).toContain('khatmahDatePassed(plan)');
+    expect(screen).toContain('khatmahDatePassed(plan, clock)');
     expect(screen).not.toMatch(/deadlinePassed =[\s\S]{0,60}daysLeft <= 0/);
   });
 

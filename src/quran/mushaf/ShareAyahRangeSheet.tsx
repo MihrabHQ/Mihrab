@@ -55,6 +55,7 @@ import {
   type AyahRangeParts,
 } from '../../share/shareText';
 import { copyToClipboard } from '../../sync/clipboard';
+import { useKeepLatest } from '../../hooks/useLatest';
 
 /** Past this many characters a share or a copy may not arrive at all (see above). */
 export const MAX_CHARS = 90_000;
@@ -107,6 +108,10 @@ export async function buildRangeText(args: {
 }
 
 export function ShareAyahRangeSheet({ visible, onClose, surah, ayah, riwayah, edition }: Props) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — ayahCountForRiwayah() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const meta = findSurah(surah);
@@ -350,7 +355,7 @@ function RepeatButton({
   const delay = useRef<ReturnType<typeof setTimeout> | null>(null);
   const every = useRef<ReturnType<typeof setInterval> | null>(null);
   const step = useRef(onStep);
-  step.current = onStep;
+  useKeepLatest(step, onStep);
   const stop = () => {
     if (delay.current) clearTimeout(delay.current);
     if (every.current) clearInterval(every.current);

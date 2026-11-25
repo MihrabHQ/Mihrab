@@ -105,6 +105,10 @@ type ReciterUsage = {
  * cards.
  */
 export function QuranDownloadsContent() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — findReciter() (decoded); jobDisplayName() (i18n.t  [src/i18n/index.ts); jobProgressText() (i18n.t  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
 

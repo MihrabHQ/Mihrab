@@ -49,45 +49,48 @@ const COMPILED = [
 const ROOT = `${__dirname}${path.sep}`;
 
 /**
- * OFF, since 2026-11-25, a day after it went on and before any release
- * carried it. Nothing is compiled while this is false; the list above is
- * kept as the list to come back to.
+ * ON — and what it rests on.
  *
- * WHY. The compiler takes rendering to be pure — the same props and state,
- * the same result — and keeps a result until a prop or state it was worked
- * out from changes. The app reads things while rendering that are neither,
- * and compiled, those reads go stale:
+ * The compiler takes rendering to be pure: the same props, state and hook
+ * results, the same output. It keeps the output until one of them changes.
+ * A component that reads anything else while rendering goes stale when it
+ * is compiled, silently: nothing throws, the screen is just yesterday's.
+ *
+ * That happened. The compiler went on 2026-11-24 and was switched off the
+ * next day, before any release carried it, for two reads found by reading
+ * its output:
  *
  *  - THE SHOWN RIWAYAH (AGENTS.md §3). `resolveRiwayah(prefs.riwayah)`
  *    answers from what the device can draw, which changes when a muṣḥaf's
- *    data arrives. The screens subscribe to that and render again — and
- *    the compiled screen, rendering again, kept the answer it had for the
- *    same preference: Ḥafṣ, for a reader of Warsh, until the preference
- *    itself changed (src/screens/quran/MushafSurahScreen.tsx, and twenty
- *    more callers).
+ *    data arrives. The screen subscribed to that and rendered again — and
+ *    compiled, kept the answer it had for the same preference: Ḥafṣ, for a
+ *    reader of Warsh, until the preference itself changed.
  *  - THE DAY. `const today = dayKey()` in `usePracticeToday` was asked once
  *    for the component's life: Today's "logged today" read yesterday's
- *    date from the first midnight the app stayed open through. The khatmah
- *    card's day, the Hifz review's, the verse of the day's the same.
- *  - And a hundred and more calls, from compiled components, into helpers
- *    that answer from a cache filled as data loads (a page's layout, a
- *    font, a reciter's table). Each is right only if what fills the cache
- *    is also something the component depends on, and none has been read
- *    for that.
+ *    date from the first midnight the app stayed open through.
  *
- * None of it is a fault in the compiler: the hand-written `useMemo`s it
- * was to replace name their dependencies and recompute everything else on
- * every render, which is what made those reads safe. They are all still in
- * the code, so with this off the app is what 2.39 was.
+ * So it is on again under one condition, held by a test
+ * (`__tests__/reactCompilerScope.test.ts`): `tools/compiler-impure.js`
+ * finds NO compiled component that reads changing state while rendering —
+ * the clock, a module-level value or cache that is written to, a live
+ * singleton (the `i18n` instance, `Dimensions`), directly or through a
+ * helper of ours. A component it finds has two ways out:
  *
- * BEFORE IT GOES BACK ON: the branch `compiler-hot` has the tools that
- * found these (tools/compiler-impure.js for the clock, a first cut of the
- * same for module state) and the clock handed on as a value
- * (`useRenderClock`). Every read of changing state while rendering has to
- * be found and made a dependency React can see — a subscription, a prop —
- * and held by a test, folder by folder, as it went on.
+ *  - make the read something React sees: the render's clock as an argument
+ *    (`hooks/useRenderClock.ts`), a subscription (`hooks/useFontScale.ts`);
+ *  - or say `'use no memo'` and be left exactly as written — which is what
+ *    every component was before the compiler, and is right. Fifty-five do,
+ *    the muṣḥaf's page and the recitation's controls among them; each says
+ *    beside the directive what it reads.
+ *
+ * A cache that is a pure function of its key is not changing state; the
+ * ones read and found to be so are named in `tools/compiler-pure-caches.json`.
+ * The check errs toward reporting, and it cannot see everything — a method
+ * on an object handed in as a prop, a native getter. `ON = false` is the
+ * way back: the hand-written memoisation is all still in the code, so with
+ * this off the app renders as 2.39 did.
  */
-const ON = false;
+const ON = true;
 
 /** Is `filename` (absolute) in a listed folder? */
 function isListed(filename) {
@@ -95,6 +98,27 @@ function isListed(filename) {
   const rel = filename.slice(ROOT.length).split(path.sep).join('/');
   return COMPILED.some(p => rel.startsWith(p));
 }
+
+/**
+ * What the compiler is told, apart from where to look.
+ *
+ * `eslintSuppressionRules`: by default the compiler leaves alone any
+ * component that carries an `eslint-disable` for either React hooks rule,
+ * on the reasoning that a suppressed rule may be a broken one. For
+ * `rules-of-hooks` that stands. For `exhaustive-deps` it kept the compiler
+ * out of twenty-one components — Today, the hero, the muṣḥaf's reader and
+ * its page among them — nearly all for an EFFECT whose list is short on
+ * purpose (run when this changes, read the rest as it is then). The
+ * compiler does not rewrite an effect's list, so such an effect runs when
+ * it did. Where the suppressed list is a `useMemo`'s or a `useCallback`'s
+ * and really is short, the compiler's own check that existing memoisation
+ * is kept (on by default) refuses the component, and it stays as written —
+ * `tools/compiler-report.js` lists those.
+ */
+const OPTIONS = {
+  target: '19',
+  eslintSuppressionRules: ['react-hooks/rules-of-hooks'],
+};
 
 /** Is `filename` compiled? Listed, and the compiler on. */
 function isCompiled(filename) {
@@ -104,7 +128,7 @@ function isCompiled(filename) {
 /** The Babel plugin entry. It must run before every other plugin. */
 const reactCompiler = [
   require.resolve('babel-plugin-react-compiler'),
-  { target: '19', sources: isCompiled },
+  { ...OPTIONS, sources: isCompiled },
 ];
 
-module.exports = { COMPILED, ON, isCompiled, isListed, reactCompiler };
+module.exports = { COMPILED, ON, OPTIONS, isCompiled, isListed, reactCompiler };

@@ -763,6 +763,10 @@ function inkIsLight(ink: string): boolean {
  * page redraws in colour when they arrive.
  */
 function useWarshTajweed(riwayah: RiwayahId, surahs: readonly number[]): WarshTajweedLookup {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — loadRiwayahText() (textCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const prefs = useQuranPrefs();
   const on = prefs.tajweedColours && riwayah === 'warsh';
   const [, setLoaded] = useState(0);
@@ -827,6 +831,10 @@ function MushafUnicodePage({
   onAyahLongPress,
   tight = false,
 }: MushafUnicodePageProps) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — riwayahFontFamily() (fontCache); riwayahPrintedMetrics() (fontCache); FIT_CACHE (written to, src/quran/MushafUnicodePage.tsx)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   // The dataset can arrive AFTER the page has mounted — Tilawah's preview
   // opens on a page before the table is read from disk — and the blocks
   // are memoised, so without this the page stayed empty until its number
@@ -1266,6 +1274,10 @@ function PrintedPageBody({
   /** How far this page's edge rows' ink reaches — the tight fit; null for the loose. */
   edge?: PrintedEdgeInk | null;
 }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — PRINTED_LINE_CACHE (written to, src/quran/MushafUnicodePage.tsx)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const measure = width;
   // How many of each āyah's words the rows above have drawn — the render
   // walks the rows in order, so this is the word's index in the page's run.

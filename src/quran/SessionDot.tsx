@@ -15,7 +15,7 @@
  * begins and when the session changes, for half a minute, and then rests
  * whole — see `SessionDot` for what breathing without end cost.
  */
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import {
   BOOKMARK_COLORS,
@@ -30,6 +30,7 @@ import {
   subscribeReadingSession,
   type ReadingOwner,
 } from './readingSession';
+import { useConst } from '../hooks/useConst';
 
 /** The bookmark that owns the open visit, if one does. */
 export function useSessionBookmark(): QuranBookmark | null {
@@ -119,7 +120,7 @@ export function useSessionColor(reader: ReaderKind = 'mushaf'): string | null {
 export function SessionDot({ color, size = 8 }: { color: string; size?: number }) {
   // One driver, native: a JS-driven loop on a page being swiped is a
   // dropped frame waiting to happen.
-  const pulse = useRef(new Animated.Value(0)).current;
+  const pulse = useConst(() => new Animated.Value(0));
   // IT BREATHES ON AN ARRIVAL, NOT FOR EVER. A native loop costs nothing
   // on the JS thread, but every frame of it is a frame the renderer
   // draws, and this one ran for as long as the reader was open: measured

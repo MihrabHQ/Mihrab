@@ -7,7 +7,7 @@
  * verse in the morning without wanting the adhan — and both ask for
  * notification permission on their own before promising anything.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationsSettings } from '../../../context/PrayerSettingsContext';
 import { useClockFormatter } from '../../../hooks/useClockFormatter';
@@ -21,6 +21,7 @@ import {
 } from '../SettingsGroup';
 import { SettingsPage } from '../SettingsPage';
 import { TimePickerSheet } from '../TimePickerSheet';
+import { useKeepLatest } from '../../../hooks/useLatest';
 
 export function DailyRemindersSettingsScreen() {
   const { t } = useTranslation();
@@ -131,8 +132,8 @@ export function DailyRemindersSettingsScreen() {
   };
 
   // Android's back button belongs to the sheet while the sheet is open.
-  const deferBack = useRef(false);
-  deferBack.current = timeTarget != null;
+  const deferBack = useRef(timeTarget != null);
+  useKeepLatest(deferBack, timeTarget != null);
 
   /**
    * One sheet, four possible times. Keyed by which row opened it rather

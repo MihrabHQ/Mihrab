@@ -393,6 +393,10 @@ function ReadingDoor({
   dense?: boolean;
   onPress: () => void;
 }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — surahName() (i18n.language  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
   const meta = findSurah(marker.surah);
@@ -478,6 +482,10 @@ function BookmarkDoor({
   dense?: boolean;
   onPress: () => void;
 }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — surahName() (i18n.language  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
   const meta = findSurah(bookmark.surah);

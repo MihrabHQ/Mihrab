@@ -41,6 +41,7 @@ import { currentDeviceClass, type DeviceClass } from '../responsive/deviceClass'
 import { usePagingKeySuspension } from './useKeyPaging';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { solidColor } from '../theme/appPalette';
+import { useRenderClock } from '../hooks/useRenderClock';
 
 /**
  * 268pt is right for a sidebar reached with a thumb on an iPad. On a Mac
@@ -113,6 +114,9 @@ function MushafIndexSidebarImpl({
   onSelectPage,
   topInset = 0,
 }: Props) {
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const quran = useQuranState();
@@ -392,7 +396,7 @@ function MushafIndexSidebarImpl({
               // 2.7.26 and this footer, written later, never filled it in —
               // the Mac showed a literal "{today}" at the foot of the
               // sidebar. Today's share is the pages still owed for the day.
-              today: khatmahPages(plan, riwayah).leftToday,
+              today: khatmahPages(plan, riwayah, clock).leftToday,
             })}
           </Text>
           <View style={[styles.track, { backgroundColor: palette.controlBg }]}>

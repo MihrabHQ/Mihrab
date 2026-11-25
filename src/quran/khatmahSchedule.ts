@@ -214,8 +214,9 @@ export function khatmahPageInWindow(
   plan: KhatmahPlan,
   page: number,
   riwayah: RiwayahId = DEFAULT_RIWAYAH,
+  now: number = Date.now(),
 ): boolean {
-  const window = khatmahCreditWindow(plan);
+  const window = khatmahCreditWindow(plan, now);
   const first = firstAyahOfPage(page, riwayah);
   const from = ayahIndexOf(first.surah, first.ayah);
   const to = ayahsThroughPage(page, riwayah);

@@ -109,6 +109,9 @@ import { VerticalBarActionsBand } from '../../navigation/VerticalTabBar';
 
 import { HeroToday, SWIPE_UP_PULL, SWIPE_UP_REACH } from './HeroToday';
 import { styles } from './todayCardStyles';
+import { useConst } from '../../hooks/useConst';
+import { useKeepLatest } from '../../hooks/useLatest';
+import { useRenderClock } from '../../hooks/useRenderClock';
 
 // The launch run's steps, for the onboarding preview and the tests.
 export { SKY_RUN_KEYFRAMES_MAX, SKY_RUN_STEPS } from './HeroToday';
@@ -342,6 +345,13 @@ function TodayCardImpl({
   onOpenPlace,
   timesSource,
 }: TodayCardProps) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — currentFontScale() (PixelRatio.getFontScale); quickLogPhase() (new Date()); daruriRowState() (new Date())
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const renderClock = useRenderClock();
   // Only the phone's full-bleed page has a minimal face; the dashboard
   // and the book keep their cards.
   const minimal = minimalWanted && fullBleed && !roomy;
@@ -417,7 +427,7 @@ function TodayCardImpl({
   // The sheet's rise, 0..1, owned here so the page recedes with it — and
   // so a drag up on the page can start the retreat before the sheet is
   // there (MinimalSheet).
-  const sheetProgress = useRef(new Animated.Value(0)).current;
+  const sheetProgress = useConst(() => new Animated.Value(0));
   // The turn of the face.
   // An aim outlives the face it was taken on: the full page's rows aim
   // the countdown (`aimAt`), and the eyebrow says "· chosen" with a tap to
@@ -500,7 +510,7 @@ function TodayCardImpl({
    * page it did not have would be blank.
    */
   const spent =
-    week.length > 1 && lastToday != null && Date.now() > lastToday.getTime();
+    week.length > 1 && lastToday != null && renderClock > lastToday.getTime();
   const landing = spent ? 1 : 0;
   landingRef.current = landing;
   /**
@@ -640,7 +650,7 @@ function TodayCardImpl({
    * never because the day did.
    */
   const selectedNow = useRef(selected);
-  selectedNow.current = selected;
+  useKeepLatest(selectedNow, selected);
   const openingOffset = useMemo(
     () => ({ x: pagePosition(todayIndex + selectedNow.current) * pageWidth, y: 0 }),
     [pageWidth, todayIndex, pagePosition],
@@ -855,7 +865,7 @@ function TodayCardImpl({
    * as information — and the set is recomputed whenever the next prayer
    * changes, which is the moment one of them stops being ahead.
    */
-  const now = nextInfo ? new Date() : null;
+  const now = nextInfo ? new Date(renderClock) : null;
   const aimable = useMemo(() => {
     const out = new Set<string>();
     if (!now) return out;
@@ -904,7 +914,7 @@ function TodayCardImpl({
     const base = addDays(startOfLocalDay(new Date()), 1);
     return onClock({ Fajr: tomorrow.Fajr }, base, dayClock, undefined).Fajr;
   }, [tomorrow?.Fajr, dayClock]);
-  const logNow = new Date();
+  const logNow = new Date(renderClock);
   /**
    * The question a tap on a passed prayer opens — see quickLog.ts. Holds
    * the prayer and the day it is about; the sheet reads the labels off it
@@ -1140,7 +1150,7 @@ function TodayCardImpl({
   // rise and the pull together (`recess` below); JavaScript hears once,
   // at the lift, and there hands the pull over to the rise in one step,
   // so the sheet's spring still carries on from where the finger let go.
-  const pullRaw = useRef(new Animated.Value(0)).current;
+  const pullRaw = useConst(() => new Animated.Value(0));
   const pulled = useMemo(
     () =>
       pullRaw.interpolate({

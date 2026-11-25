@@ -81,6 +81,8 @@ import {
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
 import { solidColor } from '../theme/appPalette';
+import { useKeepLatest } from '../hooks/useLatest';
+import { useConst } from '../hooks/useConst';
 
 // The model's pure parts, re-exported for the tests that pinned them here.
 // `isRangingDrag` outlives its caller: the rail no longer weights ticks by
@@ -164,6 +166,10 @@ function MushafPageScrubberImpl({
   locked = false,
   onLockedTouch,
 }: Props) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — totalPagesForRiwayah() (pageCache); juzForPageIn() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t, i18n } = useTranslation();
   const totalPages = totalPagesForRiwayah(riwayah);
   const { palette } = useAppPalette();
@@ -192,7 +198,7 @@ function MushafPageScrubberImpl({
   // Everything the responder reads at call time. The responder is made
   // once; a re-render changes what it sees without remaking it.
   const latest = useRef({ page, riwayah, totalPages, onSelectPage, onPeekPage });
-  latest.current = { page, riwayah, totalPages, onSelectPage, onPeekPage };
+  useKeepLatest(latest, { page, riwayah, totalPages, onSelectPage, onPeekPage });
 
   const dragRef = useRef<RailDrag | null>(null);
   // A move arrives more often than a frame is drawn; the state takes the
@@ -240,7 +246,7 @@ function MushafPageScrubberImpl({
     if (d) latest.current.onSelectPage(d.page());
   }, []);
 
-  const pan = useRef(
+  const pan = useConst(() =>
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
@@ -286,7 +292,7 @@ function MushafPageScrubberImpl({
       onPanResponderRelease: finish,
       onPanResponderTerminate: finish,
     }),
-  ).current;
+  );
 
   useEffect(
     () => () => {

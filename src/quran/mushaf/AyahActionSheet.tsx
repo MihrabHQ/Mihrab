@@ -141,6 +141,7 @@ import {
 import { IS_WEB_APP } from '../../config/webApp';
 import { useSheetSides } from '../../responsive/sheetSides';
 import { drawableText } from '../maddaWajibFallback';
+import { useRenderClock } from '../../hooks/useRenderClock';
 
 /** The sheet's own padding, before the safe-area insets are added to it. */
 const SHEET_H_PADDING = 18;
@@ -257,6 +258,13 @@ export function AyahActionSheet({
   scrollToAudio,
   showHideForReview = false,
 }: Props) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — resolveRiwayah() (pageCache); adjacentAyah() (pageCache); riwayahTextFontFamily() (fontCache); hifzSurahName() (i18n.language  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const sides = useSheetSides();
@@ -603,7 +611,7 @@ export function AyahActionSheet({
   // about THIS print's pagination, not the default one's.
   const riwayah = resolveRiwayah(state.prefs.riwayah);
   // Hifz (#121): the portion this ayah sits in, if it is known by heart.
-  const hifzToday = dayOf(Date.now());
+  const hifzToday = dayOf(clock);
   const hifzHere = state.hifz ? portionAt(state.hifz, surah, ayah) : undefined;
   const hifzHereLabel = hifzHere
     ? t('hifz.sheetKnown', {
@@ -1553,7 +1561,7 @@ export function AyahActionSheet({
               offered whatever the window says, so a pin can always be
               taken back off. */}
           {plan &&
-          (isKhatmahHere || khatmahPageInWindow(plan, page, riwayah)) ? (
+          (isKhatmahHere || khatmahPageInWindow(plan, page, riwayah, clock)) ? (
             <Pressable
               accessibilityRole="button"
               accessibilityState={{ selected: isKhatmahHere }}

@@ -14,7 +14,7 @@
  * page: they were all owned by one screen before, and the screen could
  * not say which of them any given card would open.
  */
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { ProviderPickerModal } from '../../../components/ProviderPickerModal';
 import { usePrayerSettings } from '../../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../../hooks/useAppPalette';
@@ -28,6 +28,7 @@ import { HijriCalendarCard } from '../HijriCalendarCard';
 import { PrayerOffsetsModal } from '../PrayerOffsetsModal';
 import { SettingsPage } from '../SettingsPage';
 import { DataStatsPanel } from '../../home/DataStatsPanel';
+import { useKeepLatest } from '../../../hooks/useLatest';
 
 export function PrayerTimesSettingsScreen() {
   const { settings, updateSettings } = usePrayerSettings();
@@ -36,9 +37,8 @@ export function PrayerTimesSettingsScreen() {
   const [methodModal, setMethodModal] = useState(false);
   const [offsetsModal, setOffsetsModal] = useState(false);
   const [madhabModal, setMadhabModal] = useState(false);
-  const deferBack = useRef(false);
-  deferBack.current =
-    providerModal || methodModal || offsetsModal || madhabModal;
+  const deferBack = useRef(providerModal || methodModal || offsetsModal || madhabModal);
+  useKeepLatest(deferBack, providerModal || methodModal || offsetsModal || madhabModal);
 
   const openProvider = useCallback(() => setProviderModal(true), []);
   const closeProvider = useCallback(() => setProviderModal(false), []);

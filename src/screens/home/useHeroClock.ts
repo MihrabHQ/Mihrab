@@ -15,6 +15,7 @@ import { useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { RESUME_RUN_MIN_MS, startResumeRun, type WarpStart } from '../../boot/launchWarp';
 import { forgetClockTicks, noteClockTick } from '../../utils/clockJumps';
 import { heroTickDelay } from './heroTick';
+import { useKeepLatest } from '../../hooks/useLatest';
 
 export function useHeroClock({
   running,
@@ -38,7 +39,7 @@ export function useHeroClock({
   // Read by the ticks, which set themselves by the figures on show: Minimal
   // ticks when its minute changes, not every second (heroTick.ts).
   const tickBy = useRef({ targetMs, secondsUnder });
-  tickBy.current = { targetMs, secondsUnder };
+  useKeepLatest(tickBy, { targetMs, secondsUnder });
   const retick = useRef<(() => void) | null>(null);
   /** When the clock below last stopped — the hero left the screen. */
   const leftAt = useRef(0);

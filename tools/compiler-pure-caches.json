@@ -1,0 +1,14 @@
+[
+  "src/theme/skyMoods.ts: MOOD_CACHE",
+  "src/theme/skyMoods.ts: realisticMoods",
+  "src/quran/mushafLayout.ts: measureCache",
+  "src/quran/mushafLayout.ts: tokenStreamCache",
+  "src/quran/MushafUnicodePage.tsx: printedEdgeTable",
+  "src/quran/MushafTextPageSurface.tsx: edgeInkTable",
+  "src/providers/diyanetMethod.ts: lastAsked",
+  "src/native/nativeModule.ts: views",
+  "src/components/ui/Card.tsx: warned",
+  "src/boot/bootTimeline.ts: seen",
+  "src/quran/native/MushafLineView.ts: available",
+  "src/quran/native/MushafLineView.ts: component"
+]

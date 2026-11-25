@@ -105,7 +105,7 @@ describe('the two places stay apart', () => {
   it('offers carry on, shuffle and the recommendations when idle or stale', () => {
     const screen = read('src/screens/quran/TilawahScreen.tsx');
     expect(screen).toMatch(
-      /const offerAgain =\s*idle \|\| \(!status\.playing && isListening\(\) && isListenStale\(listened\)\);/,
+      /const offerAgain =\s*idle \|\| \(!status\.playing && isListening\(\) && isListenStale\(listened, clock\)\);/,
     );
     expect(screen).toMatch(/<ListenAgainPanel/);
   });

@@ -38,6 +38,7 @@ import {
   SettingsToggleRow,
 } from './SettingsGroup';
 import { IS_WEB_APP } from '../../config/webApp';
+import { useRenderClock } from '../../hooks/useRenderClock';
 
 /**
  * Quran preferences — the app-wide companion-text choice (v2.7.40), and
@@ -65,6 +66,13 @@ import { IS_WEB_APP } from '../../config/webApp';
  * the switch between them only while it is on.
  */
 function QuranCardImpl() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — resolveRiwayah() (pageCache); availableRiwayat() (pageCache); volumeKeysAvailable() (Dimensions.get); khatmahUnreadPages() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const { t, i18n } = useTranslation();
   const { settings, updateSettings } = usePrayerSettings();
   const { mode, editionLabel } = useCompanionChoice();
@@ -109,7 +117,7 @@ function QuranCardImpl() {
    */
   const plan = activeKhatmah(quran);
   const planDeadline = plan ? khatmahDeadline(plan) : null;
-  const planDaysLeft = plan ? khatmahDaysLeft(plan) : 0;
+  const planDaysLeft = plan ? khatmahDaysLeft(plan, clock) : 0;
 
   const modeLabel =
     mode === 'tafsir'

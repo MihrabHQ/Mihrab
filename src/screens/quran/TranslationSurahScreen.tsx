@@ -105,6 +105,8 @@ import {
 } from '../../quran/tajweed/warshTajweed';
 import { tajweedInk } from '../../quran/tajweed/rules';
 import { solidColor } from '../../theme/appPalette';
+import { useKeepLatest } from '../../hooks/useLatest';
+import { useConst } from '../../hooks/useConst';
 
 type AyahRow = {
   ayah: number; // 1-based
@@ -131,6 +133,8 @@ type Props = {
   hifzReview?: { id: string; from: number; to: number; practice?: boolean };
 };
 
+const VIEWABILITY = { itemVisiblePercentThreshold: 60 };
+
 export function TranslationSurahScreen({
   surah,
   surahNumber,
@@ -138,6 +142,10 @@ export function TranslationSurahScreen({
   onToggleMode,
   hifzReview,
 }: Props) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — resolveRiwayah() (pageCache); riwayahTextFontFamily() (fontCache); hifzSurahName() (i18n.language  [src/i18n/index.ts); findPageForAyah() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const { palette, isDark } = useAppPalette();
@@ -165,7 +173,7 @@ export function TranslationSurahScreen({
   // Header closures read playback via a ref so the nav header doesn't
   // rebuild on every ayah change.
   const playbackRef = useRef(playback);
-  playbackRef.current = playback;
+  useKeepLatest(playbackRef, playback);
   const activeWord = useActiveWordIndex();
   // The window's settled size, so the header row is rebuilt after a Mac
   // resize instead of answering the mouse where it used to be.
@@ -579,7 +587,7 @@ export function TranslationSurahScreen({
   const landed = useRef(landingIndex == null);
   /** Same value, for the callbacks that are built once. */
   const landingIndexRef = useRef<number | undefined>(landingIndex);
-  landingIndexRef.current = landingIndex;
+  useKeepLatest(landingIndexRef, landingIndex);
   /**
    * The reader has taken the list. Set by a drag, or by any scroll once
    * the landing's settle window has closed — a wheel on a Mac begins no
@@ -638,9 +646,9 @@ export function TranslationSurahScreen({
   }, [takeOver]);
 
   // ── Last-read for translation mode (QR-10) ──────────────────────────
-  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 });
-  const onViewableItemsChanged = useRef(
-    (info: { viewableItems: Array<{ item: unknown; isViewable: boolean }> }) => {
+  // Made once: the list refuses a handler that changes under it.
+  const onViewableItemsChanged = useConst(
+    () => (info: { viewableItems: Array<{ item: unknown; isViewable: boolean }> }) => {
       const visible = info.viewableItems.filter(v => v.isViewable);
       const first = visible[0];
       if (!first) return;
@@ -670,7 +678,7 @@ export function TranslationSurahScreen({
     },
   );
   const surahNumberRef = useRef(surahNumber);
-  surahNumberRef.current = surahNumber;
+  useKeepLatest(surahNumberRef, surahNumber);
 
   // ── Auto-scroll to the playing ayah ─────────────────────────────────
   const lastAutoScrolled = useRef<number>(0);
@@ -1142,8 +1150,8 @@ export function TranslationSurahScreen({
             );
             listRef.current?.scrollToIndex({ index: reach, animated: false });
           }}
-          viewabilityConfig={viewabilityConfig.current}
-          onViewableItemsChanged={onViewableItemsChanged.current}
+          viewabilityConfig={VIEWABILITY}
+          onViewableItemsChanged={onViewableItemsChanged}
           onScrollBeginDrag={takeOver}
           onScroll={onScroll}
           scrollEventThrottle={200}

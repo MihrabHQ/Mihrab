@@ -32,9 +32,11 @@
  * Everywhere else — the phones' and tablets' own apps, the desktop app
  * with its trackpad — nothing changes: the hook hands back nothing.
  */
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import { Animated, PanResponder, Platform } from 'react-native';
 import { IS_WEB_APP } from '../config/webApp';
+import { useConst } from '../hooks/useConst';
+import { useKeepLatest } from '../hooks/useLatest';
 
 /**
  * Mihrab Web on a touch screen. Not the desktop app: a Windows laptop with
@@ -67,11 +69,14 @@ export function useWebSwipePaging({
   /** Off while the reading lock is on (#75): no brush of the hand turns it. */
   enabled: boolean;
 }) {
-  const lean = useRef(new Animated.Value(0)).current;
+  const lean = useConst(() => new Animated.Value(0));
   const latest = useRef({ turnPage, enabled });
-  latest.current = { turnPage, enabled };
+  useKeepLatest(latest, { turnPage, enabled });
 
-  const responder = useMemo(() => {
+  // Made once (hooks/useConst.ts), not memoised: its handlers read refs,
+  // and handed to `PanResponder.create` inside a `useMemo` that is, to the
+  // React Compiler, refs read while rendering.
+  const responder = useConst(() => {
     if (!WEB_TOUCH_PAGING) return null;
     const settle = () =>
       Animated.timing(lean, { toValue: 0, duration: 160, useNativeDriver: false }).start();
@@ -92,7 +97,7 @@ export function useWebSwipePaging({
       onPanResponderTerminate: settle,
       onPanResponderTerminationRequest: () => false,
     });
-  }, [lean]);
+  });
 
   return responder
     ? {

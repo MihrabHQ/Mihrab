@@ -47,6 +47,10 @@ import { MushafSurahScreen } from './quran/MushafSurahScreen';
 import { TranslationSurahScreen } from './quran/TranslationSurahScreen';
 
 export function QuranSurahScreen() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — riwayahDataHydrated() (hydrated); resolveRiwayah() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   useBreakpoint();
   const { t } = useTranslation();
   const { palette } = useAppPalette();

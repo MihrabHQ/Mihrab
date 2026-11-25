@@ -39,6 +39,8 @@
  *    that followed made it official.
  */
 import { useCallback, useEffect, useRef, type RefObject } from 'react';
+import { useKeepLatest } from '../hooks/useLatest';
+import { useConst } from '../hooks/useConst';
 
 /** What the pager needs from a list — the two FlatList methods it calls. */
 export type PagerList = {
@@ -348,14 +350,16 @@ export function useMushafPager(opts: {
     onContentSizeChange: (width: number, height: number) => void;
   };
   turnPage: (dir: 1 | -1) => void;
-  settledIndex: number;
 } {
   const latest = useRef(opts);
-  latest.current = opts;
+  useKeepLatest(latest, opts);
 
-  const pager = useRef<MushafPager | null>(null);
-  if (pager.current == null) {
-    pager.current = createMushafPager({
+  // Made once (hooks/useConst.ts). It was a ref filled on the first
+  // render and read on every one, which kept the React Compiler out of
+  // this hook; the pager itself is never read while rendering — only its
+  // handlers and its effects below touch it.
+  const p: MushafPager = useConst(() =>
+    createMushafPager({
       list: () => latest.current.list.current,
       itemCount: () => latest.current.itemCount,
       pageWidth: () => latest.current.pageWidth,
@@ -365,9 +369,8 @@ export function useMushafPager(opts: {
       onTurn: (page, prev) => latest.current.onTurn(page, prev),
       onTurnStart: () => latest.current.onTurnStart(),
       onSettleNoop: () => latest.current.onSettleNoop(),
-    });
-  }
-  const p = pager.current;
+    }),
+  );
 
   // Follow an outside change (jump, khatmah, recitation follow).
   const { currentPage, indexForPage, pageWidth } = opts;
@@ -387,7 +390,7 @@ export function useMushafPager(opts: {
 
   useEffect(() => () => p.dispose(), [p]);
 
-  const handlers = useRef({
+  const handlers = useConst(() => ({
     onScroll: (e: ScrollEvent) => p.onScroll(e.nativeEvent.contentOffset.x),
     onMomentumScrollEnd: (e: ScrollEvent) =>
       p.onMomentumEnd(e.nativeEvent.contentOffset.x),
@@ -395,8 +398,8 @@ export function useMushafPager(opts: {
       p.onScrollToIndexFailed(info.index),
     onScrollBeginDrag: () => p.onDragStart(),
     onContentSizeChange: () => p.onContentResized(),
-  }).current;
+  }));
   const turnPage = useCallback((dir: 1 | -1) => p.turnPage(dir), [p]);
 
-  return { handlers, turnPage, settledIndex: p.settledIndex() };
+  return { handlers, turnPage };
 }

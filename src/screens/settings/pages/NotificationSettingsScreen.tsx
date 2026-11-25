@@ -14,7 +14,7 @@
  * "Prayer sounds" page under this one sets the same five choices in one
  * sitting; both read and write `prayerAlertModes`.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePrayerSettings } from '../../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../../hooks/useAppPalette';
@@ -44,13 +44,14 @@ import {
   removeCustomAdhan,
   syncCustomAdhan,
 } from '../../../native/CustomAdhan';
+import { useKeepLatest } from '../../../hooks/useLatest';
 
 export function NotificationSettingsScreen() {
   const { t } = useTranslation();
   const { settings, updateSettings } = usePrayerSettings();
   // The settings as they are when an import finishes, not as they were when it began.
   const settingsRef = useRef(settings);
-  settingsRef.current = settings;
+  useKeepLatest(settingsRef, settings);
   const { palette } = useAppPalette();
   const [soundModal, setSoundModal] = useState(false);
   const [preReminderModal, setPreReminderModal] = useState(false);
@@ -66,9 +67,8 @@ export function NotificationSettingsScreen() {
   const [customAdhan, setCustomAdhan] = useState<CustomAdhanSound | null>(null);
   const [importingCustom, setImportingCustom] = useState(false);
 
-  const deferBack = useRef(false);
-  deferBack.current =
-    soundModal || preReminderModal || daruriLeadModal || showFromModal || silenceModal !== null;
+  const deferBack = useRef(soundModal || preReminderModal || daruriLeadModal || showFromModal || silenceModal !== null);
+  useKeepLatest(deferBack, soundModal || preReminderModal || daruriLeadModal || showFromModal || silenceModal !== null);
 
   const openSound = useCallback(() => setSoundModal(true), []);
   const closeSound = useCallback(() => setSoundModal(false), []);

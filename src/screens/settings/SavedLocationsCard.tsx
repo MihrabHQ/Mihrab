@@ -1,7 +1,7 @@
 // hover-ok: list-row / settings-row / sheet pressables. Hover-state
 // treatment would visually noise these dense surfaces; the touch
 // feedback (pressed opacity / ripple) is the right affordance here.
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import {
   Alert,
   Animated,
@@ -27,6 +27,7 @@ import { SettingsBlock, SettingsGroup } from './SettingsGroup';
 import { sharedSettingsStyles as s } from './sharedStyles';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
+import { useConst } from '../../hooks/useConst';
 
 /** Coords are "the same place" if they round to the same 4-decimal value
  *  (~11 m precision). Used to reject duplicate saves of the same spot
@@ -86,7 +87,7 @@ function SavedLocationsCardImpl({
   const { palette } = useAppPalette();
 
   // Brief accent flash when the user is deep-linked here to add a location.
-  const flash = useRef(new Animated.Value(0)).current;
+  const flash = useConst(() => new Animated.Value(0));
   useEffect(() => {
     if (!highlightSignal) return;
     flash.setValue(0);

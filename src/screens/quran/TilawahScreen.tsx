@@ -109,6 +109,9 @@ import { isListenStale, useListenProgress } from '../../quran/audio/listenProgre
 import type { ListenSuggestion } from '../../quran/audio/listenSuggestions';
 import { todaysMaghrib } from '../../hijri/islamicDay';
 import { ListenAgainPanel } from './ListenAgainPanel';
+import { useKeepLatest } from '../../hooks/useLatest';
+import { useConst } from '../../hooks/useConst';
+import { useRenderClock } from '../../hooks/useRenderClock';
 
 /** Playback speeds, matching the reader's own chips. */
 const RATES = [0.75, 1, 1.25, 1.5, 2] as const;
@@ -198,8 +201,8 @@ function Scrubber({
 }) {
   const [width, setWidth] = useState(0);
   const [dragging, setDragging] = useState<number | null>(null);
-  const widthRef = useRef(0);
-  widthRef.current = width;
+  const widthRef = useRef(width);
+  useKeepLatest(widthRef, width);
 
   const ratioAt = useCallback((x: number) => {
     const w = widthRef.current;
@@ -207,21 +210,25 @@ function Scrubber({
     return Math.max(0, Math.min(1, x / w));
   }, []);
 
-  const responder = useMemo(
-    () =>
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => true,
-        onPanResponderGrant: e => setDragging(ratioAt(e.nativeEvent.locationX)),
-        onPanResponderMove: e => setDragging(ratioAt(e.nativeEvent.locationX)),
-        onPanResponderRelease: e => {
-          const at = ratioAt(e.nativeEvent.locationX);
-          setDragging(null);
-          onSeekRatio(at);
-        },
-        onPanResponderTerminate: () => setDragging(null),
-      }),
-    [onSeekRatio, ratioAt],
+  // Made once, and told of the newest `onSeekRatio` through a ref: a
+  // responder made again while a finger is on the bar loses the drag, and
+  // one made in a `useMemo` whose handlers read refs is, to the React
+  // Compiler, refs read while rendering.
+  const seekRef = useRef(onSeekRatio);
+  useKeepLatest(seekRef, onSeekRatio);
+  const responder = useConst(() =>
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: e => setDragging(ratioAt(e.nativeEvent.locationX)),
+      onPanResponderMove: e => setDragging(ratioAt(e.nativeEvent.locationX)),
+      onPanResponderRelease: e => {
+        const at = ratioAt(e.nativeEvent.locationX);
+        setDragging(null);
+        seekRef.current(at);
+      },
+      onPanResponderTerminate: () => setDragging(null),
+    }),
   );
 
   const shown = dragging ?? Math.max(0, Math.min(1, ratio));
@@ -518,6 +525,13 @@ function OptionChip({
 }
 
 export function TilawahScreen() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — findReciter() (decoded); ayahCountForRiwayah() (pageCache); resolveRiwayah() (pageCache); isListening() (listening); and 1 more
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   /**
@@ -661,7 +675,7 @@ export function TilawahScreen() {
    * gone stale. See `ListenAgainPanel`.
    */
   const offerAgain =
-    idle || (!status.playing && isListening() && isListenStale(listened));
+    idle || (!status.playing && isListening() && isListenStale(listened, clock));
   const carryOn = useCallback(() => {
     if (status.active && isListening()) {
       void resumePlayback();
@@ -1291,7 +1305,7 @@ export function TilawahScreen() {
                 defaultValue: 'Pauses in about {{count}} min',
                 count: Math.max(
                   1,
-                  Math.round((sleepEndsAt - Date.now()) / 60_000),
+                  Math.round((sleepEndsAt - clock) / 60_000),
                 ),
               })}
             </Text>

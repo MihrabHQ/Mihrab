@@ -15,6 +15,7 @@
  * with room for everything.
  */
 import { useEffect, useRef } from 'react';
+import { useKeepLatest } from '../hooks/useLatest';
 
 export function useLandscapeFullscreen(
   landscape: boolean,
@@ -27,9 +28,9 @@ export function useLandscapeFullscreen(
   // Read at the moment of the turn, not a dependency: a toggle within an
   // orientation must not run this.
   const full = useRef(isFullscreen);
-  full.current = isFullscreen;
+  useKeepLatest(full, isFullscreen);
   const ask = useRef(request);
-  ask.current = request;
+  useKeepLatest(ask, request);
 
   useEffect(() => {
     const before = was.current;

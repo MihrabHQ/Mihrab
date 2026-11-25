@@ -92,6 +92,7 @@ import {
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
 import { useVerticalBarInsets } from '../native/VerticalBar';
+import { useKeepLatest } from '../hooks/useLatest';
 
 /** The props contract every mushaf reader implements (see MushafReader). */
 export type MushafReaderProps = {
@@ -180,7 +181,7 @@ export function useOverlayDismissGuard(
 ): void {
   const navigation = useNavigation();
   const closeRef = useRef(closeOverlays);
-  closeRef.current = closeOverlays;
+  useKeepLatest(closeRef, closeOverlays);
   const pendingRef = useRef<Parameters<typeof navigation.dispatch>[0] | null>(
     null,
   );
@@ -299,6 +300,10 @@ export function useMushafReaderCore({
   | 'onTitleChange'
   | 'onPageChange'
 >): MushafReaderCore {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — resolveRiwayah() (pageCache); totalPagesForRiwayah() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const quran = useQuranState();
   const playback = usePlaybackStatus();
 
@@ -342,7 +347,7 @@ export function useMushafReaderCore({
   // The page as of the latest render, for effects that must compare against
   // it without depending on it (the recitation follow).
   const currentPageRef = useRef(currentPage);
-  currentPageRef.current = currentPage;
+  useKeepLatest(currentPageRef, currentPage);
 
   // ── Switching riwayah keeps your place ──────────────────────────────
   //
@@ -875,6 +880,10 @@ export function MushafPageHeader({
    */
   onPageNumberPress?: () => void;
 }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — pageMetaIn() (pageCache); pagesForRiwayah() (pageCache); surahsForRiwayah() (pageCache); mushafSurahName() (i18n.language  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const sessionColor = useSessionColor();
   const exitBtn =

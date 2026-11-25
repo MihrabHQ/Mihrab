@@ -44,6 +44,10 @@ export function RiwayahPicker({
   /** Opens Manage downloads, for a riwayah not on the device yet. */
   onManage?: () => void;
 }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — riwayahAvailable() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const bookInset = useBookPaneInset(SPACING.xl);

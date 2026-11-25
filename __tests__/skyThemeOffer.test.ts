@@ -53,7 +53,7 @@ describe('wiring', () => {
 
   it('is mounted on the home screen behind the same gate as the alerts offer', () => {
     const src = read('src/screens/HomeScreen.tsx');
-    expect(src).toMatch(/<SkyThemeOffer\s+ready=\{\s*hydrated &&\s*settings\.onboardingComplete &&\s*changelogSince === null &&\s*!changelogShown\.current\s*\}/);
+    expect(src).toMatch(/<SkyThemeOffer\s+ready=\{\s*hydrated &&\s*settings\.onboardingComplete &&\s*changelogSince === null &&\s*!changelogShown\s*\}/);
   });
 
   it('shows the strip and turns Sky on from it or the button', () => {

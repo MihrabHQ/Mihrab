@@ -26,6 +26,7 @@ import { SettingsBlock, SettingsGroup } from './SettingsGroup';
 import { TABULAR_MAX_FONT_SCALE, tabularNumeralStyle } from '../../theme/textScale';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
+import { useRenderClock } from '../../hooks/useRenderClock';
 
 const NAME_DEFAULTS: Record<HijriCalendarId, string> = {
   tabular: 'Standard (calculated)',
@@ -41,6 +42,13 @@ const DESC_DEFAULTS: Record<HijriCalendarId, string> = {
 };
 
 function HijriCalendarCardImpl() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — formatHijriLabel() (i18n.exists  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const { t } = useTranslation();
   const { settings, updateSettings } = usePrayerSettings();
   const { palette } = useAppPalette();
@@ -51,7 +59,7 @@ function HijriCalendarCardImpl() {
 
 
   // Today's date as the app will now print it, so a change is seen at once.
-  const today = formatHijriLabel(new Date());
+  const today = formatHijriLabel(new Date(clock));
 
   const adjustLabel =
     adjust === 0

@@ -159,6 +159,10 @@ function PermissionBannersImpl({
   topInset = 0,
   floating = false,
 }: PermissionBannersProps) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — putAway (written to, src/screens/home/PermissionBanners.tsx)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const [, redraw] = useState(0);

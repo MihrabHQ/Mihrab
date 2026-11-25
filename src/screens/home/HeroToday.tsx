@@ -74,6 +74,8 @@ import { HERO_COUNTDOWN_SIZE, HERO_SCENE_MIN, HERO_SECONDS_SIZE, type HomeTier }
 
 import { RAIL_LINE, RAIL_TICK, RAIL_TICK_TARGET, styles } from './todayCardStyles';
 import { solidColor } from '../../theme/appPalette';
+import { useConst } from '../../hooks/useConst';
+import { useKeepLatest } from '../../hooks/useLatest';
 
 /** Minimal under the Track: the chart goes on under the line to its floor (see `trackDepth`). */
 const MINIMAL_TRACK_DEPTH = true;
@@ -356,6 +358,10 @@ export const HeroToday = memo(function HeroToday({
   onInterval?: (fromAt: number, targetAt: number) => void;
   onLayout?: (e: LayoutChangeEvent) => void;
 }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — skyMoment() (new Date()); rememberedTodayLayout() (memory)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   // iPhone Duo: the location and the Qibla stand in the vertical bar's
   // column instead (HomeScreen hands them to the tab bar there).
   const vbar = useVerticalBar();
@@ -397,7 +403,7 @@ export const HeroToday = memo(function HeroToday({
    */
   const trackDepth = railHidden && MINIMAL_TRACK_DEPTH;
   const breathing = minimal && !railHidden && lively && !reduceMotion && !posed;
-  const breath = useRef(new Animated.Value(0)).current;
+  const breath = useConst(() => new Animated.Value(0));
   useEffect(() => {
     if (!breathing) return undefined;
     const loop = Animated.loop(
@@ -418,8 +424,8 @@ export const HeroToday = memo(function HeroToday({
   const shown = useRef<WarpStart | null>(null);
   // Read on the return, through a ref: a change of the setting must not
   // tear the clock down and set it up again.
-  const resumeWanted = useRef(false);
-  resumeWanted.current = launchRunWanted && !reduceMotion && !posed;
+  const resumeWanted = useRef(launchRunWanted && !reduceMotion && !posed);
+  useKeepLatest(resumeWanted, launchRunWanted && !reduceMotion && !posed);
   // The clock: on the seconds, or on Minimal's minute (useHeroClock.ts).
   const liveNow = useHeroClock({
     running: active && !posed,

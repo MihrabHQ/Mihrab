@@ -38,6 +38,10 @@ import { RADIUS, SPACING } from '../../theme/tokens';
 import { useSheetSides } from '../../responsive/sheetSides';
 
 export function KhatmahScreen() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — totalPagesForRiwayah() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const sheetEdges = useSheetSides();

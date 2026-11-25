@@ -77,6 +77,10 @@ export function QuranDownloadStripView({
   run,
   top = 0,
 }: Props & { run: QuranDownloadState }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — riwayahLabel() (i18n.t  [src/i18n/index.ts); findReciter() (decoded); jobSurahName() (i18n.language  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const job = run.running;
@@ -236,6 +240,10 @@ function StoppedStrip({
   total: number;
   top: number;
 }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — riwayahLabel() (i18n.t  [src/i18n/index.ts); findReciter() (decoded); jobSurahName() (i18n.language  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;

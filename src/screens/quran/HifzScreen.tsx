@@ -66,6 +66,7 @@ import { cardEdgeStyle } from '../../theme/chrome';
 import { TYPE } from '../../theme/typography';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { recite, reviewPortion, useHifzGradeChoices } from './HifzEntry';
+import { useRenderClock } from '../../hooks/useRenderClock';
 
 const BUDGETS = [1, 2, 3, 5, 10] as const;
 
@@ -86,6 +87,13 @@ function CardHead({ label }: { label: string }) {
 const JUZ_SURAHS: Record<number, [number, number]> = { 30: [78, 114], 29: [67, 77] };
 
 export function HifzScreen() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — resolveRiwayah() (pageCache); hifzSurahName() (i18n.language  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -95,7 +103,7 @@ export function HifzScreen() {
   const quranHifz = useQuranHifz();
   const hifz = quranHifz ?? EMPTY_HIFZ;
   const riwayah = resolveRiwayah(quranPrefs.riwayah);
-  const today = dayOf(Date.now());
+  const today = dayOf(clock);
   const { shown, more } = todaysRevision(hifz, today);
   const done = recitedToday(hifz, today).length;
   const stock = hifzStock(hifz);

@@ -9,7 +9,7 @@
  * See docs/design/onboarding-remake.md §6.
  */
 import type { ReactNode } from 'react';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import {
   Animated,
   Easing,
@@ -32,6 +32,7 @@ import { RADIUS, SPACING } from '../theme/tokens';
 import { typeStyle } from '../theme/typography';
 import { useBookPanePadding } from '../native/FoldPosture';
 import { useWindowSize } from '../responsive/windowSize';
+import { useConst } from '../hooks/useConst';
 
 /** The reading measure for a linear flow — narrower than a settings page. */
 export const ONBOARDING_COLUMN = 560;
@@ -58,7 +59,7 @@ export function ProgressRule({
   const { palette } = useAppPalette();
   const { t } = useTranslation();
   const fraction = total > 0 ? Math.min(1, Math.max(0, now / total)) : 0;
-  const width = useRef(new Animated.Value(fraction)).current;
+  const width = useConst(() => new Animated.Value(fraction));
 
   useEffect(() => {
     let alive = true;
@@ -148,7 +149,9 @@ export function OnboardingFrame({
 }) {
   const { palette } = useAppPalette();
   const insets = useSafeAreaInsets();
-  const kb = useKeyboardAwareScroll<ScrollViewInstance>();
+  // Taken apart here: the padding read off an object that also holds the
+  // ref is, to the React Compiler, a ref read while rendering.
+  const { ref: kbRef, contentPadding: kbPadding } = useKeyboardAwareScroll<ScrollViewInstance>();
   // iPhone Duo: the page is already clear of the vertical bar's column
   // (RootNavigator); the top row — the language chip, Skip — moves into the
   // column, under the clock, where the system puts an app's own bar items.
@@ -185,7 +188,7 @@ export function OnboardingFrame({
         <View style={styles.ruleTrack} />
       )}
       <ScrollView
-        ref={kb.ref}
+        ref={kbRef}
         automaticallyAdjustKeyboardInsets
         style={styles.scroll}
         contentContainerStyle={[
@@ -195,7 +198,7 @@ export function OnboardingFrame({
           // sizes, the shelf on a small phone — and only centres in the
           // slack when there is slack.
           centred ? styles.contentCentered : null,
-          kb.contentPadding,
+          kbPadding,
         ]}
         keyboardShouldPersistTaps="handled">
         {topRow && !vbar ? (

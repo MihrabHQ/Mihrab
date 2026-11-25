@@ -25,6 +25,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Animated } from 'react-native';
+import { useConst } from '../hooks/useConst';
 
 /** In is short (the tap should feel answered); out is where the ease shows. */
 export const VEIL_IN_MS = 90;
@@ -48,7 +49,7 @@ export function useFullscreenVeil(setFullscreen: (next: boolean | ((f: boolean) 
   /** Toggle (no argument) or set fullscreen, behind the veil. */
   request: (next?: boolean) => void;
 } {
-  const opacity = useRef(new Animated.Value(0)).current;
+  const opacity = useConst(() => new Animated.Value(0));
   const pendingRef = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 

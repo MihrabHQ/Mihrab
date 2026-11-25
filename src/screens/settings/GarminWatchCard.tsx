@@ -43,6 +43,10 @@ import { TYPE } from '../../theme/typography';
  * the rest.
  */
 function GarminWatchCardImpl() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — new Date()
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t, i18n } = useTranslation();
   const clock = useClockFormatter();
   const { settings, updateSettings } = usePrayerSettings();

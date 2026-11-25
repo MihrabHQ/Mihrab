@@ -43,6 +43,7 @@ import { MadhabScreen } from './screens/MadhabScreen';
 import { AlertsScreen } from './screens/AlertsScreen';
 import { PersonaliseScreen } from './screens/PersonaliseScreen';
 import { ReadyScreen } from './screens/ReadyScreen';
+import { useConst } from '../hooks/useConst';
 
 /** Long enough to read as a change of place, short enough not to wait. */
 const TRANSITION_MS = 220;
@@ -65,7 +66,7 @@ export function OnboardingFlow() {
   const [index, setIndex] = useState(0);
   const step = steps[index];
 
-  const fade = useRef(new Animated.Value(1)).current;
+  const fade = useConst(() => new Animated.Value(1));
   const reduceRef = useRef(false);
   useEffect(() => {
     let alive = true;

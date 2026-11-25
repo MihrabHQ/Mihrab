@@ -26,6 +26,7 @@ import {
 } from '../journal/journal';
 import { coerceFastEntries, type FastEntry } from '../fasting/fasting';
 import { coerceSunnahLog, type SunnahLog } from '../journal/sunnah';
+import { useRenderClock } from '../hooks/useRenderClock';
 
 export const JOURNAL_KEY = 'prayerapp.journal.v1';
 export const FASTING_KEY = 'prayerapp.fasting.v1';
@@ -258,6 +259,9 @@ export type PracticeToday = {
 
 /** The three facts about today, kept in step with whoever writes them. */
 export function usePracticeToday(): PracticeToday {
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const [data, setData] = useState<PracticeData | null>(cache);
 
   const refresh = useCallback(() => {
@@ -295,7 +299,7 @@ export function usePracticeToday(): PracticeToday {
   }, [refresh]);
 
   const d = data ?? EMPTY;
-  const today = dayKey();
+  const today = dayKey(new Date(clock));
   // Not a tombstone: a fast taken off today is carried for sync, not kept.
   const fast = d.fasts.find(f => f.date === today && f.cleared !== true) ?? null;
   return {

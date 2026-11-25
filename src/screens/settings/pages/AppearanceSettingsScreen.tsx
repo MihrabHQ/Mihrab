@@ -15,20 +15,21 @@
  * where it belongs. `WidgetCard` draws nothing off Android, so nothing
  * about this page changes there.
  */
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { usePrayerSettings } from '../../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../../hooks/useAppPalette';
 import { AppearanceCard } from '../AppearanceCard';
 import { LanguageCard } from '../LanguageCard';
 import { LanguageModal } from '../LanguageModal';
 import { SettingsPage } from '../SettingsPage';
+import { useKeepLatest } from '../../../hooks/useLatest';
 
 export function AppearanceSettingsScreen() {
   const { settings, updateSettings } = usePrayerSettings();
   const { palette } = useAppPalette();
   const [languageModal, setLanguageModal] = useState(false);
-  const deferBack = useRef(false);
-  deferBack.current = languageModal;
+  const deferBack = useRef(languageModal);
+  useKeepLatest(deferBack, languageModal);
 
   const open = useCallback(() => setLanguageModal(true), []);
   const close = useCallback(() => setLanguageModal(false), []);

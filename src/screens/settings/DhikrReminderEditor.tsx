@@ -87,6 +87,10 @@ export function DhikrReminderEditor({
   onDelete?: () => void;
   onClose: () => void;
 }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — i18n.language
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const sheetPad = useSheetPadding();
   const { palette } = useAppPalette();

@@ -69,7 +69,7 @@ import {
 } from '../utils/prayerTimes';
 import { filterOptionalTimes } from '../utils/nightTimes';
 import { DISPLAY_ORDER, type TimingsMap } from '../types/prayer';
-import { BELOW_GAP, currentFontScale, pickHomeTier, type HomeTier } from './home/homeBudget';
+import { BELOW_GAP, pickHomeTier, type HomeTier } from './home/homeBudget';
 import { injectDaruriTimes } from '../prayer/daruriTimes';
 import { useClockFormatter } from '../hooks/useClockFormatter';
 import { qiblaBearingFrom } from '../utils/qibla';
@@ -127,6 +127,10 @@ import { SPACING } from '../theme/tokens';
 import { useFoldPosture } from '../native/FoldPosture';
 import type { HostInstance } from 'react-native';
 import { solidColor } from '../theme/appPalette';
+import { useConst } from '../hooks/useConst';
+import { useKeepLatest } from '../hooks/useLatest';
+import { useRenderClock } from '../hooks/useRenderClock';
+import { useFontScale } from '../hooks/useFontScale';
 
 
 /** The calculation note last dismissed on Today (`state:to`). */
@@ -167,6 +171,15 @@ const SILENCE_RESYNC_KEY = 'home.prayerSilence';
 const noFullScreenChange = () => {};
 
 export function HomeScreen() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — bootMark() (reported)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
+  // The system's text size, from a subscription (hooks/useFontScale.ts).
+  const fontScale = useFontScale();
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { t, i18n } = useTranslation();
@@ -454,7 +467,7 @@ export function HomeScreen() {
         }
       : null;
   const refreshParamsRef = useRef(refreshParams);
-  refreshParamsRef.current = refreshParams;
+  useKeepLatest(refreshParamsRef, refreshParams);
   const onPullRefresh = useCallback(
     async (report: (current: number, total: number) => void) => {
       const params = refreshParamsRef.current;
@@ -508,7 +521,7 @@ export function HomeScreen() {
    * once, with the one thing that puts it right on a phone that will get
    * no zone-data update — the reporter's own finding.
    */
-  const zoneKey = zoneDataNoticeKey();
+  const zoneKey = zoneDataNoticeKey(clock);
   const [zoneDismissed, setZoneDismissed] = useState<string | null | undefined>(undefined);
   useEffect(() => {
     AsyncStorage.getItem(ZONE_NOTE_DISMISSED_KEY)
@@ -517,7 +530,7 @@ export function HomeScreen() {
   }, []);
   const zoneNote =
     zoneKey && zoneDismissed !== undefined && zoneKey !== zoneDismissed
-      ? zoneDataNotice(t, 'home')
+      ? zoneDataNotice(t, 'home', clock)
       : null;
   const dismissZoneNote = useCallback(() => {
     if (!zoneKey) return;
@@ -583,7 +596,7 @@ export function HomeScreen() {
    * be a poor trade. Not the native driver, because a colour is what is
    * being animated.
    */
-  const scrollY = useRef(new Animated.Value(0)).current;
+  const scrollY = useConst(() => new Animated.Value(0));
   const onScroll = useMemo(
     () =>
       Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
@@ -640,8 +653,10 @@ export function HomeScreen() {
    */
   const [changelogSince, setChangelogSince] = useState<string | null>(null);
   // The what's-new sheet and the features offer never share a launch.
-  const changelogShown = useRef(false);
-  if (changelogSince !== null) changelogShown.current = true;
+  // State, not a ref: it is read while rendering (the offers below), and a
+  // ref read there keeps the React Compiler out of this whole screen.
+  const [changelogShown, setChangelogShown] = useState(false);
+  if (changelogSince !== null && !changelogShown) setChangelogShown(true);
   useFocusEffect(
     useCallback(() => {
       if (!settings.onboardingComplete) return;
@@ -795,7 +810,7 @@ export function HomeScreen() {
     [state, view],
   );
   const firstNextRef = useRef(firstNext);
-  firstNextRef.current = firstNext;
+  useKeepLatest(firstNextRef, firstNext);
   const nextInfo = nextInfoState ?? firstNext;
 
   /**
@@ -1854,7 +1869,7 @@ export function HomeScreen() {
   const budgetInput = {
     viewport,
     topInset: bannerInFlow ? 0 : insets.top,
-    fontScale: currentFontScale(),
+    fontScale,
     rows: DISPLAY_ORDER.filter(key => todayMap[key]).length,
     sublineRows: DISPLAY_ORDER.filter(key => todayMap[`${key}Daruri` as keyof TimingsMap]).length,
     // A banner's height is its own; this is a notice's usual size.
@@ -2220,7 +2235,7 @@ export function HomeScreen() {
           hydrated &&
           settings.onboardingComplete &&
           changelogSince === null &&
-          !changelogShown.current
+          !changelogShown
         }
       />
       <SkyThemeOffer
@@ -2228,7 +2243,7 @@ export function HomeScreen() {
           hydrated &&
           settings.onboardingComplete &&
           changelogSince === null &&
-          !changelogShown.current
+          !changelogShown
         }
       />
       <WebBookmarkOffer
@@ -2236,7 +2251,7 @@ export function HomeScreen() {
           hydrated &&
           settings.onboardingComplete &&
           changelogSince === null &&
-          !changelogShown.current
+          !changelogShown
         }
       />
       <ChangelogSheet

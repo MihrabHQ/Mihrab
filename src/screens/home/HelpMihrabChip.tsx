@@ -20,7 +20,7 @@
  *
  * Reduce Motion: it is simply open, no growing, and simply closes.
  */
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +28,7 @@ import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { holdLaunchSnapshot } from '../../native/LaunchSnapshot';
 import { typeStyle } from '../../theme/typography';
 import type { SkyInkColors } from './skyModel';
+import { useConst } from '../../hooks/useConst';
 
 /** The circle, closed. */
 const SIZE = 30;
@@ -75,7 +76,7 @@ function HelpMihrabChipImpl({
   // The line's width, measured off-screen, so the circle knows how far
   // to open — in every language, at every text size.
   const [lineW, setLineW] = useState(0);
-  const open = useRef(new Animated.Value(0)).current;
+  const open = useConst(() => new Animated.Value(0));
 
   // Open, opening or closing, the chip is in a passing state, and the
   // screen is not kept for the next launch's first frame while it is

@@ -10,22 +10,48 @@ const ROOT = path.join(__dirname, '..');
  
 const { COMPILED, ON, isCompiled, isListed, reactCompiler } = require('../babel.reactCompiler');
 
-describe('the React Compiler is off', () => {
-  it('compiles nothing — not even what is listed — until every read of changing state while rendering is found', () => {
-    // babel.reactCompiler.js has why: the shown riwayah (AGENTS.md §3), the
-    // day, and the caches. Turning it back on is a decision with a test for
-    // each of those, not a change to this line alone.
-    expect(ON).toBe(false);
-    for (const file of ['src/screens/quran/MushafSurahScreen.tsx', 'src/practice/practiceStore.ts', 'src/screens/HomeScreen.tsx', 'src/components/GlassSurface.tsx']) {
-      expect([file, isListed(path.join(ROOT, file)), isCompiled(path.join(ROOT, file))]).toEqual([file, true, false]);
+describe('the React Compiler is on, and what it rests on', () => {
+  // babel.reactCompiler.js has the story: compiled, a component that reads
+  // changing state while rendering goes stale without a sound.
+  const { analyse, unanswered } = require('../tools/compiler-impure');
+
+  it('is on', () => {
+    expect(ON).toBe(true);
+    expect(isCompiled(path.join(ROOT, 'src/components/GlassSurface.tsx'))).toBe(true);
+  });
+
+  it('no compiled component reads the clock, a written-to module value or a live singleton while rendering', () => {
+    // If this fails you have added such a read. Make it something React sees
+    // change (hooks/useRenderClock.ts, a subscription), or give the component
+    // `'use no memo'` with a line saying what it reads. Run
+    // `node tools/compiler-impure.js --unanswered` for the list.
+    const open = (unanswered() as Array<{ file: string; name: string; reads: Array<{ line: number; what: string }> }>).map(
+      c => `${c.file}: ${c.name} reads ${c.reads[0].what} (line ${c.reads[0].line})`,
+    );
+    expect(open).toEqual([]);
+  }, 120_000);
+
+  it('the two reads that showed it are answered: the shown riwayah is in a component left as written, the day is the render clock\'s', () => {
+    const found = analyse() as Array<{ file: string; name: string; optedOut: boolean }>;
+    const screen = found.find(c => c.file === 'src/screens/quran/MushafSurahScreen.tsx' && c.name === 'MushafSurahScreen');
+    expect(screen?.optedOut).toBe(true);
+    const practice = readFileSync(path.join(ROOT, 'src/practice/practiceStore.ts'), 'utf-8');
+    expect(practice).toContain('const today = dayKey(new Date(clock));');
+    expect(practice).not.toContain('const today = dayKey();');
+  }, 120_000);
+
+  it('a cache named as pure is one that exists', () => {
+    const pure: string[] = require('../tools/compiler-pure-caches.json');
+    for (const entry of pure) {
+      const [file, name] = entry.split(': ');
+      expect(readFileSync(path.join(ROOT, file), 'utf-8')).toMatch(new RegExp(`\\b(const|let) ${name}\\b`));
     }
   });
 
-  it('and the two reads that showed it are still plain reads, right on every render with it off', () => {
-    const screen = readFileSync(path.join(ROOT, 'src/screens/quran/MushafSurahScreen.tsx'), 'utf-8');
-    expect(screen).toMatch(/useRiwayahAvailability\(\);\s+const riwayah = resolveRiwayah\(quranPrefs\.riwayah\);/);
-    const practice = readFileSync(path.join(ROOT, 'src/practice/practiceStore.ts'), 'utf-8');
-    expect(practice).toContain('const today = dayKey();');
+  it('the render clock is not itself compiled, and the hooks folder is not listed', () => {
+    const clock = readFileSync(path.join(ROOT, 'src/hooks/useRenderClock.ts'), 'utf-8');
+    expect(clock).toMatch(/export function useRenderClock\(\): number \{\s+'use no memo';/);
+    expect(isListed(path.join(ROOT, 'src/hooks/useRenderClock.ts'))).toBe(false);
   });
 });
 

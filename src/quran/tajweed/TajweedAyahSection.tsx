@@ -54,6 +54,10 @@ export function TajweedAyahSection({
   /** Closes the sheet — before leaving for the guide. */
   onClose: () => void;
 }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — resolveRiwayah() (pageCache)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const readingText = useReadingText();

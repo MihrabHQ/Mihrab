@@ -21,7 +21,7 @@
  * The times are still shown to someone who steps BACK to this screen to
  * check what they entered, with Continue to go on.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
@@ -110,11 +110,11 @@ export function LocationScreen({
    * and waits for Continue, rather than bouncing them forward off a screen
    * they came back to look at.
    */
-  const wasDoneOnMount = useRef(done);
-  const armed = done && wasDoneOnMount.current;
+  const [wasDoneOnMount] = useState(done);
+  const armed = done && wasDoneOnMount;
   useEffect(() => {
-    if (done && !wasDoneOnMount.current) onAdvance();
-  }, [done, onAdvance]);
+    if (done && !wasDoneOnMount) onAdvance();
+  }, [done, onAdvance, wasDoneOnMount]);
 
   const city =
     settings.manualLocationLabel ?? settings.autoLocationLabel ?? undefined;

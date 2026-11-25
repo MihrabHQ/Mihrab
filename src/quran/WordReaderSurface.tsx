@@ -14,12 +14,14 @@
  * own coordinates, so `wordAtPoint` can answer from the layout alone.
  * Nothing here knows about pages, spreads or scrolling.
  */
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import type { MushafPageLayout } from './mushafLayout';
 import { wordAtPoint, type PageGeometry } from './mushafHitTest';
 import { cancel, hold, release } from './audio/wordReader';
 import { hapticScrubStart, hapticScrubTick } from '../polish/haptics';
+import { useKeepLatest } from '../hooks/useLatest';
+import { useConst } from '../hooks/useConst';
 
 /** How long the finger stays still before the hold begins. */
 export const HOLD_MS = 280;
@@ -36,12 +38,14 @@ export function WordReaderSurface({ layout, geometry, children }: Props) {
   // Read at touch time, never captured: the geometry changes with every
   // resize and the gesture object must not be rebuilt for it.
   const live = useRef({ layout, geometry });
-  live.current = { layout, geometry };
+  useKeepLatest(live, { layout, geometry });
   const lastKey = useRef<string>('');
   /** This surface's finger is down on a word — the hold is ours to cancel. */
   const holding = useRef(false);
 
-  const gesture = useMemo(
+  // Made once (hooks/useConst.ts): its handlers read refs, which inside a
+  // `useMemo` is, to the React Compiler, refs read while rendering.
+  const gesture = useConst(
     () =>
       Gesture.Pan()
         .activateAfterLongPress(HOLD_MS)
@@ -82,7 +86,6 @@ export function WordReaderSurface({ layout, geometry, children }: Props) {
             cancel();
           }
         }),
-    [],
   );
 
   // A page that unmounts mid-hold — a jump, a turn from elsewhere — must

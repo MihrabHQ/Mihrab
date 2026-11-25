@@ -74,7 +74,9 @@ export function SettingsPage({ children, deferBackRef }: Props) {
   useAndroidSubScreenBack(deferBackRef);
   // Every settings subpage with a field in it — location search, the
   // coordinate boxes, a saved place's name — rides on this one scroller.
-  const kb = useKeyboardAwareScroll<ScrollViewInstance>();
+  // Taken apart here: the padding read off an object that also holds the
+  // ref is, to the React Compiler, a ref read while rendering.
+  const { ref: kbRef, contentPadding: kbPadding } = useKeyboardAwareScroll<ScrollViewInstance>();
 
   const page = SETTINGS_STACK_PAGES.find(p => p.route === route.name);
   const title = t(page?.titleKey ?? route.name);
@@ -141,13 +143,13 @@ export function SettingsPage({ children, deferBackRef }: Props) {
       </CenteredColumn>
 
       <ScrollView
-        ref={kb.ref}
+        ref={kbRef}
         automaticallyAdjustKeyboardInsets
         style={[styles.scroll, { backgroundColor: palette.bg }]}
         contentContainerStyle={[
           styles.content,
           { paddingBottom: SPACING.xl + systemBottom },
-          kb.contentPadding,
+          kbPadding,
         ]}
         contentInsetAdjustmentBehavior="never"
         keyboardShouldPersistTaps="handled"

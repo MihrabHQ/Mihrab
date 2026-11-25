@@ -84,6 +84,10 @@ export function useVolumeKeyPaging(
   turnPage: (dir: 1 | -1) => void,
   upForward: boolean = false,
 ): void {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — volumeKeysAvailable() (Dimensions.get)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const focused = useIsFocused();
   const on = volumeKeysShouldTurnPages({
     enabled,

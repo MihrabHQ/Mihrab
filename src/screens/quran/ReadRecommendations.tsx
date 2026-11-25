@@ -39,6 +39,7 @@ import { readSuggestions } from '../../quran/readSuggestions';
 import { HifzIcon } from '../../theme/icons';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
+import { useRenderClock } from '../../hooks/useRenderClock';
 
 type Props = {
   /** Open the reader at a surah and ayah. */
@@ -48,6 +49,13 @@ type Props = {
 };
 
 function ReadRecommendationsImpl({ onRead, onPractise }: Props) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — todaysMaghrib() (published); hifzSurahName() (i18n.language  [src/i18n/index.ts)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const quranPrefs = useQuranPrefs();
@@ -57,7 +65,7 @@ function ReadRecommendationsImpl({ onRead, onPractise }: Props) {
   const practiseOpen = quranPrefs.practiseOpen;
   // Worked out when the header is drawn — arriving on the tab, which is
   // when the hour matters.
-  const now = new Date();
+  const now = new Date(clock);
   const suggestions = readSuggestions(now, todaysMaghrib());
   const today = dayOf(now.getTime());
   const practise = practiseAhead(hifz, today);

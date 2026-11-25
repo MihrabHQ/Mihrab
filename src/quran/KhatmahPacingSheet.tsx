@@ -43,6 +43,7 @@ import { SegmentedControl } from '../components/ui';
 import { TYPE } from '../theme/typography';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { useSheetSides } from '../responsive/sheetSides';
+import { useRenderClock } from '../hooks/useRenderClock';
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -127,10 +128,13 @@ export function KhatmahPacingSheet({
   mode,
   initialKind,
 }: PacingSheetProps) {
+  // The time as of this render, as a value the React Compiler sees change
+  // (hooks/useRenderClock.ts): the clock read here directly is kept stale.
+  const clock = useRenderClock();
   const { palette } = useAppPalette();
   const sides = useSheetSides();
   const { t, i18n } = useTranslation();
-  const now = Date.now();
+  const now = clock;
   /**
    * ONE NUMBER BEHIND BOTH VIEWS, and that is the whole trick.
    *

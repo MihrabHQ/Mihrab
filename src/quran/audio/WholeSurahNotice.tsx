@@ -84,6 +84,10 @@ export function WholeSurahNotice({
   /** Why: not on the device, or changed at its source (no download fixes that). */
   reason?: 'missing' | 'changed';
 }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — findReciter() (decoded); isJobRunning() (state); estimatedReciterBytes() (decoded); blockedSurahText() (decoded); and 2 more
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const [download, setDownload] = useState<QuranDownloadState>(quranDownloadState);
@@ -233,6 +237,10 @@ export function WholeSurahSurahRow({
   ayah: number | null;
   riwayah: RiwayahId;
 }) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — isJobRunning() (state); expectedSurahBytes() (decoded); ayahBoundaryReportUrl() (decoded); blockedSurahText() (decoded); and 3 more
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const [download, setDownload] = useState<QuranDownloadState>(quranDownloadState);

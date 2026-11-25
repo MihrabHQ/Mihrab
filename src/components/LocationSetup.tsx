@@ -59,7 +59,9 @@ export function LocationSetup({ palette, hideIntro }: Props) {
   const { updateSettings } = usePrayerSettings();
   const [step, setStep] = useState<'choose' | 'manual'>('choose');
   // One ref for both steps: only ever one of them is mounted.
-  const kb = useKeyboardAwareScroll<ScrollViewInstance>();
+  // Taken apart here: the padding read off an object that also holds the
+  // ref is, to the React Compiler, a ref read while rendering.
+  const { ref: kbRef, contentPadding: kbPadding } = useKeyboardAwareScroll<ScrollViewInstance>();
   const [gpsBusy, setGpsBusy] = useState(false);
   const [gpsError, setGpsError] = useState<string | null>(null);
   const [draftLat, setDraftLat] = useState('');
@@ -168,10 +170,10 @@ export function LocationSetup({ palette, hideIntro }: Props) {
   if (step === 'choose') {
     return (
       <ScrollView
-        ref={kb.ref}
+        ref={kbRef}
         automaticallyAdjustKeyboardInsets
         style={[styles.fill, { backgroundColor: palette.bg }]}
-        contentContainerStyle={[styles.chooseContent, kb.contentPadding]}
+        contentContainerStyle={[styles.chooseContent, kbPadding]}
         keyboardShouldPersistTaps="handled">
         {hideIntro ? null : (
           <>
@@ -235,10 +237,10 @@ export function LocationSetup({ palette, hideIntro }: Props) {
 
   return (
     <ScrollView
-      ref={kb.ref}
+      ref={kbRef}
       automaticallyAdjustKeyboardInsets
       style={[styles.fill, { backgroundColor: palette.bg }]}
-      contentContainerStyle={[styles.manualContent, kb.contentPadding]}
+      contentContainerStyle={[styles.manualContent, kbPadding]}
       keyboardShouldPersistTaps="handled">
       <Pressable
         accessibilityRole="button"

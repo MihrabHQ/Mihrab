@@ -35,6 +35,8 @@ import { useAppPalette } from '../../hooks/useAppPalette';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { useSheetPadding } from '../../responsive/sheetSides';
+import { useConst } from '../../hooks/useConst';
+import { useKeepLatest } from '../../hooks/useLatest';
 
 /** How far the page eases back under the sheet. */
 export const MINIMAL_SHEET_PAGE_SCALE = 0.94;
@@ -90,7 +92,7 @@ export function MinimalSheet({
   const [sheetHeight, setSheetHeight] = useState(0);
   // The finger's own offset, written by the handler on the UI thread
   // (`dragEvent` below), and what the sheet reads of it: down only.
-  const dragRaw = useRef(new Animated.Value(0)).current;
+  const dragRaw = useConst(() => new Animated.Value(0));
   const drag = useMemo(
     () => dragRaw.interpolate({ inputRange: [0, 1], outputRange: [0, 1], extrapolateLeft: 'clamp' }),
     [dragRaw],
@@ -169,11 +171,11 @@ export function MinimalSheet({
   // the close) is read through refs at the moment it is needed, so the
   // render every second reconfigures nothing under a finger.
   const heightRef = useRef(sheetHeight);
-  heightRef.current = sheetHeight;
+  useKeepLatest(heightRef, sheetHeight);
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  useKeepLatest(onCloseRef, onClose);
   const reduceMotionRef = useRef(reduceMotion);
-  reduceMotionRef.current = reduceMotion;
+  useKeepLatest(reduceMotionRef, reduceMotion);
   const dragEvent = useMemo(
     () => Animated.event([{ nativeEvent: { translationY: dragRaw } }], { useNativeDriver: true }),
     [dragRaw],

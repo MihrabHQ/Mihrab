@@ -1,8 +1,9 @@
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect } from 'react';
 import { Animated, StyleSheet, type ViewStyle } from 'react-native';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { DURATION } from '../../theme/motion';
 import { RADIUS } from '../../theme/tokens';
+import { useConst } from '../../hooks/useConst';
 
 /**
  * Skeleton — task #39 + #42 loading state.
@@ -26,7 +27,7 @@ type SkeletonProps = {
 
 function SkeletonImpl({ width = '100%', height = 16, radius = 'sm', style }: SkeletonProps) {
   const { palette } = useAppPalette();
-  const pulse = useRef(new Animated.Value(0.4)).current;
+  const pulse = useConst(() => new Animated.Value(0.4));
 
   useEffect(() => {
     const loop = Animated.loop(

@@ -18,6 +18,10 @@ import { TYPE, arabicTextStyle } from '../../../theme/typography';
 import { SPACING } from '../../../theme/tokens';
 
 export function WordReaderSettingsScreen() {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — wordReaderReciterId() (decoded)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const prefs = useQuranPrefs();

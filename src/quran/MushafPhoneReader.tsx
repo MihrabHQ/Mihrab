@@ -265,6 +265,10 @@ const PhonePageItem = React.memo(function PhonePageItem({
   lock,
   itemH,
 }: PageItemProps) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — portraitPageScrolls() (glyphSet); mushafPageColumnHeight() (glyphSet)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   // Locked: no tap does anything; a deliberate hold toggles the chrome.
   const onTap = locked ? undefined : onToggleFullscreen;
   const onHold = locked ? onToggleFullscreen : undefined;
@@ -529,6 +533,10 @@ const PhonePageItem = React.memo(function PhonePageItem({
 export const MushafPhoneReader = React.memo(function MushafPhoneReader(
   props: MushafReaderProps,
 ) {
+  // Left as written, not compiled: while rendering this reads what React
+  // cannot see change — volumeKeysAvailable() (Dimensions.get)
+  // (tools/compiler-impure.js; babel.reactCompiler.js has why that matters).
+  'use no memo';
   const { isFullscreen, onToggleFullscreen, veil } = props;
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
