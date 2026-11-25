@@ -52,6 +52,7 @@ import {
 import { markFirstPaint, useAfterFirstPaint } from '../boot/firstPaint';
 import { bootMark } from '../boot/bootTimeline';
 import { hideLaunchSnapshot, setLaunchSnapshotEligible } from '../native/LaunchSnapshot';
+import { useFullScreenAlarmSwitch } from '../notifications/useFullScreenAlarmSwitch';
 import { usePrefetchSavedLocations } from '../hooks/usePrefetchSavedLocations';
 import { syncPrayerNotifications } from '../notifications/prayerNotifications';
 import { useNextAlertOverride } from '../notifications/adhanMute';
@@ -161,6 +162,9 @@ const NOTIF_RESYNC_KEY = 'home.prayerNotifications';
 const EOD_RESYNC_KEY = 'home.endOfDayReminders';
 const DUA_RESYNC_KEY = 'home.duaReminders';
 const SILENCE_RESYNC_KEY = 'home.prayerSilence';
+
+/** Today reads whether full-screen alerts are refused; it never changes the switch. */
+const noFullScreenChange = () => {};
 
 export function HomeScreen() {
   const navigation =
@@ -392,6 +396,14 @@ export function HomeScreen() {
   }, []);
   const [exactAlarmDenied, setExactAlarmDenied] = useState(false);
   const [notifPermDenied, setNotifPermDenied] = useState(false);
+  // Full-screen alerts asked for here and refused by the system: said on
+  // Today, not only under the switch (PermissionBanners). Looked at on
+  // every return to the app, so it goes when the system's switch is on.
+  const { blocked: fullScreenRefused } = useFullScreenAlarmSwitch(
+    settings.notificationsEnabled && settings.prayerAlertFullScreen,
+    noFullScreenChange,
+  );
+  const fullScreenBlocked = settings.notificationsEnabled && settings.prayerAlertFullScreen && fullScreenRefused;
   /**
    * Whether anything is drawn above the hero — the three banner
    * conditions `PermissionBanners` knows (a provider that fell back,
@@ -536,6 +548,7 @@ export function HomeScreen() {
     (state.phase === 'ready' && state.usingLocalFallback === true) ||
     exactAlarmDenied ||
     notifPermDenied ||
+    fullScreenBlocked ||
     timezoneShift != null ||
     methodNote != null ||
     zoneNote != null;
@@ -1975,6 +1988,7 @@ export function HomeScreen() {
         usingLocalFallback: state.usingLocalFallback ?? false,
         exactAlarmDenied,
         notifPermDenied,
+        fullScreenBlocked,
         timezoneShift,
         methodNote,
         zoneNote,
@@ -1990,6 +2004,7 @@ export function HomeScreen() {
             usingLocalFallback={state.usingLocalFallback ?? false}
             exactAlarmDenied={exactAlarmDenied}
             notifPermDenied={notifPermDenied}
+            fullScreenBlocked={fullScreenBlocked}
             onRetryFetch={retry}
             timezoneShift={timezoneShift}
             methodNote={methodNote}
@@ -2263,6 +2278,7 @@ export function HomeScreen() {
           usingLocalFallback={state.usingLocalFallback ?? false}
           exactAlarmDenied={exactAlarmDenied}
           notifPermDenied={notifPermDenied}
+          fullScreenBlocked={fullScreenBlocked}
           onRetryFetch={retry}
           timezoneShift={timezoneShift}
           methodNote={methodNote}
