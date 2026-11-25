@@ -95,6 +95,16 @@ reclaimed app opens on the last Today screen and sweeps to now — but only
 for Today. `NavigationContainer` still has no `initialState`: the tab and the
 reader's scroll position are still lost on a reclaim, and that half is open.
 
+_2026-11-25:_ done. `src/navigation/resumeWhereLeft.ts` keeps the tab, the
+screens open over it and the reader's page or verse, and a start within
+half an hour of the app being left opens there (`initialState`, read
+synchronously from the launch's store). A reclaim cannot be told from a
+deliberate start — both are a new process — so the line is time: after half
+an hour the app opens on Today as before. Not kept: the walkthrough, a month
+being shared, a recitation about to start, a Hifz test in progress, and
+scroll position on pages other than the reader.
+`__tests__/resumeWhereLeft.test.ts`.
+
 ### 1.2 The last 1.74 MB of the JS bundle
 
 The APK went 50.1 MB → 35.8 MB by moving the translations and the 114 surah

@@ -74,6 +74,8 @@ const TRAVELS = new Set([
  * thing; "too large" means it is content, not record, and re-downloadable.
  */
 const STAYS: Record<string, string> = {
+  '@mihrab/resume/v1':
+    'device-local, and half an hour old at most — where THIS phone was left, for a start after the system closed the app (navigation/resumeWhereLeft.ts)',
   coveredUntil:
     "not a store — a key in a prayer alert's own data, saying where its schedule ends (notifications/alertCoverage.ts)",
   'mihrab.voiceHint.dismissed':

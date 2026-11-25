@@ -28,9 +28,13 @@ import type {
   QuranState,
 } from './quranTypes';
 import { activeKhatmah, khatmahCurrentPage } from './khatmahProgress';
+import { noteReaderPosition } from '../navigation/resumeWhereLeft';
 import { getQuranState, mergeRemovals, setQuranPrefs, updateQuranState } from './quranState';
 
 export function setLastRead(pos: Omit<LastRead, 'updatedAt'>): void {
+  // Where the reader is, for a start after the system closed the app
+  // (navigation/resumeWhereLeft.ts).
+  noteReaderPosition(pos);
   updateQuranState(prev => ({
     ...prev,
     lastRead: { ...pos, updatedAt: Date.now() },

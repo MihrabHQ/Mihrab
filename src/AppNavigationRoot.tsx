@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { layoutDirectionFor } from './i18n/layoutDirection';
 import { useEffect, useMemo, useRef } from 'react';
 import {
@@ -10,7 +10,13 @@ import {
 } from 'react-native';
 import { usePrayerSettings } from './context/PrayerSettingsContext';
 import { useSystemColorScheme } from './hooks/useSystemColorScheme';
-import { linking } from './navigation/linking';
+import { MIHRAB_SCHEME, linking } from './navigation/linking';
+import type { RootStackParamList } from './navigation/types';
+import {
+  noteLeft,
+  noteNavigationState,
+  readResumeState,
+} from './navigation/resumeWhereLeft';
 import { RootNavigator } from './navigation/RootNavigator';
 import { SystemNavigationScrim } from './navigation/SystemNavigationScrim';
 import { useSystemBarSurface } from './navigation/systemBarSurface';
@@ -35,7 +41,7 @@ import {
   startWidgetPayloadSync,
 } from './widget/republishWidgetPayload';
 import { afterFirstPaint } from './boot/firstPaint';
-import { lookKeyOf, setLaunchSnapshotLook } from './native/LaunchSnapshot';
+import { hideLaunchSnapshot, lookKeyOf, setLaunchSnapshotLook } from './native/LaunchSnapshot';
 import { getPrayerLiveActivityModule } from './native/PrayerLiveActivity';
 import { isMacCatalyst } from './responsive/breakpoints';
 import { rescheduleAyahOfDay } from './notifications/ayahOfDay';
@@ -77,6 +83,59 @@ import { refreshMethodCurrency } from './providers/methodCurrency';
 
 /** Gate key for the daily notification reschedules — see utils/resyncGate. */
 const DAILY_RESYNC_KEY = 'root.dailyReschedules';
+
+const navigationRef = createNavigationContainerRef<RootStackParamList>();
+
+/**
+ * The place the app was left at, when it was left within the half hour
+ * (navigation/resumeWhereLeft.ts). Read once, here: the container takes
+ * its first state when it mounts and never again, and a state that
+ * arrived a frame later would be Today flashing first. Undefined — the
+ * ordinary start on Today — almost always.
+ */
+const RESUME_STATE = readResumeState();
+
+/**
+ * A start that was SENT somewhere still goes there. React Navigation
+ * takes a given first state over the launch link's, so with a place
+ * restored the link is asked for here and followed, as the container
+ * would have followed it.
+ */
+function followLaunchLink(): void {
+  const ask = linking.getInitialURL;
+  const read = linking.getStateFromPath;
+  if (!ask || !read) return;
+  void Promise.resolve(ask())
+    .then(url => {
+      if (!url || !url.startsWith(MIHRAB_SCHEME) || !navigationRef.isReady()) return;
+      const state = read(url.slice(MIHRAB_SCHEME.length), linking.config as never);
+      if (state) navigationRef.resetRoot(state as never);
+    })
+    .catch(() => {
+      /* then the restored place stands */
+    });
+}
+
+/**
+ * The container asks for the launch link whether or not it will use it,
+ * and the alerts' engine hands a pressed notification over ONCE. With a
+ * place restored the container's asking is answered "none", so the one
+ * answer goes to `followLaunchLink`.
+ */
+const CONTAINER_LINKING: typeof linking = RESUME_STATE
+  ? { ...linking, getInitialURL: async () => null }
+  : linking;
+
+function onNavigationReady(): void {
+  if (RESUME_STATE) {
+    // The kept picture is of Today (native/LaunchSnapshot.ts), and Today
+    // is not what this start opens on: it comes down now rather than
+    // when a Today that may never mount says so.
+    hideLaunchSnapshot();
+    followLaunchLink();
+  }
+  if (navigationRef.isReady()) noteNavigationState(navigationRef.getRootState());
+}
 
 export function AppNavigationRoot() {
   const { settings, hydrated } = usePrayerSettings();
@@ -564,6 +623,15 @@ export function AppNavigationRoot() {
     );
   }, [settings.appearance, isDark]);
 
+  // The app was left: the half hour of "back where you were" counts from
+  // here (navigation/resumeWhereLeft.ts).
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', state => {
+      if (state !== 'active') noteLeft();
+    });
+    return () => sub.remove();
+  }, []);
+
   const navTheme = useMemo(
     () => buildNavigationTheme(palette, isDark),
     [palette, isDark],
@@ -617,7 +685,14 @@ export function AppNavigationRoot() {
       }}
     >
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      <NavigationContainer theme={navTheme} linking={linking}>
+      <NavigationContainer
+        ref={navigationRef}
+        theme={navTheme}
+        linking={CONTAINER_LINKING}
+        initialState={RESUME_STATE}
+        onReady={onNavigationReady}
+        onStateChange={noteNavigationState}
+      >
         <RootNavigator />
       </NavigationContainer>
       <SystemNavigationScrim palette={palette} />
