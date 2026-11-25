@@ -1053,6 +1053,15 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         );
       } else if (!isBackgroundRefresh) {
         setState({ phase: 'loading' });
+        // Nothing is on screen now, so nothing is "already loaded": the
+        // coordinates of the place just left must not answer for the fix
+        // to come. Going to "My location" for the first time from a place
+        // of one's own at the very spot the phone is — its anchor the same
+        // pair, to the last digit — the fix read as "the same city, nothing
+        // to load" and the screen stayed on "Loading prayer times…" until
+        // the app was started again (a Pixel 2, Nov 2026).
+        loadedCoordsRef.current = null;
+        loadedCityIdRef.current = null;
       }
 
       // Request Android location permission. Because we already have data on

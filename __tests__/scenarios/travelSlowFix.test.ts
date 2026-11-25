@@ -181,6 +181,31 @@ it('but not once the reader has gone to a place of their own', async () => {
   probe.unmount();
 });
 
+it('"My location" for the first time, from a place of one’s own at the very spot: the times come', async () => {
+  // The place of one's own and the fix are the same pair of coordinates,
+  // so the registry's anchor is the pair "already loaded" — and the screen,
+  // emptied for the search, stayed on "Loading prayer times…" for good
+  // (a Pixel 2, Nov 2026: fine again after a restart).
+  const s = await changeSettings(await loadSettings(), {
+    onboardingComplete: true,
+    locationOnboardingComplete: true,
+    locationMode: 'manual',
+    dataProviderAuto: true,
+    manualLatitude: STOCKHOLM.latitude,
+    manualLongitude: STOCKHOLM.longitude,
+    manualLocationLabel: 'Home',
+  });
+  const probe = await mountPrayerDay(s);
+  await until(near(probe, STOCKHOLM), 'the chosen place on screen');
+  const auto = await changeSettings(s, { locationMode: 'automatic' });
+  await probe.rerender(auto);
+  await until(() => mockLocator.fire.length > 0, 'the position asked for');
+  expect(probe.current().phase).toBe('loading');
+  mockLocator.fire[mockLocator.fire.length - 1]({ ...STOCKHOLM, timestamp: Date.now(), stage: 'coarse' });
+  await until(near(probe, STOCKHOLM), 'the times of where the phone is', 20_000);
+  probe.unmount();
+});
+
 describe('and the screen says what it knows', () => {
   /** The phone's surroundings at its last fresh position were another country's. */
   const anchoredElsewhere = () =>
