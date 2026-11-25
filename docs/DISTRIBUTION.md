@@ -326,7 +326,7 @@ That APK is **not** what goes on GitHub Releases any more (it was, up to 2.25.0)
 ### What the `fdroid` flavor does differently
 
 - **No billing dependency anywhere** — the tip jar and `react-native-iap` were removed from the project, so no flavor pulls one in.
-- **No Google Play Services** — guarded by the `patch-package` patch on `@react-native-community/geolocation` that strips `play-services-location` and uses AOSP `LocationManager` only.
+- **No Google Play Services** — the location code is the app's own (`android/app/src/main/java/com/prayer_times/geolocation/`, once a patched `@react-native-community/geolocation`) and uses AOSP `LocationManager` only; there is no `play-services-location` in any build.
 - **No ABI splits** — split APKs are only enabled for `playRelease` (guarded by `wantsPlayRelease` in `app/build.gradle`). The F-Droid build is a single universal APK, which is what their CI recipe expects.
 
 ### Windows, Linux and Mihrab Web (`desktop/`)

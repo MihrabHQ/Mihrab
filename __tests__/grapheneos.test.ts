@@ -194,10 +194,10 @@ describe('the Sensors switch', () => {
 });
 
 describe('location without Google, and with "Approximate"', () => {
-  const patch = repo('patches', '@react-native-community+geolocation+3.4.0.patch');
-  const added = patch
-    .split('\n')
-    .filter(l => l.startsWith('+') && !l.startsWith('+++'))
+  // Once a patch to @react-native-community/geolocation; the code is the
+  // app's own now (android/…/geolocation), and these read it there.
+  const added = ['AndroidLocationManager', 'BaseLocationManager', 'GeolocationModule', 'PositionError']
+    .map(name => repo('android', 'app', 'src', 'main', 'java', 'com', 'prayer_times', 'geolocation', `${name}.java`))
     .join('\n');
 
   it('the coarse permission is enough for the satellites from Android 12', () => {
@@ -214,7 +214,7 @@ describe('location without Google, and with "Approximate"', () => {
     // emulator and was handed nothing.
     // And, since Nov 2026, for every reader's quick request (not only an
     // Approximate one's): the fused provider beside the satellites.
-    expect(added).toMatch(/if \(android\.os\.Build\.VERSION\.SDK_INT >= android\.os\.Build\.VERSION_CODES\.S\s*\+\s*&& \(approximateOnly\(\) \|\| !locationOptions\.highAccuracy\)\) \{/);
+    expect(added).toMatch(/if \(android\.os\.Build\.VERSION\.SDK_INT >= android\.os\.Build\.VERSION_CODES\.S\s*&& \(approximateOnly\(\) \|\| !locationOptions\.highAccuracy\)\) \{/);
     expect(added).toMatch(/currentApproximateLocation\(locationManager, locationOptions\.timeout, success, error\);/);
     expect(added).toMatch(/new String\[\] \{LocationManager\.FUSED_PROVIDER, LocationManager\.NETWORK_PROVIDER, LocationManager\.GPS_PROVIDER\}/);
     expect(added).toMatch(/locationManager\.getCurrentLocation\(provider, request, cancel, mReactContext\.getMainExecutor\(\)/);
@@ -231,11 +231,16 @@ describe('location without Google, and with "Approximate"', () => {
   });
 
   it('a permission lost on the way is an error for the caller, not a crash', () => {
-    expect(patch).toMatch(/catch \(SecurityException e\) \{\n-\s+throw e;\n(\+.*\n)+?\+\s+error\.invoke\(PositionError\.buildError\(PositionError\.PERMISSION_DENIED/);
+    const caught = [...added.matchAll(/catch \(SecurityException e\) \{([\s\S]*?)\n\s*\}/g)].map(m => m[1]);
+    expect(caught.length).toBeGreaterThan(0);
+    // The single request's (the only one the app makes): answered, not rethrown.
+    const answered = caught.filter(body => /error\.invoke\(PositionError\.buildError\(PositionError\.PERMISSION_DENIED/.test(body));
+    expect(answered).toHaveLength(1);
+    expect(answered[0]).not.toMatch(/^\s*throw e;/m);
   });
 
   it('still carries no Google Play services', () => {
-    expect(patch).toMatch(/^-\s+implementation 'com\.google\.android\.gms:play-services-location/m);
+    expect(repo('android', 'app', 'build.gradle')).not.toMatch(/play-services-location/);
     expect(added).not.toMatch(/com\.google\.android\.gms/);
   });
 });

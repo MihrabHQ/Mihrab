@@ -43,3 +43,13 @@ terms). They are downloaded on request and are not part of the app's source.
 The Garmin watch face's fonts (garmin/watchface/resources/fonts) are bitmaps
 made from Tektur, copyright 2023 The Tektur Project Authors, under the SIL Open
 Font License 1.1 (garmin/tools/fonts/OFL.txt).
+
+THIRD-PARTY CODE KEPT IN THIS TREE
+----------------------------------
+The location module (android/app/src/main/java/com/prayer_times/geolocation/,
+ios/PrayerApp/MihrabGeolocation.{h,mm}, src/native/Geolocation.ts) is
+@react-native-community/geolocation 3.4.0, copyright 2022-present React Native
+Community and copyright Facebook, Inc. and its affiliates, under the MIT
+licence (LICENSE beside the Android code, MihrabGeolocation.LICENSE beside the
+iOS code), with this project's changes: the module's name, the Play Services
+path removed, and a lost permission answered as an error.

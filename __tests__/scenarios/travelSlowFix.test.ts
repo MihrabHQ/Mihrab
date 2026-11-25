@@ -9,7 +9,7 @@
  *
  * Two halves. The native one — a request whose wait runs out answers with
  * the newest position the phone has — is in the patch to
- * @react-native-community/geolocation and held here by its text. The other
+ * @react-native-community/geolocation (now the app's own code, android/…/geolocation) and held here by its text. The other
  * is here: with a place already on screen the precise request waits a
  * minute, a fix that lands late is still taken, and one that lands after
  * the reader went to a place of their own is not.
@@ -341,16 +341,15 @@ it('"Not updated" with the app open: it looks again by itself, a few times and n
 
 it('Android: a request whose wait runs out answers with the newest position the phone has', () => {
   const root = path.join(__dirname, '..', '..');
-  const patch = readFileSync(path.join(root, 'patches/@react-native-community+geolocation+3.4.0.patch'), 'utf8');
-  expect(patch).toMatch(/\+\s+private static Location newestLastKnown\(LocationManager locationManager\)/);
-  // The single request, and the "Approximate" one at its time limit and on an empty answer.
-  expect(patch.match(/\+\s+Location last = newestLastKnown\(/g)).toHaveLength(2);
-  // Android 12+: the quick request asks the OS's fused provider, for every reader.
-  expect(patch).toMatch(/\+\s+&& \(approximateOnly\(\) \|\| !locationOptions\.highAccuracy\)\) \{/);
-  expect(patch).toMatch(/\+\s+Location answer = location != null \? location : newestLastKnown\(locationManager\);/);
+  // Once a patch to @react-native-community/geolocation; the code is the app's own now.
   const java = readFileSync(
-    path.join(root, 'node_modules/@react-native-community/geolocation/android/src/main/java/com/reactnativecommunity/geolocation/AndroidLocationManager.java'),
+    path.join(root, 'android/app/src/main/java/com/prayer_times/geolocation/AndroidLocationManager.java'),
     'utf8',
   );
+  // The single request, and the "Approximate" one at its time limit and on an empty answer.
+  expect(java.match(/^\s+Location last = newestLastKnown\(/gm)).toHaveLength(2);
+  // Android 12+: the quick request asks the OS's fused provider, for every reader.
+  expect(java).toMatch(/&& \(approximateOnly\(\) \|\| !locationOptions\.highAccuracy\)\) \{/);
+  expect(java).toMatch(/Location answer = location != null \? location : newestLastKnown\(locationManager\);/);
   expect(java).toContain('private static Location newestLastKnown(LocationManager locationManager)');
 });
