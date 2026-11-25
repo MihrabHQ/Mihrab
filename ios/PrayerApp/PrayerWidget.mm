@@ -1,11 +1,11 @@
-#import <React/RCTBridgeModule.h>
-#import <React/RCTEventEmitter.h>
 #import <notify.h>
 
-#import "PrayerApp-Swift.h"
+// The contracts, React and the app's Swift classes, in the order
+// Objective-C++ needs them.
+#import "MihrabTurbo.h"
 #import "MihrabAppGroup.h"
 
-@interface PrayerWidget : NSObject <RCTBridgeModule>
+@interface PrayerWidget : NSObject <NativePrayerWidgetSpec>
 @end
 
 @implementation PrayerWidget
@@ -17,10 +17,9 @@ RCT_EXPORT_MODULE();
   return YES;
 }
 
-RCT_EXPORT_METHOD(setData
-                  : (NSString *)json resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject)
+- (void)setData:(NSString *)json
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject
 {
   [PrayerWidget storePayload:json v2:nil];
   resolve(nil);
@@ -37,11 +36,10 @@ RCT_EXPORT_METHOD(setData
  * Since step 1.7 the app passes an empty v1: v2 is written alone and the
  * stored v1 is removed. An empty v2 removes that key the same way.
  */
-RCT_EXPORT_METHOD(setDataV2
-                  : (NSString *)json v2
-                  : (NSString *)v2 resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject)
+- (void)setDataV2:(NSString *)json
+               v2:(NSString *)v2
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject
 {
   [PrayerWidget storePayload:json v2:v2];
   resolve(nil);
@@ -108,9 +106,8 @@ RCT_EXPORT_METHOD(setDataV2
  * WidgetLogQueue.swift (widget side) and widgetLogQueue.ts (app side); this
  * only moves the string across.
  */
-RCT_EXPORT_METHOD(takeLogQueue
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject)
+- (void)takeLogQueue:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject
 {
   NSUserDefaults *group = MihrabAppGroupDefaults();
   NSUserDefaults *target = group != nil ? group : [NSUserDefaults standardUserDefaults];
@@ -136,9 +133,8 @@ RCT_EXPORT_METHOD(takeLogQueue
  * and one string that two sets of rules both parse is a string that will
  * eventually be parsed by the wrong one.
  */
-RCT_EXPORT_METHOD(takeTasbihQueue
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject)
+- (void)takeTasbihQueue:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject
 {
   NSUserDefaults *group = MihrabAppGroupDefaults();
   NSUserDefaults *target = group != nil ? group : [NSUserDefaults standardUserDefaults];
@@ -153,10 +149,10 @@ RCT_EXPORT_METHOD(takeTasbihQueue
   resolve(json);
 }
 
-RCT_EXPORT_METHOD(setUiHints:(NSString *)style
-                  oledBackground:(BOOL)oled
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+- (void)setUiHints:(NSString *)style
+    oledBackground:(BOOL)oled
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject
 {
   NSUserDefaults *group =
       MihrabAppGroupDefaults();
@@ -168,9 +164,9 @@ RCT_EXPORT_METHOD(setUiHints:(NSString *)style
   resolve(nil);
 }
 
-RCT_EXPORT_METHOD(setWidgetHighlightDynamic:(BOOL)enabled
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+- (void)setWidgetHighlightDynamic:(BOOL)enabled
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject
 {
   NSUserDefaults *group =
       MihrabAppGroupDefaults();
@@ -181,12 +177,12 @@ RCT_EXPORT_METHOD(setWidgetHighlightDynamic:(BOOL)enabled
   resolve(nil);
 }
 
-RCT_EXPORT_METHOD(setIosWidgetHighlightAppearance:(NSString *)highlightId
-                  hex:(NSString *)hex
-                  dynamic:(BOOL)dynamic
-                  tinted:(BOOL)tinted
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+- (void)setIosWidgetHighlightAppearance:(NSString *)highlightId
+                                    hex:(NSString *)hex
+                                dynamic:(BOOL)dynamic
+                                 tinted:(BOOL)tinted
+                                resolve:(RCTPromiseResolveBlock)resolve
+                                 reject:(RCTPromiseRejectBlock)reject
 {
   NSUserDefaults *group =
       MihrabAppGroupDefaults();
@@ -214,9 +210,9 @@ RCT_EXPORT_METHOD(setIosWidgetHighlightAppearance:(NSString *)highlightId
  * the extension reads for each timeline entry's own minute (WidgetSky in
  * PrayerWidgetExtension.swift). Nil or empty clears it: the theme is off.
  */
-RCT_EXPORT_METHOD(setWidgetSkySchedule:(NSString *)json
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+- (void)setWidgetSkySchedule:(NSString *)json
+                     resolve:(RCTPromiseResolveBlock)resolve
+                      reject:(RCTPromiseRejectBlock)reject
 {
   NSUserDefaults *group = MihrabAppGroupDefaults();
   NSUserDefaults *target = group != nil ? group : [NSUserDefaults standardUserDefaults];
@@ -230,6 +226,11 @@ RCT_EXPORT_METHOD(setWidgetSkySchedule:(NSString *)json
   resolve(nil);
 }
 
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativePrayerWidgetSpecJSI>(params);
+}
 @end
 
 /**
@@ -259,7 +260,7 @@ RCT_EXPORT_METHOD(setWidgetSkySchedule:(NSString *)json
  */
 static NSString *const kMihrabWidgetQueueChangedEvent = @"MihrabWidgetQueueChanged";
 
-@interface WidgetQueueWatcher : RCTEventEmitter <RCTBridgeModule>
+@interface WidgetQueueWatcher : RCTEventEmitter <NativeWidgetQueueWatcherSpec>
 @end
 
 @implementation WidgetQueueWatcher {
@@ -304,4 +305,9 @@ RCT_EXPORT_MODULE();
   notify_cancel(_token);
 }
 
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeWidgetQueueWatcherSpecJSI>(params);
+}
 @end

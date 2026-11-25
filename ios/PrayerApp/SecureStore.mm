@@ -15,9 +15,10 @@
 // every Keychain item the app can see, of every class. Nothing called it.
 
 #import <React/RCTBridgeModule.h>
+#import <MihrabSpec/MihrabSpec.h>
 #import <Security/Security.h>
 
-@interface MihrabSecureStore : NSObject <RCTBridgeModule>
+@interface MihrabSecureStore : NSObject <NativeMihrabSecureStoreSpec>
 @end
 
 @implementation MihrabSecureStore
@@ -35,10 +36,10 @@ static void rejectWith(RCTPromiseRejectBlock reject, NSString *message, OSStatus
   reject([NSString stringWithFormat:@"%d", (int)status], message, error);
 }
 
-RCT_EXPORT_METHOD(setItem:(NSString *)key
-                  value:(NSString *)value
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+- (void)setItem:(NSString *)key
+          value:(NSString *)value
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject
 {
   NSData *data = [value dataUsingEncoding:NSUTF8StringEncoding];
   if (data == nil) {
@@ -60,9 +61,9 @@ RCT_EXPORT_METHOD(setItem:(NSString *)key
   }
 }
 
-RCT_EXPORT_METHOD(getItem:(NSString *)key
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+- (void)getItem:(NSString *)key
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject
 {
   NSDictionary *query = @{
     (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
@@ -84,9 +85,9 @@ RCT_EXPORT_METHOD(getItem:(NSString *)key
   }
 }
 
-RCT_EXPORT_METHOD(removeItem:(NSString *)key
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
+- (void)removeItem:(NSString *)key
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject
 {
   NSDictionary *query = @{
     (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
@@ -102,4 +103,9 @@ RCT_EXPORT_METHOD(removeItem:(NSString *)key
   }
 }
 
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeMihrabSecureStoreSpecJSI>(params);
+}
 @end

@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
+#import <MihrabSpec/MihrabSpec.h>
 
 /**
  * Whether the device clock is set to 24-hour time — issue #18.
@@ -14,7 +15,7 @@
  * made in Settings while the app is backgrounded is visible on the next
  * call, which is exactly when JavaScript asks again.
  */
-@interface SystemClock : NSObject <RCTBridgeModule>
+@interface SystemClock : NSObject <NativeSystemClockSpec>
 @end
 
 @implementation SystemClock
@@ -32,18 +33,26 @@ static BOOL MihrabSystemIs24Hour(void)
   return [format rangeOfString:@"a"].location == NSNotFound;
 }
 
-- (NSDictionary *)constantsToExport
+- (facebook::react::ModuleConstants<JS::NativeSystemClock::Constants>)getConstants
 {
   // The zone as well: JavaScript's first Intl call built a formatter to
   // learn it, milliseconds of a cold start (utils/zoneClock.ts).
-  return @{ @"is24Hour": @(MihrabSystemIs24Hour()), @"timeZone": [NSTimeZone localTimeZone].name };
+  return facebook::react::typedConstants<JS::NativeSystemClock::Constants>({
+      .is24Hour = (bool)MihrabSystemIs24Hour(),
+      .timeZone = [NSTimeZone localTimeZone].name,
+  });
+}
+
+- (facebook::react::ModuleConstants<JS::NativeSystemClock::Constants>)constantsToExport
+{
+  return [self getConstants];
 }
 
 // A different name from the `is24Hour` constant above, on purpose: a
 // method and a constant sharing a name means one of them is unreachable
 // from JavaScript in every bridge mode. See SystemClockModule.kt.
-RCT_EXPORT_METHOD(readIs24Hour:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+- (void)readIs24Hour:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject
 {
   resolve(@(MihrabSystemIs24Hour()));
 }
@@ -53,4 +62,9 @@ RCT_EXPORT_METHOD(readIs24Hour:(RCTPromiseResolveBlock)resolve
   return NO;
 }
 
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeSystemClockSpecJSI>(params);
+}
 @end

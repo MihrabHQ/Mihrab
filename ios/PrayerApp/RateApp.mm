@@ -7,10 +7,11 @@
 // works under the new architecture through the interop layer.
 
 #import <React/RCTBridgeModule.h>
+#import <MihrabSpec/MihrabSpec.h>
 #import <StoreKit/StoreKit.h>
 #import <UIKit/UIKit.h>
 
-@interface RateApp : NSObject <RCTBridgeModule>
+@interface RateApp : NSObject <NativeRateAppSpec>
 @end
 
 @implementation RateApp
@@ -22,7 +23,7 @@ RCT_EXPORT_MODULE();
   return NO;
 }
 
-RCT_EXPORT_METHOD(requestReview)
+- (void)requestReview
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     if (@available(iOS 14.0, *)) {
@@ -37,4 +38,9 @@ RCT_EXPORT_METHOD(requestReview)
   });
 }
 
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeRateAppSpecJSI>(params);
+}
 @end

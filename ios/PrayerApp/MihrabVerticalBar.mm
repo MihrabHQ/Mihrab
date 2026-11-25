@@ -12,9 +12,10 @@
 //
 
 #import <React/RCTBridgeModule.h>
+#import <MihrabSpec/MihrabSpec.h>
 #import <UIKit/UIKit.h>
 
-@interface MihrabVerticalBar : NSObject <RCTBridgeModule>
+@interface MihrabVerticalBar : NSObject <NativeMihrabVerticalBarSpec>
 @end
 
 @implementation MihrabVerticalBar
@@ -42,7 +43,8 @@ static UIView *MihrabRootView(void)
   return nil;
 }
 
-RCT_EXPORT_METHOD(read:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+- (void)read:(RCTPromiseResolveBlock)resolve
+      reject:(RCTPromiseRejectBlock)reject
 {
   NSMutableDictionary *out = [@{ @"edge": [NSNull null], @"regions": @[] } mutableCopy];
   UIView *view = MihrabRootView();
@@ -70,4 +72,9 @@ RCT_EXPORT_METHOD(read:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejec
   resolve(out);
 }
 
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeMihrabVerticalBarSpecJSI>(params);
+}
 @end

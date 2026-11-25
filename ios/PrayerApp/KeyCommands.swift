@@ -60,9 +60,9 @@ class MihrabKeyCommands: RCTEventEmitter {
    moment a text field in it takes focus, so that ← and → still move a
    caret in the surah search rather than turning pages under it.
    */
-  @objc func setArrowPriority(_ on: NSNumber) {
+  @objc func setArrowPriority(_ on: Bool) {
     DispatchQueue.main.async {
-      MihrabKeyCommands.arrowPriority = on.boolValue
+      MihrabKeyCommands.arrowPriority = on
     }
   }
 

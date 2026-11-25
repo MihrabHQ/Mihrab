@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
+#import <MihrabSpec/MihrabSpec.h>
 #import <UIKit/UIKit.h>
 
 /**
@@ -24,22 +25,27 @@
  * 0 means "cannot tell", and JS falls back to its own first-run stamp
  * rather than guessing (see installDate.ts).
  */
-@interface PrayerBuildInfo : NSObject <RCTBridgeModule>
+@interface PrayerBuildInfo : NSObject <NativePrayerBuildInfoSpec>
 @end
 
 @implementation PrayerBuildInfo
 
 RCT_EXPORT_MODULE();
 
-- (NSDictionary *)constantsToExport
+- (facebook::react::ModuleConstants<JS::NativePrayerBuildInfo::Constants>)getConstants
 {
-  return @{
-    // Android's flavour (play / fdroid) is what this key exists for; iOS
-    // has one channel, and JS defaults sensibly if it is missing.
-    @"distribution" : @"appstore",
-    @"firstInstallTime" : @([self firstInstallTimeMs]),
-    @"deviceName" : [self deviceName],
-  };
+  return facebook::react::typedConstants<JS::NativePrayerBuildInfo::Constants>({
+      // Android's flavour (play / fdroid) is what this key exists for; iOS
+      // has one channel, and JS defaults sensibly if it is missing.
+      .distribution = @"appstore",
+      .firstInstallTime = [self firstInstallTimeMs],
+      .deviceName = [self deviceName],
+  });
+}
+
+- (facebook::react::ModuleConstants<JS::NativePrayerBuildInfo::Constants>)constantsToExport
+{
+  return [self getConstants];
 }
 
 /**
@@ -84,4 +90,9 @@ RCT_EXPORT_MODULE();
   return NO;
 }
 
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativePrayerBuildInfoSpecJSI>(params);
+}
 @end
