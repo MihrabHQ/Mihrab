@@ -9,8 +9,7 @@ import android.provider.Settings
 import android.util.TypedValue
 import androidx.core.view.WindowCompat
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeSystemThemeSpec
 import kotlin.system.exitProcess
 
 /**
@@ -29,12 +28,11 @@ import kotlin.system.exitProcess
  *     that matches the live system accent under Material You.
  */
 class SystemThemeModule(private val reactContext: ReactApplicationContext) :
-    ReactContextBaseJavaModule(reactContext) {
+    NativeSystemThemeSpec(reactContext) {
 
   override fun getName(): String = NAME
 
-  @ReactMethod
-  fun restartApp() {
+  override fun restartApp() {
     val activity = getCurrentActivity() ?: return
     val pm = reactContext.packageManager
     val intent = pm.getLaunchIntentForPackage(reactContext.packageName) ?: return
@@ -72,8 +70,7 @@ class SystemThemeModule(private val reactContext: ReactApplicationContext) :
    * The app's per-screen bottom insets keep interactive content above the
    * buttons; only the background shows through.
    */
-  @ReactMethod
-  fun setNavigationBarStyle(isDark: Boolean) {
+  override fun setNavigationBarStyle(isDark: Boolean) {
     val activity = getCurrentActivity() ?: return
     activity.runOnUiThread {
       val window = activity.window ?: return@runOnUiThread
@@ -119,8 +116,7 @@ class SystemThemeModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  fun resolveAccentHex(): String {
+  override fun resolveAccentHex(): String {
     val activity = getCurrentActivity() ?: return DEFAULT_ACCENT
     val typedValue = TypedValue()
     val theme = activity.theme
@@ -163,8 +159,7 @@ class SystemThemeModule(private val reactContext: ReactApplicationContext) :
    * React context's. `null` means we genuinely have nothing better than
    * React Native's own answer, and the JS side falls back to it.
    */
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  fun getColorScheme(): String? {
+  override fun getColorScheme(): String? {
     val night = lastKnownNightMode
         ?: getCurrentActivity()?.resources?.configuration?.uiMode
         ?: reactContext.resources?.configuration?.uiMode
@@ -192,8 +187,7 @@ class SystemThemeModule(private val reactContext: ReactApplicationContext) :
    * three-button, 1 the old two-button, 2 gestures. `null` means the setting
    * was unreadable, and the caller falls back to judging by height.
    */
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  fun isButtonNavigation(): Boolean? {
+  override fun isButtonNavigation(): Boolean? {
     val resolver = reactContext.contentResolver ?: return null
     val mode = Settings.Secure.getInt(resolver, NAVIGATION_MODE, -1)
     return when (mode) {
@@ -227,8 +221,7 @@ class SystemThemeModule(private val reactContext: ReactApplicationContext) :
    * gesture window is the same 48dp: a slim handle floating over a live page
    * is the point of edge-to-edge, and it has no glyphs to protect.
    */
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  fun buttonNavigationHeight(): Double {
+  override fun buttonNavigationHeight(): Double {
     if (isButtonNavigation() != true) return 0.0
     val res = reactContext.resources ?: return 0.0
     var id = res.getIdentifier(NAV_BAR_FRAME_HEIGHT, "dimen", "android")

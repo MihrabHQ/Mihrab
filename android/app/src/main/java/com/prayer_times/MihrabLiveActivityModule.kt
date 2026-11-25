@@ -15,8 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeMihrabLiveActivitySpec
 import com.prayer_times.contract.LiveActivityV1
 import com.prayer_times.contract.WallClock
 import com.prayer_times.contract.WidgetContract
@@ -62,7 +61,7 @@ import java.time.Instant
  * notifications fix all three.
  */
 class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeMihrabLiveActivitySpec(reactContext) {
 
   override fun getName(): String = NAME
 
@@ -73,8 +72,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
    * send the shared one. It is the whole truth then, so a shared payload
    * kept from an earlier [displayV2] must not outrank it on a restart.
    */
-  @ReactMethod
-  fun display(payloadJson: String, promise: Promise) {
+  override fun display(payloadJson: String, promise: Promise) {
     clearPayloadV2(reactContext)
     show(payloadJson, promise)
   }
@@ -147,8 +145,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
    * payload and the setting: a countdown to a time that has passed is
    * wrong, and the app re-arms it with the next days on its next sync.
    */
-  @ReactMethod
-  fun displayV2(liveActivityJson: String, promise: Promise) {
+  override fun displayV2(liveActivityJson: String, promise: Promise) {
     try {
       val la = WidgetContract.LiveActivity.parse(liveActivityJson)
       if (la == null) {
@@ -184,8 +181,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
    * user is looking at the row they just pressed and may well have the
    * shade open over it.
    */
-  @ReactMethod
-  fun clearAlertOverride(promise: Promise) {
+  override fun clearAlertOverride(promise: Promise) {
     try {
       val prefs = reactContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
       prefs.edit()
@@ -217,8 +213,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
    * ordinary notification with nothing in the app to say why.
    * `supported` is false below Android 16, where there is no chip.
    */
-  @ReactMethod
-  fun promotionStatus(promise: Promise) {
+  override fun promotionStatus(promise: Promise) {
     try {
       val nm = reactContext.getSystemService(android.app.NotificationManager::class.java)
       val supported = Build.VERSION.SDK_INT >= 36
@@ -233,8 +228,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
   }
 
   /** The system's Live Updates switch for this app; its notification settings where that is what is off, or that page is missing. */
-  @ReactMethod
-  fun openPromotionSettings(promise: Promise) {
+  override fun openPromotionSettings(promise: Promise) {
     fun open(action: String) = reactContext.startActivity(
       Intent(action)
         .putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, reactContext.packageName)
@@ -258,8 +252,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
   private fun canPostPromoted(nm: android.app.NotificationManager): Boolean =
     runCatching { nm.canPostPromotedNotifications() }.getOrDefault(true)
 
-  @ReactMethod
-  fun cancel(promise: Promise) {
+  override fun cancel(promise: Promise) {
     try {
       // Clear persisted payload so the restart receiver doesn't revive
       // the Live Activity after an update / reboot when the user has

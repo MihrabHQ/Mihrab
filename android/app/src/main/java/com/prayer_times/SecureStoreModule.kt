@@ -7,8 +7,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeMihrabSecureStoreSpec
 
 /**
  * The encrypted store behind src/native/SecureStore.ts: the saved place,
@@ -27,20 +26,18 @@ import com.facebook.react.bridge.ReactMethod
  * too: it fell back to a plain preferences file of the same name, and so
  * does this (a device where the Keystore failed once has its data there).
  */
-class SecureStoreModule(context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
+class SecureStoreModule(context: ReactApplicationContext) : NativeMihrabSecureStoreSpec(context) {
   override fun getName() = NAME
 
   private val prefs: SharedPreferences? by lazy { open(context) }
 
-  @ReactMethod
-  fun setItem(key: String, value: String, promise: Promise) {
+  override fun setItem(key: String, value: String, promise: Promise) {
     val store = prefs ?: return promise.reject(E_STORE, "The secure store could not be opened")
     if (store.edit().putString(key, value).commit()) promise.resolve(null)
     else promise.reject(E_STORE, "Could not save $key")
   }
 
-  @ReactMethod
-  fun getItem(key: String, promise: Promise) {
+  override fun getItem(key: String, promise: Promise) {
     val store = prefs ?: return promise.reject(E_STORE, "The secure store could not be opened")
     try {
       promise.resolve(store.getString(key, null))
@@ -51,8 +48,7 @@ class SecureStoreModule(context: ReactApplicationContext) : ReactContextBaseJava
     }
   }
 
-  @ReactMethod
-  fun removeItem(key: String, promise: Promise) {
+  override fun removeItem(key: String, promise: Promise) {
     val store = prefs ?: return promise.reject(E_STORE, "The secure store could not be opened")
     if (store.edit().remove(key).commit()) promise.resolve(null)
     else promise.reject(E_STORE, "Could not remove $key")

@@ -2,8 +2,7 @@ package com.prayer_times
 
 import android.view.KeyEvent
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeMihrabVolumeKeysSpec
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.modules.core.DeviceEventManagerModule
 
@@ -26,7 +25,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
  * set cannot leave the buttons dead.
  */
 class VolumeKeysModule(private val reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeMihrabVolumeKeysSpec(reactContext) {
 
   override fun getName(): String = NAME
 
@@ -35,17 +34,14 @@ class VolumeKeysModule(private val reactContext: ReactApplicationContext) :
     captured = false
   }
 
-  @ReactMethod
-  fun setCaptured(on: Boolean) {
+  override fun setCaptured(on: Boolean) {
     captured = on
   }
 
   // NativeEventEmitter requires both; there is nothing to start or stop.
-  @ReactMethod
-  fun addListener(@Suppress("UNUSED_PARAMETER") eventName: String) = Unit
+  override fun addListener(eventName: String) = Unit
 
-  @ReactMethod
-  fun removeListeners(@Suppress("UNUSED_PARAMETER") count: Int) = Unit
+  override fun removeListeners(count: Double) = Unit
 
   companion object {
     const val NAME = "MihrabVolumeKeys"

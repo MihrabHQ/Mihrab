@@ -7,8 +7,7 @@ import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeScanQrSpec
 
 /**
  * Opens the scanner and hands back what it read.
@@ -22,7 +21,7 @@ import com.facebook.react.bridge.ReactMethod
  * has none — and each needs something different said to them.
  */
 class ScanQrModule(private val reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext), ActivityEventListener {
+  NativeScanQrSpec(reactContext), ActivityEventListener {
 
   private var pending: Promise? = null
 
@@ -33,8 +32,7 @@ class ScanQrModule(private val reactContext: ReactApplicationContext) :
   override fun getName(): String = NAME
 
   /** Whether there is a camera to point at anything. */
-  @ReactMethod
-  fun isAvailable(promise: Promise) {
+  override fun isAvailable(promise: Promise) {
     promise.resolve(
       reactContext.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY),
     )
@@ -44,8 +42,7 @@ class ScanQrModule(private val reactContext: ReactApplicationContext) :
    * Resolves `{text}` on a scan, `{cancelled: true}` when the user backs
    * out, and rejects only when the camera itself is unavailable or refused.
    */
-  @ReactMethod
-  fun scan(hint: String, cancel: String, accent: String, promise: Promise) {
+  override fun scan(hint: String, cancel: String, accent: String, promise: Promise) {
     val activity = reactContext.currentActivity
     if (activity == null) {
       promise.reject("no_activity", "there is no activity to show the scanner over")

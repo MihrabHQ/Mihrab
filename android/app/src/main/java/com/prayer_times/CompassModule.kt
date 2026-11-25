@@ -14,9 +14,8 @@ import android.view.Surface
 import android.view.WindowManager
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.prayer_times.specs.NativeCompassModuleSpec
 import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.modules.core.DeviceEventManagerModule
 
 /**
@@ -83,7 +82,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
  * the JS scoring reads them the same way it reads CoreLocation's.
  */
 class CompassModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext), SensorEventListener {
+  NativeCompassModuleSpec(reactContext), SensorEventListener {
 
   override fun getName(): String = "CompassModule"
 
@@ -111,8 +110,7 @@ class CompassModule(reactContext: ReactApplicationContext) :
   private var usingRotationVector = false
   private var accuracyDegrees = ACCURACY_UNKNOWN
 
-  @ReactMethod
-  fun startUpdates(latitude: Double, longitude: Double) {
+  override fun startUpdates(latitude: Double, longitude: Double) {
     val manager = sensorManager ?: return
     stopUpdates()
 
@@ -159,8 +157,7 @@ class CompassModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun stopUpdates() {
+  override fun stopUpdates() {
     if (!listening) return
     sensorManager?.unregisterListener(this)
     listening = false
@@ -199,8 +196,7 @@ class CompassModule(reactContext: ReactApplicationContext) :
    * where the platform defines it: an unknown permission also reads as
    * not granted.
    */
-  @ReactMethod
-  fun sensorsAccess(promise: Promise) {
+  override fun sensorsAccess(promise: Promise) {
     try {
       val pm = reactApplicationContext.packageManager
       val defined =
@@ -223,14 +219,12 @@ class CompassModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun hasSystemCompass(promise: Promise) {
+  override fun hasSystemCompass(promise: Promise) {
     promise.resolve(resolveSystemCompass() != null)
   }
 
   /** Launch it. Resolves false rather than rejecting when there is none. */
-  @ReactMethod
-  fun openSystemCompass(promise: Promise) {
+  override fun openSystemCompass(promise: Promise) {
     val intent = resolveSystemCompass()
     if (intent == null) {
       promise.resolve(false)
@@ -261,11 +255,9 @@ class CompassModule(reactContext: ReactApplicationContext) :
   }
 
   /** Required by NativeEventEmitter; the work is done by the sensor listener. */
-  @ReactMethod
-  fun addListener(@Suppress("UNUSED_PARAMETER") eventName: String) = Unit
+  override fun addListener(eventName: String) = Unit
 
-  @ReactMethod
-  fun removeListeners(@Suppress("UNUSED_PARAMETER") count: Int) = Unit
+  override fun removeListeners(count: Double) = Unit
 
   override fun onSensorChanged(event: SensorEvent) {
     when (event.sensor.type) {

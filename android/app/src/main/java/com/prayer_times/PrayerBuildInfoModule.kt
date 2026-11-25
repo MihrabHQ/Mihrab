@@ -3,7 +3,7 @@ package com.prayer_times
 import android.os.Build
 import android.provider.Settings
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.prayer_times.specs.NativePrayerBuildInfoSpec
 
 /**
  * Exposes build-time distribution (e.g. `play` vs `fdroid`) to JavaScript so
@@ -17,11 +17,11 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
  * run where this is absent (see installDate.ts).
  */
 class PrayerBuildInfoModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativePrayerBuildInfoSpec(reactContext) {
 
   override fun getName(): String = NAME
 
-  override fun getConstants(): Map<String, Any> =
+  override fun getTypedExportedConstants(): Map<String, Any> =
     mapOf(
       "distribution" to BuildConfig.FLAVOR,
       "firstInstallTime" to firstInstallTime(),

@@ -8,8 +8,7 @@ import android.os.Build
 import android.os.PersistableBundle
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeMihrabClipboardSpec
 
 /**
  * Copy and paste, for the pairing code.
@@ -34,7 +33,7 @@ import com.facebook.react.bridge.ReactMethod
  * the right one.
  */
 class MihrabClipboardModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeMihrabClipboardSpec(reactContext) {
 
   override fun getName(): String = NAME
 
@@ -48,8 +47,7 @@ class MihrabClipboardModule(reactContext: ReactApplicationContext) :
    * also shows one gives the user two. Rather than have the JS side guess at
    * the API level, the answer travels back with the result.
    */
-  @ReactMethod
-  fun setString(text: String, promise: Promise) {
+  override fun setString(text: String, promise: Promise) {
     val clipboard = manager()
     if (clipboard == null) {
       promise.reject("unavailable", "no clipboard service")
@@ -76,8 +74,7 @@ class MihrabClipboardModule(reactContext: ReactApplicationContext) :
    * 10 the clipboard is only readable by the focused app, and a paste button
    * pressed a moment too early should do nothing rather than raise.
    */
-  @ReactMethod
-  fun getString(promise: Promise) {
+  override fun getString(promise: Promise) {
     val clipboard = manager()
     if (clipboard == null) {
       promise.reject("unavailable", "no clipboard service")

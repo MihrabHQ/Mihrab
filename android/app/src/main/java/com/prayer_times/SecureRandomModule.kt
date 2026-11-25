@@ -3,8 +3,7 @@ package com.prayer_times
 import android.util.Base64
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeSecureRandomSpec
 import java.security.SecureRandom
 
 /**
@@ -35,7 +34,7 @@ import java.security.SecureRandom
  * The platform default is seeded from the kernel and is the right answer.
  */
 class SecureRandomModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeSecureRandomSpec(reactContext) {
 
   private val random by lazy { SecureRandom() }
 
@@ -53,8 +52,9 @@ class SecureRandomModule(reactContext: ReactApplicationContext) :
    * caller is generating an identity and is entitled to know it could not be
    * done properly, rather than to receive something that looks the same.
    */
-  @ReactMethod
-  fun bytes(count: Int, promise: Promise) {
+  override fun bytes(countNumber: Double, promise: Promise) {
+    // A JavaScript number: whole by the time it is here (secureRandom.ts).
+    val count = countNumber.toInt()
     if (count <= 0 || count > MAX_BYTES) {
       promise.reject("bad_count", "asked for $count bytes, which is outside 1..$MAX_BYTES")
       return

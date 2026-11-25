@@ -3,49 +3,41 @@ package com.prayer_times
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeMihrabLaunchSnapshotSpec
 import com.facebook.react.uimanager.ViewManager
 
 /** JS's half of [LaunchSnapshot]: when to keep the screen, and when to let it go. */
 class LaunchSnapshotModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeMihrabLaunchSnapshotSpec(reactContext) {
 
   override fun getName(): String = "MihrabLaunchSnapshot"
 
-  @ReactMethod
-  fun setEligible(value: Boolean) = LaunchSnapshot.setEligible(value)
+  override fun setEligible(value: Boolean) = LaunchSnapshot.setEligible(value)
 
-  @ReactMethod
-  fun setLookKey(key: String, nightMatters: Boolean) = LaunchSnapshot.setLookKey(reactApplicationContext, key, nightMatters)
+  override fun setLookKey(key: String, nightMatters: Boolean) = LaunchSnapshot.setLookKey(reactApplicationContext, key, nightMatters)
 
-  @ReactMethod
-  fun hide() = LaunchSnapshot.hide()
+  override fun hide() = LaunchSnapshot.hide()
 
   /**
    * Keep the screen as it is now (if it is worth keeping), with the posed
    * hero in `heroFile` drawn at (x, y) dp when given: see LaunchSnapshot.ts.
    */
-  @ReactMethod
-  fun captureNow(heroFile: String?, x: Double, y: Double) {
+  override fun captureNow(heroFile: String?, x: Double, y: Double) {
     val activity = reactApplicationContext.currentActivity ?: return
     activity.runOnUiThread { LaunchSnapshot.capture(activity, heroFile, x.toFloat(), y.toFloat(), fromJs = true) }
   }
 
   /** A still of the screen, faded out over the next screen: see LaunchSnapshot.crossfade. */
-  @ReactMethod
-  fun crossfade(durationMs: Double) {
+  override fun crossfade(durationMs: Double) {
     val activity = reactApplicationContext.currentActivity ?: return
     activity.runOnUiThread { LaunchSnapshot.crossfade(activity, durationMs.toLong()) }
   }
 
-  @ReactMethod
-  fun setHeroState(targetAt: Double, fromAt: Double, posed: Boolean) =
+  override fun setHeroState(targetAt: Double, fromAt: Double, posed: Boolean) =
     LaunchSnapshot.setHeroState(targetAt.toLong(), fromAt.toLong(), posed)
 
   /** Read once, at the first render of the hero: see src/boot/launchWarp.ts. */
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  fun getShownState(): String = LaunchSnapshot.shownState
+  override fun getShownState(): String = LaunchSnapshot.shownState
 }
 
 class LaunchSnapshotPackage : ReactPackage {
