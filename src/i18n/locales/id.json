@@ -2037,7 +2037,8 @@
     "wordMeanings": "Arti kata-kata sulit dalam bahasa Arab",
     "surahHeaderFont": "Kaligrafi kepala surah",
     "recitationWholeSurah": "Tilawah surah utuh (15): mp3quran.net · waktu ayat diselaraskan dengan audio oleh Mihrab",
-    "transliteration": "Transliterasi Al-Qur’an, dibuat dari teks Arab; diperiksa ayat demi ayat terhadap teks itu, {{n}} ayat diperbaiki"
+    "transliteration": "Transliterasi Al-Qur’an, dibuat dari teks Arab; diperiksa ayat demi ayat terhadap teks itu, {{n}} ayat diperbaiki",
+    "transliterationAbay": "Transliterasi Turki oleh Muhammet Abay; diperiksa ayat demi ayat terhadap teks Arab, {{n}} ayat diperbaiki"
   },
   "liveActivity": {
     "title": "Salat berikutnya",

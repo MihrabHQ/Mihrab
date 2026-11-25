@@ -173,8 +173,14 @@ export function AttributionsSettingsScreen() {
       url: TEXT_SOURCES['quran-json'].homepage,
     },
     {
-      // Another author's work: shown as he wrote it, uncorrected.
-      label: 'Türkçe okunuş (çeviriyazı): Muhammet Abay',
+      // Another author's work, checked the same way; the ayahs with a
+      // wrong letter, length or word are put right as they are read, and
+      // the count is said here as it is for the generated ones.
+      label: t('attributions.transliterationAbay', {
+        defaultValue:
+          'Turkish transliteration by Muhammet Abay; checked against the Arabic text ayah by ayah, {{n}} ayahs corrected',
+        n: transliterationCorrectionCount('tr.transliteration'),
+      }),
       sub: 'alquran.cloud · Tanzil · tr.transliteration',
       url: 'https://tanzil.net/trans/',
     },

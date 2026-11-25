@@ -2037,7 +2037,8 @@
     "wordMeanings": "较难词语的阿拉伯语释义",
     "surahHeaderFont": "章名书法",
     "recitationWholeSurah": "整章诵读（15 位）：mp3quran.net · 经文时间由 Mihrab 与音频对齐",
-    "transliteration": "《古兰经》音译，由阿拉伯文原文生成；已逐节与原文核对，更正 {{n}} 节"
+    "transliteration": "《古兰经》音译，由阿拉伯文原文生成；已逐节与原文核对，更正 {{n}} 节",
+    "transliterationAbay": "土耳其语音译，Muhammet Abay 著；已逐节与阿拉伯文原文核对，更正 {{n}} 节"
   },
   "liveActivity": {
     "title": "下一次礼拜",

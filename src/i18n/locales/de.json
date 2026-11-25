@@ -2037,7 +2037,8 @@
     "wordMeanings": "Arabische Bedeutungen schwieriger Wörter",
     "surahHeaderFont": "Kalligrafie der Surenüberschriften",
     "recitationWholeSurah": "Rezitationen ganzer Suren (15): mp3quran.net · Verszeiten von Mihrab an den Ton angeglichen",
-    "transliteration": "Koran-Umschriften, aus dem arabischen Text erzeugt; Vers für Vers damit abgeglichen, {{n}} Verse berichtigt"
+    "transliteration": "Koran-Umschriften, aus dem arabischen Text erzeugt; Vers für Vers damit abgeglichen, {{n}} Verse berichtigt",
+    "transliterationAbay": "Türkische Umschrift von Muhammet Abay; Vers für Vers mit dem arabischen Text abgeglichen, {{n}} Verse berichtigt"
   },
   "liveActivity": {
     "title": "Nächstes Gebet",

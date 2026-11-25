@@ -23,6 +23,7 @@ not part of the app or of `npm run preflight`.
   check covers the three.
 - `check_tr.py`, `abay_read.py` put Abay's Turkish into the same spelling
   and list where it differs; `abay-2026-11-24.txt` is that list.
+- `fixes_tr.py`, `fixes_tr_table.py` hold Abay's corrections and prove them.
 - `fixes.py` holds the corrections and proves each against the Arabic and
   across the three spellings (`src/quran/transliterationCorrections.ts` is
   written from it).
@@ -82,8 +83,19 @@ Of the 336 others:
   especially, words that are not the ayah's (29:13, 29:46). They are in
   `abay-2026-11-24.txt`.
 
-His text is not corrected in the app: it is another author's work, and
-what to do with it is the maintainer's decision (docs/data-sources.md).
+The 113 are corrected in the app as it reads them (the maintainer's
+decision, 2026-11-25): `fixes_tr_table.py` is the list — a fragment as he
+wrote it and the same fragment as the Arabic reads, in his spelling — and
+`fixes_tr.py` proves it: every one of the 113 ayahs has a fix, no other
+ayah has one, each fragment is in its ayah exactly once, and with it
+replaced the ayah no longer differs from the derivation (27:36 keeps one
+difference, which is the derivation's own limit; he has ātāniya right).
+`src/quran/transliterationCorrections.ts` carries the same rows, and a
+test holds the two together. What the check cannot see is the colour of a
+short vowel (he writes e or a, ü or u, by the consonant beside it): there
+each corrected word follows how he writes it, or its like, elsewhere.
+
+    python3 check_tr.py && python3 fixes_tr.py     # "ALL OK"
 
 ## What this is not
 

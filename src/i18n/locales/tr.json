@@ -2037,7 +2037,8 @@
     "wordMeanings": "Zor kelimelerin Arapça anlamları",
     "surahHeaderFont": "Sure başlığı hattı",
     "recitationWholeSurah": "Tam sure tilavetleri (15): mp3quran.net · ayet zamanlamaları Mihrab tarafından sese hizalandı",
-    "transliteration": "Kur’an okunuşları, Arapça metinden üretilmiştir; ayet ayet metinle karşılaştırılmış, {{n}} ayet düzeltilmiştir"
+    "transliteration": "Kur’an okunuşları, Arapça metinden üretilmiştir; ayet ayet metinle karşılaştırılmış, {{n}} ayet düzeltilmiştir",
+    "transliterationAbay": "Türkçe okunuş (çeviriyazı): Muhammet Abay; ayet ayet Arapça metinle karşılaştırılmış, {{n}} ayet düzeltilmiştir"
   },
   "liveActivity": {
     "title": "Sıradaki namaz",

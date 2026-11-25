@@ -603,10 +603,18 @@ picks another:
     match; 185 differ only in where he pauses; 23 write a length the script
     shows and the reading does not; **113 have a wrong letter, length or
     word** (emphatics, unassimilated articles, a singular for Ḥafṣ's
-    plural, and in 29:13 and 29:46 words that are not the ayah's). It is
-    shown as he wrote it, uncorrected — another author's work. **Open, for
-    the maintainer:** keep it as it is, or give Turkish readers the checked
-    text in Turkish spelling instead.
+    plural, and in 29:13 and 29:46 words that are not the ayah's).
+    **The 113 are put right as they are read** (the maintainer's decision,
+    2026-11-25), exactly as the fourteen are: one fragment of one ayah,
+    only when it is there, in his own spelling — the corrected word as he
+    writes it elsewhere (`src/quran/transliterationCorrections.ts`, 123
+    places). Each was proved by the check that found it: with the fragment
+    replaced, the ayah reads as the Arabic does
+    (`tools/transliteration-check/fixes_tr.py`). Where he pauses, and the
+    23 lengths (enâ, ûlî, lâkinnâ), are his convention and are left. The
+    stored and mirrored files stay as served, and Settings → About gives
+    the count. His text is used under Tanzil's terms for translations;
+    the change is to what is shown, and is said.
   - **What the check is not:** a program checked a program and a second
     text checked both; two of the ten errors were in the program too and
     only the second text showed them. Nobody who recites the Qur'an has

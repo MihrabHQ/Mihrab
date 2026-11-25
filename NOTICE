@@ -39,7 +39,8 @@ The Latin-letter transliterations shown under an ayah are from risan/quran-json
 and corrected by this app in fourteen ayahs listed in
 src/quran/transliterationCorrections.ts) and, in Turkish, by Muhammet Abay
 (from Tanzil's list of translations, https://tanzil.net/trans/, under Tanzil's
-terms). They are downloaded on request and are not part of the app's source.
+terms; shown by this app with 113 ayahs corrected against the Arabic, listed
+in the same file — his text as stored is unchanged). They are downloaded on request and are not part of the app's source.
 The Garmin watch face's fonts (garmin/watchface/resources/fonts) are bitmaps
 made from Tektur, copyright 2023 The Tektur Project Authors, under the SIL Open
 Font License 1.1 (garmin/tools/fonts/OFL.txt).

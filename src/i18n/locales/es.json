@@ -2038,7 +2038,8 @@
     "wordMeanings": "Significados en árabe de palabras difíciles",
     "surahHeaderFont": "Caligrafía de encabezados de sura",
     "recitationWholeSurah": "Recitaciones de suras completas (15): mp3quran.net · tiempos de aleyas ajustados al audio por Mihrab",
-    "transliteration": "Transliteraciones del Corán, generadas a partir del texto árabe; cotejadas con él aleya por aleya, {{n}} aleyas corregidas"
+    "transliteration": "Transliteraciones del Corán, generadas a partir del texto árabe; cotejadas con él aleya por aleya, {{n}} aleyas corregidas",
+    "transliterationAbay": "Transliteración turca de Muhammet Abay; cotejada con el texto árabe aleya por aleya, {{n}} aleyas corregidas"
   },
   "liveActivity": {
     "title": "Próxima oración",
