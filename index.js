@@ -139,6 +139,3 @@ AppRegistry.registerHeadlessTask('LocationMoved', () => locationMovedTask);
 // The iPhone's side of the same (a preview): iOS wakes or starts the app
 // itself for a move, and this listens for it (BackgroundLocation.swift).
 startBackgroundMoveListener();
-
-// WIP ONLY — remove before landing (src/native/turboCheck.wip.ts).
-setTimeout(() => require('./src/native/turboCheck.wip').runTurboCheck(), 6000);
