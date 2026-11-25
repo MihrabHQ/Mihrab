@@ -32,7 +32,6 @@
  * The launch's first reads have their own small store on top of this one
  * (boot/launchReads.ts); it is unchanged.
  */
-import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Fast = {
@@ -61,8 +60,14 @@ export function isBulkKey(key: string): boolean {
 let opened: Fast | null | undefined;
 function open(): Fast | null {
   if (opened !== undefined) return opened;
-  if (Platform.OS === 'web') return (opened = null);
   try {
+    // Asked for here and not imported at the top: this module is also read
+    // outside the app — the feed for earlier versions is built by Node from
+    // the providers (tools/compat-feed), which reach it through the clock's
+    // record — and React Native's own entry file is not something Node can
+    // read. There, as under Jest, this throws and the store is AsyncStorage.
+    const { Platform } = require('react-native') as typeof import('react-native');
+    if (Platform.OS === 'web') return (opened = null);
     const { MMKV } = require('react-native-mmkv') as { MMKV: new (c: { id: string }) => Fast };
     opened = new MMKV({ id: STORE_ID });
   } catch {
