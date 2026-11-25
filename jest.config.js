@@ -17,7 +17,11 @@ const OUR_SPECS = require('fs')
 
 module.exports = {
   preset: '@react-native/jest-preset',
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  // The first does nothing in an ordinary run: it is the recorder of
+  // tools/compiler-differential.js (compiled and as written, held equal).
+  // First, so that its end-of-test hook runs before jest.setup.js unmounts
+  // the trees it has to look at.
+  setupFilesAfterEnv: ['<rootDir>/jest/differential.js', '<rootDir>/jest.setup.js'],
   // notifee_fork is a vendored submodule (notifee core source, built only by
   // the F-Droid Android build); its own test suite isn't ours to run.
   // `__tests__/fixtures/` holds data, not tests. Jest's default testMatch

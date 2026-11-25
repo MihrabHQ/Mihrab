@@ -84,11 +84,32 @@ const ROOT = `${__dirname}${path.sep}`;
  *    beside the directive what it reads.
  *
  * A cache that is a pure function of its key is not changing state; the
- * ones read and found to be so are named in `tools/compiler-pure-caches.json`.
- * The check errs toward reporting, and it cannot see everything — a method
- * on an object handed in as a prop, a native getter. `ON = false` is the
- * way back: the hand-written memoisation is all still in the code, so with
- * this off the app renders as 2.39 did.
+ * ones read and found to be so are named in `tools/compiler-pure-caches.json`,
+ * each with a fingerprint of the code that was read: edit that code and the
+ * test fails until it is read again (`tools/compiler-pure-caches.js`).
+ *
+ * WHAT ELSE HOLDS IT. That check reads the code, errs toward reporting,
+ * and cannot see everything — a method on an object handed in as a prop, a
+ * native getter. So there are three more, each for what the one before
+ * cannot do:
+ *
+ *  - BY WHAT IS DRAWN. `tools/compiler-differential.js` runs every render
+ *    test compiled and as written — the tour of every screen among them
+ *    (`__tests__/compiledScreensTour.test.tsx`) — renders every component
+ *    again after moving the clock, the text size and the language, and
+ *    fails where the two draw differently. In preflight, in CI, and before
+ *    a release. It found a native answer read while rendering on its first
+ *    run (the installed version, in the changelog sheet).
+ *  - WHAT IS COMPILED DOES NOT CHANGE UNSEEN. The compiler is one exact
+ *    version (package.json), and what it leaves as written is a recorded
+ *    snapshot (`tools/compiler-report.js --check`): a new compiler, or a
+ *    `'use no memo'` come or gone, fails the test until it is looked at.
+ *  - LIVED WITH. A release carries the compiler only after a build with it
+ *    has been on a phone for a week, counted again when what is compiled
+ *    changes (`tools/compiler-soak.js`; `scripts/release.sh` asks it).
+ *
+ * `ON = false` is the way back: the hand-written memoisation is all still
+ * in the code, so with this off the app renders as 2.39 did.
  */
 const ON = true;
 
@@ -120,9 +141,16 @@ const OPTIONS = {
   eslintSuppressionRules: ['react-hooks/rules-of-hooks'],
 };
 
+/**
+ * AS WRITTEN, FOR A TEST RUN. `tools/compiler-differential.js` runs the
+ * render tests twice — compiled, and with this set — and holds the two to
+ * the same output. Jest only (its NODE_ENV): no build of the app reads it.
+ */
+const AS_WRITTEN = process.env.NODE_ENV === 'test' && process.env.MIHRAB_COMPILER === 'off';
+
 /** Is `filename` compiled? Listed, and the compiler on. */
 function isCompiled(filename) {
-  return ON && isListed(filename);
+  return ON && !AS_WRITTEN && isListed(filename);
 }
 
 /** The Babel plugin entry. It must run before every other plugin. */

@@ -7,6 +7,8 @@
  *   node tools/compiler-report.js            a summary, by reason and by file
  *   node tools/compiler-report.js --json     everything, for a script
  *   node tools/compiler-report.js src/quran  one folder or file
+ *   node tools/compiler-report.js --check    against the recorded snapshot (below)
+ *   node tools/compiler-report.js --update   record it as it is now
  *
  * Not part of the app or of preflight's lint; `__tests__/reactCompilerScope`
  * runs it to hold the count of skipped components where it is.
@@ -82,11 +84,89 @@ function report(only) {
   return { files: files.length, compiled, skipped };
 }
 
-module.exports = { report };
+/**
+ * WHAT IS LEFT AS WRITTEN, HELD (`compiler-report.snapshot.json`).
+ *
+ * For each file, how many of its components the compiler leaves alone and
+ * why — and the compiler's version. No names and no line numbers: an edit
+ * to a file moves nothing here, and a new component that compiles adds
+ * nothing. It moves when the SET moves:
+ *
+ *  - a new version of the compiler compiles what it used to leave, or
+ *    leaves what it used to compile (which is why the version is pinned
+ *    exactly in package.json, and is part of this);
+ *  - a `'use no memo'` is added or taken away;
+ *  - a new component is one the compiler will not take.
+ *
+ * Each of those is worth a look by a person, once.
+ * `__tests__/reactCompilerScope.test.ts` fails until the difference has been
+ * looked at and recorded: `node tools/compiler-report.js --update`. For a
+ * component newly COMPILED (a directive removed, a new compiler), run
+ * `node tools/compiler-differential.js` as well: that is the question it
+ * answers.
+ */
+const SNAPSHOT = path.join(__dirname, 'compiler-report.snapshot.json');
+const compilerVersion = () =>
+  require(path.join(root, 'node_modules/babel-plugin-react-compiler/package.json')).version;
+
+function leftAsWritten() {
+  const out = {};
+  for (const s of report().skipped) {
+    const file = (out[s.file] = out[s.file] || {});
+    file[s.reason] = (file[s.reason] || 0) + 1;
+  }
+  const sorted = {};
+  for (const file of Object.keys(out).sort()) {
+    sorted[file] = {};
+    for (const reason of Object.keys(out[file]).sort()) sorted[file][reason] = out[file][reason];
+  }
+  return { compiler: compilerVersion(), leftAsWritten: sorted };
+}
+
+/** The lines that differ between the snapshot and now; empty when they agree. */
+function snapshotDifference() {
+  const was = JSON.parse(fs.readFileSync(SNAPSHOT, 'utf8'));
+  const now = leftAsWritten();
+  const lines = [];
+  if (was.compiler !== now.compiler) lines.push(`the compiler is ${now.compiler}; the snapshot was taken with ${was.compiler}`);
+  const files = new Set([...Object.keys(was.leftAsWritten), ...Object.keys(now.leftAsWritten)]);
+  for (const file of [...files].sort()) {
+    const a = was.leftAsWritten[file] || {};
+    const b = now.leftAsWritten[file] || {};
+    for (const reason of new Set([...Object.keys(a), ...Object.keys(b)])) {
+      const before = a[reason] || 0;
+      const after = b[reason] || 0;
+      if (before === after) continue;
+      lines.push(
+        after > before
+          ? `${file}: ${after - before} more left as written — ${reason}`
+          : `${file}: ${before - after} fewer left as written (now compiled, or gone) — ${reason}`,
+      );
+    }
+  }
+  return lines;
+}
+
+module.exports = { report, leftAsWritten, snapshotDifference };
 
 if (require.main === module) {
   const args = process.argv.slice(2);
   const only = args.find(a => !a.startsWith('--'));
+  if (args.includes('--update')) {
+    fs.writeFileSync(SNAPSHOT, `${JSON.stringify(leftAsWritten(), null, 2)}\n`);
+    console.log('recorded what is left as written');
+    process.exit(0);
+  }
+  if (args.includes('--check')) {
+    const lines = snapshotDifference();
+    for (const l of lines) console.error(`✗ ${l}`);
+    if (lines.length) {
+      console.error('\nLook at each, then: node tools/compiler-report.js --update');
+      process.exit(1);
+    }
+    console.log('✓ what is left as written is what was recorded');
+    process.exit(0);
+  }
   const r = report(only);
   if (args.includes('--json')) {
     process.stdout.write(JSON.stringify(r, null, 1));

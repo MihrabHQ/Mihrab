@@ -111,7 +111,8 @@ unsure whether a change touches 1 or 2, assume it does.
 Run, and report what you ran:
 
 ```sh
-npm run preflight        # tsc, lint (errors), the site and copy checks, the whole jest suite
+npm run preflight        # tsc, lint (errors), the site and copy checks, the whole jest suite,
+                         # and the render tests compiled against as written (CONTRIBUTING.md)
 ```
 
 Then:

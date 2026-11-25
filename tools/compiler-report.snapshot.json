@@ -1,0 +1,185 @@
+{
+  "compiler": "1.0.0",
+  "leftAsWritten": {
+    "src/navigation/MinimalTabBar.tsx": {
+      "Cannot access refs during render": 1
+    },
+    "src/navigation/TabBackButton.tsx": {
+      "(BuildHIR::node.lowerReorderableExpression) Expression type `BinaryExpression` cannot be safely reordered": 1
+    },
+    "src/navigation/tabBarPress.ts": {
+      "'use no memo'": 1
+    },
+    "src/onboarding/screens/AlertsScreen.tsx": {
+      "Support value blocks (conditional, logical, optional chaining, etc) within a try/catch statement": 1
+    },
+    "src/onboarding/sourceDay.ts": {
+      "(BuildHIR::node.lowerReorderableExpression) Expression type `MemberExpression` cannot be safely reordered": 1
+    },
+    "src/practice/PracticeStrip.tsx": {
+      "Cannot access refs during render": 1
+    },
+    "src/practice/useHistoryScroll.ts": {
+      "(BuildHIR::node.lowerReorderableExpression) Expression type `MemberExpression` cannot be safely reordered": 1
+    },
+    "src/quran/MushafPageScrubber.tsx": {
+      "Existing memoization could not be preserved": 1
+    },
+    "src/quran/MushafPhoneReader.tsx": {
+      "'use no memo'": 2
+    },
+    "src/quran/MushafReader.tsx": {
+      "'use no memo'": 1
+    },
+    "src/quran/MushafSpreadReader.tsx": {
+      "'use no memo'": 1
+    },
+    "src/quran/MushafTextPageSurface.tsx": {
+      "'use no memo'": 1
+    },
+    "src/quran/MushafUnicodePage.tsx": {
+      "'use no memo'": 1,
+      "(BuildHIR::lowerExpression) Handle UpdateExpression to variables captured within lambdas.": 1,
+      "Cannot access refs during render": 1
+    },
+    "src/quran/QuranDownloadStrip.tsx": {
+      "'use no memo'": 2
+    },
+    "src/quran/QuranFeaturesOffer.tsx": {
+      "'use no memo'": 1
+    },
+    "src/quran/ResumeDoors.tsx": {
+      "'use no memo'": 2,
+      "Cannot reassign variable after render completes": 1
+    },
+    "src/quran/RiwayahDownloadSection.tsx": {
+      "(BuildHIR::lowerStatement) Handle TryStatement with a finalizer ('finally') clause": 1
+    },
+    "src/quran/RiwayahPicker.tsx": {
+      "'use no memo'": 1
+    },
+    "src/quran/TransliterationSwitch.tsx": {
+      "'use no memo'": 1
+    },
+    "src/quran/audio/MiniPlayer.tsx": {
+      "'use no memo'": 1
+    },
+    "src/quran/audio/ReadingVoiceHint.tsx": {
+      "'use no memo'": 1
+    },
+    "src/quran/audio/RecitationControls.tsx": {
+      "Existing memoization could not be preserved": 1
+    },
+    "src/quran/audio/ReciterPickerSheet.tsx": {
+      "'use no memo'": 1
+    },
+    "src/quran/audio/WholeSurahNotice.tsx": {
+      "'use no memo'": 2
+    },
+    "src/quran/audio/useWordTiming.ts": {
+      "'use no memo'": 1
+    },
+    "src/quran/mushaf/AyahActionSheet.tsx": {
+      "Existing memoization could not be preserved": 1
+    },
+    "src/quran/mushaf/ShareAyahModal.tsx": {
+      "(BuildHIR::lowerStatement) Handle TryStatement with a finalizer ('finally') clause": 1
+    },
+    "src/quran/mushaf/ShareAyahRangeSheet.tsx": {
+      "(BuildHIR::lowerStatement) Handle TryStatement with a finalizer ('finally') clause": 1
+    },
+    "src/quran/mushafReaderCore.tsx": {
+      "'use no memo'": 2
+    },
+    "src/quran/tajweed/TajweedAyahGlyphs.tsx": {
+      "'use no memo'": 1
+    },
+    "src/quran/tajweed/TajweedAyahSection.tsx": {
+      "'use no memo'": 1
+    },
+    "src/quran/tajweed/TajweedGuideScreen.tsx": {
+      "(BuildHIR::lowerStatement) Handle TryStatement without a catch clause": 1
+    },
+    "src/quran/useKeyPaging.ts": {
+      "This value cannot be modified": 1
+    },
+    "src/quran/useVolumeKeyPaging.ts": {
+      "'use no memo'": 1
+    },
+    "src/screens/DuasScreen.tsx": {
+      "Existing memoization could not be preserved": 1
+    },
+    "src/screens/HomeScreen.tsx": {
+      "Existing memoization could not be preserved": 1
+    },
+    "src/screens/QuranDownloadsScreen.tsx": {
+      "(BuildHIR::lowerStatement) Handle TryStatement without a catch clause": 1
+    },
+    "src/screens/QuranScreen.tsx": {
+      "(BuildHIR::lowerExpression) Handle UpdateExpression to variables captured within lambdas.": 1
+    },
+    "src/screens/QuranSurahScreen.tsx": {
+      "Existing memoization could not be preserved": 1
+    },
+    "src/screens/home/DataStatsPanel.tsx": {
+      "Support value blocks (conditional, logical, optional chaining, etc) within a try/catch statement": 1
+    },
+    "src/screens/home/HeroToday.tsx": {
+      "Cannot access refs during render": 1
+    },
+    "src/screens/home/PermissionBanners.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/home/TodayCard.tsx": {
+      "Expected the dependency list to be an array of simple expressions (e.g. `x`, `x.y.z`, `x?.y?.z`)": 1
+    },
+    "src/screens/quran/HifzEntry.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/quran/HifzScreen.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/quran/KhatmahCard.tsx": {
+      "Existing memoization could not be preserved": 1
+    },
+    "src/screens/quran/KhatmahScreen.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/quran/MushafSurahScreen.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/quran/ReadRecommendations.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/quran/TilawahScreen.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/quran/TranslationSurahScreen.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/settings/BackgroundLocationCard.tsx": {
+      "(BuildHIR::lowerStatement) Handle TryStatement without a catch clause": 1
+    },
+    "src/screens/settings/DataSourceCard.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/settings/DhikrReminderEditor.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/settings/GarminWatchCard.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/settings/HijriCalendarCard.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/settings/QuranCard.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/settings/pages/TajweedSettingsScreen.tsx": {
+      "'use no memo'": 1
+    },
+    "src/screens/settings/pages/WordReaderSettingsScreen.tsx": {
+      "'use no memo'": 1
+    }
+  }
+}

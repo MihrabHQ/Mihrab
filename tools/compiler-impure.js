@@ -91,7 +91,8 @@ const SAME_ANSWER = new Set(['quiet']);
  * the same. `file: name`, each read and found to be so. A cache filled as
  * DATA ARRIVES (a page's layout, a font, a download) is not one of these.
  */
-const PURE = new Set(require('./compiler-pure-caches.json'));
+// The names; beside each, the fingerprint tools/compiler-pure-caches.js holds it to.
+const PURE = new Set(Object.keys(require('./compiler-pure-caches.json')));
 
 function filesUnder(dir, out = []) {
   for (const name of fs.readdirSync(dir)) {

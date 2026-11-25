@@ -1,3 +1,8 @@
+// The folders the React Compiler is on for, as globs (babel.reactCompiler.js).
+const COMPILED_GLOBS = require('./babel.reactCompiler').COMPILED.map(p =>
+  p.endsWith('/') ? `${p}**/*.{ts,tsx}` : p,
+);
+
 module.exports = {
   root: true,
   extends: '@react-native',
@@ -33,6 +38,25 @@ module.exports = {
     ],
   },
   overrides: [
+    {
+      // THE COMPILER'S OWN RULES, where the compiler is on — as warnings,
+      // in the editor, at the line: this component reads a ref, calls an
+      // impure function or changes a value while rendering, so the
+      // compiler leaves it as written. That is safe (it is what the
+      // component was before the compiler), and worth knowing while the
+      // file is open. What is NOT safe — a read the compiler cannot see,
+      // through a helper — is not these rules' to find:
+      // tools/compiler-impure.js and tools/compiler-differential.js do,
+      // and they fail the tests.
+      files: COMPILED_GLOBS,
+      rules: {
+        'react-hooks/purity': 'warn',
+        'react-hooks/refs': 'warn',
+        'react-hooks/immutability': 'warn',
+        'react-hooks/globals': 'warn',
+        'react-hooks/set-state-in-render': 'warn',
+      },
+    },
     {
       // The build and data scripts run in Node.
       files: ['scripts/**/*.js', 'scripts/**/*.mjs', 'tools/**/*.js', 'tools/**/*.mjs', 'desktop/scripts/**/*.js'],

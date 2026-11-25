@@ -61,6 +61,11 @@ jobs:
       - name: Jest
         run: npx jest --ci --maxWorkers=100%
 
+      # The render tests again, compiled and as written, held to the same
+      # output (tools/compiler-differential.js; jest/differential.js).
+      - name: Compiled draws what the code as written draws
+        run: node tools/compiler-differential.js
+
   # The widget contract (docs/rewrite-plan.md, Phase 1): the readers the
   # widgets and Live Activities compile, run over the golden fixtures the
   # app's own TypeScript wrote (contract-tests/fixtures.json). A payload

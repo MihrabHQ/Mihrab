@@ -519,7 +519,10 @@ export function ChangelogSheet({ visible, onClose, since = null }: Props) {
   const { palette } = useAppPalette();
   const insets = useSafeAreaInsets();
   const wide = useBreakpoint() !== 'compact';
-  const installed = getInstalledAppVersionName();
+  // Asked once, as state: the version is the same for the life of the
+  // process, and a native answer read while rendering is something the
+  // React Compiler cannot see (tools/compiler-differential.js found it).
+  const [installed] = useState(getInstalledAppVersionName);
   const language = i18n.language;
   const copyable = usePrayerSettingsOrDefaults().settings.showDataStats === true;
 

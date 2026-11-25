@@ -591,6 +591,12 @@ NODE_ENV=test npx jest --silent >/dev/null 2>&1 || die "jest failed — run 'NOD
 ok "jest"
 npx tsc --noEmit >/dev/null 2>&1 || die "tsc failed — run 'npx tsc --noEmit'"
 ok "tsc"
+# The React Compiler: what it compiles draws what the code as written
+# draws (tools/compiler-differential.js), and a build with it has been on a
+# phone for a week (tools/compiler-soak.js says why, and the ways out).
+node tools/compiler-differential.js >/dev/null 2>&1 || die "compiled and as written differ — run 'node tools/compiler-differential.js'"
+ok "compiled draws what the code as written draws"
+node tools/compiler-soak.js --check || die "the React Compiler has not been lived with — see above"
 
 # One workflow, started by a push to main. A second run started while one
 # is live kills both ("An update has been initiated by another request"),
