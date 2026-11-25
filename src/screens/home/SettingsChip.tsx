@@ -6,13 +6,17 @@
  * A cog alone, a glyph rather than a word because the cog is the one icon
  * every reader already knows. Always there, whatever else the page shows:
  *
- *   the full page   UNDER the Qibla chip, at the row's trailing end
+ *   the full page   UNDER the Qibla chip, at the row's right-hand end
  *                   (`under`). It stood after the chip in the row, and
  *                   "◎ Qibla 148° ⚙" read as one chip with an icon at
  *                   each end. Beside nothing — no place set yet, so no
  *                   Qibla — it is in the row, where the chip would be.
- *   Minimal         at the row's leading end, the heart at the other:
+ *   Minimal         at the row's right-hand end, the heart at the left:
  *                   the two things the row has, one to a corner.
+ *
+ * On the RIGHT on both, in every language: the hero's top row does not
+ * mirror (todayCardStyles.heroTopRow), so the corner Settings is in is
+ * the same one in Arabic and Urdu as in English.
  *   the iPhone Duo  in the bar's column (`column`), a chip of its size.
  *   the dashboard   in the header (HomeHeaderControls), and the Mac's.
  *
@@ -25,15 +29,20 @@
  * the moon and the stars are drawn in started at the row's foot. A cog
  * hung there would have had the night's star at 90 % across standing in
  * it wherever the band is short (a compact page, a long table), and the
- * moon behind it when it is high in the west — in the east in Arabic and
- * Urdu, where the chip is on the left. The sun is never that high at
- * either end of its arc. So the cog takes the
- * twelve points of air the row already had under it (`SETTINGS_UNDER_LINE`),
- * and the sky's band begins that much lower (HeroToday's `sceneTop`): the
- * page is not a point taller, and nothing is drawn behind the glyph.
- * Not a line of its own: the compact page fits an iPhone SE with two
- * points to spare (homeBudget.ts), and a line for a cog would have made
- * that page scroll.
+ * moon behind it when it is high in the west. The sun is never that high
+ * at either end of its arc. So the cog takes the twelve points of air
+ * the row already had under it and four of the band's own
+ * (`SETTINGS_UNDER_LINE`), and the sky's band begins at its foot
+ * (HeroToday's `sceneTop`): the page is not a point taller, and nothing
+ * is drawn behind the glyph. Not a line of its own: the compact page
+ * fits an iPhone SE with two points to spare (homeBudget.ts), and a line
+ * for a cog would have made that page scroll.
+ *
+ * The four points are the air between the chip and the cog: the glyph
+ * begins at the row's foot, not inside the row, where it stood a hair
+ * under the bearing. Four and no more — the compact page's band is 44
+ * at its least, and under 40 the sky stops drawing its sun and moon
+ * (HeroSky's SKY_CRAMPED_BELOW).
  *
  * Its box is larger than its glyph downward and toward the page's middle
  * — that is the touch target, over empty sky — and it is laid out as a
@@ -63,14 +72,16 @@ const GLYPH = 18;
 const GLYPH_UNDER = 16;
 /** Above the glyph, inside its box. */
 const UNDER_PAD_TOP = 2;
+/** How far the glyph's foot goes into the band's own view, dp: the air between the chip and the cog. */
+export const SETTINGS_UNDER_DROP = SPACING.xs;
 /**
- * How much of the air under the top row the cog stands in, dp: the row's
- * own bottom margin (todayCardStyles.heroTopRow). The glyph ends where
- * that air ends, and begins a little inside the row, under the bearing.
+ * The cog's line, dp from the top row's foot to the glyph's: the row's
+ * own bottom margin (todayCardStyles.heroTopRow) and the drop. The glyph
+ * begins at the row's foot and is this tall.
  */
-export const SETTINGS_UNDER_LINE = SPACING.md;
+export const SETTINGS_UNDER_LINE = SPACING.md + SETTINGS_UNDER_DROP;
 /** From the top of the band's view up to the top of the cog's box, dp. */
-export const SETTINGS_UNDER_RISE = GLYPH_UNDER + UNDER_PAD_TOP;
+export const SETTINGS_UNDER_RISE = GLYPH_UNDER + UNDER_PAD_TOP - SETTINGS_UNDER_DROP;
 const UNDER_HIT_SLOP = { top: 0, bottom: 10, left: 8, right: 8 };
 
 function SettingsChipImpl({ onPress, ink, column = false, under = false }: Props) {
@@ -110,9 +121,11 @@ const styles = StyleSheet.create({
     height: COLUMN_CHIP_W,
     padding: 0,
   },
-  // The glyph's trailing edge under the bearing's (the Qibla chip pads its
-  // words by `sm`), and the rest of the box the room a thumb needs: down
-  // into the sky and toward the page's middle, where nothing else is.
+  // The glyph's right-hand edge under the chip's own (the Qibla chip pads
+  // its words by `sm`), and the rest of the box the room a thumb needs:
+  // down into the sky and toward the page's middle, where nothing else
+  // is. Start and end are sides here: its holder is laid out left to
+  // right (todayCardStyles.heroCogUnder).
   under: {
     paddingTop: UNDER_PAD_TOP,
     paddingBottom: SPACING.lg,

@@ -19,6 +19,10 @@
  * door, and the line that opens from it is only words.
  *
  * Reduce Motion: it is simply open, no growing, and simply closes.
+ *
+ * Under Minimal it is in the top row's left-hand corner, in every
+ * language, across from the cog (`left`): the heart holds still on the
+ * left and the line opens to the right of it, into the row's middle.
  */
 import { memo, useEffect, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -66,9 +70,12 @@ function Heart({ color }: { color: string }) {
 function HelpMihrabChipImpl({
   ink,
   onPress,
+  left = false,
 }: {
   ink: SkyInkColors;
   onPress: () => void;
+  /** At a left-hand corner: the heart on the left, the line opening rightward. */
+  left?: boolean;
 }) {
   const { t } = useTranslation();
   const reduceMotion = useReduceMotion();
@@ -140,7 +147,7 @@ function HelpMihrabChipImpl({
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants">
         <Text
-          style={[typeStyle('caption'), styles.label]}
+          style={[typeStyle('caption'), styles.label, left && styles.labelLeft]}
           numberOfLines={1}
           onLayout={e => setLineW(Math.ceil(e.nativeEvent.layout.width))}>
           {label}
@@ -159,6 +166,7 @@ function HelpMihrabChipImpl({
         <Animated.View
           style={[
             styles.pill,
+            left && styles.pillLeft,
             { width },
           ]}>
           <View style={styles.icon}>
@@ -168,6 +176,7 @@ function HelpMihrabChipImpl({
             style={[
               typeStyle('caption'),
               styles.label,
+              left && styles.labelLeft,
               styles.line,
               { color: ink.muted, width: lineW + LINE_PAD },
             ]}
@@ -202,7 +211,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // At a left-hand corner: the heart first from the left in every
+  // language, so it holds still while the pill opens to the right.
+  pillLeft: { flexDirection: 'row', direction: 'ltr' },
   label: { fontWeight: '400', paddingStart: 12 },
+  // The line's padding on its far side from the heart: the right, there.
+  labelLeft: { paddingStart: 0, paddingEnd: 12 },
   // Its measured width, never squeezed: the pill's edge cuts it instead.
   line: { flexShrink: 0 },
   // Laid out for its width and never seen. A box far wider than any

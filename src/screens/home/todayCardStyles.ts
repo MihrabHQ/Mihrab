@@ -96,13 +96,23 @@ export const styles = StyleSheet.create({
   dayDate: { fontWeight: '400' },
   dayHijri: { fontSize: TYPE.caption.fontSize, marginTop: 2 },
   dayBack: { fontWeight: '500' },
+  /**
+   * THE TOP ROW IS PHYSICAL: left to right in every language. The place
+   * (Minimal: the heart) is on the left and the Qibla and the cog on the
+   * right in Arabic and Urdu as in English — where Settings is does not
+   * move with the language. Its children are handed the app's direction
+   * back (`heroOwnRtl`), so a chip's own words still read their way.
+   */
   heroTopRow: {
     flexDirection: 'row',
+    direction: 'ltr',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: SPACING.md,
     marginBottom: SPACING.md,
   },
+  /** Inside the physical top row: a chip laid out the language's way. */
+  heroOwnRtl: { direction: 'rtl' },
   /**
    * The location chip, ON the hero's content edge.
    *
@@ -122,20 +132,24 @@ export const styles = StyleSheet.create({
     marginStart: -SPACING.sm,
   },
   /**
-   * Minimal's cog, at the row's leading end: its glyph ON the hero's
-   * content edge, as the location's pin is on the full page — the chip
-   * pads its glyph by `xs`, which the margin takes back.
+   * Minimal's cog, at the row's right-hand end (the row is left to
+   * right, so `end` is the right): its glyph ON the hero's content edge,
+   * as the location's pin is on the full page — the chip pads its glyph
+   * by `xs`, which the margin takes back.
    */
-  heroTopCog: { marginStart: -SPACING.xs },
-  /** Between Minimal's cog and its heart: the row's whole middle, which the heart's line opens across. */
+  heroTopCog: { marginEnd: -SPACING.xs },
+  /** Minimal's heart, at the left-hand end, its glyph on the edge too: the heart is 14 in a square of 30. */
+  heroTopHeart: { marginStart: -SPACING.sm },
+  /** Between Minimal's heart and its cog: the row's whole middle, which the heart's line opens across. */
   heroTopSpacer: { flexGrow: 1, flexShrink: 1 },
   /**
-   * The cog under the Qibla chip: out of the band's top by its own
-   * height, into the air under the top row (SettingsChip has the sum),
-   * at the hero's trailing edge — `end`, so it is under the chip in
-   * Arabic and Urdu too, where the chip is on the left.
+   * The cog under the Qibla chip: out of the band's top into the air
+   * under the top row (SettingsChip has the sum), at the hero's
+   * right-hand edge in every language, as the chip above it is — and
+   * left to right inside, so the chip's own start and end are sides.
    */
-  heroCogUnder: { position: 'absolute', top: -SETTINGS_UNDER_RISE, end: 0 },
+  // rtl-safe: the cog is on a physical side, under the Qibla chip (heroTopRow)
+  heroCogUnder: { position: 'absolute', top: -SETTINGS_UNDER_RISE, right: 0, direction: 'ltr' },
   hero: {},
   heroExpanded: { paddingVertical: SPACING.md },
   heroFill: { flexGrow: 1, flexShrink: 0, flexBasis: 'auto' },

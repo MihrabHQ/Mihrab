@@ -128,11 +128,18 @@ const HERO_ASCENT_EM = 0.93;
  * The cog is in the row only while there is no Qibla chip to stand under
  * (`settingsInRow`): otherwise it is under the chip, drawn by the hero
  * with the band's view (SettingsChip has why).
+ *
+ * THE ROW HAS SIDES, NOT ENDS. The place is on the left and the Qibla and
+ * the cog on the right in every language (`heroTopRow` is laid out left
+ * to right): the corner Settings is in does not change when the language
+ * does. What is INSIDE a chip still reads the language's way — each is
+ * handed the app's direction back (`rtl`).
  */
 const HeroTopRow = memo(function HeroTopRow({
   topRow,
   ink,
   settingsInRow,
+  rtl,
   onLayout,
 }: {
   topRow: {
@@ -142,12 +149,18 @@ const HeroTopRow = memo(function HeroTopRow({
   };
   ink: SkyInkColors;
   settingsInRow: boolean;
+  /** The app's direction, for what is inside the chips. */
+  rtl: boolean;
   onLayout?: (e: LayoutChangeEvent) => void;
 }) {
+  const own = rtl ? styles.heroOwnRtl : undefined;
+  const qibla = topRow.renderQibla?.(ink);
   return (
     <View style={styles.heroTopRow} onLayout={onLayout}>
-      <View style={styles.heroTopLeading}>{topRow.renderLocation?.(ink)}</View>
-      {topRow.renderQibla?.(ink)}
+      <View style={styles.heroTopLeading}>
+        <View style={own}>{topRow.renderLocation?.(ink)}</View>
+      </View>
+      {qibla ? <View style={own}>{qibla}</View> : null}
       {settingsInRow ? topRow.renderSettings?.(ink) : null}
     </View>
   );
@@ -332,8 +345,8 @@ export const HeroToday = memo(function HeroToday({
     /** A render function, not a node: it takes the sky's ink like the
         location beside it — see QiblaChip's `ink`. */
     renderQibla?: (ink: SkyInkColors, column?: boolean) => ReactNode;
-    /** Above the countdown, on the sky: the way into Help Mihrab. */
-    renderHelp?: (ink: SkyInkColors) => ReactNode;
+    /** Above the countdown, on the sky: the way into Help Mihrab — `left`, at Minimal's left-hand corner. */
+    renderHelp?: (ink: SkyInkColors, left?: boolean) => ReactNode;
     /** The way into Settings, on every face — `under` the Qibla chip on the full page (SettingsChip). */
     renderSettings?: (ink: SkyInkColors, under?: boolean) => ReactNode;
   };
@@ -1154,21 +1167,22 @@ export const HeroToday = memo(function HeroToday({
           column it keeps is the hero's own, so nothing moves at rest. */}
       <Fore style={minimal ? [styles.heroFore, recess] : undefined}>
       {minimal ? (
-        // Minimal keeps the heart, at the trailing end of the top row
-        // where the Qibla chip stood — the way into Help Mihrab, and (as
-        // on the full page) the place to put it away — and the cog at
-        // the row's other end: the two things the row has, one to a
-        // corner, where they stood side by side as a pair of icons with
-        // nothing to say which was which.
+        // Minimal keeps the heart — the way into Help Mihrab, and (as on
+        // the full page) the place to put it away — and the cog: the two
+        // things the row has, one to a corner, where they stood side by
+        // side as a pair of icons with nothing to say which was which.
+        // The heart on the left and the cog on the right in every
+        // language (the row is laid out left to right): Settings is in
+        // the corner it has on the full page.
         topRow?.renderHelp || topRow?.renderSettings ? (
           <View style={styles.heroTopRow} onLayout={banded ? onTopRowLayout : undefined}>
-            <View style={styles.heroTopCog}>{topRow.renderSettings?.(inkRow)}</View>
+            <View style={styles.heroTopHeart}>{topRow.renderHelp?.(inkRow, true)}</View>
             <View style={styles.heroTopSpacer} />
-            {topRow.renderHelp?.(inkRow)}
+            <View style={styles.heroTopCog}>{topRow.renderSettings?.(inkRow)}</View>
           </View>
         ) : null
       ) : topRow && fill && vbar ? null : topRow ? (
-        <HeroTopRow topRow={topRow} ink={inkRow} settingsInRow={!cogUnder} onLayout={banded ? onTopRowLayout : undefined} />
+        <HeroTopRow topRow={topRow} ink={inkRow} settingsInRow={!cogUnder} rtl={rtl} onLayout={banded ? onTopRowLayout : undefined} />
       ) : null}
       {/* The room the sky's bodies move in. */}
       {/* The dashboard's card does not grow, so its band is a fixed

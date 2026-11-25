@@ -1224,9 +1224,9 @@ function TodayCardImpl({
     ) : null;
   // Not at a large text size: the heart's line would open across the
   // eyebrow's words. Help Mihrab is still in Settings → About.
-  const renderHelp = (ink: SkyInkColors) =>
+  const renderHelp = (ink: SkyInkColors, left?: boolean) =>
     onHelpMihrab && currentFontScale() < HELP_CHIP_MAX_FONT_SCALE ? (
-      <HelpMihrabChip ink={ink} onPress={onHelpMihrab} />
+      <HelpMihrabChip ink={ink} onPress={onHelpMihrab} left={left} />
     ) : null;
   const renderSettings = (ink: SkyInkColors, under?: boolean) =>
     onOpenSettings ? <SettingsChip ink={ink} onPress={onOpenSettings} under={under} /> : null;

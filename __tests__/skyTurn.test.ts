@@ -140,7 +140,7 @@ describe('each of the hero’s words is inked where it stands', () => {
     expect(skyInkAt(DUSK, 0.03).text).toBe('#FFFFFF');
     const hero = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'HeroToday.tsx'), 'utf8');
     expect(hero).toMatch(/<HeroTopRow topRow=\{topRow\} ink=\{inkRow\}/);
-    expect(hero).toMatch(/\{topRow\.renderHelp\?\.\(inkRow\)\}/);
+    expect(hero).toMatch(/\{topRow\.renderHelp\?\.\(inkRow, true\)\}/);
     expect(hero).toMatch(/\{topRow\.renderSettings\?\.\(inkRow\)\}/);
     expect(hero).toMatch(/barStyle=\{inkBar\.text === '#FFFFFF' \? 'light-content' : 'dark-content'\}/);
     expect(hero).toMatch(/trackInk=\{inkBand\.text\}\s*trackLabelInk=\{inkBand\.muted\}/);
