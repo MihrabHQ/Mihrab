@@ -35,6 +35,7 @@ import { TABULAR_MAX_FONT_SCALE } from '../theme/textScale';
 import { SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
 import { monthLabelFor, STRIP_PRAYERS, type StripDay, type StripStatus } from './stripRecord';
+import { maxOffset, todayOffset } from './heatmapScroll';
 import { useHistoryScroll } from './useHistoryScroll';
 import { nextWindow, openingWindow, weekIsDrawn, weeksOnShow, type StripWindow } from './stripWindow';
 
@@ -92,6 +93,8 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
   }, [days]);
   const [drawn, setDrawn] = useState<StripWindow>(openingWindow);
   const seen = useRef({ offset: 0, viewport: 0, content: 0, measured: false });
+  /** A finger has moved the strip: from then on it is wherever it was left. */
+  const touched = useRef(false);
   const weekCount = weeks.length;
   const look = useCallback(() => {
     const at = seen.current;
@@ -107,9 +110,21 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
     // back from the newest, the answer from the row's own width is right
     // either side of the growth.
     const measuredWeeks = Math.max(1, Math.round(at.content / WEEK));
+    // UNTIL A FINGER HAS MOVED IT, THE STRIP IS ON TODAY — useHistoryScroll
+    // holds it there — and that, not the event, says which weeks are on
+    // show. An event may describe a moment before the view was parked (the
+    // offset still at the oldest edge), and Android does not promise the
+    // one after: inside `scrollEventThrottle` it is dropped, and nothing
+    // follows for where the view came to rest. Believed, that one event
+    // had the strip drawing weeks from months ago and blanks under the
+    // reader's eyes until the app was restarted (seen on a phone,
+    // 2026-11-25; __tests__/stripStaysOnToday.test.tsx).
+    const offset = touched.current
+      ? at.offset
+      : todayOffset(rtl, maxOffset(at.content, at.viewport));
     const shown = weeksOnShow({
       rtl,
-      offset: at.offset,
+      offset,
       viewportWidth: at.viewport,
       contentWidth: at.content,
       weekWidth: WEEK,
@@ -117,7 +132,7 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
     });
     setDrawn(prev => nextWindow(prev, shown, weekCount));
   }, [rtl, weekCount]);
-  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const note = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
     seen.current = {
       offset: contentOffset.x,
@@ -126,8 +141,19 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
       measured: true,
     };
     look();
+  };
+  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    note(e);
     scroll.onScroll(e);
   };
+  const onScrollBeginDrag = () => {
+    touched.current = true;
+    scroll.onScrollBeginDrag();
+  };
+  // Where a drag and a glide END is always sent, which the scroll events
+  // between are not (see `look`): the last of those can be throttled away,
+  // and the strip would go on drawing the weeks of the one before.
+  const onSettled = (e: NativeSyntheticEvent<NativeScrollEvent>) => note(e);
   const onLayout = (e: LayoutChangeEvent) => {
     seen.current.viewport = e.nativeEvent.layout.width;
     scroll.onLayout(e);
@@ -190,7 +216,9 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
         onContentSizeChange={onContentSizeChange}
         onLayout={onLayout}
         scrollEventThrottle={32}
-        onScrollBeginDrag={scroll.onScrollBeginDrag}
+        onScrollBeginDrag={onScrollBeginDrag}
+        onScrollEndDrag={onSettled}
+        onMomentumScrollEnd={onSettled}
         onScroll={onScroll}
         directionalLockEnabled
         nestedScrollEnabled
