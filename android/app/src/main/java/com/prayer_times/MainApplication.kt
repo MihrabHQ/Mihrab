@@ -9,7 +9,6 @@ import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
-import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.common.assets.ReactFontManager
 import com.facebook.react.modules.network.OkHttpClientProvider
@@ -38,32 +37,10 @@ class MainApplication : Application(), ReactApplication, androidx.work.Configura
       context = applicationContext,
       packageList =
         PackageList(this).packages.apply {
-          add(PrayerWidgetPackage())
-          add(PrayerBuildInfoPackage())
-          add(AppVersionPackage())
-          add(SystemClockPackage())
-          add(SystemThemePackage())
-          add(MihrabLiveActivityPackage())
-          add(MushafFontPackage())
+          // Our own modules, each built when JavaScript first asks for it.
+          add(MihrabPackage())
           add(MushafLinePackage())
-          add(PrayerSilencePackage())
-          add(GarminWatchPackage())
-          add(FullScreenAlarmPackage())
-          add(CustomAdhanPackage())
-          add(SecureRandomPackage())
-          add(WordPlayerPackage())
-          add(MihrabClipboardPackage())
-          add(SyncFolderPackage())
-          add(ScanQrPackage())
-          add(CompassPackage())
-          add(SecureStorePackage())
           add(com.prayer_times.geolocation.GeolocationPackage())
-          add(DisplayCutoutPackage())
-          add(FoldPosturePackage())
-          add(BackgroundLocationPackage())
-          add(RotationCoverPackage())
-          add(VolumeKeysPackage())
-          add(LaunchSnapshotPackage())
           // The alerts' engine, in our tree (android/alerts): not autolinked.
           add(io.invertase.notifee.NotifeePackage())
         },

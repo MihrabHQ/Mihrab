@@ -245,8 +245,8 @@ describe('the platform raises its cover at the turn itself', () => {
     expect(body.indexOf('RotationCover.onConfigurationChanged')).toBeLessThan(
       body.indexOf('super.onConfigurationChanged'),
     );
-    expect(read('android/app/src/main/java/com/prayer_times/MainApplication.kt')).toContain(
-      'add(RotationCoverPackage())',
+    expect(read('android/app/src/main/java/com/prayer_times/MihrabPackage.kt')).toContain(
+      '"MihrabRotationCover" -> RotationCoverModule(reactContext)',
     );
   });
 

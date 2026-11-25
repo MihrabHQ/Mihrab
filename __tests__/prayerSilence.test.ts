@@ -307,8 +307,8 @@ describe('the Android side is wired', () => {
 
   it('registers the package and exposes the methods the wrapper calls', () => {
     expect(
-      read('android/app/src/main/java/com/prayer_times/MainApplication.kt'),
-    ).toMatch(/add\(PrayerSilencePackage\(\)\)/);
+      read('android/app/src/main/java/com/prayer_times/MihrabPackage.kt'),
+    ).toMatch(/"PrayerSilence" -> PrayerSilenceModule\(reactContext\)/);
     const module = read(
       'android/app/src/main/java/com/prayer_times/PrayerSilenceModule.kt',
     );

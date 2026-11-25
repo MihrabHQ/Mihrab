@@ -107,7 +107,7 @@ describe('the native side', () => {
     read(`android/app/src/main/java/com/prayer_times/${f}`);
 
   it('is registered, and named the way JS asks for it', () => {
-    expect(kt('MainApplication.kt')).toContain('VolumeKeysPackage()');
+    expect(kt('MihrabPackage.kt')).toContain('"MihrabVolumeKeys" -> VolumeKeysModule(reactContext)');
     expect(kt('VolumeKeysModule.kt')).toContain('"MihrabVolumeKeys"');
     expect(read('src/native/volumeKeys.ts')).toContain(
       "nativeModule(NativeMihrabVolumeKeys, 'MihrabVolumeKeys')",

@@ -31,7 +31,7 @@ describe('Android', () => {
 
   it('is registered, under the name the JS asks for', () => {
     expect(kt).toContain('const val NAME = "MihrabSecureStore"');
-    expect(read('android/app/src/main/java/com/prayer_times/MainApplication.kt')).toContain('add(SecureStorePackage())');
+    expect(read('android/app/src/main/java/com/prayer_times/MihrabPackage.kt')).toContain('"MihrabSecureStore" -> SecureStoreModule(reactContext)');
   });
 
   it('writes with commit, so a resolved write is on disk', () => {

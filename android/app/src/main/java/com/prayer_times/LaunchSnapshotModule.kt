@@ -1,10 +1,7 @@
 package com.prayer_times
 
-import com.facebook.react.ReactPackage
-import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.prayer_times.specs.NativeMihrabLaunchSnapshotSpec
-import com.facebook.react.uimanager.ViewManager
 
 /** JS's half of [LaunchSnapshot]: when to keep the screen, and when to let it go. */
 class LaunchSnapshotModule(reactContext: ReactApplicationContext) :
@@ -38,12 +35,4 @@ class LaunchSnapshotModule(reactContext: ReactApplicationContext) :
 
   /** Read once, at the first render of the hero: see src/boot/launchWarp.ts. */
   override fun getShownState(): String = LaunchSnapshot.shownState
-}
-
-class LaunchSnapshotPackage : ReactPackage {
-  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
-    listOf(LaunchSnapshotModule(reactContext))
-
-  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> =
-    emptyList()
 }

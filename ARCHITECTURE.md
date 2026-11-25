@@ -170,7 +170,7 @@ Or just open `ios/PrayerApp.xcworkspace` in Xcode and Run.
 
 All Android Kotlin modules live in `android/app/src/main/java/com/prayer_times/`. All iOS Swift / Obj-C live in `ios/PrayerApp/` (main app target) or `ios/PrayerWidgetExtension/` (widget extension target).
 
-**Every module is a typed TurboModule.** `src/native/specs/Native<Name>.ts` is its contract; codegen builds an abstract class from it on Android (the Kotlin module extends it) and a protocol on iOS (an Objective-C module adopts it; a Swift one has a `.mm` category beside it that does — `ios/PrayerApp/MihrabTurbo.h`). The wrappers below reach a module through `src/native/nativeModule.ts`, never `NativeModules.X`. To add or change a method: `src/native/specs/README.md`. `__tests__/turboModulesAreTyped.test.ts` holds the three sides together.
+**Every module is a typed TurboModule.** `src/native/specs/Native<Name>.ts` is its contract; codegen builds an abstract class from it on Android (the Kotlin module extends it) and a protocol on iOS (an Objective-C module adopts it; a Swift one has a `.mm` category beside it that does — `ios/PrayerApp/MihrabTurbo.h`). The wrappers below reach a module through `src/native/nativeModule.ts`, never `NativeModules.X`. To add or change a method: `src/native/specs/README.md`. `__tests__/turboModulesAreTyped.test.ts` holds the three sides together. On Android they are registered in one place, `MihrabPackage.kt`, and each is built when JavaScript first asks for it — a plain `ReactPackage` is built whole while the app starts (`__tests__/androidModulesOnDemand.test.ts`); the location module and the alerts' engine are not typed yet and keep packages of the old kind.
 
 | Module | Android | iOS | JS wrapper | What it does |
 |---|---|---|---|---|
@@ -180,9 +180,9 @@ All Android Kotlin modules live in `android/app/src/main/java/com/prayer_times/`
 | `Compass` | `CompassModule.kt` | `CompassModule.swift` + `.mm` | `src/hooks/useQiblaCompass.ts` | Magnetometer stream for Qibla compass |
 | `PrayerBuildInfo` | `PrayerBuildInfoModule.kt` | `PrayerBuildInfo.mm` | `src/native/PrayerBuildInfo.ts` | Exposes the Android product flavor (`play` / `fdroid` / `github`) |
 | `AppVersion` | `AppVersionModule.kt` | `AppVersion.mm` | inline | Exposes versionName + versionCode |
-| `SystemTheme` | `SystemThemePackage.kt` | — | inline | Material You dynamic-color current accent |
+| `SystemTheme` | `SystemThemeModule.kt` | — | inline | Material You dynamic-color current accent |
 | `SystemClock` | `SystemClockModule.kt` | `SystemClock.mm` | `src/native/SystemClock.ts` | Is the device clock set to 24-hour time? (issue #18 — neither platform exposes this to JS). Constant `is24Hour` + method `readIs24Hour()` — **different names on purpose**: a method and a constant sharing a name leaves one unreachable in every bridge mode. |
-| `LaunchSnapshot` | `LaunchSnapshot.kt` + `LaunchSnapshotPackage.kt` | `MihrabLaunchSnapshot.swift` + `.mm` | `src/native/LaunchSnapshot.ts` | The last Today screen kept as a picture and shown as a launch's first frame — see §6 |
+| `LaunchSnapshot` | `LaunchSnapshot.kt` + `LaunchSnapshotModule.kt` | `MihrabLaunchSnapshot.swift` + `.mm` | `src/native/LaunchSnapshot.ts` | The last Today screen kept as a picture and shown as a launch's first frame — see §6 |
 | `FullScreenAlarm` | `FullScreenAlarmModule.kt` + `PrayerAlarmActivity.kt` | — | `src/native/FullScreenAlarm.ts` | The full-screen prayer alert over the lock screen (#63), painted in the Sky theme's hour when the app wears it |
 | `PrayerAlarms` | — | `PrayerAlarms.swift` + `.mm` | `src/native/PrayerAlarms.ts` | iOS 26 AlarmKit: ring like the Clock app, with Stop and Snooze (#63) |
 | `PrayerSilence` | `PrayerSilenceModule.kt` | — | `src/native/PrayerSilence.ts` | Do Not Disturb around the prayers you pick, scheduled natively so it runs with the app closed (#60) |

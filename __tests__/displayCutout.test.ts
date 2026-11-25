@@ -79,8 +79,8 @@ describe('the fullscreen phone reader', () => {
   });
 
   it('is registered natively', () => {
-    expect(read('android/app/src/main/java/com/prayer_times/MainApplication.kt')).toMatch(
-      /add\(DisplayCutoutPackage\(\)\)/,
+    expect(read('android/app/src/main/java/com/prayer_times/MihrabPackage.kt')).toMatch(
+      /"DisplayCutout" -> DisplayCutoutModule\(reactContext\)/,
     );
     expect(read('android/app/src/main/java/com/prayer_times/DisplayCutoutModule.kt')).toMatch(
       /rootWindowInsets\?\.displayCutout/,

@@ -6,12 +6,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import com.facebook.react.ReactPackage
-import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.prayer_times.specs.NativeFullScreenAlarmSpec
-import com.facebook.react.uimanager.ViewManager
 
 /**
  * Whether Android will let a prayer alert take the whole screen — issue #63.
@@ -59,12 +56,4 @@ class FullScreenAlarmModule(private val reactContext: ReactApplicationContext) :
         promise.resolve(null)
       }
   }
-}
-
-class FullScreenAlarmPackage : ReactPackage {
-  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
-    listOf(FullScreenAlarmModule(reactContext))
-
-  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> =
-    emptyList()
 }

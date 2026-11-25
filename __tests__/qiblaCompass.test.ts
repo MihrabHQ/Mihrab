@@ -212,9 +212,9 @@ describe('the Android heading', () => {
   test('is registered, or the module would not exist at runtime', () => {
     const app = repo(
       'android', 'app', 'src', 'main', 'java', 'com', 'prayer_times',
-      'MainApplication.kt',
+      'MihrabPackage.kt',
     );
-    expect(app).toContain('add(CompassPackage())');
+    expect(app).toContain('"CompassModule" -> CompassModule(reactContext)');
   });
 });
 
