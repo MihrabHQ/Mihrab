@@ -23,6 +23,11 @@
  * Under Minimal it is in the top row's left-hand corner, in every
  * language, across from the cog (`left`): the heart holds still on the
  * left and the line opens to the right of it, into the row's middle.
+ * There it is the cog's pair, and drawn as the cog is — its size, its
+ * line, the sky's full ink — on the cog's own centre line: a small grey
+ * heart in one corner and a larger white cog in the other read as two
+ * things of different standing, one of them an afterthought. The words
+ * that open from it stay muted; they are the invitation, not the door.
  */
 import { memo, useEffect, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -33,6 +38,7 @@ import { holdLaunchSnapshot } from '../../native/LaunchSnapshot';
 import { typeStyle } from '../../theme/typography';
 import type { SkyInkColors } from './skyModel';
 import { useConst } from '../../hooks/useConst';
+import { SETTINGS_GLYPH, SETTINGS_GLYPH_STROKE } from './SettingsChip';
 
 /** The circle, closed. */
 const SIZE = 30;
@@ -48,18 +54,22 @@ const EXPAND_MS = 450;
  */
 export const SHOWN_FOR_MS = 15000;
 
-function Heart({ color }: { color: string }) {
+/** The heart's side on the eyebrow's line, dp, and its line there. */
+const HEART = 14;
+const HEART_STROKE = 2.2;
+
+function Heart({ color, size = HEART, strokeWidth = HEART_STROKE }: { color: string; size?: number; strokeWidth?: number }) {
   return (
     <Svg
-      width={14}
-      height={14}
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       accessibilityElementsHidden
       importantForAccessibility="no">
       <Path
         d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
         stroke={color}
-        strokeWidth={2.2}
+        strokeWidth={strokeWidth}
         strokeLinejoin="round"
         fill="none"
       />
@@ -170,7 +180,11 @@ function HelpMihrabChipImpl({
             { width },
           ]}>
           <View style={styles.icon}>
-            <Heart color={ink.muted} />
+            {left ? (
+              <Heart color={ink.text} size={SETTINGS_GLYPH} strokeWidth={SETTINGS_GLYPH_STROKE} />
+            ) : (
+              <Heart color={ink.muted} />
+            )}
           </View>
           <Text
             style={[

@@ -68,6 +68,9 @@ type Props = {
 
 /** The glyph's side, dp: the Qibla chip's line height, so the row stays one height. */
 const GLYPH = 18;
+/** The cog as Minimal's row draws it — its side and its line — which the heart across from it takes too (HelpMihrabChip). */
+export const SETTINGS_GLYPH = GLYPH;
+export const SETTINGS_GLYPH_STROKE = 1.8;
 /** Under the Qibla chip: the size of the chip's own words, not of a control beside them. */
 const GLYPH_UNDER = 16;
 /** Above the glyph, inside its box. */
@@ -102,7 +105,7 @@ function SettingsChipImpl({ onPress, ink, column = false, under = false }: Props
       hitSlop={under ? UNDER_HIT_SLOP : 10}
       testID="today-settings"
       style={({ pressed }) => [styles.chip, skin, column && styles.column, under && styles.under, pressed && styles.pressed]}>
-      <SettingsGearIcon color={color} size={column ? 20 : under ? GLYPH_UNDER : GLYPH} strokeWidth={1.8} />
+      <SettingsGearIcon color={color} size={column ? 20 : under ? GLYPH_UNDER : GLYPH} strokeWidth={SETTINGS_GLYPH_STROKE} />
     </Pressable>
   );
 }

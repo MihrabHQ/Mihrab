@@ -22,7 +22,13 @@ import { create } from 'react-test-renderer';
 import { act } from 'react';
 import { Path } from 'react-native-svg';
 import { SettingsGearIcon } from '../src/theme/icons';
-import { SETTINGS_UNDER_DROP, SETTINGS_UNDER_LINE, SETTINGS_UNDER_RISE } from '../src/screens/home/SettingsChip';
+import {
+  SETTINGS_GLYPH,
+  SETTINGS_GLYPH_STROKE,
+  SETTINGS_UNDER_DROP,
+  SETTINGS_UNDER_LINE,
+  SETTINGS_UNDER_RISE,
+} from '../src/screens/home/SettingsChip';
 import { MOON, SKY_CRAMPED_BELOW, STAR_FIELD_TOP, SUN_R, skyScene } from '../src/screens/home/HeroSky';
 import { HERO_SCENE_MIN, HOME_TIERS } from '../src/screens/home/homeBudget';
 import { SPACING } from '../src/theme/tokens';
@@ -258,14 +264,31 @@ describe('the cog under Minimal, across the row from the heart', () => {
     expect(cog).toBeGreaterThan(gap);
   });
 
-  it('both glyphs are on the page’s edges', () => {
-    // The cog pads its glyph by `xs`; the heart is 14 in a square of 30.
+  it('the heart is drawn as the cog is: its size, its line, the sky’s full ink', () => {
+    // A small grey heart across from a larger white cog read as two things of different standing.
+    expect(heart).toContain('<Heart color={ink.text} size={SETTINGS_GLYPH} strokeWidth={SETTINGS_GLYPH_STROKE} />');
+    expect(read('SettingsChip.tsx')).toMatch(/size=\{column \? 20 : under \? GLYPH_UNDER : GLYPH\} strokeWidth=\{SETTINGS_GLYPH_STROKE\}/);
+    expect(read('SettingsChip.tsx')).toContain('export const SETTINGS_GLYPH = GLYPH;');
+    expect(SETTINGS_GLYPH).toBe(18);
+    expect(SETTINGS_GLYPH_STROKE).toBe(1.8);
+    // On the eyebrow's line, beside muted words, it is what it was.
+    expect(heart).toContain('<Heart color={ink.muted} />');
+    expect(heart).toMatch(/const HEART = 14;\s*const HEART_STROKE = 2\.2;/);
+    // The words that open from it stay muted in both places.
+    expect(heart).toContain('{ color: ink.muted, width: lineW + LINE_PAD }');
+  });
+
+  it('both glyphs are as far from the page’s edges, and on one line', () => {
+    // The cog pads its glyph by `xs`, which its margin takes back: its box is on the edge.
     expect(styles).toMatch(/heroTopCog: \{ marginEnd: -SPACING\.xs \}/);
     expect(read('SettingsChip.tsx')).toMatch(/chip: \{[^}]*padding: SPACING\.xs/s);
-    expect(styles).toMatch(/heroTopHeart: \{ marginStart: -SPACING\.sm \}/);
+    // The heart fills its box from side to side and the cog does not, so its box stands 1 inside the edge.
+    expect(styles).toMatch(/heroTopHeart: \{ marginStart: -\(SPACING\.xs \+ 1\) \}/);
     expect(heart).toMatch(/const SIZE = 30;/);
-    expect(heart).toMatch(/width=\{14\}\s*height=\{14\}/);
-    expect((30 - 14) / 2).toBe(SPACING.sm);
+    expect((30 - SETTINGS_GLYPH) / 2 - (SPACING.xs + 1)).toBe(1);
+    // Each centred in its own box, and the boxes centred in the row.
+    expect(styles).toMatch(/heroTopRow: \{[^}]*alignItems: 'center'/s);
+    expect(heart).toMatch(/icon: \{\s*width: SIZE,\s*height: SIZE,\s*alignItems: 'center',\s*justifyContent: 'center',/);
     expect(styles).toMatch(/heroTopSpacer: \{ flexGrow: 1, flexShrink: 1 \}/);
   });
 

@@ -138,8 +138,16 @@ export const styles = StyleSheet.create({
    * by `xs`, which the margin takes back.
    */
   heroTopCog: { marginEnd: -SPACING.xs },
-  /** Minimal's heart, at the left-hand end, its glyph on the edge too: the heart is 14 in a square of 30. */
-  heroTopHeart: { marginStart: -SPACING.sm },
+  /**
+   * Minimal's heart, at the left-hand end, as far from its edge as the
+   * cog is from the other. Not the glyph's box on the edge (that would
+   * be 6, the heart being the cog's 18 in a square of 30): the heart
+   * fills its box from side to side and the cog does not, so box on edge
+   * put the heart a point and a half nearer its edge than the cog is to
+   * its own. A point less, and the two are drawn as far in — measured on
+   * a Pixel, 4 px and 5 px.
+   */
+  heroTopHeart: { marginStart: -(SPACING.xs + 1) },
   /** Between Minimal's heart and its cog: the row's whole middle, which the heart's line opens across. */
   heroTopSpacer: { flexGrow: 1, flexShrink: 1 },
   /**
