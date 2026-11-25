@@ -77,7 +77,7 @@ describe('the native side', () => {
 describe('the iOS side', () => {
   const SWIFT = read('ios/PrayerApp/MihrabLaunchSnapshot.swift');
   const DELEGATE = read('ios/PrayerApp/AppDelegate.swift');
-  const BRIDGE = read('ios/PrayerApp/MihrabLaunchSnapshot.m');
+  const BRIDGE = read('src/native/specs/NativeMihrabLaunchSnapshot.ts');
 
   it('decodes at launch and lays the picture over the window as it connects', () => {
     expect(DELEGATE).toMatch(/LaunchSnapshotStore\.shared\.preload\(\)\s*let delegate = ReactNativeDelegate\(\)/);
@@ -133,7 +133,7 @@ describe('the iOS side', () => {
   });
 
   it('exposes the same module to JS as Android does', () => {
-    for (const m of ['setEligible', 'setLookKey', 'hide)', 'captureNow', 'setHeroState', 'getShownState']) {
+    for (const m of ['setEligible(', 'setLookKey(', 'hide()', 'captureNow(', 'setHeroState(', 'getShownState()']) {
       expect(BRIDGE).toContain(m);
     }
   });
@@ -211,11 +211,11 @@ describe('the JS side', () => {
     // on screen, and the picture kept across it is still this screen.
     const kt = read('android/app/src/main/java/com/prayer_times/LaunchSnapshot.kt');
     const SWIFT = read('ios/PrayerApp/MihrabLaunchSnapshot.swift');
-    const BRIDGE = read('ios/PrayerApp/MihrabLaunchSnapshot.m');
+    const BRIDGE = read('src/native/specs/NativeMihrabLaunchSnapshot.ts');
     expect(kt).toMatch(/if \(night >= 0 && \(c\.uiMode and Configuration\.UI_MODE_NIGHT_MASK\) != night\) return false/);
     expect(kt).toMatch(/val night = if \(p\.getBoolean\("look_night_matters", true\)\)/);
     expect(SWIFT).toMatch(/meta\.style < 0 \|\| scene\.traitCollection\.userInterfaceStyle\.rawValue == meta\.style/);
     expect(SWIFT).toMatch(/style: nightMatters \? scene\.traitCollection\.userInterfaceStyle\.rawValue : -1/);
-    expect(BRIDGE).toContain('setLookKey:(NSString *)key nightMatters:(BOOL)nightMatters');
+    expect(BRIDGE).toContain('setLookKey(key: string, nightMatters: boolean): void;');
   });
 });

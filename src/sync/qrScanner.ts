@@ -14,10 +14,11 @@
  * device has no camera. Collapsing them into one message would leave
  * someone tapping a button that silently does nothing.
  */
-import { NativeModules } from 'react-native';
 import { quiet } from '../utils/quiet';
+import NativeScanQr from '../native/specs/NativeScanQr';
+import { nativeModule } from '../native/nativeModule';
 
-const Native = NativeModules.ScanQr as
+const Native = nativeModule(NativeScanQr, 'ScanQr') as
   | {
       isAvailable(): Promise<boolean>;
       scan(

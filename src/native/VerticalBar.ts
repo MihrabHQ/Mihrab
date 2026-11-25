@@ -19,8 +19,10 @@
  * older iOS, an SDK without the API — there is no bar and nothing changes.
  */
 import { useEffect, useState, type ReactNode } from 'react';
-import { AppState, Dimensions, NativeModules, Platform } from 'react-native';
+import { AppState, Dimensions, Platform } from 'react-native';
 import { isMacCatalyst } from '../responsive/breakpoints';
+import NativeMihrabVerticalBar from './specs/NativeMihrabVerticalBar';
+import { nativeModule } from './nativeModule';
 
 export type VerticalBar = {
   /** The physical edge the column is on. */
@@ -44,7 +46,7 @@ type Reading = {
  */
 const Native: { read?: () => Promise<Reading> } | undefined =
   Platform.OS === 'ios' && !Platform.isPad && !isMacCatalyst
-    ? NativeModules.MihrabVerticalBar
+    ? nativeModule(NativeMihrabVerticalBar, 'MihrabVerticalBar')
     : undefined;
 
 /** From the native reading: a bar, or null when there is none (or it is not on a side). */

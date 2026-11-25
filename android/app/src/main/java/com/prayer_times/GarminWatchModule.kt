@@ -3,17 +3,15 @@ package com.prayer_times
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeGarminWatchSpec
 
 /** Settings → the Garmin watch: see GarminWatch.kt and src/native/GarminWatch.ts. */
 class GarminWatchModule(private val reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeGarminWatchSpec(reactContext) {
 
   override fun getName(): String = NAME
 
-  @ReactMethod
-  fun configure(enabled: Boolean, address: String?, promise: Promise) {
+  override fun configure(enabled: Boolean, address: String?, promise: Promise) {
     try {
       GarminWatch.configure(reactContext, enabled, address)
       promise.resolve(GarminWatch.send(reactContext, force = true))
@@ -23,8 +21,7 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
   }
 
   /** The thermometer of the app's place; kept for the next send. */
-  @ReactMethod
-  fun setFahrenheit(fahrenheit: Boolean, promise: Promise) {
+  override fun setFahrenheit(fahrenheit: Boolean, promise: Promise) {
     try {
       GarminWatch.setFahrenheit(reactContext, fahrenheit)
       promise.resolve(null)
@@ -34,8 +31,7 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
   }
 
   /** The face's accent, the app's: kept, and sent when it changes. */
-  @ReactMethod
-  fun setAccent(hex: String, promise: Promise) {
+  override fun setAccent(hex: String, promise: Promise) {
     try {
       GarminWatch.setAccent(reactContext, hex)
       promise.resolve(null)
@@ -49,8 +45,7 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
    * resolves to "opened", "no-face", "no-gadgetbridge" or "failed". From
    * the current activity when there is one, so back returns to Settings.
    */
-  @ReactMethod
-  fun installFace(promise: Promise) {
+  override fun installFace(promise: Promise) {
     try {
       promise.resolve(GarminWatch.installFace(reactContext.currentActivity ?: reactContext))
     } catch (e: Exception) {
@@ -60,8 +55,7 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
 
   /** Sends now, whatever was sent before; resolves to the outcome word. */
   /** "face", "widget" or "field": that watch app, handed to Gadgetbridge's installer. */
-  @ReactMethod
-  fun installApp(kind: String, promise: Promise) {
+  override fun installApp(kind: String, promise: Promise) {
     try {
       promise.resolve(GarminWatch.install(reactContext.currentActivity ?: reactContext, kind))
     } catch (e: Exception) {
@@ -70,8 +64,8 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
   }
 
   /** What the watch shows: the `OPT_` bits (garmin/shared/source/Mihrab.mc). */
-  @ReactMethod
-  fun setOptions(flags: Int, promise: Promise) {
+  override fun setOptions(flagsNumber: Double, promise: Promise) {
+    val flags = flagsNumber.toInt()
     try {
       GarminWatch.setOptions(reactContext, flags)
       promise.resolve(null)
@@ -80,8 +74,7 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun sendNow(promise: Promise) {
+  override fun sendNow(promise: Promise) {
     try {
       promise.resolve(GarminWatch.send(reactContext, force = true))
     } catch (e: Exception) {
@@ -89,8 +82,7 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun status(promise: Promise) {
+  override fun status(promise: Promise) {
     try {
       val map = Arguments.createMap()
       map.putBoolean("enabled", GarminWatch.enabled(reactContext))
@@ -109,8 +101,7 @@ class GarminWatchModule(private val reactContext: ReactApplicationContext) :
   }
 
   /** The paired devices, or null when the permission is missing. */
-  @ReactMethod
-  fun pairedDevices(promise: Promise) {
+  override fun pairedDevices(promise: Promise) {
     try {
       if (!GarminWatch.canListPaired(reactContext)) {
         promise.resolve(null)

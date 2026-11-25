@@ -7,7 +7,9 @@
  * no-op off iOS, on iOS before 26, on Mac Catalyst and in a build without
  * the module, so callers can simply call.
  */
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativePrayerAlarms from './specs/NativePrayerAlarms';
+import { nativeModule } from './nativeModule';
 
 export type AlarmAccess =
   | 'authorized'
@@ -47,8 +49,7 @@ type PrayerAlarmsNative = {
 
 const native: PrayerAlarmsNative | undefined =
   Platform.OS === 'ios'
-    ? (NativeModules as Record<string, PrayerAlarmsNative | undefined>)
-        .PrayerAlarms
+    ? (nativeModule(NativePrayerAlarms, 'PrayerAlarms') as PrayerAlarmsNative | undefined)
     : undefined;
 
 /** Whether this build could offer prayer alarms at all (iOS only). */

@@ -10,8 +10,7 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeFullScreenAlarmSpec
 import com.facebook.react.uimanager.ViewManager
 
 /**
@@ -24,12 +23,11 @@ import com.facebook.react.uimanager.ViewManager
  * ordinary heads-up: nothing breaks, it just is not full-screen.
  */
 class FullScreenAlarmModule(private val reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeFullScreenAlarmSpec(reactContext) {
 
   override fun getName(): String = "FullScreenAlarm"
 
-  @ReactMethod
-  fun canUse(promise: Promise) {
+  override fun canUse(promise: Promise) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       promise.resolve(true)
       return
@@ -38,8 +36,7 @@ class FullScreenAlarmModule(private val reactContext: ReactApplicationContext) :
     promise.resolve(runCatching { nm.canUseFullScreenIntent() }.getOrDefault(true))
   }
 
-  @ReactMethod
-  fun openSettings(promise: Promise) {
+  override fun openSettings(promise: Promise) {
     val pkg = reactContext.packageName
     val intent =
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

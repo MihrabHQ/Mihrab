@@ -14,11 +14,13 @@
  * missing, so a build without it behaves like a user who never imported one.
  */
 
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import {
   registerCustomAdhan,
   type CustomAdhanSound,
 } from '../notifications/notificationSounds';
+import NativeCustomAdhan from './specs/NativeCustomAdhan';
+import { nativeModule } from './nativeModule';
 
 type CustomAdhanNative = {
   pick(): Promise<CustomAdhanSound | null>;
@@ -34,9 +36,7 @@ type CustomAdhanNative = {
   deleteChannel(channelId: string): Promise<null>;
 };
 
-const native: CustomAdhanNative | undefined = (
-  NativeModules as Record<string, CustomAdhanNative | undefined>
-).CustomAdhan;
+const native: CustomAdhanNative | undefined = (nativeModule(NativeCustomAdhan, 'CustomAdhan') as CustomAdhanNative | undefined);
 
 /** Is importing a recording possible on this build at all? */
 export const CUSTOM_ADHAN_SUPPORTED =

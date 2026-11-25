@@ -25,7 +25,7 @@ function sourceFiles(dir: string): string[] {
 describe('the vertical bar is the iPhone Duo’s alone', () => {
   it('is read on an iPhone only — never Android, the iPad or the Mac', () => {
     expect(read('src/native/VerticalBar.ts')).toMatch(
-      /Platform\.OS === 'ios' && !Platform\.isPad && !isMacCatalyst\s*\?\s*NativeModules\.MihrabVerticalBar\s*:\s*undefined/,
+      /Platform\.OS === 'ios' && !Platform\.isPad && !isMacCatalyst\s*\?\s*nativeModule\(NativeMihrabVerticalBar, 'MihrabVerticalBar'\)\s*:\s*undefined/,
     );
   });
 

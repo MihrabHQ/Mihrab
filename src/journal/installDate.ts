@@ -33,9 +33,11 @@
  * app's whole claim is that the record is theirs.
  */
 import AsyncStorage from '../storage/appStorage';
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { dayKeyOf, isDayKey } from './backfill';
 import { quiet } from '../utils/quiet';
+import NativePrayerBuildInfo from '../native/specs/NativePrayerBuildInfo';
+import { nativeConstants } from '../native/nativeModule';
 
 /** AsyncStorage key holding the ISO day this build first ran. */
 export const FIRST_SEEN_KEY = 'mihrab.first_seen_day';
@@ -46,7 +48,7 @@ type BuildInfoNative = { firstInstallTime?: number };
  *  say. Both platforms expose it through the same native module name. */
 export function nativeInstallMs(): number | null {
   if (Platform.OS !== 'android' && Platform.OS !== 'ios') return null;
-  const mod = NativeModules.PrayerBuildInfo as BuildInfoNative | undefined;
+  const mod = nativeConstants(NativePrayerBuildInfo, 'PrayerBuildInfo') as BuildInfoNative | undefined;
   const ms = mod?.firstInstallTime;
   // A future timestamp means a wrong clock, not a future install. Refuse it
   // rather than let it decide how far back this app may claim anything.

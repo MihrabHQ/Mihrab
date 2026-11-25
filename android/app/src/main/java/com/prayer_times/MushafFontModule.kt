@@ -3,8 +3,7 @@ package com.prayer_times
 import android.graphics.Typeface
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeMushafFontSpec
 import com.facebook.react.views.text.ReactFontManager
 import java.io.File
 
@@ -25,7 +24,7 @@ import java.io.File
  * Typeface, and the platform frees the native font once it is unreferenced.
  */
 class MushafFontModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeMushafFontSpec(reactContext) {
 
   override fun getName(): String = "MushafFont"
 
@@ -34,8 +33,7 @@ class MushafFontModule(reactContext: ReactApplicationContext) :
    * whatever that family held before. Resolves with the family name so JS can
    * use the result directly.
    */
-  @ReactMethod
-  fun registerFont(family: String, path: String, promise: Promise) {
+  override fun registerFont(family: String, path: String, promise: Promise) {
     try {
       val given = File(path)
       if (!given.exists() || given.length() == 0L) {
@@ -60,8 +58,7 @@ class MushafFontModule(reactContext: ReactApplicationContext) :
   }
 
   /** True when the platform can parse the file — used to detect a bad download. */
-  @ReactMethod
-  fun isValidFont(path: String, promise: Promise) {
+  override fun isValidFont(path: String, promise: Promise) {
     try {
       val file = File(path)
       val ok = file.exists() && file.length() > 0 && Typeface.createFromFile(file) != null

@@ -288,7 +288,7 @@ describe('a redraw asked for while the app is in front waits until it is left', 
 
   it('is paid once, when the activity is paused or destroyed, or the module goes', () => {
     expect(gate).toMatch(/if \(!redrawOwed\.getAndSet\(false\)\) return/);
-    expect(module).toMatch(/ReactContextBaseJavaModule\(reactContext\), LifecycleEventListener/);
+    expect(module).toMatch(/NativePrayerWidgetSpec\(reactContext\), LifecycleEventListener/);
     expect(module).toMatch(/reactContext\.addLifecycleEventListener\(this\)/);
     expect(module).toMatch(/override fun onHostPause\(\) = payRedraw\(\)/);
     expect(module).toMatch(/override fun onHostDestroy\(\) = payRedraw\(\)/);

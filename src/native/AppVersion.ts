@@ -4,7 +4,8 @@
  * Provides the installed version string and build number without relying
  * on implicit `any` from NativeModules.
  */
-import { NativeModules } from 'react-native';
+import NativeAppVersion from './specs/NativeAppVersion';
+import { nativeConstants } from './nativeModule';
 
 export interface AppVersionInterface {
   /** Human-readable version string, e.g. "1.5.49". */
@@ -14,4 +15,4 @@ export interface AppVersionInterface {
 }
 
 export const AppVersionModule =
-  NativeModules.AppVersion as AppVersionInterface | undefined;
+  nativeConstants(NativeAppVersion, 'AppVersion') as AppVersionInterface | undefined;

@@ -122,7 +122,7 @@ fastlane/metadata/            Play / App Store listing copy and the Play changel
 - `src/native/MihrabLiveActivity.ts` — typed wrapper for the Android Kotlin module.
 - `android/app/src/main/java/com/prayer_times/MihrabLiveActivityModule.kt` — Kotlin module with platform `Notification.Builder` + `setShortCriticalText` + `setRequestPromotedOngoing` for Android 16 status-bar chip.
 - `src/native/PrayerLiveActivity.ts` — iOS ActivityKit wrapper.
-- `ios/PrayerApp/PrayerLiveActivity.swift` + `.m` — ActivityKit bridge.
+- `ios/PrayerApp/PrayerLiveActivity.swift` + `.mm` — ActivityKit bridge.
 - `ios/PrayerWidgetExtension/PrayerLiveActivityWidget.swift` — SwiftUI Lock Screen + Dynamic Island views.
 - `ios/PrayerWidgetExtension/PrayerLiveActivityAttributes.swift` — shared `ActivityAttributes` (member of BOTH targets via pbxproj entry).
 
@@ -170,30 +170,32 @@ Or just open `ios/PrayerApp.xcworkspace` in Xcode and Run.
 
 All Android Kotlin modules live in `android/app/src/main/java/com/prayer_times/`. All iOS Swift / Obj-C live in `ios/PrayerApp/` (main app target) or `ios/PrayerWidgetExtension/` (widget extension target).
 
+**Every module is a typed TurboModule.** `src/native/specs/Native<Name>.ts` is its contract; codegen builds an abstract class from it on Android (the Kotlin module extends it) and a protocol on iOS (an Objective-C module adopts it; a Swift one has a `.mm` category beside it that does — `ios/PrayerApp/MihrabTurbo.h`). The wrappers below reach a module through `src/native/nativeModule.ts`, never `NativeModules.X`. To add or change a method: `src/native/specs/README.md`. `__tests__/turboModulesAreTyped.test.ts` holds the three sides together.
+
 | Module | Android | iOS | JS wrapper | What it does |
 |---|---|---|---|---|
-| `PrayerWidget` | `PrayerWidgetModule.kt` | `PrayerWidget.m` + `WidgetTimelineReloader.swift` | `src/native/PrayerWidget.ts` | Push JSON payload to home-screen widget; reload widget timeline |
+| `PrayerWidget` | `PrayerWidgetModule.kt` | `PrayerWidget.mm` + `WidgetTimelineReloader.swift` | `src/native/PrayerWidget.ts` | Push JSON payload to home-screen widget; reload widget timeline |
 | `MihrabLiveActivity` | `MihrabLiveActivityModule.kt` | — | `src/native/MihrabLiveActivity.ts` | Post Android Live Activity ongoing notification with progress bar + chronometer + Android 16 chip metadata |
-| `PrayerLiveActivity` | — | `PrayerLiveActivity.swift` + `.m` | `src/native/PrayerLiveActivity.ts` | Start/update/end iOS ActivityKit Live Activity (Lock Screen + Dynamic Island) |
-| `Compass` | `CompassModule.kt` | `CompassModule.swift` + `.m` | `src/hooks/useQiblaCompass.ts` | Magnetometer stream for Qibla compass |
-| `PrayerBuildInfo` | `PrayerBuildInfoModule.kt` | `PrayerBuildInfo.m` | `src/native/PrayerBuildInfo.ts` | Exposes the Android product flavor (`play` / `fdroid` / `github`) |
-| `AppVersion` | `AppVersionModule.kt` | `AppVersion.m` | inline | Exposes versionName + versionCode |
+| `PrayerLiveActivity` | — | `PrayerLiveActivity.swift` + `.mm` | `src/native/PrayerLiveActivity.ts` | Start/update/end iOS ActivityKit Live Activity (Lock Screen + Dynamic Island) |
+| `Compass` | `CompassModule.kt` | `CompassModule.swift` + `.mm` | `src/hooks/useQiblaCompass.ts` | Magnetometer stream for Qibla compass |
+| `PrayerBuildInfo` | `PrayerBuildInfoModule.kt` | `PrayerBuildInfo.mm` | `src/native/PrayerBuildInfo.ts` | Exposes the Android product flavor (`play` / `fdroid` / `github`) |
+| `AppVersion` | `AppVersionModule.kt` | `AppVersion.mm` | inline | Exposes versionName + versionCode |
 | `SystemTheme` | `SystemThemePackage.kt` | — | inline | Material You dynamic-color current accent |
-| `SystemClock` | `SystemClockModule.kt` | `SystemClock.m` | `src/native/SystemClock.ts` | Is the device clock set to 24-hour time? (issue #18 — neither platform exposes this to JS). Constant `is24Hour` + method `readIs24Hour()` — **different names on purpose**: a method and a constant sharing a name leaves one unreachable in every bridge mode. |
-| `LaunchSnapshot` | `LaunchSnapshot.kt` + `LaunchSnapshotPackage.kt` | `MihrabLaunchSnapshot.swift` + `.m` | `src/native/LaunchSnapshot.ts` | The last Today screen kept as a picture and shown as a launch's first frame — see §6 |
+| `SystemClock` | `SystemClockModule.kt` | `SystemClock.mm` | `src/native/SystemClock.ts` | Is the device clock set to 24-hour time? (issue #18 — neither platform exposes this to JS). Constant `is24Hour` + method `readIs24Hour()` — **different names on purpose**: a method and a constant sharing a name leaves one unreachable in every bridge mode. |
+| `LaunchSnapshot` | `LaunchSnapshot.kt` + `LaunchSnapshotPackage.kt` | `MihrabLaunchSnapshot.swift` + `.mm` | `src/native/LaunchSnapshot.ts` | The last Today screen kept as a picture and shown as a launch's first frame — see §6 |
 | `FullScreenAlarm` | `FullScreenAlarmModule.kt` + `PrayerAlarmActivity.kt` | — | `src/native/FullScreenAlarm.ts` | The full-screen prayer alert over the lock screen (#63), painted in the Sky theme's hour when the app wears it |
-| `PrayerAlarms` | — | `PrayerAlarms.swift` + `.m` | `src/native/PrayerAlarms.ts` | iOS 26 AlarmKit: ring like the Clock app, with Stop and Snooze (#63) |
+| `PrayerAlarms` | — | `PrayerAlarms.swift` + `.mm` | `src/native/PrayerAlarms.ts` | iOS 26 AlarmKit: ring like the Clock app, with Stop and Snooze (#63) |
 | `PrayerSilence` | `PrayerSilenceModule.kt` | — | `src/native/PrayerSilence.ts` | Do Not Disturb around the prayers you pick, scheduled natively so it runs with the app closed (#60) |
-| `AdhanPlayer` | — | `AdhanPlayer.swift` + `.m` | `src/native/AdhanPlayer.ts` | Plays the full adhan in the foreground; iOS caps notification sounds at 30 s |
-| `CustomAdhan` | `CustomAdhanModule.kt` | `CustomAdhan.swift` + `.m` | `src/native/CustomAdhan.ts` | Import the user's own adhan recording through the system picker |
-| `WordPlayer` | `WordPlayerModule.kt` | `WordPlayer.swift` + `.m` | `src/native/WordPlayer.ts` | One slice of an āyah recording — the word reader's player, beside the recitation's queue |
+| `AdhanPlayer` | — | `AdhanPlayer.swift` + `.mm` | `src/native/AdhanPlayer.ts` | Plays the full adhan in the foreground; iOS caps notification sounds at 30 s |
+| `CustomAdhan` | `CustomAdhanModule.kt` | `CustomAdhan.swift` + `.mm` | `src/native/CustomAdhan.ts` | Import the user's own adhan recording through the system picker |
+| `WordPlayer` | `WordPlayerModule.kt` | `WordPlayer.swift` + `.mm` | `src/native/WordPlayer.ts` | One slice of an āyah recording — the word reader's player, beside the recitation's queue |
 | `AudioRoute` / `NowPlayingState` | — | `AudioRouteWatcher.swift`, `NowPlayingState.swift` | `src/native/AudioRoute.ts`, `NowPlayingState.ts` | Headphones-out pauses playback; the Mac's required now-playing state |
 | `VolumeKeys` | `VolumeKeysModule.kt` | — | `src/native/volumeKeys.ts` | The volume buttons as page-turn keys while the muṣḥaf captures them (#68) |
 | `MushafFont` / `MushafLine` | `MushafFontModule.kt`, `MushafLineView.kt` | `MushafFont.swift`, `MushafLine.swift` | `src/native/MushafFont.ts` | Runtime registration of the 604 page fonts; the native line view that draws a page line |
 | `DisplayCutout` / `RotationCover` | `DisplayCutoutModule.kt`, `RotationCover.kt` | — / `MihrabRotationCover.swift` | `src/native/DisplayCutout.ts`, `RotationCover.ts` | Where the camera is (the fullscreen muṣḥaf lays out beside it); a sheet of page colour the platform raises as the window turns |
 | `SyncFolder` / `ScanQr` / `SecureRandom` / `MihrabClipboard` | `SyncFolderModule.kt`, `ScanQrModule.kt`, `SecureRandomModule.kt`, `MihrabClipboardModule.kt` | `SyncFolder.swift`, `ScanQr.swift`, `SecureRandom.swift`, `MihrabClipboard.swift` | `src/native/FilePicker.ts`, `src/sync/` | The device-to-device sync's folder, pairing QR, keys and clipboard |
 | `WidgetQueueWatcher` | `WidgetQueueEvents.kt` | `WidgetQueueWatcher` (Darwin notification, Mac/iPad) | `src/native/WidgetQueueWatcher.ts` | The third drain trigger: a widget's log queue changed while the app was in front |
-| `MihrabKeepAwake` / `Haptics` / `KeyCommands` / `RateApp` | — | `.swift` + `.m` | inline | Screen awake while reading; haptics; Mac keyboard shortcuts; the App Store review prompt |
+| `MihrabKeepAwake` / `Haptics` / `KeyCommands` / `RateApp` | — | `.swift` + `.mm` | inline | Screen awake while reading; haptics; Mac keyboard shortcuts; the App Store review prompt |
 
 All modules are registered in:
 - Android — `MainApplication.kt` `packageList`.

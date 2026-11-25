@@ -7,8 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeWordPlayerSpec
 
 /**
  * Plays one slice of an ayah recording — a word — and stops.
@@ -34,7 +33,7 @@ import com.facebook.react.bridge.ReactMethod
  * point, which for MP3 is close enough to a word.
  */
 class WordPlayerModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeWordPlayerSpec(reactContext) {
 
   private val handler = Handler(Looper.getMainLooper())
   private var player: MediaPlayer? = null
@@ -43,8 +42,7 @@ class WordPlayerModule(reactContext: ReactApplicationContext) :
 
   override fun getName(): String = "WordPlayer"
 
-  @ReactMethod
-  fun play(path: String, startMs: Double, endMs: Double, promise: Promise) {
+  override fun play(path: String, startMs: Double, endMs: Double, promise: Promise) {
     handler.post {
       finish(false)
       val mp = MediaPlayer()
@@ -97,8 +95,7 @@ class WordPlayerModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun stop(promise: Promise) {
+  override fun stop(promise: Promise) {
     handler.post {
       finish(false)
       promise.resolve(true)

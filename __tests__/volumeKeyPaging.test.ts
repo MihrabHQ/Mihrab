@@ -110,7 +110,7 @@ describe('the native side', () => {
     expect(kt('MainApplication.kt')).toContain('VolumeKeysPackage()');
     expect(kt('VolumeKeysModule.kt')).toContain('"MihrabVolumeKeys"');
     expect(read('src/native/volumeKeys.ts')).toContain(
-      'NativeModules.MihrabVolumeKeys',
+      "nativeModule(NativeMihrabVolumeKeys, 'MihrabVolumeKeys')",
     );
   });
 

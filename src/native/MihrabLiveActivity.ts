@@ -19,7 +19,9 @@
  * module isn't linked (iOS, JS-only tests). Callers should fall through
  * to the notifee path when it returns null.
  */
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativeMihrabLiveActivity from './specs/NativeMihrabLiveActivity';
+import { nativeModule } from './nativeModule';
 
 /**
  * One event on the card.
@@ -212,7 +214,7 @@ export type LiveUpdatePromotion = {
 };
 
 export function getMihrabLiveActivityModule(): MihrabLiveActivityInterface | null {
-  const mod = NativeModules.MihrabLiveActivity as
+  const mod = nativeModule(NativeMihrabLiveActivity, 'MihrabLiveActivity') as
     | MihrabLiveActivityInterface
     | undefined;
   if (mod?.display) return mod;

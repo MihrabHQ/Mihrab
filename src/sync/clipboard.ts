@@ -7,10 +7,11 @@
  * would have to account for. `MihrabClipboard` is forty lines of app source
  * on each platform and neither problem applies. See the module comments.
  */
-import { NativeModules } from 'react-native';
 import { quiet } from '../utils/quiet';
+import NativeMihrabClipboard from '../native/specs/NativeMihrabClipboard';
+import { nativeModule } from '../native/nativeModule';
 
-const Native = NativeModules.MihrabClipboard as
+const Native = nativeModule(NativeMihrabClipboard, 'MihrabClipboard') as
   | {
       setString(text: string): Promise<boolean>;
       getString(): Promise<string>;

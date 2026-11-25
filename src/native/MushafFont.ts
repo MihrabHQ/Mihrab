@@ -21,14 +21,16 @@
  * fast swiping never has to wait on a re-registration, and a page swiped back
  * to is usually still resident.
  */
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativeMushafFont from './specs/NativeMushafFont';
+import { nativeModule } from './nativeModule';
 
 type MushafFontNative = {
   registerFont(family: string, path: string): Promise<string>;
   isValidFont(path: string): Promise<boolean>;
 };
 
-const native = (NativeModules as { MushafFont?: MushafFontNative }).MushafFont;
+const native = (nativeModule(NativeMushafFont, 'MushafFont') as MushafFontNative | undefined);
 
 /** Whether the platform module is present (false in tests / old builds). */
 export const mushafFontAvailable = native != null;

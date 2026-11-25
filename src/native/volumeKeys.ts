@@ -11,8 +11,10 @@
  * and a tablet is a different way of holding the book, so on both of those
  * `volumeKeysAvailable` is false and every call is a no-op.
  */
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { NativeEventEmitter, Platform } from 'react-native';
 import { currentDeviceClass } from '../responsive/deviceClass';
+import NativeMihrabVolumeKeys from './specs/NativeMihrabVolumeKeys';
+import { nativeModule } from './nativeModule';
 
 type NativeVolumeKeys = {
   setCaptured(on: boolean): void;
@@ -22,7 +24,7 @@ type NativeVolumeKeys = {
 
 const Native =
   Platform.OS === 'android'
-    ? ((NativeModules.MihrabVolumeKeys as NativeVolumeKeys | undefined) ?? null)
+    ? ((nativeModule(NativeMihrabVolumeKeys, 'MihrabVolumeKeys') as NativeVolumeKeys | undefined) ?? null)
     : null;
 
 /** Whether this device can turn pages with the volume buttons at all. */

@@ -319,7 +319,7 @@ describe('the Android side is wired', () => {
       'clear',
       'isActive',
     ]) {
-      expect(module).toMatch(new RegExp(`@ReactMethod\\s+fun ${name}\\(`));
+      expect(module).toMatch(new RegExp(`override fun ${name}\\(`));
     }
     expect(module).toMatch(/getName\(\): String = "PrayerSilence"/);
   });

@@ -20,8 +20,10 @@
  *                    installs, often on a phone with no Play Store, and it
  *                    is not the Play listing's install.
  */
-import { Linking, NativeModules, Platform } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import { getAndroidDistribution } from '../distribution';
+import NativeRateApp from '../native/specs/NativeRateApp';
+import { nativeModule } from '../native/nativeModule';
 
 const PLAY_MARKET_URL = 'market://details?id=com.prayer_times';
 const PLAY_WEB_URL =
@@ -65,7 +67,7 @@ async function openAppStoreReview(): Promise<void> {
   try {
     await Linking.openURL(APP_STORE_REVIEW_WEB_URL);
   } catch {
-    const native = NativeModules.RateApp as RateAppNative | undefined;
+    const native = nativeModule(NativeRateApp, 'RateApp') as RateAppNative | undefined;
     native?.requestReview?.();
   }
 }

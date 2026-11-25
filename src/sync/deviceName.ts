@@ -16,9 +16,11 @@
  * worse one than what its owner would have typed — which is why the field
  * exists.
  */
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import AsyncStorage from '../storage/appStorage';
 import { quiet } from '../utils/quiet';
+import NativePrayerBuildInfo from '../native/specs/NativePrayerBuildInfo';
+import { nativeConstants } from '../native/nativeModule';
 
 /**
  * Plaintext, unlike the identity and the peer list.
@@ -56,7 +58,7 @@ export const MAX_DEVICE_NAME = 40;
 const IOS_MODEL_WORDS = new Set(['ipad', 'iphone', 'ipod touch', 'ipod']);
 
 export function defaultDeviceName(): string {
-  const native = NativeModules.PrayerBuildInfo as
+  const native = nativeConstants(NativePrayerBuildInfo, 'PrayerBuildInfo') as
     | { deviceName?: string }
     | undefined;
   const given = native?.deviceName?.trim();

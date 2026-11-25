@@ -21,9 +21,10 @@
  * failure at the moment of the mistake, rather than a keypair that looks
  * exactly like a good one and is not.
  */
-import { NativeModules } from 'react-native';
+import NativeSecureRandom from '../native/specs/NativeSecureRandom';
+import { nativeModule } from '../native/nativeModule';
 
-const Native = NativeModules.SecureRandom as
+const Native = nativeModule(NativeSecureRandom, 'SecureRandom') as
   | { bytes(count: number): Promise<string> }
   | undefined;
 

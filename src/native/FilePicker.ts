@@ -21,13 +21,14 @@
  *
  * base64 is how they cross, because the bridge has no byte-array type.
  */
-import { NativeModules } from 'react-native';
 import { fromBase64 } from '../sync/secureRandom';
+import NativeSyncFolder from './specs/NativeSyncFolder';
+import { nativeModule } from './nativeModule';
 
 /** What the native side returns for a picked file. */
 type PickedFile = { name: string; base64: string };
 
-const Native = NativeModules.SyncFolder as
+const Native = nativeModule(NativeSyncFolder, 'SyncFolder') as
   | {
       /** Added 2.14. Absent on an older native side — see `hasFilePicker`. */
       pickFile?(): Promise<PickedFile | null>;

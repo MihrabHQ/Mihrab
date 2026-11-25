@@ -12,8 +12,7 @@ import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeSyncFolderSpec
 import com.facebook.react.bridge.WritableArray
 
 /**
@@ -81,7 +80,7 @@ internal fun isCopyOf(childName: String, exact: String): Boolean {
 }
 
 class SyncFolderModule(private val reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext), ActivityEventListener {
+  NativeSyncFolderSpec(reactContext), ActivityEventListener {
 
   /** Held between launching the picker and the activity result. */
   private var pending: Promise? = null
@@ -119,8 +118,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
    * answer, not a failure, and the screen turns it into a Choose a folder
    * button.
    */
-  @ReactMethod
-  fun defaultFolder(promise: Promise) {
+  override fun defaultFolder(promise: Promise) {
     promise.resolve(null)
   }
 
@@ -133,8 +131,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
    * a decision, not a failure, and rejecting would make the JS side treat
    * "no thanks" as an error to report.
    */
-  @ReactMethod
-  fun pick(promise: Promise) {
+  override fun pick(promise: Promise) {
     // `getCurrentActivity()` on the module base class is deprecated as of
     // RN 0.80 and is a function rather than a property, so it cannot be
     // reached by shorthand. The context is where it lives now.
@@ -189,8 +186,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
    * No persistable permission is taken: this reads the file once, now. The
    * app is not keeping a door open to it.
    */
-  @ReactMethod
-  fun pickFile(promise: Promise) {
+  override fun pickFile(promise: Promise) {
     val activity = reactContext.currentActivity
     if (activity == null) {
       promise.reject("no_activity", "there is no activity to show the picker over")
@@ -233,8 +229,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
    * Resolves `{name}` with the display name the provider gave the file, or
    * `null` if the user backs out. A cancel is a decision, not a failure.
    */
-  @ReactMethod
-  fun saveFile(fileName: String, contents: String, mime: String, promise: Promise) {
+  override fun saveFile(fileName: String, contents: String, mime: String, promise: Promise) {
     val activity = reactContext.currentActivity
     if (activity == null) {
       promise.reject("no_activity", "there is no activity to show the dialog over")
@@ -403,8 +398,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
   override fun onNewIntent(intent: Intent) = Unit
 
   /** Whether a folder chosen earlier is still ours to read and write. */
-  @ReactMethod
-  fun hasAccess(handle: String, promise: Promise) {
+  override fun hasAccess(handle: String, promise: Promise) {
     // The grant is on the TREE; the handle may be a subdirectory inside it.
     // Comparing the handle itself would report no access for every folder
     // this build creates.
@@ -422,8 +416,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
   }
 
   /** Give the folder back. The files stay; only our access ends. */
-  @ReactMethod
-  fun forget(handle: String, promise: Promise) {
+  override fun forget(handle: String, promise: Promise) {
     try {
       resolver.releasePersistableUriPermission(
         treeOf(Uri.parse(handle)),
@@ -438,8 +431,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
 
   // ── Files ─────────────────────────────────────────────────────────────
 
-  @ReactMethod
-  fun list(handle: String, promise: Promise) {
+  override fun list(handle: String, promise: Promise) {
     try {
       val out: WritableArray = Arguments.createArray()
       forEachChild(Uri.parse(handle)) { _, name -> out.pushString(name) }
@@ -449,8 +441,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun read(handle: String, name: String, promise: Promise) {
+  override fun read(handle: String, name: String, promise: Promise) {
     try {
       val tree = Uri.parse(handle)
       val documentId = childId(tree, name)
@@ -472,8 +463,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun write(handle: String, name: String, contents: String, promise: Promise) {
+  override fun write(handle: String, name: String, contents: String, promise: Promise) {
     try {
       val folder = Uri.parse(handle)
       val bytes = contents.toByteArray(Charsets.UTF_8)
@@ -553,8 +543,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
    * devices can be told to forget the same third one, and the second to act
    * should not report a failure for work the first already did.
    */
-  @ReactMethod
-  fun remove(handle: String, name: String, promise: Promise) {
+  override fun remove(handle: String, name: String, promise: Promise) {
     try {
       val folder = Uri.parse(handle)
       val matches = copiesOf(folder, name)

@@ -10,8 +10,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeMihrabFoldPostureSpec
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
@@ -29,7 +28,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
  * closed onto its cover screen (that window has no fold in it).
  */
 class FoldPostureModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext), LifecycleEventListener {
+  NativeMihrabFoldPostureSpec(reactContext), LifecycleEventListener {
 
   private var adapter: WindowInfoTrackerCallbackAdapter? = null
   private var latest: WritableMap = none()
@@ -94,16 +93,13 @@ class FoldPostureModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun read(promise: Promise) {
+  override fun read(promise: Promise) {
     promise.resolve(copy(latest))
   }
 
-  @ReactMethod
-  fun addListener(@Suppress("UNUSED_PARAMETER") eventName: String) {}
+  override fun addListener(eventName: String) {}
 
-  @ReactMethod
-  fun removeListeners(@Suppress("UNUSED_PARAMETER") count: Double) {}
+  override fun removeListeners(count: Double) {}
 
   private fun none(): WritableMap = Arguments.createMap().apply { putString("state", "none") }
 

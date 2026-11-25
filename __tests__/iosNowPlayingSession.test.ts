@@ -46,15 +46,15 @@ describe('AudioRouteWatcher (native)', () => {
     expect(swift).toMatch(/AVAudioSession\.routeChangeNotification/);
     expect(swift).toMatch(/\.oldDeviceUnavailable/);
     expect(swift).toMatch(/"AudioRouteLost"/);
-    expect(read('ios/PrayerApp/AudioRouteWatcher.m')).toMatch(
-      /RCT_EXTERN_MODULE\(AudioRouteWatcher, RCTEventEmitter\)/,
+    expect(read('ios/PrayerApp/AudioRouteWatcher.mm')).toMatch(
+      /@interface AudioRouteWatcher \(Turbo\) <NativeAudioRouteWatcherSpec>[\s\S]*RCT_EXPORT_MODULE\(AudioRouteWatcher\)/,
     );
   });
 
   it('is compiled into the app', () => {
     const pbx = read('ios/PrayerApp.xcodeproj/project.pbxproj');
     expect(pbx).toMatch(/AudioRouteWatcher\.swift in Sources/);
-    expect(pbx).toMatch(/AudioRouteWatcher\.m in Sources/);
+    expect(pbx).toMatch(/AudioRouteWatcher\.mm in Sources/);
   });
 });
 

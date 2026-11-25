@@ -1,4 +1,6 @@
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativePrayerBuildInfo from './native/specs/NativePrayerBuildInfo';
+import { nativeConstants } from './native/nativeModule';
 
 type PrayerBuildInfoNative = {
   distribution?: string;
@@ -15,7 +17,7 @@ export function getAndroidDistribution(): AndroidDistribution {
   if (Platform.OS !== 'android') {
     return 'play';
   }
-  const m = NativeModules.PrayerBuildInfo as PrayerBuildInfoNative | undefined;
+  const m = nativeConstants(NativePrayerBuildInfo, 'PrayerBuildInfo') as PrayerBuildInfoNative | undefined;
   const d = m?.distribution;
   return d === 'fdroid' || d === 'github' ? d : 'play';
 }

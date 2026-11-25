@@ -1,0 +1,313 @@
+#import <notify.h>
+
+// The contracts, React and the app's Swift classes, in the order
+// Objective-C++ needs them.
+#import "MihrabTurbo.h"
+#import "MihrabAppGroup.h"
+
+@interface PrayerWidget : NSObject <NativePrayerWidgetSpec>
+@end
+
+@implementation PrayerWidget
+
+RCT_EXPORT_MODULE();
+
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
+
+- (void)setData:(NSString *)json
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject
+{
+  [PrayerWidget storePayload:json v2:nil];
+  resolve(nil);
+}
+
+/**
+ * v1 and the widget contract's v2 (docs/rewrite-plan.md, step 1.4), in one
+ * write. One write because the extension reads v2 in preference to v1
+ * (`loadStoredWidgetPayload`): a v2 written by an earlier call and left
+ * behind would outrank a newer v1. That is also why plain `setData` removes
+ * v2 — an older JS bundle, or the app's fallback when v2 could not be built,
+ * must not leave the widgets on a payload it did not write.
+ *
+ * Since step 1.7 the app passes an empty v1: v2 is written alone and the
+ * stored v1 is removed. An empty v2 removes that key the same way.
+ */
+- (void)setDataV2:(NSString *)json
+               v2:(NSString *)v2
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject
+{
+  [PrayerWidget storePayload:json v2:v2];
+  resolve(nil);
+}
+
++ (void)storePayload:(NSString *)json v2:(nullable NSString *)v2
+{
+  // The language travels beside the payload rather than being dug back out of
+  // it on every draw. Six widget kinds read it, and re-decoding a hundred
+  // kilobytes of JSON to find one string is work a widget cannot afford —
+  // see mihrabLocalizationTag() in the extension.
+  NSString *language = nil;
+  NSError *parseError = nil;
+  // From v2 when the app wrote no v1 (step 1.7): both carry `language`.
+  NSString *languageSource = json.length > 0 ? json : (v2 ?: @"");
+  id parsed = [NSJSONSerialization
+      JSONObjectWithData:[languageSource dataUsingEncoding:NSUTF8StringEncoding]
+                 options:0
+                   error:&parseError];
+  if ([parsed isKindOfClass:[NSDictionary class]]) {
+    id value = parsed[@"language"];
+    if ([value isKindOfClass:[NSString class]]) {
+      language = value;
+    }
+  }
+
+  NSUserDefaults *group =
+      MihrabAppGroupDefaults();
+  NSUserDefaults *store = group != nil ? group : [NSUserDefaults standardUserDefaults];
+  // An empty v1 is the app writing v2 alone (step 1.7): drop the v1 it
+  // wrote before, so no renderer is left parsing its times.
+  if (json.length > 0) {
+    [store setObject:json forKey:@"prayer_widget_payload_v1"];
+  } else {
+    [store removeObjectForKey:@"prayer_widget_payload_v1"];
+  }
+  if (v2.length > 0) {
+    [store setObject:v2 forKey:@"prayer_widget_payload_v2"];
+  } else {
+    [store removeObjectForKey:@"prayer_widget_payload_v2"];
+  }
+  // Cleared rather than left behind when a payload arrives without one: an
+  // older app writing to a newer extension should give the phone's language
+  // back, not keep whatever was last set.
+  if (language.length > 0) {
+    [store setObject:language forKey:@"prayer_widget_language"];
+  } else {
+    [store removeObjectForKey:@"prayer_widget_language"];
+  }
+  // Every other writer in this file synchronizes and this one did not — the
+  // one that writes the payload every widget reads. The extension is a
+  // separate process with its own view of the group container, and the
+  // reload below is a race against it: flush first, then ask.
+  [store synchronize];
+  [WidgetTimelineReloader reloadAllTimelinesIfAvailable];
+}
+
+/**
+ * Hand over the Log Today widget's queued taps and clear them, in one step.
+ *
+ * One step because the app is about to write these to the journal, and a
+ * read-then-clear that is interrupted between the two either loses taps or
+ * writes them twice. The rules that decide what is IN the queue live in
+ * WidgetLogQueue.swift (widget side) and widgetLogQueue.ts (app side); this
+ * only moves the string across.
+ */
+- (void)takeLogQueue:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject
+{
+  NSUserDefaults *group = MihrabAppGroupDefaults();
+  NSUserDefaults *target = group != nil ? group : [NSUserDefaults standardUserDefaults];
+  NSString *json = [target stringForKey:@"widget_log_queue"];
+  if (json != nil) {
+    [target removeObjectForKey:@"widget_log_queue"];
+    [target synchronize];
+    // The widget draws the queue OVER the payload, so a card that has just
+    // been drained is still showing its taps twice — once as queued, once as
+    // whatever the payload said. Android reloads here; this side did not,
+    // and the card kept its doubled state until some later setData happened
+    // to correct it. Ask for a redraw at the moment the queue empties.
+    [WidgetTimelineReloader reloadAllTimelinesNow];
+  }
+  resolve(json);
+}
+
+/**
+ * The same hand-over for the Tasbih widget's queue.
+ *
+ * A separate key rather than one queue with a `kind` field: the two have
+ * different rules — a log tap is a set member and a dhikr tap is a sequence —
+ * and one string that two sets of rules both parse is a string that will
+ * eventually be parsed by the wrong one.
+ */
+- (void)takeTasbihQueue:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject
+{
+  NSUserDefaults *group = MihrabAppGroupDefaults();
+  NSUserDefaults *target = group != nil ? group : [NSUserDefaults standardUserDefaults];
+  NSString *json = [target stringForKey:@"widget_tasbih_queue"];
+  if (json != nil) {
+    [target removeObjectForKey:@"widget_tasbih_queue"];
+    [target synchronize];
+    // Uncoalesced, like the log queue above: the card is showing the drained
+    // taps twice until this lands.
+    [WidgetTimelineReloader reloadAllTimelinesNow];
+  }
+  resolve(json);
+}
+
+- (void)setUiHints:(NSString *)style
+    oledBackground:(BOOL)oled
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject
+{
+  NSUserDefaults *group =
+      MihrabAppGroupDefaults();
+  NSUserDefaults *target = group != nil ? group : [NSUserDefaults standardUserDefaults];
+  [target setObject:(style != nil ? style : @"fixed") forKey:@"widget_ui_style"];
+  [target setBool:oled forKey:@"widget_oled"];
+  [target synchronize];
+  [WidgetTimelineReloader reloadAllTimelinesIfAvailable];
+  resolve(nil);
+}
+
+- (void)setWidgetHighlightDynamic:(BOOL)enabled
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject
+{
+  NSUserDefaults *group =
+      MihrabAppGroupDefaults();
+  NSUserDefaults *target = group != nil ? group : [NSUserDefaults standardUserDefaults];
+  [target setBool:enabled forKey:@"widget_highlight_dynamic"];
+  [target synchronize];
+  [WidgetTimelineReloader reloadAllTimelinesIfAvailable];
+  resolve(nil);
+}
+
+- (void)setIosWidgetHighlightAppearance:(NSString *)highlightId
+                                    hex:(NSString *)hex
+                                dynamic:(BOOL)dynamic
+                                 tinted:(BOOL)tinted
+                                resolve:(RCTPromiseResolveBlock)resolve
+                                 reject:(RCTPromiseRejectBlock)reject
+{
+  NSUserDefaults *group =
+      MihrabAppGroupDefaults();
+  NSUserDefaults *target = group != nil ? group : [NSUserDefaults standardUserDefaults];
+  NSString *hid =
+      (highlightId != nil && highlightId.length > 0) ? highlightId : @"green";
+  [target setObject:hid forKey:@"widget_highlight_id"];
+  if (hex != nil && hex.length > 0) {
+    [target setObject:hex forKey:@"widget_highlight_hex"];
+  } else {
+    [target removeObjectForKey:@"widget_highlight_hex"];
+  }
+  [target setBool:dynamic forKey:@"widget_highlight_dynamic"];
+  // "Tinted surfaces" — wash the widget card toward the accent so it matches
+  // the app's tinted chrome. Off (default) keeps the neutral card.
+  [target setBool:tinted forKey:@"widget_tinted_surfaces"];
+  [target synchronize];
+  [WidgetTimelineReloader reloadAllTimelinesIfAvailable];
+  resolve(nil);
+}
+
+/**
+ * The Sky theme's day on the widgets: `[[minuteOfDay, "#bg", "#accent"], …]`
+ * from JS's `widgetSkySchedule` (src/widget/widgetSkySchedule.ts), which
+ * the extension reads for each timeline entry's own minute (WidgetSky in
+ * PrayerWidgetExtension.swift). Nil or empty clears it: the theme is off.
+ */
+- (void)setWidgetSkySchedule:(NSString *)json
+                     resolve:(RCTPromiseResolveBlock)resolve
+                      reject:(RCTPromiseRejectBlock)reject
+{
+  NSUserDefaults *group = MihrabAppGroupDefaults();
+  NSUserDefaults *target = group != nil ? group : [NSUserDefaults standardUserDefaults];
+  if (json != nil && json.length > 0) {
+    [target setObject:json forKey:@"widget_sky_schedule"];
+  } else {
+    [target removeObjectForKey:@"widget_sky_schedule"];
+  }
+  [target synchronize];
+  [WidgetTimelineReloader reloadAllTimelinesIfAvailable];
+  resolve(nil);
+}
+
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativePrayerWidgetSpecJSI>(params);
+}
+@end
+
+/**
+ * Tell JS when a widget queue changes, so the drain has a third trigger.
+ *
+ * The drain ran on app mount and on `AppState` going `active`, and a widget
+ * tap is neither. On iPhone that is hidden by circumstance — you cannot see
+ * a Home Screen widget while the app is in front of you, so a tap always
+ * happens with the app backgrounded and opening it fires `active`. On a Mac
+ * Notification Center opens OVER an app that stays active, so the tap is
+ * stranded: measured 2026-08-29, two taps sat unqueued-for with the app open
+ * throughout, and only a relaunch wrote them. Entries older than a fortnight
+ * are then discarded on the reasoning that an undrained queue means an
+ * unopened app — false on macOS, where it means prayers logged on the widget
+ * are silently thrown away while the widget shows their ticks.
+ *
+ * A SEPARATE MODULE rather than making PrayerWidget an RCTEventEmitter.
+ * That class is a plain RCTBridgeModule with a dozen exported methods, and
+ * changing its superclass to gain one event would put every one of them
+ * behind an emitter's lifecycle for no reason.
+ *
+ * `notify_register_dispatch` rather than CFNotificationCenter: it takes the
+ * queue to call back on, so the event reaches the bridge on the main queue
+ * without a hop of its own. Registration is deferred to `startObserving`,
+ * which React Native calls when JS actually subscribes — a Mac that never
+ * mounts the app UI never registers.
+ */
+static NSString *const kMihrabWidgetQueueChangedEvent = @"MihrabWidgetQueueChanged";
+
+@interface WidgetQueueWatcher : RCTEventEmitter <NativeWidgetQueueWatcherSpec>
+@end
+
+@implementation WidgetQueueWatcher {
+  int _token;
+  BOOL _observing;
+}
+
+RCT_EXPORT_MODULE();
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[ kMihrabWidgetQueueChangedEvent ];
+}
+
+- (void)startObserving
+{
+  if (_observing) {
+    return;
+  }
+  _observing = YES;
+  __weak WidgetQueueWatcher *weakSelf = self;
+  notify_register_dispatch(
+      "com.hassan.prayerapp.widgetQueueChanged", &_token, dispatch_get_main_queue(), ^(int token) {
+        // The notification carries nothing on purpose. It says "look
+        // again"; the queue itself is the state, and the drain that reads
+        // it is the one that already existed and is already tested.
+        [weakSelf sendEventWithName:kMihrabWidgetQueueChangedEvent body:@{}];
+      });
+}
+
+- (void)stopObserving
+{
+  if (!_observing) {
+    return;
+  }
+  _observing = NO;
+  notify_cancel(_token);
+}
+
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeWidgetQueueWatcherSpecJSI>(params);
+}
+@end

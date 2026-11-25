@@ -16,7 +16,8 @@
  * A read that FAILS rejects; only a key that is not there resolves null.
  * src/storage/durableWrite.ts depends on telling the two apart.
  */
-import { NativeModules } from 'react-native';
+import NativeMihrabSecureStore from './specs/NativeMihrabSecureStore';
+import { nativeModule } from './nativeModule';
 
 type NativeSecureStore = {
   setItem(key: string, value: string): Promise<null>;
@@ -25,7 +26,7 @@ type NativeSecureStore = {
 };
 
 function native(): NativeSecureStore {
-  const m = NativeModules.MihrabSecureStore as NativeSecureStore | undefined;
+  const m = nativeModule(NativeMihrabSecureStore, 'MihrabSecureStore') as NativeSecureStore | undefined;
   if (!m) throw new Error('MihrabSecureStore is not linked into this build');
   return m;
 }

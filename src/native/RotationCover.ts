@@ -9,7 +9,9 @@
  * resized rather than turned — every call is a no-op and `available` is
  * false, and the reader falls back to its own cover and fade.
  */
-import { NativeModules, processColor } from 'react-native';
+import { processColor } from 'react-native';
+import NativeMihrabRotationCover from './specs/NativeMihrabRotationCover';
+import { nativeModule } from './nativeModule';
 
 type RotationCoverNative = {
   arm(argb: number): void;
@@ -25,7 +27,7 @@ type RotationCoverNative = {
  * in place before rendering.
  */
 function native(): RotationCoverNative | undefined {
-  const module = NativeModules.MihrabRotationCover as RotationCoverNative | undefined;
+  const module = nativeModule(NativeMihrabRotationCover, 'MihrabRotationCover') as RotationCoverNative | undefined;
   if (!module) return undefined;
   const constants = module.getConstants?.() ?? module;
   return constants.enabled === true ? module : undefined;

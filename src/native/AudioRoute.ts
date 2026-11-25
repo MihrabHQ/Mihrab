@@ -10,13 +10,15 @@
  *
  * Android and tests have no module: subscribing is a no-op there.
  */
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { NativeEventEmitter, Platform } from 'react-native';
+import NativeAudioRouteWatcher from './specs/NativeAudioRouteWatcher';
+import { nativeModule } from './nativeModule';
 
 export type AudioRouteLost = { previousPort: string };
 
 const native =
   Platform.OS === 'ios'
-    ? (NativeModules as { AudioRouteWatcher?: object }).AudioRouteWatcher
+    ? (nativeModule(NativeAudioRouteWatcher, 'AudioRouteWatcher') as object | undefined)
     : undefined;
 
 /** Whether the platform module is present (false on Android and in tests). */

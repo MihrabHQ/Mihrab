@@ -17,8 +17,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.BaseActivityEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeCustomAdhanSpec
 import com.facebook.react.bridge.WritableMap
 import java.io.File
 import java.security.MessageDigest
@@ -40,7 +39,7 @@ import java.security.MessageDigest
  * not to the library that created it, so it is happy to publish into this one.
  */
 class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
-    ReactContextBaseJavaModule(reactContext) {
+    NativeCustomAdhanSpec(reactContext) {
 
   override fun getName(): String = NAME
 
@@ -99,8 +98,7 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
    * from `ACTION_OPEN_DOCUMENT` is only readable by this process, and only
    * until it is revoked.
    */
-  @ReactMethod
-  fun pick(promise: Promise) {
+  override fun pick(promise: Promise) {
     val activity = reactContext.currentActivity
     if (activity == null) {
       promise.reject("custom_adhan_no_activity", "No foreground activity")
@@ -137,8 +135,7 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
    * Android only: iOS gives an app no way to choose or play the phone's
    * own sounds.
    */
-  @ReactMethod
-  fun pickSystemSound(title: String?, promise: Promise) {
+  override fun pickSystemSound(title: String?, promise: Promise) {
     val activity = reactContext.currentActivity
     if (activity == null) {
       promise.reject("custom_adhan_no_activity", "No foreground activity")
@@ -184,8 +181,7 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
   }
 
   /** The imported adhan, or null when the user has never picked one. */
-  @ReactMethod
-  fun current(promise: Promise) {
+  override fun current(promise: Promise) {
     val file = storedFile()
     if (file == null) {
       promise.resolve(null)
@@ -195,8 +191,7 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
   }
 
   /** Forget the imported adhan and drop its channel. */
-  @ReactMethod
-  fun remove(promise: Promise) {
+  override fun remove(promise: Promise) {
     storedFile()?.let { file ->
       deleteChannelFor(tokenOf(file))
       file.delete()
@@ -216,8 +211,7 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
    * is a different channel, and the same file re-picked reuses the one already
    * there instead of piling up entries in Android's notification settings.
    */
-  @ReactMethod
-  fun ensureChannel(channelName: String, promise: Promise) {
+  override fun ensureChannel(channelName: String, promise: Promise) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       // No notification channels before Oreo, and the per-notification sound
       // that replaces them cannot be expressed through Notifee either. The
@@ -294,8 +288,7 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
    * policy access, which is a separate permission prompt, and Do Not
    * Disturb is a stronger statement than flicking the ringer off.
    */
-  @ReactMethod
-  fun ensureAlarmChannel(
+  override fun ensureAlarmChannel(
       channelId: String,
       channelName: String,
       soundResName: String?,
@@ -352,8 +345,7 @@ class CustomAdhanModule(private val reactContext: ReactApplicationContext) :
 
   /** Drop a channel this module made. Used when the setting goes back off,
    *  so Android's notification settings do not accumulate dead entries. */
-  @ReactMethod
-  fun deleteChannel(channelId: String, promise: Promise) {
+  override fun deleteChannel(channelId: String, promise: Promise) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       reactContext
           .getSystemService(NotificationManager::class.java)

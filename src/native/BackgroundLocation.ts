@@ -6,7 +6,9 @@
  * under one name and the same calls. Absent in Mihrab Web, where every
  * call answers "not offered".
  */
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { NativeEventEmitter, Platform } from 'react-native';
+import NativeBackgroundLocation from './specs/NativeBackgroundLocation';
+import { nativeModule } from './nativeModule';
 
 export type BackgroundLocationStatus = {
   /** This build may ask at all (the permission is declared per store flavor). */
@@ -38,7 +40,7 @@ export type MovedPosition = {
 
 const native: Native | undefined =
   Platform.OS === 'android' || Platform.OS === 'ios' || Platform.OS === 'web'
-    ? (NativeModules as Record<string, Native | undefined>).BackgroundLocation
+    ? (nativeModule(NativeBackgroundLocation, 'BackgroundLocation') as Native | undefined)
     : undefined;
 
 const NOT_OFFERED: BackgroundLocationStatus = {

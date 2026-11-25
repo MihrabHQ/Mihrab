@@ -30,8 +30,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeBackgroundLocationSpec
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.jstasks.HeadlessJsTaskConfig
 import com.facebook.react.jstasks.HeadlessJsTaskContext
@@ -664,11 +663,10 @@ class LocationMovedWorker(context: Context, params: WorkerParameters) : Worker(c
 }
 
 class BackgroundLocationModule(private val reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeBackgroundLocationSpec(reactContext) {
   override fun getName(): String = "BackgroundLocation"
 
-  @ReactMethod
-  fun status(promise: Promise) {
+  override fun status(promise: Promise) {
     promise.resolve(
       Arguments.createMap().apply {
         putBoolean("offered", BackgroundLocation.offered(reactContext))
@@ -678,19 +676,23 @@ class BackgroundLocationModule(private val reactContext: ReactApplicationContext
     )
   }
 
-  @ReactMethod
-  fun setEnabled(on: Boolean, promise: Promise) {
+  override fun setEnabled(on: Boolean, promise: Promise) {
     BackgroundLocation.setEnabled(reactContext, on)
     promise.resolve(BackgroundLocation.enabled(reactContext) && BackgroundLocation.permitted(reactContext))
   }
 
-  @ReactMethod
-  fun setPlace(latitude: Double, longitude: Double) {
+  override fun setPlace(latitude: Double, longitude: Double) {
     BackgroundLocation.setPlace(reactContext, latitude, longitude)
   }
 
-  @ReactMethod
-  fun confirmPlace() {
+  override fun confirmPlace() {
     BackgroundLocation.confirmPlace(reactContext)
   }
+
+  // The module's contract is one for both platforms, and on iPhone it
+  // sends events (a place found while the app was closed). Android hands
+  // those over through a headless task instead; nothing listens here.
+  override fun addListener(eventName: String) = Unit
+
+  override fun removeListeners(count: Double) = Unit
 }

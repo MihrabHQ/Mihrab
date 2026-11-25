@@ -5,8 +5,7 @@ import android.view.RoundedCorner
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeDisplayCutoutSpec
 import com.facebook.react.bridge.UiThreadUtil
 
 /**
@@ -26,12 +25,11 @@ import com.facebook.react.bridge.UiThreadUtil
  * and below API 28, where there is no API for it.
  */
 class DisplayCutoutModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeDisplayCutoutSpec(reactContext) {
 
   override fun getName(): String = NAME
 
-  @ReactMethod
-  fun getCutout(promise: Promise) {
+  override fun getCutout(promise: Promise) {
     val activity = reactApplicationContext.currentActivity
     if (activity == null) {
       promise.resolve(empty())
@@ -102,8 +100,7 @@ class DisplayCutoutModule(reactContext: ReactApplicationContext) :
    * them with the display, so "bottom left" is the bottom left of what the
    * reader is looking at, in portrait and in landscape.
    */
-  @ReactMethod
-  fun getRoundedCorners(promise: Promise) {
+  override fun getRoundedCorners(promise: Promise) {
     val activity = reactApplicationContext.currentActivity
     if (activity == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
       promise.resolve(squareCorners())

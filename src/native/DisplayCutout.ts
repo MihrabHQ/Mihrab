@@ -6,8 +6,10 @@
  * fullscreen muṣḥaf lays its surah name out beside the lens. See
  * `DisplayCutoutModule.kt` and `useCutoutSide`.
  */
-import { NativeModules, Platform, useWindowDimensions } from 'react-native';
+import { Platform, useWindowDimensions } from 'react-native';
 import { useEffect, useState } from 'react';
+import NativeDisplayCutout from './specs/NativeDisplayCutout';
+import { nativeModule } from './nativeModule';
 
 export type CutoutRect = { x: number; y: number; width: number; height: number };
 
@@ -38,7 +40,7 @@ type DisplayCutoutNative = {
   getRoundedCorners?: () => Promise<RoundedCorners>;
 };
 
-const native = NativeModules.DisplayCutout as DisplayCutoutNative | undefined;
+const native = nativeModule(NativeDisplayCutout, 'DisplayCutout') as DisplayCutoutNative | undefined;
 
 export const NO_CUTOUT: DisplayCutoutInfo = {
   top: 0,

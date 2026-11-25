@@ -6,7 +6,9 @@
  * sets the switch and the address, and asks for a send from Settings.
  * Every call degrades to a no-op where the module is absent.
  */
-import { NativeModules, PermissionsAndroid, Platform } from 'react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
+import NativeGarminWatch from './specs/NativeGarminWatch';
+import { nativeModule } from './nativeModule';
 
 /** What a send did — the native outcome words. */
 export type GarminSendResult =
@@ -55,8 +57,7 @@ type GarminWatchNative = {
 
 const native: GarminWatchNative | undefined =
   Platform.OS === 'android'
-    ? (NativeModules as Record<string, GarminWatchNative | undefined>)
-        .GarminWatch
+    ? (nativeModule(NativeGarminWatch, 'GarminWatch') as GarminWatchNative | undefined)
     : undefined;
 
 /** Whether this build can talk to Gadgetbridge at all. */

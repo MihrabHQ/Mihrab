@@ -12,10 +12,11 @@
 
 import {
   AccessibilityInfo,
-  NativeModules,
   Platform,
   Vibration,
 } from 'react-native';
+import NativeHaptics from '../native/specs/NativeHaptics';
+import { nativeModule } from '../native/nativeModule';
 
 /**
  * iOS Taptic Engine (ios/PrayerApp/Haptics.swift). Absent on Android and in
@@ -26,7 +27,7 @@ const TapticEngine: {
   prepare?: () => void;
   selectionTick?: () => void;
   impact?: (style: 'light' | 'medium' | 'heavy') => void;
-} | undefined = NativeModules.Haptics;
+} | undefined = nativeModule(NativeHaptics, 'Haptics');
 
 let reduceMotionCache: boolean | null = null;
 

@@ -8,8 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeMihrabRotationCoverSpec
 import com.facebook.react.bridge.UiThreadUtil
 
 /**
@@ -118,25 +117,22 @@ object RotationCover {
 
 /** `NativeModules.MihrabRotationCover` — see [RotationCover]. */
 class RotationCoverModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeMihrabRotationCoverSpec(reactContext) {
 
   override fun getName(): String = "MihrabRotationCover"
 
-  override fun getConstants(): Map<String, Any> = mapOf("enabled" to true)
+  override fun getTypedExportedConstants(): Map<String, Any> = mapOf("enabled" to true)
 
-  @ReactMethod
-  fun arm(argb: Double) {
+  override fun arm(argb: Double) {
     val activity = reactApplicationContext.currentActivity
     UiThreadUtil.runOnUiThread { RotationCover.arm(activity, argb.toLong().toInt()) }
   }
 
-  @ReactMethod
-  fun disarm() {
+  override fun disarm() {
     UiThreadUtil.runOnUiThread { RotationCover.disarm() }
   }
 
-  @ReactMethod
-  fun lift(durationMs: Double) {
+  override fun lift(durationMs: Double) {
     UiThreadUtil.runOnUiThread { RotationCover.lift(durationMs.toLong()) }
   }
 }

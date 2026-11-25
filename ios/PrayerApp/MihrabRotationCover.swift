@@ -28,25 +28,23 @@ class MihrabRotationCover: NSObject {
 
   @objc static func requiresMainQueueSetup() -> Bool { true }
 
-  @objc func constantsToExport() -> [AnyHashable: Any]! {
-#if targetEnvironment(macCatalyst)
-    return ["enabled": false]
-#else
-    return ["enabled": true]
-#endif
-  }
+  // `enabled` — false on the Mac, where a window does not turn — is the
+  // module's one constant, and is stated beside the contract it belongs
+  // to (MihrabRotationCover.mm).
 
-  @objc func arm(_ argb: NSNumber) {
-    DispatchQueue.main.async { MihrabRotationCover.shared.arm(argb.uint32Value) }
+  @objc func arm(_ argb: Double) {
+    // A JavaScript number holding 0xAARRGGBB: whole, and inside 32 bits.
+    let colour = UInt32(truncatingIfNeeded: Int64(argb))
+    DispatchQueue.main.async { MihrabRotationCover.shared.arm(colour) }
   }
 
   @objc func disarm() {
     DispatchQueue.main.async { MihrabRotationCover.shared.disarm() }
   }
 
-  @objc func lift(_ durationMs: NSNumber) {
+  @objc func lift(_ durationMs: Double) {
     DispatchQueue.main.async {
-      MihrabRotationCover.shared.lift(TimeInterval(durationMs.doubleValue) / 1000)
+      MihrabRotationCover.shared.lift(TimeInterval(durationMs) / 1000)
     }
   }
 

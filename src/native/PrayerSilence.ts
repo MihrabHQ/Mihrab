@@ -11,7 +11,9 @@
  * Focus there) and on a build without the module, so callers can simply
  * call.
  */
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativePrayerSilence from './specs/NativePrayerSilence';
+import { nativeModule } from './nativeModule';
 
 /** One stretch of quiet, as the native side takes it. */
 export type SilenceWindow = {
@@ -38,8 +40,7 @@ type PrayerSilenceNative = {
 
 const native: PrayerSilenceNative | undefined =
   Platform.OS === 'android'
-    ? (NativeModules as Record<string, PrayerSilenceNative | undefined>)
-        .PrayerSilence
+    ? (nativeModule(NativePrayerSilence, 'PrayerSilence') as PrayerSilenceNative | undefined)
     : undefined;
 
 /** Whether this build can silence the phone at all. */

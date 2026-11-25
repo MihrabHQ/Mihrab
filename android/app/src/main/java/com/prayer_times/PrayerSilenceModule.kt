@@ -5,24 +5,21 @@ import android.os.Build
 import android.provider.Settings
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativePrayerSilenceSpec
 import com.facebook.react.bridge.ReadableArray
 
 /** `PrayerSilence` to JS — see `src/native/PrayerSilence.ts`. */
 class PrayerSilenceModule(private val reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativePrayerSilenceSpec(reactContext) {
 
   override fun getName(): String = "PrayerSilence"
 
-  @ReactMethod
-  fun hasAccess(promise: Promise) {
+  override fun hasAccess(promise: Promise) {
     promise.resolve(PrayerSilence.hasAccess(reactContext))
   }
 
   /** The system's own screen: the app cannot grant this to itself. */
-  @ReactMethod
-  fun requestAccess(promise: Promise) {
+  override fun requestAccess(promise: Promise) {
     try {
       val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -37,8 +34,7 @@ class PrayerSilenceModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun setWindows(windows: ReadableArray, endLabel: String, channelName: String, promise: Promise) {
+  override fun setWindows(windows: ReadableArray, endLabel: String, channelName: String, promise: Promise) {
     try {
       val list = (0 until windows.size()).mapNotNull { i ->
         val m = windows.getMap(i) ?: return@mapNotNull null
@@ -56,8 +52,7 @@ class PrayerSilenceModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun clear(promise: Promise) {
+  override fun clear(promise: Promise) {
     try {
       PrayerSilence.clear(reactContext)
       promise.resolve(null)
@@ -66,8 +61,7 @@ class PrayerSilenceModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun isActive(promise: Promise) {
+  override fun isActive(promise: Promise) {
     promise.resolve(PrayerSilence.isActive(reactContext))
   }
 }

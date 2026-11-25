@@ -6,15 +6,14 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativePrayerWidgetSpec
 import com.facebook.react.common.LifecycleState
 import com.prayer_times.contract.WidgetContract
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.launch
 
 class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext), LifecycleEventListener {
+  NativePrayerWidgetSpec(reactContext), LifecycleEventListener {
 
   override fun getName(): String = NAME
 
@@ -85,8 +84,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
   /** The samples are composed and drawn on the main thread, one request after another; packed off it. */
   private val previewScope = kotlinx.coroutines.MainScope()
 
-  @ReactMethod
-  fun getAndroidWidgetAppearance(promise: Promise) {
+  override fun getAndroidWidgetAppearance(promise: Promise) {
     try {
       val prefs = reactContext.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
       if (!prefs.contains(PrayerWidgetProvider.PREFS_WIDGET_BG_OPACITY)) {
@@ -115,8 +113,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
    * Resolves a list of { uri, width, height, kind } with the sizes in dp;
    * `widthDp` is the room the page has for one.
    */
-  @ReactMethod
-  fun renderPreviews(widthDp: Double, promise: Promise) {
+  override fun renderPreviews(widthDp: Double, promise: Promise) {
     previewScope.launch {
       try {
         val density = reactContext.resources.displayMetrics.density
@@ -177,8 +174,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
    * skip the validation, which is the wrong direction for something whose
    * contents end up in the journal.
    */
-  @ReactMethod
-  fun takeLogQueue(promise: Promise) {
+  override fun takeLogQueue(promise: Promise) {
     try {
       val entries = WidgetLogQueue.take(reactContext)
       if (entries.isNotEmpty()) forceNextFanout()
@@ -200,8 +196,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
    * sequence — and one string that two sets of rules both parse is a string
    * that will eventually be parsed by the wrong one.
    */
-  @ReactMethod
-  fun takeTasbihQueue(promise: Promise) {
+  override fun takeTasbihQueue(promise: Promise) {
     try {
       val entries = WidgetTasbihQueue.take(reactContext)
       if (entries.isNotEmpty()) forceNextFanout()
@@ -238,8 +233,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun setData(json: String, promise: Promise) {
+  override fun setData(json: String, promise: Promise) {
     store(json, null, promise)
   }
 
@@ -257,8 +251,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
    * anyway), and a call that leaves nothing readable — an empty v1 and no
    * readable v2 — is rejected rather than wiping what the widgets draw.
    */
-  @ReactMethod
-  fun setDataV2(json: String, v2: String, promise: Promise) {
+  override fun setDataV2(json: String, v2: String, promise: Promise) {
     store(json, v2, promise)
   }
 
@@ -338,9 +331,8 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun setAndroidWidgetAppearance(
-    opacity: Int,
+  override fun setAndroidWidgetAppearance(
+    opacityNumber: Double,
     highlightId: String,
     highlightHex: String?,
     highlightDynamic: Boolean,
@@ -348,7 +340,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
     promise: Promise,
   ) {
     try {
-      val o = opacity.coerceIn(0, 100)
+      val o = opacityNumber.toInt().coerceIn(0, 100)
       val hid = highlightId.trim().ifEmpty { "green" }
       val hex =
         highlightHex
@@ -379,8 +371,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
    * hour's colours, or both empty to let the widget's own settings decide
    * again. See PrayerWidgetProvider.WidgetStyle.skyBg.
    */
-  @ReactMethod
-  fun setAndroidWidgetSky(bgHex: String?, accentHex: String?, promise: Promise) {
+  override fun setAndroidWidgetSky(bgHex: String?, accentHex: String?, promise: Promise) {
     try {
       reactContext
         .getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
@@ -402,8 +393,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
    * drawn at Isha wears the night whether or not the app has been open
    * since the afternoon. Null clears it: the theme is off.
    */
-  @ReactMethod
-  fun setWidgetSkySchedule(json: String?, promise: Promise) {
+  override fun setWidgetSkySchedule(json: String?, promise: Promise) {
     try {
       reactContext
         .getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
@@ -422,8 +412,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
    * changed from the widget's own settings screen, so the app reads them
    * back. Null until either side has written them.
    */
-  @ReactMethod
-  fun getAndroidPrayerWidgetDisplay(promise: Promise) {
+  override fun getAndroidPrayerWidgetDisplay(promise: Promise) {
     try {
       val prefs = reactContext.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
       if (!prefs.contains(PrayerWidgetDisplay.KEY_TIME_SCALE)) {
@@ -445,16 +434,17 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
   }
 
   /** The prayer-times widget's display options — see `PrayerWidgetDisplay`. */
-  @ReactMethod
-  fun setAndroidPrayerWidgetDisplay(
+  override fun setAndroidPrayerWidgetDisplay(
     textHex: String,
     showLocation: Boolean,
     showCountdown: Boolean,
     showTable: Boolean,
-    timeScalePercent: Int,
-    sinceAdhanMinutes: Int,
+    timeScalePercentNumber: Double,
+    sinceAdhanMinutesNumber: Double,
     promise: Promise,
   ) {
+    val timeScalePercent = timeScalePercentNumber.toInt()
+    val sinceAdhanMinutes = sinceAdhanMinutesNumber.toInt()
     try {
       val prefs = reactContext.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
       val hex = textHex.trim().takeIf { it.matches(Regex("^#[0-9A-Fa-f]{6}$")) } ?: ""
@@ -487,8 +477,7 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
-  @ReactMethod
-  fun setUiHints(style: String, oledBackground: Boolean, promise: Promise) {
+  override fun setUiHints(style: String, oledBackground: Boolean, promise: Promise) {
     try {
       reactContext
         .getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)

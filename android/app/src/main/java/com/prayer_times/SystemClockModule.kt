@@ -3,8 +3,7 @@ package com.prayer_times
 import android.text.format.DateFormat
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.specs.NativeSystemClockSpec
 
 /**
  * Whether the device clock is set to 24-hour time — issue #18.
@@ -30,7 +29,7 @@ import com.facebook.react.bridge.ReactMethod
  * later once the promise came back.
  */
 class SystemClockModule(private val reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeSystemClockSpec(reactContext) {
 
   override fun getName(): String = NAME
 
@@ -38,11 +37,10 @@ class SystemClockModule(private val reactContext: ReactApplicationContext) :
 
   // The zone as well: JavaScript's first `Intl.DateTimeFormat().resolvedOptions()`
   // built a formatter to learn it, 7 ms of a cold start (utils/zoneClock.ts).
-  override fun getConstants(): Map<String, Any> =
+  override fun getTypedExportedConstants(): Map<String, Any> =
     mapOf("is24Hour" to read(), "timeZone" to java.util.TimeZone.getDefault().id)
 
-  @ReactMethod
-  fun readIs24Hour(promise: Promise) {
+  override fun readIs24Hour(promise: Promise) {
     promise.resolve(read())
   }
 
@@ -55,8 +53,7 @@ class SystemClockModule(private val reactContext: ReactApplicationContext) :
    * no permission, long before the satellites answer. It is compared on the
    * phone with what it was at the last position and goes nowhere.
    */
-  @ReactMethod
-  fun readNetworkCountryIso(promise: Promise) {
+  override fun readNetworkCountryIso(promise: Promise) {
     val iso = try {
       (reactContext.getSystemService(android.content.Context.TELEPHONY_SERVICE)
         as? android.telephony.TelephonyManager)?.networkCountryIso
@@ -76,8 +73,7 @@ class SystemClockModule(private val reactContext: ReactApplicationContext) :
    * opened, read the new one as a second journey ("still for Dubai", on an
    * Android 17 emulator).
    */
-  @ReactMethod
-  fun readTimeZone(promise: Promise) {
+  override fun readTimeZone(promise: Promise) {
     val zone = java.util.TimeZone.getDefault()
     promise.resolve(
       com.facebook.react.bridge.Arguments.createMap().apply {

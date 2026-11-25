@@ -1,4 +1,6 @@
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import NativeAdhanPlayer from './specs/NativeAdhanPlayer';
+import { nativeModule } from './nativeModule';
 
 /**
  * Foreground player for the FULL adhan recording (iOS only).
@@ -22,7 +24,7 @@ type AdhanPlayerNative = {
 // every adhan in the page, so it answers the same calls (stop above all).
 const native: AdhanPlayerNative | undefined =
   Platform.OS === 'ios' || Platform.OS === 'web'
-    ? (NativeModules.AdhanPlayer as AdhanPlayerNative | undefined)
+    ? (nativeModule(NativeAdhanPlayer, 'AdhanPlayer') as AdhanPlayerNative | undefined)
     : undefined;
 
 type BeforePlay = () => Promise<void> | void;

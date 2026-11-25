@@ -22,10 +22,12 @@
  */
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import RNShare from 'react-native-share';
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { buildSnapshot, readSnapshot, type Snapshot, type SyncSelection } from './snapshot';
 import { collectData } from './snapshotStore';
 import { quiet } from '../utils/quiet';
+import NativeSyncFolder from '../native/specs/NativeSyncFolder';
+import { nativeModule } from '../native/nativeModule';
 
 /**
  * `mihrab-backup-2026-08-19.json`.
@@ -116,7 +118,7 @@ export async function shareExportFile(result: ExportResult): Promise<boolean> {
 }
 
 /** The Android SyncFolder native module, for its create-document save. */
-const SyncFolderNative = NativeModules.SyncFolder as
+const SyncFolderNative = nativeModule(NativeSyncFolder, 'SyncFolder') as
   | {
       /** Added 2.22. Absent on an older native side — see `hasFileSaver`. */
       saveFile?(
