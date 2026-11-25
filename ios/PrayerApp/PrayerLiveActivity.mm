@@ -18,11 +18,6 @@
 
 RCT_EXPORT_MODULE(PrayerLiveActivity)
 
-+ (BOOL)requiresMainQueueSetup
-{
-  return NO;
-}
-
 - (void)start:(NSString *)json resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
 {
   [self start:json resolver:resolve rejecter:reject];

@@ -3,8 +3,10 @@
 // Uses SKStoreReviewController so no App Store numeric id is needed and the
 // user never leaves the app. iOS rate-limits the prompt system-side (max ~3
 // times/year), so calling it from an explicit "Rate Mihrab" tap is safe and
-// App Review-compliant. Registered via RCT_EXPORT_MODULE like AppVersion.m;
-// works under the new architecture through the interop layer.
+// App Review-compliant.
+//
+// StoreKit is linked by name in the project's linker flags: Objective-C++
+// does not link a framework for having imported it, as Objective-C does.
 
 #import <React/RCTBridgeModule.h>
 #import <MihrabSpec/MihrabSpec.h>

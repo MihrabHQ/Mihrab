@@ -1013,6 +1013,8 @@
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
+					"-framework",
+					StoreKit,
 				);
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hassan.prayerapp;
@@ -1062,6 +1064,8 @@
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
+					"-framework",
+					StoreKit,
 				);
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hassan.prayerapp;
