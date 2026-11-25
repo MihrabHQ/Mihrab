@@ -50,7 +50,7 @@ import type { PrayerAppSettings } from '../settings/types';
 import { distanceKm } from '../utils/coords';
 import { addDays } from '../utils/prayerTimes';
 import { requestAndroidLocationPermission } from '../utils/locationPermission';
-import { prayerSyncsAsked } from '../notifications/prayerNotifications';
+import { prayerSyncsAsked, prayerSyncsSettled } from '../notifications/prayerNotifications';
 import { resyncPrayerAlertsFromStorage } from '../notifications/afterUpdate';
 import { republishWidgetPayload } from '../widget/republishWidgetPayload';
 import { quiet } from '../utils/quiet';
@@ -68,6 +68,8 @@ export const MOVE_KM = 20;
  */
 export const NAME_WAIT_MS = 6_000;
 export const WEEK_WAIT_MS = 12_000;
+/** For Today's own write of the alerts to reach the system (see the task's end). */
+export const ALERTS_WAIT_MS = 8_000;
 
 /** `work`, or `late` once `ms` have passed (the work is left to finish). */
 function within<T, L>(work: Promise<T>, ms: number, late: L): Promise<T | L> {
@@ -345,6 +347,16 @@ export async function locationMovedTask(
     const asked = prayerSyncsAsked();
     await republishWidgetPayload('launch', now);
     await resyncPrayerAlertsFromStorage(now, asked);
+    // NOT DONE UNTIL THE ALERTS ARE WITH THE SYSTEM. With the app alive in
+    // the background Today takes the new place too (`tellLiveMove`, above)
+    // and writes the alerts itself; the write above then stands down for
+    // it (`afterUpdate.ts`). But Today's write is only on its way, and
+    // returning here gives the background time back: iOS suspended the app
+    // with the widget on the new city and every alert still on the old one
+    // — on an iPhone 13, a move handed over in the background, the new
+    // place's next prayer passed in silence (Nov 2026). So wait for every
+    // write asked for, within what the lent time allows.
+    await within(prayerSyncsSettled(), ALERTS_WAIT_MS, undefined);
     return 'moved';
   } catch (quietError) {
     quiet('location/backgroundLocation', quietError);

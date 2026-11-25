@@ -543,6 +543,20 @@ let syncsAsked = 0;
 export function prayerSyncsAsked(): number {
   return syncsAsked;
 }
+/**
+ * Every write of the schedule asked for so far has been made (or has
+ * failed). For work that runs in time that is lent — a move found in the
+ * background (`location/backgroundLocation.ts`) — and must not give the
+ * time back while Today's write, which it stood down for, is still on its
+ * way to the system: the app is suspended the moment it does, and the
+ * alerts would stay on the place left behind until the app was next opened.
+ */
+export function prayerSyncsSettled(): Promise<void> {
+  return syncChain.then(
+    () => undefined,
+    () => undefined,
+  );
+}
 export function syncPrayerNotifications(
   params: Parameters<typeof syncPrayerNotificationsNow>[0],
 ): Promise<SyncPrayerNotificationsResult> {
