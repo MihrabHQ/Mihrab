@@ -13,6 +13,7 @@ import {
   Easing,
   Pressable,
   StatusBar,
+  StyleSheet,
   Text,
   View,
   type LayoutChangeEvent,
@@ -71,6 +72,7 @@ import { publishSkyTheme, skyDayKey } from '../../theme/skyTheme';
 import { useVerticalBar } from '../../native/VerticalBar';
 import { SPACING } from '../../theme/tokens';
 import { HERO_COUNTDOWN_SIZE, HERO_SCENE_MIN, HERO_SECONDS_SIZE, type HomeTier } from './homeBudget';
+import { SETTINGS_UNDER_LINE } from './SettingsChip';
 
 import { RAIL_LINE, RAIL_TICK, RAIL_TICK_TARGET, styles } from './todayCardStyles';
 import { solidColor } from '../../theme/appPalette';
@@ -122,25 +124,31 @@ const HERO_ASCENT_EM = 0.93;
  * the ink, which changes with the sky's steps: a launch run redraws the
  * hero every frame, and these chips cost more to rebuild than the
  * countdown they sit above.
+ *
+ * The cog is in the row only while there is no Qibla chip to stand under
+ * (`settingsInRow`): otherwise it is under the chip, drawn by the hero
+ * with the band's view (SettingsChip has why).
  */
 const HeroTopRow = memo(function HeroTopRow({
   topRow,
   ink,
+  settingsInRow,
   onLayout,
 }: {
   topRow: {
     renderLocation?: (ink: SkyInkColors, column?: boolean) => ReactNode;
     renderQibla?: (ink: SkyInkColors, column?: boolean) => ReactNode;
-    renderSettings?: (ink: SkyInkColors) => ReactNode;
+    renderSettings?: (ink: SkyInkColors, under?: boolean) => ReactNode;
   };
   ink: SkyInkColors;
+  settingsInRow: boolean;
   onLayout?: (e: LayoutChangeEvent) => void;
 }) {
   return (
     <View style={styles.heroTopRow} onLayout={onLayout}>
       <View style={styles.heroTopLeading}>{topRow.renderLocation?.(ink)}</View>
       {topRow.renderQibla?.(ink)}
-      {topRow.renderSettings?.(ink)}
+      {settingsInRow ? topRow.renderSettings?.(ink) : null}
     </View>
   );
 });
@@ -228,6 +236,7 @@ export const HeroToday = memo(function HeroToday({
   tier = 'comfortable',
   bleed,
   topRow,
+  settingsUnder = false,
   ownsStatusBar = false,
   statusBarInset = 0,
   fill = false,
@@ -325,9 +334,14 @@ export const HeroToday = memo(function HeroToday({
     renderQibla?: (ink: SkyInkColors, column?: boolean) => ReactNode;
     /** Above the countdown, on the sky: the way into Help Mihrab. */
     renderHelp?: (ink: SkyInkColors) => ReactNode;
-    /** The trailing end of the row, on every face: the way into Settings. */
-    renderSettings?: (ink: SkyInkColors) => ReactNode;
+    /** The way into Settings, on every face — `under` the Qibla chip on the full page (SettingsChip). */
+    renderSettings?: (ink: SkyInkColors, under?: boolean) => ReactNode;
   };
+  /**
+   * The full page has a Qibla chip for the cog to stand under. Without
+   * one (no place yet) the cog is in the row, where the chip would be.
+   */
+  settingsUnder?: boolean;
   /** The status bar's glyphs follow the sky while this hero is on screen. */
   ownsStatusBar?: boolean;
   /** The status bar's height, which the sky's bodies keep out of. */
@@ -372,6 +386,9 @@ export const HeroToday = memo(function HeroToday({
   // iPhone Duo: the location and the Qibla stand in the vertical bar's
   // column instead (HomeScreen hands them to the tab bar there).
   const vbar = useVerticalBar();
+  // The cog under the Qibla chip: the full page's, where there is a chip
+  // (SettingsChip). Beside the bar the column has it; Minimal's is in its row.
+  const cogUnder = settingsUnder && fill && !minimal && !vbar && !!topRow?.renderSettings;
   const { t, i18n } = useTranslation();
   const rtl = isRtlLanguage(i18n.language);
   const clock = useClockFormatter();
@@ -1064,7 +1081,13 @@ export const HeroToday = memo(function HeroToday({
   // In the card the sky bleeds past the box by the hero's own padding, so
   // the band's top is the bleed and the top row, as the status bar and the
   // top row are on the page.
-  const sceneTop = banded ? (fill ? statusBarInset : bleedTop + (expanded ? SPACING.md : 0)) + topRowH + SPACING.md : 0;
+  //
+  // And the cog's line, where it stands under the Qibla chip: the air
+  // under the top row is its, so the band begins at that air's foot — at
+  // the top of the band's own view — and not at the row's (SettingsChip).
+  const sceneTop = banded
+    ? (fill ? statusBarInset : bleedTop + (expanded ? SPACING.md : 0)) + topRowH + SPACING.md + (cogUnder ? SETTINGS_UNDER_LINE : 0)
+    : 0;
   const sceneBottom = banded && block ? heroH - block.y + bleedBottom : 0;
 
 
@@ -1133,22 +1156,36 @@ export const HeroToday = memo(function HeroToday({
       {minimal ? (
         // Minimal keeps the heart, at the trailing end of the top row
         // where the Qibla chip stood — the way into Help Mihrab, and (as
-        // on the full page) the place to put it away — and the cog after
-        // it, the corner Settings has on every face of Today.
+        // on the full page) the place to put it away — and the cog at
+        // the row's other end: the two things the row has, one to a
+        // corner, where they stood side by side as a pair of icons with
+        // nothing to say which was which.
         topRow?.renderHelp || topRow?.renderSettings ? (
           <View style={styles.heroTopRow} onLayout={banded ? onTopRowLayout : undefined}>
-            <View style={styles.heroTopLeading} />
+            <View style={styles.heroTopCog}>{topRow.renderSettings?.(inkRow)}</View>
+            <View style={styles.heroTopSpacer} />
             {topRow.renderHelp?.(inkRow)}
-            {topRow.renderSettings?.(inkRow)}
           </View>
         ) : null
       ) : topRow && fill && vbar ? null : topRow ? (
-        <HeroTopRow topRow={topRow} ink={inkRow} onLayout={banded ? onTopRowLayout : undefined} />
+        <HeroTopRow topRow={topRow} ink={inkRow} settingsInRow={!cogUnder} onLayout={banded ? onTopRowLayout : undefined} />
       ) : null}
       {/* The room the sky's bodies move in. */}
       {/* The dashboard's card does not grow, so its band is a fixed
           height — the room a desktop has to spare — rather than a share. */}
-      {fill ? (
+      {fill && cogUnder ? (
+        // The band, and the cog rising out of its top into the air under
+        // the row: a child of this view, and after the Track's tap target,
+        // so a touch on the cog is the cog's.
+        <View style={[styles.heroScene, { minHeight: HERO_SCENE_MIN[tier] }]}>
+          {track ? (
+            <TrackExplainer kind={track.kind} prayer={targetLabel} onPress={explain.toggle} style={StyleSheet.absoluteFill} />
+          ) : null}
+          <View style={styles.heroCogUnder} pointerEvents="box-none">
+            {topRow?.renderSettings?.(inkRow, true)}
+          </View>
+        </View>
+      ) : fill ? (
         track ? (
           // Under the Track the band is a tap target that explains the chart.
           <TrackExplainer

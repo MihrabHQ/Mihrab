@@ -4,6 +4,7 @@
  */
 import { Platform, StyleSheet } from 'react-native';
 import { HOME_SCREEN_PADDING, HOME_TABLE_RADIUS } from './tokens';
+import { SETTINGS_UNDER_RISE } from './SettingsChip';
 import { SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 
@@ -120,6 +121,21 @@ export const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginStart: -SPACING.sm,
   },
+  /**
+   * Minimal's cog, at the row's leading end: its glyph ON the hero's
+   * content edge, as the location's pin is on the full page — the chip
+   * pads its glyph by `xs`, which the margin takes back.
+   */
+  heroTopCog: { marginStart: -SPACING.xs },
+  /** Between Minimal's cog and its heart: the row's whole middle, which the heart's line opens across. */
+  heroTopSpacer: { flexGrow: 1, flexShrink: 1 },
+  /**
+   * The cog under the Qibla chip: out of the band's top by its own
+   * height, into the air under the top row (SettingsChip has the sum),
+   * at the hero's trailing edge — `end`, so it is under the chip in
+   * Arabic and Urdu too, where the chip is on the left.
+   */
+  heroCogUnder: { position: 'absolute', top: -SETTINGS_UNDER_RISE, end: 0 },
   hero: {},
   heroExpanded: { paddingVertical: SPACING.md },
   heroFill: { flexGrow: 1, flexShrink: 0, flexBasis: 'auto' },

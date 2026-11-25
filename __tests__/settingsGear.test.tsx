@@ -22,6 +22,10 @@ import { create } from 'react-test-renderer';
 import { act } from 'react';
 import { Path } from 'react-native-svg';
 import { SettingsGearIcon } from '../src/theme/icons';
+import { SETTINGS_UNDER_LINE, SETTINGS_UNDER_RISE } from '../src/screens/home/SettingsChip';
+import { MOON, SKY_CRAMPED_BELOW, STAR_FIELD_TOP, SUN_R, skyScene } from '../src/screens/home/HeroSky';
+import { HERO_SCENE_MIN, HOME_TIERS } from '../src/screens/home/homeBudget';
+import { SPACING } from '../src/theme/tokens';
 
 /** The opening of Lucide's cog outline — the shared gear's own path. */
 const COG_PATH_PREFIX = 'M12.22 2h-.44';
@@ -99,5 +103,132 @@ describe("Today's way into Settings", () => {
       'utf-8',
     );
     expect(tabs).not.toMatch(/name="SettingsTab"/);
+  });
+});
+
+/**
+ * Where the cog stands on Today's two faces.
+ *
+ * It stood after the Qibla chip in the hero's top row, and
+ * "◎ Qibla 148° ⚙" read as one chip with an icon at each end. On the full
+ * page it is now under the chip; under Minimal at the row's leading end,
+ * the heart at the other.
+ *
+ * Under the chip is where the sky used to begin: the sun, the moon and
+ * the stars were laid out from the top row's foot down. So the band they
+ * are laid out in begins at the cog's foot instead, and these hold that
+ * — for every size the page is drawn at, and without a point of height
+ * added to it.
+ */
+describe('the cog on the full page, under the Qibla chip', () => {
+  const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', p), 'utf-8');
+  const hero = read('HeroToday.tsx');
+  const card = read('TodayCard.tsx');
+  const styles = read('todayCardStyles.ts');
+  const chip = read('SettingsChip.tsx');
+
+  it('stands in the air the top row already had under it, so the page is no taller', () => {
+    // The row's own bottom margin is the cog's line…
+    expect(styles).toMatch(/heroTopRow: \{[^}]*marginBottom: SPACING\.md[^}]*\}/s);
+    expect(SETTINGS_UNDER_LINE).toBe(SPACING.md);
+    // …and the glyph ends exactly where that air ends: the top of the band's view.
+    const glyph = Number(/const GLYPH_UNDER = (\d+);/.exec(chip)?.[1]);
+    const padTop = Number(/const UNDER_PAD_TOP = (\d+);/.exec(chip)?.[1]);
+    expect(padTop + glyph).toBe(SETTINGS_UNDER_RISE);
+    expect(styles).toMatch(/heroCogUnder: \{ position: 'absolute', top: -SETTINGS_UNDER_RISE, end: 0 \}/);
+    expect(chip).toMatch(/under: \{\s*paddingTop: UNDER_PAD_TOP,/);
+  });
+
+  it('is on the trailing side in both directions: `end`, never a physical side', () => {
+    expect(styles).toMatch(/heroCogUnder: \{[^}]*\bend: 0[^}]*\}/);
+    expect(styles).not.toMatch(/heroCogUnder: \{[^}]*\b(left|right):/);
+    expect(chip).toMatch(/paddingStart: SPACING\.md \+ 2,\s*paddingEnd: SPACING\.sm,/);
+    // The Qibla chip pads its words by the same `sm`: the glyph's edge is under the bearing's.
+    expect(read('QiblaChip.tsx')).toMatch(/chip: \{[^}]*paddingHorizontal: SPACING\.sm/s);
+  });
+
+  it('the sky’s band begins at its foot: nothing is laid out behind the glyph', () => {
+    expect(hero).toMatch(/\+ topRowH \+ SPACING\.md \+ \(cogUnder \? SETTINGS_UNDER_LINE : 0\)/);
+    // In the sky's own measure: the row's foot, then the cog's line, then the band.
+    for (const tier of HOME_TIERS) {
+      for (const sceneH of [HERO_SCENE_MIN[tier], 96, 160, 320]) {
+        const rowFoot = 24 + SPACING.md + 40;
+        const glyphFoot = rowFoot + SETTINGS_UNDER_LINE;
+        const sceneTop = rowFoot + SETTINGS_UNDER_LINE;
+        const sceneBottom = 180;
+        const scene = skyScene({ height: sceneTop + sceneH + sceneBottom, sceneTop, sceneBottom });
+        // The highest star, the moon at its highest and the sun at noon.
+        expect(scene.starY(STAR_FIELD_TOP)).toBeGreaterThanOrEqual(glyphFoot);
+        expect(scene.y(0.08) - MOON / 2).toBeGreaterThanOrEqual(glyphFoot);
+        expect(scene.y(0.08) - SUN_R).toBeGreaterThanOrEqual(glyphFoot);
+      }
+    }
+  });
+
+  it('where the band used to begin, the highest star and a high moon were behind it', () => {
+    // Why the band moved: laid out from the row's foot, as it was.
+    const rowFoot = 24 + SPACING.md + 40;
+    const glyphFoot = rowFoot + SETTINGS_UNDER_LINE;
+    for (const tier of HOME_TIERS) {
+      const room = SPACING.md + HERO_SCENE_MIN[tier];
+      const before = skyScene({ height: rowFoot + room + 180, sceneTop: rowFoot, sceneBottom: 180 });
+      expect(before.starY(STAR_FIELD_TOP)).toBeLessThan(glyphFoot);
+      expect(before.y(0.08) - MOON / 2).toBeLessThan(glyphFoot);
+    }
+  });
+
+  it('the smallest page still has a sky with a sun and a moon in it', () => {
+    // The band is now the band's own view and no more — the twelve points
+    // above it are the cog's — so each tier's floor is the room itself.
+    for (const tier of HOME_TIERS) {
+      expect(HERO_SCENE_MIN[tier]).toBeGreaterThanOrEqual(SKY_CRAMPED_BELOW);
+      const scene = skyScene({ height: 88 + HERO_SCENE_MIN[tier] + 180, sceneTop: 88, sceneBottom: 180 });
+      expect(scene.cramped).toBe(false);
+    }
+  });
+
+  it('is under the chip only where there is a chip, and never beside the iPhone’s vertical bar', () => {
+    expect(card).toContain('const settingsUnder = fullBleed && !minimal && qiblaBearing != null;');
+    // Both heroes — the live one and the posed twin the launch picture is drawn from.
+    expect(card.match(/settingsUnder=\{settingsUnder\}/g)).toHaveLength(2);
+    expect(hero).toContain("const cogUnder = settingsUnder && fill && !minimal && !vbar && !!topRow?.renderSettings;");
+    // No chip (no place yet): the cog keeps the row's end.
+    expect(hero).toContain('{settingsInRow ? topRow.renderSettings?.(ink) : null}');
+    expect(hero).toContain('settingsInRow={!cogUnder}');
+  });
+
+  it('is a child of the band’s view, after the Track’s tap target: a touch on it is its own', () => {
+    const at = hero.indexOf('{fill && cogUnder ? (');
+    expect(at).toBeGreaterThan(-1);
+    const band = hero.slice(at, hero.indexOf(') : fill ? (', at));
+    expect(band.indexOf('<TrackExplainer')).toBeGreaterThan(-1);
+    expect(band.indexOf('styles.heroCogUnder')).toBeGreaterThan(band.indexOf('<TrackExplainer'));
+    expect(band).toContain('{topRow?.renderSettings?.(inkRow, true)}');
+    // And it takes no touch upward, where the Qibla chip's own is.
+    expect(chip).toMatch(/const UNDER_HIT_SLOP = \{ top: 0,/);
+  });
+});
+
+describe('the cog under Minimal, across the row from the heart', () => {
+  const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', p), 'utf-8');
+  const hero = read('HeroToday.tsx');
+  const styles = read('todayCardStyles.ts');
+
+  it('leads the row, the heart ends it, and the row’s middle is between them', () => {
+    const at = hero.indexOf('<View style={styles.heroTopCog}>');
+    expect(at).toBeGreaterThan(-1);
+    const row = hero.slice(at, hero.indexOf('</View>\n        ) : null', at));
+    const cog = row.indexOf('{topRow.renderSettings?.(inkRow)}');
+    const gap = row.indexOf('<View style={styles.heroTopSpacer} />');
+    const heart = row.indexOf('{topRow.renderHelp?.(inkRow)}');
+    expect(cog).toBeGreaterThan(-1);
+    expect(gap).toBeGreaterThan(cog);
+    expect(heart).toBeGreaterThan(gap);
+  });
+
+  it('its glyph is on the page’s edge, by `start` — the right-hand edge in Arabic and Urdu', () => {
+    expect(styles).toMatch(/heroTopCog: \{ marginStart: -SPACING\.xs \}/);
+    expect(read('SettingsChip.tsx')).toMatch(/chip: \{[^}]*padding: SPACING\.xs/s);
+    expect(styles).toMatch(/heroTopSpacer: \{ flexGrow: 1, flexShrink: 1 \}/);
   });
 });
