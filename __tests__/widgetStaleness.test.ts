@@ -165,7 +165,7 @@ describe('ios asks for a redraw without being throttled', () => {
     'utf8',
   );
   const bridge = readFileSync(
-    path.join(__dirname, '..', 'ios', 'PrayerApp', 'PrayerWidget.m'),
+    path.join(__dirname, '..', 'ios', 'PrayerApp', 'PrayerWidget.mm'),
     'utf8',
   );
 
@@ -190,7 +190,7 @@ describe('ios asks for a redraw without being throttled', () => {
     // The extension is a separate process with its own view of the group
     // container. Every other writer in that file already synchronized.
     const setData = bridge.slice(
-      bridge.indexOf('RCT_EXPORT_METHOD(setData'),
+      bridge.indexOf('- (void)setData:'),
       bridge.indexOf('takeLogQueue'),
     );
     expect(setData).toContain('[store synchronize]');

@@ -41,7 +41,7 @@ describe('Android', () => {
 });
 
 describe('iOS', () => {
-  const m = code(read('ios/PrayerApp/SecureStore.m'));
+  const m = code(read('ios/PrayerApp/SecureStore.mm'));
 
   it('finds items as the library stored them: generic passwords by account alone', () => {
     expect(m.match(/kSecClass : \(__bridge id\)kSecClassGenericPassword/g)).toHaveLength(3);
@@ -58,13 +58,15 @@ describe('iOS', () => {
 
   it('has no way to wipe the whole Keychain', () => {
     expect(m).not.toMatch(/RCT_EXPORT_METHOD\(clear/);
+    expect(m).not.toMatch(/- \(void\)clear/);
+    expect(read('src/native/specs/NativeMihrabSecureStore.ts')).not.toMatch(/clear/);
     expect(m).not.toContain('kSecClassIdentity');
   });
 
   it('is compiled into the app, under the name the JS asks for', () => {
     expect(m).toContain('RCT_EXPORT_MODULE(MihrabSecureStore)');
     const project = read('ios/PrayerApp.xcodeproj/project.pbxproj');
-    expect(project.match(/SecureStore\.m in Sources \*\/,/g)).toHaveLength(1);
+    expect(project.match(/SecureStore\.mm in Sources \*\/,/g)).toHaveLength(1);
   });
 });
 

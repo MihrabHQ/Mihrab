@@ -30,7 +30,9 @@ describe('background location on the iPhone (preview)', () => {
     // Only a fresh position says when (confirmPlace); see BackgroundLocation.ts.
     expect(swift).toMatch(/func setPlace\(latitude: Double, longitude: Double\) \{\s+if defaults\.object\(forKey: Key\.placeLat\) != nil,\s+defaults\.double\(forKey: Key\.placeLat\) == latitude,\s+defaults\.double\(forKey: Key\.placeLng\) == longitude \{\s+return/);
     expect(swift).toMatch(/func confirmPlace\(\) \{\s+defaults\.set\(Date\(\)\.timeIntervalSince1970, forKey: Key\.placeAt\)/);
-    expect(read('ios/PrayerApp/BackgroundLocation.m')).toContain('RCT_EXTERN_METHOD(confirmPlace)');
+    // In the contract both platforms are built against, and adopted on iOS.
+    expect(read('src/native/specs/NativeBackgroundLocation.ts')).toContain('confirmPlace(): void;');
+    expect(read('ios/PrayerApp/BackgroundLocation.mm')).toContain('@interface BackgroundLocation (Turbo) <NativeBackgroundLocationSpec>');
   });
 
   it('a new time zone under a running app starts its JavaScript again', () => {
@@ -72,7 +74,7 @@ describe('background location on the iPhone (preview)', () => {
   it('is in the Xcode project, and the permission text says it is optional', () => {
     const project = read('ios/PrayerApp.xcodeproj/project.pbxproj');
     expect(project).toContain('BackgroundLocation.swift in Sources');
-    expect(project).toContain('BackgroundLocation.m in Sources');
+    expect(project).toContain('BackgroundLocation.mm in Sources');
     const plist = read('ios/PrayerApp/Info.plist');
     const always = /<key>NSLocationAlwaysAndWhenInUseUsageDescription<\/key>\s*<string>([^<]+)<\/string>/.exec(plist)![1];
     expect(always).toMatch(/^Optional\./);

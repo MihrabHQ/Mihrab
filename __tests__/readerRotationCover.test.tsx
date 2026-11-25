@@ -258,7 +258,9 @@ describe('the platform raises its cover at the turn itself', () => {
   });
 
   it('never on the Mac, where a window is resized rather than turned', () => {
-    const swift = read('ios/PrayerApp/MihrabRotationCover.swift');
-    expect(swift).toMatch(/#if targetEnvironment\(macCatalyst\)\s*return \["enabled": false\]/);
+    // The module's one constant, stated beside its contract.
+    const module = read('ios/PrayerApp/MihrabRotationCover.mm');
+    expect(module).toMatch(/#if TARGET_OS_MACCATALYST\s*BOOL enabled = NO;\s*#else\s*BOOL enabled = YES;/);
+    expect(module).toMatch(/typedConstants<JS::NativeMihrabRotationCover::Constants>\(\{\.enabled = \(bool\)enabled\}\)/);
   });
 });
