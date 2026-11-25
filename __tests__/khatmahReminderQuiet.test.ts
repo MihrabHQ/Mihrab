@@ -7,7 +7,7 @@
  * That is the one notification in the app that lands on the person who
  * kept the promise.
  */
-import notifee from '@notifee/react-native';
+import notifee from '../src/native/Alerts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   khatmahReminderDue,

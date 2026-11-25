@@ -12,7 +12,7 @@
  *      gap, prayer alerts silently disappeared.
  */
 
-import notifee from '@notifee/react-native';
+import notifee from '../src/native/Alerts';
 import { Platform } from 'react-native';
 import {
   clampPrePrayerReminderMinutes,

@@ -53,3 +53,18 @@ Community and copyright Facebook, Inc. and its affiliates, under the MIT
 licence (LICENSE beside the Android code, MihrabGeolocation.LICENSE beside the
 iOS code), with this project's changes: the module's name, the Play Services
 path removed, and a lost permission answered as an error.
+
+The notification engine is Notifee 9.1.8, copyright 2016-present Invertase
+Limited, under the Apache License 2.0: its Android core and React Native
+bridge in android/alerts/, its iOS ones in ios/Alerts/, its JavaScript in
+src/native/notifee/, each with the licence beside it. It is no longer
+maintained upstream and is kept here so it can be. Changed from the release,
+so far: the two Android manifests are one; the build files are this
+project's; NotificationAndroidStyleModel.java names the overload it calls
+(bigLargeIcon((Bitmap) null)); in the TypeScript, one type React Native no
+longer exports is declared locally, four values are asserted non-null, lint
+comments that no longer apply are gone, the unused web stub
+(NotifeeNativeModule.web.ts) is removed, and documentation links in comments
+are written without their scheme (this project's network test reads every
+host named in src/ as one the app may contact). Files changed later say so in the
+file.

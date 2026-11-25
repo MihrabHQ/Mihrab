@@ -14,7 +14,7 @@
  * because the adhan can reach a notification through any of them and
  * closing one is not closing the others.
  */
-import notifee from '@notifee/react-native';
+import notifee from '../src/native/Alerts';
 import { Platform } from 'react-native';
 import { syncPrayerNotifications } from '../src/notifications/prayerNotifications';
 import { adhanMuteToggleTask } from '../src/notifications/adhanMute';

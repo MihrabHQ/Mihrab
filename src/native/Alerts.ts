@@ -7,17 +7,18 @@
  * else in `src/` or `index.js` names the library underneath
  * (`__tests__/alertsThroughOneDoor.test.ts`).
  *
- * WHAT IS BEHIND IT. Today: notifee, re-exported whole and unchanged, so
- * this file changes nothing about what is posted or when. Notifee is no
- * longer maintained, and the alerts are the one part of the app that must
- * not depend on code nobody looks after; a module of our own is to take
- * its place. With one door that is a change to this file — and to the
- * native side — not to thirty callers, and it can be made, and undone,
- * in one commit.
+ * WHAT IS BEHIND IT. Notifee 9.1.8, in our tree and built from source:
+ * its JavaScript in `src/native/notifee/`, its Android engine and bridge
+ * in `android/alerts/`, its iOS ones in `ios/Alerts/`. The npm package is
+ * gone. Notifee is no longer maintained (and Apache-2.0); the alerts are
+ * the one part of the app that must not depend on code nobody looks
+ * after, so it is ours to fix now. It was brought over unchanged — what
+ * is posted, and when, is what it was — and `android/alerts/build.gradle`
+ * says what must never be renamed in it.
  *
  * The API is notifee's: the default export is its module object, the
- * named exports its enums and types. A test that mocks
- * `@notifee/react-native` mocks what comes through here.
+ * named exports its enums and types. A test mocks THIS file
+ * (jest.setup.js does, for every suite).
  */
-export { default } from '@notifee/react-native';
-export * from '@notifee/react-native';
+export { default } from './notifee';
+export * from './notifee';

@@ -6,7 +6,7 @@
  * previous implementation would have passed every parsing test in the world
  * while writing nothing at all.
  */
-import { EventType } from '@notifee/react-native';
+import { EventType } from '../src/native/Alerts';
 
 // `mock`-prefixed so jest allows the factories below to close over them.
 const mockStore = new Map<string, string>();
@@ -25,7 +25,7 @@ jest.mock('../src/storage/durableWrite', () => ({
 const mockCancelNotification = jest.fn(async () => {});
 const mockCancelTrigger = jest.fn(async () => {});
 const cancelNotification = mockCancelNotification;
-jest.mock('@notifee/react-native', () => ({
+jest.mock('../src/native/Alerts', () => ({
   __esModule: true,
   default: {
     cancelNotification: (...a: unknown[]) =>

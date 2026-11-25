@@ -55,6 +55,8 @@ src/
 ├── journal/                  The prayer log (windows, late marking, timing)
 ├── liveActivity/             Cross-platform Live Activity orchestrator (syncLiveActivity.ts)
 ├── native/                   Typed wrappers for Android+iOS native modules (§5)
+│                             Alerts.ts is the one door to notifications; behind it,
+│                             native/notifee/ (notifee, in-tree — also android/alerts/, ios/Alerts/)
 ├── navigation/               Tabs, stacks, deep links
 ├── notifications/            notifee schedulers: prayer alerts, the full-screen alarm,
 │                             Do Not Disturb, fasting and dua reminders, Live Activity

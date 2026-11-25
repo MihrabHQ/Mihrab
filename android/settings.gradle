@@ -3,4 +3,6 @@ plugins { id("com.facebook.react.settings") }
 extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
 rootProject.name = "PrayerApp"
 include ':app'
+// The alerts' engine (notifee, built from source in our tree): android/alerts/build.gradle
+include ':alerts'
 includeBuild('../node_modules/@react-native/gradle-plugin')

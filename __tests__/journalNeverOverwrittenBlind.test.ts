@@ -28,7 +28,7 @@ jest.mock('../src/native/SecureStore', () => ({
   __esModule: true,
   default: { getItem: jest.fn(), setItem: jest.fn(), removeItem: jest.fn() },
 }));
-jest.mock('@notifee/react-native', () => ({
+jest.mock('../src/native/Alerts', () => ({
   __esModule: true,
   default: {
     cancelNotification: async () => {},

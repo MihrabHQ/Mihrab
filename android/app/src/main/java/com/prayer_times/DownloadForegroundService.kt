@@ -69,8 +69,10 @@ class DownloadForegroundService : ForegroundService() {
   }
 
   private fun forget() {
-    ForegroundService.a = null
-    ForegroundService.b = -1
+    // By their names, now that the engine is built from source (they were
+    // `a` and `b` in the prebuilt, minified core).
+    ForegroundService.mCurrentNotificationId = null
+    ForegroundService.mCurrentForegroundServiceType = -1
   }
 
   private companion object {

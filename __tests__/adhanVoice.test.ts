@@ -5,7 +5,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import notifee from '@notifee/react-native';
+import notifee from '../src/native/Alerts';
 import { Platform } from 'react-native';
 import {
   DEFAULT_ADHAN_SOUND,

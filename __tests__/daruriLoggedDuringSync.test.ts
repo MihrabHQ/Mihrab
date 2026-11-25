@@ -13,7 +13,7 @@ const mockCancel = jest.fn();
 const mockCreate = jest.fn();
 const mockStored = jest.fn();
 
-jest.mock('@notifee/react-native', () => ({
+jest.mock('../src/native/Alerts', () => ({
   __esModule: true,
   default: {
     getTriggerNotificationIds: (...a: unknown[]) => mockGetIds(...a),
