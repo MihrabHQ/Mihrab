@@ -64,6 +64,7 @@ import {
 import { hasFilePicker, pickFile } from '../native/FilePicker';
 import { utf8Decode } from '../sync/secureRandom';
 import { useScrollBottomInset } from '../navigation/pageBottom';
+import { solidColor } from '../theme/appPalette';
 
 /** Rows in the order someone thinks about their own data. */
 const ROWS: SyncCategory[] = [
@@ -106,7 +107,7 @@ function CategoryRow({
         value={value}
         onValueChange={onChange}
         disabled={disabled}
-        trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+        trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
         thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
       />
     </View>
@@ -368,7 +369,7 @@ export function BackupScreen() {
             ]}
           >
             {busy ? (
-              <ActivityIndicator color={String(palette.bg)} />
+              <ActivityIndicator color={solidColor(palette, 'bg')} />
             ) : (
               <Text style={[typeStyle('headline'), { color: palette.bg }]}>
                 {t('sync.exportCta', 'Export to a file')}
@@ -449,7 +450,7 @@ export function BackupScreen() {
               'sync.importPastePlaceholder',
               'Paste the backup file',
             )}
-            placeholderTextColor={String(palette.muted)}
+            placeholderTextColor={palette.mutedSolid}
             multiline
             numberOfLines={6}
             autoCapitalize="none"
@@ -504,7 +505,7 @@ export function BackupScreen() {
             ]}
           >
             {busy ? (
-              <ActivityIndicator color={String(palette.bg)} />
+              <ActivityIndicator color={solidColor(palette, 'bg')} />
             ) : (
               <Text style={[typeStyle('headline'), { color: palette.bg }]}>
                 {pending

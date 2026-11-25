@@ -73,6 +73,7 @@ import { SPACING } from '../../theme/tokens';
 import { HERO_COUNTDOWN_SIZE, HERO_SCENE_MIN, HERO_SECONDS_SIZE, type HomeTier } from './homeBudget';
 
 import { RAIL_LINE, RAIL_TICK, RAIL_TICK_TARGET, styles } from './todayCardStyles';
+import { solidColor } from '../../theme/appPalette';
 
 /** Minimal under the Track: the chart goes on under the line to its floor (see `trackDepth`). */
 const MINIMAL_TRACK_DEPTH = true;
@@ -519,7 +520,7 @@ export const HeroToday = memo(function HeroToday({
    */
   const { palette: pagePalette } = useAppPalette();
   const heroVariant: SkyVariant = skyTheme ? skyVariant : 'realistic';
-  const pageBg = String(pagePalette.bg);
+  const pageBg = solidColor(pagePalette, 'bg');
   const pageDark = pagePalette.isDark;
   // Where the sky starts fading into a page of the other polarity: just
   // under the countdown block's foot, once the growing hero has measured

@@ -113,7 +113,7 @@ export function TajweedAyahSection({
                   surah={surah}
                   ayah={ayah}
                   fontSize={AYAH_FONT_SIZE}
-                  color={String(palette.text)}
+                  color={palette.textSolid}
                   onWordPress={w => {
                     if (!w.isEnd) speakWord(surah, ayah, w.position);
                   }}
@@ -160,7 +160,7 @@ export function TajweedAyahSection({
                                 <TajweedWordGlyph
                                   word={glyph}
                                   fontSize={CHIP_FONT_SIZE}
-                                  color={String(palette.text)}
+                                  color={palette.textSolid}
                                 />
                               ) : (
                                 <Text style={[styles.chipText, { color: palette.text }]}>{w.text}</Text>

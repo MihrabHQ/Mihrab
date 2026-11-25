@@ -1422,7 +1422,7 @@ export function MushafJumpModal({
           maxLength={3}
           accessibilityLabel={t('quran.jumpToPage', 'Go to page')}
           placeholder={`1–${totalPages}`}
-          placeholderTextColor={String(palette.muted)}
+          placeholderTextColor={palette.mutedSolid}
           style={[
             styles.jumpInput,
             { color: palette.text, borderColor: palette.border },

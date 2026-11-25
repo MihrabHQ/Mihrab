@@ -135,7 +135,7 @@ export function SkyThemeOffer({ ready }: { ready: boolean }) {
           testID="sky-offer-strip"
           variant={settings.skyVariant}
           selected={false}
-          accent={String(palette.accent)}
+          accent={palette.accentSolid}
           accessibilityLabel={t('settings.themeSky')}
           onPress={trySky}
         />

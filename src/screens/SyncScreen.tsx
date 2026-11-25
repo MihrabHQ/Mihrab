@@ -94,6 +94,7 @@ import { Chip } from '../components/controls';
 import { SYNC_CATEGORIES, type SyncCategory } from '../sync/snapshot';
 import { useScrollBottomInset } from '../navigation/pageBottom';
 import { GarminWatchCard } from './settings/GarminWatchCard';
+import { solidColor } from '../theme/appPalette';
 
 type Palette = ReturnType<typeof useAppPalette>['palette'];
 
@@ -192,7 +193,7 @@ function PeerRow({
           onEndEditing={() => onRename(name)}
           onSubmitEditing={() => onRename(name)}
           placeholder={t('sync.unnamedDevice')}
-          placeholderTextColor={String(palette.muted)}
+          placeholderTextColor={palette.mutedSolid}
           maxLength={MAX_DEVICE_NAME}
           style={[typeStyle('body'), styles.peerName, { color: palette.text }]}
         />
@@ -776,7 +777,7 @@ export function SyncScreen() {
               ]}
             >
               {syncing ? (
-                <ActivityIndicator color={String(palette.bg)} />
+                <ActivityIndicator color={solidColor(palette, 'bg')} />
               ) : (
                 <Text style={[typeStyle('headline'), { color: palette.bg }]}>
                   {t('sync.syncNow')}
@@ -835,7 +836,7 @@ export function SyncScreen() {
             onEndEditing={() => onRenameSelf(deviceName)}
             onSubmitEditing={() => onRenameSelf(deviceName)}
             placeholder={defaultDeviceName()}
-            placeholderTextColor={String(palette.muted)}
+            placeholderTextColor={palette.mutedSolid}
             maxLength={MAX_DEVICE_NAME}
             style={[
               typeStyle('body'),
@@ -884,7 +885,7 @@ export function SyncScreen() {
               </Pressable>
             </>
           ) : (
-            <ActivityIndicator color={String(palette.accent)} />
+            <ActivityIndicator color={palette.accentSolid} />
           )}
         </View>
 
@@ -903,7 +904,7 @@ export function SyncScreen() {
             value={entered}
             onChangeText={setEntered}
             placeholder={t('sync.codePlaceholder')}
-            placeholderTextColor={String(palette.muted)}
+            placeholderTextColor={palette.mutedSolid}
             autoCapitalize="characters"
             autoCorrect={false}
             multiline
@@ -965,7 +966,7 @@ export function SyncScreen() {
               ]}
             >
               {busy ? (
-                <ActivityIndicator color={String(palette.bg)} />
+                <ActivityIndicator color={solidColor(palette, 'bg')} />
               ) : (
                 <Text style={[typeStyle('headline'), { color: palette.bg }]}>
                   {t('sync.addCta')}
@@ -1004,7 +1005,7 @@ export function SyncScreen() {
           )}
           {watching ? (
             <View style={styles.watching}>
-              <ActivityIndicator size="small" color={String(palette.muted)} />
+              <ActivityIndicator size="small" color={palette.mutedSolid} />
               <Text style={[typeStyle('footnote'), styles.watchingText, { color: palette.muted }]}>
                 {watching === 'answer'
                   ? t('sync.watchingAnswer', {
@@ -1039,7 +1040,7 @@ export function SyncScreen() {
                 accessibilityLabel={t(`sync.category.${category}`)}
                 value={settings?.selection[category] ?? false}
                 onValueChange={next => onToggleCategory(category, next)}
-                trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+                trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
                 thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
               />
             </View>

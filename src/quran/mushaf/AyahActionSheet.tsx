@@ -894,7 +894,7 @@ export function AyahActionSheet({
                 surah={surah}
                 ayah={ayah}
                 fontSize={AYAH_GLYPH_SIZE}
-                color={String(palette.text)}
+                color={palette.textSolid}
                 glyphs={tajweedColoursShown(shownRiwayah, state.prefs.tajweedColours) ? 'tajweed' : 'v2'}
                 onWordPress={
                   panel === 'tajweed'

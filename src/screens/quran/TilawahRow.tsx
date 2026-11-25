@@ -122,7 +122,7 @@ export function TilawahRow() {
         hitSlop={8}
         onPress={() => void listenNextSurah()}
         style={({ pressed }) => [styles.next, pressed && styles.pressed]}>
-        <NextIcon color={String(palette.text)} />
+        <NextIcon color={palette.textSolid} />
       </Pressable>
     </View>
   );

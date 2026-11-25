@@ -34,6 +34,7 @@ import { RADIUS, SPACING } from '../theme/tokens';
 import { typeStyle } from '../theme/typography';
 import { setQuranPrefs, useQuranPrefs } from './quranState';
 import { resolveRiwayah, riwayahById } from './riwayat';
+import { solidColor } from '../theme/appPalette';
 
 export type QuranFeature = 'tajweedColours' | 'wordReader';
 
@@ -177,7 +178,7 @@ export function QuranFeaturesOfferSheet({
                   testID={`quran-offer-switch-${f}`}
                   value={picked[f]}
                   onValueChange={v => setPicked(p => ({ ...p, [f]: v }))}
-                  trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+                  trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
                   thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
                 />
               }

@@ -33,6 +33,7 @@ import {
 } from './rules';
 import { speakWord } from './TajweedAyahSection';
 import { TajweedSwatch } from './TajweedText';
+import { solidColor } from '../../theme/appPalette';
 
 /** The legend's one line per colour: family, and for the reds, the length. */
 const LEGEND: ReadonlyArray<{ rule: TajweedRule['id']; family: TajweedFamilyId }> = [
@@ -109,7 +110,7 @@ export function TajweedGuideScreen() {
               value={prefs.tajweedColours && coloured}
               onValueChange={next => setQuranPrefs({ tajweedColours: next })}
               accessibilityLabel={t('tajweed.toggle', 'Colour the mushaf by tajweed rule')}
-              trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+              trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
               thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
             />
           </View>

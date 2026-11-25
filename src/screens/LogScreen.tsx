@@ -130,6 +130,7 @@ import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
 import { useHijriCalendarVersion } from '../hijri/useHijriCalendarVersion';
+import { solidColor } from '../theme/appPalette';
 
 const PRAYERS: JournalPrayer[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 const STATUSES: JournalStatus[] = ['on-time', 'late', 'missed', 'qadha'];
@@ -1217,7 +1218,7 @@ export function LogScreen() {
                 },
               ]}
             >
-              <Text style={[styles.owedHint, { color: String(palette.danger) }]}>
+              <Text style={[styles.owedHint, { color: solidColor(palette, 'danger') }]}>
                 {t('stats.owedHint', 'Tap a day to make it up')}
               </Text>
               <View style={styles.owedChips}>
@@ -1232,7 +1233,7 @@ export function LogScreen() {
                       styles.owedChip,
                       {
                         backgroundColor: palette.card,
-                        borderColor: String(palette.danger),
+                        borderColor: solidColor(palette, 'danger'),
                       },
                     ]}
                   >
@@ -1476,7 +1477,7 @@ export function LogScreen() {
                           'journal.notePlaceholder',
                           'Private note (only on this device)',
                         )}
-                        placeholderTextColor={String(palette.muted)}
+                        placeholderTextColor={palette.mutedSolid}
                         multiline
                         style={[
                           styles.noteInput,

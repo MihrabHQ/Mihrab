@@ -40,6 +40,7 @@ import { desktopSize } from '../responsive/desktop';
 import { currentDeviceClass, type DeviceClass } from '../responsive/deviceClass';
 import { usePagingKeySuspension } from './useKeyPaging';
 import { RADIUS, SPACING } from '../theme/tokens';
+import { solidColor } from '../theme/appPalette';
 
 /**
  * 268pt is right for a sidebar reached with a thumb on an iPad. On a Mac
@@ -273,7 +274,7 @@ function MushafIndexSidebarImpl({
           accessibilityLabel={t('quran.bookmarkFollows', 'Follows your reading')}
           value={!!item.follows}
           onValueChange={next => setBookmarkFollows(item.id, next)}
-          trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+          trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
           thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
         />
       </View>
@@ -319,7 +320,7 @@ function MushafIndexSidebarImpl({
           value={query}
           onChangeText={setQuery}
           placeholder={t('quran.searchSurahOrPage', 'Search surah or page')}
-          placeholderTextColor={String(palette.muted)}
+          placeholderTextColor={palette.mutedSolid}
           accessibilityLabel={t('quran.searchSurahOrPage', 'Search surah or page')}
           clearButtonMode="while-editing"
           style={[

@@ -54,6 +54,7 @@ import {
 } from '../theme/textScale';
 import { useScrollBottomInset } from '../navigation/pageBottom';
 import { useHijriCalendarVersion } from '../hijri/useHijriCalendarVersion';
+import { solidColor } from '../theme/appPalette';
 
 /**
  * FastingScreen — task #29 UI shell.
@@ -418,7 +419,7 @@ export function FastingScreen() {
           accessibilityLabel={t('fasting.reminderToggleA11y', 'Enable day-before fasting reminders')}
           value={settings.fastingRemindersEnabled}
           onValueChange={onToggleReminders}
-          trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+          trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
           // Thumb stays light in BOTH states so it remains visible
           // against the accent-coloured track when on. Previously the
           // thumb was set to the same accent colour, which made the

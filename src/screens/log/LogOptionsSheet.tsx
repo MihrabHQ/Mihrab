@@ -29,6 +29,7 @@ import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE, typeStyle } from '../../theme/typography';
 import { useSyncDialog } from '../sync/useSyncDialog';
 import { StripLegend } from '../../practice/PracticeStrip';
+import { solidColor } from '../../theme/appPalette';
 
 export function LogOptionsSheet({
   visible,
@@ -136,7 +137,7 @@ export function LogOptionsSheet({
               trailing={
                 <Switch
                   value={reminderOn}
-                  trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+                  trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
                   thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
                   onValueChange={onReminderChange}
                 />

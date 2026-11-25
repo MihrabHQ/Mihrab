@@ -80,6 +80,7 @@ import {
 } from './mushafRail';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
+import { solidColor } from '../theme/appPalette';
 
 // The model's pure parts, re-exported for the tests that pinned them here.
 // `isRangingDrag` outlives its caller: the rail no longer weights ticks by
@@ -167,11 +168,11 @@ function MushafPageScrubberImpl({
   const totalPages = totalPagesForRiwayah(riwayah);
   const { palette } = useAppPalette();
   const c: ToneChrome = chrome ?? {
-    ink: String(palette.text),
-    muted: String(palette.muted),
-    control: String(palette.controlBg),
+    ink: palette.textSolid,
+    muted: palette.mutedSolid,
+    control: solidColor(palette, 'controlBg'),
     accent: String(palette.accentSolid),
-    card: String(palette.card),
+    card: solidColor(palette, 'card'),
   };
   const [width, setWidth] = useState(0);
   const widthRef = useRef(0);

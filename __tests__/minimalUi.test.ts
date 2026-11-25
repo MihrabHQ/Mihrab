@@ -395,8 +395,8 @@ describe('the minimal sheet in a right-to-left language', () => {
     expect(sheet).toMatch(/accessibilityLabel=\{t\('log\.previousDay'[\s\S]*?<Chevron color=\{muted\} back=\{!rtl\} \/>/);
     expect(sheet).toMatch(/accessibilityLabel=\{t\('log\.nextDay'[\s\S]*?<Chevron color=\{muted\} back=\{rtl\} \/>/);
     // The full page's, which these mirror.
-    expect(card).toContain('<Chevron back={!rtl} color={String(palette.muted)} />');
-    expect(card).toContain('<Chevron back={rtl} color={String(palette.muted)} />');
+    expect(card).toContain('<Chevron back={!rtl} color={palette.mutedSolid} />');
+    expect(card).toContain('<Chevron back={rtl} color={palette.mutedSolid} />');
   });
 });
 

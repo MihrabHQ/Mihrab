@@ -38,6 +38,7 @@ import { monthLabelFor, STRIP_PRAYERS, type StripDay, type StripStatus } from '.
 import { maxOffset, todayOffset } from './heatmapScroll';
 import { useHistoryScroll } from './useHistoryScroll';
 import { nextWindow, openingWindow, weekIsDrawn, weeksOnShow, type StripWindow } from './stripWindow';
+import { solidColor } from '../theme/appPalette';
 
 /** One cell, and the gap after it; a wider gap after each week. */
 export const CELL = 10;
@@ -80,7 +81,7 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
   const rtl = useLayoutRtl();
   const ink = String(palette.textSolid);
   const accent = String(palette.accentSolid);
-  const danger = String(palette.danger);
+  const danger = solidColor(palette, 'danger');
 
   const scroll = useHistoryScroll({ columns: days.length, columnWidth: COLUMN, rtl, onReachOldest });
 
@@ -267,7 +268,7 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
                 {/* The lit column: where you are, behind the cells, with
                     nothing drawn on the cells themselves. */}
                 {selected ? (
-                  <View pointerEvents="none" style={[styles.lit, { backgroundColor: String(palette.accentBg) }]} />
+                  <View pointerEvents="none" style={[styles.lit, { backgroundColor: solidColor(palette, 'accentBg') }]} />
                 ) : null}
                 {day.prayers.map((status, i) => (
                   <View key={i} style={[styles.cell, prayerCell(status, day)]} />
@@ -317,7 +318,7 @@ export function StripLegend() {
     [{ backgroundColor: withAlpha(ink, 0.85) }, t('journal.status.on-time')],
     [{ backgroundColor: withAlpha(ink, 0.38) }, t('journal.status.late')],
     [{ borderWidth: HOLLOW, borderColor: withAlpha(ink, 0.85) }, t('journal.status.qadha')],
-    [{ backgroundColor: withAlpha(String(palette.danger), 0.8) }, t('journal.status.missed')],
+    [{ backgroundColor: withAlpha(solidColor(palette, 'danger'), 0.8) }, t('journal.status.missed')],
     [{ backgroundColor: String(palette.accentSolid) }, t('log.fastRow', 'Fast')],
   ];
   return (

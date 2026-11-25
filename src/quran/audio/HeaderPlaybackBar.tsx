@@ -239,7 +239,7 @@ function LiveBar({
             })
           }
           style={({ pressed }) => [styles.btn, pressed && styles.pressed]}>
-          <ReaderIcon color={String(palette.text)} size={16} />
+          <ReaderIcon color={palette.textSolid} size={16} />
         </Pressable>
 
         <Pressable
@@ -280,7 +280,7 @@ function LiveBar({
             void stopPlayback();
           }}
           style={({ pressed }) => [styles.btn, pressed && styles.pressed]}>
-          <CloseIcon color={String(palette.muted)} size={16} />
+          <CloseIcon color={palette.mutedSolid} size={16} />
         </Pressable>
       </View>
 

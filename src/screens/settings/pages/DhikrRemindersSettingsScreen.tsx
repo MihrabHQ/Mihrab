@@ -33,6 +33,7 @@ import {
 import { SettingsPage } from '../SettingsPage';
 import { DhikrReminderEditor, type DhikrDraft } from '../DhikrReminderEditor';
 import { sharedSettingsStyles as s } from '../sharedStyles';
+import { solidColor } from '../../../theme/appPalette';
 
 /** "Every day", or the days themselves, in the app's language. */
 function daysLabel(reminder: DhikrReminder, everyDay: string): string {
@@ -142,7 +143,7 @@ export function DhikrRemindersSettingsScreen() {
                 <Switch
                   value={reminder.enabled}
                   onValueChange={v => onToggle(reminder, v)}
-                  trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+                  trackColor={{ true: palette.accentSolid, false: solidColor(palette, 'border') }}
                   thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
                 />
               }

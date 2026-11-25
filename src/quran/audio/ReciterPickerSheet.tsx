@@ -76,6 +76,7 @@ import { useSheetSides } from '../../responsive/sheetSides';
 // The Downloads page's own shape, so a few hundred KB on disk is not "0 MB".
 import { formatBytes } from '../downloadsUi';
 import { IS_WEB_APP } from '../../config/webApp';
+import { solidColor } from '../../theme/appPalette';
 
 /**
  * A trash can, drawn.
@@ -395,7 +396,7 @@ export function ReciterPickerSheet({ visible, onClose }: Props) {
                 {t('common.delete', { defaultValue: 'Delete' })}
               </Text>
             ) : (
-              <TrashGlyph color={String(palette.danger)} />
+              <TrashGlyph color={solidColor(palette, 'danger')} />
             )}
           </Pressable>
           </>
@@ -458,7 +459,7 @@ export function ReciterPickerSheet({ visible, onClose }: Props) {
           value={query}
           onChangeText={setQuery}
           placeholder={t('quran.searchReciters', 'Search reciters…')}
-          placeholderTextColor={String(palette.muted)}
+          placeholderTextColor={palette.mutedSolid}
           accessibilityLabel={t('quran.searchReciters', 'Search reciters…')}
           clearButtonMode="while-editing"
           style={[

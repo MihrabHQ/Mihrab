@@ -70,6 +70,7 @@ import {
   PrimaryAction,
   QuietAction,
 } from '../OnboardingChrome';
+import { solidColor } from '../../theme/appPalette';
 
 export function PersonaliseScreen({
   progress,
@@ -269,9 +270,9 @@ export function PersonaliseScreen({
                   testID="personalise-sky-variant"
                   value={settings.skyVariant}
                   onChange={skyVariant => updateSettings({ skyVariant })}
-                  accent={String(palette.accent)}
-                  text={String(palette.text)}
-                  muted={String(palette.muted)}
+                  accent={palette.accentSolid}
+                  text={palette.textSolid}
+                  muted={palette.mutedSolid}
                 />
               </View>
               <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
@@ -323,13 +324,13 @@ export function PersonaliseScreen({
               minimalSky={minimalSky}
               value={minimalActive ? 'minimal' : 'full'}
               onChange={v => updateSettings({ minimalUi: v === 'minimal' })}
-              skyTop={previewSky ? previewSky.heroTop : String(palette.accentBg)}
-              skyFoot={previewSky ? previewSky.heroMid : String(palette.bg)}
-              page={String(palette.bg)}
-              text={String(palette.text)}
-              muted={String(palette.muted)}
-              accent={String(palette.accent)}
-              border={String(palette.border)}
+              skyTop={previewSky ? previewSky.heroTop : solidColor(palette, 'accentBg')}
+              skyFoot={previewSky ? previewSky.heroMid : solidColor(palette, 'bg')}
+              page={solidColor(palette, 'bg')}
+              text={palette.textSolid}
+              muted={palette.mutedSolid}
+              accent={palette.accentSolid}
+              border={solidColor(palette, 'border')}
             />
             <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
               {t('settings.minimalUiHelp')}
@@ -352,12 +353,12 @@ export function PersonaliseScreen({
             value={settings.heroLook}
             onChange={heroLook => updateSettings({ heroLook })}
             minimal={minimalActive}
-            skyTop={previewSky ? previewSky.heroTop : String(palette.accentBg)}
-            skyFoot={previewSky ? previewSky.heroMid : String(palette.bg)}
+            skyTop={previewSky ? previewSky.heroTop : solidColor(palette, 'accentBg')}
+            skyFoot={previewSky ? previewSky.heroMid : solidColor(palette, 'bg')}
             sun={previewSky ? previewSky.bodyLight : SUN_SURFACE}
-            text={String(palette.text)}
-            muted={String(palette.muted)}
-            accent={String(palette.accent)}
+            text={palette.textSolid}
+            muted={palette.mutedSolid}
+            accent={palette.accentSolid}
           />
           <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
             {t('settings.heroLookHelp')}

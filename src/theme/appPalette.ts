@@ -115,6 +115,69 @@ export type AppPalette = {
   accentHairline: ColorValue;
 };
 
+/** The palette's colours that are not always a plain string (see `solidColor`). */
+export type SolidColorKey =
+  | 'bg'
+  | 'card'
+  | 'border'
+  | 'accentBg'
+  | 'controlBg'
+  | 'danger'
+  | 'accentSurface'
+  | 'accentSurfaceStrong'
+  | 'accentHairline';
+
+/**
+ * What the Liquid Glass palette's system colours resolve to, light and
+ * dark. iOS documents them; a `PlatformColor` cannot be asked.
+ */
+const IOS_SYSTEM_SOLID: Record<SolidColorKey, { light: string; dark: string }> = {
+  // systemGroupedBackground
+  bg: { light: '#F2F2F7', dark: '#000000' },
+  accentSurface: { light: '#F2F2F7', dark: '#000000' },
+  // secondarySystemGroupedBackground
+  card: { light: '#FFFFFF', dark: '#1C1C1E' },
+  accentSurfaceStrong: { light: '#FFFFFF', dark: '#1C1C1E' },
+  // tertiarySystemGroupedBackground
+  accentBg: { light: '#F2F2F7', dark: '#2C2C2E' },
+  controlBg: { light: '#F2F2F7', dark: '#2C2C2E' },
+  // systemRed
+  danger: { light: '#FF3B30', dark: '#FF453A' },
+  // Stated as strings by that palette; here for the type's sake.
+  border: { light: 'transparent', dark: 'transparent' },
+  accentHairline: { light: 'transparent', dark: 'transparent' },
+};
+
+/**
+ * A palette colour as a string that can be PARSED: mixed, given an alpha,
+ * written into a gradient, handed to an SVG.
+ *
+ * Every palette states its colours as hex strings but one. Under Liquid
+ * Glass (iOS, system colours) `bg`, `card`, `danger` and the rest are
+ * `PlatformColor`s — objects a native view resolves and nothing else can
+ * read. `String()` of one is "[object Object]", and that is what code
+ * doing arithmetic on a palette colour got: Today's sky is a gradient that
+ * runs into the page's colour, and under Liquid Glass it ran into
+ * "[object Object]" — no sky was painted at all, the hero's white words
+ * stood on the white page, and the posed hero kept out of sight under the
+ * sky (boot/poseHero.ts) showed through as a second countdown.
+ *
+ * So: never `String(palette.bg)`. This, for the surfaces and `danger`;
+ * `textSolid`, `mutedSolid` and `accentSolid` for those three
+ * (`__tests__/paletteColoursAreParsed.test.ts` holds both). A colour only
+ * ever given to a native view's style can stay the palette's own value —
+ * that is what lets it follow the system.
+ */
+export function solidColor<K extends SolidColorKey>(
+  palette: { isDark: boolean } & Record<K, ColorValue>,
+  key: K,
+): string {
+  const value = palette[key];
+  if (typeof value === 'string') return value;
+  const system = IOS_SYSTEM_SOLID[key];
+  return palette.isDark ? system.dark : system.light;
+}
+
 export function resolveEffectiveDark(
   appearance: AppearancePreference | undefined,
   systemScheme: ColorSchemeName | null | undefined,
@@ -696,6 +759,9 @@ function buildDynamicSystemPalette(
   }
   return buildAppPalette(isDark, pureBlackDark, 'green', '#22c55e', tintedSurfaces);
 }
+
+/** Test seam: the system-colour palette of the platform (Liquid Glass on iOS). */
+export const buildDynamicSystemPaletteForTests = buildDynamicSystemPalette;
 
 export function buildAppPalette(
   isDark: boolean,

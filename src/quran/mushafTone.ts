@@ -21,6 +21,7 @@
 import type { ColorValue } from 'react-native';
 import { PALETTE_OLED } from '../theme/tokens';
 import type { QuranPrefs } from './quranTypes';
+import { solidColor } from '../theme/appPalette';
 
 export type MushafTone = 'paper' | 'sepia' | 'night';
 
@@ -205,8 +206,8 @@ export function scrubberChrome(
     accentSolid: string;
     tintedSurfaces: boolean;
     isDark: boolean;
-    text: ColorValue;
-    muted: ColorValue;
+    textSolid: string;
+    mutedSolid: string;
     controlBg: ColorValue;
     card: ColorValue;
   },
@@ -222,10 +223,10 @@ export function scrubberChrome(
     return { ...base, accent };
   }
   return {
-    ink: String(palette.text),
-    muted: String(palette.muted),
-    control: String(palette.controlBg),
+    ink: palette.textSolid,
+    muted: palette.mutedSolid,
+    control: solidColor(palette, 'controlBg'),
     accent,
-    card: String(palette.card),
+    card: solidColor(palette, 'card'),
   };
 }

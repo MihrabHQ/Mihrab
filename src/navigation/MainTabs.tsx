@@ -336,7 +336,7 @@ export function MainTabs() {
         headerShadowVisible: false,
         tabBarActiveTintColor: palette.accentSolid,
         /**
-         * A HEX, NOT `String(palette.muted)`.
+         * A HEX, NOT `palette.mutedSolid`.
          *
          * react-navigation types the TINT colours as plain strings, so a
          * PlatformColor cannot be passed here — but stringifying one gives
