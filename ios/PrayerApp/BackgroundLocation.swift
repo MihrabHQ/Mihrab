@@ -58,6 +58,9 @@ final class MihrabBackgroundLocation: NSObject, CLLocationManagerDelegate {
   private(set) var pending: [String: Double]?
   /// Set while JavaScript is listening.
   var onMove: (([String: Double]) -> Void)?
+  /// A move is waiting and no JavaScript is listening: the app delegate
+  /// starts the engine (see `startEngineWithoutWindow` there).
+  var needsEngine: (() -> Void)?
 
   private enum Key {
     static let enabled = "mihrab.bgLocation.enabled"
@@ -253,7 +256,15 @@ final class MihrabBackgroundLocation: NSObject, CLLocationManagerDelegate {
     // (a new time zone, on landing) ends the update half done, and the
     // new engine asks for it again (`takePending`).
     pending = move
-    onMove?(move)
+    if let onMove {
+      onMove(move)
+    } else {
+      // Nobody to hand it to. Either the engine is still starting — it
+      // asks for `pending` when it listens — or there is no engine at all:
+      // iOS started the app for this move, in the background, and gave it
+      // no window. The app delegate knows which.
+      needsEngine?()
+    }
   }
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

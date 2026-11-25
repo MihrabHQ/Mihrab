@@ -1205,10 +1205,20 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
               .catch(() => {});
           }
           loadedCityIdRef.current = summary.cityId;
+          // NOT a background refresh: the new place goes on screen NOW, on
+          // the phone's own times, and its source's week replaces them
+          // (`loadTimes` paints the on-device week first, and nothing is
+          // written from it — `provisional`). As a background refresh it
+          // waited for the source with the town left behind still up, name
+          // and times — and abroad the network is the part that is slow or
+          // missing: every retry of a source answering 429, or of a hotel's
+          // sign-in page, was sat through under the wrong city's times.
+          // Seen on an iPhone 13 (Nov 2026): São Paulo for over a minute,
+          // in London. A place chosen by hand has always moved this way.
           loadTimes(
             summary.anchorLat,
             summary.anchorLng,
-            true,
+            false,
             summary.displayName,
             true, // GPS-resolved fix
           ).catch(() => {});
@@ -1431,6 +1441,15 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
     // switching stops, so a burst costs at most two loads (the first and
     // the last) instead of one per tap. The cleanup clears the pending
     // trailing timer, so re-runs never stack them.
+    // What a return to the app is compared with (the gate below).
+    const foregroundPrint = () =>
+      dayTzFingerprint(
+        new Date(),
+        settings.locationMode,
+        settings.calculationMethod,
+        settings.school,
+        settings.dataProvider,
+      );
     const now = Date.now();
     const quietFor = now - lastFireRef.current;
     if (!didInitialLoadRef.current || quietFor >= LOCATION_SETTLE_MS) {
@@ -1440,6 +1459,12 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         clearTimeout(loadDebounceRef.current);
         loadDebounceRef.current = null;
       }
+      // THE LAUNCH'S OWN LOOK COUNTS AS ONE. The iPhone reports 'active' a
+      // moment after the app has started, and with nothing recorded that
+      // read as a return: every cold start found the position, loaded the
+      // week and published the screen a second time, a second after the
+      // first (iPhone 13, Nov 2026). The gate is told this look happened.
+      markResynced(RESYNC_KEY, foregroundPrint());
       requestAndLoad();
     } else {
       if (loadDebounceRef.current) clearTimeout(loadDebounceRef.current);
@@ -1464,13 +1489,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       // only suppresses repeats whose inputs are identical, and anyone who
       // has been away long enough to have moved has been away longer than it
       // (docs/design/background-power.md).
-      const fingerprint = dayTzFingerprint(
-        new Date(),
-        settings.locationMode,
-        settings.calculationMethod,
-        settings.school,
-        settings.dataProvider,
-      );
+      const fingerprint = foregroundPrint();
       if (!shouldResync(RESYNC_KEY, fingerprint)) return;
       markResynced(RESYNC_KEY, fingerprint);
       // After the hero's return run, which draws on the same frames this

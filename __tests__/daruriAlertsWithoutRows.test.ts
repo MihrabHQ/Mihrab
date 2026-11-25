@@ -22,6 +22,7 @@ const REPO = path.resolve(__dirname, '..');
 const read = (p: string) => fs.readFileSync(path.join(REPO, p), 'utf-8');
 
 const HOME = read('src/screens/HomeScreen.tsx');
+const WRITER = read('src/screens/home/writeTodayAlerts.ts');
 const CARD = read('src/screens/settings/CalculationCard.tsx');
 // The alerts moved to the Notifications page in #23: what fires is not
 // decided on the screen about where the numbers come from.
@@ -61,14 +62,19 @@ describe('drawing and announcing are separate', () => {
   it('schedules from the alert week, not the drawn one', () => {
     // Both sync call sites — the effect and the focus resync — and the
     // quiet windows (issue #60), computed from the same week.
-    const uses = HOME.match(/week: phoneView\.alertWeek,/g) ?? [];
-    expect(uses).toHaveLength(3);
-    expect(HOME).not.toMatch(/syncPrayerNotifications\([\s\S]{0,900}?week: (phoneView|view)\.table\.week,/);
+    // Today's two writers hand the alert week to the one place that
+    // schedules (`writeTodayAlerts.ts`), which passes it on as the week.
+    expect(HOME.match(/alertWeek: phoneView\.alertWeek,/g) ?? []).toHaveLength(2);
+    expect(HOME.match(/week: phoneView\.alertWeek,/g) ?? []).toHaveLength(1);
+    expect(WRITER).toMatch(/week: i\.alertWeek,/);
+    expect(WRITER).not.toMatch(/week: i\.(today|week)\b/);
+    expect(HOME).not.toMatch(/syncPrayerNotifications\(/);
   });
 
   it('passes the end-of-window switch through at both sites', () => {
-    const uses = HOME.match(/daruriEndAlerts: settings\.malikiSecondTimeEndAlerts,/g) ?? [];
-    expect(uses).toHaveLength(2);
+    // One place schedules for both writers.
+    expect(WRITER).toMatch(/daruriEndAlerts: s\.malikiSecondTimeEndAlerts,/);
+    expect(HOME).toMatch(/malikiSecondTimeEndAlerts: settings\.malikiSecondTimeEndAlerts,/);
   });
 });
 

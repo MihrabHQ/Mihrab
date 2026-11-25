@@ -29,7 +29,9 @@ import com.prayer_times.specs.NativeMihrabSecureStoreSpec
 class SecureStoreModule(context: ReactApplicationContext) : NativeMihrabSecureStoreSpec(context) {
   override fun getName() = NAME
 
-  private val prefs: SharedPreferences? by lazy { open(context) }
+  // The process's one store, opened once: by `warm` on a start that shows a
+  // window, or by the first call here.
+  private val prefs: SharedPreferences? get() = store(reactApplicationContext).value
 
   override fun setItem(key: String, value: String, promise: Promise) {
     val store = prefs ?: return promise.reject(E_STORE, "The secure store could not be opened")
@@ -59,6 +61,34 @@ class SecureStoreModule(context: ReactApplicationContext) : NativeMihrabSecureSt
     /** react-native-encrypted-storage's file. See the note on the class. */
     const val FILE = "RN_ENCRYPTED_STORAGE_SHARED_PREF"
     private const val E_STORE = "E_SECURE_STORE"
+
+    @Volatile private var shared: Lazy<SharedPreferences?>? = null
+
+    private fun store(context: Context): Lazy<SharedPreferences?> =
+      shared ?: synchronized(this) {
+        shared ?: lazy { open(context.applicationContext) }.also { shared = it }
+      }
+
+    /**
+     * OPENED WHILE THE JAVASCRIPT STARTS, NOT WHEN IT FIRST ASKS.
+     *
+     * Opening the store builds the master key in the Android Keystore and
+     * the two ciphers: some fifty milliseconds. The library this replaced
+     * did it when its module was made — at start-up, like every module then,
+     * beside the JavaScript loading. Made when first needed, as modules are
+     * now, it is opened by the first read: the settings', with the first
+     * screen waiting on it. Measured, 2.39.0 against main (Nov 2026): the
+     * settings were ready 58 ms later after the JavaScript started, on a
+     * Pixel 2 and a Pixel 10 Pro alike.
+     *
+     * So a start that will show a window opens it on a thread of its own
+     * from the process's first moment (`MainApplication`). A read that
+     * arrives first waits for that same opening, not a second one.
+     */
+    fun warm(context: Context) {
+      val opening = store(context)
+      Thread({ opening.value }, "MihrabSecureStoreWarm").start()
+    }
 
     private fun open(context: Context): SharedPreferences? =
       try {

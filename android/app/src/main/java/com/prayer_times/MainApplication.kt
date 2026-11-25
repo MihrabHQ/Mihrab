@@ -94,6 +94,8 @@ class MainApplication : Application(), ReactApplication, androidx.work.Configura
     val importance = ActivityManager.RunningAppProcessInfo().also { ActivityManager.getMyMemoryState(it) }.importance
     Log.i("MihrabBoot", "process importance at start: $importance")
     if (importance <= ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+      // The first thing the JavaScript reads, opened beside it (see `warm`).
+      SecureStoreModule.warm(this)
       try {
         reactHost.start()
       } catch (t: Throwable) {

@@ -132,8 +132,9 @@ describe('wiring that would fail silently if it drifted', () => {
     // It changes which channel every prayer is scheduled against. Left out
     // of the fingerprint, flipping the toggle looks like "nothing changed"
     // and the alarms keep pointing at the old channel.
-    const home = read('src/screens/HomeScreen.tsx');
-    expect(home).toMatch(/String\(settings\.adhanUsesAlarmStream\)/);
+    // The fingerprint is Today's two writers' own (`writeTodayAlerts.ts`).
+    const alerts = read('src/screens/home/writeTodayAlerts.ts');
+    expect(alerts).toMatch(/String\(s\.adhanUsesAlarmStream\)/);
   });
 
   it('the toggle is Android-only', () => {

@@ -128,6 +128,42 @@ it('a fix that lands late moves "My location" to Germany', async () => {
   probe.unmount();
 });
 
+it('the new place is on screen at once, on the phone’s own times, while its source is slow', async () => {
+  // Abroad the network is the part that may be missing or slow: a captive
+  // portal, roaming, a source answering 429. The move used to wait for the
+  // source's week — every retry of it — with the town left behind still on
+  // screen, name and times: on an iPhone 13 (Nov 2026) São Paulo stood for
+  // over a minute in London. The place moves at once, as it does for a
+  // place chosen by hand; the source's times replace the phone's own.
+  // A place whose times come over the network (most of Europe's are worked
+  // out on the phone, and are there at once whatever the network does).
+  const NEW_YORK = { latitude: 40.7128, longitude: -74.006 };
+  const { probe } = await atHome();
+  await settle(10);
+  // From here the source does not answer at all.
+  let answer!: () => void;
+  const stalled = new Promise<void>(resolve => (answer = resolve));
+  const server = aladhanServer('America/New_York');
+  goOnline(async url => {
+    if (!url.includes('aladhan.com')) return undefined;
+    await stalled;
+    return server.handler(url);
+  });
+  mockLocator.fire[0]({ ...NEW_YORK, timestamp: Date.now(), stage: 'coarse' });
+  await until(() => {
+    const c = probe.current();
+    return c.phase === 'ready' && Math.abs(c.latitude - NEW_YORK.latitude) < 0.2;
+  }, 'New York on screen with nothing from its source', 5_000);
+  const shown = probe.current();
+  // The phone's own arithmetic, said to be so: nothing is written from it.
+  expect(shown.phase === 'ready' && shown.provisional).toBe(true);
+  expect(shown.phase === 'ready' && shown.week.length).toBe(7);
+  // And the source's week takes its place when it comes.
+  answer();
+  await until(near(probe, NEW_YORK), 'New York from its source', 20_000);
+  probe.unmount();
+});
+
 it('but not once the reader has gone to a place of their own', async () => {
   const { s, probe } = await atHome();
   const manual = await changeSettings(s, {

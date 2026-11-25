@@ -218,12 +218,15 @@ describe('reset reaches both copies, and the schedule', () => {
     // Left out, pressing reset would look like "nothing changed" and the
     // alarm would keep whatever the card gave it.
     const home = read('src/screens/HomeScreen.tsx');
-    expect(home).toMatch(/alertOverridePrint,\s*\n\s*state\.baseDate\.getTime\(\),/);
+    // The fingerprint is Today's two writers' own (`writeTodayAlerts.ts`).
+    const alerts = read('src/screens/home/writeTodayAlerts.ts');
+    expect(alerts).toMatch(/i\.alertOverridePrint,\s*\n\s*i\.baseDate\.getTime\(\),/);
     expect(home).toMatch(
       /const alertOverridePrint = alertOverride\s*\n?\s*\? `\$\{alertOverride\.epoch\}-\$\{alertOverride\.name\}-\$\{alertOverride\.mode\}`/,
     );
-    // And in both dependency lists, or the effects keep their identity.
-    expect(home.match(/^\s*alertOverridePrint,$/gm)?.length).toBe(3);
+    // Handed to it by both writers, and in both dependency lists, or the
+    // effects keep their identity.
+    expect(home.match(/^\s*alertOverridePrint,$/gm)?.length).toBe(4);
   });
 });
 

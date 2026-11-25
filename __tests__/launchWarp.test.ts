@@ -298,7 +298,8 @@ describe('wiring', () => {
     expect(card).toMatch(/const skyE = launchRun \? Math\.floor\(warpE \* SKY_RUN_STEPS\) \/ SKY_RUN_STEPS : warpE;/);
     expect(card).toMatch(/warpSkyAt\(warp, now\.getTime\(\), skyE\)/);
     // And a second sky (the posed twin's) is not mounted under the run.
-    expect(card).toMatch(/const twinMayMount = useAfterFirstPaint\(\);/);
+    expect(card).toMatch(/const paintedOnce = useAfterFirstPaint\(\);/);
+    expect(card).toMatch(/const twinMayMount = paintedOnce;/);
     expect(card).toMatch(/!fullBleedRunHeld && twinMayMount && runWanted/);
     const sky = read('src/screens/home/HeroSky.tsx');
     expect(sky).toMatch(/const StarField = memo\(/);

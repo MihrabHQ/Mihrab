@@ -54,7 +54,7 @@ import { bootMark } from '../boot/bootTimeline';
 import { hideLaunchSnapshot, setLaunchSnapshotEligible } from '../native/LaunchSnapshot';
 import { useFullScreenAlarmSwitch } from '../notifications/useFullScreenAlarmSwitch';
 import { usePrefetchSavedLocations } from '../hooks/usePrefetchSavedLocations';
-import { syncPrayerNotifications } from '../notifications/prayerNotifications';
+import { todayAlertsJob, writeTodayAlerts } from './home/writeTodayAlerts';
 import { useNextAlertOverride } from '../notifications/adhanMute';
 import { syncPrayerWidget } from '../widget/syncPrayerWidget';
 import { collectWidgetExtras } from '../widget/collectWidgetExtras';
@@ -162,7 +162,6 @@ const ZONE_NOTE_DISMISSED_KEY = 'home.zoneNote.dismissed.v1';
 /** How long after a prayer's instant the hero moves on to the next (the watchdog's flip). */
 const FLIP_AFTER_MS = 300;
 /** Gate keys — see src/utils/resyncGate.ts. */
-const NOTIF_RESYNC_KEY = 'home.prayerNotifications';
 const EOD_RESYNC_KEY = 'home.endOfDayReminders';
 const DUA_RESYNC_KEY = 'home.duaReminders';
 const SILENCE_RESYNC_KEY = 'home.prayerSilence';
@@ -823,6 +822,38 @@ export function HomeScreen() {
    * instants, and native code reads every time on the phone's clock. The
    * very same objects when the days are on the phone's clock already.
    */
+  // The settings the alerts are written from, as one value: Today's two
+  // writers (the effect and the focus callback) hand it on unchanged.
+  const alertSettings = useMemo(
+    () => ({
+      notificationsEnabled: settings.notificationsEnabled,
+      prePrayerReminderMinutes: settings.prePrayerReminderMinutes,
+      notificationSound: settings.notificationSound,
+      adhanUsesAlarmStream: settings.adhanUsesAlarmStream,
+      prayerAlertFullScreen: settings.prayerAlertFullScreen,
+      malikiSecondTimesEnabled: settings.malikiSecondTimesEnabled,
+      malikiSecondTimeAlerts: settings.malikiSecondTimeAlerts,
+      malikiSecondTimeAlertMinutes: settings.malikiSecondTimeAlertMinutes,
+      malikiSecondTimeEndAlerts: settings.malikiSecondTimeEndAlerts,
+      prayerAlertModes: settings.prayerAlertModes,
+      journalNotificationActionsEnabled: settings.journalNotificationActionsEnabled,
+      tintedSurfaces: settings.tintedSurfaces,
+    }),
+    [
+      settings.notificationsEnabled,
+      settings.prePrayerReminderMinutes,
+      settings.notificationSound,
+      settings.adhanUsesAlarmStream,
+      settings.prayerAlertFullScreen,
+      settings.malikiSecondTimesEnabled,
+      settings.malikiSecondTimeAlerts,
+      settings.malikiSecondTimeAlertMinutes,
+      settings.malikiSecondTimeEndAlerts,
+      settings.prayerAlertModes,
+      settings.journalNotificationActionsEnabled,
+      settings.tintedSurfaces,
+    ],
+  );
   const phoneView = useMemo(() => {
     if (state.phase !== 'ready' || !view) return null;
     const clock = state.clock;
@@ -1001,42 +1032,23 @@ export function HomeScreen() {
       return;
     // After the card is on screen, not in the same breath as drawing it.
     if (!afterFirstPaint) return;
-    syncPrayerNotifications({
-      enabled: settings.notificationsEnabled,
-      prePrayerReminderMinutes: settings.prePrayerReminderMinutes,
-      notificationSound: settings.notificationSound,
-      adhanUsesAlarmStream: settings.adhanUsesAlarmStream,
-      prayerAlertFullScreen: settings.prayerAlertFullScreen,
-      // On the phone's clock: the schedule reads every time on it.
-      today: phoneView.table.today,
-      tomorrow: phoneView.table.tomorrow,
-      // Last night's ʿIshāʾ past midnight is still ahead in the small hours.
-      yesterday: phoneView.alertYesterday,
-      // Anchor the schedule to the day the maps were FETCHED for — if this
-      // sync fires with stale state just after midnight, yesterday's map
-      // must not be pinned onto today's date (early-adhan bug, v2.7.38).
-      baseDate: state.baseDate,
-      // Extra cached days extend coverage past tomorrow so alerts keep
-      // firing when the app isn't opened for a couple of days (v2.7.40).
-      week: phoneView.alertWeek,
-      // Unfiltered, so Fajr ends at sunrise even with the Sunrise row hidden.
-      windowWeek: phoneView.windowWeek,
-      // Only when the times themselves are on: an alert about a boundary
-      // the card is not showing would be the app announcing something the
-      // reader cannot go and look at.
-      daruriAlerts: settings.malikiSecondTimesEnabled
-        ? settings.malikiSecondTimeAlerts
-        : [],
-      daruriAlertMinutes: settings.malikiSecondTimeAlertMinutes,
-      daruriEndAlerts: settings.malikiSecondTimeEndAlerts,
-      alertModes: settings.prayerAlertModes,
-      journalLogActionEnabled: settings.journalNotificationActionsEnabled,
-      hour12: clockHour12,
-      // The shade's tint follows the app's accent, Material You included.
-      accentColor: palette.accentSolid,
-      // Tinted surfaces: colourise the whole notification with the accent.
-      tinted: settings.tintedSurfaces,
-    }).catch(e => console.warn('syncPrayerNotifications (effect):', e));
+    // Once for the same answer, whichever of this effect and the focus
+    // callback below asks first (`home/writeTodayAlerts.ts`).
+    writeTodayAlerts(
+      todayAlertsJob({
+        settings: alertSettings,
+        today: phoneView.table.today,
+        tomorrow: phoneView.table.tomorrow,
+        yesterday: phoneView.alertYesterday,
+        alertWeek: phoneView.alertWeek,
+        windowWeek: phoneView.windowWeek,
+        baseDate: state.baseDate,
+        hour12: clockHour12,
+        accentColor: palette.accentSolid,
+        alertOverridePrint,
+      }),
+      'effect',
+    );
     // The end-of-day prompt is scheduled from the same data and the same
     // moment as the prayer alerts: it needs Isha for every day it covers,
     // and this is the one place in the app that holds a week of times
@@ -1114,6 +1126,7 @@ export function HomeScreen() {
   }, [
     afterFirstPaint,
     hydrated,
+    alertSettings,
     settings.notificationsEnabled,
     settings.prePrayerReminderMinutes,
     settings.notificationSound,
@@ -1217,84 +1230,22 @@ export function HomeScreen() {
       // ~48-alarm set, plus a `getDisplayedNotifications` round-trip and a
       // cancel-diff. The schedule is a function of the times, the sound and
       // the reminder offset — so when none of those changed, neither did the
-      // answer (docs/design/background-power.md).
-      const notifPrint = dayTzFingerprint(
-        new Date(),
-        String(settings.notificationsEnabled),
-        settings.prePrayerReminderMinutes,
-        settings.notificationSound,
-        // In the fingerprint because it changes which CHANNEL every prayer
-        // is scheduled against. Left out, flipping the setting would look
-        // like "nothing changed" and the alarms would keep pointing at the
-        // old channel until something else forced a rewrite.
-        String(settings.adhanUsesAlarmStream),
-        // The full-screen intent is part of each alert, so flipping it has
-        // to rewrite them like the stream above.
-        String(settings.prayerAlertFullScreen),
-        // Sunrise and the night marks print a clock time in their copy,
-        // so a 12/24 change has to rewrite them — same reason as above.
-        // The resolved answer rather than the setting, so 'auto' following
-        // the device counts as a change too.
-        String(clockHour12),
-        // The tint is written into every card, so a new accent rewrites.
-        palette.accentSolid,
-        // The second-time alerts are part of the same schedule, so a
-        // change to which of them fire has to rewrite it.
-        settings.malikiSecondTimesEnabled
-          ? settings.malikiSecondTimeAlerts.join(',')
-          : '',
-        String(settings.malikiSecondTimeAlertMinutes),
-        // The end-of-window alert doubles the set this schedule writes,
-        // so turning it on has to rewrite rather than read as no change.
-        String(settings.malikiSecondTimeEndAlerts),
-        // Which prayers speak, and how. A row cycled from adhan to silent
-        // has to take its alarm away, so the schedule is rewritten.
-        JSON.stringify(settings.prayerAlertModes),
-        // The Live Activity's one-occurrence override, which is not a
-        // setting and does not come from this process: the card's button
-        // writes it, and the row that shows it writes the clearing. In the
-        // fingerprint because it changes which channel ONE prayer is
-        // scheduled against — or whether it is scheduled at all. Left out,
-        // pressing reset would look like "nothing changed" and the prayer
-        // would keep the alert the card gave it until something else
-        // forced a rewrite.
-        alertOverridePrint,
-        state.baseDate.getTime(),
-      );
-      if (shouldResync(NOTIF_RESYNC_KEY, notifPrint)) {
-        syncPrayerNotifications({
-          enabled: settings.notificationsEnabled,
-          prePrayerReminderMinutes: settings.prePrayerReminderMinutes,
-          notificationSound: settings.notificationSound,
-          adhanUsesAlarmStream: settings.adhanUsesAlarmStream,
-          prayerAlertFullScreen: settings.prayerAlertFullScreen,
-          // On the phone's clock: the schedule reads every time on it.
+      // answer (docs/design/background-power.md; `home/writeTodayAlerts.ts`).
+      writeTodayAlerts(
+        todayAlertsJob({
+          settings: alertSettings,
           today: phoneView.table.today,
           tomorrow: phoneView.table.tomorrow,
-          // Last night's ʿIshāʾ past midnight is still ahead in the small hours.
           yesterday: phoneView.alertYesterday,
-          baseDate: state.baseDate,
-          // The alert week, not the drawn one — with the rows off they
-          // differ by exactly the boundaries this schedule is for.
-          week: phoneView.alertWeek,
+          alertWeek: phoneView.alertWeek,
           windowWeek: phoneView.windowWeek,
+          baseDate: state.baseDate,
           hour12: clockHour12,
           accentColor: palette.accentSolid,
-          // Tinted surfaces: colourise the whole notification with the accent.
-          tinted: settings.tintedSurfaces,
-          daruriAlerts: settings.malikiSecondTimesEnabled
-            ? settings.malikiSecondTimeAlerts
-            : [],
-          daruriAlertMinutes: settings.malikiSecondTimeAlertMinutes,
-          daruriEndAlerts: settings.malikiSecondTimeEndAlerts,
-          alertModes: settings.prayerAlertModes,
-        })
-          // Marked on success only: a rewrite that threw must not suppress
-          // the next attempt, or one bad round leaves the alarms as they are
-          // for a whole minute of retries that never run.
-          .then(() => markResynced(NOTIF_RESYNC_KEY, notifPrint))
-          .catch(e => console.warn('syncPrayerNotifications (focus):', e));
-      }
+          alertOverridePrint,
+        }),
+        'focus',
+      );
       {
         // The widget and the Live Activity read every time on the phone's
         // clock (WallClock.kt / WallClock.swift): they are handed the days
@@ -1377,17 +1328,9 @@ export function HomeScreen() {
     }, [
       afterFirstPaint,
       hydrated,
+      alertSettings,
       settings.notificationsEnabled,
-      settings.prePrayerReminderMinutes,
-      settings.notificationSound,
-      settings.adhanUsesAlarmStream,
-      settings.prayerAlertFullScreen,
       clockHour12,
-      settings.malikiSecondTimesEnabled,
-      settings.malikiSecondTimeAlerts,
-      settings.malikiSecondTimeAlertMinutes,
-      settings.malikiSecondTimeEndAlerts,
-      settings.prayerAlertModes,
       // Pressing reset on a row changes nothing this screen owns, so
       // without this the effect keeps its identity, the focus pass never
       // re-runs, and the alarm keeps whatever the card gave it.

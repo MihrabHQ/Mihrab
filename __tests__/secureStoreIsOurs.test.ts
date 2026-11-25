@@ -34,6 +34,17 @@ describe('Android', () => {
     expect(read('android/app/src/main/java/com/prayer_times/MihrabPackage.kt')).toContain('"MihrabSecureStore" -> SecureStoreModule(reactContext)');
   });
 
+  it('is opened beside the JavaScript on a start that shows a window, once', () => {
+    // Made when first needed, the store was opened by the settings' read,
+    // with the first screen waiting: 58 ms later than 2.39.0 (Nov 2026).
+    expect(kt).toMatch(/fun warm\(context: Context\) \{\s*val opening = store\(context\)\s*Thread\(\{ opening\.value \}/);
+    expect(kt).toMatch(/private val prefs: SharedPreferences\? get\(\) = store\(reactApplicationContext\)\.value/);
+    // One opening for the process, whoever asks first.
+    expect(kt.match(/open\(context\.applicationContext\)/g)).toHaveLength(1);
+    const app = code(read('android/app/src/main/java/com/prayer_times/MainApplication.kt'));
+    expect(app).toMatch(/IMPORTANCE_FOREGROUND\) \{\s*SecureStoreModule\.warm\(this\)\s*try \{\s*reactHost\.start\(\)/);
+  });
+
   it('writes with commit, so a resolved write is on disk', () => {
     expect(kt.match(/\.commit\(\)/g)).toHaveLength(2);
     expect(kt).not.toContain('.apply()');

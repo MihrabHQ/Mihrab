@@ -54,6 +54,50 @@ describe('iOS scene life cycle', () => {
     expect(appDelegate).not.toMatch(/startReactNative/);
   });
 
+  it('starts the engine for a move that finds none, and no window with it', () => {
+    // iOS may start a closed app in the background for a change of place
+    // and give it no scene: React Native starts where the window is made,
+    // so the move waited for an engine that never came, and the alerts
+    // stayed on the town left behind until the app was opened.
+    const bg = readFileSync(path.join(IOS, 'BackgroundLocation.swift'), 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\/\/.*$/gm, '');
+    expect(bg).toMatch(/pending = move\s*if let onMove \{\s*onMove\(move\)\s*\} else \{\s*needsEngine\?\(\)/);
+    const appDelegate = code.slice(code.indexOf('class AppDelegate'), code.indexOf('class SceneDelegate'));
+    expect(appDelegate).toMatch(/needsEngine = \{ \[weak self\] in\s*self\?\.startEngineWithoutWindow\(\)/);
+    // Only when there is no engine and a move is waiting; the JavaScript, no view.
+    expect(appDelegate).toMatch(/guard !factory\.rootViewFactory\.hasEngine else \{ return \}/);
+    expect(code).toMatch(/var hasEngine: Bool \{ value\(forKey: "reactHost"\) != nil \}/);
+    // …and the library still has the property that is asked for by name.
+    expect(
+      readFileSync(
+        path.join(__dirname, '..', 'node_modules/react-native/Libraries/AppDelegate/RCTRootViewFactory.h'),
+        'utf8',
+      ),
+    ).toMatch(/@property \(nonatomic, strong, nullable\) RCTHost \*reactHost;/);
+    expect(appDelegate).toMatch(/guard MihrabBackgroundLocation\.shared\.pending != nil else \{ return \}/);
+    expect(appDelegate).toMatch(/rootViewFactory\.startEngine\(/);
+    // As Objective-C calls it, so the dev menu's configuration can be nil —
+    // it is, in a release build, and a made-up one crashed the app.
+    expect(code).toMatch(
+      /NSSelectorFromString\(\s*"initializeReactHostWithLaunchOptions:bundleConfiguration:devMenuConfiguration:"/,
+    );
+    expect(code).not.toMatch(/RCTDevMenuConfiguration\.default/);
+    expect(
+      readFileSync(
+        path.join(__dirname, '..', 'node_modules/react-native/Libraries/AppDelegate/RCTRootViewFactory.h'),
+        'utf8',
+      ),
+    ).toMatch(/- \(void\)initializeReactHostWithLaunchOptions:\(NSDictionary \*__nullable\)launchOptions\s+bundleConfiguration:\(RCTBundleConfiguration \*\)bundleConfiguration\s+devMenuConfiguration:\(RCTDevMenuConfiguration \*\)devMenuConfiguration;/);
+    // The link that later opens the app is not that engine's launch link:
+    // it is handed over when the first screen is up.
+    expect(code).toMatch(/let engineWasRunning = app\.reactNativeFactory\?\.rootViewFactory\.hasEngine == true/);
+    expect(code).toMatch(/RCTContentDidAppearNotification[\s\S]{0,260}RCTLinkingManager\.scene\(scene, openURLContexts: contexts\)/);
+    // And the entry of the JavaScript listens before any screen.
+    const index = readFileSync(path.join(__dirname, '..', 'index.js'), 'utf8');
+    expect(index).toMatch(/startBackgroundMoveListener\(\)/);
+  });
+
   it('hands a launching link to Linking.getInitialURL', () => {
     expect(code).toMatch(/connectionOptions\.urlContexts/);
     expect(code).toMatch(/launchOptions\[\.url\]/);

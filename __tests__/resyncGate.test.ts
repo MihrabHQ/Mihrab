@@ -127,6 +127,9 @@ describe('the call sites are gated', () => {
   test('the foreground location refresh', () => {
     const src = read('src/hooks/usePrayerDay.ts');
     expect(src).toMatch(/shouldResync\(RESYNC_KEY/);
+    // The launch's own look is one: the 'active' the iPhone reports a moment
+    // after a cold start must not find the position and load the week again.
+    expect(src).toMatch(/markResynced\(RESYNC_KEY, foregroundPrint\(\)\);\s*requestAndLoad\(\);/);
     // And it still refreshes on a real change: the fingerprint carries the
     // settings that decide the times.
     expect(src).toMatch(/settings\.calculationMethod,[\s\S]{0,80}settings\.school/);
@@ -134,10 +137,13 @@ describe('the call sites are gated', () => {
 
   test('the prayer-alarm rewrite and the end-of-day rewrite', () => {
     const src = read('src/screens/HomeScreen.tsx');
-    expect(src).toMatch(/shouldResync\(NOTIF_RESYNC_KEY/);
+    // The alarms' gate is Today's two writers' own (`writeTodayAlerts.ts`).
+    const alerts = read('src/screens/home/writeTodayAlerts.ts');
+    expect(alerts).toMatch(/shouldResync\(NOTIF_RESYNC_KEY/);
     expect(src).toMatch(/shouldResync\(EOD_RESYNC_KEY/);
     // Marked in .then, never before the work — see the "threw" test above.
-    expect(src).toMatch(/\.then\(\(\) => markResynced\(NOTIF_RESYNC_KEY/);
+    expect(alerts).toMatch(/\.then\(\(\) => markResynced\(NOTIF_RESYNC_KEY/);
+    expect(src).not.toMatch(/syncPrayerNotifications\(/);
     expect(src).toMatch(/\.then\(\(\) => markResynced\(EOD_RESYNC_KEY/);
   });
 });

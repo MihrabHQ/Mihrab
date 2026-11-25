@@ -42,6 +42,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // "My location" kept up while the app is closed (optional): iOS may be
     // starting the app for a change of place, and the location manager has
     // to be there, with its delegate, to be told (BackgroundLocation.swift).
+    MihrabBackgroundLocation.shared.needsEngine = { [weak self] in
+      self?.startEngineWithoutWindow()
+    }
     MihrabBackgroundLocation.shared.resume()
 
     // Register the Live Activity background-refresh task (local rollover, no
@@ -93,6 +96,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
   }
 
+  /**
+   STARTED FOR A MOVE, WITH NO WINDOW. React Native starts where the window
+   is made — `scene(_:willConnectTo:)` — and an app iOS starts in the
+   background for a change of place (it had been closed, or put out of
+   memory) may be given no scene at all: the move then waited in `pending`
+   with no JavaScript to take it, the half minute iOS lends ran out, and
+   the alerts and widgets stayed on the town left behind until the app was
+   opened — which is what "Update my location in the background" says it
+   spares the reader.
+
+   So a move that finds no engine starts one: the JavaScript only, no view.
+   The app's entry listens for the move and takes the one that is waiting
+   (`startBackgroundMoveListener`, index.js). When a window does come, it
+   is given a view from this same engine (`startReactNative` makes one
+   only when there is none).
+
+   A moment later, not at once: on an ordinary start a position can arrive
+   before the scene has connected, and the scene is about to start the
+   engine itself.
+   */
+  fileprivate func startEngineWithoutWindow() {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+      guard let self, let factory = self.reactNativeFactory else { return }
+      guard !factory.rootViewFactory.hasEngine else { return }
+      guard MihrabBackgroundLocation.shared.pending != nil else { return }
+      factory.rootViewFactory.startEngine(
+        bundle: factory.bundleConfiguration,
+        devMenu: factory.devMenuConfiguration
+      )
+    }
+  }
+
   @objc private func becameActive() {
     guard zoneReloadPending else { return }
     zoneReloadPending = false
@@ -100,6 +135,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   private var zoneReloadPending = false
+}
+
+/// Whether React Native's engine has been started. `reactHost` is the
+/// factory's own property; its type (`RCTHost`) is C++-backed and Swift is
+/// not shown it, so it is asked for by name.
+fileprivate extension RCTRootViewFactory {
+  var hasEngine: Bool { value(forKey: "reactHost") != nil }
+
+  /// React Native's own "the engine, and no view":
+  /// `initializeReactHostWithLaunchOptions:bundleConfiguration:devMenuConfiguration:`,
+  /// as `startReactNative` calls it — with the dev menu's configuration
+  /// nil, which is what it is in a release build
+  /// (`[RCTDevMenuConfiguration defaultConfiguration]` returns nil there).
+  /// Swift is shown that argument as one that cannot be nil, and making one
+  /// up crashed the app at this line on an iPhone 13 (the first try of
+  /// this, Nov 2026). So the method is called as Objective-C calls it.
+  func startEngine(bundle: RCTBundleConfiguration, devMenu: RCTDevMenuConfiguration?) {
+    let selector = NSSelectorFromString(
+      "initializeReactHostWithLaunchOptions:bundleConfiguration:devMenuConfiguration:"
+    )
+    guard responds(to: selector), let implementation = method(for: selector) else { return }
+    typealias Start = @convention(c) (AnyObject, Selector, NSDictionary?, AnyObject, AnyObject?) -> Void
+    unsafeBitCast(implementation, to: Start.self)(self, selector, nil, bundle, devMenu)
+  }
 }
 
 /**
@@ -161,6 +220,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       }
     }
 
+    // An engine started for a move, before any window (the app delegate's
+    // `startEngineWithoutWindow`), was started with no launch options: the
+    // link that opens the app now is not its "initial URL". It is handed
+    // over as a link that found the app running — once the first screen is
+    // up, when the navigation is there to hear it.
+    let engineWasRunning = app.reactNativeFactory?.rootViewFactory.hasEngine == true
+
     app.reactNativeFactory?.startReactNative(
       withModuleName: "PrayerApp",
       in: window,
@@ -175,6 +241,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     // so nothing changes until the app has something to show.
     window.backgroundColor = LaunchSnapshotStore.launchColor
     window.rootViewController?.view.backgroundColor = LaunchSnapshotStore.launchColor
+    // The link, for an engine that was started before there was a window.
+    if engineWasRunning, !connectionOptions.urlContexts.isEmpty {
+      let contexts = connectionOptions.urlContexts
+      var token: NSObjectProtocol?
+      token = NotificationCenter.default.addObserver(
+        forName: NSNotification.Name("RCTContentDidAppearNotification"),
+        object: nil,
+        queue: .main
+      ) { _ in
+        if let token { NotificationCenter.default.removeObserver(token) }
+        token = nil
+        RCTLinkingManager.scene(scene, openURLContexts: contexts)
+      }
+    }
   }
 
   /// Hand `mihrab://…` to React Native's Linking module, which turns it into

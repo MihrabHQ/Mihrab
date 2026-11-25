@@ -54,7 +54,8 @@ describe('background location on the iPhone (preview)', () => {
   });
 
   it('a move is kept until JavaScript has written it, so a reload in between does not lose it', () => {
-    expect(swift).toMatch(/pending = move\s+onMove\?\(move\)/);
+    // Kept first, then handed over — or, with nobody listening, an engine asked for.
+    expect(swift).toMatch(/pending = move\s+if let onMove \{\s+onMove\(move\)\s+\} else \{[\s\S]*?needsEngine\?\(\)/);
     expect(swift).toMatch(/func takePending\(\) -> \[String: Double\]\? \{\s+pending\s+\}/);
     expect(swift).toMatch(/func endTask\(\) \{\s+DispatchQueue\.main\.async \{\s+self\.pending = nil/);
   });

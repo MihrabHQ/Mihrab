@@ -1145,7 +1145,8 @@ struct Provider: TimelineProvider {
         dynamicNextKey: np?.key,
         dynamicNextName: np?.name,
         dynamicNextTime: np?.display,
-        since: since(at: b)
+        since: since(at: b),
+        nextDate: np?.date
       ))
     }
 
@@ -1207,6 +1208,13 @@ struct Entry: TimelineEntry {
   let dynamicNextTime: String?
   /// Inside a count-up from a prayer that has just come in (#111).
   var since: SinceAdhan? = nil
+  /// The instant of the event `dynamicNextName` names — what the countdown
+  /// counts to. The name is the next EVENT (Sunrise and the night marks
+  /// included, when they are on); the countdown used to be worked out apart
+  /// from it, from the five prayers alone, and between Fajr and sunrise the
+  /// card read "Next: Sunrise 06:21" over the hours left until Dhuhr
+  /// (iPhone 13, Nov 2026). One event, one name, one instant.
+  var nextDate: Date? = nil
 }
 
 /// A prayer that has just come in, and until when the card counts up from it.
@@ -1454,7 +1462,7 @@ struct PrayerWidgetEntryView: View {
               .font(.system(size: 11))
               .foregroundStyle(widgetMuted)
           }
-          CountdownLabel(target: interval?.end, fallback: time, since: entry.since)
+          CountdownLabel(target: countdownTarget(p), fallback: time, since: entry.since)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
       }
@@ -1471,6 +1479,19 @@ struct PrayerWidgetEntryView: View {
   /// Previous → next prayer around the entry's moment, as real dates.
   private func currentInterval(_ p: WidgetPayload) -> PrayerInterval? {
     PrayerInterval.around(entry.date, rows: p.rows, calendar: .current)
+  }
+
+  /// What the countdown counts to: the event the card names as next.
+  /// Without its instant (a payload with no `days[]`, a snapshot), the end
+  /// of the stretch between the day's events — every event the name may
+  /// be, not the five prayers alone.
+  private func countdownTarget(_ p: WidgetPayload) -> Date? {
+    if let d = entry.nextDate, d > entry.date { return d }
+    return PrayerInterval.around(
+      entry.date,
+      rows: widgetEvents(rows: p.rows, sunriseRow: p.sunriseRow, extraRows: p.extraRows),
+      calendar: .current
+    )?.end
   }
 
   // MARK: - Medium / Large widget
@@ -1522,7 +1543,7 @@ struct PrayerWidgetEntryView: View {
           // without it this column states a time and nothing about how far
           // away it is, which is the question being asked.
           CountdownLabel(
-            target: PrayerInterval.around(entry.date, rows: p.rows, calendar: .current)?.end,
+            target: countdownTarget(p),
             fallback: nil,
             since: entry.since
           )
@@ -1788,7 +1809,7 @@ struct PrayerWidgetEntryView: View {
                   .foregroundStyle(widgetMuted)
               }
               CountdownLabel(
-                target: PrayerInterval.around(entry.date, rows: p.rows, calendar: .current)?.end,
+                target: countdownTarget(p),
                 fallback: nil,
                 trailing: true,
                 since: entry.since

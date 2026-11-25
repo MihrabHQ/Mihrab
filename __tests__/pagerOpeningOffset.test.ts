@@ -24,8 +24,11 @@ describe("Today's day pager", () => {
     const memo = /const openingOffset = useMemo\(([\s\S]*?)\);/.exec(card);
     expect(memo).not.toBeNull();
     const deps = /\[([^\]]*)\]\s*,?\s*$/.exec(memo![1].trim())![1];
-    expect(deps.split(',').map(s => s.trim())).toEqual(['pageWidth', 'todayIndex', 'pagePosition']);
-    expect(memo![1]).toMatch(/selectedNow\.current/);
+    // `openingDay` is the day only until the pager is mounted, and nothing
+    // after: see `__tests__/pagerOpensOnTheDayOnShow.test.tsx`.
+    expect(deps.split(',').map(s => s.trim())).toEqual(['pageWidth', 'todayIndex', 'pagePosition', 'openingDay']);
+    expect(card).toMatch(/const pagerUp = pageWidth > 0 && pagerMayMount;\s*const openingDay = pagerUp \? null : selected;/);
+    expect(memo![1]).toMatch(/openingDay \?\? selectedNow\.current/);
   });
 
   it('never hands the pager an offset built from `selected` itself', () => {

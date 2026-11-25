@@ -140,6 +140,19 @@ describe('ios and macos already meet the same contract', () => {
     'utf8',
   );
 
+  it('counts down to the event it names, not to the next of the five', () => {
+    // Between Fajr and sunrise the card read "Next: Sunrise 06:21" over the
+    // hours left until Dhuhr (iPhone 13, Nov 2026): the name came from every
+    // event of the day, the countdown from the five prayers alone.
+    expect(swift).toMatch(/since: since\(at: b\),\s*nextDate: np\?\.date/);
+    expect(swift).toMatch(
+      /func countdownTarget\(_ p: WidgetPayload\) -> Date\? \{\s*if let d = entry\.nextDate, d > entry\.date \{ return d \}/,
+    );
+    // No countdown is aimed from the five prayers' rows any more.
+    expect(swift).not.toMatch(/CountdownLabel\([^)]*rows: p\.rows/);
+    expect(swift.match(/target: countdownTarget\(p\)/g)).toHaveLength(3);
+  });
+
   it('puts an entry at every future prayer across the whole window', () => {
     expect(swift).toMatch(/for p in prayers where p\.date > now \{ boundarySet\.insert\(p\.date\) \}/);
     // Flattened from every day in days[], not just today — which is what

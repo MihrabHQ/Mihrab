@@ -585,6 +585,16 @@ function TodayCardImpl({
    * renderer) today's table is drawn on its own.
    */
   const [pageWidth, setPageWidth] = useState(0);
+  // After the launch's first paint: the pager and the hero's twin wait for it.
+  const paintedOnce = useAfterFirstPaint();
+  /**
+   * The day pager: its two weeks of pages — eighty-odd rows — were
+   * mounted the frame after the first paint, under the launch run, and
+   * were the run's one stall (65 ms on a Pixel 10 Pro, 2.35). The plain
+   * day stands in, the same height to the pixel, until the run is over;
+   * a return (no run) mounts it at once, as before.
+   */
+  const pagerMayMount = paintedOnce;
   const onTableLayout = useCallback((e: LayoutChangeEvent) => {
     const w = Math.round(e.nativeEvent.layout.width);
     setPageWidth(prev => (prev === w ? prev : w));
@@ -648,13 +658,41 @@ function TodayCardImpl({
    * So the offset is worked out from the day on show only when the pages'
    * width or layout changes — a resized window, the days behind arriving —
    * never because the day did.
+   *
+   * UNTIL THE PAGER IS THERE, though, where it opens IS the day on show.
+   * The pager is mounted after the launch's first paint (`pagerMayMount`),
+   * and the day can turn before that: the place kept from the last launch
+   * is drawn first, and a start in another town whose night has already
+   * begun turns the card to Tomorrow a few hundred milliseconds in. The
+   * offset stayed where it was worked out — today's page — while the list
+   * was told to start at tomorrow's (`initialScrollIndex`) and so drew no
+   * page before it: the pager opened on the gap where today's page would
+   * have been, a bar saying "Tomorrow" over an empty table, until the day
+   * was turned by hand or the app started again (iPhone 13, Nov 2026 —
+   * São Paulo in the afternoon, then London in the evening). So before
+   * the pager is mounted the offset follows the day; from then on it does
+   * not, as above.
    */
   const selectedNow = useRef(selected);
   useKeepLatest(selectedNow, selected);
+  const pagerUp = pageWidth > 0 && pagerMayMount;
+  const openingDay = pagerUp ? null : selected;
   const openingOffset = useMemo(
-    () => ({ x: pagePosition(todayIndex + selectedNow.current) * pageWidth, y: 0 }),
-    [pageWidth, todayIndex, pagePosition],
+    () => ({
+      x: pagePosition(todayIndex + (openingDay ?? selectedNow.current)) * pageWidth,
+      y: 0,
+    }),
+    [pageWidth, todayIndex, pagePosition, openingDay],
   );
+  // And the pager, once there, is put on the day on show — nothing moves
+  // when it opened there, which is every time but a day that turned in
+  // the very render that mounted it.
+  useEffect(() => {
+    if (pagerUp) scrollToDay(selectedNow.current, false);
+    // Only as the pager arrives: `scrollToDay` is new with every layout,
+    // and the layout's own changes are followed below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagerUp]);
   /**
    * ── THE PAGES MOVE UNDER A PAGER THAT DOES NOT ──────────────────────
    *
@@ -1094,15 +1132,7 @@ function TodayCardImpl({
   // first frames go. Nor with the run turned off: nothing would run from
   // the pose, and a twin is a second hero to lay out and draw on every tick.
   const fullBleedRunHeld = useLaunchRunActive();
-  const twinMayMount = useAfterFirstPaint();
-  /**
-   * The day pager too: its two weeks of pages — eighty-odd rows — were
-   * mounted the frame after the first paint, under the launch run, and
-   * were the run's one stall (65 ms on a Pixel 10 Pro, 2.35). The plain
-   * day stands in, the same height to the pixel, until the run is over;
-   * a return (no run) mounts it at once, as before.
-   */
-  const pagerMayMount = twinMayMount;
+  const twinMayMount = paintedOnce;
   const runWanted = settings.launchAnimation;
   useEffect(() => setLaunchRunWanted(runWanted), [runWanted]);
   const twinUp = !!(
