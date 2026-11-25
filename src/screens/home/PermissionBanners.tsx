@@ -2,8 +2,9 @@
 // treatment would visually noise these dense surfaces; the touch
 // feedback (pressed opacity / ripple) is the right affordance here.
 import { memo, useState } from 'react';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import notifee from '../../native/Alerts';
+import { openFullScreenAlarmSettings } from '../../native/FullScreenAlarm';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { formatUtcOffset } from '../../utils/utcOffset';
@@ -17,6 +18,8 @@ import { tabularNumeralStyle } from '../../theme/textScale';
  *     showing on-device adhan computations.
  *   • `exactAlarmDenied` — Android revoked SCHEDULE_EXACT_ALARM (task #3).
  *   • `notifPermDenied` — iOS notification permission denied.
+ *   • `fullScreenBlocked` — full-screen alerts are switched on here and
+ *     switched off in the system's settings.
  *   • `timezoneShift` — the clocks changed where the reader is, and every
  *     time on this screen has just moved with them (issue #56).
  *   • `methodNote` — the calculation behind the times is not current.
@@ -25,6 +28,21 @@ type PermissionBannersProps = {
   usingLocalFallback: boolean;
   exactAlarmDenied: boolean;
   notifPermDenied: boolean;
+  /**
+   * "Full-screen prayer alerts" is on in the app and the system will not
+   * show one: Android's "Full-screen notifications" is off for Mihrab (it
+   * can be switched off there at any time, and Play grants it only to
+   * calling and alarm apps), or iOS was told no to alarms.
+   *
+   * WHY IT IS SAID ON TODAY. The switch in Settings → Notifications stays
+   * on, the prayer still alerts — as an ordinary notification — and the
+   * one place that said so was a row under that switch, on a page nobody
+   * opens once it is set. The first a reader knew of it was a prayer that
+   * did not fill the screen (reported 2026-11-25: off for three days,
+   * unnoticed). So it is said where the app is opened, with the way to
+   * the system's switch, and can be put away.
+   */
+  fullScreenBlocked?: boolean;
   onRetryFetch: () => void;
   /**
    * The offset change that caused this refresh, if one did.
@@ -106,6 +124,7 @@ export function permissionBannersShown(p: {
   usingLocalFallback?: boolean;
   exactAlarmDenied?: boolean;
   notifPermDenied?: boolean;
+  fullScreenBlocked?: boolean;
   timezoneShift?: unknown;
   methodNote?: unknown;
   zoneNote?: unknown;
@@ -116,6 +135,7 @@ export function permissionBannersShown(p: {
       p.usingLocalFallback ||
       p.exactAlarmDenied ||
       p.notifPermDenied ||
+      p.fullScreenBlocked ||
       p.timezoneShift ||
       p.methodNote ||
       p.zoneNote,
@@ -126,6 +146,7 @@ function PermissionBannersImpl({
   usingLocalFallback,
   exactAlarmDenied,
   notifPermDenied,
+  fullScreenBlocked,
   onRetryFetch,
   timezoneShift,
   onDismissTimezoneShift,
@@ -166,6 +187,7 @@ function PermissionBannersImpl({
       usingLocalFallback,
       exactAlarmDenied,
       notifPermDenied,
+      fullScreenBlocked,
       timezoneShift,
       methodNote,
       zoneNote,
@@ -246,6 +268,23 @@ function PermissionBannersImpl({
       text: t('home.notifPermDenied'),
       action: t('common.openSettings'),
       onAction: () => Linking.openSettings().catch(() => {}),
+      closable: true,
+      clamp: true,
+    });
+  }
+  // Last: the alert still comes, only smaller. The two above are alerts
+  // that may not come at all.
+  if (fullScreenBlocked && !away('fullScreen')) {
+    const ios = Platform.OS === 'ios';
+    notices.push({
+      key: 'fullScreen',
+      // The words Settings → Notifications already says it in, in every
+      // language: what is off, then what happens instead.
+      text: ios
+        ? t('settings.prayerAlertFullScreenBlockedHelpIos')
+        : `${t('settings.prayerAlertFullScreenBlocked')}. ${t('settings.prayerAlertFullScreenBlockedHelp')}`,
+      action: t('common.openSettings'),
+      onAction: () => void (ios ? Linking.openSettings().catch(() => {}) : openFullScreenAlarmSettings()),
       closable: true,
       clamp: true,
     });
