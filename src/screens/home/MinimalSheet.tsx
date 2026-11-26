@@ -39,7 +39,10 @@ import { useConst } from '../../hooks/useConst';
 import { useKeepLatest } from '../../hooks/useLatest';
 
 /** How far the page eases back under the sheet. */
-export const MINIMAL_SHEET_PAGE_SCALE = 0.94;
+// 1: the page stays where it is. It used to step back to 0.94 as the sheet
+// rose, taking the heart, the cog and the countdown with it; the maintainer
+// had that removed (2026-11-27). The veil alone says the sheet is in front.
+export const MINIMAL_SHEET_PAGE_SCALE = 1;
 /** The veil over the sky, and the veil down by the sheet. */
 const VEIL_TOP = 0.22;
 const VEIL_FOOT = 0.58;
