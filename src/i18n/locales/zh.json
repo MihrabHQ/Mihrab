@@ -2811,6 +2811,15 @@
     "browse": "查阅",
     "searchPlaceholder": "搜索圣训，或{{example}}",
     "searchClear": "清除搜索",
+    "comp": {
+      "section": "可通读的书",
+      "note": "{{title}}全书 {{of}} 条圣训中的 {{held}} 条，按{{compiler}}的顺序和编号：即他归于布哈里或穆斯林、并在其中确切找到的圣训。每条按该圣训集原文呈现——HadeethEnc 收录时附其译文——因此他节录的圣训在此为全文。其余尚未收录。",
+      "riyad": {
+        "title": "《利雅得·萨利欣》",
+        "compiler": "脑威",
+        "blurb": "伊玛目脑威的《清廉者的花园》"
+      }
+    },
     "agreed": {
       "title": "两大圣训集共录",
       "row": "布哈里与穆斯林均收录 · 附译文",

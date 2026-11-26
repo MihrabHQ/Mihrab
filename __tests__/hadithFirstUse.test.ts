@@ -538,7 +538,10 @@ describe('the reader', () => {
   });
 
   it('says where it is in a set or a topic, and leaves a book to its own numbers', () => {
-    expect(reader).toContain("item.source !== 'book' && at >= 0 && ids.length > 1");
+    // …unless it is being read through a compilation: there it is one of
+    // the compilation's hadith, and its place in that is what is said
+    // (hadithCompilation.test.ts).
+    expect(reader).toContain("(item.source !== 'book' || inCompilation) && at >= 0 && ids.length > 1");
     expect(reader).toContain("t('hadith.position', { n: at + 1, total: ids.length })");
     for (const lang of HADITH_LANGS) {
       const p = locale(lang).position;

@@ -2811,6 +2811,15 @@
     "browse": "Telusuri",
     "searchPlaceholder": "Cari hadis, atau {{example}}",
     "searchClear": "Hapus pencarian",
+    "comp": {
+      "section": "Kitab untuk dibaca",
+      "note": "{{held}} dari {{of}} hadis {{title}}, menurut urutan dan nomor {{compiler}}: yang beliau nisbatkan kepada al-Bukhari atau Muslim dan ditemukan di sana dengan yakin. Masing-masing ditampilkan sebagaimana ada dalam kitab itu — dengan terjemahan HadeethEnc bila hadisnya ada di sana — sehingga hadis yang beliau ringkas ada di sini secara utuh. Yang lain belum disertakan.",
+      "riyad": {
+        "title": "Riyadhus Shalihin",
+        "compiler": "an-Nawawi",
+        "blurb": "Riyadhus Shalihin karya Imam an-Nawawi"
+      }
+    },
     "agreed": {
       "title": "Muttafaq ‘alaih",
       "row": "Dalam al-Bukhari dan Muslim · diterjemahkan",

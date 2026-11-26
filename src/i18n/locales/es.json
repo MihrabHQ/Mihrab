@@ -2812,6 +2812,15 @@
     "browse": "Consultar",
     "searchPlaceholder": "Buscar hadices, o {{example}}",
     "searchClear": "Borrar la búsqueda",
+    "comp": {
+      "section": "Libros para leer",
+      "note": "{{held}} de los {{of}} hadices de {{title}}, en el orden de {{compiler}} y con sus números: los que atribuye a al-Bujari o a Muslim y que se hallaron allí con certeza. Cada uno se muestra tal como lo recoge ese libro — con la traducción de HadeethEnc cuando tiene el hadiz —, de modo que uno que él abrevió está aquí completo. Los demás aún no se incluyen.",
+      "riyad": {
+        "title": "Riyad as-Salihin",
+        "compiler": "an-Nawawi",
+        "blurb": "Los jardines de los justos, del imam an-Nawawi"
+      }
+    },
     "agreed": {
       "title": "Acordado",
       "row": "En al-Bujari y Muslim · traducido",

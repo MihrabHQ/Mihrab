@@ -9,7 +9,7 @@
  * place in Open-Hadith-Data's file, not in our pack. A list is
  * `set:<id>` (a curated set, `sets.json`), `hub:<id>` (one of Look up's
  * tiles: a few HadeethEnc topics under a name of ours), `cat:<id>` (a
- * HadeethEnc topic), `book:<id>`, or `agreed` (below). The reader's record keys on these, so
+ * HadeethEnc topic), `book:<id>`, `agreed` or `comp:<id>` (a compilation; both below). The reader's record keys on these, so
  * they are kept stable.
  *
  * ── WHAT IS DOWNLOADED ─────────────────────────────────────────────────
@@ -39,6 +39,7 @@
 import SETS from './sets.json';
 import NAWAWI from './nawawi40.json';
 import AGREED from './agreed.json';
+import RIYAD from './compilations/riyad.json';
 import { IS_WEB_APP } from '../config/webApp';
 import { ALL_BOOKS, SAHIH_BOOKS } from './bookGrades';
 import type { CategoryRow, PackKey } from './packTypes';
@@ -115,6 +116,51 @@ export const AGREED_IDS: readonly string[] = AGREED.ids;
 export const AGREED_LIST = 'agreed';
 export const AGREED_OFFERED = !IS_WEB_APP;
 
+/**
+ * A compilation: a book whose compiler says which collection each hadith
+ * is from, held here as an INDEX into the hadith the app already serves
+ * (`scripts/hadith/build-compilation.js` has the rule and writes it;
+ * docs/hadith-policy.md §1 is the maintainer's clause it is under).
+ *
+ * A row is the compiler's number, the book he attributes it to, the row's
+ * place there, and the HadeethEnc entry that is the same hadith where
+ * there is one. Nothing of the compilation's own text is in the app: a
+ * reader is shown the HadeethEnc entry, with its translation, or else the
+ * hadith as al-Bukhārī or Muslim has it.
+ *
+ * Not in a browser, for the reason "Agreed upon" is not.
+ */
+export type CompilationRow = { n: number; book: string; index: number; henc: string | null };
+export type Compilation = {
+  id: string;
+  /** How many hadith the book has, and why the ones not here were left out. */
+  of: number;
+  left: Record<string, number>;
+  rows: readonly CompilationRow[];
+};
+type RawCompilation = { id: string; of: number; left: Record<string, number>; rows: unknown[] };
+const SHORT_BOOK: Record<string, string> = { b: 'bukhari', m: 'muslim' };
+const compilation = (raw: RawCompilation): Compilation => ({
+  id: raw.id,
+  of: raw.of,
+  left: raw.left,
+  rows: (raw.rows as Array<[number, string, number, string | null]>).map(([n, b, index, henc]) => ({
+    n,
+    book: SHORT_BOOK[b] ?? b,
+    index,
+    henc,
+  })),
+});
+const ALL_COMPILATIONS: readonly Compilation[] = [compilation(RIYAD as RawCompilation)];
+export const COMPILATIONS: readonly Compilation[] = IS_WEB_APP ? [] : ALL_COMPILATIONS;
+export function findCompilation(id: string): Compilation | undefined {
+  return COMPILATIONS.find(c => c.id === id);
+}
+/** The books a compilation's rows are in. */
+export function compilationBooks(c: Compilation): string[] {
+  return [...new Set(c.rows.map(r => r.book))];
+}
+
 export const hencPackKey = (pack: string, lang: string): PackKey => `henc/${pack}/${lang}`;
 export const categoriesKey = (lang: string): PackKey => `categories/${lang}`;
 export const bookKey = (book: string): PackKey => `books/${book}`;
@@ -168,6 +214,7 @@ export type ListRef =
   | { kind: 'cat'; id: string }
   | { kind: 'book'; id: string }
   | { kind: 'agreed' }
+  | { kind: 'comp'; id: string }
   | { kind: 'bookmarks' };
 
 export function parseList(list: string | undefined): ListRef | null {
@@ -177,6 +224,7 @@ export function parseList(list: string | undefined): ListRef | null {
   const [kind, id] = list.split(':');
   if (!id) return null;
   if (kind === 'set' || kind === 'hub' || kind === 'cat' || kind === 'book') return { kind, id };
+  if (kind === 'comp') return findCompilation(id) ? { kind, id } : null;
   return null;
 }
 

@@ -74,6 +74,7 @@ import {
   AGREED_LIST,
   AGREED_OFFERED,
   BOOKS,
+  COMPILATIONS,
   bookKey,
   findHub,
   HADITH_HUBS,
@@ -619,6 +620,27 @@ function Browse({ navigation }: { navigation: Nav }) {
           </Group>
         ) : null}
       </View>
+
+      {/* The books people read through, each as an index into the hadith
+          the app already serves (docs/hadith-policy.md §1). */}
+      {COMPILATIONS.length ? (
+        <>
+          <Text style={[styles.sectionTitle, { color: palette.text }]} accessibilityRole="header">
+            {t('hadith.comp.section')}
+          </Text>
+          <Group>
+            {COMPILATIONS.map(c => (
+              <Row
+                key={c.id}
+                title={t(`hadith.comp.${c.id}.title`)}
+                subtitle={t(`hadith.comp.${c.id}.blurb`)}
+                onPress={() => navigation.push('HadithList', { list: `comp:${c.id}` })}
+                testID={`hadith-comp-${c.id}`}
+              />
+            ))}
+          </Group>
+        </>
+      ) : null}
 
       {/* The two Ṣaḥīḥs in translation, as near as there is: what HadeethEnc
           says both report. Before the books, which are Arabic only. */}

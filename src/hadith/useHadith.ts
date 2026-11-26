@@ -15,6 +15,8 @@ import {
   findSet,
   packsForSet,
   packsForTopics,
+  compilationBooks,
+  findCompilation,
   parseList,
   type CategoryTree,
 } from './catalog';
@@ -31,6 +33,11 @@ export function packsForList(list: string, appLang: string): PackKey[] {
   if (ref.kind === 'book') return [bookKey(ref.id)];
   // Every entry of it is HadeethEnc's: the one pack, and the topic tree.
   if (ref.kind === 'agreed') return packsForTopics([], appLang, false);
+  if (ref.kind === 'comp') {
+    // HadeethEnc for the hadith it holds in translation, and the books the rest are read from.
+    const c = findCompilation(ref.id);
+    return c ? [...packsForTopics([], appLang, false), ...compilationBooks(c).map(bookKey)] : [];
+  }
   if (ref.kind === 'cat') return packsForTopics([ref.id], appLang);
   if (ref.kind === 'hub') return packsForTopics(findHub(ref.id)?.topics ?? [], appLang);
   const set = findSet(ref.id);

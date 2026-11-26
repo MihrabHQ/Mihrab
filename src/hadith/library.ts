@@ -7,6 +7,9 @@
  */
 import {
   AGREED_IDS,
+  compilationBooks,
+  findCompilation,
+  type Compilation,
   BOOKS,
   CategoryTree,
   categoriesKey,
@@ -422,6 +425,30 @@ export async function bookRows(book: string): Promise<ListRow[]> {
   return rows;
 }
 
+/**
+ * A compilation's rows, in its compiler's order and under his numbers:
+ * the HadeethEnc entry where the hadith has one here (a translation), the
+ * book's own row otherwise. A hadith whose book is not on the device, or
+ * whose row a later build of the book no longer holds, is left out.
+ */
+export async function compilationRows(c: Compilation, appLang: string): Promise<ListRow[]> {
+  const idx = await hencIndex(appLang);
+  const files = new Map<string, BookFile | null>();
+  for (const book of compilationBooks(c)) files.set(book, await loadPack<BookFile>(bookKey(book)));
+  const rows: ListRow[] = [];
+  for (const r of c.rows) {
+    const translated = r.henc ? rowOf(r.henc, idx) : null;
+    if (translated) {
+      rows.push({ ...translated, number: r.n });
+      continue;
+    }
+    const file = files.get(r.book);
+    const row = file ? bookRowAt(file, r.index) : undefined;
+    if (row) rows.push({ id: `b:${r.book}:${r.index}`, title: bookRowTitle(row[1]), number: r.n });
+  }
+  return rows;
+}
+
 /** The rows of a list id (`catalog.ts`). Bookmarks are the caller's: they come from the record. */
 export async function listRows(list: string, appLang: string, bookmarks: readonly string[] = []): Promise<ListRow[]> {
   const ref = parseList(list);
@@ -438,6 +465,10 @@ export async function listRows(list: string, appLang: string, bookmarks: readonl
     return hub ? underTopics(await hencIndex(appLang), hub.topics, await categoryTree(appLang)) : [];
   }
   if (ref.kind === 'book') return bookRows(ref.id);
+  if (ref.kind === 'comp') {
+    const c = findCompilation(ref.id);
+    return c ? compilationRows(c, appLang) : [];
+  }
   if (ref.kind === 'agreed') {
     // In the list's order. An entry HadeethEnc has since withdrawn or
     // regraded is not in the pack, and the list is that much shorter.

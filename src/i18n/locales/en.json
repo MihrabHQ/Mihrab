@@ -2811,6 +2811,15 @@
     "browse": "Look up",
     "searchPlaceholder": "Search hadith, or {{example}}",
     "searchClear": "Clear the search",
+    "comp": {
+      "section": "Books to read",
+      "note": "{{held}} of the {{of}} hadith of {{title}}, in {{compiler}}'s order and under his numbers: the ones he attributes to al-Bukhari or Muslim that were found there with confidence. Each is shown as that book has it — with HadeethEnc's translation where it has the hadith — so one he shortened is here whole. The others are not included yet.",
+      "riyad": {
+        "title": "Riyad as-Salihin",
+        "compiler": "an-Nawawi",
+        "blurb": "Imam an-Nawawi's Gardens of the Righteous"
+      }
+    },
     "agreed": {
       "title": "Agreed upon",
       "row": "In both al-Bukhari and Muslim · translated",

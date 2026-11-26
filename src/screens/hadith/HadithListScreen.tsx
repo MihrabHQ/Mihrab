@@ -41,6 +41,7 @@ import { CenteredColumn } from '../../responsive/CenteredColumn';
 import type { RootStackParamList } from '../../navigation/types';
 import {
   FIQH_ROOT,
+  findCompilation,
   findHub,
   findSet,
   LONG_LIST,
@@ -90,6 +91,7 @@ export function listTitle(
   if (!ref) return t('nav.hadith');
   if (ref.kind === 'bookmarks') return t('hadith.bookmarks');
   if (ref.kind === 'agreed') return t('hadith.agreed.title');
+  if (ref.kind === 'comp') return t(`hadith.comp.${ref.id}.title`);
   if (ref.kind === 'set') return t(`hadith.set.${ref.id}.title`);
   if (ref.kind === 'hub') return t(`hadith.hub.${ref.id}`);
   if (ref.kind === 'book') return t(`hadith.book.${ref.id}`);
@@ -137,6 +139,7 @@ export function HadithListScreen() {
   const contents = !all && !!rows && opensOnContents(sections, rows.length);
   const rulings = hub ? !!hub.fiqh : ref?.kind === 'cat' && (tree?.rootOf(ref.id) ?? ref.id) === FIQH_ROOT;
   const set = ref?.kind === 'set' ? findSet(ref.id) : undefined;
+  const comp = ref?.kind === 'comp' ? findCompilation(ref.id) : undefined;
   const ids = useMemo(() => rows?.map(r => r.id) ?? null, [rows]);
   const progress = set ? setProgress(rec, set.id, ids) : null;
   const setMarked = set ? isSetMarked(rec, set.id) : false;
@@ -240,6 +243,16 @@ export function HadithListScreen() {
       ) : null}
       {set ? (
         <Text style={[styles.blurb, { color: palette.muted }]}>{t(`hadith.set.${set.id}.blurb`)}</Text>
+      ) : null}
+      {comp && rows ? (
+        <Text style={[styles.blurb, { color: palette.muted }]} testID="hadith-comp-note">
+          {t('hadith.comp.note', {
+            title: t(`hadith.comp.${comp.id}.title`),
+            compiler: t(`hadith.comp.${comp.id}.compiler`),
+            held: rows.length,
+            of: comp.of,
+          })}
+        </Text>
       ) : null}
       {ref?.kind === 'agreed' ? (
         <Text style={[styles.blurb, { color: palette.muted }]} testID="hadith-agreed-note">

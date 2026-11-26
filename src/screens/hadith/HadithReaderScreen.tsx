@@ -56,7 +56,7 @@ import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { foreignText, ownSideAlign } from '../../i18n/foreignText';
 import { useSheetSides } from '../../responsive/sheetSides';
 import type { RootStackParamList } from '../../navigation/types';
-import { homeList } from '../../hadith/catalog';
+import { homeList, parseList } from '../../hadith/catalog';
 import { isBookmarked, isRead, noteOf, setBookmark, setLast, setNote, setRead } from '../../hadith/hadithRecord';
 import { updateHadithRecord, useHadithRecord } from '../../hadith/hadithStore';
 import { loadItem, type HadithItem } from '../../hadith/library';
@@ -147,7 +147,11 @@ export function HadithReaderScreen() {
   const textDir = item?.textLang ? foreignText(item.textLang, i18n.language) : null;
   const arabicAlign = { textAlign: ownSideAlign(true, layoutRtl), writingDirection: 'rtl' as const };
 
-  const title = item?.number != null && item.source !== 'hadeethenc'
+  // Read through a compilation, a hadith is one of ITS hadith: the bar
+  // names the compilation and the place in it, not the number the hadith
+  // has in the book it is shown from.
+  const inCompilation = parseList(list)?.kind === 'comp';
+  const title = item?.number != null && item.source !== 'hadeethenc' && !inCompilation
     ? `${list ? listTitle(list, t, tree) : t('nav.hadith')} · ${item.number}`
     : list
       ? listTitle(list, t, tree)
@@ -162,7 +166,7 @@ export function HadithReaderScreen() {
   // Where this is in the list it is being read through. A book's hadith
   // carries its own number in the title.
   const position =
-    item && item.source !== 'book' && at >= 0 && ids.length > 1
+    item && (item.source !== 'book' || inCompilation) && at >= 0 && ids.length > 1
       ? t('hadith.position', { n: at + 1, total: ids.length })
       : null;
 
