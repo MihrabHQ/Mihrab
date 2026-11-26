@@ -2863,7 +2863,9 @@
         "title": "Kitab at-Tawhid",
         "compiler": "Muhammad ibn Abd al-Wahhab",
         "blurb": "Boken om Guds enhet: Allahs rätt över Sina tjänare"
-      }
+      },
+      "why": "Varför färre än boken har: Mihrab visar bara hadither som graderats hasan eller sahih. En återberättelse som graderats svag, som saknar gradering eller som boken hämtar från en samling Mihrab inte har utelämnas, så boken är kortare här än i tryck.",
+      "sectionNote": "Några av dessa visar färre hadither än den tryckta boken: bara hadither graderade hasan eller sahih visas."
     },
     "agreed": {
       "title": "Överensstämmande",
@@ -3141,6 +3143,9 @@
       },
       "levelFirst": "Att börja med",
       "levelLater": "För ett senare skede"
-    }
+    },
+    "recentSearches": "Senaste sökningar",
+    "clearRecent": "Rensa",
+    "searchCapped": "bara de första {{count}} visas; lägg till ett ord för att begränsa"
   }
 }

@@ -81,6 +81,8 @@ const STAYS: Record<string, string> = {
     'paragraphs marked in Library books: places in a downloaded text, device-local until the maintainer decides whether they travel like the journal (hadith/libraryShelf.ts)',
   'mihrab.library.place.v1':
     'the chapter last opened in each Library book, on this device — a place in a text, kept like the Hadith tab\'s page and not a record of reading (hadith/libraryShelf.ts)',
+  'mihrab.hadith.recentSearches.v1':
+    'the last few searches in the Hadith tab that led to a hadith, offered again on this device — what was typed here, not a record to carry (hadith/recentSearches.ts)',
   'mihrab.hadith.mode':
     'which half of the Hadith tab (Learn or Browse) was on show — a view on this screen, not a record of reading (screens/HadithScreen.tsx)',
   '@mihrab/resume/v1':

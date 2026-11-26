@@ -2863,7 +2863,9 @@
         "title": "Kitab at-Tauhid",
         "compiler": "Muhammad bin Abdul Wahhab",
         "blurb": "Kitab Tauhid: hak Allah atas hamba-hamba-Nya"
-      }
+      },
+      "why": "Mengapa lebih sedikit daripada bukunya: Mihrab hanya menampilkan hadis yang dinilai hasan atau sahih. Riwayat yang dinilai lemah, yang tidak bernilai, atau yang diambil dari kitab yang tidak ada di Mihrab ditinggalkan, sehingga buku ini tampak lebih pendek di sini daripada cetakannya.",
+      "sectionNote": "Sebagian menampilkan lebih sedikit hadis daripada buku cetaknya: hanya hadis yang dinilai hasan atau sahih yang ditampilkan."
     },
     "agreed": {
       "title": "Muttafaq ‘alaih",
@@ -3141,6 +3143,9 @@
       },
       "levelFirst": "Untuk memulai",
       "levelLater": "Untuk tahap lanjut"
-    }
+    },
+    "recentSearches": "Pencarian terakhir",
+    "clearRecent": "Hapus",
+    "searchCapped": "hanya {{count}} pertama yang ditampilkan; tambahkan kata untuk mempersempit"
   }
 }

@@ -115,6 +115,7 @@ import { ownSideAlign } from '../i18n/foreignText';
 import { LibraryShelf } from './hadith/LibraryShelf';
 import { IS_WEB_APP } from '../config/webApp';
 import { useKeyboardInset } from '../hooks/useKeyboardInset';
+import { clearRecentSearches, countBySource, recentSearches, rememberSearch } from '../hadith/recentSearches';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 /** `library`: whole books to read (`LibraryShelf.tsx`); not offered in a browser, which has no packs of them. */
@@ -191,6 +192,12 @@ export function HadithScreen() {
 
   const [query, setQuery] = useState('');
   const searching = query.trim().length >= 2;
+  // What was looked for before, offered while the field is open and empty.
+  const [fieldOpen, setFieldOpen] = useState(false);
+  const [recent, setRecent] = useState<string[]>([]);
+  useEffect(() => {
+    if (fieldOpen) void recentSearches().then(setRecent);
+  }, [fieldOpen, searching]);
 
   // Have the downloaded hadith ready to be searched before the field is
   // touched: the first query used to wait while every text was folded.
@@ -268,35 +275,59 @@ export function HadithScreen() {
   return (
     <View style={[styles.root, { backgroundColor: palette.bg }]}>
       <Column outer={{ paddingTop: pageTop, backgroundColor: palette.bg }} style={styles.pinned}>
-        <View style={[styles.search, inputChromeStyle(palette), { backgroundColor: palette.card }]}>
-          <SearchIcon size={18} color={palette.mutedSolid} />
-          <TextInput
-            value={query}
-            onChangeText={setQuery}
-            placeholder={searchHint}
-            placeholderTextColor={palette.muted}
-            style={[styles.searchInput, { color: palette.text }]}
-            accessibilityLabel={searchHint}
-            returnKeyType="search"
-            autoCorrect={false}
-            clearButtonMode="while-editing"
-            testID="hadith-search"
-          />
-          {/* iOS draws its own (clearButtonMode); Android and the web have none,
-              and a query was still in the field on coming back to the tab. */}
-          {Platform.OS !== 'ios' && query.length > 0 ? (
-            <Pressable
-              onPress={() => setQuery('')}
-              accessibilityRole="button"
-              accessibilityLabel={t('hadith.searchClear')}
-              hitSlop={12}
-              style={({ pressed }) => [styles.searchClear, pressed && styles.pressed]}
-              testID="hadith-search-clear"
-            >
-              <CloseIcon size={16} color={palette.mutedSolid} />
-            </Pressable>
-          ) : null}
-        </View>
+        {/* The field finds hadith, and the Library's books are not hadith the app serves: on
+            that page it would be a search that cannot find what is in front of the reader. A
+            book is searched on its own page. */}
+        {mode !== 'library' ? (
+          <View style={[styles.search, inputChromeStyle(palette), { backgroundColor: palette.card }]}>
+            <SearchIcon size={18} color={palette.mutedSolid} />
+            <TextInput
+              value={query}
+              onChangeText={setQuery}
+              onFocus={() => setFieldOpen(true)}
+              // A moment after: on a pointer, the field loses focus before the tap on a recent search lands.
+              onBlur={() => setTimeout(() => setFieldOpen(false), 200)}
+              placeholder={searchHint}
+              placeholderTextColor={palette.muted}
+              style={[styles.searchInput, { color: palette.text }]}
+              accessibilityLabel={searchHint}
+              returnKeyType="search"
+              autoCorrect={false}
+              clearButtonMode="while-editing"
+              testID="hadith-search"
+            />
+            {/* iOS draws its own (clearButtonMode); Android and the web have none,
+                and a query was still in the field on coming back to the tab. */}
+            {Platform.OS !== 'ios' && query.length > 0 ? (
+              <Pressable
+                onPress={() => setQuery('')}
+                accessibilityRole="button"
+                accessibilityLabel={t('hadith.searchClear')}
+                hitSlop={12}
+                style={({ pressed }) => [styles.searchClear, pressed && styles.pressed]}
+                testID="hadith-search-clear"
+              >
+                <CloseIcon size={16} color={palette.mutedSolid} />
+              </Pressable>
+            ) : null}
+          </View>
+        ) : null}
+        {fieldOpen && !query.trim() && recent.length && mode !== 'library' ? (
+          <View style={styles.recent} testID="hadith-recent">
+            <Text style={[styles.small, { color: palette.muted }]}>{t('hadith.recentSearches')}</Text>
+            <View style={styles.recentChips}>
+              {recent.map(q => (
+                <Chip key={q} label={q} compact onPress={() => setQuery(q)} testID={`hadith-recent-${q}`} />
+              ))}
+              <Chip
+                label={t('hadith.clearRecent')}
+                compact
+                onPress={() => void clearRecentSearches().then(() => setRecent([]))}
+                testID="hadith-recent-clear"
+              />
+            </View>
+          </View>
+        ) : null}
         {!searching ? (
           <SegmentedControl
             segments={segments}
@@ -703,6 +734,9 @@ function Browse({ navigation }: { navigation: Nav }) {
           <Text style={[styles.sectionTitle, { color: palette.text }]} accessibilityRole="header">
             {t('hadith.comp.section')}
           </Text>
+          <Text style={[styles.blurb, { color: palette.muted }]} testID="hadith-comp-section-note">
+            {t('hadith.comp.sectionNote')}
+          </Text>
           <Group>
             {COMPILATIONS.map(c => (
               <Row
@@ -766,6 +800,8 @@ function Browse({ navigation }: { navigation: Nav }) {
 
 /** Where a search looks: everywhere, HadeethEnc's entries from the two Ṣaḥīḥs, or the books. */
 type Scope = 'all' | 'sahihayn' | 'books';
+/** The most results a search gives (`searchHadith`'s own limit): at this many, there may be more. */
+const SEARCH_SHOWN = 80;
 
 function SearchResults({
   query,
@@ -878,7 +914,17 @@ function SearchResults({
     };
   }, [refKey, lang, here]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const open = useCallback((id: string) => navigation.push('HadithReader', { id }), [navigation]);
+  // A search that led somewhere is one worth offering again.
+  const open = useCallback(
+    (id: string) => {
+      void rememberSearch(query);
+      navigation.push('HadithReader', { id });
+    },
+    [navigation, query],
+  );
+  // How many of what is shown are from each place, and whether there was more than is shown.
+  const sources = useMemo(() => (hits ? countBySource(hits) : null), [hits]);
+  const sourceName = (k: string) => (k === 'hadeethenc' ? 'HadeethEnc' : k === 'nawawi' ? t('hadith.set.nawawi40.title') : t(`hadith.book.${k}`));
   const anything = here.length > 0;
   const searchingLine = (
     <Text style={[styles.empty, { color: palette.muted }]} accessibilityLiveRegion="polite">
@@ -1028,6 +1074,16 @@ function SearchResults({
       {hits?.length ? (
         <>
           <Text style={[styles.small, styles.scope, { color: palette.muted }]}>{t('hadith.searchScope')}</Text>
+          {sources ? (
+            <Text style={[styles.small, styles.scope, tabularNumeralStyle, { color: palette.muted }]} testID="hadith-search-counts">
+              {sources.map(([k, n]) => `${sourceName(k)} ${n}`).join(' · ')}
+              {!busy && hits.length >= SEARCH_SHOWN ? ` — ${t('hadith.searchCapped', { count: SEARCH_SHOWN })}` : ''}
+            </Text>
+          ) : !busy && hits.length >= SEARCH_SHOWN ? (
+            <Text style={[styles.small, styles.scope, { color: palette.muted }]} testID="hadith-search-capped">
+              {t('hadith.searchCapped', { count: SEARCH_SHOWN })}
+            </Text>
+          ) : null}
           {hits.map(h => (
             <HadithRow
               key={h.id}
@@ -1143,6 +1199,8 @@ const styles = StyleSheet.create({
   filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs },
   inset: { paddingHorizontal: SPACING.lg, paddingVertical: SPACING.xs },
   scope: { paddingHorizontal: SPACING.lg, paddingBottom: SPACING.xs },
+  recent: { gap: SPACING.xs },
+  recentChips: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs },
   empty: { padding: SPACING.xl, textAlign: 'center', fontSize: TYPE.callout.fontSize },
   pressed: { opacity: 0.6 },
 });

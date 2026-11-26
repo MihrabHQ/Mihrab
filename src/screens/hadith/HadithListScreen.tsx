@@ -298,6 +298,12 @@ export function HadithListScreen() {
             : ''}
         </Text>
       ) : null}
+      {/* Why the book is shorter here than in print, said where it is: the rule, in a sentence. */}
+      {comp && rows && rows.length < comp.of ? (
+        <Text style={[styles.blurb, { color: palette.muted }]} testID="hadith-comp-why">
+          {t('hadith.comp.why')}
+        </Text>
+      ) : null}
       {ref?.kind === 'agreed' ? (
         <Text style={[styles.blurb, { color: palette.muted }]} testID="hadith-agreed-note">
           {t('hadith.agreed.blurb')}

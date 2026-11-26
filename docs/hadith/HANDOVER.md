@@ -79,6 +79,12 @@ the shelf; font choice; verse links. A chapter holds the screen on
 under the Qur'an's own `readerKeepAwake` setting (the maintainer's yes,
 2026-11-26) — whose help text still names only the Qur'an screens.
 
+Hadith tab, same day: a compilation shorter than its book says why
+(`hadith.comp.why`, and `sectionNote` over the list); the search field is
+not drawn on the Library page; recent searches and the count of results
+by source are `src/hadith/recentSearches.ts`. Learn already had
+"Continue reading" in one tap (`resumeTarget`), so nothing was added there.
+
 Not built:
 - بلد العميان — Hindawi's CC BY translation sits behind a bot check
   (Cloudflare), which is not to be worked round. The maintainer can

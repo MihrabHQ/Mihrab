@@ -2863,7 +2863,9 @@
         "title": "Kitab at-Tawhid",
         "compiler": "Muhammad ibn Abd al-Wahhab",
         "blurb": "The Book of Monotheism: Allah's right over His servants"
-      }
+      },
+      "why": "Why fewer than the book has: Mihrab serves only hadith graded hasan or sahih. A report graded weak, one with no grade, or one the book takes from a collection Mihrab does not carry is left out, so the book appears shorter here than in print.",
+      "sectionNote": "Some of these show fewer hadith than the printed book: only hadith graded hasan or sahih are served."
     },
     "agreed": {
       "title": "Agreed upon",
@@ -3141,6 +3143,9 @@
       },
       "levelFirst": "To begin with",
       "levelLater": "For a later stage"
-    }
+    },
+    "recentSearches": "Recent searches",
+    "clearRecent": "Clear",
+    "searchCapped": "only the first {{count}} are shown; add a word to narrow it"
   }
 }

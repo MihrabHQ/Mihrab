@@ -2863,7 +2863,9 @@
         "title": "Kitab at-Tawhid（认主独一论）",
         "compiler": "穆罕默德·本·阿卜杜勒·瓦哈卜",
         "blurb": "安拉对众仆的权利"
-      }
+      },
+      "why": "为何比原书少：Mihrab 只呈现被评为良好（哈桑）或可靠（萨希赫）的圣训。被评为羸弱、没有评级，或出自 Mihrab 未收录之集的传述均不收入，因此本书在此比印本短。",
+      "sectionNote": "其中一些所示圣训少于印本：只呈现被评为良好或可靠的圣训。"
     },
     "agreed": {
       "title": "两大圣训集共录",
@@ -3141,6 +3143,9 @@
       },
       "levelFirst": "入门",
       "levelLater": "进阶"
-    }
+    },
+    "recentSearches": "最近搜索",
+    "clearRecent": "清除",
+    "searchCapped": "仅显示前 {{count}} 条；再加一个词以缩小范围"
   }
 }

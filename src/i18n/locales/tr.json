@@ -2863,7 +2863,9 @@
         "title": "Kitâbü't-Tevhîd",
         "compiler": "Muhammed b. Abdülvehhâb",
         "blurb": "Tevhid Kitabı: Allah'ın kulları üzerindeki hakkı"
-      }
+      },
+      "why": "Kitaptakinden neden az: Mihrab yalnızca hasen veya sahih derecesindeki hadisleri sunar. Zayıf sayılan, derecesi olmayan veya Mihrab'da bulunmayan bir eserden alınan rivayet dışarıda bırakılır; bu yüzden kitap burada basılısından kısa görünür.",
+      "sectionNote": "Bunların bazılarında basılı kitaptakinden az hadis görünür: yalnızca hasen veya sahih derecesindekiler sunulur."
     },
     "agreed": {
       "title": "Müttefekun aleyh",
@@ -3141,6 +3143,9 @@
       },
       "levelFirst": "Başlangıç için",
       "levelLater": "İleri aşama için"
-    }
+    },
+    "recentSearches": "Son aramalar",
+    "clearRecent": "Temizle",
+    "searchCapped": "yalnızca ilk {{count}} gösteriliyor; daraltmak için bir kelime ekleyin"
   }
 }
