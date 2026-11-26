@@ -2843,6 +2843,21 @@
         "title": "Hadith qudsi",
         "blurb": "Från al-Bukhari och Muslim: det som Profeten ﷺ återger från sin Herre",
         "note": "{{held}} hadith qudsi – ord som Profeten ﷺ återger från sin Herre – var och en så som Sahih al-Bukhari eller Sahih Muslim har den. Det är de som ett välkänt urval om fyrtio tillskriver någon av de två och som hittades där med säkerhet; den här listan är inte det urvalet."
+      },
+      "rajab": {
+        "title": "Ibn Rajabs tillägg till de fyrtio",
+        "compiler": "Ibn Rajab",
+        "blurb": "De åtta hadither han lade till an-Nawawis fyrtiotvå, så att de blev femtio"
+      },
+      "adhkar": {
+        "title": "al-Adhkar",
+        "compiler": "an-Nawawi",
+        "blurb": "Imam an-Nawawis åminnelser och åkallan för varje tillfälle"
+      },
+      "wabil": {
+        "title": "al-Wabil as-Sayyib",
+        "compiler": "Ibn al-Qayyim",
+        "blurb": "Det rikliga regnet: om åminnelsen av Allah och dess frukter"
       }
     },
     "agreed": {

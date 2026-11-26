@@ -2844,6 +2844,21 @@
         "title": "Hadices qudsi",
         "blurb": "De al-Bujari y Muslim: lo que el Profeta ﷺ transmite de su Señor",
         "note": "{{held}} hadices qudsi —palabras que el Profeta ﷺ transmite de su Señor—, cada uno tal como lo tiene Sahih al-Bujari o Sahih Muslim. Son los que una conocida selección de cuarenta atribuye a uno de los dos y que se encontraron allí con certeza; esta lista no es esa selección."
+      },
+      "rajab": {
+        "title": "Las adiciones de Ibn Rayab a los Cuarenta",
+        "compiler": "Ibn Rayab",
+        "blurb": "Los ocho hadices que añadió a los cuarenta y dos de an-Nawawi, hasta completar cincuenta"
+      },
+      "adhkar": {
+        "title": "al-Adhkar",
+        "compiler": "an-Nawawi",
+        "blurb": "Los recuerdos y súplicas del imam an-Nawawi para cada ocasión"
+      },
+      "wabil": {
+        "title": "al-Wabil as-Sayyib",
+        "compiler": "Ibn al-Qayyim",
+        "blurb": "La lluvia abundante: sobre el recuerdo de Allah y sus frutos"
       }
     },
     "agreed": {

@@ -144,6 +144,99 @@ const COMPILATIONS = {
       return ['bukhari', 'muslim'].includes(named[0]) ? named.filter(b => b === 'bukhari' || b === 'muslim') : [];
     },
   },
+  /**
+   * al-Adhkār, an-Nawawī (d. 676 AH): the remembrances of the day and the
+   * night, of the prayer and of every occasion. He names where each is
+   * from BEFORE it — "روينا في صحيح مسلم عن…", "وروينا في سنن أبي داود
+   * والترمذي بإسناد صحيح عن…" — and says so when a chain is weak
+   * (`attributionLed`). A report he leads with "وروينا فيه" (in the book
+   * just named) or gives no book for is not read: the rule wants his own
+   * words for each.
+   *
+   * Wikisource holds one chapter of it. The input is the OpenITI corpus's
+   * transcription of the numbered edition (github.com/OpenITI/0700AH,
+   * CC BY-NC-SA): read, like every input here, and never republished —
+   * the output holds no word of it.
+   */
+  adhkar: {
+    numbered: true,
+    input: {
+      url: 'https://raw.githubusercontent.com/OpenITI/0700AH/master/data/0676Nawawi/0676Nawawi.Adhkar/0676Nawawi.Adhkar.Shamela0001956-ara1',
+      cache: 'openiti-adhkar.txt',
+      text: true,
+    },
+    items: text => {
+      const items = new Map();
+      const parts = text.slice(text.indexOf('#META#Header#End#')).split(/\n### \| (\d+) - *\n/);
+      for (let i = 1; i < parts.length - 1; i += 2) {
+        const n = Number(parts[i]);
+        // The edition repeats a number here and there: the first stands.
+        if (items.has(n)) continue;
+        const paras = parts[i + 1]
+          .split(/\n# /)
+          .map(p => p.replace(/^# /, '').replace(/PageV\d+P\d+|ms\d+|~~|\(\d+\)/g, ' ').replace(/\s+/g, ' ').trim())
+          .filter(Boolean);
+        if (!paras.length) continue;
+        // A paragraph that stops mid-sentence (a page turned, or a narrator
+        // still being introduced: "…قالت:") goes on in the next.
+        let first = paras[0];
+        let at = 1;
+        while (at < paras.length && at < 4 && !/[."»؟!]$/.test(first)) first += ` ${paras[at++]}`;
+        // A chapter's heading set after its last hadith is not the hadith.
+        first = first.split(' ### ')[0];
+        const verdict = paras[at];
+        items.set(n, [first, verdict && VERDICT_HEAD.test(plain(verdict)) ? verdict : ''].join('\n'));
+      }
+      return items;
+    },
+    attribution: body => attributionLed(body.split('\n')[0]),
+    report: body => reportLed(body.split('\n')[0]),
+    // "بإسناد جيد لم يضعفه": Abū Dāwūd did NOT call it weak.
+    weak: body => SAYS_WEAK.test(plain(body).replace(/لم يضعفه/g, ' ')),
+  },
+  /**
+   * al-Wābil aṣ-Ṣayyib min al-Kalim aṭ-Ṭayyib, Ibn al-Qayyim (d. 751 AH):
+   * on the remembrance of Allah and its fruits, and then the remembrances
+   * themselves by their occasions. Wikisource has it as one page, in the
+   * form it has his teacher's al-Kalim aṭ-Ṭayyib: each hadith in square
+   * brackets, where it is from before it ("وفي صحيح مسلم عن…") or after it
+   * ("رواه الترمذي وقال حديث حسن"), a paragraph a line. Much of the book
+   * is his own words and reports from the early Muslims; those name none
+   * of the seven books and are not read. Unnumbered, like its model.
+   */
+  wabil: {
+    numbered: false,
+    input: { wikisource: 'كتاب الوابل الصيب', cache: 'wikisource-wabil.json' },
+    items: pages => bracketed(pages, /\n/),
+    attribution: body => attributionAround(body),
+    report: body => plain(body.slice(body.indexOf('[') + 1, body.indexOf(']'))),
+  },
+  /**
+   * The eight hadith Ibn Rajab (d. 795 AH) added to an-Nawawī's forty-two
+   * to make fifty, in Jāmiʿ al-ʿUlūm wa-l-Ḥikam: numbers 43 to 50. Each of
+   * his chapters opens with the hadith and, after it, where it is from
+   * ("خرجه البخاري ومسلم", "رواه الإمام أحمد والترمذي… وقال الترمذي حديث
+   * حسن"); the commentary that follows is not read. Wikisource sets the
+   * hadith in <big>…</big>, which is how it is told from the commentary.
+   */
+  rajab: {
+    of: 8,
+    numbered: true,
+    input: { wikisource: 'جامع العلوم والحكم/الحديث ', cache: 'wikisource-rajab.json' },
+    items: pages => {
+      const ORDINALS = { 'الثالث والأربعون': 43, 'الرابع والأربعون': 44, 'الخامس والأربعون': 45, 'السادس والأربعون': 46, 'السابع والأربعون': 47, 'الثامن والأربعون': 48, 'التاسع والأربعون': 49, 'الخمسون': 50 };
+      const items = new Map();
+      for (const [title, page] of Object.entries(pages)) {
+        const n = ORDINALS[title.slice(title.indexOf('/الحديث ') + '/الحديث '.length)];
+        const m = n && /<big>([\s\S]*?)<\/big>([^\n]*)/.exec(page.text.replace(/\{\{صل\}\}/g, ' صلى الله عليه وسلم '));
+        // In the form al-Kalim aṭ-Ṭayyib is read in: the hadith in brackets, his attribution after it.
+        if (m) items.set(n, `[${m[1].replace(/[[\]]/g, ' ')}] ${m[2]}`);
+      }
+      return items;
+    },
+    attribution: body => attributionAround(body),
+    report: body => plain(body.slice(body.indexOf('[') + 1, body.indexOf(']'))),
+  },
 };
 
 /**
@@ -323,6 +416,33 @@ function attributionAround(body) {
   if (/في (?:صحيح )?البخاري/.test(before)) return ['bukhari'];
   return [];
 }
+/**
+ * An attribution that LEADS the report (al-Adhkār): "روينا في …", "وقد
+ * روينا في …", "ثبت في …", up to where the narrator is named. The books
+ * are read from those words alone. "غير الصحيحين" is not the Ṣaḥīḥs, and
+ * "فيه" / "فيهما" (the book just named) names nothing here.
+ */
+const LED = /^(?:قال المصنف[^:]*: ?)?(?:و|ف)?(?:قد )?(?:رويناه?|ثبت)(?: بالاسناد الصحيح| بالاسانيد الصحيح[هة])? في (.+?)(?: عن | ان |،|:| من رواي[هة] )/;
+const VERDICT_HEAD = /^(?:و?قال (?:الترمذي|ابو داود|الحاكم)|و?(?:في )?اسناده|و?هو حديث|حديث )/;
+function attributionLed(para) {
+  const m = LED.exec(plain(para).replace(/["()]/g, ' ').replace(/\s+/g, ' '));
+  if (!m) return [];
+  const names = m[1];
+  if (/^غير /.test(names)) return [];
+  if (/صحيحيهما|(?:^| )الصحيحين|صحيحي /.test(names)) return ['bukhari', 'muslim'];
+  // After "في" the name is in the genitive: "سنن أبي داود".
+  const list = names.replace(/ابي داود/g, 'ابو داود').split(/\s+و(?=\S)|\s+/).join(' ');
+  return BOOK_NAMES.filter(([b, re]) => re.test(list) || (b === 'malik' && /(?:^| )الموطا(?: |$)/.test(list))).map(([b]) => b);
+}
+/** What follows a leading attribution: the report. */
+function reportLed(para) {
+  const t = plain(para).replace(/["()]/g, ' ').replace(/\s+/g, ' ');
+  const m = LED.exec(t);
+  const said = m ? t.slice(m[0].length - 1) : t;
+  // After the report he may give another wording, or explain a word: not the report.
+  const turn = said.search(/ وفي رواي[هة]| قلت:| ثم قال الترمذي| قال الترمذي| وهذا لفظ| هذا لفظ| ومعني | قال العلماء/);
+  return turn > 0 ? said.slice(0, turn) : said;
+}
 // attribution-rule:end
 
 /** The hadith itself: what stands before the compiler's attribution. */
@@ -351,13 +471,15 @@ async function api(url, params) {
 /** A source that is one JSON file, cached like the rest. */
 async function fetched(input) {
   const file = path.join(CACHE, input.cache);
-  if (fs.existsSync(file)) return JSON.parse(fs.readFileSync(file, 'utf8'));
+  // A source that is a book's text and not JSON is handed over as it is.
+  const parsed = t => (input.text ? t : JSON.parse(t));
+  if (fs.existsSync(file)) return parsed(fs.readFileSync(file, 'utf8'));
   const res = await fetch(input.url);
   if (!res.ok) throw new Error(`${input.url}: ${res.status}`);
   const text = await res.text();
   fs.mkdirSync(CACHE, { recursive: true });
   fs.writeFileSync(file, text);
-  return JSON.parse(text);
+  return parsed(text);
 }
 
 /** Every page of the book on Wikisource, as it stood when read: `{ title: { rev, ts, text } }`. */
@@ -415,7 +537,7 @@ function numbered(pages) {
 }
 
 /** A book whose hadith are paragraphs, each with its text in square brackets: `Map<count, paragraph>`, in order. */
-function bracketed(pages) {
+function bracketed(pages, between = /\n\s*\n/) {
   const items = new Map();
   let n = 0;
   for (const page of Object.values(pages)) {
@@ -425,7 +547,7 @@ function bracketed(pages) {
       .replace(/\{\{[^{}]*\}\}/gs, '')
       .replace(/<[^>]+>/g, '')
       .replace(/'''?/g, '');
-    for (const para of t.split(/\n\s*\n/)) {
+    for (const para of t.split(between)) {
       if (/^\s*==/.test(para)) continue;
       if (/\[[^\]]{12,}\]/s.test(para)) items.set(++n, para.trim());
     }
@@ -521,7 +643,7 @@ async function main() {
   const attributionOf = spec.attribution ?? attribution;
   const reportOf = spec.report ?? report;
   // Only where the compiler's own sentence follows the hadith is there a verdict of his to hear.
-  const weakOf = spec.attribution ? () => false : saysWeak;
+  const weakOf = spec.weak ?? (spec.attribution ? () => false : saysWeak);
 
   // The packs as they are served: the two Ṣaḥīḥs whole, and of the five
   // graded books only the rows every grader calls sound. A hadith paired
@@ -672,4 +794,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-module.exports = { indexed, pair, signedRow, SIGNED, attribution, attributionAround, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };
+module.exports = { indexed, pair, signedRow, SIGNED, attribution, attributionAround, attributionLed, reportLed, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };

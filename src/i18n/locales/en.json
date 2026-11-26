@@ -2843,6 +2843,21 @@
         "title": "Hadith Qudsi",
         "blurb": "From al-Bukhari and Muslim: what the Prophet ﷺ relates from his Lord",
         "note": "{{held}} hadith qudsi — sayings the Prophet ﷺ relates from his Lord — each as Sahih al-Bukhari or Sahih Muslim has it. They are the ones a well-known selection of forty attributes to one of the two, found there with confidence; this list is not that selection."
+      },
+      "rajab": {
+        "title": "Ibn Rajab's Additions to the Forty",
+        "compiler": "Ibn Rajab",
+        "blurb": "The eight hadith he added to an-Nawawi's forty-two, making fifty"
+      },
+      "adhkar": {
+        "title": "al-Adhkar",
+        "compiler": "an-Nawawi",
+        "blurb": "Imam an-Nawawi's remembrances and supplications for every occasion"
+      },
+      "wabil": {
+        "title": "al-Wabil as-Sayyib",
+        "compiler": "Ibn al-Qayyim",
+        "blurb": "The Abundant Rain: on the remembrance of Allah and its fruits"
       }
     },
     "agreed": {

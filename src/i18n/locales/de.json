@@ -2843,6 +2843,21 @@
         "title": "Hadith Qudsi",
         "blurb": "Aus al-Bukhari und Muslim: was der Prophet ﷺ von seinem Herrn überliefert",
         "note": "{{held}} Hadith Qudsi – Worte, die der Prophet ﷺ von seinem Herrn überliefert –, jeder so, wie Sahih al-Bukhari oder Sahih Muslim ihn hat. Es sind die, die eine bekannte Auswahl von vierzig einem der beiden zuschreibt und die dort sicher gefunden wurden; diese Liste ist nicht jene Auswahl."
+      },
+      "rajab": {
+        "title": "Ibn Rajabs Ergänzungen zu den Vierzig",
+        "compiler": "Ibn Rajab",
+        "blurb": "Die acht Hadithe, die er an-Nawawis zweiundvierzig hinzufügte, sodass es fünfzig wurden"
+      },
+      "adhkar": {
+        "title": "al-Adhkar",
+        "compiler": "an-Nawawi",
+        "blurb": "Imam an-Nawawis Gedenkworte und Bittgebete für jeden Anlass"
+      },
+      "wabil": {
+        "title": "al-Wabil as-Sayyib",
+        "compiler": "Ibn al-Qayyim",
+        "blurb": "Der reichliche Regen: über das Gedenken Allahs und seine Früchte"
       }
     },
     "agreed": {

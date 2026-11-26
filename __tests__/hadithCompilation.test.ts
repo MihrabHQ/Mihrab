@@ -163,7 +163,7 @@ describe('the index', () => {
 
 describe('every compilation’s index', () => {
   type Raw = { id: string; of: number; note: string; numbered?: boolean; left: Record<string, number>; rows: Array<[number, string, number, string | null]> };
-  const all = ['riyad', 'umdah', 'kalim', 'qudsi'].map(id => JSON.parse(read(`src/hadith/compilations/${id}.json`)) as Raw);
+  const all = ['riyad', 'umdah', 'kalim', 'adhkar', 'wabil', 'qudsi', 'rajab'].map(id => JSON.parse(read(`src/hadith/compilations/${id}.json`)) as Raw);
 
   it('is written by the script, in the compiler’s order, and accounts for every hadith of the book', () => {
     for (const c of all) {
@@ -237,7 +237,7 @@ describe('in the app', () => {
   });
 
   it('is a list of its own, read from HadeethEnc and the books it names', () => {
-    expect(COMPILATIONS.map(c => c.id)).toEqual(['riyad', 'umdah', 'kalim', 'qudsi']);
+    expect(COMPILATIONS.map(c => c.id)).toEqual(['riyad', 'umdah', 'kalim', 'adhkar', 'wabil', 'qudsi', 'rajab']);
     expect(parseList('comp:riyad')).toEqual({ kind: 'comp', id: 'riyad' });
     expect(parseList('comp:nothing')).toBeNull();
     expect(compilationBooks(riyad)).toEqual(expect.arrayContaining(['bukhari', 'muslim', 'abudawud', 'tirmidhi']));
@@ -287,6 +287,56 @@ describe('in the app', () => {
     expect(attribution('… في الأجر" ((رواه مسلم)) .\n\n((ورواه البخاري)) عن أنس')).toEqual(['muslim']);
     expect(attribution('… الحديث ((رواه أحمد)) .')).toEqual([]);
     expect(report('من يرد الله به خيرا يصب منه ((رواه البخاري))')).not.toMatch(/رواه/);
+  });
+
+  it('reads al-Adhkār by the book an-Nawawī names before each report, and al-Wābil aṣ-Ṣayyib as its model is read', () => {
+    const build = read('scripts/hadith/build-compilation.js');
+    const rule = build.slice(build.indexOf('// attribution-rule:start'), build.indexOf('// attribution-rule:end'));
+    // The names end where the narrator begins; "other than the two Ṣaḥīḥs" is not them; "in it" names nothing.
+    expect(rule).toContain('function attributionLed(para)');
+    const { attributionLed, reportLed } = require('../scripts/hadith/build-compilation.js');
+    expect(attributionLed('وروينا في " صحيح مسلم " عن أبي هريرة رضي الله عنه قال')).toEqual(['muslim']);
+    expect(attributionLed('روينا في صحيحي البخاري ومسلم عن أنس')).toEqual(['bukhari', 'muslim']);
+    expect(attributionLed('وروينا في " صحيحيهما " عن أبي ذر')).toEqual(['bukhari', 'muslim']);
+    expect(attributionLed('وروينا بالإسناد الصحيح في سنن أبي داود والترمذي عن أبي هريرة')).toEqual(['abudawud', 'tirmidhi']);
+    expect(attributionLed('وروينا في الموطأ عن نافع')).toEqual(['malik']);
+    expect(attributionLed('روينا في كتاب ابن السني عن ثوبان')).toEqual([]);
+    expect(attributionLed('وروينا في غير الصحيحين عن فلان')).toEqual([]);
+    expect(attributionLed('وروينا فيه أيضا عن جويرية')).toEqual([]);
+    expect(attributionLed('وعن أبي هريرة رضي الله عنه أن رسول الله قال')).toEqual([]);
+    expect(reportLed('وروينا في صحيح مسلم عن علي قال: قل اللهم اهدني وسددني وفي رواية: اللهم إني أسألك الهدى')).not.toContain('اسالك');
+    // What he calls weak is left out, and "Abū Dāwūd did not weaken it" is not that.
+    expect(build).toContain("weak: body => SAYS_WEAK.test(plain(body).replace(/لم يضعفه/g, ' ')),");
+    const adhkar = findCompilation('adhkar')!;
+    const wabil = findCompilation('wabil')!;
+    expect(adhkar.numbered).toBe(true);
+    expect(wabil.numbered).toBe(false);
+    expect(adhkar.rows.length).toBeGreaterThanOrEqual(300);
+    expect(wabil.rows.length).toBeGreaterThanOrEqual(45);
+    const raw = JSON.parse(read('src/hadith/compilations/adhkar.json'));
+    expect(raw.left.saidWeak).toBeGreaterThan(0);
+    expect(raw.signed).toEqual([]);
+    for (const lang of ['en', 'sv', 'ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh']) {
+      const c = JSON.parse(read(`src/i18n/locales/${lang}.json`)).hadith.comp;
+      for (const id of ['adhkar', 'wabil']) expect([lang, id, Object.keys(c[id]).sort()]).toEqual([lang, id, ['blurb', 'compiler', 'title']]);
+      expect(c.adhkar.compiler).toBe(c.riyad.compiler);
+    }
+  });
+
+  it('offers the eight Ibn Rajab added to the Forty under his numbers, less the one he gives to no book served', () => {
+    const rajab = findCompilation('rajab')!;
+    expect(rajab.numbered).toBe(true);
+    expect(rajab.of).toBe(8);
+    // No. 50 he gives to Aḥmad "in these words": the rule leaves it out.
+    expect(rajab.rows.map(r => r.n)).toEqual([43, 44, 45, 46, 47, 48, 49]);
+    const raw = JSON.parse(read('src/hadith/compilations/rajab.json'));
+    expect(raw.left.elsewhere).toBe(1);
+    expect(raw.signed).toEqual([]);
+    for (const lang of ['en', 'sv', 'ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh']) {
+      const c = JSON.parse(read(`src/i18n/locales/${lang}.json`)).hadith.comp.rajab;
+      expect([lang, Object.keys(c).sort()]).toEqual([lang, ['blurb', 'compiler', 'title']]);
+    }
+    expect(read('scripts/hadith/build-compilation.js')).toContain("input: { wikisource: 'جامع العلوم والحكم/الحديث ', cache: 'wikisource-rajab.json' }");
   });
 
   it('offers the hadith qudsi of the two Ṣaḥīḥs as a list of its own, not as the selection it was read from', () => {

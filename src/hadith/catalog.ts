@@ -43,6 +43,9 @@ import RIYAD from './compilations/riyad.json';
 import UMDAH from './compilations/umdah.json';
 import KALIM from './compilations/kalim.json';
 import QUDSI from './compilations/qudsi.json';
+import ADHKAR from './compilations/adhkar.json';
+import WABIL from './compilations/wabil.json';
+import RAJAB from './compilations/rajab.json';
 import SEE_IN_BOOK from './seeInBook.json';
 import CHAPTERS from './chapters.json';
 import CHAPTER_NAMES from './chapterNames.json';
@@ -181,7 +184,11 @@ const ALL_COMPILATIONS: readonly Compilation[] = [
   compilation(RIYAD as RawCompilation),
   compilation(UMDAH as RawCompilation),
   compilation(KALIM as RawCompilation),
+  compilation(ADHKAR as RawCompilation),
+  compilation(WABIL as RawCompilation),
   compilation(QUDSI as RawCompilation),
+  // The eight Ibn Rajab added to the Forty, under his numbers (43 to 50).
+  compilation(RAJAB as RawCompilation),
 ];
 export const COMPILATIONS: readonly Compilation[] = IS_WEB_APP ? [] : ALL_COMPILATIONS;
 export function findCompilation(id: string): Compilation | undefined {

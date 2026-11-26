@@ -2844,6 +2844,21 @@
         "title": "Hadiths qudsi",
         "blurb": "D'al-Boukhari et Muslim : ce que le Prophète ﷺ rapporte de son Seigneur",
         "note": "{{held}} hadiths qudsi — des paroles que le Prophète ﷺ rapporte de son Seigneur —, chacun tel que Sahih al-Boukhari ou Sahih Muslim le donne. Ce sont ceux qu'une sélection connue de quarante attribue à l'un des deux et qui y ont été trouvés avec certitude ; cette liste n'est pas cette sélection."
+      },
+      "rajab": {
+        "title": "Les ajouts d'Ibn Rajab aux Quarante",
+        "compiler": "Ibn Rajab",
+        "blurb": "Les huit hadiths qu'il a ajoutés aux quarante-deux d'an-Nawawi, pour en faire cinquante"
+      },
+      "adhkar": {
+        "title": "al-Adhkar",
+        "compiler": "an-Nawawi",
+        "blurb": "Les rappels et invocations de l'imam an-Nawawi pour chaque occasion"
+      },
+      "wabil": {
+        "title": "al-Wabil as-Sayyib",
+        "compiler": "Ibn al-Qayyim",
+        "blurb": "La pluie abondante : sur le rappel d'Allah et ses fruits"
       }
     },
     "agreed": {

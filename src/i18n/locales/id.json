@@ -2843,6 +2843,21 @@
         "title": "Hadis Qudsi",
         "blurb": "Dari al-Bukhari dan Muslim: yang diriwayatkan Nabi ﷺ dari Rabb-nya",
         "note": "{{held}} hadis qudsi — perkataan yang diriwayatkan Nabi ﷺ dari Rabb-nya — masing-masing sebagaimana dalam Shahih al-Bukhari atau Shahih Muslim. Inilah hadis-hadis yang oleh sebuah kumpulan empat puluh yang terkenal dinisbatkan kepada salah satu dari keduanya dan ditemukan di sana dengan yakin; daftar ini bukan kumpulan tersebut."
+      },
+      "rajab": {
+        "title": "Tambahan Ibnu Rajab atas Arba'in",
+        "compiler": "Ibnu Rajab",
+        "blurb": "Delapan hadis yang ia tambahkan pada empat puluh dua hadis an-Nawawi sehingga genap lima puluh"
+      },
+      "adhkar": {
+        "title": "al-Adzkar",
+        "compiler": "an-Nawawi",
+        "blurb": "Zikir dan doa Imam an-Nawawi untuk setiap keadaan"
+      },
+      "wabil": {
+        "title": "al-Wabil ash-Shayyib",
+        "compiler": "Ibnul Qayyim",
+        "blurb": "Hujan yang lebat: tentang zikir kepada Allah dan buahnya"
       }
     },
     "agreed": {

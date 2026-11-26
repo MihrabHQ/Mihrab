@@ -1,0 +1,25 @@
+{
+ "note": "The hadith of rajab its compiler attributes to one of the seven books the app serves, each as [his number, the book (b al-Bukhari, m Muslim, d Abu Dawud, t at-Tirmidhi, n an-Nasa'i, j Ibn Majah, k Malik; h none, the HadeethEnc entry alone), the row's place in Open-Hadith-Data's file, the HadeethEnc entry that is the same hadith or null]. Written by scripts/hadith/build-compilation.js; do not edit.",
+ "id": "rajab",
+ "asOf": "2026-11-25",
+ "of": 8,
+ "numbered": true,
+ "rule": "first attribution names a book the app serves; a row of it holds 0.85 of the hadith's words in order and close together — or a person read the two and signed the pairing (scripts/hadith/signed-pairings.json)",
+ "signed": [],
+ "left": {
+  "elsewhere": 1,
+  "saidWeak": 0,
+  "notFound": 0,
+  "tooShort": 0,
+  "noText": 0
+ },
+ "rows": [
+  [43, "b", 6248, null],
+  [44, "h", 0, "4311"],
+  [45, "m", 2959, "4556"],
+  [46, "b", 3996, null],
+  [47, "h", 0, "4723"],
+  [48, "h", 0, "66537"],
+  [49, "t", 2265, "66538"]
+ ]
+}

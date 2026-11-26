@@ -18,11 +18,13 @@ longer true.
 | Settings → Hadith (starting level, downloads) | `src/screens/settings/pages/HadithSettingsScreen.tsx` |
 | "Agreed upon": HadeethEnc entries attributed to both Ṣaḥīḥs | `scripts/hadith/agreed-list.js` → `src/hadith/agreed.json` |
 | Books to read: Riyāḍ aṣ-Ṣāliḥīn (1,525 of 1,896), ʿUmdat al-Aḥkām (320 of 414), al-Kalim aṭ-Ṭayyib (68 of 187) | `scripts/hadith/build-compilation.js` → `src/hadith/compilations/*.json` |
-| Ṣaḥīḥ al-Bukhārī and Ṣaḥīḥ Muslim by their books (97, and 57) | `scripts/hadith/book-chapters.js` → `src/hadith/chapters.json`; names in `src/hadith/chapterNames.json` |
+| All seven collections by their compilers' books (al-Bukhārī 97, Muslim 57, Abū Dāwūd 43, at-Tirmidhī 49, an-Nasāʾī 51, Ibn Mājah 38, the Muwaṭṭaʾ 61). In a graded book a chapter with no row kept holds nothing and is not offered (the Muwaṭṭaʾ's 59) | `scripts/hadith/book-chapters.js` → `src/hadith/chapters.json`; names in `src/hadith/chapterNames.json` |
 | Hadith of the day, at the top of Learn | `src/hadith/daily.ts` |
 | Copy and Share carry the reference (book, number, chapter) | `hadithReference` in `src/screens/hadith/HadithReaderScreen.tsx` |
 | "See it in al-Bukhārī / Muslim" on a HadeethEnc entry (1,579) | `scripts/hadith/see-in-book.js` → `src/hadith/seeInBook.json`, `seeInBook` in `catalog.ts` |
 | Hadith Qudsi from the two Ṣaḥīḥs (30 of a selection's 40), as a list of the app's own | `build-compilation.js qudsi` → `compilations/qudsi.json` (`own: true`) |
+| Ibn Rajab's additions to the Forty (7 of 8, nos. 43–49; no. 50 he gives to Aḥmad) | `build-compilation.js rajab` → `compilations/rajab.json` |
+| al-Adhkār (406 of 1,219 numbered reports) and al-Wābil aṣ-Ṣayyib (50 of 203 bracketed reports) | `build-compilation.js adhkar` / `wabil`; al-Adhkār's attribution leads the report (`attributionLed`) and its input is OpenITI's text (Wikisource has one chapter) |
 | The set "Short hadith to memorise" (the forty shortest of "Agreed upon") | `scripts/hadith/short-set.js` → `sets.json` |
 | Related hadith: others in the same HadeethEnc topic, folded under the one read | `relatedHadith` in `src/hadith/library.ts`, `__tests__/hadithRelated.test.ts` |
 | "What the grades mean": Settings → Hadith, and the foot of a hadith | `src/screens/settings/pages/HadithGradesSettingsScreen.tsx`, `hadith.grades.*`, `__tests__/hadithGradesGuide.test.ts` |
@@ -95,19 +97,26 @@ Features that add no hadith:
 
 Content, all under the policy's compilation clause or from what is held:
 
-7. Chapters for the five graded books. `book-chapters.js` already divides
-   them (set `BOOKS` to all seven); a chapter none of whose rows a pack
-   kept must be allowed to be empty instead of refused, and about 240
-   chapter names are to be written.
+7. ~~Chapters for the five graded books~~ — done 2026-11-26. The 242
+   names were written from memory of the books and checked against
+   sunnah.com's lists only where its pages could be read (about a third);
+   **the maintainer should read `chapterNames.json` once.** hadith-api's
+   ranges overlap for at-Tirmidhī and Ibn Mājah, so the five are read by
+   where each book begins (`GRADED`); an-Nasāʾī's 35 is named for both
+   books its range holds (oaths and vows, and sharecropping).
 8. Hadith Qudsi from the two Ṣaḥīḥs (hadith-api's edition ends each with
    its source; present as a list of ours, not as that modern book's
-   selection). Ibn Rajab's eight additions to the Forty (Wikisource has
-   Jāmiʿ al-ʿUlūm wa-l-Ḥikam). A "short hadith to memorise" set from
+   selection). ~~Ibn Rajab's eight additions to the Forty~~ — done
+   2026-11-26, seven of the eight (§1). A "short hadith to memorise" set from
    "Agreed upon", by length. "See it in al-Bukhārī / Muslim" on a
    HadeethEnc entry (the pairing exists in `build-compilation.js`).
-9. al-Wābil aṣ-Ṣayyib, al-Adhkār (Wikisource has only part), Kitāb
-   at-Tawḥīd. The maintainer asked for these after first choosing to skip
-   creed texts; confirm Kitāb at-Tawḥīd before building it.
+9. ~~al-Wābil aṣ-Ṣayyib, al-Adhkār~~ — done 2026-11-26 (§1). In
+   al-Adhkār 244 reports he gives to a served book were not found with
+   confidence and 512 name no served book in their own lead ("وروينا
+   فيه", Ibn as-Sunnī): recall could be raised by reading "فيه" as the
+   book just named, which is a reading of his words the maintainer should
+   rule on. **Kitāb at-Tawḥīd is not built**: the maintainer asked for it
+   after first choosing to skip creed texts; confirm before building.
 10. Links between hadith and Qur'an: first measure how consistently
     HadeethEnc entries cite verses.
 

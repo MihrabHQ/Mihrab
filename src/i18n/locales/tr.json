@@ -2843,6 +2843,21 @@
         "title": "Kudsî hadisler",
         "blurb": "Buhârî ve Müslim'den: Peygamber'in ﷺ Rabbinden rivayet ettikleri",
         "note": "{{held}} kudsî hadis — Peygamber'in ﷺ Rabbinden rivayet ettiği sözler — her biri Sahîh-i Buhârî veya Sahîh-i Müslim'de geçtiği şekliyle. Bunlar, bilinen bir kırk hadis seçkisinin bu ikisinden birine nispet ettiği ve orada kesin olarak bulunan hadislerdir; bu liste o seçki değildir."
+      },
+      "rajab": {
+        "title": "İbn Receb'in Kırk Hadis'e ekledikleri",
+        "compiler": "İbn Receb",
+        "blurb": "Nevevî'nin kırk iki hadisine eklediği ve sayıyı elliye tamamlayan sekiz hadis"
+      },
+      "adhkar": {
+        "title": "el-Ezkâr",
+        "compiler": "Nevevî",
+        "blurb": "İmam Nevevî'nin her durum için zikir ve duaları"
+      },
+      "wabil": {
+        "title": "el-Vâbilü's-Sayyib",
+        "compiler": "İbn Kayyim",
+        "blurb": "Bereketli yağmur: Allah'ı zikretmek ve meyveleri üzerine"
       }
     },
     "agreed": {
