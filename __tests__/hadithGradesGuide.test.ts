@@ -64,7 +64,7 @@ describe('the guide to the grades', () => {
 
   it('is reached from Settings → Hadith and from a hadith’s foot, and ends on the rule itself', () => {
     const hadith = ALL_SETTINGS_SUBPAGES.find(p => p.route === 'SettingsHadith')!;
-    expect(hadith.children?.map(c => c.route)).toEqual(['SettingsHadithGrades']);
+    expect(hadith.children?.map(c => c.route)).toEqual(['SettingsHadithLanguage', 'SettingsHadithGrades']);
     expect(SETTINGS_STACK_PAGES.some(p => p.route === 'SettingsHadithGrades')).toBe(true);
     expect(read('src/screens/settings/pages/HadithSettingsScreen.tsx')).toContain('<NestedPageRows parent="SettingsHadith" />');
     expect(read('src/screens/hadith/HadithReaderScreen.tsx')).toContain("navigation.navigate('SettingsHadithGrades')");

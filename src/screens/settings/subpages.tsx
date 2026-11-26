@@ -181,6 +181,13 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
     getComponent: () => (require('./pages/HadithSettingsScreen') as typeof import('./pages/HadithSettingsScreen')).HadithSettingsScreen,
     children: [
       {
+        // The language hadith are read in, where it is not the app's.
+        route: 'SettingsHadithLanguage',
+        titleKey: 'hadith.language.title',
+        blurbKey: 'hadith.language.blurb',
+        getComponent: () => (require('./pages/HadithLanguageSettingsScreen') as typeof import('./pages/HadithLanguageSettingsScreen')).HadithLanguageSettingsScreen,
+      },
+      {
         // What sahih and hasan mean, and what is left out: also opened
         // from the foot of every hadith.
         route: 'SettingsHadithGrades',

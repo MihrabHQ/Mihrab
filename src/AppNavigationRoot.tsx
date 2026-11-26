@@ -46,6 +46,7 @@ import { getPrayerLiveActivityModule } from './native/PrayerLiveActivity';
 import { isMacCatalyst } from './responsive/breakpoints';
 import { rescheduleAyahOfDay } from './notifications/ayahOfDay';
 import { rescheduleHadithOfDay, rescheduleHadithPlanReminder } from './notifications/hadithReminders';
+import { hadithLanguageFor } from './hadith/hadithLang';
 import { rescheduleFastingReminders } from './notifications/fastingReminders';
 import { rescheduleDhikrReminders } from './notifications/dhikrReminders';
 import { dhikrFingerprint } from './dhikr/dhikrReminders';
@@ -248,6 +249,7 @@ export function AppNavigationRoot() {
         String(settings.hadithPlanReminderEnabled),
         settings.hadithPlanReminderHour,
         settings.hadithPlanReminderMinute,
+        settings.hadithLanguage,
         String(settings.fastingRemindersEnabled),
         settings.fastingReminderHour,
         String(settings.kahfReminderEnabled),
@@ -302,13 +304,13 @@ export function AppNavigationRoot() {
         enabled: settings.hadithOfDayEnabled,
         hour: settings.hadithOfDayHour,
         minute: settings.hadithOfDayMinute,
-        language: settings.language,
+        language: hadithLanguageFor(settings.language),
       });
       void rescheduleHadithPlanReminder({
         enabled: settings.hadithPlanReminderEnabled,
         hour: settings.hadithPlanReminderHour,
         minute: settings.hadithPlanReminderMinute,
-        language: settings.language,
+        language: hadithLanguageFor(settings.language),
       });
       // Al-Kahf on Friday and Al-Mulk at night (#36). Same rolling
       // window as the others, rolled forward by this same resync.
@@ -424,6 +426,7 @@ export function AppNavigationRoot() {
     settings.hadithPlanReminderEnabled,
     settings.hadithPlanReminderHour,
     settings.hadithPlanReminderMinute,
+    settings.hadithLanguage,
     settings.fastingRemindersEnabled,
     settings.fastingReminderHour,
     settings.kahfReminderEnabled,

@@ -3103,6 +3103,12 @@
       "finished": "Selesai: semua hadisnya sudah dibaca.",
       "reminderBody": "{{n}} hadis untuk dibaca hari ini"
     },
-    "seeIn": "Lihat di {{book}}"
+    "seeIn": "Lihat di {{book}}",
+    "language": {
+      "title": "Bahasa hadis",
+      "blurb": "Membaca hadis dalam bahasa selain bahasa aplikasi",
+      "auto": "Sama dengan aplikasi",
+      "note": "Terjemahan dan penjelasan berasal dari HadeethEnc.com, dalam semua bahasa yang diterbitkannya. Angka di samping bahasa menunjukkan jumlah hadis yang sudah diterjemahkan sejauh ini; untuk yang lain ditampilkan bahasa Inggris. Sebuah bahasa diunduh saat Anda pertama kali membuka daftar dalam bahasa itu."
+    }
   }
 }

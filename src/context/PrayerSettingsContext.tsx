@@ -10,6 +10,7 @@ import React, {
 import { applyMadhabNaming } from '../prayer/madhab';
 import i18n from '../i18n';
 import { setActiveClockFormat } from '../utils/activeClock';
+import { setHadithLanguage } from '../hadith/hadithLang';
 import { setWidgetSinceAdhanMinutes } from '../widget/sinceAdhanSetting';
 import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
 import { restoreSkyTheme, setSkyVariant } from '../theme/skyTheme';
@@ -79,6 +80,8 @@ export type AppearanceSlice = Pick<
   // for the same reason: it decides how a rendered string reads, and the
   // screens that care about one care about the other.
   | 'clockFormat'
+  // The language hadith are read in rides here too: it decides how a page reads.
+  | 'hadithLanguage'
   // Not a colour, but it is the "what Home looks like" switch and it is
   // rendered by AppearanceCard, so it rides in this slice rather than
   // making the card subscribe to a second one.
@@ -261,6 +264,11 @@ export function PrayerSettingsProvider({
     setActiveClockFormat(settings.clockFormat);
   }, [settings.clockFormat]);
 
+  // The same for the language hadith are read in (`hadith/hadithLang.ts`).
+  useEffect(() => {
+    setHadithLanguage(settings.hadithLanguage);
+  }, [settings.hadithLanguage]);
+
   // Issue #111: the widgets' "time since the adhan" travels in their
   // payload, so a change has to reach them now, not at the next prayer.
   // Mirrored for the payload builder like the clock above; the first
@@ -327,6 +335,7 @@ export function PrayerSettingsProvider({
       pureBlackDark: settings.pureBlackDark,
       language: settings.language,
       clockFormat: settings.clockFormat,
+      hadithLanguage: settings.hadithLanguage,
       appAccentId: settings.appAccentId,
       appAccentCustomHex: settings.appAccentCustomHex,
       tintedSurfaces: settings.tintedSurfaces,
@@ -344,6 +353,7 @@ export function PrayerSettingsProvider({
       settings.pureBlackDark,
       settings.language,
       settings.clockFormat,
+      settings.hadithLanguage,
       settings.appAccentId,
       settings.appAccentCustomHex,
       settings.tintedSurfaces,

@@ -783,6 +783,11 @@ export type PrayerAppSettings = {
   hadithPlanReminderHour: number;
   hadithPlanReminderMinute: number;
   /**
+   * The language hadith are read in: `'auto'` (the app's, the default) or
+   * one of HadeethEnc's language codes (`hadith/hadithLang.ts`).
+   */
+  hadithLanguage: string;
+  /**
    * The two surahs with a time of their own — issue #36.
    *
    * Al-Kahf on Friday and Al-Mulk before sleeping are the two most
@@ -954,6 +959,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   hadithPlanReminderEnabled: false,
   hadithPlanReminderHour: 20,
   hadithPlanReminderMinute: 0,
+  hadithLanguage: 'auto',
   kahfReminderEnabled: false,
   kahfReminderHour: 9,
   kahfReminderMinute: 0,

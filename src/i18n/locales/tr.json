@@ -3103,6 +3103,12 @@
       "finished": "Tamamlandı: bütün hadisleri okundu.",
       "reminderBody": "Bugün okunacak {{n}} hadis"
     },
-    "seeIn": "{{book}} içinde gör"
+    "seeIn": "{{book}} içinde gör",
+    "language": {
+      "title": "Hadis dili",
+      "blurb": "Hadisleri uygulamanın dilinden başka bir dilde okuyun",
+      "auto": "Uygulamayla aynı",
+      "note": "Çeviriler ve açıklamalar, yayımladığı bütün dillerde HadeethEnc.com'a aittir. Bir dilin yanındaki sayı, şimdiye kadar o dile çevrilen hadis sayısıdır; diğerleri için İngilizce gösterilir. Bir dil, o dilde ilk kez bir liste açtığınızda indirilir."
+    }
   }
 }

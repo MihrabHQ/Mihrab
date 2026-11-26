@@ -56,7 +56,7 @@ import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { foreignText, ownSideAlign } from '../../i18n/foreignText';
 import { useSheetSides } from '../../responsive/sheetSides';
 import type { RootStackParamList } from '../../navigation/types';
-import { chapterAt, chapterName, homeList, parseList, seeInBook } from '../../hadith/catalog';
+import { chapterAt, chapterName, hadithLangIsRtl, homeList, parseList, seeInBook } from '../../hadith/catalog';
 import { isBookmarked, isRead, memoOf, noteOf, setBookmark, setLast, setMemo, setNote, setRead } from '../../hadith/hadithRecord';
 import { updateHadithRecord, useHadithRecord } from '../../hadith/hadithStore';
 import { loadItem, type HadithItem, relatedHadith, type RelatedHadith } from '../../hadith/library';
@@ -210,7 +210,8 @@ export function HadithReaderScreen() {
   const note = noteOf(rec, id);
   const now = () => Date.now();
 
-  const textDir = item?.textLang ? foreignText(item.textLang, i18n.language) : null;
+  // By the pack language's own direction: Uyghur, Pashto and Kurdish run right to left too.
+  const textDir = item?.textLang ? foreignText(hadithLangIsRtl(item.textLang) ? 'ar' : 'en', i18n.language) : null;
   const arabicAlign = { textAlign: ownSideAlign(true, layoutRtl), writingDirection: 'rtl' as const };
 
   // Read through a compilation, a hadith is one of ITS hadith: the bar
@@ -308,7 +309,7 @@ export function HadithReaderScreen() {
               onClose={() => setPicture(false)}
               arabic={item.arabic}
               meaning={item.text}
-              meaningRtl={item.textLang === 'ur' || item.textLang === 'ar'}
+              meaningRtl={hadithLangIsRtl(item.textLang)}
               lines={hadithCardLines(item, t)}
             />
           ) : null}

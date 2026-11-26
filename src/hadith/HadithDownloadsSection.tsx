@@ -12,9 +12,12 @@ import { languageLabel } from '../i18n/languages';
 import { SettingsGroup } from '../screens/settings/SettingsGroup';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { DownloadRow, TextAction } from '../quran/downloadsUi';
-import { WHOLE_PACK } from './catalog';
+import { WHOLE_PACK, findHadithLanguage } from './catalog';
 import { cancelPack, deletePack, downloadPack, usePackStatuses, type PackStatus } from './packs';
 import type { PackKey } from './packTypes';
+
+/** A pack's language in its own words: the app's name for one of its thirteen, HadeethEnc's for the rest. */
+const packLanguageLabel = (code: string) => (languageLabel(code) !== code ? languageLabel(code) : findHadithLanguage(code)?.native ?? code);
 
 /** What a pack is called, in a row. */
 export function packLabel(key: string, t: TFunction): string {
@@ -28,9 +31,9 @@ export function packLabel(key: string, t: TFunction): string {
         : a === 'starter'
           ? t('hadith.packStarter')
           : t(`hadith.topic.${a.replace('cat-', '')}`, { defaultValue: t('hadith.topics') });
-    return `${what} · ${languageLabel(b)}`;
+    return `${what} · ${packLanguageLabel(b)}`;
   }
-  if (kind === 'categories') return `${t('hadith.packCategories')} · ${languageLabel(a)}`;
+  if (kind === 'categories') return `${t('hadith.packCategories')} · ${packLanguageLabel(a)}`;
   if (kind === 'nawawi') return t('hadith.packNawawi');
   return t(`hadith.book.${a}`);
 }

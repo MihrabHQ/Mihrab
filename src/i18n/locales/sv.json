@@ -3103,6 +3103,12 @@
       "finished": "Klar: alla dess hadither är lästa.",
       "reminderBody": "{{n}} hadither att läsa i dag"
     },
-    "seeIn": "Se den i {{book}}"
+    "seeIn": "Se den i {{book}}",
+    "language": {
+      "title": "Hadithspråk",
+      "blurb": "Läs hadither på ett annat språk än appens",
+      "auto": "Samma som appen",
+      "note": "Översättningar och förklaringar kommer från HadeethEnc.com, på alla språk som de ger ut. Siffran bredvid ett språk är hur många hadither som hittills har översatts; engelska visas för de övriga. Ett språk laddas ned första gången du öppnar en lista på det."
+    }
   }
 }

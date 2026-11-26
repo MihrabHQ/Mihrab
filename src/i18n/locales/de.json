@@ -3103,6 +3103,12 @@
       "finished": "Fertig: Alle seine Hadithe sind gelesen.",
       "reminderBody": "Heute {{n}} Hadithe zu lesen"
     },
-    "seeIn": "In {{book}} ansehen"
+    "seeIn": "In {{book}} ansehen",
+    "language": {
+      "title": "Hadith-Sprache",
+      "blurb": "Hadithe in einer anderen Sprache als der der App lesen",
+      "auto": "Wie die App",
+      "note": "Übersetzungen und Erläuterungen stammen von HadeethEnc.com, in allen Sprachen, die dort erscheinen. Die Zahl neben einer Sprache gibt an, wie viele Hadithe bisher übersetzt sind; für die übrigen wird Englisch gezeigt. Eine Sprache wird geladen, wenn du zum ersten Mal eine Liste in ihr öffnest."
+    }
   }
 }

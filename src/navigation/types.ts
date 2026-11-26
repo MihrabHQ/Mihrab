@@ -141,6 +141,8 @@ export type RootStackParamList = {
   SettingsTajweed: undefined;
   /** Settings → Downloads: the download manager, and the disk it uses. */
   SettingsHadith: undefined;
+  /** Settings → Hadith → Hadith language. */
+  SettingsHadithLanguage: undefined;
   /** Settings → Hadith → What the grades mean; also opened from a hadith's foot. */
   SettingsHadithGrades: undefined;
   SettingsDownloads: undefined;

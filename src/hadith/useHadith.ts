@@ -8,7 +8,7 @@
  * as long as a book was coming down.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useHadithLanguage } from './hadithLang';
 import {
   bookKey,
   findHub,
@@ -75,9 +75,9 @@ export function summarisePacks(keys: readonly PackKey[], statuses: Record<string
   };
 }
 
+/** The language hadith are read in: the app's, unless another is chosen in Settings → Hadith (`hadithLang.ts`). */
 export function useAppLang(): string {
-  const { i18n } = useTranslation();
-  return i18n.language || 'en';
+  return useHadithLanguage();
 }
 
 /** The topic tree in the app's language, once its pack is here. */

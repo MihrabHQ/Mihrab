@@ -48,6 +48,7 @@ import WABIL from './compilations/wabil.json';
 import TAWHID from './compilations/tawhid.json';
 import RAJAB from './compilations/rajab.json';
 import SEE_IN_BOOK from './seeInBook.json';
+import RAW_HADITH_LANGUAGES from './hadithLanguages.json';
 import CHAPTERS from './chapters.json';
 import CHAPTER_NAMES from './chapterNames.json';
 import { IS_WEB_APP } from '../config/webApp';
@@ -105,10 +106,33 @@ export const NAWAWI_CROSSWALK: ReadonlyArray<{ n: number; henc: string | null }>
 /** The languages HadeethEnc is read in here — the app's thirteen. */
 export const HADITH_LANGS = ['en', 'sv', 'ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh'] as const;
 
-/** The app language as a pack language, and English beside it when it is neither. */
+/**
+ * Every language HadeethEnc translates into, in its own order and under
+ * its own names (hadeethenc.com/api/v1/languages, 2026-11-26): the app's
+ * thirteen and fifty-nine more, read by choosing one in Settings → Hadith
+ * (`hadithLang.ts`). `rtl` is read off the pack's own text — Uyghur,
+ * Persian, Dari, Pashto and both Kurdish packs are in the Arabic script.
+ * A browser is offered the thirteen: its packs are cut by set and topic,
+ * and only those are cut.
+ */
+export type HadithLanguage = { code: string; native: string; rtl?: boolean };
+export const HADITH_LANGUAGES: readonly HadithLanguage[] = IS_WEB_APP
+  ? (RAW_HADITH_LANGUAGES as HadithLanguage[]).filter(l => (HADITH_LANGS as readonly string[]).includes(l.code))
+  : (RAW_HADITH_LANGUAGES as HadithLanguage[]);
+const languageByCode = new Map(HADITH_LANGUAGES.map(l => [l.code, l]));
+export function findHadithLanguage(code: string): HadithLanguage | undefined {
+  return languageByCode.get(code);
+}
+/** Does a pack language run right to left? By its code whole: `kmr` is Kurmancî, not Khmer. */
+export function hadithLangIsRtl(code: string | null | undefined): boolean {
+  return !!code && languageByCode.get(code)?.rtl === true;
+}
+
+/** A language as a pack language, and English beside it when it is neither English nor Arabic. */
 export function packLangs(appLang: string): string[] {
-  const base = appLang.slice(0, 2);
-  const lang = (HADITH_LANGS as readonly string[]).includes(base) ? base : 'en';
+  // "sv-SE" is Swedish; "prs" and "kmr" are codes of their own.
+  const base = appLang.split(/[-_]/)[0].toLowerCase();
+  const lang = languageByCode.has(base) ? base : 'en';
   return lang === 'en' || lang === 'ar' ? [lang] : [lang, 'en'];
 }
 

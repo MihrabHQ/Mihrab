@@ -3103,6 +3103,12 @@
       "finished": "Finished: every hadith of it is read.",
       "reminderBody": "{{n}} hadith to read today"
     },
-    "seeIn": "See it in {{book}}"
+    "seeIn": "See it in {{book}}",
+    "language": {
+      "title": "Hadith language",
+      "blurb": "Read hadith in a language other than the app's",
+      "auto": "Same as the app",
+      "note": "Translations and explanations are HadeethEnc.com's, in every language it publishes. The number beside a language is how many hadith it has translated so far; English stands in for the rest. A language is downloaded the first time you open a list in it."
+    }
   }
 }

@@ -3104,6 +3104,12 @@
       "finished": "Terminado: se han leído todos sus hadices.",
       "reminderBody": "{{n}} hadices por leer hoy"
     },
-    "seeIn": "Verlo en {{book}}"
+    "seeIn": "Verlo en {{book}}",
+    "language": {
+      "title": "Idioma de los hadices",
+      "blurb": "Leer los hadices en un idioma distinto al de la aplicación",
+      "auto": "El mismo que la aplicación",
+      "note": "Las traducciones y explicaciones son de HadeethEnc.com, en todos los idiomas que publica. El número junto a un idioma indica cuántos hadices se han traducido hasta ahora; para los demás se muestra el inglés. Un idioma se descarga la primera vez que abres una lista en él."
+    }
   }
 }

@@ -138,17 +138,25 @@ feature is the maintainer's call.
 
 ## 4. Waiting on the maintainer
 
-- **HadeethEnc's other 59 languages.** The fetch was approved and is
-  running on the maintainer's Mac in a worktree, `/tmp/geo/wt-langs`
-  (log `/tmp/geo/langs-build.log`; rerun the same command to resume:
-  `node scripts/hadith/build-packs.js --langs "$(cat /tmp/geo/langs.txt)" --concurrency 2`).
-  **Nothing is published.** Before `scripts/hadith/upload-packs.sh` is
-  run: (a) the 13 existing languages' packs must go up byte for byte as
-  they are — a rebuilt pack carries a new retrieval date, and every
-  installed app would download its hadith again (`packUpdates.ts`);
-  (b) the app needs a hadith-language setting, since hadith language is
-  tied to the 13 interface languages (`HADITH_LANGS`, `packLangs` in
-  `catalog.ts`); (c) ask the maintainer again, with the list of files.
+- **HadeethEnc's other 59 languages: built, the app is ready, NOT
+  published.** The fetch finished (72 languages in
+  `/tmp/geo/wt-langs/build/hadith/v1` on the maintainer's Mac — a temp
+  folder: it does not survive a restart, and the fetch takes hours).
+  The app side is in `main`: a hadith-language setting (Settings → Hadith
+  → Hadith language; `src/hadith/hadithLang.ts`, `hadithLanguages.json`,
+  `HadithLanguageSettingsScreen.tsx`), which offers a language only when
+  our copy's manifest names its pack — so until the upload it offers the
+  thirteen and nothing else changes for anyone. To publish:
+  `node scripts/hadith/merge-langs.js /tmp/geo/wt-langs/build/hadith/v1`
+  (says what it would add: 59 languages, 118 files, 184.2 MB; `--write`
+  adds them to `build/hadith/v1` and its manifest and touches no pack of
+  the thirteen, which must go up byte for byte — a rebuilt pack carries a
+  new retrieval date and every installed app would download it again),
+  then `scripts/hadith/upload-packs.sh --dry-run`, **then ask the
+  maintainer, with the list of files, before the real upload.** A release
+  holds 1,000 assets; this makes 155. Nobody has read a hadith in any of
+  the 59 in the app: the right-to-left ones (ug, fa, prs, ps, ku, kmr)
+  and the scripts the reading font may not carry want a look on a phone.
 - **Bulūgh al-Marām**: skipped by the maintainer. No clean input text was
   found; the only clean copies are taken from sunnah.com, which
   `build-packs.js` says is never read.

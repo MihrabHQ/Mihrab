@@ -3104,6 +3104,12 @@
       "finished": "Terminé : tous ses hadiths sont lus.",
       "reminderBody": "{{n}} hadiths à lire aujourd'hui"
     },
-    "seeIn": "Le voir dans {{book}}"
+    "seeIn": "Le voir dans {{book}}",
+    "language": {
+      "title": "Langue des hadiths",
+      "blurb": "Lire les hadiths dans une autre langue que celle de l'application",
+      "auto": "La même que l'application",
+      "note": "Les traductions et explications sont celles de HadeethEnc.com, dans toutes les langues qu'il publie. Le nombre à côté d'une langue indique combien de hadiths y sont traduits à ce jour ; l'anglais est affiché pour les autres. Une langue est téléchargée la première fois que vous ouvrez une liste dans cette langue."
+    }
   }
 }

@@ -85,7 +85,7 @@ export function HadithSettingsScreen() {
         />
       </SettingsGroup>
 
-      {/* What the grades mean (subpages.tsx). */}
+      {/* The hadith language, and what the grades mean (subpages.tsx). */}
       <NestedPageRows parent="SettingsHadith" />
     </SettingsPage>
   );
