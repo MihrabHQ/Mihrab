@@ -49,6 +49,7 @@
  * fawazahmed0/hadith-api (`bookGrades.ts`). Named at the foot of Look up and in
  * Settings → About.
  */
+import { withHadithUi } from '../hadith/HadithUiScope';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   Platform,
@@ -161,7 +162,10 @@ function useSetIds(): Record<string, string[]> {
   return ids;
 }
 
-export function HadithScreen() {
+/** Inside `HadithUiScope`: Arabic and mirrored when the hadith language is Arabic. */
+export const HadithScreen = withHadithUi(HadithScreenPage, 'HadithScreen');
+
+function HadithScreenPage() {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const navigation = useNavigation<Nav>();

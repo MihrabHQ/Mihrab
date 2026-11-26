@@ -49,7 +49,7 @@ export function hadithLanguageFor(appLang: string | null | undefined): string {
   return chosen === HADITH_LANGUAGE_AUTO ? appLang || 'en' : chosen;
 }
 
-const subscribe = (l: () => void) => {
+export const subscribeHadithLanguage = (l: () => void) => {
   listeners.add(l);
   return () => {
     listeners.delete(l);
@@ -59,6 +59,6 @@ const subscribe = (l: () => void) => {
 /** The same, in React: follows the setting and the app's language. */
 export function useHadithLanguage(): string {
   const { i18n } = useTranslation();
-  const mine = useSyncExternalStore(subscribe, chosenHadithLanguage, chosenHadithLanguage);
+  const mine = useSyncExternalStore(subscribeHadithLanguage, chosenHadithLanguage, chosenHadithLanguage);
   return mine === HADITH_LANGUAGE_AUTO ? i18n.language || 'en' : mine;
 }

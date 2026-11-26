@@ -92,7 +92,7 @@ const BOOKS = {
   },
   ighatha: {
     title: 'إغاثة اللهفان من مصائد الشيطان',
-    author: 'ابن قيم الجوزية',
+    author: 'ابن قيّم الجوزية',
     died: '751 هـ',
     prefix: 'إغاثة اللهفان',
     ownHeadings: true,
@@ -110,7 +110,7 @@ const BOOKS = {
   },
   dawa: {
     title: 'الداء والدواء',
-    author: 'ابن قيم الجوزية',
+    author: 'ابن قيّم الجوزية',
     died: '751 هـ',
     openiti: '0775AH/data/0751IbnQayyimJawziyya/0751IbnQayyimJawziyya.DaWaDawa/0751IbnQayyimJawziyya.DaWaDawa.Shamela0000158-ara1',
     cache: 'openiti-dawa.txt',

@@ -29,6 +29,7 @@
  * says so; an Arabic reader gets the Arabic and the explanation, no
  * translation. The texts of the books are Arabic only.
  */
+import { withHadithUi } from '../../hadith/HadithUiScope';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   Linking,
@@ -146,7 +147,10 @@ export function hadithCardLines(item: HadithItem, t: TFunction): string[] {
   return [cite, hadithReference(item, t) ?? '', sourceLine(item, t)].filter(Boolean);
 }
 
-export function HadithReaderScreen() {
+/** Inside `HadithUiScope`: Arabic and mirrored when the hadith language is Arabic. */
+export const HadithReaderScreen = withHadithUi(HadithReaderScreenPage, 'HadithReaderScreen');
+
+function HadithReaderScreenPage() {
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
   const layoutRtl = useLayoutRtl();

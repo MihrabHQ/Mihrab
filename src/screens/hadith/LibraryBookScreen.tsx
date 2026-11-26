@@ -30,6 +30,7 @@
  * language. Nothing here is graded, searched with the hadith or shown
  * anywhere else (`libraryShelf.ts`).
  */
+import { withHadithUi } from '../../hadith/HadithUiScope';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FlatList, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Text, TextInput, View, type ColorValue } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -107,7 +108,10 @@ const ProgressLine = forwardRef<{ set: (f: number) => void }, { start: number; t
   );
 });
 
-export function LibraryBookScreen() {
+/** Inside `HadithUiScope`: Arabic and mirrored when the hadith language is Arabic. */
+export const LibraryBookScreen = withHadithUi(LibraryBookScreenPage, 'LibraryBookScreen');
+
+function LibraryBookScreenPage() {
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

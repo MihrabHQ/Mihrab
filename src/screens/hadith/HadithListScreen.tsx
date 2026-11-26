@@ -28,6 +28,7 @@
  * people arrive at rulings nobody qualified gave them; the app shows the
  * text and says plainly that the text is not the answer to "may I?".
  */
+import { withHadithUi } from '../../hadith/HadithUiScope';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -116,7 +117,10 @@ const ARABIC = /[\u0600-\u06FF]/;
 const NO_ROWS: ReadonlyArray<ListRow & Partial<SearchHit>> = [];
 const NO_CHAPTERS: readonly BookChapter[] = [];
 
-export function HadithListScreen() {
+/** Inside `HadithUiScope`: Arabic and mirrored when the hadith language is Arabic. */
+export const HadithListScreen = withHadithUi(HadithListScreenPage, 'HadithListScreen');
+
+function HadithListScreenPage() {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const layoutRtl = useLayoutRtl();
