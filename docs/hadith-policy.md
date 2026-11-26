@@ -5,7 +5,8 @@ The rule, in one sentence:
 > **A hadith is in the app only when a named grader calls it ṣaḥīḥ or
 > ḥasan, and no grader the app cites calls it weak.**
 
-Set by the maintainer on 2026-11-25 and confirmed on 2026-11-26. Mihrab
+Set by the maintainer on 2026-11-25 and confirmed on 2026-11-26, with the
+clause for compilations added that day (§1). Mihrab
 grades nothing itself: it sorts what its sources say, shows each grade in
 the source's own words with the grader's name, and leaves out what does
 not pass. This page is the rule; the code named beside each part is what
@@ -23,6 +24,39 @@ enforces it, and a test holds the two together
   source's words, and is not listed under the search's "ṣaḥīḥ" or "ḥasan"
   filters, which hold only what is graded so outright (`gradeClass`,
   `src/hadith/grade.ts`).
+
+### A compilation: by its compiler's own attribution
+
+Added by the maintainer on 2026-11-26. The books people read most —
+Riyāḍ aṣ-Ṣāliḥīn, ʿUmdat al-Aḥkām, Bulūgh al-Marām — are not graded
+hadith by hadith in any open dataset. They do not need to be: their
+compilers say, of each hadith, which book it is from.
+
+> **A hadith in a compilation is served when its compiler attributes it
+> to al-Bukhārī or to Muslim, or to one of the five graded books and the
+> row it is there passes the rule above.**
+
+- The attribution is the **compiler's**, in his words ("متفق عليه",
+  "رواه مسلم", "رواه أبو داود والترمذي"). The app does not decide where a
+  hadith is from.
+- What is served is **the app's own row** of that hadith in the book
+  named — the text and the grade it already carries. The compilation's
+  text is read only to find that row and is never republished, so where a
+  compiler shortened a hadith the reader has the narration whole.
+- A hadith is left out when the compiler attributes it to a book the app
+  does not grade (Aḥmad, al-Ḥākim, al-Bayhaqī…), when its row in a graded
+  book does not pass, or **when its row cannot be found with
+  confidence** — the same caution as for the grades of the Sunan: wrong
+  the other way would put one hadith under another's name.
+- Where the compiler names several books, one that passes is enough: the
+  hadith is served from that book. A compiler's own remark that a hadith
+  is weak leaves it out whatever he attributes it to.
+- This is **not** matching by wording alone. A hadith of Musnad Aḥmad
+  that reads like one of al-Bukhārī's is not thereby al-Bukhārī's: the
+  chain is another, and nobody has said so. Only a compiler's stated
+  attribution carries a grade across.
+- A compilation's list says how many of the book's hadith it holds and
+  how many it leaves out.
 
 ## 2. What is refused
 
@@ -109,7 +143,8 @@ changes. No count is typed here.
 
 - A new source, set, book or language of hadith is added **only under
   this rule**: a named grader, a sound grade, nobody cited calling it
-  weak — or the whole of al-Bukhārī or Muslim.
+  weak — or the whole of al-Bukhārī or Muslim — or, in a compilation, its
+  compiler's attribution to one of those.
 - A change to the rule itself is the maintainer's decision. It is made on
   this page first, then in `grade.ts` / `bookGrades.ts` /
   `book-grades.js` and their tests, with a line in `CHANGELOG.md` saying
