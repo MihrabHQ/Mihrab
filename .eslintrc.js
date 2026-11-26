@@ -19,6 +19,9 @@ module.exports = {
     'android/',
     'ios/',
     'branding/',
+    // jest --coverage's report (git-ignored): generated JavaScript, and its
+    // own eslint-disable lines failed `lint:errors` wherever the folder was.
+    'coverage/',
   ],
   rules: {
     // Two the preset warns of that this codebase does on purpose, some six
