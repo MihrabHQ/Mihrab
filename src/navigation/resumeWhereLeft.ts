@@ -104,6 +104,7 @@ export const RESTORABLE: Readonly<Record<string, Readonly<Record<string, ParamKi
   SettingsWordReader: {},
   SettingsTajweed: {},
   SettingsHadith: {},
+  SettingsHadithGrades: {},
   SettingsDownloads: {},
   SettingsWidgets: {},
   SettingsDevices: {},

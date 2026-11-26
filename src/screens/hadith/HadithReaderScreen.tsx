@@ -382,6 +382,13 @@ export function HadithReaderScreen() {
                     />
                   </View>
                   <View style={styles.report}>
+                    {/* A grade is shown above, or a line saying there is none of
+                        ours: this is where a reader asks what either means. */}
+                    <TextAction
+                      label={t('hadith.grades.title')}
+                      color={palette.muted}
+                      onPress={() => navigation.navigate('SettingsHadithGrades')}
+                    />
                     <TextAction label={t('hadith.report')} color={palette.muted} onPress={() => report(item)} />
                   </View>
                 </Column>
@@ -555,7 +562,8 @@ const styles = StyleSheet.create({
   // Sits on the title it counts: the page's gap is taken back.
   position: { fontSize: TYPE.footnote.fontSize, marginBottom: -SPACING.md },
   unread: { flexDirection: 'row', justifyContent: 'center', marginTop: -SPACING.sm },
-  report: { flexDirection: 'row', justifyContent: 'center' },
+  // Two lines of their own, centred: side by side they do not fit a phone.
+  report: { alignItems: 'center', gap: SPACING.sm },
   missing: { padding: SPACING.xl, textAlign: 'center', fontSize: TYPE.callout.fontSize },
   badges: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
   badge: { paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs, borderRadius: RADIUS.full },

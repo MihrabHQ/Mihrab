@@ -3022,6 +3022,21 @@
     "gradedBookNote": "Este libro contiene aquí solo los hadices que todos los sabios que los clasificaron consideran sahih o hasan. Un hadiz que alguno de ellos considera débil, o que no tiene clasificación, queda fuera. En cada hadiz se muestra la clasificación de cada sabio, tal como figura en fawazahmed0/hadith-api.",
     "sahihCollectionNote": "{{book}} está aceptado como auténtico (sahih) en su conjunto. Aquí sus hadices no se clasifican uno por uno.",
     "refNotServed": "Aquí no hay ningún hadiz con el número {{n}} de {{book}}. Puede ser uno de los que quedan fuera: solo se incluyen los hadices que todos los sabios clasifican como sahih o hasan.",
-    "downloadGradedNote": "Se descarga de la copia de Mihrab en GitHub. Elimínalo cuando quieras en Ajustes → Descargas."
+    "downloadGradedNote": "Se descarga de la copia de Mihrab en GitHub. Elimínalo cuando quieras en Ajustes → Descargas.",
+    "grades": {
+      "title": "Qué significan los grados",
+      "blurb": "Sahih, hasan y lo que se deja fuera",
+      "intro": "Un grado es el juicio de un sabio del hadiz sobre la fiabilidad con que se transmitió un relato. Mihrab no clasifica nada por sí misma: cada grado que muestra es de un sabio nombrado, con las palabras de la fuente.",
+      "sahihTitle": "Sahih (auténtico)",
+      "sahih": "Transmitido por una cadena ininterrumpida de narradores fiables y de memoria precisa, sin defecto oculto y sin contradecir relatos más sólidos.",
+      "hasanTitle": "Hasan (bueno)",
+      "hasan": "Cumple las mismas condiciones, salvo que la precisión de algún narrador es un grado menor. Es sólido y se actúa conforme a él, y se muestra como hasan.",
+      "sahihaynTitle": "Sahih al-Bujari y Sahih Muslim",
+      "sahihayn": "Se ofrecen completos, por el rango de las dos colecciones. Aquí sus hadices no se clasifican uno por uno, y la página de cada hadiz lo dice.",
+      "leftOutTitle": "Lo que se deja fuera",
+      "leftOut": "Todo lo que un sabio citado por la aplicación considera débil, todo aquello en que los sabios citados discrepan y todo lo que no tiene grado. Dejar fuera un hadiz no significa que Mihrab lo considere débil: sigue estando en los libros impresos.",
+      "fullRule": "La regla completa",
+      "fullRuleSub": "Qué hadices se ofrecen, fuente por fuente"
+    }
   }
 }

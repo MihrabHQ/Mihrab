@@ -179,6 +179,16 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
     blurbKey: 'settings.sectionHadithBlurb',
     Icon: HadithIcon,
     getComponent: () => (require('./pages/HadithSettingsScreen') as typeof import('./pages/HadithSettingsScreen')).HadithSettingsScreen,
+    children: [
+      {
+        // What sahih and hasan mean, and what is left out: also opened
+        // from the foot of every hadith.
+        route: 'SettingsHadithGrades',
+        titleKey: 'hadith.grades.title',
+        blurbKey: 'hadith.grades.blurb',
+        getComponent: () => (require('./pages/HadithGradesSettingsScreen') as typeof import('./pages/HadithGradesSettingsScreen')).HadithGradesSettingsScreen,
+      },
+    ],
   },
   {
     /**

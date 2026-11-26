@@ -3021,6 +3021,21 @@
     "gradedBookNote": "This book holds only the hadith that every grader who ruled on it calls sahih or hasan. A hadith any of them calls weak, or that has no grade, is left out. Each hadith shows the graders' own verdicts, as recorded in fawazahmed0/hadith-api.",
     "sahihCollectionNote": "{{book}} is accepted as authentic (sahih) as a collection. Its hadith are not graded one by one here.",
     "refNotServed": "No hadith numbered {{n}} is included here from {{book}}. It may be one that is left out: only the hadith every grader calls sahih or hasan are included.",
-    "downloadGradedNote": "Downloaded from Mihrab's copy on GitHub. Remove it any time in Settings → Downloads."
+    "downloadGradedNote": "Downloaded from Mihrab's copy on GitHub. Remove it any time in Settings → Downloads.",
+    "grades": {
+      "title": "What the grades mean",
+      "blurb": "Sahih, hasan, and what is left out",
+      "intro": "A grade is a hadith scholar's judgement of how reliably a report was passed down. Mihrab grades nothing itself: every grade it shows is a named scholar's, in the source's own words.",
+      "sahihTitle": "Sahih (authentic)",
+      "sahih": "Passed down through an unbroken chain of trustworthy narrators with precise memory, with no hidden defect and nothing that contradicts stronger reports.",
+      "hasanTitle": "Hasan (good)",
+      "hasan": "Meets the same conditions, except that a narrator's precision is a degree lighter. It is sound and acted upon, and is shown as hasan.",
+      "sahihaynTitle": "Sahih al-Bukhari and Sahih Muslim",
+      "sahihayn": "Served whole, on the standing of the two collections. Their hadith are not graded one by one here, and each hadith's page says so.",
+      "leftOutTitle": "What is left out",
+      "leftOut": "Anything a scholar the app cites calls weak, anything the scholars it cites disagree on, and anything with no grade. Leaving a hadith out is not Mihrab calling it weak: it is still in the printed books.",
+      "fullRule": "The full rule",
+      "fullRuleSub": "Which hadith are served, source by source"
+    }
   }
 }

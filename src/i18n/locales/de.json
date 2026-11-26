@@ -3021,6 +3021,21 @@
     "gradedBookNote": "Dieses Buch enthält hier nur die Hadithe, die jeder Gelehrte, der sie eingestuft hat, als sahih oder hasan bezeichnet. Ein Hadith, den einer von ihnen als schwach einstuft oder der keine Einstufung hat, ist ausgelassen. Bei jedem Hadith stehen die Einstufungen der Gelehrten selbst, wie sie in fawazahmed0/hadith-api verzeichnet sind.",
     "sahihCollectionNote": "{{book}} gilt als Sammlung als authentisch (sahih). Die einzelnen Hadithe werden hier nicht gesondert eingestuft.",
     "refNotServed": "Aus {{book}} ist hier kein Hadith mit der Nummer {{n}} enthalten. Er kann zu den ausgelassenen gehören: Enthalten sind nur Hadithe, die jeder Gelehrte als sahih oder hasan einstuft.",
-    "downloadGradedNote": "Heruntergeladen von Mihrabs Kopie auf GitHub. Jederzeit entfernbar unter Einstellungen → Downloads."
+    "downloadGradedNote": "Heruntergeladen von Mihrabs Kopie auf GitHub. Jederzeit entfernbar unter Einstellungen → Downloads.",
+    "grades": {
+      "title": "Was die Einstufungen bedeuten",
+      "blurb": "Sahih, hasan und was weggelassen wird",
+      "intro": "Eine Einstufung ist das Urteil eines Hadithgelehrten darüber, wie zuverlässig ein Bericht überliefert wurde. Mihrab stuft selbst nichts ein: Jede angezeigte Einstufung stammt von einem namentlich genannten Gelehrten, im Wortlaut der Quelle.",
+      "sahihTitle": "Sahih (authentisch)",
+      "sahih": "Überliefert durch eine lückenlose Kette vertrauenswürdiger Überlieferer mit genauem Gedächtnis, ohne verborgenen Mangel und ohne Widerspruch zu stärkeren Berichten.",
+      "hasanTitle": "Hasan (gut)",
+      "hasan": "Erfüllt dieselben Bedingungen, nur ist die Genauigkeit eines Überlieferers eine Stufe geringer. Er ist verlässlich, es wird nach ihm gehandelt, und er wird als hasan angezeigt.",
+      "sahihaynTitle": "Sahih al-Bukhari und Sahih Muslim",
+      "sahihayn": "Vollständig enthalten, aufgrund des Rangs der beiden Sammlungen. Ihre Hadithe werden hier nicht einzeln eingestuft, und das steht auf der Seite jedes Hadith.",
+      "leftOutTitle": "Was weggelassen wird",
+      "leftOut": "Alles, was ein von der App zitierter Gelehrter als schwach bezeichnet, alles, worüber die zitierten Gelehrten uneins sind, und alles ohne Einstufung. Wird ein Hadith weggelassen, nennt Mihrab ihn damit nicht schwach: Er steht weiterhin in den gedruckten Büchern.",
+      "fullRule": "Die vollständige Regel",
+      "fullRuleSub": "Welche Hadithe gezeigt werden, Quelle für Quelle"
+    }
   }
 }

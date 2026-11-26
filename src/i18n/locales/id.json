@@ -3021,6 +3021,21 @@
     "gradedBookNote": "Kitab ini di sini hanya memuat hadis yang dinilai shahih atau hasan oleh setiap ulama yang menilainya. Hadis yang dinilai lemah oleh salah satu dari mereka, atau yang tidak memiliki derajat, tidak dimuat. Setiap hadis menampilkan penilaian masing-masing ulama, sebagaimana tercatat di fawazahmed0/hadith-api.",
     "sahihCollectionNote": "{{book}} diterima sebagai kitab yang shahih secara keseluruhan. Hadis-hadisnya tidak dinilai satu per satu di sini.",
     "refNotServed": "Tidak ada hadis bernomor {{n}} dari {{book}} yang dimuat di sini. Mungkin hadis itu termasuk yang tidak dimuat: hanya hadis yang dinilai shahih atau hasan oleh setiap ulama yang dimuat.",
-    "downloadGradedNote": "Diunduh dari salinan Mihrab di GitHub. Hapus kapan saja di Pengaturan → Unduhan."
+    "downloadGradedNote": "Diunduh dari salinan Mihrab di GitHub. Hapus kapan saja di Pengaturan → Unduhan.",
+    "grades": {
+      "title": "Arti derajat hadis",
+      "blurb": "Shahih, hasan, dan yang tidak dimuat",
+      "intro": "Derajat adalah penilaian seorang ulama hadis tentang seberapa terpercaya sebuah riwayat sampai kepada kita. Mihrab tidak menilai apa pun sendiri: setiap derajat yang ditampilkan adalah penilaian ulama yang disebut namanya, dengan kata-kata sumbernya.",
+      "sahihTitle": "Shahih (autentik)",
+      "sahih": "Diriwayatkan melalui sanad yang bersambung oleh para perawi yang tepercaya dan kuat hafalannya, tanpa cacat tersembunyi dan tanpa menyelisihi riwayat yang lebih kuat.",
+      "hasanTitle": "Hasan (baik)",
+      "hasan": "Memenuhi syarat yang sama, hanya saja ketelitian hafalan perawinya satu tingkat lebih ringan. Hadis ini diterima dan diamalkan, dan ditampilkan sebagai hasan.",
+      "sahihaynTitle": "Shahih al-Bukhari dan Shahih Muslim",
+      "sahihayn": "Dimuat seluruhnya, berdasarkan kedudukan kedua kitab itu. Hadis-hadisnya tidak dinilai satu per satu di sini, dan halaman setiap hadis menyebutkannya.",
+      "leftOutTitle": "Yang tidak dimuat",
+      "leftOut": "Apa pun yang dinilai lemah oleh seorang ulama yang dikutip aplikasi, apa pun yang diperselisihkan para ulama yang dikutip, dan apa pun yang tidak memiliki derajat. Tidak memuat sebuah hadis bukan berarti Mihrab menilainya lemah: hadis itu tetap ada dalam kitab-kitab cetak.",
+      "fullRule": "Aturan lengkapnya",
+      "fullRuleSub": "Hadis mana yang dimuat, sumber demi sumber"
+    }
   }
 }

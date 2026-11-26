@@ -31,6 +31,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { formatBytes } from '../../../quran/downloadsUi';
 import { SPACING } from '../../../theme/tokens';
 import { TYPE } from '../../../theme/typography';
+import { NestedPageRows } from '../NestedPageRows';
 import { SettingsGroup, SettingsLinkRow } from '../SettingsGroup';
 import { SettingsPage } from '../SettingsPage';
 
@@ -83,6 +84,9 @@ export function HadithSettingsScreen() {
           testID="settings-hadith-downloads"
         />
       </SettingsGroup>
+
+      {/* What the grades mean (subpages.tsx). */}
+      <NestedPageRows parent="SettingsHadith" />
     </SettingsPage>
   );
 }

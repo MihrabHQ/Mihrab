@@ -3021,6 +3021,21 @@
     "gradedBookNote": "Bu kitapta burada yalnızca, hakkında hüküm veren her âlimin sahih veya hasen dediği hadisler yer alır. İçlerinden birinin zayıf dediği veya derecesi bulunmayan hadis alınmamıştır. Her hadiste âlimlerin kendi hükümleri, fawazahmed0/hadith-api’de kayıtlı olduğu şekliyle gösterilir.",
     "sahihCollectionNote": "{{book}} bir bütün olarak sahih kabul edilir. Hadisleri burada tek tek derecelendirilmemiştir.",
     "refNotServed": "{{book}} kitabından {{n}} numaralı hadis burada yer almıyor. Alınmayanlardan biri olabilir: yalnızca her âlimin sahih veya hasen dediği hadisler yer alır.",
-    "downloadGradedNote": "Mihrab’ın GitHub’daki kopyasından indirilir. İstediğiniz zaman Ayarlar → İndirmeler bölümünden kaldırabilirsiniz."
+    "downloadGradedNote": "Mihrab’ın GitHub’daki kopyasından indirilir. İstediğiniz zaman Ayarlar → İndirmeler bölümünden kaldırabilirsiniz.",
+    "grades": {
+      "title": "Derecelerin anlamı",
+      "blurb": "Sahih, hasen ve dışarıda bırakılanlar",
+      "intro": "Derece, bir hadis âliminin bir rivayetin ne kadar güvenilir biçimde aktarıldığına dair hükmüdür. Mihrab kendisi hiçbir şeyi derecelendirmez: gösterilen her derece, adı verilen bir âlimindir ve kaynağın kendi ifadesiyledir.",
+      "sahihTitle": "Sahih",
+      "sahih": "Güvenilir ve hafızası sağlam ravilerin kesintisiz senediyle aktarılan, gizli bir kusuru bulunmayan ve daha güçlü rivayetlere aykırı olmayan hadistir.",
+      "hasanTitle": "Hasen",
+      "hasan": "Aynı şartları taşır; yalnızca bir ravinin zabtı bir derece daha hafiftir. Makbuldür, onunla amel edilir ve hasen olarak gösterilir.",
+      "sahihaynTitle": "Sahîh-i Buhârî ve Sahîh-i Müslim",
+      "sahihayn": "İki eserin konumu gereği bütün olarak sunulur. Hadisleri burada tek tek derecelendirilmemiştir ve her hadisin sayfasında bu belirtilir.",
+      "leftOutTitle": "Dışarıda bırakılanlar",
+      "leftOut": "Uygulamanın naklettiği âlimlerden birinin zayıf dediği, bu âlimlerin hakkında ihtilaf ettiği ve derecesi bulunmayan her şey. Bir hadisin dışarıda bırakılması, Mihrab'ın ona zayıf dediği anlamına gelmez: o hadis basılı kitaplarda durmaktadır.",
+      "fullRule": "Kuralın tamamı",
+      "fullRuleSub": "Hangi hadislerin sunulduğu, kaynak kaynak"
+    }
   }
 }

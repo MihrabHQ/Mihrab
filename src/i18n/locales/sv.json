@@ -3021,6 +3021,21 @@
     "gradedBookNote": "Den här boken innehåller bara de hadither som varje granskare som har bedömt dem kallar sahih eller hasan. En hadith som någon av dem kallar svag, eller som saknar gradering, är utelämnad. Vid varje hadith visas granskarnas egna bedömningar, så som de står i fawazahmed0/hadith-api.",
     "sahihCollectionNote": "{{book}} är erkänd som autentisk (sahih) som samling. Dess hadither graderas inte var för sig här.",
     "refNotServed": "Ingen hadith med nummer {{n}} ur {{book}} finns med här. Den kan vara utelämnad: bara de hadither som varje granskare kallar sahih eller hasan finns med.",
-    "downloadGradedNote": "Laddas ner från Mihrabs kopia på GitHub. Ta bort den när du vill under Inställningar → Nedladdningar."
+    "downloadGradedNote": "Laddas ner från Mihrabs kopia på GitHub. Ta bort den när du vill under Inställningar → Nedladdningar.",
+    "grades": {
+      "title": "Vad graderna betyder",
+      "blurb": "Sahih, hasan och vad som utelämnas",
+      "intro": "En grad är en hadithlärds bedömning av hur tillförlitligt en berättelse har förts vidare. Mihrab graderar ingenting självt: varje grad som visas är en namngiven lärds, med källans egna ord.",
+      "sahihTitle": "Sahih (autentisk)",
+      "sahih": "Förd vidare genom en obruten kedja av pålitliga berättare med gott minne, utan dold brist och utan att motsäga starkare berättelser.",
+      "hasanTitle": "Hasan (god)",
+      "hasan": "Uppfyller samma villkor, förutom att en berättares noggrannhet är något svagare. Den är sund och följs, och visas som hasan.",
+      "sahihaynTitle": "Sahih al-Bukhari och Sahih Muslim",
+      "sahihayn": "Visas i sin helhet, på grund av de två samlingarnas ställning. Deras hadither graderas inte var för sig här, och det står på varje hadiths sida.",
+      "leftOutTitle": "Vad som utelämnas",
+      "leftOut": "Allt som någon lärd som appen hänvisar till kallar svagt, allt som de lärda är oeniga om, och allt som saknar grad. Att en hadith utelämnas betyder inte att Mihrab kallar den svag: den finns kvar i de tryckta böckerna.",
+      "fullRule": "Hela regeln",
+      "fullRuleSub": "Vilka hadither som visas, källa för källa"
+    }
   }
 }

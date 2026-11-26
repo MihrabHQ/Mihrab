@@ -3022,6 +3022,21 @@
     "gradedBookNote": "Ce livre ne contient ici que les hadiths que tous les savants qui les ont classés jugent sahih ou hasan. Un hadith que l'un d'eux juge faible, ou qui n'a pas de degré, est laissé de côté. Chaque hadith affiche le jugement de chaque savant, tel qu'il figure dans fawazahmed0/hadith-api.",
     "sahihCollectionNote": "{{book}} est reconnu comme authentique (sahih) en tant que recueil. Ses hadiths ne sont pas classés un par un ici.",
     "refNotServed": "Aucun hadith portant le numéro {{n}} de {{book}} n'est inclus ici. Il fait peut-être partie de ceux qui sont laissés de côté : seuls les hadiths que tous les savants jugent sahih ou hasan sont inclus.",
-    "downloadGradedNote": "Téléchargé depuis la copie de Mihrab sur GitHub. Supprimez-le à tout moment dans Paramètres → Téléchargements."
+    "downloadGradedNote": "Téléchargé depuis la copie de Mihrab sur GitHub. Supprimez-le à tout moment dans Paramètres → Téléchargements.",
+    "grades": {
+      "title": "Ce que signifient les degrés",
+      "blurb": "Sahih, hasan, et ce qui est laissé de côté",
+      "intro": "Un degré est le jugement d'un savant du hadith sur la fiabilité avec laquelle un récit a été transmis. Mihrab ne classe rien elle-même : chaque degré affiché est celui d'un savant nommé, dans les termes de la source.",
+      "sahihTitle": "Sahih (authentique)",
+      "sahih": "Transmis par une chaîne ininterrompue de transmetteurs dignes de confiance et à la mémoire précise, sans défaut caché et sans contredire des récits plus solides.",
+      "hasanTitle": "Hasan (bon)",
+      "hasan": "Remplit les mêmes conditions, sauf que la précision d'un transmetteur est d'un degré moindre. Il est fiable, on agit selon lui, et il est affiché comme hasan.",
+      "sahihaynTitle": "Sahih al-Boukhari et Sahih Muslim",
+      "sahihayn": "Proposés en entier, en raison du rang des deux recueils. Leurs hadiths ne sont pas classés un par un ici, et la page de chaque hadith le dit.",
+      "leftOutTitle": "Ce qui est laissé de côté",
+      "leftOut": "Tout ce qu'un savant cité par l'application juge faible, tout ce sur quoi les savants cités divergent, et tout ce qui n'a pas de degré. Laisser un hadith de côté ne signifie pas que Mihrab le juge faible : il reste dans les livres imprimés.",
+      "fullRule": "La règle complète",
+      "fullRuleSub": "Quels hadiths sont proposés, source par source"
+    }
   }
 }
