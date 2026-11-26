@@ -22,5 +22,21 @@
   "author": "ابن قيم الجوزية",
   "authorLatin": "Ibn al-Qayyim",
   "died": "751 AH"
+ },
+ {
+  "id": "dawa",
+  "title": "الداء والدواء",
+  "latin": "Ad-Da' wa'd-Dawa'",
+  "author": "ابن قيم الجوزية",
+  "authorLatin": "Ibn al-Qayyim",
+  "died": "751 AH"
+ },
+ {
+  "id": "bahja",
+  "title": "بهجة المجالس وأنس المجالس",
+  "latin": "Bahjat al-Majalis",
+  "author": "ابن عبد البر",
+  "authorLatin": "Ibn 'Abd al-Barr",
+  "died": "463 AH"
  }
 ]

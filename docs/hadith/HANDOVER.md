@@ -45,17 +45,25 @@ nothing of it is searched, graded or shown outside the book.
 | Tests | `__tests__/libraryBooks.test.ts` |
 
 Built: `kalila` (19 chapters), `maqamat` (51, in ʿAbduh's order), `ighatha`
-(48). **Not published until the maintainer sees the file list**
-(`upload-packs.sh` uploads whatever is under `build/hadith/v1`, so the
-three packs and the manifest go up with the next run).
+(48) from Wikisource; `dawa` (الداء والدواء, 116) and `bahja` (بهجة
+المجالس, 125) from OpenITI (CC BY-NC-SA, accepted by the maintainer;
+`openitiChapters`). **Not published until the maintainer sees the file
+list** (`upload-packs.sh` uploads whatever is under `build/hadith/v1`).
 
-Still to add, sources found: الداء والدواء and بهجة المجالس (OpenITI only,
-CC BY-NC-SA — the maintainer accepted that licence; OpenITI's markup
-needs its own reader in the builder), العقد الفريد (Wikisource, 157
-pages), بلد العميان (Hindawi's translation, CC BY 4.0). Tafsir (Ibn
-Kathīr first, from the Tafsir Center's CC BY 4.0 dataset) belongs in the
-Qur'an reader per āyah and is not started. Not looked at on a phone; the
-Maqāmāt include coarse passages (the edition's text is kept whole).
+Not built:
+- العقد الفريد — Wikisource has it as 131 numbered pages over five parts
+  (3.1 MB), cut by size and not by Ibn ʿAbd Rabbih's own books, with
+  templates the builder does not know yet (`ربط بصفحة`, `smallrefs`). It
+  wants its chapters found from the headings inside the pages.
+- بلد العميان — Hindawi's CC BY translation sits behind a bot check
+  (Cloudflare), which is not to be worked round. The maintainer can
+  download the EPUB himself and hand it over.
+- Tafsir (Ibn Kathīr first, from the Tafsir Center's CC BY 4.0 dataset)
+  belongs in the Qur'an reader per āyah and is not started.
+- المحرر الوجيز: no clean text located.
+
+Not looked at on a phone. The Maqāmāt include coarse passages (the
+edition's text is kept whole).
 
 ## 2. Not verified by anyone
 

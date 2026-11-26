@@ -71,6 +71,42 @@ describe('the builder', () => {
     expect(validPack('library/k', pack)).toBe(true);
   });
 
+  it('reads OpenITI’s markup: headings, paragraphs that go on, verse, and none of its page marks', () => {
+    const { openitiChapters, openitiPack } = builder;
+    const file = [
+      '######OpenITI#',
+      '#META# 041.EdNUMBER\t:: الأولى',
+      '#META# 043.EdPUBLISHER\t:: دار',
+      '#META#Header#End#',
+      '',
+      '# PageV00P000',
+      '### | مقدمة المؤلف',
+      '### | بسم الله الرحمن الرحيم',
+      '# أما بعد: فإن أولى ما ابتدئ به',
+      '~~كتاب ms001 وافتتح به خطاب PageV01P003 حمد الله.',
+      '### | باب في اجتناب اللحن',
+      '### | وذم الغريب في الخطاب',
+      '# ؟ قال الشاعر:',
+      '# صدر البيت ... عجز البيت',
+      '# صدر ثان ... عجز ثان',
+      '### | [فصل الدعاء]',
+      '# نص الفصل.',
+    ].join('\n');
+    expect(openitiChapters(file, 't')).toEqual([
+      { t: 'مقدمة المؤلف', b: ['بسم الله الرحمن الرحيم', 'أما بعد: فإن أولى ما ابتدئ به كتاب وافتتح به خطاب حمد الله.'] },
+      { t: 'باب في اجتناب اللحن وذم الغريب في الخطاب', b: ['قال الشاعر:', { v: [`صدر البيت${HALVES}عجز البيت`, `صدر ثان${HALVES}عجز ثان`] }] },
+      { t: 'فصل الدعاء', b: ['نص الفصل.'] },
+    ]);
+    expect(() => openitiChapters('#META#Header#End#\n# نص بلا عنوان', 't')).toThrow(/before the first heading/);
+    expect(() => openitiChapters('#META#Header#End#\n### | باب\n| جدول', 't')).toThrow(/does not know/);
+    expect(() => openitiChapters('#META#Header#End#\n### | باب\n# نص\n### | باب آخر', 't')).toThrow(/has no text/);
+    const pack = openitiPack('k', { title: 'ك', author: 'م', died: '1', read: '2026-11-26', openiti: '0775AH/data/0751X/0751X.Book/0751X.Book.Shamela1-ara1' }, file);
+    // Built again another day it is the same file: the day read is written down, not today's.
+    expect(pack.asOf).toBe('2026-11-26');
+    expect(pack.source).toEqual({ name: 'OpenITI', license: 'CC BY-NC-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-nc-sa/4.0/', url: 'https://github.com/OpenITI/0775AH/tree/master/data/0751X/0751X.Book', edition: 'دار، الأولى' });
+    expect(validPack('library/k', pack)).toBe(true);
+  });
+
   it('adds its own entries to the manifest and nothing else, and publishes nothing', () => {
     const src = read('scripts/library/build-library.js');
     expect(src).toContain("if (JSON.stringify({ ...manifest, library: undefined }) !== others) throw new Error('the manifest changed outside `library`: nothing written');");

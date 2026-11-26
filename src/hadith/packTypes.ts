@@ -78,7 +78,8 @@ export type LibraryFile = {
   author: string;
   died: string;
   lang: string;
-  source: { name: string; license: string; licenseUrl: string; url: string };
+  /** `edition`: the printed edition the transcription was made from, where the source says. */
+  source: { name: string; license: string; licenseUrl: string; url: string; edition?: string };
   asOf: string;
   chapters: LibraryChapter[];
 };

@@ -47,6 +47,14 @@ const OUT = path.join(ROOT, 'build', 'hadith', 'v1');
 const CACHE = path.join(__dirname, '.cache');
 const WIKISOURCE = 'https://ar.wikisource.org/w/api.php';
 const SOURCE = { name: 'Arabic Wikisource', license: 'CC BY-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/' };
+/**
+ * The OpenITI corpus (github.com/OpenITI): transcriptions of classical
+ * texts in its own plain markup, released under CC BY-NC-SA 4.0 — it may
+ * be republished with credit, not sold, and under the same terms. The
+ * maintainer accepted that licence for the Library on 2026-11-26; a pack
+ * built from it says so, and the app is free.
+ */
+const OPENITI = { name: 'OpenITI', license: 'CC BY-NC-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-nc-sa/4.0/' };
 
 /** al-Hamadhānī's maqāmāt in the order of Muḥammad ʿAbduh's edition, by the name each page has. */
 const MAQAMAT = [
@@ -99,6 +107,22 @@ const BOOKS = {
       }
       return out;
     },
+  },
+  dawa: {
+    title: 'الداء والدواء',
+    author: 'ابن قيم الجوزية',
+    died: '751 هـ',
+    openiti: '0775AH/data/0751IbnQayyimJawziyya/0751IbnQayyimJawziyya.DaWaDawa/0751IbnQayyimJawziyya.DaWaDawa.Shamela0000158-ara1',
+    cache: 'openiti-dawa.txt',
+    read: '2026-11-26',
+  },
+  bahja: {
+    title: 'بهجة المجالس وأنس المجالس',
+    author: 'ابن عبد البر',
+    died: '463 هـ',
+    openiti: '0475AH/data/0463IbnCabdBarr/0463IbnCabdBarr.BahjatMajalis/0463IbnCabdBarr.BahjatMajalis.Shamela0000558-ara1',
+    cache: 'openiti-bahja.txt',
+    read: '2026-11-26',
   },
 };
 
@@ -240,6 +264,112 @@ function blocksOf(wikitext, where) {
   return blocks.filter(b => typeof b !== 'string' || b.length > 0);
 }
 
+// ── OpenITI's markup to the author's text ──────────────────────────────
+
+/** A book's file from the OpenITI corpus, as it stood when read. Cached. */
+async function openiti(repoPath, cache) {
+  const file = path.join(CACHE, cache);
+  if (fs.existsSync(file)) return fs.readFileSync(file, 'utf8');
+  const res = await fetch(`https://raw.githubusercontent.com/OpenITI/${repoPath.replace('/data/', '/master/data/')}`);
+  if (!res.ok) throw new Error(`${repoPath}: ${res.status}`);
+  const text = await res.text();
+  fs.mkdirSync(CACHE, { recursive: true });
+  fs.writeFileSync(file, text);
+  return text;
+}
+
+/**
+ * OpenITI's file as chapters: `[{ t, b }]`.
+ *
+ * Its markup is a line's first characters: `### |` a heading, `# ` a
+ * paragraph, `~~` the same paragraph going on; `PageV01P007` and `ms012`
+ * mark the printed page and a counting unit and are not the text. A
+ * chapter is a heading and what follows it. A heading with nothing under
+ * it runs into the next one: where that begins with "و" it is the rest of
+ * a title set on two lines ("باب في اجتناب اللحن" / "وذم الغريب في
+ * الخطاب"); otherwise it is a line of the chapter (the basmala under
+ * "مقدمة المؤلف"). A line of verse is two halves with " ... " between
+ * them; lines of verse one after another are one block.
+ *
+ * A leading "؟" is the conversion's mark for something it could not read
+ * in the margin, not a word of the author's, and is taken off the start
+ * of a line. Throws on a line it does not know.
+ */
+function openitiChapters(text, where) {
+  const start = text.indexOf('#META#Header#End#');
+  if (start < 0) throw new Error(`${where}: not an OpenITI file`);
+  const clean = s => s.replace(/PageV\d+P\d+|ms\d+/g, ' ').replace(/\s+/g, ' ').replace(/^(?:؟+\s*)+/, '').trim();
+  const chapters = [];
+  let para = null;
+  const flush = () => {
+    if (para == null) return;
+    const s = clean(para);
+    para = null;
+    if (!s) return;
+    if (!chapters.length) chapters.push({ t: '', b: [] });
+    const b = chapters[chapters.length - 1].b;
+    const halves = s.split(' ... ');
+    if (halves.length === 2 && s.length < 160) {
+      const line = halves.map(h => h.trim()).join(HALVES);
+      const last = b[b.length - 1];
+      if (last && typeof last === 'object' && last.v) last.v.push(line);
+      else b.push({ v: [line] });
+    } else b.push(s);
+  };
+  for (const line of text.slice(start).split('\n').slice(1)) {
+    if (!line.trim()) continue;
+    if (line.startsWith('~~')) {
+      if (para == null) throw new Error(`${where}: a line going on from nothing: ${line.slice(0, 60)}`);
+      para += ` ${line.slice(2)}`;
+      continue;
+    }
+    flush();
+    const h = /^### \|+ ?(.*)$/.exec(line);
+    if (h) {
+      const title = clean(h[1]).replace(/^\[(.*)\]$/, '$1').trim();
+      const prev = chapters[chapters.length - 1];
+      if (prev && !prev.b.length && prev.t) {
+        if (title.startsWith('و')) prev.t = `${prev.t} ${title}`;
+        else if (title) prev.b.push(title);
+      } else if (title) chapters.push({ t: title, b: [] });
+      continue;
+    }
+    if (line.startsWith('# ')) {
+      para = line.slice(2);
+      continue;
+    }
+    throw new Error(`${where}: a line this file does not know: ${line.slice(0, 60)}`);
+  }
+  flush();
+  for (const c of chapters) {
+    if (!c.t) throw new Error(`${where}: text before the first heading`);
+    if (!c.b.length) throw new Error(`${where}: "${c.t}" has no text`);
+    for (const b of c.b) {
+      const s = typeof b === 'string' ? b : b.v.join(' ');
+      if (/#|~~|PageV|\bms\d|@[A-Z]|%~%/.test(s)) throw new Error(`${where}: markup left in the text: ${s.slice(0, 80)}`);
+    }
+  }
+  return chapters;
+}
+
+/** A pack from an OpenITI file. */
+function openitiPack(id, spec, text) {
+  const chapters = openitiChapters(text, id);
+  const meta = key => (new RegExp(`#META# ${key}\\s*:: (.*)`).exec(text)?.[1] ?? '').trim();
+  const edition = [meta('043.EdPUBLISHER'), meta('041.EdNUMBER')].filter(v => v && v !== 'NODATA' && v !== 'NOTGIVEN').join('، ');
+  return {
+    id,
+    title: spec.title,
+    author: spec.author,
+    died: spec.died,
+    lang: 'ar',
+    source: { ...OPENITI, url: `https://github.com/OpenITI/${spec.openiti.split('/data/')[0]}/tree/master/data/${spec.openiti.split('/data/')[1].split('/').slice(0, 2).join('/')}`, ...(edition ? { edition } : null) },
+    // The day the file was read, written down: a pack built again is the same bytes.
+    asOf: spec.read,
+    chapters,
+  };
+}
+
 /** A pack: the book, and where its text is from. */
 function packOf(id, spec, pages) {
   const chapters = [];
@@ -284,7 +414,7 @@ async function main() {
   for (const id of ids) {
     const spec = BOOKS[id];
     if (!spec) throw new Error(`no such book: ${id} (${Object.keys(BOOKS).join(', ')})`);
-    const pack = packOf(id, spec, await wikisource(spec.prefix, spec.cache));
+    const pack = spec.openiti ? openitiPack(id, spec, await openiti(spec.openiti, spec.cache)) : packOf(id, spec, await wikisource(spec.prefix, spec.cache));
     const json = JSON.stringify(pack);
     const file = path.join(OUT, 'library', `${id}.json`);
     fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -309,4 +439,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-module.exports = { blocksOf, linksOf, packOf, BOOKS, MAQAMAT, HALVES };
+module.exports = { blocksOf, linksOf, packOf, openitiChapters, openitiPack, BOOKS, MAQAMAT, HALVES };
