@@ -73,7 +73,11 @@ function main() {
   const withheld = JSON.parse(fs.readFileSync(path.join(ROOT, 'src', 'hadith', 'withheld.json'), 'utf8'));
   const ids = withheld.henc;
   if (!Array.isArray(ids)) throw new Error('src/hadith/withheld.json names no entries: its shape changed');
-  const before = JSON.stringify([here.henc.all.langs, here.categories, here.books, here.nawawi]);
+  // What is published, entry by entry: each must come out as it went in.
+  const sections = m => ({ henc: m.henc.all.langs, categories: m.categories, books: m.books });
+  const snapshot = m => Object.entries(sections(m)).flatMap(([name, sec]) => Object.keys(sec).map(k => [`${name}/${k}`, JSON.stringify(sec[k])]));
+  const before = snapshot(here);
+  const nawawiBefore = JSON.stringify(here.nawawi);
   const p = plan(here, there, HERE, thereDir, ids);
   let bytes = 0;
   for (const { lang, files } of p.add) {
@@ -90,9 +94,9 @@ function main() {
   }
   if (write && p.add.length) {
     // The entries that were here are the entries that are here: only keys were added.
-    const kept = k => Object.fromEntries(p.kept.map(l => [l, k[l]]));
-    const after = JSON.stringify([kept(here.henc.all.langs), kept(here.categories), here.books, here.nawawi]);
-    if (after !== before) throw new Error('an existing entry changed: nothing written');
+    const after = new Map(snapshot(here));
+    const changed = before.filter(([k, v]) => after.get(k) !== v).map(([k]) => k);
+    if (changed.length || JSON.stringify(here.nawawi) !== nawawiBefore) throw new Error(`an existing entry changed: nothing written (${changed.join(', ') || 'nawawi'})`);
     fs.writeFileSync(manifestFile, JSON.stringify(here));
   }
   console.log(`${p.add.length} language${p.add.length === 1 ? '' : 's'} (${(bytes / 1e6).toFixed(1)} MB) ${write ? 'added' : 'to add'}; ${p.kept.length} left as they are: ${p.kept.join(', ')}`);

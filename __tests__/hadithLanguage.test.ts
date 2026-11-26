@@ -151,7 +151,9 @@ describe('adding languages to the published packs', () => {
     const wrong = { henc: { all: { langs: { bs: { ...entry, sha256: sha('other'), count: 2 } } } }, categories: { bs: cats } };
     expect(() => plan(here, wrong, '/nowhere', dir, [])).toThrow(/not the file its manifest names/);
     const script = read('scripts/hadith/merge-langs.js');
-    expect(script).toContain("if (after !== before) throw new Error('an existing entry changed: nothing written');");
+    // Each published entry is compared by its own key: the sections do not list the languages in one order.
+    expect(script).toContain("const changed = before.filter(([k, v]) => after.get(k) !== v).map(([k]) => k);");
+    expect(script).toContain('throw new Error(`an existing entry changed: nothing written');
     // It publishes nothing.
     expect(script).not.toContain('gh release');
   });
