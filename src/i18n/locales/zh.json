@@ -2048,7 +2048,9 @@
     "hadeethenc": "圣训原文、译文、讲解与教益，未经改动转载",
     "nawawiArabic": "《奈瓦维四十段圣训》，阿拉伯文原文",
     "openHadithData": "圣训典籍，阿拉伯文原文",
-    "hadithGrades": "四部《苏南》与《穆宛塔》中圣训的等级"
+    "hadithGrades": "四部《苏南》与《穆宛塔》中圣训的等级",
+    "hadithPolicy": "收录哪些圣训，不收录哪些",
+    "hadithPolicySub": "只收录有具名评定者评为可靠（萨希赫）或良好（哈桑）、且无人评为羸弱的圣训"
   },
   "liveActivity": {
     "title": "下一次礼拜",

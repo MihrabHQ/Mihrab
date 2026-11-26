@@ -2048,7 +2048,9 @@
     "hadeethenc": "Hadith texts, translations, explanations and lessons, republished unmodified",
     "nawawiArabic": "an-Nawawi's Forty Hadith, Arabic text",
     "openHadithData": "Books of hadith, Arabic text",
-    "hadithGrades": "Grades of the hadith in the four Sunan and the Muwatta"
+    "hadithGrades": "Grades of the hadith in the four Sunan and the Muwatta",
+    "hadithPolicy": "Which hadith are served, and which are left out",
+    "hadithPolicySub": "Only what a named grader calls sahih or hasan, and none calls weak"
   },
   "liveActivity": {
     "title": "Next prayer",

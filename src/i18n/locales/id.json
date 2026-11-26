@@ -2048,7 +2048,9 @@
     "hadeethenc": "Teks hadis, terjemahan, penjelasan, dan pelajaran, diterbitkan ulang tanpa perubahan",
     "nawawiArabic": "Hadis Arbain Nawawi, teks Arab",
     "openHadithData": "Kitab-kitab hadis, teks Arab",
-    "hadithGrades": "Derajat hadis-hadis dalam empat kitab Sunan dan al-Muwaththa"
+    "hadithGrades": "Derajat hadis-hadis dalam empat kitab Sunan dan al-Muwaththa",
+    "hadithPolicy": "Hadis mana yang ditampilkan, dan mana yang tidak",
+    "hadithPolicySub": "Hanya yang dinilai sahih atau hasan oleh ahli hadis yang disebut namanya, dan tidak ada yang menilainya lemah"
   },
   "liveActivity": {
     "title": "Salat berikutnya",

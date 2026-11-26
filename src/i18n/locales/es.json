@@ -2049,7 +2049,9 @@
     "hadeethenc": "Textos de hadices, traducciones, explicaciones y enseñanzas, republicados sin modificar",
     "nawawiArabic": "Los cuarenta hadices de an-Nawawi, texto árabe",
     "openHadithData": "Los libros de hadices, texto árabe",
-    "hadithGrades": "Clasificaciones de los hadices de los cuatro Sunan y del Muwatta"
+    "hadithGrades": "Clasificaciones de los hadices de los cuatro Sunan y del Muwatta",
+    "hadithPolicy": "Qué hadices se muestran y cuáles se dejan fuera",
+    "hadithPolicySub": "Solo lo que un tradicionista nombrado califica de sahih o hasan, y ninguno de débil"
   },
   "liveActivity": {
     "title": "Próxima oración",

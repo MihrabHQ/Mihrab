@@ -2048,7 +2048,9 @@
     "hadeethenc": "Hadis metinleri, çevirileri, açıklamaları ve dersleri, değiştirilmeden yeniden yayımlanmıştır",
     "nawawiArabic": "Nevevî’nin Kırk Hadisi, Arapça metin",
     "openHadithData": "Hadis kitapları, Arapça metin",
-    "hadithGrades": "Dört Sünen ve Muvatta’daki hadislerin dereceleri"
+    "hadithGrades": "Dört Sünen ve Muvatta’daki hadislerin dereceleri",
+    "hadithPolicy": "Hangi hadisler sunulur, hangileri dışarıda bırakılır",
+    "hadithPolicySub": "Yalnızca adı verilen bir muhaddisin sahih veya hasen dediği ve hiçbirinin zayıf demediği hadisler"
   },
   "liveActivity": {
     "title": "Sıradaki namaz",

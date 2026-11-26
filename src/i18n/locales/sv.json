@@ -2048,7 +2048,9 @@
     "hadeethenc": "Hadithtexter, översättningar, förklaringar och lärdomar, återpublicerade oförändrade",
     "nawawiArabic": "an-Nawawis fyrtio hadither, arabisk text",
     "openHadithData": "Hadithböckerna, arabisk text",
-    "hadithGrades": "Graderingar av haditherna i de fyra Sunan-samlingarna och Muwatta"
+    "hadithGrades": "Graderingar av haditherna i de fyra Sunan-samlingarna och Muwatta",
+    "hadithPolicy": "Vilka hadither som visas och vilka som utelämnas",
+    "hadithPolicySub": "Bara det som en namngiven bedömare kallar sahih eller hasan, och ingen kallar svagt"
   },
   "liveActivity": {
     "title": "Nästa bön",

@@ -50,6 +50,9 @@ const TANZIL_TAFSIR = TAFSIR_EDITIONS.filter(e => e.source === 'tanzil');
 
 type Credit = { label: string; sub: string; url: string };
 
+/** The rule for which hadith the app serves, as the repository holds it. */
+export const HADITH_POLICY_URL = 'https://github.com/MihrabHQ/Mihrab/blob/main/docs/hadith-policy.md';
+
 export function AttributionsSettingsScreen() {
   const { t } = useTranslation();
 
@@ -260,6 +263,16 @@ export function AttributionsSettingsScreen() {
       }),
       sub: 'fawazahmed0/hadith-api',
       url: 'https://github.com/fawazahmed0/hadith-api',
+    },
+    {
+      // The rule itself, where a reader can read all of it (docs/hadith-policy.md).
+      label: t('attributions.hadithPolicy', {
+        defaultValue: 'Which hadith are served, and which are left out',
+      }),
+      sub: t('attributions.hadithPolicySub', {
+        defaultValue: 'Only what a named grader calls sahih or hasan, and none calls weak',
+      }),
+      url: HADITH_POLICY_URL,
     },
   ];
 

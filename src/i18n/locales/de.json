@@ -2048,7 +2048,9 @@
     "hadeethenc": "Hadith-Texte, Übersetzungen, Erläuterungen und Lehren, unverändert wiederveröffentlicht",
     "nawawiArabic": "an-Nawawis vierzig Hadithe, arabischer Text",
     "openHadithData": "Die Hadith-Bücher, arabischer Text",
-    "hadithGrades": "Einstufungen der Hadithe in den vier Sunan und im Muwatta"
+    "hadithGrades": "Einstufungen der Hadithe in den vier Sunan und im Muwatta",
+    "hadithPolicy": "Welche Hadithe gezeigt werden und welche nicht",
+    "hadithPolicySub": "Nur was ein namentlich genannter Gelehrter als sahih oder hasan einstuft und keiner als schwach"
   },
   "liveActivity": {
     "title": "Nächstes Gebet",

@@ -2049,7 +2049,9 @@
     "hadeethenc": "Textes de hadiths, traductions, explications et enseignements, republiés sans modification",
     "nawawiArabic": "Les quarante hadiths d'an-Nawawi, texte arabe",
     "openHadithData": "Les livres de hadiths, texte arabe",
-    "hadithGrades": "Degrés des hadiths des quatre Sunan et du Muwatta"
+    "hadithGrades": "Degrés des hadiths des quatre Sunan et du Muwatta",
+    "hadithPolicy": "Quels hadiths sont proposés, et lesquels sont écartés",
+    "hadithPolicySub": "Seulement ce qu’un savant nommé juge sahih ou hasan, et qu’aucun ne juge faible"
   },
   "liveActivity": {
     "title": "Prochaine prière",
