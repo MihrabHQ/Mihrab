@@ -105,10 +105,23 @@ async function onboard(d) {
 }
 
 // Settings → Devices, the pairing page (its own section since it moved
-// out of About).
+// out of About). Settings is behind Today's cog since the Hadith tab took
+// its place in the bar: a button with a label and no text, so it is found
+// by its test id, from Today.
 async function openSync(d) {
   await front(d);
-  await d.click(/^Settings$/);
+  const cog = () => d.page.getByTestId('today-settings').first();
+  if (!(await cog().isVisible().catch(() => false))) {
+    const tab = d.page.getByRole('tab', { name: /Today/ }).first();
+    if (await tab.count()) await tab.click();
+    await d.page.waitForTimeout(1500);
+  }
+  if (await cog().isVisible().catch(() => false)) {
+    await cog().click();
+    await d.page.waitForTimeout(1500);
+  } else {
+    d.say('missing the settings cog');
+  }
   await d.click(/^Devices$/, 2500);
 }
 
