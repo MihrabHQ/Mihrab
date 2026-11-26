@@ -22,17 +22,22 @@
  * mark it, copy it, send it, the last two with the book's name under the
  * words. Tapping and not holding: holding a paragraph selects its text.
  *
+ * The book's page has a field that finds a phrase in THIS book
+ * (`librarySearch.ts`), and a chapter with headings of its own lists them
+ * to jump to ("Sections").
+ *
  * The text is Arabic and is laid out right to left whatever the app's
- * language. Nothing here is searched, graded or shown anywhere else
- * (`libraryShelf.ts`).
+ * language. Nothing here is graded, searched with the hadith or shown
+ * anywhere else (`libraryShelf.ts`).
  */
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { FlatList, Linking, Pressable, Share, StyleSheet, Text, View, type ColorValue } from 'react-native';
+import { FlatList, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, Text, TextInput, View, type ColorValue } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { Button, Group, Row, TextSizeStepper } from '../../components/ui';
 import { useAppPalette } from '../../hooks/useAppPalette';
+import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { useReadingText } from '../../hooks/useReadingText';
 import { ownSideAlign } from '../../i18n/foreignText';
 import { isRtlLanguage } from '../../i18n/layoutDirection';
@@ -51,12 +56,17 @@ import {
   toggleLibraryBookmark,
   type LibraryBookmark,
 } from '../../hadith/libraryShelf';
+import { LIBRARY_HITS_MAX, LIBRARY_QUERY_MIN, chapterHeadings, libraryIndex, searchLibrary, type LibraryHit } from '../../hadith/librarySearch';
+import { foldForSearch } from '../../hadith/library';
 import { deletePack, loadPack, usePackStatuses } from '../../hadith/packs';
 import type { LibraryBlock, LibraryFile } from '../../hadith/packTypes';
 import { summarisePacks } from '../../hadith/useHadith';
 import { copyToClipboard } from '../../sync/clipboard';
 import type { RootStackParamList } from '../../navigation/types';
 import { TextAction } from '../../quran/downloadsUi';
+import { ResponsiveModal } from '../../responsive/ResponsiveModal';
+import { inputChromeStyle } from '../../theme/chrome';
+import { CloseIcon, SearchIcon } from '../../theme/icons';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE, arabicTextStyle } from '../../theme/typography';
 import { Column } from './Column';
@@ -102,6 +112,8 @@ export function LibraryBookScreen() {
   const { id, chapter, block: toBlock } = useRoute<RouteProp<RootStackParamList, 'LibraryBook'>>().params;
   const layoutRtl = useLayoutRtl();
   const readingText = useReadingText();
+  // What was found runs on under the keyboard while the search field is open.
+  const keyboard = useKeyboardInset();
   const statuses = usePackStatuses();
   const known = findLibraryBook(id);
   const key = libraryKey(id);
@@ -219,6 +231,32 @@ export function LibraryBookScreen() {
     if (!pending.current) pending.current = setTimeout(() => writeRef.current(), PLACE_DELAY_MS);
   }).current;
 
+  // ── Finding a phrase in this book (the book's page) ──
+  const [query, setQuery] = useState('');
+  const [found, setFound] = useState<{ hits: LibraryHit[]; more: boolean } | null>(null);
+  const asking = foldForSearch(query).length >= LIBRARY_QUERY_MIN;
+  useEffect(() => {
+    if (!file || !asking) {
+      setFound(null);
+      return undefined;
+    }
+    let live = true;
+    // Wait for the typing to pause: the first search folds the whole book.
+    const timer = setTimeout(() => {
+      void libraryIndex(file.chapters).then(index => {
+        if (live) setFound(searchLibrary(file.chapters, index, query));
+      });
+    }, 250);
+    return () => {
+      live = false;
+      clearTimeout(timer);
+    };
+  }, [file, query, asking]);
+
+  // A chapter's own headings, to jump to.
+  const headings = useMemo(() => (blocks ? chapterHeadings(blocks) : []), [blocks]);
+  const [jumping, setJumping] = useState(false);
+
   // The paragraph whose actions are showing, and whether it was just copied.
   const [picked, setPicked] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
@@ -329,9 +367,14 @@ export function LibraryBookScreen() {
                 }}
                 ListHeaderComponent={
                   file ? (
-                    <Text style={[styles.where, { color: palette.muted }]} testID="library-where">
-                      {t('hadith.library.chapterOf', { n: chapter + 1, count: file.chapters.length })}
-                    </Text>
+                    <View style={styles.whereRow}>
+                      <Text style={[styles.where, { color: palette.muted }]} testID="library-where">
+                        {t('hadith.library.chapterOf', { n: chapter + 1, count: file.chapters.length })}
+                      </Text>
+                      {headings.length > 1 ? (
+                        <TextAction label={t('hadith.library.sections')} color={palette.accentSolid} onPress={() => setJumping(true)} />
+                      ) : null}
+                    </View>
                   ) : undefined
                 }
                 contentContainerStyle={[styles.text, { paddingBottom: bottom + SPACING.xl }]}
@@ -356,6 +399,24 @@ export function LibraryBookScreen() {
                   ) : undefined
                 }
               />
+              <ResponsiveModal visible={jumping} onClose={() => setJumping(false)} closeLabel={t('common.close')} maxHeightRatio={0.7}>
+                <ScrollView contentContainerStyle={styles.sheet} testID="library-sections">
+                  <Group>
+                    {headings.map(h => (
+                      <Row
+                        key={h.b}
+                        title={h.h}
+                        onPress={() => {
+                          setJumping(false);
+                          // Once the sheet has gone: a list does not move under an open one.
+                          setTimeout(() => list.current?.scrollToIndex({ index: h.b, animated: false, viewPosition: 0 }), 450);
+                        }}
+                        testID={`library-section-${h.b}`}
+                      />
+                    ))}
+                  </Group>
+                </ScrollView>
+              </ResponsiveModal>
             </Column>
           )
         }
@@ -377,7 +438,9 @@ export function LibraryBookScreen() {
               keyExtractor={String}
               onScroll={onScroll}
               scrollEventThrottle={16}
-              contentContainerStyle={[styles.book, { paddingBottom: bottom + SPACING.xl }]}
+              contentContainerStyle={[styles.book, { paddingBottom: Math.max(bottom, keyboard) + SPACING.xl }]}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
               testID="library-book"
               renderItem={() =>
                 file ? (
@@ -396,6 +459,60 @@ export function LibraryBookScreen() {
                     <Text style={[styles.note, { color: palette.muted }]} testID="library-note">
                       {t('hadith.library.bookNote')}
                     </Text>
+                    <View style={[styles.search, inputChromeStyle(palette), { backgroundColor: palette.card }]}>
+                      <SearchIcon size={18} color={palette.mutedSolid} />
+                      <TextInput
+                        value={query}
+                        onChangeText={setQuery}
+                        placeholder={t('hadith.library.searchHint')}
+                        placeholderTextColor={palette.muted}
+                        style={[styles.searchInput, { color: palette.text }]}
+                        accessibilityLabel={t('hadith.library.searchHint')}
+                        returnKeyType="search"
+                        autoCorrect={false}
+                        clearButtonMode="while-editing"
+                        testID="library-search"
+                      />
+                      {Platform.OS !== 'ios' && query.length > 0 ? (
+                        <Pressable
+                          onPress={() => setQuery('')}
+                          accessibilityRole="button"
+                          accessibilityLabel={t('hadith.searchClear')}
+                          hitSlop={12}
+                          style={({ pressed }) => [styles.searchClear, pressed && styles.pressed]}
+                          testID="library-search-clear"
+                        >
+                          <CloseIcon size={16} color={palette.mutedSolid} />
+                        </Pressable>
+                      ) : null}
+                    </View>
+                    {asking ? (
+                      found == null ? null : found.hits.length === 0 ? (
+                        <Text style={[styles.note, { color: palette.muted }]} testID="library-no-results">
+                          {t('hadith.noResults')}
+                        </Text>
+                      ) : (
+                        <>
+                          <Group>
+                            {found.hits.map(h => (
+                              <Row
+                                key={`${h.c}.${h.b}`}
+                                title={h.snippet}
+                                subtitle={file.chapters[h.c].t}
+                                onPress={() => navigation.push('LibraryBook', { id, chapter: h.c, block: h.b })}
+                                testID={`library-hit-${h.c}-${h.b}`}
+                              />
+                            ))}
+                          </Group>
+                          {found.more ? (
+                            <Text style={[styles.note, { color: palette.muted }]} testID="library-more">
+                              {t('hadith.library.firstOnly', { count: LIBRARY_HITS_MAX })}
+                            </Text>
+                          ) : null}
+                        </>
+                      )
+                    ) : (
+                      <>
                     {place != null && file.chapters[place] ? (
                       <Group>
                         <Row
@@ -470,6 +587,8 @@ export function LibraryBookScreen() {
                     <Group>
                       <Row title={t('hadith.library.remove')} tone="danger" onPress={() => void deletePack(key)} testID="library-remove" />
                     </Group>
+                      </>
+                    )}
                   </View>
                 ) : null
               }
@@ -493,7 +612,12 @@ const styles = StyleSheet.create({
   text: { paddingHorizontal: SPACING.lg, paddingTop: SPACING.md },
   block: { marginBottom: SPACING.lg, paddingHorizontal: SPACING.sm, marginHorizontal: -SPACING.sm, borderRadius: RADIUS.sm },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.lg, paddingVertical: SPACING.sm },
-  where: { fontSize: TYPE.footnote.fontSize, marginBottom: SPACING.md, fontVariant: ['tabular-nums'] },
+  whereRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SPACING.md },
+  where: { fontSize: TYPE.footnote.fontSize, fontVariant: ['tabular-nums'] },
+  sheet: { padding: SPACING.lg },
+  search: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, paddingHorizontal: SPACING.md, borderRadius: RADIUS.lg },
+  searchInput: { flex: 1, fontSize: TYPE.body.fontSize, paddingVertical: SPACING.sm },
+  searchClear: { padding: SPACING.xs },
   progress: { height: StyleSheet.hairlineWidth * 3 },
   progressFill: { height: '100%' },
   para: { ...arabicTextStyle('body') },

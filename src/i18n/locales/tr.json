@@ -3127,7 +3127,10 @@
       "mark": "Yer imi ekle",
       "unmark": "Yer imini kaldır",
       "marks": "Yer imleri",
-      "remove": "İndirmeyi kaldır"
+      "remove": "İndirmeyi kaldır",
+      "searchHint": "Bu kitapta ara",
+      "firstOnly": "İlk {{count}} gösteriliyor. Daraltmak için ifadenin daha fazlasını yazın.",
+      "sections": "Bölümler"
     }
   }
 }

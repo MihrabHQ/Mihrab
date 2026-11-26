@@ -180,7 +180,7 @@ describe('the shelf', () => {
     expect(read('src/screens/hadith/LibraryBookScreen.tsx')).toContain("{t('hadith.library.bookNote')}");
     for (const f of fs.readdirSync(path.join(REPO, 'src/i18n/locales'))) {
       const k = JSON.parse(read(`src/i18n/locales/${f}`)).hadith.library;
-      expect([f, Object.keys(k).sort()]).toEqual([f, ['bookNote', 'by', 'chapterOf', 'chapters', 'continue', 'empty', 'intro', 'mark', 'marks', 'needsDownload', 'next', 'percent', 'previous', 'remove', 'source', 'tab', 'unmark']]);
+      expect([f, Object.keys(k).sort()]).toEqual([f, ['bookNote', 'by', 'chapterOf', 'chapters', 'continue', 'empty', 'firstOnly', 'intro', 'mark', 'marks', 'needsDownload', 'next', 'percent', 'previous', 'remove', 'searchHint', 'sections', 'source', 'tab', 'unmark']]);
       for (const key of ['by', 'source', 'continue', 'percent']) expect(k[key]).toMatch(/\{\{/);
       expect(k.chapterOf).toMatch(/\{\{n\}\}.*\{\{count\}\}|\{\{count\}\}.*\{\{n\}\}/);
     }
@@ -311,6 +311,56 @@ describe('the shelf', () => {
     it('never reaches the hadith: a place and a mark are the only things the Library keeps', () => {
       const src = read('src/hadith/libraryShelf.ts');
       expect(src.match(/'mihrab\.library\.[a-z]+\.v1'/g)).toEqual(["'mihrab.library.place.v1'", "'mihrab.library.reading.v1'", "'mihrab.library.bookmarks.v1'"]);
+    });
+  });
+
+  describe('finding a phrase in one book', () => {
+    const { libraryIndex, searchLibrary, librarySnippet, chapterHeadings } = require('../src/hadith/librarySearch') as typeof import('../src/hadith/librarySearch');
+    const chapters = [
+      { t: 'باب الأول', b: [{ h: 'فصل في النية' }, 'قال النبي ﷺ: «إِنَّمَا الأعمالُ بالنيّات» وهذا أصل عظيم.', { v: ['أسر وفاء ثم أظهر غدرة\u2003\u2003فمن لي بعذر'] }] },
+      { t: 'باب الثاني', b: ['كلام آخر في المشورة.', { h: 'فصل ثان' }, 'إنما يُعرف الفضل لأهله.'] },
+    ];
+    const now = () => Promise.resolve();
+
+    it('finds it whatever the marks and the hamza, as a phrase, in the book\'s order', async () => {
+      const index = await libraryIndex(chapters, now);
+      expect(searchLibrary(chapters, index, 'انما').hits.map(h => [h.c, h.b])).toEqual([[0, 1], [1, 2]]);
+      expect(searchLibrary(chapters, index, 'انما الاعمال بالنيات').hits.map(h => [h.c, h.b])).toEqual([[0, 1]]);
+      // The words in another order are another phrase.
+      expect(searchLibrary(chapters, index, 'الاعمال انما').hits).toEqual([]);
+      // Verse and headings are the book's text too.
+      expect(searchLibrary(chapters, index, 'أظهر غدرة').hits.map(h => [h.c, h.b])).toEqual([[0, 2]]);
+      expect(searchLibrary(chapters, index, 'فصل').hits.map(h => [h.c, h.b])).toEqual([[0, 0], [1, 1]]);
+    });
+
+    it('asks for two letters, and says when there was more than it gives', async () => {
+      const index = await libraryIndex(chapters, now);
+      expect(searchLibrary(chapters, index, 'ا')).toEqual({ hits: [], more: false });
+      expect(searchLibrary(chapters, index, '  ')).toEqual({ hits: [], more: false });
+      const r = searchLibrary(chapters, index, 'انما', 1);
+      expect(r.hits.map(h => [h.c, h.b])).toEqual([[0, 1]]);
+      expect(r.more).toBe(true);
+      // Made once for a book.
+      expect(libraryIndex(chapters, now)).toBe(libraryIndex(chapters, now));
+    });
+
+    it('shows the words around what was found, as written', () => {
+      const long = `${'كلمة '.repeat(30)}حتى إِنَّمَا الأعمالُ بالنيّات ${'ثم '.repeat(30)}`.trim();
+      const s = librarySnippet(long, 'انما الاعمال');
+      expect(s).toContain('إِنَّمَا الأعمالُ بالنيّات');
+      expect(s.startsWith('… ')).toBe(true);
+      expect(s.endsWith(' …')).toBe(true);
+      expect(s.split(' ').length).toBeLessThan(25);
+      expect(librarySnippet('قول قصير.', 'قول')).toBe('قول قصير.');
+    });
+
+    it('lists a chapter\'s own headings with where they are', () => {
+      expect(chapterHeadings(chapters[1].b)).toEqual([{ b: 1, h: 'فصل ثان' }]);
+      expect(chapterHeadings(['نص'])).toEqual([]);
+    });
+
+    it('is not the Hadith tab\'s search', () => {
+      for (const f of ['src/screens/HadithScreen.tsx', 'src/hadith/library.ts']) expect([f, /librarySearch/.test(read(f))]).toEqual([f, false]);
     });
   });
 });

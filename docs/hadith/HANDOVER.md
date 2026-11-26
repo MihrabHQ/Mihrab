@@ -68,8 +68,11 @@ still read), progress by chapters (`libraryProgress`), bookmarks
 book's name (`libraryShareText`), remove download. All device-local and
 listed in `syncCompleteness` STAYS — **whether bookmarks should travel
 like the journal is the maintainer's to decide.** Tapping a paragraph
-shows its actions (holding selects text). Still to do from the plan:
-search inside a book and a jump list of a chapter's headings; a line
+shows its actions (holding selects text). Search inside ONE book and a
+chapter's "Sections" jump list are in `src/hadith/librarySearch.ts`
+(folded once per book in slices, a phrase match, first 100 places) —
+never the Hadith tab's search. Still to do from the plan: search across
+the shelf; a line
 about each book, levels/subjects and a note on coarse passages; keep
 awake, font choice, verse links.
 

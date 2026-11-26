@@ -3127,7 +3127,10 @@
       "mark": "添加书签",
       "unmark": "移除书签",
       "marks": "书签",
-      "remove": "移除下载"
+      "remove": "移除下载",
+      "searchHint": "在本书中搜索",
+      "firstOnly": "显示前 {{count}} 条。输入更多词句以缩小范围。",
+      "sections": "小节"
     }
   }
 }

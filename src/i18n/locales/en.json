@@ -3127,7 +3127,10 @@
       "mark": "Bookmark",
       "unmark": "Remove bookmark",
       "marks": "Bookmarks",
-      "remove": "Remove download"
+      "remove": "Remove download",
+      "searchHint": "Search in this book",
+      "firstOnly": "Showing the first {{count}}. Type more of the phrase to narrow it.",
+      "sections": "Sections"
     }
   }
 }

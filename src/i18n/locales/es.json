@@ -3128,7 +3128,10 @@
       "mark": "Marcar",
       "unmark": "Quitar marcador",
       "marks": "Marcadores",
-      "remove": "Quitar la descarga"
+      "remove": "Quitar la descarga",
+      "searchHint": "Buscar en este libro",
+      "firstOnly": "Se muestran los primeros {{count}}. Escribe más de la frase para acotar.",
+      "sections": "Secciones"
     }
   }
 }

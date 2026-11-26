@@ -3128,7 +3128,10 @@
       "mark": "Marquer",
       "unmark": "Retirer le signet",
       "marks": "Signets",
-      "remove": "Supprimer le téléchargement"
+      "remove": "Supprimer le téléchargement",
+      "searchHint": "Rechercher dans ce livre",
+      "firstOnly": "Les {{count}} premiers sont affichés. Saisissez davantage de la phrase pour affiner.",
+      "sections": "Sections"
     }
   }
 }

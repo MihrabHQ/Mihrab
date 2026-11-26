@@ -3127,7 +3127,10 @@
       "mark": "Bokmärk",
       "unmark": "Ta bort bokmärke",
       "marks": "Bokmärken",
-      "remove": "Ta bort nedladdningen"
+      "remove": "Ta bort nedladdningen",
+      "searchHint": "Sök i den här boken",
+      "firstOnly": "Visar de första {{count}}. Skriv mer av frasen för att begränsa.",
+      "sections": "Avsnitt"
     }
   }
 }

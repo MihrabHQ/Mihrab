@@ -3127,7 +3127,10 @@
       "mark": "Lesezeichen setzen",
       "unmark": "Lesezeichen entfernen",
       "marks": "Lesezeichen",
-      "remove": "Download entfernen"
+      "remove": "Download entfernen",
+      "searchHint": "In diesem Buch suchen",
+      "firstOnly": "Die ersten {{count}} werden angezeigt. Gib mehr von der Wendung ein, um einzugrenzen.",
+      "sections": "Abschnitte"
     }
   }
 }

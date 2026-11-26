@@ -3127,7 +3127,10 @@
       "mark": "Tandai",
       "unmark": "Hapus tanda",
       "marks": "Penanda",
-      "remove": "Hapus unduhan"
+      "remove": "Hapus unduhan",
+      "searchHint": "Cari di buku ini",
+      "firstOnly": "Menampilkan {{count}} yang pertama. Ketik lebih banyak dari frasa untuk mempersempit.",
+      "sections": "Bagian"
     }
   }
 }
