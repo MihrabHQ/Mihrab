@@ -2948,6 +2948,10 @@
       "book-muslim": {
         "title": "Sahih Muslim",
         "blurb": "The whole collection, in Arabic."
+      },
+      "short": {
+        "title": "Short hadith to memorise",
+        "blurb": "Forty of the shortest hadith that al-Bukhari and Muslim both report."
       }
     },
     "topic": {
@@ -3068,6 +3072,7 @@
       "end": "End the plan",
       "card": "Reading plan",
       "finished": "Finished: every hadith of it is read."
-    }
+    },
+    "seeIn": "See it in {{book}}"
   }
 }

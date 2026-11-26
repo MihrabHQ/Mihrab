@@ -218,20 +218,21 @@ describe('progress', () => {
       expect(shelf.now.length + shelf.more.length).toBe(HADITH_SETS.length);
       expect(shelf.done).toEqual([]);
     }
-    expect(shelfFor('starting', none).now.map(s => s.id)).toEqual(['nawawi40', 'foundations', 'daily']);
+    expect(shelfFor('starting', none).now.map(s => s.id)).toEqual(['nawawi40', 'foundations', 'daily', 'short']);
   });
 
   it('stops offering a set that is finished or marked as known', () => {
     const shelf = shelfFor('starting', s => s.id === 'nawawi40');
-    expect(shelf.now.map(s => s.id)).toEqual(['foundations', 'daily']);
+    expect(shelf.now.map(s => s.id)).toEqual(['foundations', 'daily', 'short']);
     expect(shelf.done.map(s => s.id)).toEqual(['nawawi40']);
     expect(shelf.more.some(s => s.id === 'nawawi40')).toBe(false);
   });
 
   it('fills the page from the next level when a level is all but read', () => {
-    const shelf = shelfFor('starting', s => s.id === 'nawawi40' || s.id === 'foundations');
+    // One of the level's four left (the fourth, "short", came on 2026-11-26).
+    const shelf = shelfFor('starting', s => s.id === 'nawawi40' || s.id === 'foundations' || s.id === 'daily');
     expect(shelf.now).toHaveLength(SHELF_CARDS);
-    expect(shelf.now[0].id).toBe('daily');
+    expect(shelf.now[0].id).toBe('short');
     expect(shelf.now[1].level).toBe('building');
     // Everything read: nothing to offer, and nothing pretended.
     expect(shelfFor('depth', () => true)).toMatchObject({ now: [], more: [] });

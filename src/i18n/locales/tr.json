@@ -2948,6 +2948,10 @@
       "book-muslim": {
         "title": "Sahîh-i Müslim",
         "blurb": "Koleksiyonun tamamı, Arapça."
+      },
+      "short": {
+        "title": "Ezberlenecek kısa hadisler",
+        "blurb": "Buhârî ve Müslim'in birlikte rivayet ettiği en kısa hadislerden kırkı."
       }
     },
     "topic": {
@@ -3068,6 +3072,7 @@
       "end": "Planı bitir",
       "card": "Okuma planı",
       "finished": "Tamamlandı: bütün hadisleri okundu."
-    }
+    },
+    "seeIn": "{{book}} içinde gör"
   }
 }

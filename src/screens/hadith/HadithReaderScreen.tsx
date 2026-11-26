@@ -56,7 +56,7 @@ import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { foreignText, ownSideAlign } from '../../i18n/foreignText';
 import { useSheetSides } from '../../responsive/sheetSides';
 import type { RootStackParamList } from '../../navigation/types';
-import { chapterAt, chapterName, homeList, parseList } from '../../hadith/catalog';
+import { chapterAt, chapterName, homeList, parseList, seeInBook } from '../../hadith/catalog';
 import { isBookmarked, isRead, memoOf, noteOf, setBookmark, setLast, setMemo, setNote, setRead } from '../../hadith/hadithRecord';
 import { updateHadithRecord, useHadithRecord } from '../../hadith/hadithStore';
 import { loadItem, type HadithItem, relatedHadith, type RelatedHadith } from '../../hadith/library';
@@ -282,6 +282,7 @@ export function HadithReaderScreen() {
   // only, and an Arabic reader (who has no translation) are as they were.
   const sideBySide = windowWidth >= PAIR_MIN_WIDTH && !!item?.arabic && !!item?.text;
   const practising = parseList(list)?.kind === 'memo';
+  const inBook = seeInBook(id);
   const arabicText = item?.arabic ? (
     <Text style={[styles.arabic, arabicAlign, { color: palette.text }]} selectable accessibilityLanguage="ar">
       {item.arabic}
@@ -512,6 +513,14 @@ export function HadithReaderScreen() {
                         platform can hand a file to a share sheet (not a browser). */}
                     {Platform.OS !== 'web' && fitsACard(item) ? (
                       <TextAction label={t('hadith.shareImage')} color={palette.accentSolid} onPress={() => setPicture(true)} />
+                    ) : null}
+                    {/* The same hadith as its collector has it, with its chain (`seeInBook`). */}
+                    {inBook ? (
+                      <TextAction
+                        label={t('hadith.seeIn', { book: t(`hadith.book.${inBook.book}`) })}
+                        color={palette.accentSolid}
+                        onPress={() => navigation.push('HadithReader', { id: inBook.id, list: `book:${inBook.book}` })}
+                      />
                     ) : null}
                     <ReaderTools id={id} rec={rec} />
                     {/* A grade is shown above, or a line saying there is none of

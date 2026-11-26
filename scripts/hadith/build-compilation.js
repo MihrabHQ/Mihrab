@@ -645,4 +645,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-module.exports = { signedRow, SIGNED, attribution, attributionAround, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };
+module.exports = { indexed, pair, signedRow, SIGNED, attribution, attributionAround, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };

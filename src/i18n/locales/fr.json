@@ -2949,6 +2949,10 @@
       "book-muslim": {
         "title": "Sahih Muslim",
         "blurb": "Le recueil complet, en arabe."
+      },
+      "short": {
+        "title": "Courts hadiths à mémoriser",
+        "blurb": "Quarante des plus courts hadiths rapportés à la fois par al-Boukhari et Muslim."
       }
     },
     "topic": {
@@ -3069,6 +3073,7 @@
       "end": "Terminer le plan",
       "card": "Plan de lecture",
       "finished": "Terminé : tous ses hadiths sont lus."
-    }
+    },
+    "seeIn": "Le voir dans {{book}}"
   }
 }

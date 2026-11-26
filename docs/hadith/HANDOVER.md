@@ -21,6 +21,8 @@ longer true.
 | Ṣaḥīḥ al-Bukhārī and Ṣaḥīḥ Muslim by their books (97, and 57) | `scripts/hadith/book-chapters.js` → `src/hadith/chapters.json`; names in `src/hadith/chapterNames.json` |
 | Hadith of the day, at the top of Learn | `src/hadith/daily.ts` |
 | Copy and Share carry the reference (book, number, chapter) | `hadithReference` in `src/screens/hadith/HadithReaderScreen.tsx` |
+| "See it in al-Bukhārī / Muslim" on a HadeethEnc entry (1,579) | `scripts/hadith/see-in-book.js` → `src/hadith/seeInBook.json`, `seeInBook` in `catalog.ts` |
+| The set "Short hadith to memorise" (the forty shortest of "Agreed upon") | `scripts/hadith/short-set.js` → `sets.json` |
 | Related hadith: others in the same HadeethEnc topic, folded under the one read | `relatedHadith` in `src/hadith/library.ts`, `__tests__/hadithRelated.test.ts` |
 | "What the grades mean": Settings → Hadith, and the foot of a hadith | `src/screens/settings/pages/HadithGradesSettingsScreen.tsx`, `hadith.grades.*`, `__tests__/hadithGradesGuide.test.ts` |
 
@@ -101,6 +103,20 @@ Content, all under the policy's compilation clause or from what is held:
    creed texts; confirm Kitāb at-Tawḥīd before building it.
 10. Links between hadith and Qur'an: first measure how consistently
     HadeethEnc entries cite verses.
+
+### Verse citations in HadeethEnc, measured (2026-11-26)
+
+Before any hadith-to-Qur'an links (item 10): of the 3,572 Arabic entries,
+**272 (7.6%) cite a verse in a form that can be read** — "[البقرة: 255]",
+in the hadith's text (175), its explanation (118) or its lessons (52);
+477 citations, 74 surah names spelt consistently (one variant seen:
+"الاسراء"). **155 more quote a verse in braces with no reference**, and
+would need their words found in the Qur'an. The English entries cite 188
+times under 113 spellings of the surah names ("Sūrat al-Baqarah", "Surat
+al-Baqarah"…): links are to be read from the Arabic entry and carried to
+every language by the entry's id, never from a translation. So links are
+possible for about one entry in thirteen; whether that is worth a
+feature is the maintainer's call.
 
 ## 4. Waiting on the maintainer
 

@@ -42,6 +42,7 @@ import AGREED from './agreed.json';
 import RIYAD from './compilations/riyad.json';
 import UMDAH from './compilations/umdah.json';
 import KALIM from './compilations/kalim.json';
+import SEE_IN_BOOK from './seeInBook.json';
 import CHAPTERS from './chapters.json';
 import CHAPTER_NAMES from './chapterNames.json';
 import { IS_WEB_APP } from '../config/webApp';
@@ -275,6 +276,22 @@ export function findSet(id: string): HadithSet | undefined {
 
 export function findHub(id: string): HadithHub | undefined {
   return HADITH_HUBS.find(h => h.id === id);
+}
+
+/**
+ * The row of al-Bukhārī's or Muslim's own text that is the same hadith as
+ * a HadeethEnc entry, as an entry id (`b:<book>:<place>`) with its book —
+ * or null where none was found with confidence
+ * (`scripts/hadith/see-in-book.js` has the rule and writes the list). A
+ * way from one served text to the other: nothing of either's standing is
+ * carried across.
+ */
+export function seeInBook(id: string): { id: string; book: string } | null {
+  if (!id.startsWith('h:')) return null;
+  const row = (SEE_IN_BOOK.rows as unknown as Record<string, [string, number] | undefined>)[id.slice(2)];
+  if (!row) return null;
+  const book = row[0] === 'b' ? 'bukhari' : 'muslim';
+  return { id: `b:${book}:${row[1]}`, book };
 }
 
 // ── List ids ───────────────────────────────────────────────────────────

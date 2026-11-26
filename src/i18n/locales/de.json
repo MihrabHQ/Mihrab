@@ -2948,6 +2948,10 @@
       "book-muslim": {
         "title": "Sahih Muslim",
         "blurb": "Die ganze Sammlung, auf Arabisch."
+      },
+      "short": {
+        "title": "Kurze Hadithe zum Auswendiglernen",
+        "blurb": "Vierzig der kürzesten Hadithe, die al-Bukhari und Muslim beide überliefern."
       }
     },
     "topic": {
@@ -3068,6 +3072,7 @@
       "end": "Plan beenden",
       "card": "Leseplan",
       "finished": "Fertig: Alle seine Hadithe sind gelesen."
-    }
+    },
+    "seeIn": "In {{book}} ansehen"
   }
 }

@@ -2948,6 +2948,10 @@
       "book-muslim": {
         "title": "Sahih Muslim",
         "blurb": "Hela samlingen, på arabiska."
+      },
+      "short": {
+        "title": "Korta hadither att memorera",
+        "blurb": "Fyrtio av de kortaste hadither som både al-Bukhari och Muslim återger."
       }
     },
     "topic": {
@@ -3068,6 +3072,7 @@
       "end": "Avsluta planen",
       "card": "Läsplan",
       "finished": "Klar: alla dess hadither är lästa."
-    }
+    },
+    "seeIn": "Se den i {{book}}"
   }
 }

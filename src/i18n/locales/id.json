@@ -2948,6 +2948,10 @@
       "book-muslim": {
         "title": "Shahih Muslim",
         "blurb": "Kumpulan lengkap, dalam bahasa Arab."
+      },
+      "short": {
+        "title": "Hadis pendek untuk dihafal",
+        "blurb": "Empat puluh hadis terpendek yang diriwayatkan oleh al-Bukhari dan Muslim."
       }
     },
     "topic": {
@@ -3068,6 +3072,7 @@
       "end": "Akhiri rencana",
       "card": "Rencana membaca",
       "finished": "Selesai: semua hadisnya sudah dibaca."
-    }
+    },
+    "seeIn": "Lihat di {{book}}"
   }
 }

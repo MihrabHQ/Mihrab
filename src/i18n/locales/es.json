@@ -2949,6 +2949,10 @@
       "book-muslim": {
         "title": "Sahih Muslim",
         "blurb": "La colección completa, en árabe."
+      },
+      "short": {
+        "title": "Hadices breves para memorizar",
+        "blurb": "Cuarenta de los hadices más breves que transmiten tanto al-Bujari como Muslim."
       }
     },
     "topic": {
@@ -3069,6 +3073,7 @@
       "end": "Terminar el plan",
       "card": "Plan de lectura",
       "finished": "Terminado: se han leído todos sus hadices."
-    }
+    },
+    "seeIn": "Verlo en {{book}}"
   }
 }
