@@ -58,6 +58,7 @@ import { isBookmarked, isRead, isSetMarked, setSetMarked } from '../../hadith/ha
 import { updateHadithRecord, useHadithRecord } from '../../hadith/hadithStore';
 import {
   chapterCounts,
+  compilationWaiting,
   foldForSearch,
   foldedTitle,
   latinDigits,
@@ -274,8 +275,8 @@ export function HadithListScreen() {
             held: rows.length,
             of: comp.of,
           })}
-          {comp.rows.length > rows.length
-            ? ` ${t('hadith.comp.more', { more: comp.rows.length - rows.length })}`
+          {compilationWaiting(comp, rows) > 0
+            ? ` ${t('hadith.comp.more', { more: compilationWaiting(comp, rows) })}`
             : ''}
         </Text>
       ) : null}

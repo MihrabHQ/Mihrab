@@ -476,6 +476,27 @@ export async function compilationRows(c: Compilation, appLang: string): Promise<
   return rows;
 }
 
+/**
+ * Of a compilation's hadith that are not among the rows shown, how many
+ * wait for a book to be downloaded — and for nothing else. The list says
+ * "N more appear once those books are on this device", and that has to be
+ * true of every one of the N: a hadith told only by a HadeethEnc entry
+ * that is not translated into the reader's language (or English) is not
+ * shown either, and no download brings it. Counting every missing row
+ * told a reader of ʿUmdat al-Aḥkām, all of whose hadith are from the two
+ * Ṣaḥīḥs, that two more were "from the Sunan".
+ */
+export function compilationWaiting(c: Compilation, shown: readonly ListRow[]): number {
+  const here = new Set(shown.map(r => r.id));
+  return c.rows.filter(
+    r =>
+      r.book !== '' &&
+      !here.has(`b:${r.book}:${r.index}`) &&
+      !(r.henc && here.has(`h:${r.henc}`)) &&
+      packStatus(bookKey(r.book)).state !== 'ready',
+  ).length;
+}
+
 /** The rows of a list id (`catalog.ts`). Bookmarks are the caller's: they come from the record. */
 export async function listRows(list: string, appLang: string, bookmarks: readonly string[] = []): Promise<ListRow[]> {
   const ref = parseList(list);

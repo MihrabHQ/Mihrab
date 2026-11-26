@@ -30,7 +30,7 @@ import path from 'path';
 import RIYAD from '../src/hadith/compilations/riyad.json';
 import WITHHELD from '../src/hadith/withheld.json';
 import { COMPILATIONS, compilationBooks, compilationNeeds, findCompilation, parseList } from '../src/hadith/catalog';
-import { compilationRows, listRows } from '../src/hadith/library';
+import { compilationRows, compilationWaiting, listRows } from '../src/hadith/library';
 import { packsForList } from '../src/hadith/useHadith';
 
 const builder = require('../scripts/hadith/build-compilation.js') as {
@@ -268,6 +268,43 @@ describe('in the app', () => {
     expect(reader).toContain("const inCompilation = parseList(list)?.kind === 'comp';");
     expect(reader).toContain("item?.number != null && item.source !== 'hadeethenc' && !inCompilation");
     expect(reader).toContain("(item.source !== 'book' || inCompilation) && at >= 0 && ids.length > 1");
+  });
+
+  it('carries its compiler’s number of the hadith in the reader’s title, where he numbered them', () => {
+    // "2 of 1394" alone, on the hadith the list called 3, was the place and not the number.
+    const reader = read('src/screens/hadith/HadithReaderScreen.tsx');
+    expect(reader).toContain('const hisNumber = inCompilation && at >= 0 ? listing.rows?.[at]?.number : undefined;');
+    expect(reader).toContain('`${listTitle(list, t, tree)} · ${hisNumber}`');
+    // The number is a row's only where the compilation is numbered (al-Kalim aṭ-Ṭayyib is not).
+    expect(read('src/hadith/library.ts')).toContain("rows.push(c.numbered ? { ...translated, number: r.n } : translated);");
+  });
+
+  it('reads an attribution the edition sets in brackets', () => {
+    const { attribution, report } = builder;
+    expect(attribution('… يصب منه" . ((رواه البخاري)) .')).toEqual(['bukhari']);
+    expect(attribution('… ما لم يغرغر" . ((رواه الترمذي وقال: حديث حسن)) .')).toEqual(['tirmidhi']);
+    // The first one decides, bracketed or not.
+    expect(attribution('… في الأجر" ((رواه مسلم)) .\n\n((ورواه البخاري)) عن أنس')).toEqual(['muslim']);
+    expect(attribution('… الحديث ((رواه أحمد)) .')).toEqual([]);
+    expect(report('من يرد الله به خيرا يصب منه ((رواه البخاري))')).not.toMatch(/رواه/);
+  });
+
+  it('counts as waiting for a book only the hadith a download would bring', async () => {
+    const rows = await compilationRows(riyad, 'en');
+    const here = new Set(rows.map(r => r.id));
+    const waiting = compilationWaiting(riyad, rows);
+    // Every one of them is a row of a book that is not on the device, with no entry shown in its place…
+    const fromAbsentBooks = riyad.rows.filter(
+      r => r.book !== '' && !mockPacks[`books/${r.book}`] && !(r.henc && here.has(`h:${r.henc}`)),
+    ).length;
+    expect(waiting).toBe(fromAbsentBooks);
+    expect(waiting).toBeGreaterThan(0);
+    // …so a hadith told only by a HadeethEnc entry this language does not have is not among them:
+    // no book brings it, and the list must not say one will.
+    const untranslated = riyad.rows.filter(r => r.book === '' && !here.has(`h:${r.henc}`)).length;
+    expect(untranslated).toBeGreaterThan(0);
+    expect(waiting).toBeLessThan(riyad.rows.length - rows.length);
+    expect(read('src/screens/hadith/HadithListScreen.tsx')).toContain("t('hadith.comp.more', { more: compilationWaiting(comp, rows) })");
   });
 
   it('says on its list how many of the book it holds, and is not offered in a browser', () => {

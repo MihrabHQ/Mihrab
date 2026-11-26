@@ -17,27 +17,45 @@ longer true.
 | Reader: title keeps a gap from − A +, a line under the bar when scrolled, a heading cut from a long hadith says so | `src/screens/hadith/HadithPage.tsx`, `src/hadith/heading.ts` |
 | Settings → Hadith (starting level, downloads) | `src/screens/settings/pages/HadithSettingsScreen.tsx` |
 | "Agreed upon": HadeethEnc entries attributed to both Ṣaḥīḥs | `scripts/hadith/agreed-list.js` → `src/hadith/agreed.json` |
-| Books to read: Riyāḍ aṣ-Ṣāliḥīn (1,476 of 1,896), ʿUmdat al-Aḥkām (320 of 414), al-Kalim aṭ-Ṭayyib (68 of 187) | `scripts/hadith/build-compilation.js` → `src/hadith/compilations/*.json` |
+| Books to read: Riyāḍ aṣ-Ṣāliḥīn (1,524 of 1,896), ʿUmdat al-Aḥkām (320 of 414), al-Kalim aṭ-Ṭayyib (68 of 187) | `scripts/hadith/build-compilation.js` → `src/hadith/compilations/*.json` |
 | Ṣaḥīḥ al-Bukhārī and Ṣaḥīḥ Muslim by their books (97, and 57) | `scripts/hadith/book-chapters.js` → `src/hadith/chapters.json`; names in `src/hadith/chapterNames.json` |
 | Hadith of the day, at the top of Learn | `src/hadith/daily.ts` |
 | Copy and Share carry the reference (book, number, chapter) | `hadithReference` in `src/screens/hadith/HadithReaderScreen.tsx` |
 
 ## 2. Not verified by anyone
 
-- **Nothing in §1 after the reader fixes has been seen on a device.** The
-  Pixel 10 Pro was locked each time. The build installed on it at 12:50
-  on 2026-11-26 has Riyāḍ aṣ-Ṣāliḥīn from the two Ṣaḥīḥs only; everything
-  later needs a new build (`./gradlew assembleGithubRelease`, then
-  `adb install -r --user 0`, never an uninstall).
+- **Seen on the Pixel 10 Pro on 2026-11-26 (English, the two Ṣaḥīḥs
+  downloaded):** hadith of the day, the three books to read, al-Bukhārī
+  by its books, "Agreed upon", the search and its ×, Share's reference,
+  the reader's title gap and the line under its bar. **Not seen:**
+  Settings → Hadith, Copy (the clipboard cannot be read over adb), the
+  "…" on a heading cut from a long hadith, Muslim's chapters, a hadith
+  from a Sunan, anything in Arabic or another locale. A new build is
+  `./gradlew assembleGithubRelease`, then `adb install -r --user 0`,
+  never an uninstall. `uiautomator dump` cannot read Today (its
+  countdown never idles): drive it by screenshot, and do not tap from a
+  dump that may be stale.
+- **Riyāḍ aṣ-Ṣāliḥīn no. 1 ("Actions are by intentions") is left out**,
+  with 283 others not found with confidence: an-Nawawī's wording of it
+  is 0.79 of al-Bukhārī's nearest row (6689) and of Muslim's, under the
+  0.85 the rule asks. Serving it would need either a list of pairings a
+  person has read and signed (a change to the policy page first), or a
+  lower bar. Asked of the maintainer; not done.
 - **The pairings were read in samples, not in full**: about twenty of the
   least sure of each compilation, and a spread of the rest. All read were
-  the right hadith. Nobody has read all 1,864 rows.
+  the right hadith. The 48 that Riyāḍ gained from its bracketed
+  attributions were each read, his text against the row. Nobody has read
+  all 1,912 rows.
 - **Strings in the 12 locales that are not English**, and the **154
   chapter names** (Arabic and English, written by hand), want a native
   reader.
-- **The reader's title gap** (− A +) is installed and unseen.
-- On Today, the accessibility tree held a second, stale countdown beside
-  the real one ("Asr in 1 h 13 m" at the interval's start). Not traced.
+- On Today, a raw `uiautomator dump` holds a second countdown, stopped at
+  the interval's start. It is the posed twin `TodayCard` draws for the
+  kept launch picture (`twinUp`, `frozenAt={interval.fromAt}`), under the
+  real hero and marked `importantForAccessibility="no-hide-descendants"`
+  + `accessibilityElementsHidden`; a raw dump lists such views, a screen
+  reader does not (`__tests__/heroTwinHiddenFromScreenReaders.test.ts`).
+  Not heard with TalkBack on by anyone.
 
 ## 3. Planned, in the order agreed
 
@@ -129,6 +147,14 @@ node scripts/hadith/book-chapters.js
 - A source-pin test elsewhere may hold the line being changed
   (`hadithFirstUse.test.ts` held the reader's old condition). Run the
   whole suite, not the nearest tests.
+- An edition's own typography can hide an attribution: Wikisource's
+  Riyāḍ sets the first chapters' in "((…))", and for a day 58 hadith
+  were "attributed elsewhere". When `left.elsewhere` is large for a book
+  whose compiler rarely goes outside the six, read what follows the
+  hadith in a few of them before believing it.
+- A count shown to the reader with a reason ("N more … once those books
+  are on this device") must be a count of that reason alone
+  (`compilationWaiting`).
 - A widened pattern is tried against the books already built: adding
   "أخرجه" for Ibn Taymiyyah took an attribution away from Riyāḍ 518 for
   one run.

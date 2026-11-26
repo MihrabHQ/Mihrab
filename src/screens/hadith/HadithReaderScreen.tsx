@@ -174,7 +174,14 @@ export function HadithReaderScreen() {
   // names the compilation and the place in it, not the number the hadith
   // has in the book it is shown from.
   const inCompilation = parseList(list)?.kind === 'comp';
-  const title = item?.number != null && item.source !== 'hadeethenc' && !inCompilation
+  // Where its compiler numbered his hadith, the bar carries HIS number
+  // of this one: the list beside it said "3", and a page that said only
+  // "2 of 1394" — its place among the ones held here — had lost the
+  // number the hadith is known by in the book being read.
+  const hisNumber = inCompilation && at >= 0 ? listing.rows?.[at]?.number : undefined;
+  const title = hisNumber != null && list
+    ? `${listTitle(list, t, tree)} · ${hisNumber}`
+    : item?.number != null && item.source !== 'hadeethenc' && !inCompilation
     ? `${list ? listTitle(list, t, tree) : t('nav.hadith')} · ${item.number}`
     : list
       ? listTitle(list, t, tree)

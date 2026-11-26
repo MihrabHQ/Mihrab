@@ -173,8 +173,15 @@ function inOrder(a, b) {
 // attribution-rule:start
 const plain = s => String(s ?? '').normalize('NFD').replace(MARKS, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي');
 const AGREED = /متفق علي(?:ه| صحته)/;
-const REPORTED = /(?:^|[\s.،])رواه(?:ما)? /;
-const REPORTED_HEAD = /^[\s.،]*رواه(?:ما)? /;
+/**
+ * "رواه", after a space or a stop — or an opening bracket: the edition
+ * read sets the attributions of the book's first chapters in double
+ * brackets, "((رواه مسلم))", and for a day fifty-eight of them went
+ * unread and their hadith were counted as attributed elsewhere. The
+ * closing bracket ends the names (`NAMES_END`).
+ */
+const REPORTED = /(?:^|[\s.،(])رواه(?:ما)? /;
+const REPORTED_HEAD = /^[\s.،(]*رواه(?:ما)? /;
 /**
  * Ibn Taymiyyah's words for the same: "خرجه مسلم", "أخرجه البخاري",
  * "خرجاه" (the two of them). Read only of a book that uses them, and only
@@ -185,7 +192,7 @@ const AGREED_WIDE = /متفق علي(?:ه| صحته)|(?:^|[\s.،\]])ا?خرجا�
 const REPORTED_WIDE = /(?:^|[\s.،\]])(?:رواه(?:ما)?|ا?خرجه) /;
 const REPORTED_HEAD_WIDE = /^[\s.،\]]*(?:رواه(?:ما)?|ا?خرجه) /;
 /** Where a "رواه …" stops naming books and says something else. */
-const NAMES_END = /[.،؛:\n(«"]| وقال| قال| باسناد| باسانيد| علي شرط| في | وغيره| وغيرهما| وغيرهم| بلفظ| وهذا| هكذا| من روايه| مرفوعا| موقوفا| مرسلا| تعليقا| معلقا/;
+const NAMES_END = /[.،؛:\n()«"]| وقال| قال| باسناد| باسانيد| علي شرط| في | وغيره| وغيرهما| وغيرهم| بلفظ| وهذا| هكذا| من روايه| مرفوعا| موقوفا| مرسلا| تعليقا| معلقا/;
 /** The seven books the app serves, as a compiler writes them (unvowelled). */
 const BOOK_NAMES = [
   ['bukhari', /(?:^| )البخاري(?: |$)/],
