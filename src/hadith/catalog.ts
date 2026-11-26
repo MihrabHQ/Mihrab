@@ -221,6 +221,10 @@ export function bookChapters(book: string): readonly BookChapter[] {
 export function findChapter(book: string, no: number): BookChapter | undefined {
   return bookChapters(book).find(c => c.no === no);
 }
+/** The chapter a row of a book is in, by the row's place; undefined where the book has no chapters. */
+export function chapterAt(book: string, place: number): BookChapter | undefined {
+  return bookChapters(book).find(c => place >= c.from && place < c.to);
+}
 /** A chapter's name, in Arabic for `ar` and in English otherwise; '' where there is none. */
 export function chapterName(book: string, no: number, namesIn: string): string {
   const names = (CHAPTER_NAMES as Record<string, RawNames | undefined>)[book];

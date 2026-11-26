@@ -27,6 +27,8 @@ import NAMES from '../src/hadith/chapterNames.json';
 import { bookChapters, chapterName, findChapter, parseList } from '../src/hadith/catalog';
 import { chapterCounts, inChapter, listRows } from '../src/hadith/library';
 import { packsForList } from '../src/hadith/useHadith';
+import { hadithReference, hadithShareText } from '../src/screens/hadith/HadithReaderScreen';
+import type { HadithItem } from '../src/hadith/library';
 
 const REPO = path.join(__dirname, '..');
 const read = (p: string) => fs.readFileSync(path.join(REPO, p), 'utf8');
@@ -146,5 +148,41 @@ describe('the builder', () => {
   it('refuses to write unless every book is found, in order', () => {
     expect(script).toContain('throw new Error(`book ${k} was not found among our rows`);');
     expect(script).toContain('throw new Error(`book ${ranges[i][0]} does not begin after the one before it`);');
+  });
+});
+
+describe('copied or shared, a book’s hadith carries the reference it is cited by', () => {
+  const t = ((k: string, o?: { book?: string }) =>
+    k === 'hadith.chapterNamesIn' ? 'en' : k === 'hadith.book.bukhari' ? 'Sahih al-Bukhari' : k === 'hadith.sourceBook' ? `From ${o?.book}` : k) as never;
+  const item = (over: Partial<HadithItem>): HadithItem => ({
+    id: 'b:bukhari:6',
+    source: 'book',
+    title: '…',
+    arabic: 'النص',
+    text: null,
+    textLang: null,
+    fallback: false,
+    hints: [],
+    words: [],
+    categories: [],
+    number: 8,
+    book: 'bukhari',
+    ...over,
+  });
+
+  it('names the book, its number and the compiler’s chapter', () => {
+    // Place 6 is the first row of al-Bukhārī's second book.
+    expect(hadithReference(item({}), t)).toBe('Sahih al-Bukhari 8 · Faith');
+    expect(hadithReference(item({ id: 'b:bukhari:0', number: 1 }), t)).toBe('Sahih al-Bukhari 1 · The Beginning of Revelation');
+    expect(hadithReference(item({ number: null }), t)).toBe('Sahih al-Bukhari · Faith');
+  });
+
+  it('is in what Copy and Share hand on, between the grade and the source', () => {
+    const text = hadithShareText(item({}), t).split('\n\n');
+    expect(text).toEqual(['النص', 'Sahih al-Bukhari 8 · Faith', 'From Sahih al-Bukhari']);
+  });
+
+  it('says nothing of an entry that is not a book’s row', () => {
+    expect(hadithReference(item({ id: 'h:1', source: 'hadeethenc', book: undefined }), t)).toBeNull();
   });
 });

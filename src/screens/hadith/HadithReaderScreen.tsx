@@ -56,7 +56,7 @@ import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { foreignText, ownSideAlign } from '../../i18n/foreignText';
 import { useSheetSides } from '../../responsive/sheetSides';
 import type { RootStackParamList } from '../../navigation/types';
-import { homeList, parseList } from '../../hadith/catalog';
+import { chapterAt, chapterName, homeList, parseList } from '../../hadith/catalog';
 import { isBookmarked, isRead, noteOf, setBookmark, setLast, setNote, setRead } from '../../hadith/hadithRecord';
 import { updateHadithRecord, useHadithRecord } from '../../hadith/hadithStore';
 import { loadItem, type HadithItem } from '../../hadith/library';
@@ -85,12 +85,35 @@ export function sourceLine(item: HadithItem, t: TFunction): string {
   return t('hadith.sourceBook', { book: t(`hadith.book.${item.book}`) });
 }
 
-/** What Share and Copy hand on: the text, its meaning, and where it is from. */
+/**
+ * Where a hadith of a book stands in it, as it is cited: "Sahih Muslim
+ * 2577 · Kindness, Kinship and Manners" — the book, the number its pack
+ * carries (Open-Hadith-Data's edition: `reference.ts` has why no other
+ * numbering is offered), and the compiler's chapter where the book has
+ * them. Null for an entry that is not a book's row.
+ */
+export function hadithReference(item: HadithItem, t: TFunction): string | null {
+  if (item.source !== 'book' || !item.book) return null;
+  const place = Number(item.id.slice(item.id.lastIndexOf(':') + 1));
+  const chapter = Number.isInteger(place) ? chapterAt(item.book, place) : undefined;
+  const name = chapter ? chapterName(item.book, chapter.no, t('hadith.chapterNamesIn')) : '';
+  const book = t(`hadith.book.${item.book}`);
+  return [item.number != null ? `${book} ${item.number}` : book, name].filter(Boolean).join(' · ');
+}
+
+/**
+ * What Share and Copy hand on: the text, its meaning, and where it is
+ * from — for a book's hadith, the reference it is cited by. A hadith
+ * pasted somewhere with "Sahih Muslim" under it and no number could not
+ * be looked up again by whoever read it there.
+ */
 export function hadithShareText(item: HadithItem, t: TFunction): string {
   const parts = [item.arabic];
   if (item.text) parts.push(item.text);
   const cite = [item.attribution, item.grade].filter(Boolean).join(' · ');
   if (cite) parts.push(cite);
+  const reference = hadithReference(item, t);
+  if (reference) parts.push(reference);
   parts.push(sourceLine(item, t));
   return parts.filter(Boolean).join('\n\n');
 }
