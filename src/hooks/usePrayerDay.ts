@@ -25,6 +25,7 @@ import {
 } from '../prayer/locationFreshness';
 import { recordLocationFix } from '../prayer/cityRegistry';
 import { reverseLocality, type ReverseLocality } from '../geocoding/nominatim';
+import i18n from '../i18n';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
 import { computeNamazvaktiMethodTimes } from '../providers/namazvakti';
 import {
@@ -1348,6 +1349,25 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       }),
     [requestAndLoad],
   );
+
+  // The place's name is asked for in the app's language (`localityLanguages`)
+  // and then kept while the phone stays within a kilometre — so after a
+  // change of language the chip went on naming the town in the old one:
+  // "स्टॉकहोम" over an Arabic page, until the phone moved or the app was
+  // opened again (Pixel 10 Pro, 2026-11-26). The kept answer is in the
+  // wrong language now: drop it and ask again, as a pull to refresh does.
+  // A place chosen by hand keeps the name it was chosen under.
+  useEffect(() => {
+    const onLanguage = () => {
+      if (liveModeRef.current === 'manual') return;
+      lastGeocodeRef.current = null;
+      requestAndLoad(true);
+    };
+    i18n.on('languageChanged', onLanguage);
+    return () => {
+      i18n.off('languageChanged', onLanguage);
+    };
+  }, [requestAndLoad]);
 
   // WiFi-triggered background sync: silently top up the 12-month cache
   // whenever the device connects to WiFi.  No backgroundRefreshing indicator
