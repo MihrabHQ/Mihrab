@@ -3151,6 +3151,11 @@
     },
     "recentSearches": "最近搜索",
     "clearRecent": "清除",
-    "searchCapped": "仅显示前 {{count}} 条；再加一个词以缩小范围"
+    "searchCapped": "仅显示前 {{count}} 条；再加一个词以缩小范围",
+    "isnad": {
+      "show": "显示传述系统",
+      "hide": "隐藏传述系统",
+      "note": "传述系统是 {{book}} 原文的一部分（Open-Hadith-Data），未作增删。传述系统止于何处、正文始于何处，由 Mihrab 依据措辞判断，可能相差一个人名。"
+    }
   }
 }

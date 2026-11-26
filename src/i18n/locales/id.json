@@ -3151,6 +3151,11 @@
     },
     "recentSearches": "Pencarian terakhir",
     "clearRecent": "Hapus",
-    "searchCapped": "hanya {{count}} pertama yang ditampilkan; tambahkan kata untuk mempersempit"
+    "searchCapped": "hanya {{count}} pertama yang ditampilkan; tambahkan kata untuk mempersempit",
+    "isnad": {
+      "show": "Tampilkan sanad",
+      "hide": "Sembunyikan sanad",
+      "note": "Sanad adalah bagian dari teks sebagaimana terdapat dalam {{book}} (Open-Hadith-Data); tidak ada yang ditambah atau dikurangi. Di mana sanad berakhir dan matan bermula ditentukan Mihrab dari susunan katanya, dan bisa meleset satu nama."
+    }
   }
 }

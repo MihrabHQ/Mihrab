@@ -263,6 +263,9 @@ describe('the shelf', () => {
     beforeEach(async () => {
       await storage.multiRemove(['mihrab.library.place.v1', 'mihrab.library.reading.v1', 'mihrab.library.bookmarks.v1']);
       shelf._resetLibraryForTests();
+      require('../src/hadith/hadithStore')._resetHadithStoreForTests();
+      // The record on disk is emptied too: a mark from one test is not found by the next.
+      await require('../src/storage/durableWrite').durableEncryptedSet('prayerapp.hadith.v1', JSON.stringify({ v: 1, items: {}, sets: {} }));
     });
 
     it('keeps the paragraph, and still reads the chapter kept before there were paragraphs', async () => {
@@ -299,7 +302,33 @@ describe('the shelf', () => {
       shelf._resetLibraryForTests();
       expect(await shelf.toggleLibraryBookmark('a', 1, 2, 30)).toEqual([{ c: 0, b: 7, at: 20 }]);
       expect(await shelf.toggleLibraryBookmark('a', 0, 7, 40)).toEqual([]);
-      expect(await storage.getItem('mihrab.library.bookmarks.v1')).toBe('{}');
+    });
+
+    it('keeps marks in the record that travels, so they are backed up, synced and merged mark by mark', async () => {
+      const record = require('../src/hadith/hadithRecord') as typeof import('../src/hadith/hadithRecord');
+      const store = require('../src/hadith/hadithStore') as typeof import('../src/hadith/hadithStore');
+      await shelf.toggleLibraryBookmark('iqd', 3, 2, 10);
+      expect(store.getHadithRecord().library).toEqual({ 'iqd:3:2': [1, 10] });
+      // Two devices: a mark made on one and taken back later on the other stays taken back.
+      const here = record.setLibraryMark(record.EMPTY_HADITH_RECORD, 'iqd', 3, 2, true, 10);
+      const there = record.setLibraryMark(record.setLibraryMark(record.EMPTY_HADITH_RECORD, 'iqd', 3, 2, false, 20), 'kalila', 0, 1, true, 15);
+      const merged = record.mergeHadith(here, there);
+      expect(merged).toEqual(record.mergeHadith(there, here));
+      expect(record.libraryMarksOf(merged, 'iqd')).toEqual([]);
+      expect(record.libraryMarksOf(merged, 'kalila')).toEqual([{ c: 0, b: 1, at: 15 }]);
+      // What is not a mark is dropped on the way in, and a record without any keeps its bytes.
+      expect(record.coerceHadithRecord({ v: 1, items: {}, sets: {}, library: { 'iqd:3:2': [1, 10], 'bad key': [1, 1], 'iqd:1:1': ['x', 1] } }).library).toEqual({ 'iqd:3:2': [1, 10] });
+      expect('library' in record.mergeHadith(record.EMPTY_HADITH_RECORD, record.EMPTY_HADITH_RECORD)).toBe(false);
+      expect(read('__tests__/syncCompleteness.test.ts')).toContain("'prayerapp.hadith.v1',");
+    });
+
+    it('moves the marks kept on the device for a day into the record, once', async () => {
+      const store = require('../src/hadith/hadithStore') as typeof import('../src/hadith/hadithStore');
+      await storage.setItem('mihrab.library.bookmarks.v1', JSON.stringify({ iqd: [{ c: 3, b: 2, at: 7 }], bahja: [{ c: 1, b: 0, at: 9 }, { c: 'x' }] }));
+      expect(await shelf.libraryBookmarks('iqd')).toEqual([{ c: 3, b: 2, at: 7 }]);
+      expect(await shelf.libraryBookmarks('bahja')).toEqual([{ c: 1, b: 0, at: 9 }]);
+      expect(await storage.getItem('mihrab.library.bookmarks.v1')).toBeNull();
+      expect(Object.keys(store.getHadithRecord().library ?? {}).sort()).toEqual(['bahja:1:0', 'iqd:3:2']);
     });
 
     it('sends a passage with whose it is, whole', () => {

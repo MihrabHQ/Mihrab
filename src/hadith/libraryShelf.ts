@@ -14,6 +14,8 @@
  */
 import AsyncStorage from '../storage/appStorage';
 import BOOKS from './libraryBooks.json';
+import { libraryMarkKey, libraryMarksOf, setLibraryMark } from './hadithRecord';
+import { getHadithRecord, hydrateHadithRecord, updateHadithRecord } from './hadithStore';
 import { manifestEntry } from './packs';
 import type { Manifest, PackKey } from './packTypes';
 
@@ -133,45 +135,64 @@ export function lastReadBook(readings: Record<string, LibraryReading>, ids: read
 /**
  * Bookmarks: paragraphs a reader marked, by chapter and block, newest
  * first. A mark is a place and not a copy of the text, which is read from
- * the book when it is shown. On the device only.
+ * the book when it is shown.
+ *
+ * They are the reader's own record, so they are kept where the hadith
+ * bookmarks and notes are — the hadith record, encrypted, carried by
+ * backup and sync and merged mark by mark (`hadithRecord.ts`, `library`;
+ * the maintainer's decision of 2026-11-26). For a day they were a key of
+ * their own on the device (`mihrab.library.bookmarks.v1`): what is found
+ * there is moved into the record once, with the time each was made, and
+ * the key is removed.
  */
 export type LibraryBookmark = { c: number; b: number; at: number };
-const BOOKMARKS_KEY = 'mihrab.library.bookmarks.v1';
-let bookmarks: Record<string, LibraryBookmark[]> | null = null;
+const OLD_BOOKMARKS_KEY = 'mihrab.library.bookmarks.v1';
+let moved: Promise<void> | null = null;
 
-async function loadBookmarks(): Promise<Record<string, LibraryBookmark[]>> {
-  if (bookmarks) return bookmarks;
-  const out: Record<string, LibraryBookmark[]> = {};
-  try {
-    const raw = await AsyncStorage.getItem(BOOKMARKS_KEY);
-    const v: unknown = raw ? JSON.parse(raw) : {};
-    if (v && typeof v === 'object' && !Array.isArray(v)) {
-      for (const [k, list] of Object.entries(v)) {
-        if (!Array.isArray(list)) continue;
-        const marks = list.filter((m): m is LibraryBookmark => !!m && whole(m.c) && whole(m.b) && typeof m.at === 'number');
-        if (marks.length) out[k] = marks;
+function moveOldBookmarks(): Promise<void> {
+  if (!moved) {
+    moved = (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(OLD_BOOKMARKS_KEY);
+        if (!raw) return;
+        const v: unknown = JSON.parse(raw);
+        const found: [string, LibraryBookmark][] = [];
+        if (v && typeof v === 'object' && !Array.isArray(v)) {
+          for (const [book, list] of Object.entries(v)) {
+            if (!Array.isArray(list)) continue;
+            for (const m of list) if (m && whole(m.c) && whole(m.b) && typeof m.at === 'number') found.push([book, m]);
+          }
+        }
+        if (found.length) {
+          await updateHadithRecord(rec => {
+            let out = rec;
+            // A mark already in the record (made on another device, say) is the newer word.
+            for (const [book, m] of found) if (!out.library?.[libraryMarkKey(book, m.c, m.b)]) out = setLibraryMark(out, book, m.c, m.b, true, m.at);
+            return out;
+          });
+        }
+        await AsyncStorage.removeItem(OLD_BOOKMARKS_KEY);
+      } catch {
+        // Left where it is: it will be tried again on the next launch.
       }
-    }
-  } catch {
-    // As above.
+    })();
   }
-  bookmarks = out;
-  return bookmarks;
+  return moved;
 }
 
 export async function libraryBookmarks(id: string): Promise<LibraryBookmark[]> {
-  return [...((await loadBookmarks())[id] ?? [])];
+  await moveOldBookmarks();
+  await hydrateHadithRecord();
+  return libraryMarksOf(getHadithRecord(), id);
 }
 
 /** Marks a paragraph, or takes its mark off. Returns the book's marks after. */
 export async function toggleLibraryBookmark(id: string, c: number, b: number, now = Date.now()): Promise<LibraryBookmark[]> {
-  const all = await loadBookmarks();
-  const list = all[id] ?? [];
-  const next = list.some(m => m.c === c && m.b === b) ? list.filter(m => !(m.c === c && m.b === b)) : [{ c, b, at: now }, ...list];
-  if (next.length) all[id] = next;
-  else delete all[id];
-  await AsyncStorage.setItem(BOOKMARKS_KEY, JSON.stringify(all)).catch(() => undefined);
-  return [...next];
+  await moveOldBookmarks();
+  await hydrateHadithRecord();
+  const on = getHadithRecord().library?.[libraryMarkKey(id, c, b)]?.[0] === 1;
+  await updateHadithRecord(rec => setLibraryMark(rec, id, c, b, !on, now));
+  return libraryMarksOf(getHadithRecord(), id);
 }
 
 /** A block as words: a paragraph or a heading as it is, verse a line to a line. */
@@ -193,7 +214,7 @@ export function libraryShareText(book: { title: string; author: string }, chapte
 export function _resetLibraryForTests(): void {
   places = null;
   reading = null;
-  bookmarks = null;
+  moved = null;
 }
 
 /**

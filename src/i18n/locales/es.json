@@ -3152,6 +3152,11 @@
     },
     "recentSearches": "Búsquedas recientes",
     "clearRecent": "Borrar",
-    "searchCapped": "solo se muestran los primeros {{count}}; añade una palabra para acotar"
+    "searchCapped": "solo se muestran los primeros {{count}}; añade una palabra para acotar",
+    "isnad": {
+      "show": "Mostrar la cadena de transmisores",
+      "hide": "Ocultar la cadena de transmisores",
+      "note": "La cadena forma parte del texto tal como lo tiene {{book}} (Open-Hadith-Data); no se añade ni se quita nada. Dónde termina la cadena y empieza el relato lo deduce Mihrab de la redacción, y puede errar por un nombre."
+    }
   }
 }

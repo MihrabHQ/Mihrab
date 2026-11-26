@@ -66,8 +66,13 @@ fraction, chapter count and name, time; the older chapter-only key is
 still read), progress by chapters (`libraryProgress`), bookmarks
 (`mihrab.library.bookmarks.v1`, places not copies), copy/share with the
 book's name (`libraryShareText`), remove download. All device-local and
-listed in `syncCompleteness` STAYS — **whether bookmarks should travel
-like the journal is the maintainer's to decide.** Tapping a paragraph
+listed in `syncCompleteness` STAYS — except bookmarks, which the
+maintainer decided (2026-11-26) travel like the journal: they are in the
+hadith record (`HadithRecord.library`, `book:chapter:block` → `[0|1, at]`,
+merged like every other mark), and the day-old device key is moved in
+once. A mark is a place in a pack: **a book rebuilt with its blocks in
+other places would move its marks**, so a rebuild that shifts blocks
+needs a thought for them. Tapping a paragraph
 shows its actions (holding selects text). Search inside ONE book and a
 chapter's "Sections" jump list are in `src/hadith/librarySearch.ts`
 (folded once per book in slices, a phrase match, first 100 places) —
@@ -85,6 +90,14 @@ in `build-compilation.js`, the row in the policy table. Left out: 346
 attributed elsewhere, 109 he reports as found wanting, 312 not found with
 confidence, 99 too short to tell, 13 not in the text read. Known
 conservative miss: "رواه أحمد، واللفظ له، والثلاثة" stops at "واللفظ".
+
+The reader folds a book hadith's chain (`src/hadith/isnad.ts`,
+`splitIsnad`): the report begins at the Companion, found from the first
+ṣalawāt and the words of handing-on before it; 92–97% of the six books'
+rows fold (56% of the Muwaṭṭaʾ), the rest stand whole. A fold only — the
+halves are the text, checked over every built row in `hadithIsnad.test`.
+Memorising, notes and bookmark folders were already in the app
+(`hadithRecord.ts`: `m`, `n`, `f`) and were not rebuilt.
 
 Hadith tab, same day: a compilation shorter than its book says why
 (`hadith.comp.why`, and `sectionNote` over the list); the search field is

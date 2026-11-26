@@ -3151,6 +3151,11 @@
     },
     "recentSearches": "Letzte Suchen",
     "clearRecent": "Löschen",
-    "searchCapped": "nur die ersten {{count}} werden gezeigt; ein weiteres Wort grenzt ein"
+    "searchCapped": "nur die ersten {{count}} werden gezeigt; ein weiteres Wort grenzt ein",
+    "isnad": {
+      "show": "Überliefererkette anzeigen",
+      "hide": "Überliefererkette ausblenden",
+      "note": "Die Kette ist Teil des Textes, wie {{book}} ihn hat (Open-Hadith-Data); nichts wird hinzugefügt oder weggelassen. Wo die Kette endet und der Bericht beginnt, ermittelt Mihrab aus dem Wortlaut; das kann um einen Namen danebenliegen."
+    }
   }
 }

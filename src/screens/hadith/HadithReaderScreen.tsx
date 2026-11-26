@@ -48,6 +48,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { hadithHeading } from '../../hadith/heading';
+import { isnadShown, setIsnadShown, splitIsnad } from '../../hadith/isnad';
 import { Button, TextSizeStepper } from '../../components/ui';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { useReadingText } from '../../hooks/useReadingText';
@@ -285,11 +286,51 @@ export function HadithReaderScreen() {
   // only, and an Arabic reader (who has no translation) are as they were.
   const sideBySide = windowWidth >= PAIR_MIN_WIDTH && !!item?.arabic && !!item?.text;
   const practising = parseList(list)?.kind === 'memo';
+  // Whether chains are unfolded: the reader's choice, kept for the next hadith and the next visit.
+  const [chainShown, setChain] = useState(false);
+  useEffect(() => {
+    void isnadShown().then(setChain);
+  }, []);
+  const setChainShown = (on: boolean) => {
+    setChain(on);
+    void setIsnadShown(on);
+  };
   const inBook = seeInBook(id);
+  // A book's hadith is its chain and then its report (`isnad.ts`). The chain is folded
+  // unless the reader wants it; nothing is cut — unfolded, the two are the text.
+  const isnad = useMemo(() => (item?.source === 'book' && item.arabic ? splitIsnad(item.arabic) : null), [item]);
   const arabicText = item?.arabic ? (
-    <Text style={[styles.arabic, arabicAlign, { color: palette.text }]} selectable accessibilityLanguage="ar">
-      {item.arabic}
-    </Text>
+    isnad ? (
+      <View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: chainShown }}
+          onPress={() => setChainShown(!chainShown)}
+          hitSlop={8}
+          style={({ pressed }) => [styles.chainToggle, pressed && styles.pressed]}
+          testID="hadith-isnad-toggle"
+        >
+          <Text style={[styles.chainLabel, { color: palette.accentSolid }]}>{t(chainShown ? 'hadith.isnad.hide' : 'hadith.isnad.show')}</Text>
+        </Pressable>
+        {chainShown ? (
+          <>
+            <Text style={[styles.arabic, styles.chain, arabicAlign, { color: palette.muted }]} selectable accessibilityLanguage="ar" testID="hadith-isnad">
+              {isnad.chain}
+            </Text>
+            <Text style={[styles.chainNote, { color: palette.muted }]} testID="hadith-isnad-note">
+              {t('hadith.isnad.note', { book: item.book ? t(`hadith.book.${item.book}`) : '' })}
+            </Text>
+          </>
+        ) : null}
+        <Text style={[styles.arabic, arabicAlign, { color: palette.text }]} selectable accessibilityLanguage="ar" testID="hadith-matn">
+          {isnad.report}
+        </Text>
+      </View>
+    ) : (
+      <Text style={[styles.arabic, arabicAlign, { color: palette.text }]} selectable accessibilityLanguage="ar">
+        {item.arabic}
+      </Text>
+    )
   ) : null;
   const meaningText = item?.text ? (
     <Text style={[styles.translation, readingText.style(READING_BASE), textDir?.style, { color: palette.text }]} selectable>
@@ -707,6 +748,11 @@ const styles = StyleSheet.create({
   half: { flex: 1, minWidth: 0 },
   heading: { fontSize: TYPE.title3.fontSize, fontWeight: '500', lineHeight: 28 },
   arabic: { ...arabicTextStyle('body'), fontSize: TYPE.title2.fontSize, lineHeight: 46 },
+  chainToggle: { alignSelf: 'flex-start', paddingVertical: SPACING.xs },
+  chainLabel: { fontSize: TYPE.footnote.fontSize },
+  chainNote: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginBottom: SPACING.md },
+  // The chain a size down from the report it leads to, so the eye lands on the report.
+  chain: { fontSize: TYPE.body.fontSize, lineHeight: 34, marginBottom: SPACING.sm },
   translation: { fontSize: TYPE.body.fontSize, lineHeight: 26 },
   prose: { fontSize: TYPE.callout.fontSize, lineHeight: 23 },
   note: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginTop: -SPACING.sm },

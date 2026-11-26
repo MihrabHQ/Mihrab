@@ -3151,6 +3151,11 @@
     },
     "recentSearches": "Son aramalar",
     "clearRecent": "Temizle",
-    "searchCapped": "yalnızca ilk {{count}} gösteriliyor; daraltmak için bir kelime ekleyin"
+    "searchCapped": "yalnızca ilk {{count}} gösteriliyor; daraltmak için bir kelime ekleyin",
+    "isnad": {
+      "show": "Senedi göster",
+      "hide": "Senedi gizle",
+      "note": "Sened, metnin {{book}} içindeki hâlinin bir parçasıdır (Open-Hadith-Data); hiçbir şey eklenmez veya çıkarılmaz. Senedin nerede bitip metnin nerede başladığını Mihrab ifadeden çıkarır; bir isim kadar şaşabilir."
+    }
   }
 }

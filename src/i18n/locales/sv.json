@@ -3151,6 +3151,11 @@
     },
     "recentSearches": "Senaste sökningar",
     "clearRecent": "Rensa",
-    "searchCapped": "bara de första {{count}} visas; lägg till ett ord för att begränsa"
+    "searchCapped": "bara de första {{count}} visas; lägg till ett ord för att begränsa",
+    "isnad": {
+      "show": "Visa berättarkedjan",
+      "hide": "Dölj berättarkedjan",
+      "note": "Kedjan är en del av texten så som {{book}} har den (Open-Hadith-Data); inget läggs till eller tas bort. Var kedjan slutar och själva berättelsen börjar räknar Mihrab ut från ordalydelsen, och det kan slå fel på ett namn."
+    }
   }
 }

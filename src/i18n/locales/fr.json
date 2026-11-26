@@ -3152,6 +3152,11 @@
     },
     "recentSearches": "Recherches récentes",
     "clearRecent": "Effacer",
-    "searchCapped": "seuls les {{count}} premiers sont affichés ; ajoutez un mot pour affiner"
+    "searchCapped": "seuls les {{count}} premiers sont affichés ; ajoutez un mot pour affiner",
+    "isnad": {
+      "show": "Afficher la chaîne de transmetteurs",
+      "hide": "Masquer la chaîne de transmetteurs",
+      "note": "La chaîne fait partie du texte tel que {{book}} le donne (Open-Hadith-Data) ; rien n'est ajouté ni retiré. L'endroit où la chaîne finit et où le récit commence est déduit par Mihrab de la formulation, et peut être décalé d'un nom."
+    }
   }
 }

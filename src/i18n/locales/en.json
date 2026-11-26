@@ -3151,6 +3151,11 @@
     },
     "recentSearches": "Recent searches",
     "clearRecent": "Clear",
-    "searchCapped": "only the first {{count}} are shown; add a word to narrow it"
+    "searchCapped": "only the first {{count}} are shown; add a word to narrow it",
+    "isnad": {
+      "show": "Show the chain of narrators",
+      "hide": "Hide the chain of narrators",
+      "note": "The chain is part of the text as {{book}} has it (Open-Hadith-Data); nothing is added or removed. Where the chain ends and the report begins is worked out by Mihrab from the wording, and may be off by a name."
+    }
   }
 }

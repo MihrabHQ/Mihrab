@@ -59,6 +59,12 @@ export type HadithRecord = {
   folders?: Record<string, Stamped<string>>;
   /** The reading plan, or 0 once ended. */
   plan?: Stamped<ReadingPlan | 0>;
+  /**
+   * Paragraphs marked in the Library's books, by `book:chapter:block`
+   * (`libraryMarkKey`): 1 marked, 0 taken back. A place in a book's pack,
+   * not a copy of its words. Absent until one is made.
+   */
+  library?: Record<string, Stamped<0 | 1>>;
 };
 
 export const EMPTY_HADITH_RECORD: HadithRecord = { v: 1, items: {}, sets: {} };
@@ -151,6 +157,14 @@ export function coerceHadithRecord(raw: unknown): HadithRecord {
   }
   const pl = stamp(r.plan, plan);
   if (pl) out.plan = pl;
+  if (r.library && typeof r.library === 'object' && !Array.isArray(r.library)) {
+    const library: Record<string, Stamped<0 | 1>> = {};
+    for (const [key, m] of Object.entries(r.library as Record<string, unknown>)) {
+      const v = key.length <= MAX_ID && LIBRARY_MARK.test(key) ? stamp(m, bit) : undefined;
+      if (v) library[key] = v;
+    }
+    if (Object.keys(library).length) out.library = library;
+  }
   return out;
 }
 
@@ -203,6 +217,11 @@ export function mergeHadith(a: HadithRecord, b: HadithRecord): HadithRecord {
   }
   const pl = newer(a.plan, b.plan);
   if (pl) out.plan = pl;
+  const markKeys = [...new Set([...Object.keys(a.library ?? {}), ...Object.keys(b.library ?? {})])].sort();
+  if (markKeys.length) {
+    out.library = {};
+    for (const k of markKeys) out.library[k] = newer(a.library?.[k], b.library?.[k])!;
+  }
   return out;
 }
 
@@ -251,6 +270,26 @@ export function folderOf(rec: HadithRecord, id: string): string {
 /** The bookmarks in a folder, newest first. */
 export const folderIds = (rec: HadithRecord, folder: string): string[] =>
   bookmarkedIds(rec).filter(id => folderOf(rec, id) === folder);
+
+/** A marked paragraph's key: the book, the chapter and the block in it. */
+const LIBRARY_MARK = /^[a-z0-9-]+:\d+:\d+$/;
+export const libraryMarkKey = (book: string, c: number, b: number) => `${book}:${c}:${b}`;
+
+/** A book's marked paragraphs, newest first. */
+export function libraryMarksOf(rec: HadithRecord, book: string): { c: number; b: number; at: number }[] {
+  const out: { c: number; b: number; at: number }[] = [];
+  for (const [key, m] of Object.entries(rec.library ?? {})) {
+    if (m[0] !== 1) continue;
+    const [id, c, b] = key.split(':');
+    if (id === book) out.push({ c: Number(c), b: Number(b), at: m[1] });
+  }
+  return out.sort((x, y) => y.at - x.at || x.c - y.c || x.b - y.b);
+}
+
+export const setLibraryMark = (rec: HadithRecord, book: string, c: number, b: number, on: boolean, at: number): HadithRecord => ({
+  ...rec,
+  library: { ...rec.library, [libraryMarkKey(book, c, b)]: [on ? 1 : 0, at] },
+});
 
 /** The plan being followed, or null. */
 export const planOf = (rec: HadithRecord): ReadingPlan | null => (rec.plan && rec.plan[0] !== 0 ? rec.plan[0] : null);
