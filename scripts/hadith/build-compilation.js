@@ -212,6 +212,53 @@ const COMPILATIONS = {
     report: body => plain(body.slice(body.indexOf('[') + 1, body.indexOf(']'))),
   },
   /**
+   * Kitāb at-Tawḥīd, Muḥammad ibn ʿAbd al-Wahhāb (d. 1206 AH): chapters
+   * of verses and hadith, each chapter closed by the points he draws from
+   * them ("فيه مسائل", not read). He says where a hadith is from after it
+   * ("أخرجاه", "رواه مسلم") or before it ("وفي الصحيح عن…", "ولهما عن…",
+   * "ولمسلم عن…": `attributionTawhid`). Wikisource sets every quotation,
+   * verse or hadith, in round brackets, and breaks its lines mid-sentence:
+   * so the book is read as one run of text, and a report is a bracket
+   * with what leads into it and what follows it, up to the next bracket.
+   * A bracket nothing introduces as a report (a verse, a phrase quoted
+   * again) is not counted. Unnumbered.
+   */
+  tawhid: {
+    numbered: false,
+    input: { wikisource: 'كتاب التوحيد الذي هو حق الله على العبيد', cache: 'wikisource-tawhid.json' },
+    items: pages => {
+      const items = new Map();
+      let n = 0;
+      for (const page of Object.values(pages)) {
+        const t = page.text
+          .replace(/\{\{صل\}\}/g, ' صلى الله عليه وسلم ')
+          .replace(/\{\{[^{}]*\}\}/gs, '')
+          .replace(/'''?/g, '')
+          // His own points at each chapter's end, up to the next chapter's heading.
+          .replace(/فيه مسائل:?[\s\S]*?(?=\n=+[^=\n]+=+|$)/g, '\n')
+          .replace(/^=+[^=\n]+=+$/gm, ' ¶ ')
+          .replace(/[[\]]/g, ' ')
+          .replace(/\s+/g, ' ');
+        const re = /\(([^()]{20,})\)/g;
+        let m;
+        let from = 0;
+        while ((m = re.exec(t))) {
+          // What leads into it: since the bracket, the stop or the heading before.
+          const lead = t.slice(from, m.index).split(/[.¶]/).pop().slice(-200);
+          const rest = t.slice(re.lastIndex, re.lastIndex + 160).split(/[(¶]/)[0];
+          from = re.lastIndex;
+          const body = `${lead} [${m[1]}] ${rest}`;
+          const told = / عن |قال (?:رسول|النبي)|يقول/.test(plain(lead)) || TAWHID_AFTER.test(plain(rest));
+          if (told) items.set(++n, body);
+        }
+      }
+      return items;
+    },
+    attribution: body => attributionTawhid(body),
+    report: body => plain(body.slice(body.indexOf('[') + 1, body.indexOf(']'))),
+    weak: body => SAYS_WEAK.test(plain(body.slice(body.indexOf(']') + 1)).split('.')[0]),
+  },
+  /**
    * The eight hadith Ibn Rajab (d. 795 AH) added to an-Nawawī's forty-two
    * to make fifty, in Jāmiʿ al-ʿUlūm wa-l-Ḥikam: numbers 43 to 50. Each of
    * his chapters opens with the hadith and, after it, where it is from
@@ -442,6 +489,31 @@ function reportLed(para) {
   // After the report he may give another wording, or explain a word: not the report.
   const turn = said.search(/ وفي رواي[هة]| قلت:| ثم قال الترمذي| قال الترمذي| وهذا لفظ| هذا لفظ| ومعني | قال العلماء/);
   return turn > 0 ? said.slice(0, turn) : said;
+}
+/**
+ * Kitāb at-Tawḥīd's attributions: after the report, read as above when
+ * the words that follow it BEGIN with one ("أخرجاه", "رواه مسلم"); else
+ * before it — "وفي الصحيح" and "في الصحيحين" and "ولهما" are al-Bukhārī's
+ * and Muslim's (which of the two has it, the pairing finds), "ولمسلم" is
+ * Muslim's, "وللبخاري" al-Bukhārī's, and so for the Sunan. "ولأحمد" names
+ * no book served.
+ */
+const TAWHID_AFTER = /^[\s.،]*(?:رواه(?:ما)? |ا?خرجه |ا?خرجاه(?=[\s.،]|$)|متفق عليه)/;
+function attributionTawhid(body) {
+  const t = plain(body);
+  const open = t.indexOf('[');
+  const close = t.indexOf(']');
+  if (open < 0 || close < open) return [];
+  const after = t.slice(close + 1);
+  if (TAWHID_AFTER.test(after)) return attribution(after, true);
+  const before = t.slice(0, open);
+  if (/(?:^|\s)و?في الصحيح(?:ين)?(?:\s|$)|(?:^|\s)ولهما\s/.test(before)) return ['bukhari', 'muslim'];
+  if (/(?:^|\s)ولمسلم\s|في صحيح مسلم/.test(before)) return ['muslim'];
+  if (/(?:^|\s)وللبخاري\s|في صحيح البخاري/.test(before)) return ['bukhari'];
+  if (/(?:^|\s)ولابي داود\s/.test(before)) return ['abudawud'];
+  if (/(?:^|\s)وللترمذي\s/.test(before)) return ['tirmidhi'];
+  if (/(?:^|\s)وللنسا[يئ]ي\s/.test(before)) return ['nasai'];
+  return [];
 }
 // attribution-rule:end
 
@@ -794,4 +866,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-module.exports = { indexed, pair, signedRow, SIGNED, attribution, attributionAround, attributionLed, reportLed, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };
+module.exports = { indexed, pair, signedRow, SIGNED, attribution, attributionAround, attributionLed, reportLed, attributionTawhid, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };

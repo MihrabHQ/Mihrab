@@ -115,8 +115,10 @@ Content, all under the policy's compilation clause or from what is held:
    confidence and 512 name no served book in their own lead ("وروينا
    فيه", Ibn as-Sunnī): recall could be raised by reading "فيه" as the
    book just named, which is a reading of his words the maintainer should
-   rule on. **Kitāb at-Tawḥīd is not built**: the maintainer asked for it
-   after first choosing to skip creed texts; confirm before building.
+   rule on. Kitāb at-Tawḥīd: built the same day, after the maintainer
+   answered "finish the rest" to the question whether he wanted it — 40
+   of the 122 reports it introduces as reports (`tawhid.json`). "وفي
+   الصحيح" is read as either Ṣaḥīḥ; the pairing says which.
 10. Links between hadith and Qur'an: first measure how consistently
     HadeethEnc entries cite verses.
 

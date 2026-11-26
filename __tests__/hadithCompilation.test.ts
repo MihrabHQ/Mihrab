@@ -163,7 +163,7 @@ describe('the index', () => {
 
 describe('every compilation’s index', () => {
   type Raw = { id: string; of: number; note: string; numbered?: boolean; left: Record<string, number>; rows: Array<[number, string, number, string | null]> };
-  const all = ['riyad', 'umdah', 'kalim', 'adhkar', 'wabil', 'qudsi', 'rajab'].map(id => JSON.parse(read(`src/hadith/compilations/${id}.json`)) as Raw);
+  const all = ['riyad', 'umdah', 'kalim', 'adhkar', 'wabil', 'qudsi', 'rajab', 'tawhid'].map(id => JSON.parse(read(`src/hadith/compilations/${id}.json`)) as Raw);
 
   it('is written by the script, in the compiler’s order, and accounts for every hadith of the book', () => {
     for (const c of all) {
@@ -237,7 +237,7 @@ describe('in the app', () => {
   });
 
   it('is a list of its own, read from HadeethEnc and the books it names', () => {
-    expect(COMPILATIONS.map(c => c.id)).toEqual(['riyad', 'umdah', 'kalim', 'adhkar', 'wabil', 'qudsi', 'rajab']);
+    expect(COMPILATIONS.map(c => c.id)).toEqual(['riyad', 'umdah', 'kalim', 'adhkar', 'wabil', 'qudsi', 'rajab', 'tawhid']);
     expect(parseList('comp:riyad')).toEqual({ kind: 'comp', id: 'riyad' });
     expect(parseList('comp:nothing')).toBeNull();
     expect(compilationBooks(riyad)).toEqual(expect.arrayContaining(['bukhari', 'muslim', 'abudawud', 'tirmidhi']));
@@ -320,6 +320,28 @@ describe('in the app', () => {
       const c = JSON.parse(read(`src/i18n/locales/${lang}.json`)).hadith.comp;
       for (const id of ['adhkar', 'wabil']) expect([lang, id, Object.keys(c[id]).sort()]).toEqual([lang, id, ['blurb', 'compiler', 'title']]);
       expect(c.adhkar.compiler).toBe(c.riyad.compiler);
+    }
+  });
+
+  it('reads Kitāb at-Tawḥīd by what follows a report or leads into it, and not its author’s own points', () => {
+    const { attributionTawhid } = require('../scripts/hadith/build-compilation.js');
+    expect(attributionTawhid('عن ابن مسعود قال: [من مات وهو يدعو من دون الله ندا دخل النار] رواه البخاري.')).toEqual(['bukhari']);
+    expect(attributionTawhid('عن معاذ قال [كنت رديف النبي على حمار] أخرجاه في الصحيحين')).toEqual(['bukhari', 'muslim']);
+    expect(attributionTawhid('وفي الصحيح عن أبي هريرة عن النبي قال: [إذا قضى الله الأمر في السماء] ')).toEqual(['bukhari', 'muslim']);
+    expect(attributionTawhid('ولهما عن عائشة قالت [لما نزل برسول الله طفق يطرح خميصة] ')).toEqual(['bukhari', 'muslim']);
+    expect(attributionTawhid('ولمسلم عن جابر أن رسول الله قال: [من لقي الله لا يشرك به شيئا] ')).toEqual(['muslim']);
+    expect(attributionTawhid('ولأحمد عن رويفع قال [يا رويفع لعل الحياة تطول بك] ')).toEqual([]);
+    expect(attributionTawhid('وعن ابن عباس قال: [هذه أسماء رجال صالحين] ')).toEqual([]);
+    // "رواه أحمد" after it is his attribution, whatever stood before.
+    expect(attributionTawhid('وفي الصحيح ذكر كذا. وعن عمران [أن النبي رأى رجلا في يده حلقة] رواه أحمد بسند لا بأس به')).toEqual([]);
+    const build = read('scripts/hadith/build-compilation.js');
+    expect(build).toContain(".replace(/فيه مسائل:?[\\s\\S]*?(?=\\n=+[^=\\n]+=+|$)/g, '\\n')");
+    const tawhid = findCompilation('tawhid')!;
+    expect(tawhid.numbered).toBe(false);
+    expect(tawhid.rows.length).toBeGreaterThanOrEqual(25);
+    for (const lang of ['en', 'sv', 'ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh']) {
+      const c = JSON.parse(read(`src/i18n/locales/${lang}.json`)).hadith.comp.tawhid;
+      expect([lang, Object.keys(c).sort()]).toEqual([lang, ['blurb', 'compiler', 'title']]);
     }
   });
 
