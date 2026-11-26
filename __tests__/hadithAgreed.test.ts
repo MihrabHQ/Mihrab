@@ -32,7 +32,6 @@ import { AGREED_IDS, AGREED_LIST, AGREED_OFFERED, parseList } from '../src/hadit
 import { listRows } from '../src/hadith/library';
 import { packsForList } from '../src/hadith/useHadith';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { agreedUpon } = require('../scripts/hadith/agreed-list.js') as {
   agreedUpon: (e: { a?: string; g?: string }) => boolean;
 };
