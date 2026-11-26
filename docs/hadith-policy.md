@@ -48,6 +48,17 @@ compilers say, of each hadith, which book it is from.
   book does not pass, or **when its row cannot be found with
   confidence** — the same caution as for the grades of the Sunan: wrong
   the other way would put one hadith under another's name.
+- **A pairing a person has read and signed stands as found.** The
+  measure falls short of some hadith that are plainly in the book their
+  compiler names: he words one narration, the book holds another. The
+  maintainer may sign such a pairing — the compilation's number, the
+  book, the row, the words the row must hold, who decided and when and
+  why — in `scripts/hadith/signed-pairings.json`. A signature never goes
+  outside the compiler's attribution and never to a row the app does not
+  serve, and the builder refuses one that does, or whose row no longer
+  holds the words signed for. Added by the maintainer on 2026-11-26, for
+  the first hadith of Riyāḍ aṣ-Ṣāliḥīn; the list is short on purpose,
+  and the bar for everything else is where it was.
 - Where the compiler names several books, one that passes is enough: the
   hadith is served from that book. A compiler's own remark that a hadith
   is weak leaves it out whatever he attributes it to.

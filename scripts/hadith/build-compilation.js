@@ -120,6 +120,36 @@ const COMPILATIONS = {
   },
 };
 
+/**
+ * Pairings a person has read and signed (docs/hadith-policy.md §1, the
+ * maintainer's clause of 2026-11-26): where the measure below falls short
+ * of a hadith that is plainly in the book its compiler names. The file
+ * says who and why; `signedRow` holds each to the rule.
+ */
+const SIGNED = JSON.parse(fs.readFileSync(path.join(__dirname, 'signed-pairings.json'), 'utf8'));
+
+/**
+ * The row a signature names, or an error: a signature does not go outside
+ * the compiler's own attribution, and the row must be there — one the app
+ * serves — under the number signed for and holding the words signed for,
+ * so that a rebuilt pack cannot quietly put another hadith in its place.
+ */
+function signedRow(sig, named, book) {
+  const fail = why => {
+    throw new Error(`signed-pairings.json: no. ${sig.n} → ${sig.book} row ${sig.row}: ${why}`);
+  };
+  if (!named.includes(sig.book)) fail(`its compiler does not attribute it to ${sig.book} (${named.join(', ') || 'no book the app serves'})`);
+  if (!book) fail('no such book');
+  const at = book.rows.findIndex((r, i) => (typeof r[2] === 'number' ? r[2] : i) === sig.row);
+  if (at < 0) fail('no such row in the pack: not served, or the pack has changed');
+  const row = book.rows[at];
+  if (row[0] !== sig.number) fail(`the row is numbered ${row[0]}, and ${sig.number} was signed for`);
+  const text = fold(row[1]);
+  for (const words of sig.holds) if (!text.includes(fold(words))) fail(`the row does not hold "${words}"`);
+  if (!sig.by || !/^\d{4}-\d{2}-\d{2}$/.test(sig.on || '') || !sig.why) fail('unsigned: it needs who, when and why');
+  return sig.row;
+}
+
 /** A hadith is paired with a row that holds this share of its words, in order. */
 const PAIR_AT = 0.85;
 /** And with a HadeethEnc entry at this share, each way. */
@@ -490,6 +520,8 @@ async function main() {
   const rows = [];
   const left = { elsewhere: 0, saidWeak: 0, notFound: 0, tooShort: 0, noText: of - items.size };
   const review = [];
+  const signed = new Map((SIGNED[id] ?? []).map(s => [s.n, s]));
+  const signedFor = [];
   for (const n of [...items.keys()].sort((a, b) => a - b)) {
     const body = items.get(n);
     const named = attributionOf(body);
@@ -499,6 +531,14 @@ async function main() {
     }
     if (weakOf(body)) {
       left.saidWeak++;
+      continue;
+    }
+    // Signed for by a person who read the two: the row named, held to the
+    // rule (`signedRow`). Whether the measure would have found it is not asked.
+    if (signed.has(n)) {
+      const sig = signed.get(n);
+      rows.push([n, LETTER[sig.book], signedRow(sig, named, books[sig.book]), null]);
+      signedFor.push(n);
       continue;
     }
     // The report, and the report from where its narrator starts to speak:
@@ -560,7 +600,8 @@ async function main() {
     asOf,
     of,
     numbered: spec.numbered,
-    rule: `first attribution names a book the app serves; a row of it holds ${PAIR_AT} of the hadith's words in order and close together`,
+    rule: `first attribution names a book the app serves; a row of it holds ${PAIR_AT} of the hadith's words in order and close together — or a person read the two and signed the pairing (scripts/hadith/signed-pairings.json)`,
+    signed: signedFor,
     left,
     rows,
   };
@@ -573,6 +614,8 @@ async function main() {
   const withHenc = rows.filter(r => r[3]).length;
   const by = {};
   for (const r of rows) by[r[1]] = (by[r[1]] ?? 0) + 1;
+  for (const n of signed.keys()) if (!signedFor.includes(n)) throw new Error(`signed-pairings.json: ${id} no. ${n} is not a hadith the text read has, or its compiler calls it weak or attributes it elsewhere`);
+  if (signedFor.length) console.log(`signed for by a person, not measured: ${signedFor.join(', ')}`);
   console.log(
     `${id}: ${items.size} of ${of} read · ${rows.length} served (${withHenc} with a HadeethEnc entry; ${Object.entries(by).map(([k, v]) => `${k} ${v}`).join(', ')}) · left out: ${left.elsewhere} attributed elsewhere, ${left.saidWeak} he calls weak, ${left.notFound} not found with confidence, ${left.tooShort} too short to tell, ${left.noText} not in the text read`,
   );
@@ -602,4 +645,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-module.exports = { attribution, attributionAround, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };
+module.exports = { signedRow, SIGNED, attribution, attributionAround, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };

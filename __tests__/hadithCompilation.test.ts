@@ -289,6 +289,35 @@ describe('in the app', () => {
     expect(report('من يرد الله به خيرا يصب منه ((رواه البخاري))')).not.toMatch(/رواه/);
   });
 
+  it('takes a pairing a person signed, and holds the signature to the rule', () => {
+    const b = builder as unknown as {
+      SIGNED: Record<string, { n: number; book: string; row: number; number: number; holds: string[]; by: string; on: string; why: string }[]>;
+      signedRow: (sig: object, named: string[], book: { rows: unknown[][] } | undefined) => number;
+    };
+    // The list is short, and every entry says who, when and why.
+    const all = Object.entries(b.SIGNED).filter(([k]) => k !== 'note').flatMap(([, v]) => v as { by: string; on: string; why: string }[]);
+    expect(all.length).toBeLessThanOrEqual(10);
+    for (const s of all) expect(s.by && /^\d{4}-\d{2}-\d{2}$/.test(s.on) && s.why.length > 40).toBe(true);
+    // Riyāḍ aṣ-Ṣāliḥīn opens at its first hadith, as the row signed for.
+    const sig = b.SIGNED.riyad.find(s => s.n === 1)!;
+    expect(RIYAD.rows[0]).toEqual([1, 'b', sig.row, null]);
+    expect((RIYAD as unknown as { signed: number[] }).signed).toEqual(b.SIGNED.riyad.map(s => s.n));
+
+    const text = 'حدثنا فلان ' + sig.holds.join(' وكذا ');
+    const book = { rows: [[7, 'غيره'], [sig.number, text]] };
+    const here = { ...sig, row: 1 };
+    expect(b.signedRow(here, ['bukhari', 'muslim'], book)).toBe(1);
+    // Not outside the compiler's attribution…
+    expect(() => b.signedRow(here, ['tirmidhi'], book)).toThrow(/does not attribute/);
+    // …not to a row that is not served, or is another hadith now…
+    expect(() => b.signedRow({ ...here, row: 5 }, ['bukhari'], book)).toThrow(/no such row/);
+    expect(() => b.signedRow({ ...here, row: 0 }, ['bukhari'], book)).toThrow(/numbered 7/);
+    expect(() => b.signedRow({ ...here, number: 7, row: 0 }, ['bukhari'], book)).toThrow(/does not hold/);
+    // …and not unsigned.
+    expect(() => b.signedRow({ ...here, by: '' }, ['bukhari'], book)).toThrow(/unsigned/);
+    expect(read('docs/hadith-policy.md')).toContain('A pairing a person has read and signed stands as found.');
+  });
+
   it('counts as waiting for a book only the hadith a download would bring', async () => {
     const rows = await compilationRows(riyad, 'en');
     const here = new Set(rows.map(r => r.id));

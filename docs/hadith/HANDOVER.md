@@ -17,7 +17,7 @@ longer true.
 | Reader: title keeps a gap from − A +, a line under the bar when scrolled, a heading cut from a long hadith says so | `src/screens/hadith/HadithPage.tsx`, `src/hadith/heading.ts` |
 | Settings → Hadith (starting level, downloads) | `src/screens/settings/pages/HadithSettingsScreen.tsx` |
 | "Agreed upon": HadeethEnc entries attributed to both Ṣaḥīḥs | `scripts/hadith/agreed-list.js` → `src/hadith/agreed.json` |
-| Books to read: Riyāḍ aṣ-Ṣāliḥīn (1,524 of 1,896), ʿUmdat al-Aḥkām (320 of 414), al-Kalim aṭ-Ṭayyib (68 of 187) | `scripts/hadith/build-compilation.js` → `src/hadith/compilations/*.json` |
+| Books to read: Riyāḍ aṣ-Ṣāliḥīn (1,525 of 1,896), ʿUmdat al-Aḥkām (320 of 414), al-Kalim aṭ-Ṭayyib (68 of 187) | `scripts/hadith/build-compilation.js` → `src/hadith/compilations/*.json` |
 | Ṣaḥīḥ al-Bukhārī and Ṣaḥīḥ Muslim by their books (97, and 57) | `scripts/hadith/book-chapters.js` → `src/hadith/chapters.json`; names in `src/hadith/chapterNames.json` |
 | Hadith of the day, at the top of Learn | `src/hadith/daily.ts` |
 | Copy and Share carry the reference (book, number, chapter) | `hadithReference` in `src/screens/hadith/HadithReaderScreen.tsx` |
@@ -35,17 +35,19 @@ longer true.
   never an uninstall. `uiautomator dump` cannot read Today (its
   countdown never idles): drive it by screenshot, and do not tap from a
   dump that may be stale.
-- **Riyāḍ aṣ-Ṣāliḥīn no. 1 ("Actions are by intentions") is left out**,
-  with 283 others not found with confidence: an-Nawawī's wording of it
-  is 0.79 of al-Bukhārī's nearest row (6689) and of Muslim's, under the
-  0.85 the rule asks. Serving it would need either a list of pairings a
-  person has read and signed (a change to the policy page first), or a
-  lower bar. Asked of the maintainer; not done.
+- **Riyāḍ aṣ-Ṣāliḥīn no. 1 is served by signature**, not by the measure
+  (`scripts/hadith/signed-pairings.json`; the policy's clause of
+  2026-11-26): al-Bukhārī's row 6194, numbered 6195 in the pack's
+  edition and 6689 in Fatḥ al-Bārī's. It has no HadeethEnc entry signed
+  with it, so a reader in translation gets the book's first hadith in
+  Arabic only; signing an entry for it is the maintainer's to decide.
+  The numbers the app shows for al-Bukhārī are that edition's, not the
+  ones most people cite.
 - **The pairings were read in samples, not in full**: about twenty of the
   least sure of each compilation, and a spread of the rest. All read were
   the right hadith. The 48 that Riyāḍ gained from its bracketed
   attributions were each read, his text against the row. Nobody has read
-  all 1,912 rows.
+  all 1,913 rows.
 - **Strings in the 12 locales that are not English**, and the **154
   chapter names** (Arabic and English, written by hand), want a native
   reader.

@@ -1,0 +1,19 @@
+{
+ "note": "Pairings a person has read and signed (docs/hadith-policy.md §1): a compilation's hadith that is plainly in the book its compiler names, where the measure in build-compilation.js falls short because he words one narration and the book holds another. Each entry: his number, the book, the row's place in the pack (and the number the pack gives it), words the row must hold, who decided and when. Kept short on purpose. A signature never goes outside the compiler's attribution or to a row the app does not serve; the builder refuses one that does.",
+ "riyad": [
+  {
+   "n": 1,
+   "book": "bukhari",
+   "row": 6194,
+   "number": 6195,
+   "holds": [
+    "إنما الأعمال بالنية",
+    "فمن كانت هجرته إلى الله ورسوله فهجرته إلى الله ورسوله",
+    "فهجرته إلى ما هاجر إليه"
+   ],
+   "by": "the maintainer",
+   "on": "2026-11-26",
+   "why": "\"Actions are by intentions\", from ʿUmar: an-Nawawī calls it agreed upon and gives a wording that is in neither Ṣaḥīḥ word for word (0.79 of this row, under the 0.85 asked). This is al-Bukhārī's narration in the Book of Oaths and Vows — no. 6689 in the numbering of Fatḥ al-Bārī, 6195 in the edition the pack follows — which has both halves of the hadith."
+  }
+ ]
+}

@@ -4,7 +4,8 @@
  "asOf": "2026-11-25",
  "of": 187,
  "numbered": false,
- "rule": "first attribution names a book the app serves; a row of it holds 0.85 of the hadith's words in order and close together",
+ "rule": "first attribution names a book the app serves; a row of it holds 0.85 of the hadith's words in order and close together — or a person read the two and signed the pairing (scripts/hadith/signed-pairings.json)",
+ "signed": [],
  "left": {
   "elsewhere": 74,
   "saidWeak": 0,
