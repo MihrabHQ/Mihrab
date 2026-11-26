@@ -135,6 +135,12 @@ export type NotificationsSlice = Pick<
   | 'hifzReminderEnabled'
   | 'hifzReminderHour'
   | 'hifzReminderMinute'
+  | 'hadithOfDayEnabled'
+  | 'hadithOfDayHour'
+  | 'hadithOfDayMinute'
+  | 'hadithPlanReminderEnabled'
+  | 'hadithPlanReminderHour'
+  | 'hadithPlanReminderMinute'
   | 'kahfReminderEnabled'
   | 'kahfReminderHour'
   | 'kahfReminderMinute'
@@ -411,6 +417,12 @@ export function PrayerSettingsProvider({
       hifzReminderEnabled: settings.hifzReminderEnabled,
       hifzReminderHour: settings.hifzReminderHour,
       hifzReminderMinute: settings.hifzReminderMinute,
+      hadithOfDayEnabled: settings.hadithOfDayEnabled,
+      hadithOfDayHour: settings.hadithOfDayHour,
+      hadithOfDayMinute: settings.hadithOfDayMinute,
+      hadithPlanReminderEnabled: settings.hadithPlanReminderEnabled,
+      hadithPlanReminderHour: settings.hadithPlanReminderHour,
+      hadithPlanReminderMinute: settings.hadithPlanReminderMinute,
       kahfReminderEnabled: settings.kahfReminderEnabled,
       kahfReminderHour: settings.kahfReminderHour,
       kahfReminderMinute: settings.kahfReminderMinute,
@@ -443,6 +455,12 @@ export function PrayerSettingsProvider({
       settings.hifzReminderEnabled,
       settings.hifzReminderHour,
       settings.hifzReminderMinute,
+      settings.hadithOfDayEnabled,
+      settings.hadithOfDayHour,
+      settings.hadithOfDayMinute,
+      settings.hadithPlanReminderEnabled,
+      settings.hadithPlanReminderHour,
+      settings.hadithPlanReminderMinute,
       settings.kahfReminderEnabled,
       settings.kahfReminderHour,
       settings.kahfReminderMinute,

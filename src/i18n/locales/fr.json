@@ -602,7 +602,11 @@
     "backgroundLocationAskMac": "Pour que vos alertes de prière et vos widgets vous suivent en voyage, Mihrab lit la position de ce Mac pendant qu’il tourne, fenêtre fermée. macOS peut vous demander d’autoriser Mihrab à utiliser votre position.\n\nC’est facultatif. Cela sert uniquement à garder vos horaires de prière sur le lieu où vous êtes, et Mihrab fonctionne sans.",
     "backgroundLocationDeniedMac": "macOS n’a pas autorisé Mihrab à utiliser votre position, donc ceci est désactivé. Vous pouvez l’autoriser dans Réglages Système, sous Confidentialité et sécurité → Service de localisation.",
     "backgroundLocationHelpDesktop": "Facultatif, et en aperçu sur l’ordinateur. Quand vous voyagez avec votre ordinateur, vos alertes de prière passent au nouveau lieu sans ouvrir la fenêtre : tant que Mihrab tourne, dans sa fenêtre ou dans la zone de notification, il recherche sa position quand l’ordinateur sort de veille, est déverrouillé, rejoint un autre réseau ou change de fuseau horaire. Pas lorsque Mihrab est quitté. Rien de plus n’est envoyé que lorsque l’app est ouverte. Sans cela, votre position est mise à jour à l’ouverture de la fenêtre.",
-    "backgroundLocationDeniedDesktop": "Cet ordinateur n’a pas donné sa position à Mihrab, donc ceci est désactivé. Sous Windows, autorisez-la dans Paramètres, sous Confidentialité et sécurité → Localisation → Autoriser les applications de bureau à accéder à votre emplacement. Beaucoup d’ordinateurs sous Linux n’ont pas de service de localisation ; choisissez-y plutôt votre lieu dans Mihrab."
+    "backgroundLocationDeniedDesktop": "Cet ordinateur n’a pas donné sa position à Mihrab, donc ceci est désactivé. Sous Windows, autorisez-la dans Paramètres, sous Confidentialité et sécurité → Localisation → Autoriser les applications de bureau à accéder à votre emplacement. Beaucoup d’ordinateurs sous Linux n’ont pas de service de localisation ; choisissez-y plutôt votre lieu dans Mihrab.",
+    "hadithOfDay": "Notification quotidienne de hadith",
+    "hadithOfDayHelp": "Le hadith du jour — rapporté à la fois par al-Boukhari et Muslim — à l'heure de votre choix. Les hadiths doivent être téléchargés.",
+    "hadithPlanReminder": "Rappel du plan de lecture",
+    "hadithPlanReminderHelp": "Les jours où la part du jour de votre plan de lecture de hadiths n'est pas encore lue."
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",
@@ -3077,7 +3081,8 @@
       "line": "Jour {{day}} sur {{days}} · {{done}} sur {{target}} aujourd'hui",
       "end": "Terminer le plan",
       "card": "Plan de lecture",
-      "finished": "Terminé : tous ses hadiths sont lus."
+      "finished": "Terminé : tous ses hadiths sont lus.",
+      "reminderBody": "{{n}} hadiths à lire aujourd'hui"
     },
     "seeIn": "Le voir dans {{book}}"
   }

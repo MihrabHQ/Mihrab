@@ -601,7 +601,11 @@
     "backgroundLocationAskMac": "För att flytta dina böneaviseringar och widgetar när du reser läser Mihrab den här Macens plats medan appen körs med fönstret stängt. macOS kan fråga om Mihrab får använda din plats.\n\nDetta är valfritt. Det används bara för att hålla dina bönetider på platsen där du är, och Mihrab fungerar utan det.",
     "backgroundLocationDeniedMac": "macOS har inte tillåtit Mihrab att använda din plats, så detta är av. Du kan tillåta det i Systeminställningar, under Integritet och säkerhet → Platstjänster.",
     "backgroundLocationHelpDesktop": "Valfritt, och en förhandsversion på datorn. När du reser med datorn flyttas dina böneaviseringar till den nya platsen utan att fönstret öppnas: medan Mihrab körs, i fönstret eller i systemfältet, söker den sin position igen när datorn vaknar ur viloläge, låses upp, ansluter till ett annat nätverk eller byter tidszon. Inte när Mihrab är avslutat. Inget mer skickas än när appen är öppen. Utan detta uppdateras din plats när du öppnar fönstret.",
-    "backgroundLocationDeniedDesktop": "Datorn gav inte Mihrab sin plats, så detta är av. I Windows tillåter du det i Inställningar, under Sekretess och säkerhet → Plats → Ge skrivbordsappar åtkomst till din plats. Många Linux-datorer saknar platstjänst; välj där din plats i Mihrab i stället."
+    "backgroundLocationDeniedDesktop": "Datorn gav inte Mihrab sin plats, så detta är av. I Windows tillåter du det i Inställningar, under Sekretess och säkerhet → Plats → Ge skrivbordsappar åtkomst till din plats. Många Linux-datorer saknar platstjänst; välj där din plats i Mihrab i stället.",
+    "hadithOfDay": "Daglig hadithavisering",
+    "hadithOfDayHelp": "Dagens hadith – en som både al-Bukhari och Muslim återger – vid den tid du väljer. Haditherna måste vara nedladdade.",
+    "hadithPlanReminder": "Påminnelse om läsplanen",
+    "hadithPlanReminderHelp": "De dagar då dagens del av din läsplan för hadither ännu inte är läst."
   },
   "locationSetup": {
     "headline": "Ange din plats",
@@ -3076,7 +3080,8 @@
       "line": "Dag {{day}} av {{days}} · {{done}} av {{target}} i dag",
       "end": "Avsluta planen",
       "card": "Läsplan",
-      "finished": "Klar: alla dess hadither är lästa."
+      "finished": "Klar: alla dess hadither är lästa.",
+      "reminderBody": "{{n}} hadither att läsa i dag"
     },
     "seeIn": "Se den i {{book}}"
   }

@@ -773,6 +773,16 @@ export type PrayerAppSettings = {
   hifzReminderHour: number;
   hifzReminderMinute: number;
   /**
+   * The hadith of the day as a notification, and the hadith reading plan's
+   * reminder (`notifications/hadithReminders.ts`). Both off by default.
+   */
+  hadithOfDayEnabled: boolean;
+  hadithOfDayHour: number;
+  hadithOfDayMinute: number;
+  hadithPlanReminderEnabled: boolean;
+  hadithPlanReminderHour: number;
+  hadithPlanReminderMinute: number;
+  /**
    * The two surahs with a time of their own — issue #36.
    *
    * Al-Kahf on Friday and Al-Mulk before sleeping are the two most
@@ -938,6 +948,12 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   hifzReminderEnabled: false,
   hifzReminderHour: 20,
   hifzReminderMinute: 0,
+  hadithOfDayEnabled: false,
+  hadithOfDayHour: 9,
+  hadithOfDayMinute: 0,
+  hadithPlanReminderEnabled: false,
+  hadithPlanReminderHour: 20,
+  hadithPlanReminderMinute: 0,
   kahfReminderEnabled: false,
   kahfReminderHour: 9,
   kahfReminderMinute: 0,

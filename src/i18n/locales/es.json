@@ -602,7 +602,11 @@
     "backgroundLocationAskMac": "Para llevar tus avisos de oración y widgets contigo cuando viajas, Mihrab lee la ubicación de este Mac mientras está en marcha con la ventana cerrada. macOS puede preguntarte si permites que Mihrab use tu ubicación.\n\nEs opcional. Solo se usa para mantener tus horarios de oración en el lugar donde estás, y Mihrab funciona sin ello.",
     "backgroundLocationDeniedMac": "macOS no ha permitido que Mihrab use tu ubicación, así que esto está desactivado. Puedes permitirlo en Ajustes del Sistema, en Privacidad y seguridad → Localización.",
     "backgroundLocationHelpDesktop": "Opcional, y una vista previa en el ordenador. Cuando viajas con tu ordenador, tus avisos de oración pasan al nuevo lugar sin abrir la ventana: mientras Mihrab está en marcha, en su ventana o en la bandeja, vuelve a buscar su posición cuando el ordenador sale de la suspensión, se desbloquea, se conecta a otra red o cambia de zona horaria. No mientras Mihrab está cerrado del todo. No se envía nada más que con la app abierta. Sin esto, tu ubicación se actualiza al abrir la ventana.",
-    "backgroundLocationDeniedDesktop": "Este ordenador no ha dado su ubicación a Mihrab, así que esto está desactivado. En Windows, permítelo en Configuración, en Privacidad y seguridad → Ubicación → Permitir que las aplicaciones de escritorio accedan a tu ubicación. Muchos ordenadores con Linux no tienen servicio de ubicación; ahí, elige tu lugar en Mihrab."
+    "backgroundLocationDeniedDesktop": "Este ordenador no ha dado su ubicación a Mihrab, así que esto está desactivado. En Windows, permítelo en Configuración, en Privacidad y seguridad → Ubicación → Permitir que las aplicaciones de escritorio accedan a tu ubicación. Muchos ordenadores con Linux no tienen servicio de ubicación; ahí, elige tu lugar en Mihrab.",
+    "hadithOfDay": "Notificación diaria de hadiz",
+    "hadithOfDayHelp": "El hadiz del día —uno que transmiten tanto al-Bujari como Muslim— a la hora que elijas. Requiere tener los hadices descargados.",
+    "hadithPlanReminder": "Recordatorio del plan de lectura",
+    "hadithPlanReminderHelp": "Los días en que la parte de hoy de tu plan de lectura de hadices aún no se ha leído."
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",
@@ -3077,7 +3081,8 @@
       "line": "Día {{day}} de {{days}} · {{done}} de {{target}} hoy",
       "end": "Terminar el plan",
       "card": "Plan de lectura",
-      "finished": "Terminado: se han leído todos sus hadices."
+      "finished": "Terminado: se han leído todos sus hadices.",
+      "reminderBody": "{{n}} hadices por leer hoy"
     },
     "seeIn": "Verlo en {{book}}"
   }

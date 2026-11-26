@@ -601,7 +601,11 @@
     "backgroundLocationAskMac": "Um Ihre Gebetshinweise und Widgets auf Reisen mitzunehmen, liest Mihrab den Standort dieses Macs, während die App mit geschlossenem Fenster läuft. macOS fragt Sie möglicherweise, ob Mihrab Ihren Standort verwenden darf.\n\nDas ist optional. Es dient nur dazu, Ihre Gebetszeiten an Ihrem Aufenthaltsort zu halten, und Mihrab funktioniert auch ohne.",
     "backgroundLocationDeniedMac": "macOS hat Mihrab die Nutzung Ihres Standorts nicht erlaubt, daher ist dies aus. Sie können sie in den Systemeinstellungen unter Datenschutz & Sicherheit → Ortungsdienste erlauben.",
     "backgroundLocationHelpDesktop": "Optional und auf dem Computer eine Vorschau. Wenn Sie mit Ihrem Computer reisen, wechseln Ihre Gebetshinweise zum neuen Ort, ohne dass das Fenster geöffnet wird: Solange Mihrab läuft, im Fenster oder im Infobereich, sucht es seine Position erneut, wenn der Computer aus dem Ruhezustand erwacht, entsperrt wird, sich mit einem anderen Netz verbindet oder die Zeitzone wechselt. Nicht, wenn Mihrab beendet ist. Es wird nicht mehr gesendet als bei geöffneter App. Ohne diese Einstellung wird Ihr Standort beim Öffnen des Fensters aktualisiert.",
-    "backgroundLocationDeniedDesktop": "Dieser Computer hat Mihrab seinen Standort nicht gegeben, daher ist dies aus. Unter Windows erlauben Sie es in den Einstellungen unter Datenschutz und Sicherheit → Standort → Desktop-Apps den Zugriff auf Ihren Standort erlauben. Viele Linux-Computer haben keinen Ortungsdienst; wählen Sie dort Ihren Ort stattdessen in Mihrab."
+    "backgroundLocationDeniedDesktop": "Dieser Computer hat Mihrab seinen Standort nicht gegeben, daher ist dies aus. Unter Windows erlauben Sie es in den Einstellungen unter Datenschutz und Sicherheit → Standort → Desktop-Apps den Zugriff auf Ihren Standort erlauben. Viele Linux-Computer haben keinen Ortungsdienst; wählen Sie dort Ihren Ort stattdessen in Mihrab.",
+    "hadithOfDay": "Tägliche Hadith-Benachrichtigung",
+    "hadithOfDayHelp": "Der Hadith des Tages – einer, den al-Bukhari und Muslim beide überliefern – zur gewählten Zeit. Die Hadithe müssen heruntergeladen sein.",
+    "hadithPlanReminder": "Erinnerung an den Leseplan",
+    "hadithPlanReminderHelp": "An den Tagen, an denen der heutige Teil deines Hadith-Leseplans noch nicht gelesen ist."
   },
   "locationSetup": {
     "headline": "Legen Sie Ihren Standort fest",
@@ -3076,7 +3080,8 @@
       "line": "Tag {{day}} von {{days}} · heute {{done}} von {{target}}",
       "end": "Plan beenden",
       "card": "Leseplan",
-      "finished": "Fertig: Alle seine Hadithe sind gelesen."
+      "finished": "Fertig: Alle seine Hadithe sind gelesen.",
+      "reminderBody": "Heute {{n}} Hadithe zu lesen"
     },
     "seeIn": "In {{book}} ansehen"
   }

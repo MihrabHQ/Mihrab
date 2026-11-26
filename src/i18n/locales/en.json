@@ -601,7 +601,11 @@
     "backgroundLocationAskMac": "To move your prayer alerts and widgets when you travel, Mihrab reads this Mac’s location while it is running with its window closed. macOS may ask you to allow Mihrab to use your location.\n\nThis is optional. It is used only to keep your prayer times on the place you are in, and Mihrab works without it.",
     "backgroundLocationDeniedMac": "macOS has not allowed Mihrab to use your location, so this is off. You can allow it in System Settings, under Privacy & Security → Location Services.",
     "backgroundLocationHelpDesktop": "Optional, and a preview on the computer. When you travel with your computer, your prayer alerts move to the new place without the window being opened: while Mihrab is running, in its window or in the tray, it looks for its position again after the computer wakes from sleep, is unlocked, joins another network or changes time zone. Not while Mihrab is quit. Nothing more is sent than when the app is open. Without this, your location is updated when you open the window.",
-    "backgroundLocationDeniedDesktop": "This computer did not give Mihrab its location, so this is off. On Windows, allow it in Settings, under Privacy & security → Location → Let desktop apps access your location. Many Linux computers have no location service; there, choose your place in Mihrab instead."
+    "backgroundLocationDeniedDesktop": "This computer did not give Mihrab its location, so this is off. On Windows, allow it in Settings, under Privacy & security → Location → Let desktop apps access your location. Many Linux computers have no location service; there, choose your place in Mihrab instead.",
+    "hadithOfDay": "Daily hadith notification",
+    "hadithOfDayHelp": "The hadith of the day — one that al-Bukhari and Muslim both report — at the time you choose. It needs the hadith downloaded.",
+    "hadithPlanReminder": "Reading plan reminder",
+    "hadithPlanReminderHelp": "On the days today's share of your hadith reading plan is not yet read."
   },
   "locationSetup": {
     "headline": "Set your location",
@@ -3076,7 +3080,8 @@
       "line": "Day {{day}} of {{days}} · {{done}} of {{target}} today",
       "end": "End the plan",
       "card": "Reading plan",
-      "finished": "Finished: every hadith of it is read."
+      "finished": "Finished: every hadith of it is read.",
+      "reminderBody": "{{n}} hadith to read today"
     },
     "seeIn": "See it in {{book}}"
   }

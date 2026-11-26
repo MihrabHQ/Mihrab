@@ -601,7 +601,11 @@
     "backgroundLocationAskMac": "为了在出行时让礼拜提醒和小组件随您切换，Mihrab 会在窗口关闭、应用仍在运行时读取这台 Mac 的位置。macOS 可能会询问是否允许 Mihrab 使用您的位置。\n\n这是可选的。它只用于让礼拜时间保持在您所在的地点，没有它 Mihrab 也能正常使用。",
     "backgroundLocationDeniedMac": "macOS 尚未允许 Mihrab 使用您的位置，因此此项已关闭。您可以在“系统设置”中，通过 隐私与安全性 → 定位服务 来允许。",
     "backgroundLocationHelpDesktop": "可选，在电脑上尚为预览功能。带着电脑出行时，礼拜提醒无需打开窗口即可切换到新地点：只要 Mihrab 在运行（在窗口中或在托盘中），当电脑从睡眠中唤醒、解锁、连接到其他网络或更换时区时，它会重新查找自己的位置。Mihrab 完全退出时则不会。发送的内容不会比应用打开时更多。不开启时，您的位置会在打开窗口时更新。",
-    "backgroundLocationDeniedDesktop": "这台电脑没有向 Mihrab 提供位置，因此此项已关闭。在 Windows 上，请在“设置”中通过 隐私和安全性 → 位置 → 允许桌面应用访问你的位置 来允许。许多 Linux 电脑没有定位服务；在那里请直接在 Mihrab 中选择您的地点。"
+    "backgroundLocationDeniedDesktop": "这台电脑没有向 Mihrab 提供位置，因此此项已关闭。在 Windows 上，请在“设置”中通过 隐私和安全性 → 位置 → 允许桌面应用访问你的位置 来允许。许多 Linux 电脑没有定位服务；在那里请直接在 Mihrab 中选择您的地点。",
+    "hadithOfDay": "每日圣训通知",
+    "hadithOfDayHelp": "今日圣训——布哈里和穆斯林共同传述的一段——在您选择的时间推送。需要先下载圣训。",
+    "hadithPlanReminder": "阅读计划提醒",
+    "hadithPlanReminderHelp": "在您的圣训阅读计划当天份额尚未读完的日子提醒。"
   },
   "locationSetup": {
     "headline": "设置您的位置",
@@ -3076,7 +3080,8 @@
       "line": "第 {{day}} 天，共 {{days}} 天 · 今日 {{done}}/{{target}}",
       "end": "结束计划",
       "card": "阅读计划",
-      "finished": "已完成：其中的圣训已全部读完。"
+      "finished": "已完成：其中的圣训已全部读完。",
+      "reminderBody": "今天还有 {{n}} 段圣训要读"
     },
     "seeIn": "在{{book}}中查看"
   }

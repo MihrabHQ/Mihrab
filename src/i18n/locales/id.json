@@ -601,7 +601,11 @@
     "backgroundLocationAskMac": "Agar pengingat salat dan widget ikut berpindah saat Anda bepergian, Mihrab membaca lokasi Mac ini selama berjalan dengan jendela tertutup. macOS mungkin meminta Anda mengizinkan Mihrab memakai lokasi Anda.\n\nIni opsional. Hanya dipakai agar waktu salat Anda tetap sesuai tempat Anda berada, dan Mihrab tetap berfungsi tanpanya.",
     "backgroundLocationDeniedMac": "macOS belum mengizinkan Mihrab memakai lokasi Anda, jadi ini nonaktif. Anda dapat mengizinkannya di Pengaturan Sistem, di Privasi & Keamanan → Layanan Lokasi.",
     "backgroundLocationHelpDesktop": "Opsional, dan masih pratinjau di komputer. Saat Anda bepergian membawa komputer, pengingat salat berpindah ke tempat baru tanpa membuka jendela: selama Mihrab berjalan, di jendelanya atau di baki sistem, ia mencari posisinya lagi saat komputer bangun dari tidur, dibuka kuncinya, tersambung ke jaringan lain, atau berganti zona waktu. Tidak saat Mihrab ditutup sepenuhnya. Tidak ada yang dikirim lebih dari saat aplikasi terbuka. Tanpa ini, lokasi Anda diperbarui saat jendela dibuka.",
-    "backgroundLocationDeniedDesktop": "Komputer ini tidak memberikan lokasinya kepada Mihrab, jadi ini nonaktif. Di Windows, izinkan di Pengaturan, di Privasi & keamanan → Lokasi → Izinkan aplikasi desktop mengakses lokasi Anda. Banyak komputer Linux tidak punya layanan lokasi; di sana, pilih tempat Anda di Mihrab."
+    "backgroundLocationDeniedDesktop": "Komputer ini tidak memberikan lokasinya kepada Mihrab, jadi ini nonaktif. Di Windows, izinkan di Pengaturan, di Privasi & keamanan → Lokasi → Izinkan aplikasi desktop mengakses lokasi Anda. Banyak komputer Linux tidak punya layanan lokasi; di sana, pilih tempat Anda di Mihrab.",
+    "hadithOfDay": "Notifikasi hadis harian",
+    "hadithOfDayHelp": "Hadis hari ini — yang diriwayatkan oleh al-Bukhari dan Muslim — pada waktu yang Anda pilih. Hadis harus sudah diunduh.",
+    "hadithPlanReminder": "Pengingat rencana membaca",
+    "hadithPlanReminderHelp": "Pada hari-hari ketika bagian hari ini dari rencana membaca hadis Anda belum dibaca."
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",
@@ -3076,7 +3080,8 @@
       "line": "Hari {{day}} dari {{days}} · {{done}} dari {{target}} hari ini",
       "end": "Akhiri rencana",
       "card": "Rencana membaca",
-      "finished": "Selesai: semua hadisnya sudah dibaca."
+      "finished": "Selesai: semua hadisnya sudah dibaca.",
+      "reminderBody": "{{n}} hadis untuk dibaca hari ini"
     },
     "seeIn": "Lihat di {{book}}"
   }

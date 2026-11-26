@@ -71,6 +71,7 @@ import { READING_BASE } from '../../theme/readingText';
 import { MAX_CONTENT_WIDTH, useResponsive } from '../../responsive/breakpoints';
 import { ShareHadithModal, fitsACard } from './ShareHadithModal';
 import { MemoGate, ReaderTools } from './ReaderExtras';
+import { refreshHadithPlanReminder } from '../../notifications/hadithReminders';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE, arabicTextStyle } from '../../theme/typography';
 import { tabularNumeralStyle } from '../../theme/textScale';
@@ -231,7 +232,8 @@ export function HadithReaderScreen() {
 
   // Under the text: say it is read, and go on.
   const readOn = () => {
-    if (!read) void updateHadithRecord(r => setRead(r, id, true, now()));
+    // A hadith read may be the last of today's share of a plan: its reminder is written again.
+    if (!read) void updateHadithRecord(r => setRead(r, id, true, now())).then(refreshHadithPlanReminder);
     if (next) go(next);
   };
 

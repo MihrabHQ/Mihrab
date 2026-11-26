@@ -83,6 +83,7 @@ import { formatHijriLabel } from '../hijri/formatHijriLabel';
 import { QuranCard } from './home/QuranCard';
 import { PermissionBanners, bringBackNotice, permissionBannersShown } from './home/PermissionBanners';
 import { PracticeCard } from './home/PracticeCard';
+import { HadithOfDayCard } from './home/HadithOfDayCard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { TodaySummary } from './home/TodaySummary';
 import { CenteredColumn } from '../responsive/CenteredColumn';
@@ -2071,6 +2072,13 @@ export function HomeScreen() {
             dense={tier === 'compact'}
           />
         );
+        // Beside the day only — the dashboard's column and the book's second
+        // page — never under it on a phone (HadithOfDayCard has why).
+        const hadithOfDay = (
+          <ErrorBoundary label="HadithOfDayCard">
+            <HadithOfDayCard day={new Date().toDateString()} />
+          </ErrorBoundary>
+        );
         const toolsGrid = <TodaySummary onOpenLog={handleOpenLog} />;
         const practiceCard = settings.showPracticeOnHome ? (
           <ErrorBoundary label="PracticeCard">
@@ -2110,6 +2118,7 @@ export function HomeScreen() {
               <View style={{ width: HOME_MAIN_COL, gap: SPACING.md }}>{dayTable}</View>
               <View style={styles.dashSide}>
                 {quranShortcut}
+                {hadithOfDay}
                 {toolsGrid}
                 {practiceCard}
                 {ramadanCard}
@@ -2145,6 +2154,7 @@ export function HomeScreen() {
               </View>
               <View style={styles.dashSide}>
                 {quranShortcut}
+                {hadithOfDay}
                 {toolsGrid}
                 {practiceCard}
                 {ramadanCard}

@@ -80,12 +80,18 @@ Features that add no hadith:
    text whole or no picture (`fitsACard`, 1,200 characters).
 5. ~~Memorisation mode, a reading plan, bookmark folders~~ — done
    2026-11-26 (`ReaderExtras.tsx`, `hadithRecord.ts`, `plan.ts`), except
-   **the plan's daily reminder**, which is not built: it wants a channel,
-   a time setting and the re-sync hooks `khatmahReminder.ts` has. The
+   the plan's daily reminder, which came later the same day
+   (`notifications/hadithReminders.ts`, `hadithPlanReminder*`). The
    record gained `m`, `f`, `folders` and `plan`; no release has shipped
    the hadith record yet, so there is nothing to migrate.
-6. Hadith of the day on Today and as a notification. Today and the alert
-   scheduling are the app's most guarded code (AGENTS.md §1, §8, §9).
+6. ~~Hadith of the day on Today and as a notification~~ — done
+   2026-11-26: the notification (`hadithReminders.ts`, off by default,
+   Settings → Notifications → daily reminders) and a card in Today's side
+   column on the dashboard and the folded book (`HadithOfDayCard.tsx`).
+   **Not on the phone's Today, on purpose** — it fits the screen without
+   scrolling by design; the maintainer may rule otherwise. No prayer
+   alert's code was touched. Nobody has heard either notification on a
+   device.
 
 Content, all under the policy's compilation clause or from what is held:
 

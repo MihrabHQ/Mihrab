@@ -45,6 +45,7 @@ import { hideLaunchSnapshot, lookKeyOf, setLaunchSnapshotLook } from './native/L
 import { getPrayerLiveActivityModule } from './native/PrayerLiveActivity';
 import { isMacCatalyst } from './responsive/breakpoints';
 import { rescheduleAyahOfDay } from './notifications/ayahOfDay';
+import { rescheduleHadithOfDay, rescheduleHadithPlanReminder } from './notifications/hadithReminders';
 import { rescheduleFastingReminders } from './notifications/fastingReminders';
 import { rescheduleDhikrReminders } from './notifications/dhikrReminders';
 import { dhikrFingerprint } from './dhikr/dhikrReminders';
@@ -241,6 +242,12 @@ export function AppNavigationRoot() {
         String(settings.hifzReminderEnabled),
         settings.hifzReminderHour,
         settings.hifzReminderMinute,
+        String(settings.hadithOfDayEnabled),
+        settings.hadithOfDayHour,
+        settings.hadithOfDayMinute,
+        String(settings.hadithPlanReminderEnabled),
+        settings.hadithPlanReminderHour,
+        settings.hadithPlanReminderMinute,
         String(settings.fastingRemindersEnabled),
         settings.fastingReminderHour,
         String(settings.kahfReminderEnabled),
@@ -288,6 +295,20 @@ export function AppNavigationRoot() {
       void rescheduleFastingReminders({
         enabled: settings.fastingRemindersEnabled,
         hour: settings.fastingReminderHour,
+      });
+      // The hadith of the day and the hadith reading plan's reminder: the
+      // same rolling windows, rolled forward by this same resync.
+      void rescheduleHadithOfDay({
+        enabled: settings.hadithOfDayEnabled,
+        hour: settings.hadithOfDayHour,
+        minute: settings.hadithOfDayMinute,
+        language: settings.language,
+      });
+      void rescheduleHadithPlanReminder({
+        enabled: settings.hadithPlanReminderEnabled,
+        hour: settings.hadithPlanReminderHour,
+        minute: settings.hadithPlanReminderMinute,
+        language: settings.language,
       });
       // Al-Kahf on Friday and Al-Mulk at night (#36). Same rolling
       // window as the others, rolled forward by this same resync.
@@ -397,6 +418,12 @@ export function AppNavigationRoot() {
     settings.hifzReminderEnabled,
     settings.hifzReminderHour,
     settings.hifzReminderMinute,
+    settings.hadithOfDayEnabled,
+    settings.hadithOfDayHour,
+    settings.hadithOfDayMinute,
+    settings.hadithPlanReminderEnabled,
+    settings.hadithPlanReminderHour,
+    settings.hadithPlanReminderMinute,
     settings.fastingRemindersEnabled,
     settings.fastingReminderHour,
     settings.kahfReminderEnabled,

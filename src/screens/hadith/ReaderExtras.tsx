@@ -39,6 +39,7 @@ import {
 } from '../../hadith/hadithRecord';
 import { updateHadithRecord } from '../../hadith/hadithStore';
 import { localDay, planProgress, type PlanProgress } from '../../hadith/plan';
+import { refreshHadithPlanReminder } from '../../notifications/hadithReminders';
 import { inputChromeStyle } from '../../theme/chrome';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
@@ -179,7 +180,7 @@ export function PlanSheet({ visible, onClose, list }: { visible: boolean; onClos
             label={t('hadith.plan.daysN', { n: days })}
             testID={`hadith-plan-${days}`}
             onPress={() => {
-              void updateHadithRecord(r => setPlan(r, { list, days, from: localDay(new Date()) }, now()));
+              void updateHadithRecord(r => setPlan(r, { list, days, from: localDay(new Date()) }, now())).then(refreshHadithPlanReminder);
               onClose();
             }}
           />
@@ -246,7 +247,7 @@ export function ListTools({
         mine ? (
           <View style={styles.planBox} testID="hadith-plan-line">
             <Text style={[styles.planText, { color: palette.text }]}>{planLine(planProgress(mine, rowIds, rec, new Date()), t)}</Text>
-            <Link label={t('hadith.plan.end')} muted onPress={() => void updateHadithRecord(r => setPlan(r, null, now()))} testID="hadith-plan-end" />
+            <Link label={t('hadith.plan.end')} muted onPress={() => void updateHadithRecord(r => setPlan(r, null, now())).then(refreshHadithPlanReminder)} testID="hadith-plan-end" />
           </View>
         ) : (
           <Link label={t('hadith.plan.start')} onPress={() => setPlanning(true)} testID="hadith-plan-start" />

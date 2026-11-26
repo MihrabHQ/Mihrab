@@ -29,7 +29,7 @@ export function DailyRemindersSettingsScreen() {
   const clock = useClockFormatter();
   /** Which of the two times the sheet is editing, or none. */
   const [timeTarget, setTimeTarget] = useState<
-    'ayah' | 'khatmah' | 'hifz' | 'kahf' | 'mulk' | null
+    'ayah' | 'khatmah' | 'hifz' | 'kahf' | 'mulk' | 'hadith' | 'hadithPlan' | null
   >(null);
 
   // The khatmah reminder has nothing to say without a plan — the
@@ -56,6 +56,12 @@ export function DailyRemindersSettingsScreen() {
     }
     if (!(await ensureNotifPermission())) return;
     updateSettings({ ayahOfDayEnabled: true });
+  };
+
+  // The two of the Hadith tab (`notifications/hadithReminders.ts`).
+  const onToggleHadith = async (key: 'hadithOfDayEnabled' | 'hadithPlanReminderEnabled', value: boolean) => {
+    if (value && !(await ensureNotifPermission())) return;
+    updateSettings({ [key]: value });
   };
 
   const onToggleKhatmahReminder = async (value: boolean) => {
@@ -153,6 +159,18 @@ export function DailyRemindersSettingsScreen() {
       minute: settings.khatmahReminderMinute,
       setHour: (h: number) => updateSettings({ khatmahReminderHour: h }),
       setMinute: (m: number) => updateSettings({ khatmahReminderMinute: m }),
+    },
+    hadith: {
+      hour: settings.hadithOfDayHour,
+      minute: settings.hadithOfDayMinute,
+      setHour: (h: number) => updateSettings({ hadithOfDayHour: h }),
+      setMinute: (m: number) => updateSettings({ hadithOfDayMinute: m }),
+    },
+    hadithPlan: {
+      hour: settings.hadithPlanReminderHour,
+      minute: settings.hadithPlanReminderMinute,
+      setHour: (h: number) => updateSettings({ hadithPlanReminderHour: h }),
+      setMinute: (m: number) => updateSettings({ hadithPlanReminderMinute: m }),
     },
     hifz: {
       hour: settings.hifzReminderHour,
@@ -314,6 +332,36 @@ export function DailyRemindersSettingsScreen() {
                 settings.mulkReminderMinute,
               )}
               onPress={() => setTimeTarget('mulk')}
+            />
+          ) : null}
+        </SettingsGroup>
+
+        {/* The Hadith tab's two: the hadith of the day, and the reading plan's reminder. */}
+        <SettingsGroup title={t('nav.hadith')}>
+          <SettingsToggleRow
+            title={t('settings.hadithOfDay')}
+            help={t('settings.hadithOfDayHelp')}
+            value={settings.hadithOfDayEnabled}
+            onValueChange={v => onToggleHadith('hadithOfDayEnabled', v)}
+          />
+          {settings.hadithOfDayEnabled ? (
+            <SettingsLinkRow
+              title={t('settings.ayahOfDayTime', 'Notification time')}
+              value={fmtTime(settings.hadithOfDayHour, settings.hadithOfDayMinute)}
+              onPress={() => setTimeTarget('hadith')}
+            />
+          ) : null}
+          <SettingsToggleRow
+            title={t('settings.hadithPlanReminder')}
+            help={t('settings.hadithPlanReminderHelp')}
+            value={settings.hadithPlanReminderEnabled}
+            onValueChange={v => onToggleHadith('hadithPlanReminderEnabled', v)}
+          />
+          {settings.hadithPlanReminderEnabled ? (
+            <SettingsLinkRow
+              title={t('settings.ayahOfDayTime', 'Notification time')}
+              value={fmtTime(settings.hadithPlanReminderHour, settings.hadithPlanReminderMinute)}
+              onPress={() => setTimeTarget('hadithPlan')}
             />
           ) : null}
         </SettingsGroup>

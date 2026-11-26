@@ -74,7 +74,7 @@ describe('where they are met', () => {
       return [h.memo, h.folder, h.plan].map(o => Object.keys(o));
     };
     const en = keys('en');
-    expect(en.map(k => k.length)).toEqual([9, 8, 7]);
+    expect(en.map(k => k.length)).toEqual([9, 8, 8]);
     for (const lang of LOCALES) expect(keys(lang)).toEqual(en);
     for (const lang of LOCALES) {
       const p = JSON.parse(read(`src/i18n/locales/${lang}.json`)).hadith.plan;

@@ -51,6 +51,10 @@ export const ROUTE_KHATMAH = 'khatmah';
 /** The day's hifz revision — #121. */
 export const ROUTE_HIFZ = 'hifz';
 export const ROUTE_AYAH_OF_DAY = 'ayahOfDay';
+/** The hadith of the day: its own hadith, decided the day it was written (`hadithReminders.ts`). */
+export const ROUTE_HADITH = 'hadith';
+/** The hadith reading plan's reminder: the Hadith tab, where the plan's card goes on from the first unread. */
+export const ROUTE_HADITH_PLAN = 'hadithPlan';
 /** A whole surah — the Al-Kahf and Al-Mulk reminders, #36. */
 export const ROUTE_SURAH = 'surah';
 /** One of the user's own dhikr reminders — #29. */
@@ -95,6 +99,13 @@ export async function notificationRoute(
     if (!surah || !ayah) return null;
     return readUrl(surah, `scrollToAyah=${ayah}`);
   }
+
+  // The hadith of the day opens that hadith; an id that is not one opens the tab.
+  if (data.route === ROUTE_HADITH) {
+    const id = typeof data.hadith === 'string' && /^[hnb]:[\w:]{1,60}$/.test(data.hadith) ? data.hadith : null;
+    return id ? `${MIHRAB_SCHEME}hadith/read/${encodeURIComponent(id)}` : `${MIHRAB_SCHEME}hadith`;
+  }
+  if (data.route === ROUTE_HADITH_PLAN) return `${MIHRAB_SCHEME}hadith`;
 
   // Manage downloads, where a stopped download can be picked up — #55.
   if (data.route === ROUTE_QURAN_DOWNLOADS) {
