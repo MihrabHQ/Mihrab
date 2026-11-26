@@ -2865,7 +2865,12 @@
         "blurb": "The Book of Monotheism: Allah's right over His servants"
       },
       "why": "Why fewer than the book has: Mihrab serves only hadith graded hasan or sahih. A report graded weak, one with no grade, or one the book takes from a collection Mihrab does not carry is left out, so the book appears shorter here than in print.",
-      "sectionNote": "Some of these show fewer hadith than the printed book: only hadith graded hasan or sahih are served."
+      "sectionNote": "Some of these show fewer hadith than the printed book: only hadith graded hasan or sahih are served.",
+      "bulugh": {
+        "title": "Bulugh al-Maram",
+        "compiler": "Ibn Hajar",
+        "blurb": "The hadith that rulings are drawn from, each with who reports it"
+      }
     },
     "agreed": {
       "title": "Agreed upon",

@@ -2865,7 +2865,12 @@
         "blurb": "Das Buch des Monotheismus: Allahs Recht über Seine Diener"
       },
       "why": "Warum weniger als im Buch: Mihrab zeigt nur Hadithe, die als hasan oder sahih eingestuft sind. Eine als schwach eingestufte Überlieferung, eine ohne Einstufung oder eine aus einer Sammlung, die Mihrab nicht führt, wird ausgelassen; das Buch ist hier daher kürzer als im Druck.",
-      "sectionNote": "Einige davon zeigen weniger Hadithe als das gedruckte Buch: Es werden nur als hasan oder sahih eingestufte Hadithe gezeigt."
+      "sectionNote": "Einige davon zeigen weniger Hadithe als das gedruckte Buch: Es werden nur als hasan oder sahih eingestufte Hadithe gezeigt.",
+      "bulugh": {
+        "title": "Bulugh al-Maram",
+        "compiler": "Ibn Hadschar",
+        "blurb": "Die Hadithe, aus denen die Rechtsbestimmungen abgeleitet werden, jeweils mit ihren Überlieferern"
+      }
     },
     "agreed": {
       "title": "Übereinstimmend überliefert",

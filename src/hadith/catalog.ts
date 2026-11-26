@@ -41,6 +41,7 @@ import NAWAWI from './nawawi40.json';
 import AGREED from './agreed.json';
 import RIYAD from './compilations/riyad.json';
 import UMDAH from './compilations/umdah.json';
+import BULUGH from './compilations/bulugh.json';
 import KALIM from './compilations/kalim.json';
 import QUDSI from './compilations/qudsi.json';
 import ADHKAR from './compilations/adhkar.json';
@@ -208,6 +209,7 @@ const compilation = (raw: RawCompilation): Compilation => ({
 const ALL_COMPILATIONS: readonly Compilation[] = [
   compilation(RIYAD as RawCompilation),
   compilation(UMDAH as RawCompilation),
+  compilation(BULUGH as RawCompilation),
   compilation(KALIM as RawCompilation),
   compilation(ADHKAR as RawCompilation),
   compilation(WABIL as RawCompilation),

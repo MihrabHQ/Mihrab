@@ -2865,7 +2865,12 @@
         "blurb": "Tevhid Kitabı: Allah'ın kulları üzerindeki hakkı"
       },
       "why": "Kitaptakinden neden az: Mihrab yalnızca hasen veya sahih derecesindeki hadisleri sunar. Zayıf sayılan, derecesi olmayan veya Mihrab'da bulunmayan bir eserden alınan rivayet dışarıda bırakılır; bu yüzden kitap burada basılısından kısa görünür.",
-      "sectionNote": "Bunların bazılarında basılı kitaptakinden az hadis görünür: yalnızca hasen veya sahih derecesindekiler sunulur."
+      "sectionNote": "Bunların bazılarında basılı kitaptakinden az hadis görünür: yalnızca hasen veya sahih derecesindekiler sunulur.",
+      "bulugh": {
+        "title": "Bulûğu'l-Merâm",
+        "compiler": "İbn Hacer",
+        "blurb": "Hükümlerin dayandığı hadisler; her biri kimin rivayet ettiğiyle"
+      }
     },
     "agreed": {
       "title": "Müttefekun aleyh",

@@ -2866,7 +2866,12 @@
         "blurb": "El libro del monoteísmo: el derecho de Allah sobre Sus siervos"
       },
       "why": "Por qué hay menos que en el libro: Mihrab solo muestra hadices calificados como hasan o sahih. Un relato calificado de débil, sin calificación o tomado de una colección que Mihrab no incluye se omite, así que el libro aparece aquí más corto que impreso.",
-      "sectionNote": "Algunos muestran menos hadices que el libro impreso: solo se ofrecen los calificados como hasan o sahih."
+      "sectionNote": "Algunos muestran menos hadices que el libro impreso: solo se ofrecen los calificados como hasan o sahih.",
+      "bulugh": {
+        "title": "Bulugh al-Maram",
+        "compiler": "Ibn Hayar",
+        "blurb": "Los hadices de los que se extraen las normas, cada uno con quién lo transmite"
+      }
     },
     "agreed": {
       "title": "Acordado",

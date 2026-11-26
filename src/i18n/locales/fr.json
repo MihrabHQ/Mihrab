@@ -2866,7 +2866,12 @@
         "blurb": "Le Livre de l'unicité : le droit d'Allah sur Ses serviteurs"
       },
       "why": "Pourquoi moins que dans le livre : Mihrab ne présente que les hadiths jugés hasan ou sahih. Un récit jugé faible, sans jugement, ou tiré d'un recueil que Mihrab ne contient pas est laissé de côté ; le livre paraît donc plus court ici qu'à l'impression.",
-      "sectionNote": "Certains présentent moins de hadiths que le livre imprimé : seuls les hadiths jugés hasan ou sahih sont proposés."
+      "sectionNote": "Certains présentent moins de hadiths que le livre imprimé : seuls les hadiths jugés hasan ou sahih sont proposés.",
+      "bulugh": {
+        "title": "Bulugh al-Maram",
+        "compiler": "Ibn Hajar",
+        "blurb": "Les hadiths dont sont tirées les règles, chacun avec ceux qui le rapportent"
+      }
     },
     "agreed": {
       "title": "Unanimement reconnu",

@@ -79,6 +79,13 @@ the shelf; font choice; verse links. A chapter holds the screen on
 under the Qur'an's own `readerKeepAwake` setting (the maintainer's yes,
 2026-11-26) — whose help text still names only the Qur'an screens.
 
+Bulūgh al-Marām (`bulugh`, 703 of 1,582) was added the same day at the
+maintainer's request: `attributionBulugh` / `reportBulugh` / `weakBulugh`
+in `build-compilation.js`, the row in the policy table. Left out: 346
+attributed elsewhere, 109 he reports as found wanting, 312 not found with
+confidence, 99 too short to tell, 13 not in the text read. Known
+conservative miss: "رواه أحمد، واللفظ له، والثلاثة" stops at "واللفظ".
+
 Hadith tab, same day: a compilation shorter than its book says why
 (`hadith.comp.why`, and `sectionNote` over the list); the search field is
 not drawn on the Library page; recent searches and the count of results

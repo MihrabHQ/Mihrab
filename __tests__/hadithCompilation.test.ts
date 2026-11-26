@@ -163,7 +163,7 @@ describe('the index', () => {
 
 describe('every compilation’s index', () => {
   type Raw = { id: string; of: number; note: string; numbered?: boolean; left: Record<string, number>; rows: Array<[number, string, number, string | null]> };
-  const all = ['riyad', 'umdah', 'kalim', 'adhkar', 'wabil', 'qudsi', 'rajab', 'tawhid'].map(id => JSON.parse(read(`src/hadith/compilations/${id}.json`)) as Raw);
+  const all = ['riyad', 'umdah', 'bulugh', 'kalim', 'adhkar', 'wabil', 'qudsi', 'rajab', 'tawhid'].map(id => JSON.parse(read(`src/hadith/compilations/${id}.json`)) as Raw);
 
   it('is written by the script, in the compiler’s order, and accounts for every hadith of the book', () => {
     for (const c of all) {
@@ -237,7 +237,7 @@ describe('in the app', () => {
   });
 
   it('is a list of its own, read from HadeethEnc and the books it names', () => {
-    expect(COMPILATIONS.map(c => c.id)).toEqual(['riyad', 'umdah', 'kalim', 'adhkar', 'wabil', 'qudsi', 'rajab', 'tawhid']);
+    expect(COMPILATIONS.map(c => c.id)).toEqual(['riyad', 'umdah', 'bulugh', 'kalim', 'adhkar', 'wabil', 'qudsi', 'rajab', 'tawhid']);
     expect(parseList('comp:riyad')).toEqual({ kind: 'comp', id: 'riyad' });
     expect(parseList('comp:nothing')).toBeNull();
     expect(compilationBooks(riyad)).toEqual(expect.arrayContaining(['bukhari', 'muslim', 'abudawud', 'tirmidhi']));
@@ -343,6 +343,53 @@ describe('in the app', () => {
       const c = JSON.parse(read(`src/i18n/locales/${lang}.json`)).hadith.comp.tawhid;
       expect([lang, Object.keys(c).sort()]).toEqual([lang, ['blurb', 'compiler', 'title']]);
     }
+  });
+
+  it('reads Bulugh al-Maram in Ibn Hajar\'s own shorthand, and leaves out what he reports as found wanting', () => {
+    const { attributionBulugh, reportBulugh, weakBulugh } = require('../scripts/hadith/build-compilation.js');
+    const six = ['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah'];
+    const sunan = ['abudawud', 'tirmidhi', 'nasai', 'ibnmajah'];
+    // His preface: السبعة and الستة are the six (Aḥmad is not served); الخمسة and الأربعة the four Sunan; الثلاثة three of them.
+    expect(attributionBulugh('عن أبي هريرة قال: «كذا وكذا». رواه السبعة.')).toEqual(six);
+    expect(attributionBulugh('عن أنس: «كذا». أخرجه الستة')).toEqual(six);
+    expect(attributionBulugh('عن أبي هريرة في البحر: «هو الطهور ماؤه». أخرجه الأربعة, وابن أبي شيبة واللفظ له, وصححه ابن خزيمة')).toEqual(sunan);
+    expect(attributionBulugh('عن جابر: «كذا». رواه الخمسة, وصححه الترمذي')).toEqual(sunan);
+    expect(attributionBulugh('عن أبي سعيد: «إن الماء طهور». أخرجه الثلاثة وصححه أحمد.')).toEqual(['abudawud', 'tirmidhi', 'nasai']);
+    expect(attributionBulugh('عن عمر: «إنما الأعمال بالنيات». متفق عليه.')).toEqual(['bukhari', 'muslim']);
+    // A list with commas runs on until it says something else.
+    expect(attributionBulugh('عن علي: «كذا». رواه أحمد, وأبو داود, والترمذي وحسنه, وقواه ابن المديني')).toEqual(['abudawud', 'tirmidhi']);
+    expect(attributionBulugh('عن المقدام: «الخال وارث». أخرجه أحمد, والأربعة سوى الترمذي, وحسنه أبو زرعة')).toEqual(['abudawud', 'nasai', 'ibnmajah']);
+    expect(attributionBulugh('وله شاهد عند الأربعة إلا النسائي')).toEqual([]);
+    expect(attributionBulugh('عن فلان: «كذا». أخرجه الأربعة إلا النسائي.')).toEqual(['abudawud', 'tirmidhi', 'ibnmajah']);
+    // Another book's wording of the hadith before.
+    expect(attributionBulugh('وللبخاري: «لا يبولن أحدكم في الماء الدائم».')).toEqual(['bukhari']);
+    expect(attributionBulugh('ولأصحاب السنن: اغتسل بعض أزواج النبي في جفنة')).toEqual(sunan);
+    expect(reportBulugh('وللبخاري: «لا يبولن أحدكم في الماء الدائم».')).not.toMatch(/للبخاري/);
+    expect(reportBulugh('عن عمر: «إنما الأعمال بالنيات». متفق عليه.')).not.toMatch(/متفق/);
+    // Books the app does not serve name nothing.
+    expect(attributionBulugh('وللبيهقي: «الماء طاهر».')).toEqual([]);
+    expect(attributionBulugh('عن فلان: «كذا». رواه أحمد, ورجاله ثقات.')).toEqual([]);
+    expect(attributionBulugh('عن فلان: «كذا». أخرجه الدارقطني, وصححه الحاكم')).toEqual([]);
+    expect(attributionBulugh('عن فلان: «كذا». رواه البخاري تعليقا')).toEqual([]);
+    // What he reports as found wanting.
+    for (const said of ['أخرجه ابن ماجه وضعفه أبو حاتم.', 'رواه ابن ماجه بسند واه جدا.', 'رواه أبو داود, وسنده ضعيف.', 'أخرجه أبو داود وهو مرسل', 'رواه أبو داود, وصححه ابن خزيمة. لكن رجح أبو حاتم إرساله.', 'رواه الخمسة, ومال النسائي والترمذي إلى ترجيح وقفه', 'أخرجه ابن ماجه, وإسناده حسن, لكنه معلول']) {
+      expect([said, weakBulugh(`عن فلان: «كذا». ${said}`)]).toEqual([said, true]);
+    }
+    // Words that only look like them: "رواه" holds "واه", "الأولين" holds "لين", "فعله" holds "عله".
+    for (const said of ['رواه مسلم.', 'رواه أبو داود, وصححه الترمذي في الأولين', 'أخرجه البخاري من فعله', 'رواه الترمذي وحسنه', 'متفق عليه']) {
+      expect([said, weakBulugh(`عن فلان: «كذا». ${said}`)]).toEqual([said, false]);
+    }
+    // A word about a second report does not fall on the first.
+    expect(weakBulugh('عن فلان: «كذا». أخرجه مسلم. وللدارقطني: «كذا» وإسناده ضعيف')).toBe(false);
+    const bulugh = findCompilation('bulugh')!;
+    expect(bulugh.numbered).toBe(true);
+    expect(bulugh.of).toBe(1582);
+    expect(bulugh.rows.length).toBeGreaterThanOrEqual(650);
+    for (const lang of ['en', 'sv', 'ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh']) {
+      const c = JSON.parse(read(`src/i18n/locales/${lang}.json`)).hadith.comp.bulugh;
+      expect([lang, Object.keys(c).sort()]).toEqual([lang, ['blurb', 'compiler', 'title']]);
+    }
+    expect(read('docs/hadith-policy.md')).toContain('| **Bulūgh al-Marām** (a compilation, §1;');
   });
 
   it('offers the eight Ibn Rajab added to the Forty under his numbers, less the one he gives to no book served', () => {

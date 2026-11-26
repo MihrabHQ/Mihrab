@@ -266,6 +266,53 @@ const COMPILATIONS = {
    * حسن"); the commentary that follows is not read. Wikisource sets the
    * hadith in <big>…</big>, which is how it is told from the commentary.
    */
+  /**
+   * Bulūgh al-Marām min Adillat al-Aḥkām, Ibn Ḥajar al-ʿAsqalānī (d. 852
+   * AH): the hadith of rulings, each followed by who reports it — and in
+   * his own shorthand, which his preface defines and `attributionBulugh`
+   * reads: "السبعة" is Aḥmad and the six, "الستة" the six, "الخمسة" Aḥmad
+   * and the four Sunan, "الأربعة" the four Sunan, "الثلاثة" Abū Dāwūd,
+   * at-Tirmidhī and an-Nasāʾī, "متفق عليه" al-Bukhārī and Muslim. He also
+   * says what he and the imams before him found wrong with a hadith
+   * ("وضعفه أبو حاتم", "وإسناده ضعيف", "ورجح … إرساله"), and a hadith he
+   * reports with such a word is left out (`weakBulugh`).
+   *
+   * The text is OpenITI's, from Shamela's transcription of the Dār
+   * al-Falaq printing. The conversion took a quotation set on a line of
+   * its own for a heading ("### | : «إذا كان الماء قلتين"): such a line is
+   * the hadith's text. A heading that IS one — كتاب, باب, فصل — set after
+   * a chapter's last hadith ends that hadith. "[ص: 6]" is the page.
+   */
+  bulugh: {
+    of: 1582,
+    numbered: true,
+    input: {
+      url: 'https://raw.githubusercontent.com/OpenITI/0875AH/master/data/0852IbnHajarCasqalani/0852IbnHajarCasqalani.BulughMaram/0852IbnHajarCasqalani.BulughMaram.Shamela0009111-ara1',
+      cache: 'openiti-bulugh.txt',
+      text: true,
+    },
+    items: text => {
+      const items = new Map();
+      const parts = text.slice(text.indexOf('#META#Header#End#')).split(/\n### \| (\d+) - *\n/);
+      for (let i = 1; i < parts.length - 1; i += 2) {
+        const n = Number(parts[i]);
+        if (items.has(n)) continue;
+        const lines = [];
+        for (const line of parts[i + 1].split('\n')) {
+          const h = /^### [|$]+ ?(.*)$/.exec(line);
+          if (h && /^\[ص: \d+\]\s*$/.test(h[1])) continue;
+          if (h && /^(?:كتاب|باب|فصل)(?:\s|$)/.test(h[1])) break;
+          lines.push(h ? h[1] : line.replace(/^# |^~~/, ''));
+        }
+        const body = lines.join(' ').replace(/PageV\d+P\d+|ms\d+|\(\d+\)/g, ' ').replace(/\s+/g, ' ').trim();
+        if (body) items.set(n, body);
+      }
+      return items;
+    },
+    attribution: body => attributionBulugh(body),
+    report: body => reportBulugh(body),
+    weak: body => weakBulugh(body),
+  },
   rajab: {
     of: 8,
     numbered: true,
@@ -514,6 +561,112 @@ function attributionTawhid(body) {
   if (/(?:^|\s)وللترمذي\s/.test(before)) return ['tirmidhi'];
   if (/(?:^|\s)وللنسا[يئ]ي\s/.test(before)) return ['nasai'];
   return [];
+}
+/**
+ * Ibn Ḥajar's attribution in Bulūgh al-Marām, in the shorthand his preface
+ * sets out: the books his FIRST attribution names, of the seven the app
+ * serves. A group word stands for its books ("الأربعة": the four Sunan;
+ * Aḥmad, whom "السبعة" and "الخمسة" count, is not served and is not
+ * named here), "إلا" takes out what follows it ("أخرجه الأربعة إلا
+ * النسائي"), and a hadith he gives as another book's wording of the one
+ * before ("وللبخاري: …", "ولمسلم …", "ولأبي داود: …") is that book's. One
+ * he gives for a book the app does not serve ("وللبيهقي", "رواه أحمد",
+ * "أخرجه الدارقطني") names none.
+ */
+const BULUGH_GROUPS = [
+  [/(?:^| )السبع[هة](?: |$)/, ['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah']],
+  [/(?:^| )الست[هة](?: |$)/, ['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah']],
+  [/(?:^| )الخمس[هة](?: |$)/, ['abudawud', 'tirmidhi', 'nasai', 'ibnmajah']],
+  [/(?:^| )الاربع[هة](?: |$)/, ['abudawud', 'tirmidhi', 'nasai', 'ibnmajah']],
+  [/(?:^| )الثلاث[هة](?: |$)/, ['abudawud', 'tirmidhi', 'nasai']],
+];
+/** Where a piece of his list stops naming books: a verdict, a wording, a place in a book. */
+const BULUGH_NAMES_END = / و?(?:صحح|حسن|ضعف|قال|رجال|اسناد|سند|لفظ|اللفظ|زاد|اصل|رجح|قوا|اعل|استنكر|هذا|هو |لكن|مرسل|موقوف|مطول|مختصر|تعليقا|معلقا|بمعنا|نحوه|مثله|علي شرط|بلفظ|من |عن |ان |في )/;
+const BULUGH_LED = [
+  [/^و?للبخاري[\s:،]/, 'bukhari'],
+  [/^و?لمسلم[\s:،]/, 'muslim'],
+  [/^و?لابي داود[\s:،]/, 'abudawud'],
+  [/^و?للترمذي[\s:،]/, 'tirmidhi'],
+  [/^و?للنسا[يئ]ي[\s:،]/, 'nasai'],
+  [/^و?لابن ماجه[\s:،]/, 'ibnmajah'],
+];
+const bulughNames = names => {
+  const list = names.replace(/ابي داود/g, 'ابو داود').split(/\s+و(?=\S)|\s+/).join(' ');
+  const out = new Set(BOOK_NAMES.filter(([, re]) => re.test(list)).map(([b]) => b));
+  for (const [re, group] of BULUGH_GROUPS) if (re.test(list)) for (const b of group) out.add(b);
+  return out;
+};
+/** Where his first attribution begins and what kind it is; null where there is none. */
+function bulughFirst(t) {
+  const agreed = t.search(AGREED_WIDE);
+  const reported = t.search(REPORTED_WIDE);
+  if (agreed < 0 && reported < 0) return null;
+  return agreed >= 0 && (reported < 0 || agreed < reported) ? { at: agreed, agreed: true } : { at: reported, agreed: false };
+}
+function attributionBulugh(body) {
+  const t = plain(body).replace(/[,;]/g, m => (m === ',' ? '،' : '؛'));
+  const led = BULUGH_LED.find(([re]) => re.test(t));
+  if (led) return [led[1]];
+  // "ولأصحاب السنن: …": the four Sunan, as he names them together.
+  if (/^و?لاصحاب السنن[\s:،]/.test(t)) return ['abudawud', 'tirmidhi', 'nasai', 'ibnmajah'];
+  // "ولأحمد", "وللبيهقي", "وله", "ولهما": another book's wording, of a book not served or not named.
+  if (/^و?ل(?:ل|ه |هما |احمد|ابن )/.test(t)) return [];
+  const first = bulughFirst(t);
+  if (!first) return [];
+  if (first.agreed) return ['bukhari', 'muslim'];
+  // He lists his sources with commas between them ("رواه أحمد، والثلاثة،
+  // وصححه الترمذي"): the names run on over a comma until a piece says
+  // something else, and stop at the sentence's end.
+  const sentence = t.slice(first.at).replace(REPORTED_HEAD_WIDE, '').split(/[.؛:\n()«"]/)[0];
+  let names = '';
+  let turned = '';
+  for (const piece of sentence.split('،')) {
+    const stop = ` ${piece} `.search(BULUGH_NAMES_END);
+    if (stop >= 0) {
+      names += ` ${` ${piece} `.slice(0, stop)}`;
+      turned = ` ${piece} `.slice(stop, stop + 16);
+      break;
+    }
+    if (piece.trim().split(/\s+/).length > 6) break;
+    names += ` ${piece}`;
+  }
+  if ((/^ في /.test(turned) && !IN_HIS_BOOK.test(turned)) || /^ (?:تعليقا|معلقا)/.test(turned)) return [];
+  const [kept, ...taken] = names.split(/ (?:الا|سوي|غير) /);
+  const out = bulughNames(kept);
+  for (const b of bulughNames(taken.join(' '))) out.delete(b);
+  return ['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah', 'malik'].filter(b => out.has(b));
+}
+/** The hadith itself: before his first attribution, or — where the book leads ("وللبخاري: «…»") — after it. */
+function reportBulugh(body) {
+  const t = plain(body).replace(/[,;]/g, m => (m === ',' ? '،' : '؛'));
+  const led = BULUGH_LED.find(([re]) => re.test(t)) ?? (/^و?لاصحاب السنن[\s:،]/.test(t) ? [/^و?لاصحاب السنن[\s:،]/] : undefined);
+  const from = led ? t.replace(led[0], ' ') : t;
+  const first = bulughFirst(from);
+  return first ? from.slice(0, first.at) : from;
+}
+/**
+ * Does he report, with the attribution, that the hadith was found wanting
+ * — by himself or by an imam he quotes? Read from his attribution to where
+ * he turns to another wording ("وللبخاري", "وفي رواية", "وزاد"), so a word
+ * about a second report does not fall on the first. Wider than `SAYS_WEAK`:
+ * this book's own terms — معلول, أعلّه, منكر, مضطرب, and a hadith judged
+ * to be a Companion's word or to lack its Companion ("والصواب وقفه",
+ * "ورجح إرساله", "مرسل"). Leaving out too much is the safe side.
+ */
+// Whole words only: "واه" is in "رواه", "لين" in "الأولين", "عله" in "فعله".
+const BULUGH_WEAK = new RegExp(
+  '(?:^|[\\s.،؛:«»])(?:و|ف|ب|ل)?(?:ال)?(?:' +
+    'ضعيف[هة]?|ضعف[هة]?|ضعفوه|منقطع|مجهول|باطل|موضوع|معلول|معل|اعل[هة]|اعلوه|منكر|استنكره?|مضطرب|اضطراب|مرسلا?|ارسال[هة]?|وقف[هة]|موقوفا?|لين|واهي?|مقال|شاذ|غلط|مدرج' +
+    ')(?=[\\s.،؛:«»]|$)|لا يصح|لم يصح|لا يثبت|فيه نظر',
+);
+function weakBulugh(body) {
+  const t = plain(body).replace(/[,;]/g, m => (m === ',' ? '،' : '؛'));
+  const first = bulughFirst(t);
+  // A leading "ول…" has no "رواه" of its own: his words after the report are read whole.
+  const rest = first ? t.slice(first.at) : t;
+  const turn = rest.slice(1).search(/[.،؛»] و(?:ل(?:ل|مسلم|ابي|ابن|احمد|هما |ه )|في رواي|في لفظ|زاد |عند )/);
+  const said = (turn < 0 ? rest : rest.slice(0, turn + 1)).replace(/لم يضعفه/g, ' ');
+  return BULUGH_WEAK.test(said);
 }
 // attribution-rule:end
 
@@ -866,4 +1019,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-module.exports = { indexed, pair, signedRow, SIGNED, attribution, attributionAround, attributionLed, reportLed, attributionTawhid, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };
+module.exports = { indexed, pair, signedRow, SIGNED, attribution, attributionAround, attributionLed, reportLed, attributionTawhid, attributionBulugh, reportBulugh, weakBulugh, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };

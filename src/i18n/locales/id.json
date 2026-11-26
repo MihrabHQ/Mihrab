@@ -2865,7 +2865,12 @@
         "blurb": "Kitab Tauhid: hak Allah atas hamba-hamba-Nya"
       },
       "why": "Mengapa lebih sedikit daripada bukunya: Mihrab hanya menampilkan hadis yang dinilai hasan atau sahih. Riwayat yang dinilai lemah, yang tidak bernilai, atau yang diambil dari kitab yang tidak ada di Mihrab ditinggalkan, sehingga buku ini tampak lebih pendek di sini daripada cetakannya.",
-      "sectionNote": "Sebagian menampilkan lebih sedikit hadis daripada buku cetaknya: hanya hadis yang dinilai hasan atau sahih yang ditampilkan."
+      "sectionNote": "Sebagian menampilkan lebih sedikit hadis daripada buku cetaknya: hanya hadis yang dinilai hasan atau sahih yang ditampilkan.",
+      "bulugh": {
+        "title": "Bulughul Maram",
+        "compiler": "Ibnu Hajar",
+        "blurb": "Hadis-hadis dalil hukum, masing-masing dengan siapa yang meriwayatkannya"
+      }
     },
     "agreed": {
       "title": "Muttafaq ‘alaih",

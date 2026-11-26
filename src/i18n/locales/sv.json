@@ -2865,7 +2865,12 @@
         "blurb": "Boken om Guds enhet: Allahs rätt över Sina tjänare"
       },
       "why": "Varför färre än boken har: Mihrab visar bara hadither som graderats hasan eller sahih. En återberättelse som graderats svag, som saknar gradering eller som boken hämtar från en samling Mihrab inte har utelämnas, så boken är kortare här än i tryck.",
-      "sectionNote": "Några av dessa visar färre hadither än den tryckta boken: bara hadither graderade hasan eller sahih visas."
+      "sectionNote": "Några av dessa visar färre hadither än den tryckta boken: bara hadither graderade hasan eller sahih visas.",
+      "bulugh": {
+        "title": "Bulugh al-Maram",
+        "compiler": "Ibn Hajar",
+        "blurb": "Haditherna som rättsreglerna hämtas ur, var och en med vem som återger den"
+      }
     },
     "agreed": {
       "title": "Överensstämmande",
