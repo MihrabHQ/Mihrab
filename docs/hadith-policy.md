@@ -96,6 +96,8 @@ decided before any is served.
 | **Ṣaḥīḥ al-Bukhārī, Ṣaḥīḥ Muslim** | Whole | The standing of the collections. They are not graded hadith by hadith in any open dataset, and a hadith's page says exactly that — it does not show a grade of ours |
 | **Sunan Abī Dāwūd, Jāmiʿ at-Tirmidhī, Sunan an-Nasāʾī, Sunan Ibn Mājah, the Muwaṭṭaʾ** | Only the hadith every grader who ruled calls ṣaḥīḥ or ḥasan — and at least one did | `scripts/hadith/book-grades.js` (the build), `src/hadith/bookGrades.ts` (the app reads every row again and refuses a pack with one that does not pass) |
 | **Riyāḍ aṣ-Ṣāliḥīn** (a compilation, §1) | The hadith an-Nawawī attributes to a book the app serves, each as that book's own row — in the five graded books, only a row every grader calls sound — or the HadeethEnc entry that is the same hadith, for its translation. One he himself calls weak is left out | `scripts/hadith/build-compilation.js` writes `src/hadith/compilations/riyad.json`: his number, the book, the row |
+| **ʿUmdat al-Aḥkām** (a compilation, §1) | Its compiler's condition is that every hadith is in al-Bukhārī and Muslim both: each is served as the row of one of the two that has its words, or as its HadeethEnc entry | The same script; `src/hadith/compilations/umdah.json` |
+| **al-Kalim aṭ-Ṭayyib** (a compilation, §1) | The supplications Ibn Taymiyyah attributes to a book the app serves, each as that book's row | The same script; `src/hadith/compilations/kalim.json` |
 | **Musnad Aḥmad, Sunan ad-Dārimī** | Not offered | No open dataset grades them. They come back when one does |
 
 **"Agreed upon"** (Look up, above the books) is not a further source: it

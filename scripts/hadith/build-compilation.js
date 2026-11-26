@@ -79,11 +79,44 @@ const OUT_DIR = path.join(ROOT, 'src', 'hadith', 'compilations');
 
 const COMPILATIONS = {
   riyad: {
-    title: 'رياض الصالحين',
     /** The book's hadith, by an-Nawawī's count in the edition read. */
     of: 1896,
-    cache: 'wikisource-riyad.json',
-    api: 'https://ar.wikisource.org/w/api.php',
+    numbered: true,
+    input: { wikisource: 'رياض الصالحين', cache: 'wikisource-riyad.json' },
+    items: pages => numbered(pages),
+  },
+  /**
+   * ʿUmdat al-Aḥkām, ʿAbd al-Ghanī al-Maqdisī (d. 600 AH): the hadith of
+   * rulings "مما اتفق عليه الإمامان" — his own condition, stated in his
+   * introduction, is that each is in al-Bukhārī AND Muslim. So the
+   * attribution is the book's, of every hadith in it, and a hadith is
+   * served from whichever of the two has its words. A second narration he
+   * adds under a hadith ("ولمسلم: …") is not the hadith and is not read.
+   *
+   * The input is a transcription of the book in a public repository that
+   * states no licence (github.com/okabe-r/Umdat-al-Ahkam): read, like
+   * every input here, and never republished.
+   */
+  umdah: {
+    of: 414,
+    numbered: true,
+    input: { url: 'https://raw.githubusercontent.com/okabe-r/Umdat-al-Ahkam/main/hadith.json', cache: 'github-umdah.json' },
+    items: list => new Map(list.map(h => [h.id, h.content.split(/\n(?=\s*و(?:ل|في|عن|زاد|قال))/)[0]])),
+    attribution: () => ['bukhari', 'muslim'],
+  },
+  /**
+   * al-Kalim aṭ-Ṭayyib, Ibn Taymiyyah (d. 728 AH): remembrances and
+   * supplications, each with where it is from — after it ("خرجه مسلم",
+   * "أخرجه البخاري", "رواه الترمذي وقال: حديث حسن", "متفق عليه") or before
+   * it ("في الصحيحين عن…", "وفي صحيح مسلم"). He does not number them: they
+   * are counted here in his order, and the app shows no number.
+   */
+  kalim: {
+    numbered: false,
+    input: { wikisource: 'الكلم الطيب', cache: 'wikisource-kalim.json' },
+    items: pages => bracketed(pages),
+    attribution: body => attributionAround(body),
+    report: body => plain(body.slice(body.indexOf('[') + 1, body.indexOf(']'))),
   },
 };
 
@@ -140,6 +173,17 @@ function inOrder(a, b) {
 // attribution-rule:start
 const plain = s => String(s ?? '').normalize('NFD').replace(MARKS, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي');
 const AGREED = /متفق علي(?:ه| صحته)/;
+const REPORTED = /(?:^|[\s.،])رواه(?:ما)? /;
+const REPORTED_HEAD = /^[\s.،]*رواه(?:ما)? /;
+/**
+ * Ibn Taymiyyah's words for the same: "خرجه مسلم", "أخرجه البخاري",
+ * "خرجاه" (the two of them). Read only of a book that uses them, and only
+ * in what FOLLOWS a hadith: in a hadith's own words "فأخرجه" is a man
+ * taking something out (Riyāḍ aṣ-Ṣāliḥīn 518 lost its attribution to it).
+ */
+const AGREED_WIDE = /متفق علي(?:ه| صحته)|(?:^|[\s.،\]])ا?خرجاه(?=[\s.،]|$)/;
+const REPORTED_WIDE = /(?:^|[\s.،\]])(?:رواه(?:ما)?|ا?خرجه) /;
+const REPORTED_HEAD_WIDE = /^[\s.،\]]*(?:رواه(?:ما)?|ا?خرجه) /;
 /** Where a "رواه …" stops naming books and says something else. */
 const NAMES_END = /[.،؛:\n(«"]| وقال| قال| باسناد| باسانيد| علي شرط| في | وغيره| وغيرهما| وغيرهم| بلفظ| وهذا| هكذا| من روايه| مرفوعا| موقوفا| مرسلا| تعليقا| معلقا/;
 /** The seven books the app serves, as a compiler writes them (unvowelled). */
@@ -159,14 +203,14 @@ const IN_HIS_BOOK = /^ في (?:الموطا|سننه|سننهما|صحيحه|ص�
  * serves, in the order he names them — or [] where it names none of
  * them, names one with a reservation, or there is no attribution to read.
  */
-function attribution(body) {
+function attribution(body, wide = false) {
   const t = plain(body);
   // "متفق على صحته" is how an-Nawawī words it of the book's first hadith.
-  const agreed = t.search(AGREED);
-  const reported = t.search(/(?:^|[\s.،])رواه(?:ما)? /);
+  const agreed = t.search(wide ? AGREED_WIDE : AGREED);
+  const reported = t.search(wide ? REPORTED_WIDE : REPORTED);
   if (agreed < 0 && reported < 0) return [];
   if (agreed >= 0 && (reported < 0 || agreed < reported)) return ['bukhari', 'muslim'];
-  const after = t.slice(reported).replace(/^[\s.،]*رواه(?:ما)? /, '');
+  const after = t.slice(reported).replace(wide ? REPORTED_HEAD_WIDE : REPORTED_HEAD, '');
   const stop = after.search(NAMES_END);
   const turned = stop < 0 ? '' : after.slice(stop, stop + 16);
   const names = stop < 0 ? after : after.slice(0, stop);
@@ -186,7 +230,7 @@ const SAYS_WEAK = /ضعيف|ضعف|لا يصح|لم يصح|لا يثبت|منق�
 function saysWeak(body) {
   const t = plain(body);
   const agreed = t.search(AGREED);
-  const reported = t.search(/(?:^|[\s.،])رواه(?:ما)? /);
+  const reported = t.search(REPORTED);
   // Of what he calls agreed upon he says nothing more; and only the
   // sentence of the attribution is his verdict — what follows it is his
   // explanation of the hadith's words ("…في باب ضعفة المسلمين").
@@ -194,12 +238,34 @@ function saysWeak(body) {
   const sentence = t.slice(reported + 1).split(/[.\n]/)[0];
   return SAYS_WEAK.test(sentence);
 }
+/**
+ * An attribution that may stand AFTER the hadith or BEFORE it, the hadith
+ * itself being in square brackets (al-Kalim aṭ-Ṭayyib): what follows the
+ * bracket is read first, as above; failing that, what leads into it —
+ * "في الصحيحين", "وفيهما" (in the two just named), "في صحيح مسلم", or
+ * "قال الترمذي: حديث حسن" after it, which is at-Tirmidhī reporting it.
+ */
+function attributionAround(body) {
+  const t = plain(body);
+  const open = t.indexOf('[');
+  const close = t.indexOf(']');
+  if (open < 0 || close < open) return [];
+  const after = t.slice(close + 1);
+  const named = attribution(after, true);
+  if (named.length) return named;
+  if (/^[\s.،]*(?:و)?قال الترمذي/.test(after)) return ['tirmidhi'];
+  const before = t.slice(0, open);
+  if (/في الصحيحين|وفيهما|في البخاري ومسلم/.test(before)) return ['bukhari', 'muslim'];
+  if (/في (?:صحيح )?مسلم/.test(before)) return ['muslim'];
+  if (/في (?:صحيح )?البخاري/.test(before)) return ['bukhari'];
+  return [];
+}
 // attribution-rule:end
 
 /** The hadith itself: what stands before the compiler's attribution. */
 function report(body) {
   const t = plain(body);
-  const cut = [t.search(AGREED), t.search(/(?:^|[\s.،])رواه(?:ما)? /)].filter(i => i >= 0);
+  const cut = [t.search(AGREED), t.search(REPORTED)].filter(i => i >= 0);
   return cut.length ? t.slice(0, Math.min(...cut)) : t;
 }
 
@@ -217,6 +283,18 @@ async function api(url, params) {
     await sleep(30_000 * (attempt + 1));
   }
   throw new Error(`${url} would not answer`);
+}
+
+/** A source that is one JSON file, cached like the rest. */
+async function fetched(input) {
+  const file = path.join(CACHE, input.cache);
+  if (fs.existsSync(file)) return JSON.parse(fs.readFileSync(file, 'utf8'));
+  const res = await fetch(input.url);
+  if (!res.ok) throw new Error(`${input.url}: ${res.status}`);
+  const text = await res.text();
+  fs.mkdirSync(CACHE, { recursive: true });
+  fs.writeFileSync(file, text);
+  return JSON.parse(text);
 }
 
 /** Every page of the book on Wikisource, as it stood when read: `{ title: { rev, ts, text } }`. */
@@ -268,6 +346,25 @@ function numbered(pages) {
       const n = Number(parts[i]);
       const body = parts[i + 1].trim();
       if (!items.has(n) || body.length > items.get(n).length) items.set(n, body);
+    }
+  }
+  return items;
+}
+
+/** A book whose hadith are paragraphs, each with its text in square brackets: `Map<count, paragraph>`, in order. */
+function bracketed(pages) {
+  const items = new Map();
+  let n = 0;
+  for (const page of Object.values(pages)) {
+    const t = page.text
+      .replace(/\{\{صل\}\}/g, ' صلى الله عليه وسلم ')
+      .replace(/\{\{[^{}]*\}\}/gs, '')
+      .replace(/\{\{[^{}]*\}\}/gs, '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/'''?/g, '');
+    for (const para of t.split(/\n\s*\n/)) {
+      if (/^\s*==/.test(para)) continue;
+      if (/\[[^\]]{12,}\]/s.test(para)) items.set(++n, para.trim());
     }
   }
   return items;
@@ -353,8 +450,15 @@ async function main() {
   }
   const REVIEW = process.argv.includes('--review');
 
-  const pages = await wikisource(spec);
-  const items = numbered(pages);
+  const source = spec.input.wikisource
+    ? await wikisource({ title: spec.input.wikisource, cache: spec.input.cache, api: 'https://ar.wikisource.org/w/api.php' })
+    : await fetched(spec.input);
+  const items = spec.items(source);
+  const of = spec.of ?? items.size;
+  const attributionOf = spec.attribution ?? attribution;
+  const reportOf = spec.report ?? report;
+  // Only where the compiler's own sentence follows the hadith is there a verdict of his to hear.
+  const weakOf = spec.attribution ? () => false : saysWeak;
 
   // The packs as they are served: the two Ṣaḥīḥs whole, and of the five
   // graded books only the rows every grader calls sound. A hadith paired
@@ -377,23 +481,23 @@ async function main() {
   const hencSahih = { entries: sahihEntries, ...indexed(sahihEntries, e => e.h) };
 
   const rows = [];
-  const left = { elsewhere: 0, saidWeak: 0, notFound: 0, tooShort: 0, noText: spec.of - items.size };
+  const left = { elsewhere: 0, saidWeak: 0, notFound: 0, tooShort: 0, noText: of - items.size };
   const review = [];
   for (const n of [...items.keys()].sort((a, b) => a - b)) {
     const body = items.get(n);
-    const named = attribution(body);
+    const named = attributionOf(body);
     if (!named.length) {
       left.elsewhere++;
       continue;
     }
-    if (saysWeak(body)) {
+    if (weakOf(body)) {
       left.saidWeak++;
       continue;
     }
     // The report, and the report from where its narrator starts to speak:
     // an-Nawawī gives ʿUmar his whole lineage in the book's first hadith,
     // twenty words no chain of ours has, and the hadith itself is all there.
-    const said = report(body);
+    const said = reportOf(body);
     const spoken = said.search(/(?:^|\s)(?:قال|قالت|سمعت|يقول)[\s:،]/);
     const tellings = [words(said), ...(spoken > 0 ? [words(said.slice(spoken))] : [])].filter(t => t.length >= MIN_WORDS);
     if (!tellings.length) {
@@ -447,7 +551,8 @@ async function main() {
     note: `The hadith of ${id} its compiler attributes to one of the seven books the app serves, each as [his number, the book (b al-Bukhari, m Muslim, d Abu Dawud, t at-Tirmidhi, n an-Nasa'i, j Ibn Majah, k Malik; h none, the HadeethEnc entry alone), the row's place in Open-Hadith-Data's file, the HadeethEnc entry that is the same hadith or null]. Written by scripts/hadith/build-compilation.js; do not edit.`,
     id,
     asOf,
-    of: spec.of,
+    of,
+    numbered: spec.numbered,
     rule: `first attribution names a book the app serves; a row of it holds ${PAIR_AT} of the hadith's words in order and close together`,
     left,
     rows,
@@ -462,7 +567,7 @@ async function main() {
   const by = {};
   for (const r of rows) by[r[1]] = (by[r[1]] ?? 0) + 1;
   console.log(
-    `${id}: ${items.size} of ${spec.of} read · ${rows.length} served (${withHenc} with a HadeethEnc entry; ${Object.entries(by).map(([k, v]) => `${k} ${v}`).join(', ')}) · left out: ${left.elsewhere} attributed elsewhere, ${left.saidWeak} he calls weak, ${left.notFound} not found with confidence, ${left.tooShort} too short to tell, ${left.noText} not in the text read`,
+    `${id}: ${items.size} of ${of} read · ${rows.length} served (${withHenc} with a HadeethEnc entry; ${Object.entries(by).map(([k, v]) => `${k} ${v}`).join(', ')}) · left out: ${left.elsewhere} attributed elsewhere, ${left.saidWeak} he calls weak, ${left.notFound} not found with confidence, ${left.tooShort} too short to tell, ${left.noText} not in the text read`,
   );
   console.log(`wrote ${path.relative(ROOT, file)}`);
 
@@ -490,4 +595,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-module.exports = { attribution, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };
+module.exports = { attribution, attributionAround, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };

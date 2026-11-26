@@ -2814,12 +2814,22 @@
     "chapterNamesIn": "en",
     "comp": {
       "section": "Bücher zum Lesen",
-      "note": "{{held}} der {{of}} Hadithe von {{title}}, in {{compiler}}s Reihenfolge und unter seinen Nummern: jene, die er einem Buch zuschreibt, das Mihrab anbietet, und die dort sicher gefunden wurden. Jeder wird so gezeigt, wie ihn dieses Buch überliefert — mit der Übersetzung von HadeethEnc, wo es den Hadith hat —, ein von ihm gekürzter steht hier also vollständig. Die übrigen sind nicht enthalten.",
+      "note": "{{held}} der {{of}} Hadithe von {{title}}, in {{compiler}}s Reihenfolge: jene, die er einem Buch zuschreibt, das Mihrab anbietet, und die dort sicher gefunden wurden. Jeder wird so gezeigt, wie ihn dieses Buch überliefert — mit der Übersetzung von HadeethEnc, wo es den Hadith hat —, ein von ihm gekürzter steht hier also vollständig. Die übrigen sind nicht enthalten.",
       "more": "{{more}} weitere stammen aus den Sunan und dem Muwatta und erscheinen, sobald diese Bücher auf diesem Gerät sind (Nachschlagen → Die Bücher).",
       "riyad": {
         "title": "Riyad as-Salihin",
         "compiler": "an-Nawawi",
         "blurb": "Imam an-Nawawis Gärten der Rechtschaffenen"
+      },
+      "umdah": {
+        "title": "Umdat al-Ahkam",
+        "compiler": "al-Maqdisi",
+        "blurb": "Die Hadithe der Rechtsbestimmungen, die al-Buchari und Muslim beide überliefern"
+      },
+      "kalim": {
+        "title": "al-Kalim at-Tayyib",
+        "compiler": "Ibn Taimiya",
+        "blurb": "Das gute Wort: Gedenkformeln und Bittgebete"
       }
     },
     "agreed": {

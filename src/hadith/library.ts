@@ -466,12 +466,12 @@ export async function compilationRows(c: Compilation, appLang: string): Promise<
   for (const r of c.rows) {
     const translated = r.henc ? rowOf(r.henc, idx) : null;
     if (translated) {
-      rows.push({ ...translated, number: r.n });
+      rows.push(c.numbered ? { ...translated, number: r.n } : translated);
       continue;
     }
     const file = r.book ? files.get(r.book) : null;
     const row = file ? bookRowAt(file, r.index) : undefined;
-    if (row) rows.push({ id: `b:${r.book}:${r.index}`, title: bookRowTitle(row[1]), number: r.n });
+    if (row) rows.push({ id: `b:${r.book}:${r.index}`, title: bookRowTitle(row[1]), ...(c.numbered ? { number: r.n } : null) });
   }
   return rows;
 }

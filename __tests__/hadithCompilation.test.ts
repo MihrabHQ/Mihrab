@@ -35,6 +35,7 @@ import { packsForList } from '../src/hadith/useHadith';
 
 const builder = require('../scripts/hadith/build-compilation.js') as {
   attribution: (body: string) => string[];
+  attributionAround: (body: string) => string[];
   saysWeak: (body: string) => boolean;
   report: (body: string) => string;
   inOrder: (a: string[], b: string[]) => number;
@@ -160,6 +161,55 @@ describe('the index', () => {
   });
 });
 
+describe('every compilation’s index', () => {
+  type Raw = { id: string; of: number; note: string; numbered?: boolean; left: Record<string, number>; rows: Array<[number, string, number, string | null]> };
+  const all = ['riyad', 'umdah', 'kalim'].map(id => JSON.parse(read(`src/hadith/compilations/${id}.json`)) as Raw);
+
+  it('is written by the script, in the compiler’s order, and accounts for every hadith of the book', () => {
+    for (const c of all) {
+      expect([c.id, c.note.includes('scripts/hadith/build-compilation.js')]).toEqual([c.id, true]);
+      const ns = c.rows.map(r => r[0]);
+      expect(ns).toEqual([...ns].sort((a, b) => a - b));
+      expect(new Set(ns).size).toBe(ns.length);
+      expect([c.id, c.rows.length + Object.values(c.left).reduce((a, b) => a + b, 0)]).toEqual([c.id, c.of]);
+      for (const [, b, i, h] of c.rows) {
+        expect(['b', 'm', 'd', 't', 'n', 'j', 'k', 'h']).toContain(b);
+        expect(Number.isInteger(i) && i >= 0).toBe(true);
+        if (h) expect(WITHHELD.henc).not.toContain(h);
+        if (b === 'h') expect(h).not.toBeNull();
+      }
+    }
+  });
+
+  it('ʿUmdat al-Aḥkām is from the two Ṣaḥīḥs alone — its compiler’s own condition', () => {
+    const umdah = all.find(c => c.id === 'umdah')!;
+    expect(umdah.of).toBe(414);
+    expect(umdah.rows.length).toBeGreaterThan(300);
+    for (const [, b] of umdah.rows) expect(['b', 'm', 'h']).toContain(b);
+    expect(read('scripts/hadith/build-compilation.js')).toContain("attribution: () => ['bukhari', 'muslim'],");
+  });
+
+  it('al-Kalim aṭ-Ṭayyib has no numbers of its compiler’s, and shows none', async () => {
+    expect(all.find(c => c.id === 'kalim')!.numbered).toBe(false);
+    const kalim = findCompilation('kalim')!;
+    expect(kalim.numbered).toBe(false);
+    expect(findCompilation('riyad')!.numbered).toBe(true);
+    for (const r of await compilationRows(kalim, 'en')) expect(r.number).toBeUndefined();
+  });
+
+  it('reads Ibn Taymiyyah’s attributions — after the hadith or before it — and only of his book', () => {
+    const { attributionAround, attribution } = builder;
+    expect(attributionAround('وقال أبو هريرة: [قال النبي: سبق المفردون] خرجه مسلم')).toEqual(['muslim']);
+    expect(attributionAround('وعن أبي موسى قال: [مثل الذي يذكر ربه] أخرجه البخاري')).toEqual(['bukhari']);
+    expect(attributionAround('في الصحيحين عن أبي هريرة [أن رسول الله قال: من قال لا إله إلا الله]')).toEqual(['bukhari', 'muslim']);
+    expect(attributionAround('وقال أنس: [لا يرد الدعاء بين الأذان والإقامة] قال الترمذي: حديث حسن صحيح')).toEqual(['tirmidhi']);
+    expect(attributionAround('[اللهم باعد بيني وبين خطاياي] متفق عليه')).toEqual(['bukhari', 'muslim']);
+    expect(attributionAround('وذكر فلان [كلاما طويلا في الذكر] خرجه الحاكم')).toEqual([]);
+    // In a hadith's own words "فأخرجه" is a man taking something out: not an attribution (Riyāḍ 518).
+    expect(attribution('بعثنا رسول الله فأخرجه لنا ثم أكلنا. رواه مسلم.')).toEqual(['muslim']);
+  });
+});
+
 describe('in the app', () => {
   const riyad = findCompilation('riyad')!;
   const withHenc = riyad.rows.find(r => r.henc)!;
@@ -187,7 +237,7 @@ describe('in the app', () => {
   });
 
   it('is a list of its own, read from HadeethEnc and the books it names', () => {
-    expect(COMPILATIONS.map(c => c.id)).toEqual(['riyad']);
+    expect(COMPILATIONS.map(c => c.id)).toEqual(['riyad', 'umdah', 'kalim']);
     expect(parseList('comp:riyad')).toEqual({ kind: 'comp', id: 'riyad' });
     expect(parseList('comp:nothing')).toBeNull();
     expect(compilationBooks(riyad)).toEqual(expect.arrayContaining(['bukhari', 'muslim', 'abudawud', 'tirmidhi']));

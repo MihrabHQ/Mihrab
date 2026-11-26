@@ -2814,12 +2814,22 @@
     "chapterNamesIn": "en",
     "comp": {
       "section": "Kitab untuk dibaca",
-      "note": "{{held}} dari {{of}} hadis {{title}}, menurut urutan dan nomor {{compiler}}: yang beliau nisbatkan kepada kitab yang disajikan Mihrab dan ditemukan di sana dengan yakin. Masing-masing ditampilkan sebagaimana ada dalam kitab itu — dengan terjemahan HadeethEnc bila hadisnya ada di sana — sehingga hadis yang beliau ringkas ada di sini secara utuh. Yang lain tidak disertakan.",
+      "note": "{{held}} dari {{of}} hadis {{title}}, menurut urutan {{compiler}}: yang beliau nisbatkan kepada kitab yang disajikan Mihrab dan ditemukan di sana dengan yakin. Masing-masing ditampilkan sebagaimana ada dalam kitab itu — dengan terjemahan HadeethEnc bila hadisnya ada di sana — sehingga hadis yang beliau ringkas ada di sini secara utuh. Yang lain tidak disertakan.",
       "more": "{{more}} lainnya berasal dari kitab-kitab Sunan dan al-Muwaththa, dan muncul setelah kitab-kitab itu ada di perangkat ini (Cari → Kitab-kitab).",
       "riyad": {
         "title": "Riyadhus Shalihin",
         "compiler": "an-Nawawi",
         "blurb": "Riyadhus Shalihin karya Imam an-Nawawi"
+      },
+      "umdah": {
+        "title": "Umdatul Ahkam",
+        "compiler": "al-Maqdisi",
+        "blurb": "Hadis-hadis hukum yang diriwayatkan al-Bukhari dan Muslim"
+      },
+      "kalim": {
+        "title": "al-Kalim ath-Thayyib",
+        "compiler": "Ibnu Taimiyah",
+        "blurb": "Kalimat yang baik: zikir dan doa"
       }
     },
     "agreed": {

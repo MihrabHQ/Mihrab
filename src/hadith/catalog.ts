@@ -40,6 +40,8 @@ import SETS from './sets.json';
 import NAWAWI from './nawawi40.json';
 import AGREED from './agreed.json';
 import RIYAD from './compilations/riyad.json';
+import UMDAH from './compilations/umdah.json';
+import KALIM from './compilations/kalim.json';
 import CHAPTERS from './chapters.json';
 import CHAPTER_NAMES from './chapterNames.json';
 import { IS_WEB_APP } from '../config/webApp';
@@ -138,9 +140,11 @@ export type Compilation = {
   /** How many hadith the book has, and why the ones not here were left out. */
   of: number;
   left: Record<string, number>;
+  /** False where the compiler did not number his hadith: `n` is then only their order, and no number is shown. */
+  numbered: boolean;
   rows: readonly CompilationRow[];
 };
-type RawCompilation = { id: string; of: number; left: Record<string, number>; rows: unknown[] };
+type RawCompilation = { id: string; of: number; left: Record<string, number>; numbered?: boolean; rows: unknown[] };
 /** `h`: no row of a book — the hadith is served as its HadeethEnc entry alone. */
 const SHORT_BOOK: Record<string, string> = {
   b: 'bukhari',
@@ -156,6 +160,7 @@ const compilation = (raw: RawCompilation): Compilation => ({
   id: raw.id,
   of: raw.of,
   left: raw.left,
+  numbered: raw.numbered !== false,
   rows: (raw.rows as Array<[number, string, number, string | null]>).map(([n, b, index, henc]) => ({
     n,
     book: SHORT_BOOK[b] ?? b,
@@ -163,7 +168,12 @@ const compilation = (raw: RawCompilation): Compilation => ({
     henc,
   })),
 });
-const ALL_COMPILATIONS: readonly Compilation[] = [compilation(RIYAD as RawCompilation)];
+/** In the order Look up shows them: the one read through first, then the rulings, then the supplications. */
+const ALL_COMPILATIONS: readonly Compilation[] = [
+  compilation(RIYAD as RawCompilation),
+  compilation(UMDAH as RawCompilation),
+  compilation(KALIM as RawCompilation),
+];
 export const COMPILATIONS: readonly Compilation[] = IS_WEB_APP ? [] : ALL_COMPILATIONS;
 export function findCompilation(id: string): Compilation | undefined {
   return COMPILATIONS.find(c => c.id === id);
