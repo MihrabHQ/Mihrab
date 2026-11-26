@@ -58,9 +58,15 @@ Not built:
 - بلد العميان — Hindawi's CC BY translation sits behind a bot check
   (Cloudflare), which is not to be worked round. The maintainer can
   download the EPUB himself and hand it over.
-- Tafsir (Ibn Kathīr first, from the Tafsir Center's CC BY 4.0 dataset)
-  belongs in the Qur'an reader per āyah and is not started.
-- المحرر الوجيز: no clean text located.
+- Tafsir was **already in the app** (the āyah sheet, `src/quran/tafsir.ts`,
+  25 editions from the Quran.com corpus via spa5k/tafsir_api — Ibn Kathīr
+  and as-Saʿdī among them); this was missed when the maintainer's list was
+  first answered. aṭ-Ṭabarī and Ibn ʿAṭiyya's al-Muḥarrar al-Wajīz were
+  added to that registry on 2026-11-26 from the same corpus. They read
+  from the corpus directly until their mirror releases exist
+  (`data-tafsir-ar-tafsir-al-tabari`, `data-tafsir-al-muharrar-al-wajiz-ibn-atiyyah`,
+  114 files each, fetched to `/tmp/mihrab-mirror` — **not uploaded**; ask
+  the maintainer). Fī Ẓilāl al-Qurʾān is in copyright and not added.
 
 Not looked at on a phone. The Maqāmāt include coarse passages (the
 edition's text is kept whole).

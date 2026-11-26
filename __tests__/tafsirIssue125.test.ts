@@ -43,6 +43,18 @@ describe('tafsir editions (#125)', () => {
     ]);
   });
 
+  it('offers aṭ-Ṭabarī and Ibn ʿAṭiyya after as-Saʿdī, to Arabic readers', () => {
+    expect(ids('ar')).toEqual(expect.arrayContaining(['ar-tafseer-al-saddi', 'ar-tafsir-al-tabari', 'al-muharrar-al-wajiz-ibn-atiyyah']));
+    expect(ids('ar').indexOf('ar-tafsir-al-tabari')).toBeGreaterThan(ids('ar').indexOf('ar-tafseer-al-saddi'));
+    const tabari = TAFSIR_EDITIONS.find(e => e.id === 'ar-tafsir-al-tabari')!;
+    expect(tabari.label).toBe('تفسير الطبري');
+    expect(tabari.rtl).toBe(true);
+    // The default an Arabic reader meets is unchanged: the short one.
+    expect(resolveTafsirEdition('', 'ar').id).toBe('ar-tafsir-muyassar');
+    // Not offered to an English reader, who has no use for sixty megabytes of Arabic.
+    expect(ids('en')).not.toContain('ar-tafsir-al-tabari');
+  });
+
   it('has one entry per id, each with a size and a language', () => {
     const all = TAFSIR_EDITIONS.map(e => e.id);
     expect(new Set(all).size).toBe(all.length);

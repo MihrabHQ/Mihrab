@@ -475,6 +475,8 @@ build of 2026-11-05.
 | Russian | Kuliev with as-Sa'di's commentary `ru-tafsir-kuliev-alsaadi` | Tanzil `ru.kuliev-alsaadi` | 10 MB |
 | Russian | Ibn Kathir `ru-tafsir-ibne-kahtir` | Quran.com | 16 MB |
 | Arabic | as-Sa'di `ar-tafseer-al-saddi` | Quran.com | 6.0 MB |
+| Arabic | aṭ-Ṭabarī, Jāmiʿ al-Bayān `ar-tafsir-al-tabari` | Quran.com | 61 MB |
+| Arabic | Ibn ʿAṭiyya, al-Muḥarrar al-Wajīz `al-muharrar-al-wajiz-ibn-atiyyah` | Quran.com | 64 MB |
 | Urdu | Bayan ul-Quran, Israr Ahmad `ur-tafsir-bayan-ul-quran` | Quran.com | 9.7 MB |
 | Bengali | Abu Bakr Zakaria `bn-tafsir-abu-bakr-zakaria` | Quran.com | 14 MB |
 | English | al-Mukhtasar `en-tafsir-al-mukhtasar` | Quran.com | 1.8 MB |
@@ -490,8 +492,10 @@ a `source: 'tanzil'` and never in the translation list.
 
 **Not added.** The corpus's `tr-tafsir-ibne-kathir` (1.1 MB for the whole
 Qur'an) is the ayah's meaning and nothing else — a translation wearing a
-tafsir's name — and its `in-tafsir-jalalayn` is empty; the big Arabic
-classics (al-Tabari, al-Qurtubi, al-Baghawi, al-Wasit) were not measured.
+tafsir's name — and its `in-tafsir-jalalayn` is empty; of the big Arabic
+classics, al-Tabari and Ibn ʿAṭiyya's al-Muḥarrar al-Wajīz were added on
+2026-11-26 at the maintainer's request (every āyah has text in both);
+al-Qurtubi, al-Baghawi and al-Wasit were not measured.
 Quran-only readings (Yüksel, Öztürk) and the Shia translations (Qarai,
 Shakir, Najafi, Jawadi) were left out: the first on reliability, the
 second because every text in the app is Sunni and adding them is a

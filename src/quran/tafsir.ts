@@ -211,6 +211,26 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     language: 'Arabic',
     approxBytes: 5990000,
   },
+  // The two classics the maintainer asked for (2026-11-26), from the same
+  // corpus as the others and whole in it: every āyah of every surah has
+  // text. Each is as large as a small translation library, so the sizes
+  // are the surah files as the corpus serves them, summed that day.
+  {
+    id: 'ar-tafsir-al-tabari',
+    label: 'تفسير الطبري',
+    locale: 'ar',
+    rtl: true,
+    language: 'Arabic',
+    approxBytes: 61390000,
+  },
+  {
+    id: 'al-muharrar-al-wajiz-ibn-atiyyah',
+    label: 'المحرر الوجيز',
+    locale: 'ar',
+    rtl: true,
+    language: 'Arabic',
+    approxBytes: 64480000,
+  },
   {
     id: 'ur-tafsir-bayan-ul-quran',
     label: 'بیان القرآن (ڈاکٹر اسرار احمد)',
