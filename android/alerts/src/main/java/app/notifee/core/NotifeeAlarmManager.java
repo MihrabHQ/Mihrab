@@ -281,7 +281,14 @@ class NotifeeAlarmManager {
           @Override
           public void onSuccess(List<WorkDataEntity> workDataEntities) {
             for (WorkDataEntity workDataEntity : workDataEntities) {
-              rescheduleNotification(workDataEntity);
+              // One alert whose kept bytes cannot be read (ObjectUtils.bytesToBundleOrNull)
+              // must not stop the alarms of the rest being set again after a restart — nor
+              // end the process, which an exception thrown out of this callback does.
+              try {
+                rescheduleNotification(workDataEntity);
+              } catch (RuntimeException e) {
+                Logger.e(TAG, "Could not reschedule " + workDataEntity.getId(), e);
+              }
             }
           }
 

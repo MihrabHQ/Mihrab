@@ -43,9 +43,17 @@ class NotifeeReactUtils {
       // TODO custom error class with message/code
       promise.reject(e);
     } else {
-      WritableArray writableArray = Arguments.createArray();
-      for (Bundle bundle : bundleList) {
-        writableArray.pushMap(Arguments.fromBundle(bundle));
+      // A Bundle that cannot be turned into a map is the caller's to hear of, as a rejected
+      // promise. Thrown from here — a worker thread of the alerts' engine — it ended the app.
+      WritableArray writableArray;
+      try {
+        writableArray = Arguments.createArray();
+        for (Bundle bundle : bundleList) {
+          writableArray.pushMap(Arguments.fromBundle(bundle));
+        }
+      } catch (RuntimeException unreadable) {
+        promise.reject(unreadable);
+        return;
       }
       promise.resolve(writableArray);
     }

@@ -108,6 +108,47 @@ public class ObjectUtils {
     return Objects.requireNonNull(bundle);
   }
 
+  /**
+   * `bytesToBundle`, read all the way through — or null where the bytes cannot be read on this
+   * system.
+   *
+   * <p>A scheduled alert is kept as a Parcel's own bytes (`bundleToBytes`), which Android does
+   * not promise to read back after the system is updated; and a Bundle is read lazily, so bytes
+   * it cannot read are found out only where a key is first asked for — in whoever asked. Play
+   * reported that as a crash of 2.39.0 on Android 16: `BadParcelableException` under
+   * `Arguments.fromBundle`, in `getTriggerNotifications`, at every start of the app, so the
+   * alerts were never written again either. Here the whole Bundle is read at once, nested
+   * Bundles and lists included, and the failure is the caller's to handle.
+   */
+  @Nullable
+  public static Bundle bytesToBundleOrNull(@Nullable byte[] bytes) {
+    if (bytes == null) return null;
+    try {
+      Bundle bundle = bytesToBundle(bytes);
+      readThrough(bundle);
+      return bundle;
+    } catch (RuntimeException e) {
+      return null;
+    }
+  }
+
+  private static void readThrough(Bundle bundle) {
+    for (String key : bundle.keySet()) {
+      Object value = bundle.get(key);
+      if (value instanceof Bundle) {
+        readThrough((Bundle) value);
+      } else if (value instanceof List) {
+        for (Object item : (List<?>) value) {
+          if (item instanceof Bundle) readThrough((Bundle) item);
+        }
+      } else if (value instanceof Object[]) {
+        for (Object item : (Object[]) value) {
+          if (item instanceof Bundle) readThrough((Bundle) item);
+        }
+      }
+    }
+  }
+
   public static Map<String, Object> bundleToMap(Bundle bundle) throws IllegalArgumentException {
     Map<String, Object> map = new HashMap<>();
     for (String key : bundle.keySet()) {

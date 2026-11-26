@@ -812,11 +812,22 @@ class NotificationManager {
             for (WorkDataEntity workDataEntity : workDataEntities) {
               Bundle triggerNotificationBundle = new Bundle();
 
-              triggerNotificationBundle.putBundle(
-                  "notification", ObjectUtils.bytesToBundle(workDataEntity.getNotification()));
+              Bundle notification =
+                  ObjectUtils.bytesToBundleOrNull(workDataEntity.getNotification());
+              Bundle trigger = ObjectUtils.bytesToBundleOrNull(workDataEntity.getTrigger());
+              if (notification == null || trigger == null) {
+                // Kept bytes this system cannot read (ObjectUtils.bytesToBundleOrNull). The
+                // alert is still listed, by its id and nothing else: whoever asked can then
+                // write it again under that id, which replaces the row, or cancel it, which
+                // removes it. Left off the list it would stay in the store unread for good.
+                Logger.w(TAG, "A scheduled notification could not be read: " + workDataEntity.getId());
+                notification = new Bundle();
+                notification.putString("id", workDataEntity.getId());
+                trigger = new Bundle();
+              }
 
-              triggerNotificationBundle.putBundle(
-                  "trigger", ObjectUtils.bytesToBundle(workDataEntity.getTrigger()));
+              triggerNotificationBundle.putBundle("notification", notification);
+              triggerNotificationBundle.putBundle("trigger", trigger);
               triggerNotifications.add(triggerNotificationBundle);
             }
 
