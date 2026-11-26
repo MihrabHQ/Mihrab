@@ -193,7 +193,7 @@ describe('the row and the card', () => {
   const quick = read('src/journal/quickLog.ts');
 
   it('holds the check slot on loggable rows only, so names line up there and nowhere else', () => {
-    expect(row).toMatch(/<LogCheck[\s\S]*?\/>\s*\) : hasCheckColumn \? \(\s*<View style=\{styles\.checkSlot\} \/>\s*\) : null\}/);
+    expect(row).toMatch(/<LogCheck[\s\S]*?\/>\s*<\/View>\s*\) : hasCheckColumn \? \(\s*<View style=\{styles\.checkSlot\} \/>\s*\) : null\}/);
     expect(row).toMatch(/checkSlot: \{ width: LOG_CHECK_SIZE, marginEnd: SPACING\.md \}/);
     expect(card).toMatch(/hasCheckColumn=\{loggable\}/);
   });

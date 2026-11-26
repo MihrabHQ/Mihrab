@@ -231,14 +231,16 @@ function PrayerRowImpl({
           check; every other row holds its width, so the names line up
           whether or not there is anything to check. */}
       {log && onToggleLog ? (
-        <LogCheck
-          status={log.status}
-          phase={log.phase}
-          ready={log.ready}
-          palette={palette}
-          prayerLabel={t(`prayer.${prayerKey}`)}
-          onPress={onToggleLog}
-        />
+        <View style={styles.lineBox}>
+          <LogCheck
+            status={log.status}
+            phase={log.phase}
+            ready={log.ready}
+            palette={palette}
+            prayerLabel={t(`prayer.${prayerKey}`)}
+            onPress={onToggleLog}
+          />
+        </View>
       ) : hasCheckColumn ? (
         <View style={styles.checkSlot} />
       ) : null}
@@ -304,17 +306,19 @@ function PrayerRowImpl({
           setting about THIS time, next to it. */}
       <View style={styles.trailing}>
         {alertMode && onCycleAlertMode ? (
-          <AlertModeButton
-            mode={alertMode}
-            palette={palette}
-            onPress={onCycleAlertMode}
-            prayerLabel={t(`prayer.${prayerKey}`)}
-            secondary={isSecondary}
-            // The accent only where this prayer differs from the standing
-            // setting: a list on the default reads quiet, and the one Fajr
-            // set differently is what stands out (redesign-plan §3.1).
-            emphasised={!!overrideMode}
-          />
+          <View style={styles.lineBox}>
+            <AlertModeButton
+              mode={alertMode}
+              palette={palette}
+              onPress={onCycleAlertMode}
+              prayerLabel={t(`prayer.${prayerKey}`)}
+              secondary={isSecondary}
+              // The accent only where this prayer differs from the standing
+              // setting: a list on the default reads quiet, and the one Fajr
+              // set differently is what stands out (redesign-plan §3.1).
+              emphasised={!!overrideMode}
+            />
+          </View>
         ) : null}
         {/* Only for a row the user aimed at. The next prayer is already
             emphasised, and marking it too would say nothing.
@@ -413,6 +417,15 @@ const styles = StyleSheet.create({
   nameWrap: {
     flexShrink: 1,
     flexGrow: 1,
+  },
+  // The check and the bell are taller than the row's line of text, and a
+  // row that carried them (today's) stood 7 px taller than one that did not
+  // (any other day's): the table changed size as the day was paged. Each
+  // sits in a box the height of the line, centred and overflowing it into
+  // the row's own padding, so every day's row is the text's.
+  lineBox: {
+    height: labelLineHeight(TYPE.title3.fontSize),
+    justifyContent: 'center',
   },
   checkSlot: { width: LOG_CHECK_SIZE, marginEnd: SPACING.md },
   // No `gap`: the dot's slot carries the spacing on both of its sides, so

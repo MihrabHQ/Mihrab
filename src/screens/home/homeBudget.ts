@@ -98,13 +98,21 @@ const QURAN_TEXT: Record<HomeTier, number> = {
 };
 const QURAN_PAD: Record<HomeTier, number> = { roomy: SPACING.md, comfortable: SPACING.md, compact: SPACING.sm + 2 };
 /**
- * Between the table and the door, and under the door — the page's own
+ * Between the table and the door: nothing since 2026-11-26 (the door's
+ * hairline sits under the last row's own padding — HomeScreen's
+ * `belowHeroFlush`). It was: between the table and the door, and under the door — the page's own
  * foot (HomeScreen's scroll padding on a budgeted page reads this). The
  * page padded its foot by 24 whatever the tier while the sum counted 12
  * or 8: a page the budget called fitting was 12 to 16 dp too tall, and
  * scrolled by that for nothing.
  */
-export const BELOW_GAP: Record<HomeTier, number> = { roomy: SPACING.md, comfortable: SPACING.md, compact: SPACING.sm };
+export const BELOW_GAP: Record<HomeTier, number> = { roomy: 0, comfortable: 0, compact: 0 };
+/**
+ * Under the door: nothing. The door pads its own text top and bottom
+ * (`QURAN_PAD`), and a foot gap on top of that put twice the space under
+ * its words as over them, above the tab bar — space the hero had a use for.
+ */
+export const FOOT_GAP: Record<HomeTier, number> = { roomy: 0, comfortable: 0, compact: 0 };
 
 /* ── The sum ──────────────────────────────────────────────────────────── */
 
@@ -148,7 +156,7 @@ export function homeSegmentHeights(tier: HomeTier, input: HomeBudgetInput): Home
     BELOW_GAP[tier] +
     QURAN_PAD[tier] * 2 +
     QURAN_TEXT[tier] * tabular +
-    BELOW_GAP[tier] +
+    FOOT_GAP[tier] +
     input.extra;
   const total = input.topInset + hero + dayBar + table + below;
   return { hero, dayBar, table, below, total };

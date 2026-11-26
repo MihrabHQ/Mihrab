@@ -346,7 +346,7 @@ describe('the page’s sizes count what the page draws, and a new reader’s doo
   it('the page’s foot is the one the sum counts', () => {
     const home = fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'HomeScreen.tsx'), 'utf8');
     expect(home).toMatch(/const tier: HomeTier = budgeted \? pickHomeTier\(budgetInput\) : 'comfortable';/);
-    expect(home).toMatch(/\{ paddingBottom: minimal \? 0 : \(budgeted \? BELOW_GAP\[tier\] : SPACING\.xl\) \+ tabBarInset \},/);
+    expect(home).toMatch(/\{ paddingBottom: minimal \? 0 : \(budgeted \? FOOT_GAP\[tier\] : SPACING\.xl\) \+ tabBarInset \},/);
   });
 
   it('Start reading and Start a khatmah are dense on the compact tier: no hint, the dense padding', () => {

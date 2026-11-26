@@ -69,7 +69,7 @@ import {
 } from '../utils/prayerTimes';
 import { filterOptionalTimes } from '../utils/nightTimes';
 import { DISPLAY_ORDER, type TimingsMap } from '../types/prayer';
-import { BELOW_GAP, pickHomeTier, type HomeTier } from './home/homeBudget';
+import { FOOT_GAP, pickHomeTier, type HomeTier } from './home/homeBudget';
 import { injectDaruriTimes } from '../prayer/daruriTimes';
 import { useClockFormatter } from '../hooks/useClockFormatter';
 import { qiblaBearingFrom } from '../utils/qibla';
@@ -1900,9 +1900,9 @@ export function HomeScreen() {
         // dead air at the foot of the page, which on iPad was most of
         // the reason the dashboard overflowed and had to scroll at all.
         // Minimal: nothing under the hero — its sky runs on under the dots.
-        // A budgeted page's foot is the budget's (BELOW_GAP), so the sum
+        // A budgeted page's foot is the budget's (FOOT_GAP), so the sum
         // the tier was picked by is the page's height.
-        { paddingBottom: minimal ? 0 : (budgeted ? BELOW_GAP[tier] : SPACING.xl) + tabBarInset },
+        { paddingBottom: minimal ? 0 : (budgeted ? FOOT_GAP[tier] : SPACING.xl) + tabBarInset },
         // Beside a vertical bar: only clear of the home indicator (no bar
         // along the bottom then). The column is kept clear inside:
         // TodayCard pads the hero's content and the table, and the sky
@@ -2174,6 +2174,7 @@ export function HomeScreen() {
               style={[
                 styles.belowHero,
                 tier === 'compact' && styles.belowHeroCompact,
+                fullBleed && styles.belowHeroFlush,
                 vbarPad,
                 wideInset > 0 && { marginHorizontal: wideInset },
               ]}>
@@ -2337,6 +2338,10 @@ const styles = StyleSheet.create({
   fillColumn: { flexGrow: 1, flexShrink: 0, flexBasis: 'auto' },
   belowHero: { paddingHorizontal: HOME_SCREEN_PADDING, gap: SPACING.md },
   belowHeroCompact: { marginTop: -SPACING.xs, gap: SPACING.sm },
+  // The phone's page: the door's hairline closes the table the way a row's
+  // does, directly under the last row's own padding. The scroll content's
+  // gap between its children put a second, empty 12 under Isha.
+  belowHeroFlush: { marginTop: -SPACING.md },
   // Dashboard: let the content grow to the viewport and center it
   // vertically when shorter (§B1 — kills the dead bottom half).
   scrollContentDash: {
