@@ -43,7 +43,21 @@ const PACKS = path.join(ROOT, 'build', 'hadith', 'v1');
 const CACHE = path.join(__dirname, '.cache');
 const OUT = path.join(ROOT, 'src', 'hadith', 'chapters.json');
 const API = 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions';
-const BOOKS = ['bukhari', 'muslim'];
+const BOOKS = ['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah', 'malik'];
+/**
+ * The five books served by their grades: a pack holds only the rows a
+ * named grader accepted, so a book of the compiler's may have none of its
+ * rows here. It is kept in the count (the books keep their compiler's
+ * numbers) and holds nothing: it begins where the next begins.
+ *
+ * Of these the edition's ranges are read by where each book BEGINS, a
+ * book running up to the next one's first number: the last numbers it
+ * gives overlap in places (at-Tirmidhī's 32 is given to 2298 and its 33
+ * from 2158), and a number between two books (an-Nasāʾī 3857-3938, the
+ * book of sharecropping the edition leaves unnamed) stays with the book
+ * before it.
+ */
+const GRADED = new Set(['abudawud', 'tirmidhi', 'nasai', 'ibnmajah', 'malik']);
 /** Of the next three paired rows after a book's first, how many must be in it or after it. */
 const STEADY = 2;
 
@@ -70,7 +84,7 @@ async function edition(book) {
  * introduction is 0), `starts[i]` the place of the first row of book
  * `first + i`. Throws where a book is not found or the books are out of order.
  */
-function divide(ours, api) {
+function divide(ours, api, graded = false) {
   const theirs = api.hadiths.filter(h => h[2]);
   const pairs = pairRows(ours.map(r => r[1]), theirs.map(h => h[2]));
   // By the hadith's NUMBER and the ranges the edition gives: its own
@@ -80,6 +94,11 @@ function divide(ours, api) {
     .filter(r => r[2] > 0)
     .sort((a, b) => a[0] - b[0]);
   const bookOf = n => {
+    if (graded) {
+      let k = null;
+      for (const r of ranges) if (n >= r[1]) k = r[0];
+      return k;
+    }
     for (const [k, from, to] of ranges) if (n >= from && n <= to) return k;
     return null;
   };
@@ -100,11 +119,19 @@ function divide(ours, api) {
       }
       if (steady >= Math.min(STEADY, seen)) found = i;
     }
-    if (found < 0) throw new Error(`book ${k} was not found among our rows`);
+    if (found < 0 && !graded) throw new Error(`book ${k} was not found among our rows`);
     at.push(found);
-    from = found;
+    if (found >= 0) from = found;
   }
-  for (let i = 1; i < at.length; i++) if (at[i] <= at[i - 1]) throw new Error(`book ${ranges[i][0]} does not begin after the one before it`);
+  const empty = ranges.filter((_, x) => at[x] < 0).map(r => r[0]);
+  if (empty.length === ranges.length) throw new Error('no book was found among our rows');
+  // A book with none of its rows here begins where the next one found does; after the last, past the end.
+  for (let x = at.length - 1; x >= 0; x--) if (at[x] < 0) at[x] = x + 1 < at.length ? at[x + 1] : book.length;
+  for (let i = 1; i < at.length; i++) {
+    if (at[i] < at[i - 1] || (at[i] === at[i - 1] && !empty.includes(ranges[i - 1][0]))) {
+      throw new Error(`book ${ranges[i][0]} does not begin after the one before it`);
+    }
+  }
   for (let i = 0; i < ranges.length; i++) if (ranges[i][0] !== ranges[0][0] + i) throw new Error('the books are not numbered one after another');
 
   let astray = 0;
@@ -118,23 +145,27 @@ function divide(ours, api) {
     }
   });
   // A row's place in Open-Hadith-Data's file: its own where the pack says, where it stands otherwise.
-  const placeOf = i => (typeof ours[i][2] === 'number' ? ours[i][2] : i);
+  const placeOf = i => (i >= ours.length ? placeOf(ours.length - 1) + 1 : typeof ours[i][2] === 'number' ? ours[i][2] : i);
   // The rows before the first book found belong to it (two rows of Muslim's introduction that pair with nothing).
-  const starts = at.map((i, x) => (x === 0 ? 0 : placeOf(i)));
-  return { first: ranges[0][0], starts, paired, astray, rows: ours.length };
+  const firstFound = at.findIndex((_, x) => !empty.includes(ranges[x][0]));
+  const starts = at.map((i, x) => (x <= firstFound ? 0 : placeOf(i)));
+  return { first: ranges[0][0], starts, paired, astray, rows: ours.length, empty };
 }
 
 async function main() {
   const out = { note: '', asOf: '', books: {} };
   for (const b of BOOKS) {
     const pack = JSON.parse(fs.readFileSync(path.join(PACKS, 'books', `${b}.json`), 'utf8'));
-    const d = divide(pack.hadiths, await edition(b));
+    const d = divide(pack.hadiths, await edition(b), GRADED.has(b));
     out.asOf = out.asOf || pack.retrieved;
     out.books[b] = { first: d.first, starts: d.starts };
-    console.log(`${b}: ${d.starts.length} books over ${d.rows} rows · ${d.astray} of ${d.paired} paired rows on the wrong side of a boundary`);
+    console.log(
+      `${b}: ${d.starts.length} books over ${d.rows} rows · ${d.astray} of ${d.paired} paired rows on the wrong side of a boundary` +
+        (d.empty.length ? ` · none of its rows here: ${d.empty.join(', ')}` : ''),
+    );
   }
   out.note =
-    'Where each book of Sahih al-Bukhari and Sahih Muslim begins: `starts[i]` is the place, in Open-Hadith-Data\'s file, of the first row of book `first + i`. Written by scripts/hadith/book-chapters.js; do not edit. The names are src/hadith/chapterNames.json.';
+    'Where each book of the seven collections begins among the rows served: `starts[i]` is the place, in Open-Hadith-Data\'s file, of the first row of book `first + i`. Written by scripts/hadith/book-chapters.js; do not edit. The names are src/hadith/chapterNames.json.';
   fs.writeFileSync(OUT, `${JSON.stringify(out)}\n`);
   console.log(`wrote ${path.relative(ROOT, OUT)}`);
 }
@@ -145,4 +176,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-module.exports = { divide, STEADY };
+module.exports = { divide, STEADY, BOOKS, GRADED };

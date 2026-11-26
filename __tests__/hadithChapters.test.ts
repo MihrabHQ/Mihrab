@@ -40,14 +40,55 @@ describe('the divisions', () => {
     expect(CHAPTERS.books.bukhari.starts).toHaveLength(97);
     expect(CHAPTERS.books.muslim.first).toBe(0);
     expect(CHAPTERS.books.muslim.starts).toHaveLength(57);
-    for (const b of Object.values(CHAPTERS.books)) {
+    for (const book of ['bukhari', 'muslim'] as const) {
+      const b = CHAPTERS.books[book];
       expect(b.starts[0]).toBe(0);
       for (let i = 1; i < b.starts.length; i++) expect(b.starts[i]).toBeGreaterThan(b.starts[i - 1]);
     }
   });
 
+  it('are every book of the five collections served by their grades, a book with no row kept holding none', () => {
+    const counts = { abudawud: 43, tirmidhi: 49, nasai: 51, ibnmajah: 38, malik: 61 } as const;
+    for (const [book, n] of Object.entries(counts) as [keyof typeof counts, number][]) {
+      const b = CHAPTERS.books[book];
+      // Ibn Mājah's introduction is 0, as Muslim's is.
+      expect(b.first).toBe(book === 'ibnmajah' ? 0 : 1);
+      expect(b.starts).toHaveLength(n);
+      expect(b.starts[0]).toBe(0);
+      // Never backwards; the same place twice is a book that holds nothing.
+      for (let i = 1; i < b.starts.length; i++) expect(b.starts[i]).toBeGreaterThanOrEqual(b.starts[i - 1]);
+    }
+    // The Muwaṭṭaʾ's book of Knowledge is one report, and no grader named here accepted it.
+    const malik = bookChapters('malik');
+    const knowledge = malik.find(c => c.no === 59)!;
+    expect(knowledge.from).toBe(knowledge.to);
+    expect(chapterCounts('malik', [{ id: `b:malik:${knowledge.from}`, title: '', number: 1 }]).get(59)).toBeUndefined();
+    expect(read('scripts/hadith/book-chapters.js')).toContain('if (found < 0 && !graded) throw new Error');
+  });
+
+  it('read the edition by where each book begins, where its last numbers overlap', () => {
+    const { divide } = require('../scripts/hadith/book-chapters.js');
+    // Twelve reports with no word in common, so each pairs with itself alone.
+    const letters = 'ابتثجحخدذرزسشصضطظعغفقكلمنهوي';
+    const word = (n: number) => [n, Math.floor(n / 28), n * 3 + 1, n * 5 + 2].map(k => letters[k % letters.length]).join('');
+    const text = (i: number) => Array.from({ length: 14 }, (_, w) => word(i * 14 + w)).join(' ');
+    const ours = Array.from({ length: 12 }, (_, i) => [i + 1, text(i), i]);
+    const api = {
+      // The first book is given a last number inside the second, as at-Tirmidhī's 32 is.
+      details: { 1: { hadithnumber_first: 1, hadithnumber_last: 9 }, 2: { hadithnumber_first: 5, hadithnumber_last: 8 }, 3: { hadithnumber_first: 9, hadithnumber_last: 12 } },
+      hadiths: ours.map(r => [r[0], null, r[1]]),
+    };
+    expect(divide(ours, api, true).starts).toEqual([0, 4, 8]);
+    // And a book none of whose rows are here begins where the next does.
+    const fewer = ours.filter(r => (r[0] as number) < 5 || (r[0] as number) > 8);
+    const d = divide(fewer, api, true);
+    expect(d.empty).toEqual([2]);
+    expect(d.starts).toEqual([0, 8, 8]);
+    expect(() => divide(fewer, api)).toThrow();
+  });
+
   it('each have a name, in Arabic and in English', () => {
-    for (const book of ['bukhari', 'muslim'] as const) {
+    for (const book of ['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah', 'malik'] as const) {
       const n = NAMES[book];
       expect(n.first).toBe(CHAPTERS.books[book].first);
       expect(n.ar).toHaveLength(CHAPTERS.books[book].starts.length);
@@ -62,7 +103,10 @@ describe('the divisions', () => {
     expect(chapterName('muslim', 56, 'en')).toBe("Commentary on the Qur'an");
     // A reader in another language is shown the English.
     expect(chapterName('muslim', 1, 'sv')).toBe('Faith');
-    expect(chapterName('tirmidhi', 1, 'en')).toBe('');
+    expect(chapterName('tirmidhi', 1, 'en')).toBe('Purification');
+    expect(chapterName('ibnmajah', 0, 'ar')).toBe('المقدمة');
+    expect(chapterName('nasai', 34, 'en')).toBe('Gifts for Life');
+    expect(chapterName('ahmad', 1, 'en')).toBe('');
   });
 
   it('every locale says which names it is shown: Arabic its own, the rest English', () => {
@@ -103,7 +147,8 @@ describe('a chapter', () => {
     expect(parseList('book:bukhari')).toEqual({ kind: 'book', id: 'bukhari' });
     // No such chapter: the book.
     expect(parseList('book:bukhari:400')).toEqual({ kind: 'book', id: 'bukhari' });
-    expect(parseList('book:tirmidhi:2')).toEqual({ kind: 'book', id: 'tirmidhi' });
+    expect(parseList('book:tirmidhi:2')).toEqual({ kind: 'book', id: 'tirmidhi', chapter: 2 });
+    expect(parseList('book:tirmidhi:50')).toEqual({ kind: 'book', id: 'tirmidhi' });
     expect(packsForList('book:bukhari:2', 'en')).toEqual(['books/bukhari']);
     const rows = await listRows('book:bukhari:2', 'en');
     expect(rows).toHaveLength(third.from - second.from);

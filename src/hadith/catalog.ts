@@ -203,9 +203,10 @@ export function compilationNeeds(c: Compilation): string[] {
 
 /**
  * The books ("كتاب") a collection is divided into by its compiler — the
- * Book of Faith, the Book of Prayer — for the two Ṣaḥīḥs
+ * Book of Faith, the Book of Prayer — for the seven collections
  * (`scripts/hadith/book-chapters.js` finds where each begins among our
- * rows). A chapter is `no` (the compiler's count; Muslim's introduction
+ * rows). Of a book served by its grades a chapter may hold nothing here
+ * (`from === to`): it keeps its number and is not offered. A chapter is `no` (the compiler's count; Muslim's introduction
  * is 0) and the places its rows run between, `from` up to but not `to`.
  *
  * Its names are the books' own in Arabic and ours in English
