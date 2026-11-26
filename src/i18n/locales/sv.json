@@ -1789,7 +1789,7 @@
     "transliterationHafsOnly": "Den återger Ḥafṣ-läsningen och visas därför bara med Ḥafṣ, inte med {{riwayah}}.",
     "transliterationDownloading": "Laddar ner · {{pct}} %",
     "transliterationGet": "Läses online tills vidare. Ladda ner för offline · {{size}}",
-    "transliterationDoneBody": "Varje ayahs translitterering finns på den här enheten. Den läses utan uppkoppling nu.",
+    "transliterationDoneBody": "Translittereringen av varje vers finns på den här enheten. Den läses utan uppkoppling nu.",
     "transliterationStyle": "Stavning"
   },
   "reading": {
@@ -2135,7 +2135,7 @@
     "groupDownloading": "Laddar ned",
     "groupOnDevice": "På den här enheten",
     "transliterationWhole": "Fullständig translitterering",
-    "transliterationSub": "Cachade translitterationsrader"
+    "transliterationSub": "Cachade translittereringsrader"
   },
   "dataStats": {
     "title": "Datastatistik",
@@ -2873,9 +2873,9 @@
       }
     },
     "agreed": {
-      "title": "Överensstämmande",
+      "title": "Överenskomna",
       "row": "Hos både al-Bukhari och Muslim · översatt",
-      "blurb": "De hadither som HadeethEnc tillskriver både al-Bukhari och Muslim — ”överensstämmande” och inget mer — och bedömer som autentiska, var och en med översättning och förklaring. En post som tillskrivs med ett förbehåll finns i sina ämnen och i sökningen, inte här."
+      "blurb": "De hadither som HadeethEnc tillskriver både al-Bukhari och Muslim — ”överenskommet” och inget mer — och bedömer som autentiska, var och en med översättning och förklaring. En post som tillskrivs med ett förbehåll finns i sina ämnen och i sökningen, inte här."
     },
     "settingsNoDownloads": "Inget nedladdat ännu",
     "searchExample": "Nawawi 14",
@@ -3028,7 +3028,7 @@
       "food": "Mat och dryck",
       "character": "Karaktär och tal",
       "etiquette": "Uppförande i vardagen",
-      "supplications": "Duor och dhikr",
+      "supplications": "Åkallan och dhikr",
       "heart": "Hjärtat och ångern",
       "faith": "Tro och troslära",
       "prophet": "Profetens liv ﷺ"
@@ -3080,7 +3080,7 @@
     "related": "Fler hadither om: {{topic}}",
     "shareImage": "Dela som bild",
     "memo": {
-      "title": "Memorerar",
+      "title": "Memorering",
       "add": "Memorera den här hadithen",
       "remove": "Sluta memorera",
       "prompt": "Läs upp den ur minnet och kontrollera sedan.",

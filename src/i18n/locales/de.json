@@ -2817,7 +2817,7 @@
     "searchClear": "Suche löschen",
     "daily": {
       "title": "Hadith des Tages",
-      "from": "Aus dem, was al-Buchari und Muslim beide überliefern"
+      "from": "Aus dem, was al-Bukhari und Muslim beide überliefern"
     },
     "chapterNamesIn": "en",
     "comp": {
@@ -2832,7 +2832,7 @@
       "umdah": {
         "title": "Umdat al-Ahkam",
         "compiler": "al-Maqdisi",
-        "blurb": "Die Hadithe der Rechtsbestimmungen, die al-Buchari und Muslim beide überliefern"
+        "blurb": "Die Hadithe der Rechtsbestimmungen, die al-Bukhari und Muslim beide überliefern"
       },
       "kalim": {
         "title": "al-Kalim at-Tayyib",
@@ -2868,14 +2868,14 @@
       "sectionNote": "Einige davon zeigen weniger Hadithe als das gedruckte Buch: Es werden nur als hasan oder sahih eingestufte Hadithe gezeigt.",
       "bulugh": {
         "title": "Bulugh al-Maram",
-        "compiler": "Ibn Hadschar",
+        "compiler": "Ibn Hajar",
         "blurb": "Die Hadithe, aus denen die Rechtsbestimmungen abgeleitet werden, jeweils mit ihren Überlieferern"
       }
     },
     "agreed": {
       "title": "Übereinstimmend überliefert",
-      "row": "Bei al-Buchari und Muslim · übersetzt",
-      "blurb": "Die Hadithe, die HadeethEnc sowohl al-Buchari als auch Muslim zuschreibt — „übereinstimmend überliefert“ und nichts weiter — und als authentisch einstuft, jeweils mit Übersetzung und Erläuterung. Ein Eintrag mit einer Einschränkung steht in seinen Themen und in der Suche, nicht hier."
+      "row": "Bei al-Bukhari und Muslim · übersetzt",
+      "blurb": "Die Hadithe, die HadeethEnc sowohl al-Bukhari als auch Muslim zuschreibt — „übereinstimmend überliefert“ und nichts weiter — und als authentisch einstuft, jeweils mit Übersetzung und Erläuterung. Ein Eintrag mit einer Einschränkung steht in seinen Themen und in der Suche, nicht hier."
     },
     "settingsNoDownloads": "Noch nichts heruntergeladen",
     "searchExample": "Nawawi 14",
@@ -3145,7 +3145,7 @@
         "maqamat": "Einundfünfzig kurze Erzählungen in Reimprosa über einen umherziehenden Schelm; ein Grundwerk arabischer Stilkunst. Manche Stellen sind derb.",
         "bahja": "Ibn 'Abd al-Barrs Sammlung von Sprüchen, Versen und Anekdoten, nach Themen geordnet.",
         "iqd": "Eine andalusische Anthologie in fünfundzwanzig Büchern: Herrscher, Krieg, Wissen, Sprichwörter, Dichtung, Geschichte. Manche Stellen sind derb.",
-        "jami": "Ibn Radschabs Kommentar zu an-Nawawis Vierzig und den acht Hadithen, die er hinzufügte – ein Kapitel je Hadith."
+        "jami": "Ibn Rajabs Kommentar zu an-Nawawis Vierzig und den acht Hadithen, die er hinzufügte – ein Kapitel je Hadith."
       },
       "levelFirst": "Für den Anfang",
       "levelLater": "Für später"
@@ -3159,7 +3159,7 @@
       "note": "Die Kette ist Teil des Textes, wie {{book}} ihn hat (Open-Hadith-Data); nichts wird hinzugefügt oder weggelassen. Wo die Kette endet und der Bericht beginnt, ermittelt Mihrab aus dem Wortlaut; das kann um einen Namen danebenliegen."
     },
     "commentary": {
-      "jami": "Ibn Radschabs Kommentar (Arabisch)"
+      "jami": "Ibn Rajabs Kommentar (Arabisch)"
     }
   }
 }

@@ -2823,7 +2823,7 @@
     "comp": {
       "section": "Okunacak kitaplar",
       "note": "{{title}} kitabındaki {{of}} hadisten {{held}} tanesi, {{compiler}}’nin sırasıyla: Mihrab’ın sunduğu bir kitaba nispet ettiği ve orada kesin olarak bulunanlar. Her biri o kitapta geçtiği şekliyle — HadeethEnc’te hadis varsa çevirisiyle — gösterilir; böylece onun kısalttığı bir hadis burada tam hâliyle yer alır. Diğerleri dâhil değildir.",
-      "more": "{{more}} hadis daha Sünenler’den ve Muvatta’dandır; bu kitaplar bu cihaza indirildiğinde görünür (Bak → Kitaplar).",
+      "more": "{{more}} hadis daha Sünenler’den ve Muvatta’dandır; bu kitaplar bu cihaza indirildiğinde görünür (Bul → Kitaplar).",
       "riyad": {
         "title": "Riyâzü’s-Sâlihîn",
         "compiler": "Nevevî",
@@ -3140,8 +3140,8 @@
       "sections": "Bölümler",
       "about": {
         "kalila": "Yönetim, dostluk ve sağduyu üzerine hayvan masalları; Arapçaya İbnü'l-Mukaffa' aktarmıştır.",
-        "ighatha": "İbnü'l-Kayyim'den kalbin hastalıkları, şeytanın tuzakları ve bunlardan kurtuluş yolu.",
-        "dawa": "İbnü'l-Kayyim'in şifa soran bir adama cevabı: günah, etkileri ve tövbe üzerine.",
+        "ighatha": "İbn Kayyim'den kalbin hastalıkları, şeytanın tuzakları ve bunlardan kurtuluş yolu.",
+        "dawa": "İbn Kayyim'in şifa soran bir adama cevabı: günah, etkileri ve tövbe üzerine.",
         "maqamat": "Gezgin bir düzenbaz hakkında secili nesirle elli bir kısa hikâye; Arap üslubunun kurucu eserlerinden. Bazı bölümleri kabadır.",
         "bahja": "İbn Abdilberr'in konulara göre düzenlediği hikmetli sözler, şiirler ve kıssalar derlemesi.",
         "iqd": "Yirmi beş kitaplık bir Endülüs antolojisi: hükümdarlar, savaş, ilim, atasözleri, şiir, tarih. Bazı bölümleri kabadır.",

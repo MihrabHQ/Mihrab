@@ -2055,7 +2055,7 @@
     "openHadithData": "Los libros de hadices, texto árabe",
     "hadithGrades": "Clasificaciones de los hadices de los cuatro Sunan y del Muwatta",
     "hadithPolicy": "Qué hadices se muestran y cuáles se dejan fuera",
-    "hadithPolicySub": "Solo lo que un tradicionista nombrado califica de sahih o hasan, y ninguno de débil"
+    "hadithPolicySub": "Solo lo que un sabio nombrado califica de sahih o hasan, y ninguno de débil"
   },
   "liveActivity": {
     "title": "Próxima oración",
@@ -3081,7 +3081,7 @@
     "related": "Más hadices sobre: {{topic}}",
     "shareImage": "Compartir como imagen",
     "memo": {
-      "title": "Memorizando",
+      "title": "Memorización",
       "add": "Memorizar este hadiz",
       "remove": "Dejar de memorizar",
       "prompt": "Recítalo de memoria y luego comprueba.",

@@ -2823,7 +2823,7 @@
     "comp": {
       "section": "Kitab untuk dibaca",
       "note": "{{held}} dari {{of}} hadis {{title}}, menurut urutan {{compiler}}: yang beliau nisbatkan kepada kitab yang disajikan Mihrab dan ditemukan di sana dengan yakin. Masing-masing ditampilkan sebagaimana ada dalam kitab itu — dengan terjemahan HadeethEnc bila hadisnya ada di sana — sehingga hadis yang beliau ringkas ada di sini secara utuh. Yang lain tidak disertakan.",
-      "more": "{{more}} lainnya berasal dari kitab-kitab Sunan dan al-Muwaththa, dan muncul setelah kitab-kitab itu ada di perangkat ini (Cari → Kitab-kitab).",
+      "more": "{{more}} lainnya berasal dari kitab-kitab Sunan dan al-Muwaththa, dan muncul setelah kitab-kitab itu ada di perangkat ini (Telusuri → Kitab-kitab).",
       "riyad": {
         "title": "Riyadhus Shalihin",
         "compiler": "an-Nawawi",
@@ -2845,7 +2845,7 @@
         "note": "{{held}} hadis qudsi — perkataan yang diriwayatkan Nabi ﷺ dari Rabb-nya — masing-masing sebagaimana dalam Shahih al-Bukhari atau Shahih Muslim. Inilah hadis-hadis yang oleh sebuah kumpulan empat puluh yang terkenal dinisbatkan kepada salah satu dari keduanya dan ditemukan di sana dengan yakin; daftar ini bukan kumpulan tersebut."
       },
       "rajab": {
-        "title": "Tambahan Ibnu Rajab atas Arba'in",
+        "title": "Tambahan Ibnu Rajab atas Arbain",
         "compiler": "Ibnu Rajab",
         "blurb": "Delapan hadis yang ia tambahkan pada empat puluh dua hadis an-Nawawi sehingga genap lima puluh"
       },
@@ -2902,7 +2902,7 @@
     "topics": "Topik",
     "entries": "{{count}} hadis",
     "books": "Kitab-kitab",
-    "booksNote": "Dalam bahasa Arab, dari Open-Hadith-Data. Shahih al-Bukhari dan Shahih Muslim lengkap; lima kitab lainnya hanya memuat hadis yang dinilai shahih atau hasan oleh para ulama penilainya. Masing-masing diunduh terpisah.",
+    "booksNote": "Dalam bahasa Arab, dari Open-Hadith-Data. Shahih al-Bukhari dan Shahih Muslim lengkap; lima kitab lainnya hanya memuat hadis yang dinilai sahih atau hasan oleh para ulama penilainya. Masing-masing diunduh terpisah.",
     "onDevice": "Sudah diunduh",
     "attribution": "Teks, terjemahan, dan penjelasan: HadeethEnc.com. Arbain Nawawi dalam bahasa Arab: fawazahmed0/hadith-api. Kitab-kitab: Open-Hadith-Data (ODbL). Derajatnya: fawazahmed0/hadith-api.",
     "needsDownload": "Daftar ini belum ada di perangkat Anda.",
@@ -3042,7 +3042,7 @@
       "topic": "Topik",
       "clearTopic": "Hapus topik: {{topic}}",
       "grade": "Derajat",
-      "sahih": "Shahih",
+      "sahih": "Sahih",
       "hasan": "Hasan",
       "clearGrade": "Hapus derajat: {{grade}}",
       "gradeNote": "Menurut penilaian HadeethEnc. Hadis yang dinilainya dengan catatan tidak termasuk keduanya, dan dapat ditemukan tanpa filter ini."
@@ -3058,15 +3058,15 @@
     "arabicTag": "Bahasa Arab",
     "refNeedsBookArabic": "{{book}} belum diunduh, dan hanya tersedia dalam bahasa Arab. Buka untuk mengunduhnya.",
     "bookNeedsDownload": "Kitab ini hanya tersedia dalam bahasa Arab, tanpa terjemahan. Kitab ini belum ada di perangkat Anda.",
-    "gradedBookNote": "Kitab ini di sini hanya memuat hadis yang dinilai shahih atau hasan oleh setiap ulama yang menilainya. Hadis yang dinilai lemah oleh salah satu dari mereka, atau yang tidak memiliki derajat, tidak dimuat. Setiap hadis menampilkan penilaian masing-masing ulama, sebagaimana tercatat di fawazahmed0/hadith-api.",
-    "sahihCollectionNote": "{{book}} diterima sebagai kitab yang shahih secara keseluruhan. Hadis-hadisnya tidak dinilai satu per satu di sini.",
-    "refNotServed": "Tidak ada hadis bernomor {{n}} dari {{book}} yang dimuat di sini. Mungkin hadis itu termasuk yang tidak dimuat: hanya hadis yang dinilai shahih atau hasan oleh setiap ulama yang dimuat.",
+    "gradedBookNote": "Kitab ini di sini hanya memuat hadis yang dinilai sahih atau hasan oleh setiap ulama yang menilainya. Hadis yang dinilai lemah oleh salah satu dari mereka, atau yang tidak memiliki derajat, tidak dimuat. Setiap hadis menampilkan penilaian masing-masing ulama, sebagaimana tercatat di fawazahmed0/hadith-api.",
+    "sahihCollectionNote": "{{book}} diterima sebagai kitab yang sahih secara keseluruhan. Hadis-hadisnya tidak dinilai satu per satu di sini.",
+    "refNotServed": "Tidak ada hadis bernomor {{n}} dari {{book}} yang dimuat di sini. Mungkin hadis itu termasuk yang tidak dimuat: hanya hadis yang dinilai sahih atau hasan oleh setiap ulama yang dimuat.",
     "downloadGradedNote": "Diunduh dari salinan Mihrab di GitHub. Hapus kapan saja di Pengaturan → Unduhan.",
     "grades": {
       "title": "Arti derajat hadis",
-      "blurb": "Shahih, hasan, dan yang tidak dimuat",
+      "blurb": "Sahih, hasan, dan yang tidak dimuat",
       "intro": "Derajat adalah penilaian seorang ulama hadis tentang seberapa terpercaya sebuah riwayat sampai kepada kita. Mihrab tidak menilai apa pun sendiri: setiap derajat yang ditampilkan adalah penilaian ulama yang disebut namanya, dengan kata-kata sumbernya.",
-      "sahihTitle": "Shahih (autentik)",
+      "sahihTitle": "Sahih (autentik)",
       "sahih": "Diriwayatkan melalui sanad yang bersambung oleh para perawi yang tepercaya dan kuat hafalannya, tanpa cacat tersembunyi dan tanpa menyelisihi riwayat yang lebih kuat.",
       "hasanTitle": "Hasan (baik)",
       "hasan": "Memenuhi syarat yang sama, hanya saja ketelitian hafalan perawinya satu tingkat lebih ringan. Hadis ini diterima dan diamalkan, dan ditampilkan sebagai hasan.",
@@ -3139,13 +3139,13 @@
       "firstOnly": "Menampilkan {{count}} yang pertama. Ketik lebih banyak dari frasa untuk mempersempit.",
       "sections": "Bagian",
       "about": {
-        "kalila": "Fabel hewan tentang pemerintahan, persahabatan, dan kebijaksanaan, dialihkan ke bahasa Arab oleh Ibn al-Muqaffa'.",
-        "ighatha": "Ibn al-Qayyim tentang penyakit hati, perangkap setan, dan jalan keluar darinya.",
-        "dawa": "Jawaban Ibn al-Qayyim kepada seorang yang meminta obat: tentang dosa, akibatnya, dan tobat.",
+        "kalila": "Fabel hewan tentang pemerintahan, persahabatan, dan kebijaksanaan, dialihkan ke bahasa Arab oleh Ibnu al-Muqaffa'.",
+        "ighatha": "Ibnul Qayyim tentang penyakit hati, perangkap setan, dan jalan keluar darinya.",
+        "dawa": "Jawaban Ibnul Qayyim kepada seorang yang meminta obat: tentang dosa, akibatnya, dan tobat.",
         "maqamat": "Lima puluh satu kisah pendek dalam prosa bersajak tentang seorang penipu pengembara; karya dasar gaya bahasa Arab. Beberapa bagian kasar.",
-        "bahja": "Himpunan Ibn 'Abd al-Barr berisi kata-kata hikmah, syair, dan anekdot, disusun menurut tema.",
+        "bahja": "Himpunan Ibnu 'Abdil Barr berisi kata-kata hikmah, syair, dan anekdot, disusun menurut tema.",
         "iqd": "Antologi Andalusia dalam dua puluh lima kitab: penguasa, perang, ilmu, peribahasa, syair, sejarah. Beberapa bagian kasar.",
-        "jami": "Syarah Ibnu Rajab atas Arba'in an-Nawawi dan delapan hadis yang ia tambahkan, satu bab untuk tiap hadis."
+        "jami": "Syarah Ibnu Rajab atas Arbain an-Nawawi dan delapan hadis yang ia tambahkan, satu bab untuk tiap hadis."
       },
       "levelFirst": "Untuk memulai",
       "levelLater": "Untuk tahap lanjut"

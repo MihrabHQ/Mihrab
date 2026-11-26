@@ -3099,7 +3099,7 @@
       "in": "Dossier : {{name}}",
       "rename": "Renommer le dossier",
       "delete": "Supprimer le dossier",
-      "deleteNote": "Ses favoris sont conservés, sans dossier."
+      "deleteNote": "Ses signets sont conservés, sans dossier."
     },
     "plan": {
       "start": "Commencer un plan de lecture",
