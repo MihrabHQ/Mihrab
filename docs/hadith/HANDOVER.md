@@ -22,6 +22,7 @@ longer true.
 | Hadith of the day, at the top of Learn | `src/hadith/daily.ts` |
 | Copy and Share carry the reference (book, number, chapter) | `hadithReference` in `src/screens/hadith/HadithReaderScreen.tsx` |
 | "See it in al-Bukhārī / Muslim" on a HadeethEnc entry (1,579) | `scripts/hadith/see-in-book.js` → `src/hadith/seeInBook.json`, `seeInBook` in `catalog.ts` |
+| Hadith Qudsi from the two Ṣaḥīḥs (30 of a selection's 40), as a list of the app's own | `build-compilation.js qudsi` → `compilations/qudsi.json` (`own: true`) |
 | The set "Short hadith to memorise" (the forty shortest of "Agreed upon") | `scripts/hadith/short-set.js` → `sets.json` |
 | Related hadith: others in the same HadeethEnc topic, folded under the one read | `relatedHadith` in `src/hadith/library.ts`, `__tests__/hadithRelated.test.ts` |
 | "What the grades mean": Settings → Hadith, and the foot of a hadith | `src/screens/settings/pages/HadithGradesSettingsScreen.tsx`, `hadith.grades.*`, `__tests__/hadithGradesGuide.test.ts` |

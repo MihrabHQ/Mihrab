@@ -2834,6 +2834,11 @@
         "title": "al-Kalim ath-Thayyib",
         "compiler": "Ibnu Taimiyah",
         "blurb": "Kalimat yang baik: zikir dan doa"
+      },
+      "qudsi": {
+        "title": "Hadis Qudsi",
+        "blurb": "Dari al-Bukhari dan Muslim: yang diriwayatkan Nabi ﷺ dari Rabb-nya",
+        "note": "{{held}} hadis qudsi — perkataan yang diriwayatkan Nabi ﷺ dari Rabb-nya — masing-masing sebagaimana dalam Shahih al-Bukhari atau Shahih Muslim. Inilah hadis-hadis yang oleh sebuah kumpulan empat puluh yang terkenal dinisbatkan kepada salah satu dari keduanya dan ditemukan di sana dengan yakin; daftar ini bukan kumpulan tersebut."
       }
     },
     "agreed": {

@@ -2834,6 +2834,11 @@
         "title": "al-Kalim at-Tayyib",
         "compiler": "Ibn Taimiya",
         "blurb": "Das gute Wort: Gedenkformeln und Bittgebete"
+      },
+      "qudsi": {
+        "title": "Hadith Qudsi",
+        "blurb": "Aus al-Bukhari und Muslim: was der Prophet ﷺ von seinem Herrn überliefert",
+        "note": "{{held}} Hadith Qudsi – Worte, die der Prophet ﷺ von seinem Herrn überliefert –, jeder so, wie Sahih al-Bukhari oder Sahih Muslim ihn hat. Es sind die, die eine bekannte Auswahl von vierzig einem der beiden zuschreibt und die dort sicher gefunden wurden; diese Liste ist nicht jene Auswahl."
       }
     },
     "agreed": {

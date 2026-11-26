@@ -2834,6 +2834,11 @@
         "title": "el-Kelimü’t-Tayyib",
         "compiler": "İbn Teymiyye",
         "blurb": "Güzel söz: zikirler ve dualar"
+      },
+      "qudsi": {
+        "title": "Kudsî hadisler",
+        "blurb": "Buhârî ve Müslim'den: Peygamber'in ﷺ Rabbinden rivayet ettikleri",
+        "note": "{{held}} kudsî hadis — Peygamber'in ﷺ Rabbinden rivayet ettiği sözler — her biri Sahîh-i Buhârî veya Sahîh-i Müslim'de geçtiği şekliyle. Bunlar, bilinen bir kırk hadis seçkisinin bu ikisinden birine nispet ettiği ve orada kesin olarak bulunan hadislerdir; bu liste o seçki değildir."
       }
     },
     "agreed": {

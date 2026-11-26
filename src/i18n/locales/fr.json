@@ -2835,6 +2835,11 @@
         "title": "al-Kalim at-Tayyib",
         "compiler": "Ibn Taymiyya",
         "blurb": "La bonne parole : rappels et invocations"
+      },
+      "qudsi": {
+        "title": "Hadiths qudsi",
+        "blurb": "D'al-Boukhari et Muslim : ce que le Prophète ﷺ rapporte de son Seigneur",
+        "note": "{{held}} hadiths qudsi — des paroles que le Prophète ﷺ rapporte de son Seigneur —, chacun tel que Sahih al-Boukhari ou Sahih Muslim le donne. Ce sont ceux qu'une sélection connue de quarante attribue à l'un des deux et qui y ont été trouvés avec certitude ; cette liste n'est pas cette sélection."
       }
     },
     "agreed": {

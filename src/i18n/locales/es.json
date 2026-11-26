@@ -2835,6 +2835,11 @@
         "title": "al-Kalim at-Tayyib",
         "compiler": "Ibn Taymiyya",
         "blurb": "La buena palabra: recuerdos y súplicas"
+      },
+      "qudsi": {
+        "title": "Hadices qudsi",
+        "blurb": "De al-Bujari y Muslim: lo que el Profeta ﷺ transmite de su Señor",
+        "note": "{{held}} hadices qudsi —palabras que el Profeta ﷺ transmite de su Señor—, cada uno tal como lo tiene Sahih al-Bujari o Sahih Muslim. Son los que una conocida selección de cuarenta atribuye a uno de los dos y que se encontraron allí con certeza; esta lista no es esa selección."
       }
     },
     "agreed": {

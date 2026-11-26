@@ -109,6 +109,7 @@ decided before any is served.
 | **Riyāḍ aṣ-Ṣāliḥīn** (a compilation, §1) | The hadith an-Nawawī attributes to a book the app serves, each as that book's own row — in the five graded books, only a row every grader calls sound — or the HadeethEnc entry that is the same hadith, for its translation. One he himself calls weak is left out | `scripts/hadith/build-compilation.js` writes `src/hadith/compilations/riyad.json`: his number, the book, the row |
 | **ʿUmdat al-Aḥkām** (a compilation, §1) | Its compiler's condition is that every hadith is in al-Bukhārī and Muslim both: each is served as the row of one of the two that has its words, or as its HadeethEnc entry | The same script; `src/hadith/compilations/umdah.json` |
 | **al-Kalim aṭ-Ṭayyib** (a compilation, §1) | The supplications Ibn Taymiyyah attributes to a book the app serves, each as that book's row | The same script; `src/hadith/compilations/kalim.json` |
+| **Hadith Qudsi** (a list of the app's own, §1) | The hadith qudsi that hadith-api's edition of a modern selection of forty attributes first to al-Bukhārī or to Muslim, each as that book's row. Not presented as that selection, and unnumbered | The same script; `src/hadith/compilations/qudsi.json` |
 | **Musnad Aḥmad, Sunan ad-Dārimī** | Not offered | No open dataset grades them. They come back when one does |
 
 **"Agreed upon"** (Look up, above the books) is not a further source: it

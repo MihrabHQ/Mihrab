@@ -287,7 +287,7 @@ export function HadithListScreen() {
       ) : null}
       {comp && rows ? (
         <Text style={[styles.blurb, { color: palette.muted }]} testID="hadith-comp-note">
-          {t('hadith.comp.note', {
+          {t(comp.own ? `hadith.comp.${comp.id}.note` : 'hadith.comp.note', {
             title: t(`hadith.comp.${comp.id}.title`),
             compiler: t(`hadith.comp.${comp.id}.compiler`),
             held: rows.length,

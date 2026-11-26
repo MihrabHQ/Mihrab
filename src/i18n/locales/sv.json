@@ -2834,6 +2834,11 @@
         "title": "al-Kalim at-Tayyib",
         "compiler": "Ibn Taymiyya",
         "blurb": "Det goda ordet: åminnelser och åkallan"
+      },
+      "qudsi": {
+        "title": "Hadith qudsi",
+        "blurb": "Från al-Bukhari och Muslim: det som Profeten ﷺ återger från sin Herre",
+        "note": "{{held}} hadith qudsi – ord som Profeten ﷺ återger från sin Herre – var och en så som Sahih al-Bukhari eller Sahih Muslim har den. Det är de som ett välkänt urval om fyrtio tillskriver någon av de två och som hittades där med säkerhet; den här listan är inte det urvalet."
       }
     },
     "agreed": {

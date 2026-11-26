@@ -2834,6 +2834,11 @@
         "title": "al-Kalim at-Tayyib",
         "compiler": "Ibn Taymiyyah",
         "blurb": "The Goodly Word: remembrances and supplications"
+      },
+      "qudsi": {
+        "title": "Hadith Qudsi",
+        "blurb": "From al-Bukhari and Muslim: what the Prophet ﷺ relates from his Lord",
+        "note": "{{held}} hadith qudsi — sayings the Prophet ﷺ relates from his Lord — each as Sahih al-Bukhari or Sahih Muslim has it. They are the ones a well-known selection of forty attributes to one of the two, found there with confidence; this list is not that selection."
       }
     },
     "agreed": {

@@ -118,6 +118,32 @@ const COMPILATIONS = {
     attribution: body => attributionAround(body),
     report: body => plain(body.slice(body.indexOf('[') + 1, body.indexOf(']'))),
   },
+  /**
+   * Hadith Qudsi, from the two Ṣaḥīḥs. There is no classical book of them
+   * with attributions to read; the input is hadith-api's edition of a
+   * modern selection of forty, which ends each with where it is from
+   * ("رواه مسلم (وكذلك البخاري والنسائي)"). Only its first attribution is
+   * read, and only where that is al-Bukhārī or Muslim: what is served is
+   * that book's own row, on the collection's standing, so the list is OURS
+   * — the hadith qudsi of the two Ṣaḥīḥs that a known selection points to
+   * — and is not presented as that selection (`own`: the app words the
+   * list accordingly, and shows no numbers).
+   */
+  qudsi: {
+    of: 40,
+    numbered: false,
+    own: true,
+    input: { url: 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-qudsi.min.json', cache: 'hadith-api-qudsi.json' },
+    // The edition as fetched, or as an earlier run kept it: `[number, text]` rows.
+    items: d =>
+      new Map(
+        (Array.isArray(d) ? d : d.hadiths.map(h => [h.hadithnumber, h.text])).map(([n, text]) => [n, String(text).replace(/<br\s*\/?>/g, '\n')]),
+      ),
+    attribution: body => {
+      const named = attribution(body);
+      return ['bukhari', 'muslim'].includes(named[0]) ? named.filter(b => b === 'bukhari' || b === 'muslim') : [];
+    },
+  },
 };
 
 /**
@@ -600,6 +626,7 @@ async function main() {
     asOf,
     of,
     numbered: spec.numbered,
+    ...(spec.own ? { own: true } : null),
     rule: `first attribution names a book the app serves; a row of it holds ${PAIR_AT} of the hadith's words in order and close together — or a person read the two and signed the pairing (scripts/hadith/signed-pairings.json)`,
     signed: signedFor,
     left,

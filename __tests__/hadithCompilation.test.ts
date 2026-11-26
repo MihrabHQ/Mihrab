@@ -163,7 +163,7 @@ describe('the index', () => {
 
 describe('every compilation’s index', () => {
   type Raw = { id: string; of: number; note: string; numbered?: boolean; left: Record<string, number>; rows: Array<[number, string, number, string | null]> };
-  const all = ['riyad', 'umdah', 'kalim'].map(id => JSON.parse(read(`src/hadith/compilations/${id}.json`)) as Raw);
+  const all = ['riyad', 'umdah', 'kalim', 'qudsi'].map(id => JSON.parse(read(`src/hadith/compilations/${id}.json`)) as Raw);
 
   it('is written by the script, in the compiler’s order, and accounts for every hadith of the book', () => {
     for (const c of all) {
@@ -237,7 +237,7 @@ describe('in the app', () => {
   });
 
   it('is a list of its own, read from HadeethEnc and the books it names', () => {
-    expect(COMPILATIONS.map(c => c.id)).toEqual(['riyad', 'umdah', 'kalim']);
+    expect(COMPILATIONS.map(c => c.id)).toEqual(['riyad', 'umdah', 'kalim', 'qudsi']);
     expect(parseList('comp:riyad')).toEqual({ kind: 'comp', id: 'riyad' });
     expect(parseList('comp:nothing')).toBeNull();
     expect(compilationBooks(riyad)).toEqual(expect.arrayContaining(['bukhari', 'muslim', 'abudawud', 'tirmidhi']));
@@ -289,6 +289,27 @@ describe('in the app', () => {
     expect(report('من يرد الله به خيرا يصب منه ((رواه البخاري))')).not.toMatch(/رواه/);
   });
 
+  it('offers the hadith qudsi of the two Ṣaḥīḥs as a list of its own, not as the selection it was read from', () => {
+    const qudsi = findCompilation('qudsi')!;
+    expect(qudsi.own).toBe(true);
+    expect(qudsi.numbered).toBe(false);
+    expect(findCompilation('riyad')!.own).toBe(false);
+    // From al-Bukhārī and Muslim alone, each as that book's row or the HadeethEnc entry that is the same hadith.
+    for (const r of qudsi.rows) expect(['bukhari', 'muslim', '']).toContain(r.book);
+    expect(qudsi.rows.length).toBeGreaterThanOrEqual(25);
+    // Its page says what it is, in every language, and that it is not that selection.
+    expect(read('src/screens/hadith/HadithListScreen.tsx')).toContain("t(comp.own ? `hadith.comp.${comp.id}.note` : 'hadith.comp.note', {");
+    for (const lang of ['en', 'sv', 'ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh']) {
+      const q = JSON.parse(read(`src/i18n/locales/${lang}.json`)).hadith.comp.qudsi;
+      expect(q.note).toContain('{{held}}');
+      expect(q.title.length > 3 && q.blurb.length > 10).toBe(true);
+    }
+    expect(JSON.parse(read('src/i18n/locales/en.json')).hadith.comp.qudsi.note).toMatch(/not that selection/);
+    // Only the first attribution, and only where it is one of the two.
+    const b = builder as unknown as { attribution: (s: string) => string[] };
+    expect(b.attribution('… رواه مسلم (وكذلك البخاري والنسائي وابن ماجه)')).toEqual(['muslim']);
+  });
+
   it('takes a pairing a person signed, and holds the signature to the rule', () => {
     const b = builder as unknown as {
       SIGNED: Record<string, { n: number; book: string; row: number; number: number; holds: string[]; by: string; on: string; why: string }[]>;
@@ -338,7 +359,7 @@ describe('in the app', () => {
 
   it('says on its list how many of the book it holds, and is not offered in a browser', () => {
     const list = read('src/screens/hadith/HadithListScreen.tsx');
-    expect(list).toMatch(/t\('hadith\.comp\.note', \{[\s\S]{0,200}held: rows\.length,\s+of: comp\.of,/);
+    expect(list).toMatch(/'hadith\.comp\.note', \{[\s\S]{0,200}held: rows\.length,\s+of: comp\.of,/);
     expect(read('src/hadith/catalog.ts')).toContain('export const COMPILATIONS: readonly Compilation[] = IS_WEB_APP ? [] : ALL_COMPILATIONS;');
   });
 
