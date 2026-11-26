@@ -722,6 +722,52 @@ export function sameHadithTwice(a: HencEntry, b: HencEntry): boolean {
   return both / (x.size + y.size - both) >= SAME_MATN;
 }
 
+export type RelatedHadith = { topic: string; rows: ListRow[] };
+
+/**
+ * Other hadith on the same subject as a HadeethEnc entry: those HadeethEnc
+ * files under the same topic, and nothing this app judged to be alike.
+ *
+ * An entry is under one topic or a few. The NARROWEST that holds another
+ * hadith is taken — "Virtues of ablution" before "Purification" — since
+ * that is the one a reader of this hadith would call its subject. The
+ * rows are the ones that FOLLOW it in that topic, in the packs' order and
+ * round to the start: each hadith of a topic then points at different
+ * neighbours, where "the first five" would send all eighty of a long
+ * topic to the same five. The same hadith filed twice (`sameHadithTwice`)
+ * is not offered as related to itself.
+ *
+ * Null for anything that is not a HadeethEnc entry — the books' rows
+ * carry no topics — and for an entry alone in its topics.
+ */
+export async function relatedHadith(id: string, appLang: string, max = 5): Promise<RelatedHadith | null> {
+  if (!id.startsWith('h:')) return null;
+  const idx = await hencIndex(appLang);
+  const key = id.slice(2);
+  const self = idx.lang.get(key) ?? idx.en.get(key);
+  if (!self || !self.c.length) return null;
+  const mine = new Set(self.c);
+  const members = new Map<string, HencEntry[]>(self.c.map(c => [c, []]));
+  const seen = new Set<string>();
+  for (const map of [idx.lang, idx.en]) {
+    for (const e of map.values()) {
+      if (seen.has(e.id)) continue;
+      seen.add(e.id);
+      for (const c of e.c) if (mine.has(c)) members.get(c)!.push(e);
+    }
+  }
+  let best: { topic: string; all: HencEntry[]; others: HencEntry[] } | null = null;
+  for (const topic of self.c) {
+    const all = members.get(topic)!;
+    const others = all.filter(e => e.id !== self.id && !sameHadithTwice(self, e));
+    if (others.length && (!best || all.length < best.all.length)) best = { topic, all, others };
+  }
+  if (!best) return null;
+  const at = best.all.findIndex(e => e.id === self.id);
+  const after = [...best.all.slice(at + 1), ...best.all.slice(0, Math.max(at, 0))].filter(e => best.others.includes(e));
+  return { topic: best.topic, rows: after.slice(0, max).map(e => ({ id: `h:${e.id}`, title: e.t, note: entryNote(e) })) };
+}
+
 /**
  * Everything on the device that holds every word of the query.
  *

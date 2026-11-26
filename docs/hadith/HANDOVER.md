@@ -21,6 +21,7 @@ longer true.
 | Ṣaḥīḥ al-Bukhārī and Ṣaḥīḥ Muslim by their books (97, and 57) | `scripts/hadith/book-chapters.js` → `src/hadith/chapters.json`; names in `src/hadith/chapterNames.json` |
 | Hadith of the day, at the top of Learn | `src/hadith/daily.ts` |
 | Copy and Share carry the reference (book, number, chapter) | `hadithReference` in `src/screens/hadith/HadithReaderScreen.tsx` |
+| Related hadith: others in the same HadeethEnc topic, folded under the one read | `relatedHadith` in `src/hadith/library.ts`, `__tests__/hadithRelated.test.ts` |
 | "What the grades mean": Settings → Hadith, and the foot of a hadith | `src/screens/settings/pages/HadithGradesSettingsScreen.tsx`, `hadith.grades.*`, `__tests__/hadithGradesGuide.test.ts` |
 
 ## 2. Not verified by anyone
@@ -67,7 +68,7 @@ Features that add no hadith:
 1. ~~A short guide to the grades~~ — done 2026-11-26 (§1); its twelve
    translations want a native reader, and nobody has seen the page on a
    device.
-2. Related hadith (others in the same HadeethEnc topic, under the one read).
+2. ~~Related hadith~~ — done 2026-11-26 (§1).
 3. Arabic and translation side by side on tablets and desktop.
 4. Share as an image.
 5. Memorisation mode; a reading plan ("Riyāḍ aṣ-Ṣāliḥīn in 90 days",

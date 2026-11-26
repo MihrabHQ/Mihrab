@@ -3037,6 +3037,7 @@
       "leftOut": "Todo lo que un sabio citado por la aplicación considera débil, todo aquello en que los sabios citados discrepan y todo lo que no tiene grado. Dejar fuera un hadiz no significa que Mihrab lo considere débil: sigue estando en los libros impresos.",
       "fullRule": "La regla completa",
       "fullRuleSub": "Qué hadices se ofrecen, fuente por fuente"
-    }
+    },
+    "related": "Más hadices sobre: {{topic}}"
   }
 }

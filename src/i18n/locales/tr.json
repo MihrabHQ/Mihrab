@@ -3036,6 +3036,7 @@
       "leftOut": "Uygulamanın naklettiği âlimlerden birinin zayıf dediği, bu âlimlerin hakkında ihtilaf ettiği ve derecesi bulunmayan her şey. Bir hadisin dışarıda bırakılması, Mihrab'ın ona zayıf dediği anlamına gelmez: o hadis basılı kitaplarda durmaktadır.",
       "fullRule": "Kuralın tamamı",
       "fullRuleSub": "Hangi hadislerin sunulduğu, kaynak kaynak"
-    }
+    },
+    "related": "Bu konuda başka hadisler: {{topic}}"
   }
 }

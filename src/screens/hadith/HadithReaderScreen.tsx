@@ -59,7 +59,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import { chapterAt, chapterName, homeList, parseList } from '../../hadith/catalog';
 import { isBookmarked, isRead, noteOf, setBookmark, setLast, setNote, setRead } from '../../hadith/hadithRecord';
 import { updateHadithRecord, useHadithRecord } from '../../hadith/hadithStore';
-import { loadItem, type HadithItem } from '../../hadith/library';
+import { loadItem, type HadithItem, relatedHadith, type RelatedHadith } from '../../hadith/library';
 import { hadithReport, hadithReportIssueUrl, hadithReportMailUrl } from '../../hadith/report';
 import { usePacksReadyKey } from '../../hadith/packs';
 import { useAppLang, useCategoryTree, useListRows } from '../../hadith/useHadith';
@@ -143,6 +143,20 @@ export function HadithReaderScreen() {
     let live = true;
     loadItem(id, lang).then(x => {
       if (live) setItem(x);
+    });
+    return () => {
+      live = false;
+    };
+  }, [id, lang, here]);
+
+  // Others on the same subject (`relatedHadith`): asked for with the hadith,
+  // shown folded like its explanation.
+  const [related, setRelated] = useState<RelatedHadith | null>(null);
+  useEffect(() => {
+    let live = true;
+    setRelated(null);
+    relatedHadith(id, lang).then(x => {
+      if (live) setRelated(x);
     });
     return () => {
       live = false;
@@ -337,6 +351,32 @@ export function HadithReaderScreen() {
                               {bodyText(w.meaning)}
                             </View>
                           ))}
+                        </View>,
+                      )
+                    : null}
+
+                  {related?.rows.length
+                    ? section(
+                        'related',
+                        t('hadith.related', { topic: tree?.title(related.topic) ?? '' }).replace(/[:：]\s*$/, ''),
+                        <View style={styles.list}>
+                          {related.rows.map(r => (
+                            <Pressable
+                              key={r.id}
+                              accessibilityRole="button"
+                              onPress={() => navigation.push('HadithReader', { id: r.id, list: `cat:${related.topic}` })}
+                              style={({ pressed }) => pressed && styles.pressed}
+                              testID={`hadith-related-${r.id}`}
+                            >
+                              <Text style={[styles.prose, { color: palette.text }]}>{r.title}</Text>
+                              {r.note ? <Text style={[styles.relatedNote, { color: palette.muted }]}>{r.note}</Text> : null}
+                            </Pressable>
+                          ))}
+                          <TextAction
+                            label={t('hadith.allHadith')}
+                            color={palette.accentSolid}
+                            onPress={() => navigation.push('HadithList', { list: `cat:${related.topic}` })}
+                          />
                         </View>,
                       )
                     : null}
@@ -562,6 +602,7 @@ const styles = StyleSheet.create({
   // Sits on the title it counts: the page's gap is taken back.
   position: { fontSize: TYPE.footnote.fontSize, marginBottom: -SPACING.md },
   unread: { flexDirection: 'row', justifyContent: 'center', marginTop: -SPACING.sm },
+  relatedNote: { fontSize: TYPE.footnote.fontSize, marginTop: SPACING.xs },
   // Two lines of their own, centred: side by side they do not fit a phone.
   report: { alignItems: 'center', gap: SPACING.sm },
   missing: { padding: SPACING.xl, textAlign: 'center', fontSize: TYPE.callout.fontSize },

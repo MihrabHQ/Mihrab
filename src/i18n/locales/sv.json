@@ -3036,6 +3036,7 @@
       "leftOut": "Allt som någon lärd som appen hänvisar till kallar svagt, allt som de lärda är oeniga om, och allt som saknar grad. Att en hadith utelämnas betyder inte att Mihrab kallar den svag: den finns kvar i de tryckta böckerna.",
       "fullRule": "Hela regeln",
       "fullRuleSub": "Vilka hadither som visas, källa för källa"
-    }
+    },
+    "related": "Fler hadither om: {{topic}}"
   }
 }

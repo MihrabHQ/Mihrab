@@ -3036,6 +3036,7 @@
       "leftOut": "Apa pun yang dinilai lemah oleh seorang ulama yang dikutip aplikasi, apa pun yang diperselisihkan para ulama yang dikutip, dan apa pun yang tidak memiliki derajat. Tidak memuat sebuah hadis bukan berarti Mihrab menilainya lemah: hadis itu tetap ada dalam kitab-kitab cetak.",
       "fullRule": "Aturan lengkapnya",
       "fullRuleSub": "Hadis mana yang dimuat, sumber demi sumber"
-    }
+    },
+    "related": "Hadis lain tentang: {{topic}}"
   }
 }

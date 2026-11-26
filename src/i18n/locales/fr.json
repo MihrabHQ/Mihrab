@@ -3037,6 +3037,7 @@
       "leftOut": "Tout ce qu'un savant cité par l'application juge faible, tout ce sur quoi les savants cités divergent, et tout ce qui n'a pas de degré. Laisser un hadith de côté ne signifie pas que Mihrab le juge faible : il reste dans les livres imprimés.",
       "fullRule": "La règle complète",
       "fullRuleSub": "Quels hadiths sont proposés, source par source"
-    }
+    },
+    "related": "Autres hadiths sur : {{topic}}"
   }
 }

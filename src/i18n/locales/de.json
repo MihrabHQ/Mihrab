@@ -3036,6 +3036,7 @@
       "leftOut": "Alles, was ein von der App zitierter Gelehrter als schwach bezeichnet, alles, worüber die zitierten Gelehrten uneins sind, und alles ohne Einstufung. Wird ein Hadith weggelassen, nennt Mihrab ihn damit nicht schwach: Er steht weiterhin in den gedruckten Büchern.",
       "fullRule": "Die vollständige Regel",
       "fullRuleSub": "Welche Hadithe gezeigt werden, Quelle für Quelle"
-    }
+    },
+    "related": "Weitere Hadithe zu: {{topic}}"
   }
 }

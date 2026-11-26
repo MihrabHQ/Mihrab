@@ -3036,6 +3036,7 @@
       "leftOut": "Anything a scholar the app cites calls weak, anything the scholars it cites disagree on, and anything with no grade. Leaving a hadith out is not Mihrab calling it weak: it is still in the printed books.",
       "fullRule": "The full rule",
       "fullRuleSub": "Which hadith are served, source by source"
-    }
+    },
+    "related": "More hadith on: {{topic}}"
   }
 }
