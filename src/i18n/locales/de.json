@@ -2813,7 +2813,8 @@
     "searchClear": "Suche löschen",
     "comp": {
       "section": "Bücher zum Lesen",
-      "note": "{{held}} der {{of}} Hadithe von {{title}}, in {{compiler}}s Reihenfolge und unter seinen Nummern: jene, die er al-Buchari oder Muslim zuschreibt und die dort sicher gefunden wurden. Jeder wird so gezeigt, wie ihn dieses Buch überliefert — mit der Übersetzung von HadeethEnc, wo es den Hadith hat —, ein von ihm gekürzter steht hier also vollständig. Die übrigen sind noch nicht enthalten.",
+      "note": "{{held}} der {{of}} Hadithe von {{title}}, in {{compiler}}s Reihenfolge und unter seinen Nummern: jene, die er einem Buch zuschreibt, das Mihrab anbietet, und die dort sicher gefunden wurden. Jeder wird so gezeigt, wie ihn dieses Buch überliefert — mit der Übersetzung von HadeethEnc, wo es den Hadith hat —, ein von ihm gekürzter steht hier also vollständig. Die übrigen sind nicht enthalten.",
+      "more": "{{more}} weitere stammen aus den Sunan und dem Muwatta und erscheinen, sobald diese Bücher auf diesem Gerät sind (Nachschlagen → Die Bücher).",
       "riyad": {
         "title": "Riyad as-Salihin",
         "compiler": "an-Nawawi",

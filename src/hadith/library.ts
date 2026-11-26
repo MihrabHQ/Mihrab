@@ -434,7 +434,10 @@ export async function bookRows(book: string): Promise<ListRow[]> {
 export async function compilationRows(c: Compilation, appLang: string): Promise<ListRow[]> {
   const idx = await hencIndex(appLang);
   const files = new Map<string, BookFile | null>();
-  for (const book of compilationBooks(c)) files.set(book, await loadPack<BookFile>(bookKey(book)));
+  // Whichever of its books are here: the Sunan are not asked for (`compilationNeeds`).
+  for (const book of compilationBooks(c)) {
+    files.set(book, packStatus(bookKey(book)).state === 'ready' ? await loadPack<BookFile>(bookKey(book)) : null);
+  }
   const rows: ListRow[] = [];
   for (const r of c.rows) {
     const translated = r.henc ? rowOf(r.henc, idx) : null;
@@ -442,7 +445,7 @@ export async function compilationRows(c: Compilation, appLang: string): Promise<
       rows.push({ ...translated, number: r.n });
       continue;
     }
-    const file = files.get(r.book);
+    const file = r.book ? files.get(r.book) : null;
     const row = file ? bookRowAt(file, r.index) : undefined;
     if (row) rows.push({ id: `b:${r.book}:${r.index}`, title: bookRowTitle(row[1]), number: r.n });
   }

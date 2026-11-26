@@ -2814,7 +2814,8 @@
     "searchClear": "Effacer la recherche",
     "comp": {
       "section": "Livres à lire",
-      "note": "{{held}} des {{of}} hadiths de {{title}}, dans l’ordre de {{compiler}} et sous ses numéros : ceux qu’il attribue à al-Boukhari ou à Muslim et qui y ont été retrouvés avec certitude. Chacun est présenté tel que ce livre le rapporte — avec la traduction de HadeethEnc lorsqu’il a le hadith —, si bien qu’un hadith qu’il a abrégé figure ici en entier. Les autres ne sont pas encore inclus.",
+      "note": "{{held}} des {{of}} hadiths de {{title}}, dans l’ordre de {{compiler}} et sous ses numéros : ceux qu’il attribue à un livre que Mihrab propose et qui y ont été retrouvés avec certitude. Chacun est présenté tel que ce livre le rapporte — avec la traduction de HadeethEnc lorsqu’il a le hadith —, si bien qu’un hadith qu’il a abrégé figure ici en entier. Les autres ne sont pas inclus.",
+      "more": "{{more}} autres proviennent des Sunan et du Muwatta et apparaissent une fois ces livres présents sur cet appareil (Consulter → Les livres).",
       "riyad": {
         "title": "Riyad as-Salihin",
         "compiler": "an-Nawawi",

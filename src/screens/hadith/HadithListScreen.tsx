@@ -252,6 +252,9 @@ export function HadithListScreen() {
             held: rows.length,
             of: comp.of,
           })}
+          {comp.rows.length > rows.length
+            ? ` ${t('hadith.comp.more', { more: comp.rows.length - rows.length })}`
+            : ''}
         </Text>
       ) : null}
       {ref?.kind === 'agreed' ? (

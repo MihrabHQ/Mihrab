@@ -2813,7 +2813,8 @@
     "searchClear": "Clear the search",
     "comp": {
       "section": "Books to read",
-      "note": "{{held}} of the {{of}} hadith of {{title}}, in {{compiler}}'s order and under his numbers: the ones he attributes to al-Bukhari or Muslim that were found there with confidence. Each is shown as that book has it — with HadeethEnc's translation where it has the hadith — so one he shortened is here whole. The others are not included yet.",
+      "note": "{{held}} of the {{of}} hadith of {{title}}, in {{compiler}}'s order and under his numbers: the ones he attributes to a book Mihrab serves, found there with confidence. Each is shown as that book has it — with HadeethEnc's translation where it has the hadith — so one he shortened is here whole. The others are not included.",
+      "more": "{{more}} more are from the Sunan and the Muwatta, and appear once those books are on this device (Look up → The books).",
       "riyad": {
         "title": "Riyad as-Salihin",
         "compiler": "an-Nawawi",

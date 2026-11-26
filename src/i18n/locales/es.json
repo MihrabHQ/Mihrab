@@ -2814,7 +2814,8 @@
     "searchClear": "Borrar la búsqueda",
     "comp": {
       "section": "Libros para leer",
-      "note": "{{held}} de los {{of}} hadices de {{title}}, en el orden de {{compiler}} y con sus números: los que atribuye a al-Bujari o a Muslim y que se hallaron allí con certeza. Cada uno se muestra tal como lo recoge ese libro — con la traducción de HadeethEnc cuando tiene el hadiz —, de modo que uno que él abrevió está aquí completo. Los demás aún no se incluyen.",
+      "note": "{{held}} de los {{of}} hadices de {{title}}, en el orden de {{compiler}} y con sus números: los que atribuye a un libro que Mihrab ofrece y que se hallaron allí con certeza. Cada uno se muestra tal como lo recoge ese libro — con la traducción de HadeethEnc cuando tiene el hadiz —, de modo que uno que él abrevió está aquí completo. Los demás no se incluyen.",
+      "more": "Otros {{more}} proceden de los Sunan y del Muwatta, y aparecen cuando esos libros están en este dispositivo (Consultar → Los libros).",
       "riyad": {
         "title": "Riyad as-Salihin",
         "compiler": "an-Nawawi",

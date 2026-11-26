@@ -142,10 +142,22 @@ const plain = s => String(s ?? '').normalize('NFD').replace(MARKS, '').replace(/
 const AGREED = /متفق علي(?:ه| صحته)/;
 /** Where a "رواه …" stops naming books and says something else. */
 const NAMES_END = /[.،؛:\n(«"]| وقال| قال| باسناد| باسانيد| علي شرط| في | وغيره| وغيرهما| وغيرهم| بلفظ| وهذا| هكذا| من روايه| مرفوعا| موقوفا| مرسلا| تعليقا| معلقا/;
+/** The seven books the app serves, as a compiler writes them (unvowelled). */
+const BOOK_NAMES = [
+  ['bukhari', /(?:^| )البخاري(?: |$)/],
+  ['muslim', /(?:^| )مسلم(?: |$)/],
+  ['abudawud', /(?:^| )ابو ?داود(?: |$)/],
+  ['tirmidhi', /(?:^| )الترمذي(?: |$)/],
+  ['nasai', /(?:^| )النسايي(?: |$)|(?:^| )النسائي(?: |$)/],
+  ['ibnmajah', /(?:^| )ابن ماجه(?: |$)/],
+  ['malik', /(?:^| )مالك(?: |$)/],
+];
+/** "رواه مالك في الموطأ", "رواه أبو داود في سننه": the book itself, said in full. */
+const IN_HIS_BOOK = /^ في (?:الموطا|سننه|سننهما|صحيحه|صحيحيهما|جامعه)/;
 /**
- * The books the compiler's FIRST attribution names — 'bukhari', 'muslim'
- * — or [] where it names neither, names them with a reservation, or there
- * is no attribution to read.
+ * The books the compiler's FIRST attribution names, of the seven the app
+ * serves, in the order he names them — or [] where it names none of
+ * them, names one with a reservation, or there is no attribution to read.
  */
 function attribution(body) {
   const t = plain(body);
@@ -156,15 +168,31 @@ function attribution(body) {
   if (agreed >= 0 && (reported < 0 || agreed < reported)) return ['bukhari', 'muslim'];
   const after = t.slice(reported).replace(/^[\s.،]*رواه(?:ما)? /, '');
   const stop = after.search(NAMES_END);
-  const turned = stop < 0 ? '' : after.slice(stop, stop + 12);
+  const turned = stop < 0 ? '' : after.slice(stop, stop + 16);
   const names = stop < 0 ? after : after.slice(0, stop);
-  // "رواه البخاري في الأدب المفرد", "رواه مسلم في مقدمته", "رواه البخاري تعليقا": not the Ṣaḥīḥ's own report.
-  if (/^ في | تعليقا| معلقا/.test(turned)) return [];
+  // "رواه البخاري في الأدب المفرد", "رواه مسلم في مقدمته", "رواه البخاري تعليقا": not the book's own report.
+  if ((/^ في /.test(turned) && !IN_HIS_BOOK.test(turned)) || /^ (?:تعليقا|معلقا)/.test(turned)) return [];
   const list = names.split(/\s+و(?=\S)|\s+/).join(' ');
-  const out = [];
-  if (/(?:^| )البخاري(?: |$)/.test(list)) out.push('bukhari');
-  if (/(?:^| )مسلم(?: |$)/.test(list)) out.push('muslim');
-  return out;
+  return BOOK_NAMES.filter(([, re]) => re.test(list)).map(([b]) => b);
+}
+
+/**
+ * Does the compiler himself say, with his attribution, that the hadith is
+ * weak? ("رواه أبو داود بإسناد ضعيف", "…وضعفه", "…وفي إسناده مجهول".) Such
+ * a hadith is left out whatever he attributes it to (docs/hadith-policy.md).
+ * Read in the sentences that follow his first attribution.
+ */
+const SAYS_WEAK = /ضعيف|ضعف|لا يصح|لم يصح|لا يثبت|منقطع|مجهول|فيه نظر|باطل|موضوع/;
+function saysWeak(body) {
+  const t = plain(body);
+  const agreed = t.search(AGREED);
+  const reported = t.search(/(?:^|[\s.،])رواه(?:ما)? /);
+  // Of what he calls agreed upon he says nothing more; and only the
+  // sentence of the attribution is his verdict — what follows it is his
+  // explanation of the hadith's words ("…في باب ضعفة المسلمين").
+  if (reported < 0 || (agreed >= 0 && agreed < reported)) return false;
+  const sentence = t.slice(reported + 1).split(/[.\n]/)[0];
+  return SAYS_WEAK.test(sentence);
 }
 // attribution-rule:end
 
@@ -313,7 +341,11 @@ async function main() {
     console.error(`Which compilation? One of: ${Object.keys(COMPILATIONS).join(', ')}`);
     process.exit(1);
   }
-  for (const f of ['books/bukhari.json', 'books/muslim.json', 'henc/all/ar.json']) {
+  const BOOKS = ['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah', 'malik'];
+  /** One letter a book, in the index. `h`: no row of a book, the HadeethEnc entry alone. */
+  const LETTER = { bukhari: 'b', muslim: 'm', abudawud: 'd', tirmidhi: 't', nasai: 'n', ibnmajah: 'j', malik: 'k' };
+  const SAHIHAYN = ['bukhari', 'muslim'];
+  for (const f of [...BOOKS.map(b => `books/${b}.json`), 'henc/all/ar.json']) {
     if (!fs.existsSync(path.join(PACKS, f))) {
       console.error(`No ${f} in build/hadith/v1. Run: node scripts/hadith/build-packs.js`);
       process.exit(1);
@@ -324,25 +356,38 @@ async function main() {
   const pages = await wikisource(spec);
   const items = numbered(pages);
 
-  const files = { bukhari: read('books/bukhari.json'), muslim: read('books/muslim.json') };
+  // The packs as they are served: the two Ṣaḥīḥs whole, and of the five
+  // graded books only the rows every grader calls sound. A hadith paired
+  // with a row here is paired with a row the app serves.
   const books = {};
-  for (const [b, f] of Object.entries(files)) books[b] = { ...indexed(f.hadiths, r => r[1]), rows: f.hadiths };
+  let asOf = '';
+  for (const b of BOOKS) {
+    const f = read(`books/${b}.json`);
+    asOf = asOf || f.retrieved;
+    books[b] = { ...indexed(f.hadiths, r => r[1]), rows: f.hadiths };
+  }
   // A row's place in Open-Hadith-Data's file: its own where the pack says, where it stands otherwise.
   const placeOf = (row, at) => (typeof row[2] === 'number' ? row[2] : at);
 
-  // HadeethEnc's Arabic entries from the two Ṣaḥīḥs (`s`), to be shown in translation.
+  // HadeethEnc's Arabic entries, to be shown in translation: every one of
+  // them is served, and those from the two Ṣaḥīḥs are marked (`s`).
   const henc = read('henc/all/ar.json');
-  const sahih = henc.entries.filter(e => e.s === 1);
-  const hencIdx = indexed(sahih, e => e.h);
+  const hencAll = { entries: henc.entries, ...indexed(henc.entries, e => e.h) };
+  const sahihEntries = henc.entries.filter(e => e.s === 1);
+  const hencSahih = { entries: sahihEntries, ...indexed(sahihEntries, e => e.h) };
 
   const rows = [];
-  const left = { elsewhere: 0, notFound: 0, tooShort: 0, noText: spec.of - items.size };
+  const left = { elsewhere: 0, saidWeak: 0, notFound: 0, tooShort: 0, noText: spec.of - items.size };
   const review = [];
   for (const n of [...items.keys()].sort((a, b) => a - b)) {
     const body = items.get(n);
     const named = attribution(body);
     if (!named.length) {
       left.elsewhere++;
+      continue;
+    }
+    if (saysWeak(body)) {
+      left.saidWeak++;
       continue;
     }
     // The report, and the report from where its narrator starts to speak:
@@ -355,41 +400,55 @@ async function main() {
       left.tooShort++;
       continue;
     }
+    // In any book he names: one that has it is enough (the policy's
+    // clause), and one of the two Ṣaḥīḥs before a Sunan where both do.
     let best = null;
     let w = tellings[0];
     for (const t of tellings) {
       for (const b of named) {
         const p = pair(t, books[b]);
-        if (p && (!best || p.share > best.share)) {
+        if (!p || p.share < PAIR_AT) continue;
+        const better =
+          !best || (SAHIHAYN.includes(b) && !SAHIHAYN.includes(best.book)) || (SAHIHAYN.includes(b) === SAHIHAYN.includes(best.book) && p.share > best.share);
+        if (better) {
           best = { ...p, book: b };
           w = t;
         }
       }
     }
-    if (!best || best.share < PAIR_AT) {
-      left.notFound++;
-      continue;
-    }
-    // The same hadith in HadeethEnc: its words in ours and ours in its, each way.
+    // The same hadith in HadeethEnc: its words in ours and ours in its,
+    // each way. Of a hadith he gives to the two Ṣaḥīḥs, an entry
+    // HadeethEnc gives to them too.
+    const pool = named.some(b => SAHIHAYN.includes(b)) ? hencSahih : hencAll;
     let hencId = null;
     for (const t of tellings) {
-      const h = pair(t, hencIdx);
-      if (h && h.share >= HENC_AT && inOrder(hencIdx.W[h.i], t) >= HENC_AT) {
-        hencId = sahih[h.i].id;
+      const h = pair(t, pool);
+      if (h && h.share >= HENC_AT && inOrder(pool.W[h.i], t) >= HENC_AT) {
+        hencId = pool.entries[h.i].id;
         break;
       }
     }
-    const row = books[best.book].rows[best.i];
-    rows.push([n, best.book === 'bukhari' ? 'b' : 'm', placeOf(row, best.i), hencId]);
-    review.push({ n, book: best.book, share: best.share, hencId, said: w.join(' '), ours: books[best.book].W[best.i].join(' ') });
+    if (!best && !hencId) {
+      left.notFound++;
+      continue;
+    }
+    if (best) {
+      const row = books[best.book].rows[best.i];
+      rows.push([n, LETTER[best.book], placeOf(row, best.i), hencId]);
+      review.push({ n, book: best.book, share: best.share, hencId, said: w.join(' '), ours: books[best.book].W[best.i].join(' ') });
+    } else {
+      // No row of a book could be told for it, and HadeethEnc holds the
+      // hadith itself: served as that entry, which is graded in its own right.
+      rows.push([n, 'h', 0, hencId]);
+    }
   }
 
   const out = {
-    note: `The hadith of ${id} its compiler attributes to al-Bukhārī or Muslim, each as [his number, the book (b|m), the row's place in Open-Hadith-Data's file, the HadeethEnc entry that is the same hadith or null]. Written by scripts/hadith/build-compilation.js; do not edit.`,
+    note: `The hadith of ${id} its compiler attributes to one of the seven books the app serves, each as [his number, the book (b al-Bukhari, m Muslim, d Abu Dawud, t at-Tirmidhi, n an-Nasa'i, j Ibn Majah, k Malik; h none, the HadeethEnc entry alone), the row's place in Open-Hadith-Data's file, the HadeethEnc entry that is the same hadith or null]. Written by scripts/hadith/build-compilation.js; do not edit.`,
     id,
-    asOf: files.bukhari.retrieved,
+    asOf,
     of: spec.of,
-    rule: `first attribution names al-Bukhari or Muslim; row holds ${PAIR_AT} of the hadith's words in order`,
+    rule: `first attribution names a book the app serves; a row of it holds ${PAIR_AT} of the hadith's words in order and close together`,
     left,
     rows,
   };
@@ -397,18 +456,26 @@ async function main() {
   const file = path.join(OUT_DIR, `${id}.json`);
   fs.writeFileSync(
     file,
-    `${JSON.stringify(out, null, 1).replace(/\[\n\s+(\d+),\n\s+"([bm])",\n\s+(\d+),\n\s+(null|"\d+")\n\s+\]/g, '[$1, "$2", $3, $4]')}\n`,
+    `${JSON.stringify(out, null, 1).replace(/\[\n\s+(\d+),\n\s+"([a-z])",\n\s+(\d+),\n\s+(null|"\d+")\n\s+\]/g, '[$1, "$2", $3, $4]')}\n`,
   );
   const withHenc = rows.filter(r => r[3]).length;
+  const by = {};
+  for (const r of rows) by[r[1]] = (by[r[1]] ?? 0) + 1;
   console.log(
-    `${id}: ${items.size} of ${spec.of} read · ${rows.length} served (${withHenc} with a HadeethEnc entry) · left out: ${left.elsewhere} attributed elsewhere, ${left.notFound} not found with confidence, ${left.tooShort} too short to tell, ${left.noText} not in the text read`,
+    `${id}: ${items.size} of ${spec.of} read · ${rows.length} served (${withHenc} with a HadeethEnc entry; ${Object.entries(by).map(([k, v]) => `${k} ${v}`).join(', ')}) · left out: ${left.elsewhere} attributed elsewhere, ${left.saidWeak} he calls weak, ${left.notFound} not found with confidence, ${left.tooShort} too short to tell, ${left.noText} not in the text read`,
   );
   console.log(`wrote ${path.relative(ROOT, file)}`);
 
   if (REVIEW) {
     // The least sure of what was paired, and a spread of the rest: for a person to read.
     const byShare = [...review].sort((a, b) => a.share - b.share);
-    const pick = [...byShare.slice(0, 12), ...byShare.filter((_, i) => i % Math.ceil(byShare.length / 12) === 0)];
+    const graded = byShare.filter(r => r.book !== 'bukhari' && r.book !== 'muslim');
+    const pick = [
+      ...byShare.slice(0, 12),
+      // The graded books' least sure, read apart: a wrong row there would carry another hadith's grade.
+      ...graded.slice(0, 10),
+      ...byShare.filter((_, i) => i % Math.ceil(byShare.length / 12) === 0),
+    ];
     for (const r of pick) {
       console.log(`\n#${r.n} → ${r.book} (${r.share.toFixed(2)})${r.hencId ? ` · HadeethEnc ${r.hencId}` : ''}`);
       console.log(`  his:  ${r.said.slice(0, 170)}`);
@@ -423,4 +490,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-module.exports = { attribution, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };
+module.exports = { attribution, saysWeak, report, inOrder, inOrderNear, words, fold, PAIR_AT, MIN_WORDS };

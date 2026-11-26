@@ -2813,7 +2813,8 @@
     "searchClear": "Hapus pencarian",
     "comp": {
       "section": "Kitab untuk dibaca",
-      "note": "{{held}} dari {{of}} hadis {{title}}, menurut urutan dan nomor {{compiler}}: yang beliau nisbatkan kepada al-Bukhari atau Muslim dan ditemukan di sana dengan yakin. Masing-masing ditampilkan sebagaimana ada dalam kitab itu — dengan terjemahan HadeethEnc bila hadisnya ada di sana — sehingga hadis yang beliau ringkas ada di sini secara utuh. Yang lain belum disertakan.",
+      "note": "{{held}} dari {{of}} hadis {{title}}, menurut urutan dan nomor {{compiler}}: yang beliau nisbatkan kepada kitab yang disajikan Mihrab dan ditemukan di sana dengan yakin. Masing-masing ditampilkan sebagaimana ada dalam kitab itu — dengan terjemahan HadeethEnc bila hadisnya ada di sana — sehingga hadis yang beliau ringkas ada di sini secara utuh. Yang lain tidak disertakan.",
+      "more": "{{more}} lainnya berasal dari kitab-kitab Sunan dan al-Muwaththa, dan muncul setelah kitab-kitab itu ada di perangkat ini (Cari → Kitab-kitab).",
       "riyad": {
         "title": "Riyadhus Shalihin",
         "compiler": "an-Nawawi",

@@ -29,12 +29,13 @@ import fs from 'fs';
 import path from 'path';
 import RIYAD from '../src/hadith/compilations/riyad.json';
 import WITHHELD from '../src/hadith/withheld.json';
-import { COMPILATIONS, compilationBooks, findCompilation, parseList } from '../src/hadith/catalog';
+import { COMPILATIONS, compilationBooks, compilationNeeds, findCompilation, parseList } from '../src/hadith/catalog';
 import { compilationRows, listRows } from '../src/hadith/library';
 import { packsForList } from '../src/hadith/useHadith';
 
 const builder = require('../scripts/hadith/build-compilation.js') as {
   attribution: (body: string) => string[];
+  saysWeak: (body: string) => boolean;
   report: (body: string) => string;
   inOrder: (a: string[], b: string[]) => number;
   inOrderNear: (a: string[], b: string[]) => number;
@@ -60,18 +61,33 @@ describe('the compiler’s attribution', () => {
     expect(attribution('… الحديث. رواه مسلم. وفي رواية للبخاري: كذا')).toEqual(['muslim']);
   });
 
-  it('is neither, where the first attribution is to another book', () => {
-    for (const body of [
-      '… الحديث. رَوَاهُ التِّرمِذِيُّ وَقَالَ حَدِيثٌ حَسَنٌ.',
-      '… الحديث. رواه أبو داود بإسناد صحيح على شرط البخاري ومسلم.',
-      '… الحديث. رواه أبو داود والترمذي والحاكم وقال: حديث صحيح على شرط البخاري ومسلم.',
-      '… الحديث. رواه أبو داود. وفي رواية لمسلم: كذا',
-      '… الحديث. رواه الترمذي، وقال: حديث حسن. وأصله في مسلم',
-      '… الحديث بلا عزو',
-      '',
-    ]) {
+  it('is the Sunan he names, and not the Ṣaḥīḥs a later clause mentions', () => {
+    expect(attribution('… الحديث. رَوَاهُ التِّرمِذِيُّ وَقَالَ حَدِيثٌ حَسَنٌ.')).toEqual(['tirmidhi']);
+    expect(attribution('… الحديث. رواه أبو داود بإسناد صحيح على شرط البخاري ومسلم.')).toEqual(['abudawud']);
+    expect(attribution('… الحديث. رواه أبو داود والترمذي والحاكم وقال: حديث صحيح على شرط البخاري ومسلم.')).toEqual([
+      'abudawud',
+      'tirmidhi',
+    ]);
+    expect(attribution('… الحديث. رواه أبو داود. وفي رواية لمسلم: كذا')).toEqual(['abudawud']);
+    expect(attribution('… الحديث. رواه الترمذي، وقال: حديث حسن. وأصله في مسلم')).toEqual(['tirmidhi']);
+    expect(attribution('… الحديث. رواه النسائي وابن ماجه.')).toEqual(['nasai', 'ibnmajah']);
+    expect(attribution('… الحديث. رواه مالك في الموطأ.')).toEqual(['malik']);
+  });
+
+  it('is none, where he names no book the app serves, or none at all', () => {
+    for (const body of ['… الحديث. رواه أحمد والحاكم والبيهقي.', '… الحديث. رواه الطبراني بإسناد جيد.', '… الحديث بلا عزو', '']) {
       expect(attribution(body)).toEqual([]);
     }
+  });
+
+  it('hears him say a hadith is weak — in the attribution’s own sentence, and nowhere after it', () => {
+    const { saysWeak } = builder;
+    expect(saysWeak('… الحديث. رواه أبو داود بإسناد ضعيف.')).toBe(true);
+    expect(saysWeak('… رواه أبو داود بإسناد حسن إلا قيس بن بشر فاختلفوا في توثيقه وتضعيفه.')).toBe(true);
+    expect(saysWeak('… رَوَاهُ التِّرمِذِيُّ وَقَالَ حَدِيثٌ حَسَنٌ.')).toBe(false);
+    // His explanation of the hadith's words, after it: not a verdict.
+    expect(saysWeak('… مُتَّفَقٌ عَلَيهِ. وتقدم شرحه في باب ضعفة المسلمين')).toBe(false);
+    expect(saysWeak('… رَوَاهُ الْبُخَارِيُّ.\n\n(القائم في حدود اللَّه) معناه: المنكر لها. وفيه ضعيف')).toBe(false);
   });
 
   it('is neither, where it is not the Ṣaḥīḥ’s own report', () => {
@@ -118,7 +134,9 @@ describe('the index', () => {
     expect(RIYAD.note).toContain('scripts/hadith/build-compilation.js');
     for (const [n, b, i, h] of rows) {
       expect(Number.isInteger(n) && n > 0 && n <= RIYAD.of).toBe(true);
-      expect(['b', 'm']).toContain(b);
+      expect(['b', 'm', 'd', 't', 'n', 'j', 'k', 'h']).toContain(b);
+      // With no book it is the HadeethEnc entry alone, and there is one.
+      if (b === 'h') expect(h).not.toBeNull();
       expect(Number.isInteger(i) && i >= 0).toBe(true);
       expect(h === null || /^\d+$/.test(h)).toBe(true);
     }
@@ -134,7 +152,7 @@ describe('the index', () => {
     const left = Object.values(RIYAD.left).reduce((a, b) => a + b, 0);
     expect(rows.length + left).toBe(RIYAD.of);
     expect(rows.length).toBeGreaterThan(1000);
-    expect(Object.keys(RIYAD.left).sort()).toEqual(['elsewhere', 'noText', 'notFound', 'tooShort']);
+    expect(Object.keys(RIYAD.left).sort()).toEqual(['elsewhere', 'noText', 'notFound', 'saidWeak', 'tooShort']);
   });
 
   it('links no HadeethEnc entry the packs withhold', () => {
@@ -172,7 +190,9 @@ describe('in the app', () => {
     expect(COMPILATIONS.map(c => c.id)).toEqual(['riyad']);
     expect(parseList('comp:riyad')).toEqual({ kind: 'comp', id: 'riyad' });
     expect(parseList('comp:nothing')).toBeNull();
-    expect(compilationBooks(riyad).sort()).toEqual(['bukhari', 'muslim']);
+    expect(compilationBooks(riyad)).toEqual(expect.arrayContaining(['bukhari', 'muslim', 'abudawud', 'tirmidhi']));
+    // Opened with the two Ṣaḥīḥs; the Sunan are not asked for.
+    expect(compilationNeeds(riyad).sort()).toEqual(['bukhari', 'muslim']);
     expect(packsForList('comp:riyad', 'en')).toEqual(['categories/en', 'henc/all/en', 'books/bukhari', 'books/muslim']);
   });
 
@@ -183,6 +203,11 @@ describe('in the app', () => {
     expect(byId.get(`h:${withHenc.henc}`)).toEqual({ id: `h:${withHenc.henc}`, title: 'In translation', number: withHenc.n });
     expect(byId.get(`b:bukhari:${fromBukhari.index}`)?.number).toBe(fromBukhari.n);
     expect(byId.get(`b:muslim:${fromMuslim.index}`)?.number).toBe(fromMuslim.n);
+    // A hadith from a Sunan is not shown while that book is not on the device…
+    const fromSunan = riyad.rows.find(r => !r.henc && r.book === 'tirmidhi')!;
+    expect(byId.has(`b:tirmidhi:${fromSunan.index}`)).toBe(false);
+    // …and a hadith told only by its HadeethEnc entry has no book to wait for.
+    expect(riyad.rows.some(r => r.book === '' && r.henc)).toBe(true);
     // A row whose hadith is in no pack here is left out, not shown empty.
     expect(rows.length).toBeLessThan(riyad.rows.length);
     expect(rows.map(r => r.number)).toEqual([...rows.map(r => r.number)].sort((a, b) => (a ?? 0) - (b ?? 0)));

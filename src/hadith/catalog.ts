@@ -124,7 +124,7 @@ export const AGREED_OFFERED = !IS_WEB_APP;
  *
  * A row is the compiler's number, the book he attributes it to, the row's
  * place there, and the HadeethEnc entry that is the same hadith where
- * there is one. Nothing of the compilation's own text is in the app: a
+ * there is one (with no book, where only that entry could be told for it). Nothing of the compilation's own text is in the app: a
  * reader is shown the HadeethEnc entry, with its translation, or else the
  * hadith as al-Bukhārī or Muslim has it.
  *
@@ -139,7 +139,17 @@ export type Compilation = {
   rows: readonly CompilationRow[];
 };
 type RawCompilation = { id: string; of: number; left: Record<string, number>; rows: unknown[] };
-const SHORT_BOOK: Record<string, string> = { b: 'bukhari', m: 'muslim' };
+/** `h`: no row of a book — the hadith is served as its HadeethEnc entry alone. */
+const SHORT_BOOK: Record<string, string> = {
+  b: 'bukhari',
+  m: 'muslim',
+  d: 'abudawud',
+  t: 'tirmidhi',
+  n: 'nasai',
+  j: 'ibnmajah',
+  k: 'malik',
+  h: '',
+};
 const compilation = (raw: RawCompilation): Compilation => ({
   id: raw.id,
   of: raw.of,
@@ -158,7 +168,16 @@ export function findCompilation(id: string): Compilation | undefined {
 }
 /** The books a compilation's rows are in. */
 export function compilationBooks(c: Compilation): string[] {
-  return [...new Set(c.rows.map(r => r.book))];
+  return [...new Set(c.rows.map(r => r.book).filter(Boolean))];
+}
+/**
+ * The books a compilation is opened with: the two Ṣaḥīḥs, where most of
+ * it is. Its hadith from the Sunan and the Muwaṭṭaʾ are shown as those
+ * books are downloaded — five more downloads are not asked of a reader
+ * who came for one book.
+ */
+export function compilationNeeds(c: Compilation): string[] {
+  return compilationBooks(c).filter(b => SAHIH_BOOKS.includes(b));
 }
 
 export const hencPackKey = (pack: string, lang: string): PackKey => `henc/${pack}/${lang}`;
