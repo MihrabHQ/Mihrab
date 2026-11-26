@@ -180,8 +180,9 @@ describe('the shelf', () => {
     expect(read('src/screens/hadith/LibraryBookScreen.tsx')).toContain("{t('hadith.library.bookNote')}");
     for (const f of fs.readdirSync(path.join(REPO, 'src/i18n/locales'))) {
       const k = JSON.parse(read(`src/i18n/locales/${f}`)).hadith.library;
-      expect([f, Object.keys(k).sort()]).toEqual([f, ['bookNote', 'by', 'chapters', 'continue', 'empty', 'intro', 'needsDownload', 'next', 'previous', 'source', 'tab']]);
-      for (const key of ['by', 'source', 'continue']) expect(k[key]).toMatch(/\{\{/);
+      expect([f, Object.keys(k).sort()]).toEqual([f, ['bookNote', 'by', 'chapterOf', 'chapters', 'continue', 'empty', 'intro', 'mark', 'marks', 'needsDownload', 'next', 'percent', 'previous', 'remove', 'source', 'tab', 'unmark']]);
+      for (const key of ['by', 'source', 'continue', 'percent']) expect(k[key]).toMatch(/\{\{/);
+      expect(k.chapterOf).toMatch(/\{\{n\}\}.*\{\{count\}\}|\{\{count\}\}.*\{\{n\}\}/);
     }
   });
 
@@ -248,6 +249,68 @@ describe('the shelf', () => {
         { name: 'م', first: 0, count: 1 },
         { name: 'ك', first: 1, count: 2 },
       ]);
+    });
+  });
+
+  describe('a reader\'s place, marks and what leaves the app', () => {
+    const shelf = require('../src/hadith/libraryShelf') as typeof import('../src/hadith/libraryShelf');
+    const storage = require('../src/storage/appStorage').default as { multiRemove: (k: string[]) => Promise<void>; setItem: (k: string, v: string) => Promise<void>; getItem: (k: string) => Promise<string | null> };
+    beforeEach(async () => {
+      await storage.multiRemove(['mihrab.library.place.v1', 'mihrab.library.reading.v1', 'mihrab.library.bookmarks.v1']);
+      shelf._resetLibraryForTests();
+    });
+
+    it('keeps the paragraph, and still reads the chapter kept before there were paragraphs', async () => {
+      await storage.setItem('mihrab.library.place.v1', JSON.stringify({ kalila: 3 }));
+      expect(await shelf.libraryPlace('kalila')).toBe(3);
+      expect(await shelf.libraryReading('kalila')).toBeNull();
+      await shelf.setLibraryReading('kalila', { c: 5, b: 12, f: 0.5, n: 19, t: 'باب', at: 100 });
+      shelf._resetLibraryForTests();
+      expect(await shelf.libraryReading('kalila')).toEqual({ c: 5, b: 12, f: 0.5, n: 19, t: 'باب', at: 100 });
+      expect(await shelf.libraryPlace('kalila')).toBe(5);
+    });
+
+    it('drops what is not a place, and loses nothing else with it', async () => {
+      await storage.setItem('mihrab.library.reading.v1', JSON.stringify({ a: { c: 1, b: 0, f: 0, n: 4, t: 'x', at: 1 }, b: { c: -1 }, c: 'no' }));
+      expect(Object.keys(await shelf.libraryReadings())).toEqual(['a']);
+      await storage.setItem('mihrab.library.bookmarks.v1', '{not json');
+      expect(await shelf.libraryBookmarks('a')).toEqual([]);
+    });
+
+    it('measures a book by its chapters and offers the one read last', () => {
+      expect(shelf.libraryProgress({ c: 0, f: 0, n: 10 })).toBe(0);
+      expect(shelf.libraryProgress({ c: 4, f: 0.5, n: 10 })).toBeCloseTo(0.45);
+      expect(shelf.libraryProgress({ c: 9, f: 1, n: 10 })).toBe(1);
+      const r = { a: { c: 0, b: 0, f: 0, n: 2, t: '', at: 5 }, b: { c: 0, b: 0, f: 0, n: 2, t: '', at: 9 } };
+      expect(shelf.lastReadBook(r, ['a', 'b'])).toBe('b');
+      // A book that is not on the device is not offered to go on with.
+      expect(shelf.lastReadBook(r, ['a'])).toBe('a');
+      expect(shelf.lastReadBook(r, [])).toBeNull();
+    });
+
+    it('marks a paragraph and takes the mark off, newest first', async () => {
+      expect(await shelf.toggleLibraryBookmark('a', 1, 2, 10)).toEqual([{ c: 1, b: 2, at: 10 }]);
+      expect(await shelf.toggleLibraryBookmark('a', 0, 7, 20)).toEqual([{ c: 0, b: 7, at: 20 }, { c: 1, b: 2, at: 10 }]);
+      shelf._resetLibraryForTests();
+      expect(await shelf.toggleLibraryBookmark('a', 1, 2, 30)).toEqual([{ c: 0, b: 7, at: 20 }]);
+      expect(await shelf.toggleLibraryBookmark('a', 0, 7, 40)).toEqual([]);
+      expect(await storage.getItem('mihrab.library.bookmarks.v1')).toBe('{}');
+    });
+
+    it('sends a passage with whose it is, whole', () => {
+      const book = { title: 'العقد الفريد', author: 'ابن عبد ربه الأندلسي' };
+      expect(shelf.libraryShareText(book, 'المشورة', 'قول كامل.')).toBe('قول كامل.\n\n— العقد الفريد، ابن عبد ربه الأندلسي · المشورة');
+      expect(shelf.libraryShareText(book, 'العقد الفريد', { v: ['صدر  عجز', 'صدر  عجز'] })).toBe('صدر  عجز\nصدر  عجز\n\n— العقد الفريد، ابن عبد ربه الأندلسي');
+      const { bookmarkSnippet } = require('../src/screens/hadith/LibraryBookScreen');
+      expect(bookmarkSnippet('كلمة  قصيرة')).toBe('كلمة قصيرة');
+      const long = bookmarkSnippet('كلمة '.repeat(60));
+      expect(long.length).toBeLessThanOrEqual(91);
+      expect(long.endsWith('…')).toBe(true);
+    });
+
+    it('never reaches the hadith: a place and a mark are the only things the Library keeps', () => {
+      const src = read('src/hadith/libraryShelf.ts');
+      expect(src.match(/'mihrab\.library\.[a-z]+\.v1'/g)).toEqual(["'mihrab.library.place.v1'", "'mihrab.library.reading.v1'", "'mihrab.library.bookmarks.v1'"]);
     });
   });
 });

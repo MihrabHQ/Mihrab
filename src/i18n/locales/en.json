@@ -3121,7 +3121,13 @@
       "continue": "Continue: {{chapter}}",
       "chapters": "Chapters",
       "next": "Next chapter",
-      "previous": "Previous chapter"
+      "previous": "Previous chapter",
+      "chapterOf": "{{n}} of {{count}}",
+      "percent": "{{percent}}%",
+      "mark": "Bookmark",
+      "unmark": "Remove bookmark",
+      "marks": "Bookmarks",
+      "remove": "Remove download"
     }
   }
 }

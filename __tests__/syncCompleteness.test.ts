@@ -75,6 +75,10 @@ const TRAVELS = new Set([
  * thing; "too large" means it is content, not record, and re-downloadable.
  */
 const STAYS: Record<string, string> = {
+  'mihrab.library.reading.v1':
+    'the paragraph a reader is at in each Library book, on this device — a place in a text, like the chapter place before it (hadith/libraryShelf.ts)',
+  'mihrab.library.bookmarks.v1':
+    'paragraphs marked in Library books: places in a downloaded text, device-local until the maintainer decides whether they travel like the journal (hadith/libraryShelf.ts)',
   'mihrab.library.place.v1':
     'the chapter last opened in each Library book, on this device — a place in a text, kept like the Hadith tab\'s page and not a record of reading (hadith/libraryShelf.ts)',
   'mihrab.hadith.mode':

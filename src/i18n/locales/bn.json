@@ -3121,7 +3121,13 @@
       "continue": "চালিয়ে যান: {{chapter}}",
       "chapters": "অধ্যায়",
       "next": "পরের অধ্যায়",
-      "previous": "আগের অধ্যায়"
+      "previous": "আগের অধ্যায়",
+      "chapterOf": "{{count}}-এর মধ্যে {{n}}",
+      "percent": "{{percent}}%",
+      "mark": "বুকমার্ক করুন",
+      "unmark": "বুকমার্ক সরান",
+      "marks": "বুকমার্ক",
+      "remove": "ডাউনলোড সরান"
     }
   }
 }

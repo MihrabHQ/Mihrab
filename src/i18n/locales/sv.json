@@ -3121,7 +3121,13 @@
       "continue": "Fortsätt: {{chapter}}",
       "chapters": "Kapitel",
       "next": "Nästa kapitel",
-      "previous": "Föregående kapitel"
+      "previous": "Föregående kapitel",
+      "chapterOf": "{{n}} av {{count}}",
+      "percent": "{{percent}} %",
+      "mark": "Bokmärk",
+      "unmark": "Ta bort bokmärke",
+      "marks": "Bokmärken",
+      "remove": "Ta bort nedladdningen"
     }
   }
 }

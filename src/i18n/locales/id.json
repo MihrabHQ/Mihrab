@@ -3121,7 +3121,13 @@
       "continue": "Lanjutkan: {{chapter}}",
       "chapters": "Bab",
       "next": "Bab berikutnya",
-      "previous": "Bab sebelumnya"
+      "previous": "Bab sebelumnya",
+      "chapterOf": "{{n}} dari {{count}}",
+      "percent": "{{percent}}%",
+      "mark": "Tandai",
+      "unmark": "Hapus tanda",
+      "marks": "Penanda",
+      "remove": "Hapus unduhan"
     }
   }
 }

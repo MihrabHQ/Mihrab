@@ -60,6 +60,19 @@ Two book headings the transcription misspelt ("السدرة في النوادي
 them, on the maintainer's word. **Not published until the maintainer sees the file
 list** (`upload-packs.sh` uploads whatever is under `build/hadith/v1`).
 
+Reading (2026-11-26, the maintainer's plan — tasks 1–5 of it done):
+the place to the paragraph (`mihrab.library.reading.v1`: chapter, block,
+fraction, chapter count and name, time; the older chapter-only key is
+still read), progress by chapters (`libraryProgress`), bookmarks
+(`mihrab.library.bookmarks.v1`, places not copies), copy/share with the
+book's name (`libraryShareText`), remove download. All device-local and
+listed in `syncCompleteness` STAYS — **whether bookmarks should travel
+like the journal is the maintainer's to decide.** Tapping a paragraph
+shows its actions (holding selects text). Still to do from the plan:
+search inside a book and a jump list of a chapter's headings; a line
+about each book, levels/subjects and a note on coarse passages; keep
+awake, font choice, verse links.
+
 Not built:
 - بلد العميان — Hindawi's CC BY translation sits behind a bot check
   (Cloudflare), which is not to be worked round. The maintainer can

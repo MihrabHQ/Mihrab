@@ -16,12 +16,18 @@
  *     its foot. A long chapter is hundreds of paragraphs, so it is a
  *     list, drawn as it is scrolled.
  *
+ * A chapter opens where it was left, to the paragraph, and says how far
+ * through the book that is (a thin line under the bar, and "12 of 116"
+ * over the text). Tapping a paragraph shows what can be done with it —
+ * mark it, copy it, send it, the last two with the book's name under the
+ * words. Tapping and not holding: holding a paragraph selects its text.
+ *
  * The text is Arabic and is laid out right to left whatever the app's
  * language. Nothing here is searched, graded or shown anywhere else
  * (`libraryShelf.ts`).
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { FlatList, Linking, Pressable, Share, StyleSheet, Text, View, type ColorValue } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
@@ -31,17 +37,34 @@ import { useReadingText } from '../../hooks/useReadingText';
 import { ownSideAlign } from '../../i18n/foreignText';
 import { isRtlLanguage } from '../../i18n/layoutDirection';
 import { useLayoutRtl } from '../../i18n/useLayoutRtl';
-import { findLibraryBook, libraryKey, libraryParts, libraryPlace, setLibraryPlace } from '../../hadith/libraryShelf';
-import { loadPack, usePackStatuses } from '../../hadith/packs';
+import {
+  findLibraryBook,
+  libraryBlockText,
+  libraryBookmarks,
+  libraryKey,
+  libraryParts,
+  libraryPlace,
+  libraryProgress,
+  libraryReading,
+  libraryShareText,
+  setLibraryReading,
+  toggleLibraryBookmark,
+  type LibraryBookmark,
+} from '../../hadith/libraryShelf';
+import { deletePack, loadPack, usePackStatuses } from '../../hadith/packs';
 import type { LibraryBlock, LibraryFile } from '../../hadith/packTypes';
 import { summarisePacks } from '../../hadith/useHadith';
+import { copyToClipboard } from '../../sync/clipboard';
 import type { RootStackParamList } from '../../navigation/types';
-import { SPACING } from '../../theme/tokens';
+import { TextAction } from '../../quran/downloadsUi';
+import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE, arabicTextStyle } from '../../theme/typography';
 import { Column } from './Column';
 import { HadithPage } from './HadithPage';
 import { PackGate } from './PackGate';
 
+// `outer={styles.flex}` on both pages: on a wide window the column sits in a full-width
+// band, and a band without a height lets the list grow to its whole text and never scroll.
 /** The size a book's Arabic is set at before the reader's own − A +: larger than Latin body text, with room for its marks. */
 const ARABIC_READING = { fontSize: 20, lineHeight: 38 };
 
@@ -50,11 +73,33 @@ export function blockKind(b: LibraryBlock): 'p' | 'h' | 'v' {
   return typeof b === 'string' ? 'p' : 'h' in b ? 'h' : 'v';
 }
 
+/** How long a place waits before it is written: scrolling passes many paragraphs a second. */
+const PLACE_DELAY_MS = 1200;
+/** A bookmark's line on the book's page: the paragraph's first words. */
+export function bookmarkSnippet(text: string, max = 90): string {
+  const one = text.replace(/\s+/g, ' ').trim();
+  return one.length <= max ? one : `${one.slice(0, one.lastIndexOf(' ', max) > max / 2 ? one.lastIndexOf(' ', max) : max)}…`;
+}
+
+/** How far through the book: a hairline under the bar, moved without drawing the page again. */
+const ProgressLine = forwardRef<{ set: (f: number) => void }, { start: number; track: ColorValue; fill: ColorValue }>(function ProgressLine(
+  { start, track, fill },
+  ref,
+) {
+  const [f, setF] = useState(start);
+  useImperativeHandle(ref, () => ({ set: setF }), []);
+  return (
+    <View style={[styles.progress, { backgroundColor: track }]} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: Math.round(f * 100) }} testID="library-progress">
+      <View style={[styles.progressFill, { backgroundColor: fill, width: `${Math.round(f * 1000) / 10}%` }]} />
+    </View>
+  );
+});
+
 export function LibraryBookScreen() {
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { id, chapter } = useRoute<RouteProp<RootStackParamList, 'LibraryBook'>>().params;
+  const { id, chapter, block: toBlock } = useRoute<RouteProp<RootStackParamList, 'LibraryBook'>>().params;
   const layoutRtl = useLayoutRtl();
   const readingText = useReadingText();
   const statuses = usePackStatuses();
@@ -91,10 +136,96 @@ export function LibraryBookScreen() {
       };
     }, [id]),
   );
-  // Reading a chapter is being at it.
+  // The book's marks, read again on coming back: one may have been made in a chapter.
+  const [marks, setMarks] = useState<LibraryBookmark[]>([]);
+  useFocusEffect(
+    useCallback(() => {
+      let live = true;
+      void libraryBookmarks(id).then(m => {
+        if (live) setMarks(m);
+      });
+      return () => {
+        live = false;
+      };
+    }, [id]),
+  );
+
+  // ── A chapter: where to open it, and keeping the place as it is read ──
+  const blocks = chapter != null ? file?.chapters[chapter]?.b : undefined;
+  const list = useRef<FlatList<LibraryBlock>>(null);
+  const line = useRef<{ set: (f: number) => void }>(null);
+  // The block to open at: the one asked for (a bookmark), else where this chapter was left. null until known.
+  const [target, setTarget] = useState<number | null>(null);
   useEffect(() => {
-    if (chapter != null && file && file.chapters[chapter]) void setLibraryPlace(id, chapter);
-  }, [id, chapter, file]);
+    if (chapter == null) return undefined;
+    let live = true;
+    void libraryReading(id).then(r => {
+      if (live) setTarget(toBlock ?? (r && r.c === chapter ? r.b : 0));
+    });
+    return () => {
+      live = false;
+    };
+  }, [id, chapter, toBlock]);
+  // Nothing is written until the chapter stands where it was opened at: the top it is drawn at first is not where the reader is.
+  const settled = useRef(false);
+  const seen = useRef(0);
+  const pending = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const write = useCallback(() => {
+    pending.current = null;
+    if (chapter == null || !file || !blocks) return;
+    const b = Math.min(seen.current, blocks.length - 1);
+    void setLibraryReading(id, { c: chapter, b, f: blocks.length > 1 ? b / blocks.length : 0, n: file.chapters.length, t: file.chapters[chapter].t, at: Date.now() });
+  }, [id, chapter, file, blocks]);
+  const writeRef = useRef(write);
+  writeRef.current = write;
+  useEffect(() => {
+    if (chapter == null || !file || !blocks || target == null) return undefined;
+    const at = Math.min(target, blocks.length - 1);
+    seen.current = at;
+    const done = () => {
+      settled.current = true;
+      writeRef.current();
+    };
+    let timer: ReturnType<typeof setTimeout>;
+    if (at > 0) {
+      timer = setTimeout(() => {
+        list.current?.scrollToIndex({ index: at, animated: false, viewPosition: 0 });
+        timer = setTimeout(done, 600);
+      }, 60);
+    } else timer = setTimeout(done, 0);
+    return () => {
+      clearTimeout(timer);
+      settled.current = false;
+      // Leaving: what was waiting to be written is written.
+      if (pending.current) {
+        clearTimeout(pending.current);
+        writeRef.current();
+      }
+    };
+  }, [chapter, file, blocks, target]);
+  const bookF = useCallback(
+    (b: number) => (file && blocks && chapter != null ? libraryProgress({ c: chapter, f: blocks.length > 1 ? b / blocks.length : 0, n: file.chapters.length }) : 0),
+    [file, blocks, chapter],
+  );
+  const bookFRef = useRef(bookF);
+  bookFRef.current = bookF;
+  // A list wants these two never to change.
+  const viewability = useRef({ itemVisiblePercentThreshold: 10 }).current;
+  const onViewable = useRef(({ viewableItems }: { viewableItems: { index?: number | null }[] }) => {
+    const first = viewableItems.find(v => v.index != null)?.index;
+    if (first == null || !settled.current || first === seen.current) return;
+    seen.current = first;
+    line.current?.set(bookFRef.current(first));
+    if (!pending.current) pending.current = setTimeout(() => writeRef.current(), PLACE_DELAY_MS);
+  }).current;
+
+  // The paragraph whose actions are showing, and whether it was just copied.
+  const [picked, setPicked] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    setPicked(null);
+    setCopied(false);
+  }, [chapter]);
 
   // A book of books lists its parts; the one last read in starts open.
   const parts = useMemo(() => (file ? libraryParts(file.chapters) : null), [file]);
@@ -115,7 +246,7 @@ export function LibraryBookScreen() {
 
   if (chapter != null) {
     const last = file ? file.chapters.length - 1 : 0;
-    const block = ({ item }: { item: LibraryBlock }) => {
+    const block = ({ item, index }: { item: LibraryBlock; index: number }) => {
       const kind = blockKind(item);
       if (kind === 'h') {
         return (
@@ -124,21 +255,47 @@ export function LibraryBookScreen() {
           </Text>
         );
       }
-      if (kind === 'v') {
-        return (
-          <View style={styles.verse}>
-            {(item as { v: string[] }).v.map((line, i) => (
-              <Text key={i} style={[styles.verseLine, readingText.style(ARABIC_READING), { color: palette.text }]} selectable accessibilityLanguage="ar">
-                {line}
-              </Text>
-            ))}
-          </View>
-        );
-      }
+      const on = picked === index;
+      const marked = marks.some(m => m.c === chapter && m.b === index);
+      const pick = () => {
+        setCopied(false);
+        setPicked(on ? null : index);
+      };
+      const words = file ? libraryShareText(file, current?.t ?? '', item) : libraryBlockText(item);
       return (
-        <Text style={[styles.para, readingText.style(ARABIC_READING), arabic, { color: palette.text }]} selectable accessibilityLanguage="ar">
-          {item as string}
-        </Text>
+        <View
+          style={[styles.block, marked && { borderStartWidth: StyleSheet.hairlineWidth * 4, borderStartColor: palette.accentSolid, borderRadius: 0 }, on && { backgroundColor: palette.card }]}
+          testID={`library-block-${index}`}
+        >
+          {kind === 'v' ? (
+            <Pressable onPress={pick} style={styles.verse} accessibilityRole="button">
+              {(item as { v: string[] }).v.map((verseLine, i) => (
+                <Text key={i} style={[styles.verseLine, readingText.style(ARABIC_READING), { color: palette.text }]} selectable accessibilityLanguage="ar">
+                  {verseLine}
+                </Text>
+              ))}
+            </Pressable>
+          ) : (
+            <Text style={[styles.para, readingText.style(ARABIC_READING), arabic, { color: palette.text }]} selectable onPress={pick} accessibilityLanguage="ar">
+              {item as string}
+            </Text>
+          )}
+          {on ? (
+            <View style={styles.actions} testID="library-actions">
+              <TextAction
+                label={marked ? t('hadith.library.unmark') : t('hadith.library.mark')}
+                color={palette.accentSolid}
+                onPress={() => void toggleLibraryBookmark(id, chapter, index).then(setMarks)}
+              />
+              <TextAction
+                label={copied ? t('hadith.copied') : t('hadith.copy')}
+                color={palette.accentSolid}
+                onPress={async () => setCopied((await copyToClipboard(words)) !== 'failed')}
+              />
+              <TextAction label={t('common.share')} color={palette.accentSolid} onPress={() => void Share.share({ message: words }).catch(() => undefined)} />
+            </View>
+          ) : null}
+        </View>
       );
     };
     return (
@@ -149,15 +306,34 @@ export function LibraryBookScreen() {
               <PackGate packs={packs} body={t('hadith.library.needsDownload')} />
             </Column>
           ) : (
-            <Column style={styles.flex}>
+            <Column style={styles.flex} outer={styles.flex}>
+              {file && blocks && target != null ? (
+                <ProgressLine ref={line} start={bookF(Math.min(target, blocks.length - 1))} track={palette.border} fill={palette.accentSolid} />
+              ) : null}
               <FlatList
+                ref={list}
                 data={current?.b ?? []}
                 keyExtractor={(_, i) => String(i)}
                 renderItem={block}
+                extraData={`${picked}|${copied}|${marks.length}`}
                 onScroll={onScroll}
                 scrollEventThrottle={16}
                 initialNumToRender={12}
                 windowSize={9}
+                viewabilityConfig={viewability}
+                onViewableItemsChanged={onViewable}
+                // A paragraph far down has not been measured yet: go to about where it is, then to it.
+                onScrollToIndexFailed={info => {
+                  list.current?.scrollToOffset({ offset: info.averageItemLength * info.index, animated: false });
+                  setTimeout(() => list.current?.scrollToIndex({ index: info.index, animated: false, viewPosition: 0 }), 120);
+                }}
+                ListHeaderComponent={
+                  file ? (
+                    <Text style={[styles.where, { color: palette.muted }]} testID="library-where">
+                      {t('hadith.library.chapterOf', { n: chapter + 1, count: file.chapters.length })}
+                    </Text>
+                  ) : undefined
+                }
                 contentContainerStyle={[styles.text, { paddingBottom: bottom + SPACING.xl }]}
                 testID="library-chapter"
                 ListFooterComponent={
@@ -195,7 +371,7 @@ export function LibraryBookScreen() {
             <PackGate packs={packs} body={t('hadith.library.needsDownload')} />
           </Column>
         ) : (
-          <Column style={styles.flex}>
+          <Column style={styles.flex} outer={styles.flex}>
             <FlatList
               data={file ? [0] : []}
               keyExtractor={String}
@@ -224,10 +400,31 @@ export function LibraryBookScreen() {
                       <Group>
                         <Row
                           title={t('hadith.library.continue', { chapter: file.chapters[place].t })}
+                          subtitle={t('hadith.library.chapterOf', { n: place + 1, count: file.chapters.length })}
                           onPress={() => open(place)}
                           testID="library-continue"
                         />
                       </Group>
+                    ) : null}
+                    {marks.some(m => file.chapters[m.c]?.b[m.b] != null) ? (
+                      <>
+                        <Text style={[styles.sectionTitle, { color: palette.text }]} accessibilityRole="header">
+                          {t('hadith.library.marks')}
+                        </Text>
+                        <Group>
+                          {marks
+                            .filter(m => file.chapters[m.c]?.b[m.b] != null)
+                            .map(m => (
+                              <Row
+                                key={`${m.c}.${m.b}`}
+                                title={bookmarkSnippet(libraryBlockText(file.chapters[m.c].b[m.b]))}
+                                subtitle={file.chapters[m.c].t}
+                                onPress={() => navigation.push('LibraryBook', { id, chapter: m.c, block: m.b })}
+                                testID={`library-mark-${m.c}-${m.b}`}
+                              />
+                            ))}
+                        </Group>
+                      </>
                     ) : null}
                     <Text style={[styles.sectionTitle, { color: palette.text }]} accessibilityRole="header">
                       {t('hadith.library.chapters')}
@@ -269,6 +466,10 @@ export function LibraryBookScreen() {
                         {t('hadith.library.source', { source: file.source.name, license: file.source.license })}
                       </Text>
                     </Pressable>
+                    {/* The book off the device; the place and the marks in it are kept for when it is back. */}
+                    <Group>
+                      <Row title={t('hadith.library.remove')} tone="danger" onPress={() => void deletePack(key)} testID="library-remove" />
+                    </Group>
                   </View>
                 ) : null
               }
@@ -290,9 +491,14 @@ const styles = StyleSheet.create({
   note: { fontSize: TYPE.footnote.fontSize, lineHeight: 19 },
   sectionTitle: { fontSize: TYPE.headline.fontSize, fontWeight: '600' },
   text: { paddingHorizontal: SPACING.lg, paddingTop: SPACING.md },
-  para: { ...arabicTextStyle('body'), marginBottom: SPACING.lg },
+  block: { marginBottom: SPACING.lg, paddingHorizontal: SPACING.sm, marginHorizontal: -SPACING.sm, borderRadius: RADIUS.sm },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.lg, paddingVertical: SPACING.sm },
+  where: { fontSize: TYPE.footnote.fontSize, marginBottom: SPACING.md, fontVariant: ['tabular-nums'] },
+  progress: { height: StyleSheet.hairlineWidth * 3 },
+  progressFill: { height: '100%' },
+  para: { ...arabicTextStyle('body') },
   heading: { ...arabicTextStyle('body'), fontSize: TYPE.title3.fontSize, lineHeight: 36, fontWeight: '600', marginTop: SPACING.md, marginBottom: SPACING.md },
-  verse: { marginBottom: SPACING.lg, alignItems: 'center', gap: SPACING.xs },
+  verse: { alignItems: 'center', gap: SPACING.xs },
   verseLine: { ...arabicTextStyle('body'), textAlign: 'center', writingDirection: 'rtl' },
   turn: { marginTop: SPACING.xl, gap: SPACING.md },
   link: { alignItems: 'center', paddingVertical: SPACING.sm },

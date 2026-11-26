@@ -3121,7 +3121,13 @@
       "continue": "जारी रखें: {{chapter}}",
       "chapters": "अध्याय",
       "next": "अगला अध्याय",
-      "previous": "पिछला अध्याय"
+      "previous": "पिछला अध्याय",
+      "chapterOf": "{{count}} में से {{n}}",
+      "percent": "{{percent}}%",
+      "mark": "बुकमार्क करें",
+      "unmark": "बुकमार्क हटाएँ",
+      "marks": "बुकमार्क",
+      "remove": "डाउनलोड हटाएँ"
     }
   }
 }

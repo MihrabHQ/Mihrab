@@ -3121,7 +3121,13 @@
       "continue": "Weiterlesen: {{chapter}}",
       "chapters": "Kapitel",
       "next": "Nächstes Kapitel",
-      "previous": "Vorheriges Kapitel"
+      "previous": "Vorheriges Kapitel",
+      "chapterOf": "{{n}} von {{count}}",
+      "percent": "{{percent}} %",
+      "mark": "Lesezeichen setzen",
+      "unmark": "Lesezeichen entfernen",
+      "marks": "Lesezeichen",
+      "remove": "Download entfernen"
     }
   }
 }

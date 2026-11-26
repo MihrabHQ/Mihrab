@@ -3121,7 +3121,13 @@
       "continue": "继续阅读：{{chapter}}",
       "chapters": "章节",
       "next": "下一章",
-      "previous": "上一章"
+      "previous": "上一章",
+      "chapterOf": "第 {{n}} / {{count}}",
+      "percent": "{{percent}}%",
+      "mark": "添加书签",
+      "unmark": "移除书签",
+      "marks": "书签",
+      "remove": "移除下载"
     }
   }
 }

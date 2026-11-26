@@ -3121,7 +3121,13 @@
       "continue": "Devam et: {{chapter}}",
       "chapters": "Bölümler",
       "next": "Sonraki bölüm",
-      "previous": "Önceki bölüm"
+      "previous": "Önceki bölüm",
+      "chapterOf": "{{n}} / {{count}}",
+      "percent": "%{{percent}}",
+      "mark": "Yer imi ekle",
+      "unmark": "Yer imini kaldır",
+      "marks": "Yer imleri",
+      "remove": "İndirmeyi kaldır"
     }
   }
 }

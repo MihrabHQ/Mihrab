@@ -3171,7 +3171,13 @@
       "continue": "متابعة: {{chapter}}",
       "chapters": "الأبواب",
       "next": "الباب التالي",
-      "previous": "الباب السابق"
+      "previous": "الباب السابق",
+      "chapterOf": "{{n}} من {{count}}",
+      "percent": "{{percent}}٪",
+      "mark": "ضع علامة",
+      "unmark": "أزل العلامة",
+      "marks": "العلامات",
+      "remove": "احذف التنزيل"
     }
   }
 }

@@ -3122,7 +3122,13 @@
       "continue": "Continuer : {{chapter}}",
       "chapters": "Chapitres",
       "next": "Chapitre suivant",
-      "previous": "Chapitre précédent"
+      "previous": "Chapitre précédent",
+      "chapterOf": "{{n}} sur {{count}}",
+      "percent": "{{percent}} %",
+      "mark": "Marquer",
+      "unmark": "Retirer le signet",
+      "marks": "Signets",
+      "remove": "Supprimer le téléchargement"
     }
   }
 }

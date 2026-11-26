@@ -3121,7 +3121,13 @@
       "continue": "جاری رکھیں: {{chapter}}",
       "chapters": "ابواب",
       "next": "اگلا باب",
-      "previous": "پچھلا باب"
+      "previous": "پچھلا باب",
+      "chapterOf": "{{count}} میں سے {{n}}",
+      "percent": "{{percent}}٪",
+      "mark": "نشان لگائیں",
+      "unmark": "نشان ہٹائیں",
+      "marks": "نشانات",
+      "remove": "ڈاؤن لوڈ ہٹائیں"
     }
   }
 }
