@@ -82,8 +82,22 @@ async function onboard(d) {
   await d.page.waitForTimeout(2500);
 }
 
+// Settings is behind Today's cog since the Hadith tab took its place in the
+// bar: a button with a label and no text, found by its test id, from Today.
+async function openSettings(d) {
+  const cog = () => d.page.getByTestId('today-settings').first();
+  if (!(await cog().isVisible().catch(() => false))) {
+    const tab = d.page.getByRole('tab', { name: /Today/ }).first();
+    if (await tab.count()) await tab.click();
+    await d.page.waitForTimeout(1500);
+  }
+  if (!(await cog().isVisible().catch(() => false))) return d.say('missing the settings cog');
+  await cog().click();
+  await d.page.waitForTimeout(1500);
+}
+
 async function openBackup(d) {
-  await d.click(/^Settings$/);
+  await openSettings(d);
   await d.click(/^About$/);
   if (!(await d.click(/^Backup$/, 2500))) throw new Error('no Backup row under About');
 }
