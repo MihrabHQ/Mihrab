@@ -100,8 +100,8 @@ export const styles = StyleSheet.create({
    * THE TOP ROW IS PHYSICAL: left to right in every language. The place
    * (Minimal: the heart) is on the left and the Qibla and the cog on the
    * right in Arabic and Urdu as in English — where Settings is does not
-   * move with the language. Its children are handed the app's direction
-   * back (`heroOwnRtl`), so a chip's own words still read their way.
+   * move with the language. Its chips are laid out the same way:
+   * the pin and the compass on the left of their words in every language.
    */
   heroTopRow: {
     flexDirection: 'row',
@@ -111,8 +111,6 @@ export const styles = StyleSheet.create({
     gap: SPACING.md,
     marginBottom: SPACING.md,
   },
-  /** Inside the physical top row: a chip laid out the language's way. */
-  heroOwnRtl: { direction: 'rtl' },
   /**
    * The location chip, ON the hero's content edge.
    *

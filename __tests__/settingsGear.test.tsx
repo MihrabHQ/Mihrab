@@ -129,9 +129,9 @@ describe('the cog on the full page, at the row’s right-hand end beside the Qib
   it('the place on the left; then the Qibla chip and the cog, in that order, at the right', () => {
     const at = hero.indexOf('<View style={styles.heroTopRow} onLayout={onLayout}>');
     const row = hero.slice(at, hero.indexOf('</View>\n  );', at));
-    const place = row.indexOf('<View style={own}>{topRow.renderLocation?.(ink)}</View>');
-    const placeEnd = row.indexOf('</View>\n      </View>', place);
-    const qibla = row.indexOf('{qibla ? <View style={own}>{qibla}</View> : null}');
+    const place = row.indexOf('{topRow.renderLocation?.(ink)}');
+    const placeEnd = row.indexOf('</View>', place);
+    const qibla = row.indexOf('{qibla}\n');
     const cog = row.indexOf('{topRow.renderSettings?.(ink)}');
     expect(place).toBeGreaterThan(-1);
     // The Qibla chip is not in the place's group: it is the row's own child, as the cog is.
@@ -155,9 +155,9 @@ describe('the cog on the full page, at the row’s right-hand end beside the Qib
 
   it('the top row has sides, not ends: the place on the left, the Qibla and the cog on the right, in every language', () => {
     expect(styles).toMatch(/heroTopRow: \{\s*flexDirection: 'row',\s*direction: 'ltr',/);
-    expect(styles).toMatch(/heroOwnRtl: \{ direction: 'rtl' \}/);
-    // What is inside a chip still reads the language's way: the app's direction, not the OS's.
-    expect(hero).toContain('const own = rtl ? styles.heroOwnRtl : undefined;');
+    // The chips too: the pin and the compass lead their words in every language.
+    expect(styles).not.toContain('heroOwnRtl');
+    expect(hero).not.toContain('heroOwnRtl');
     expect(hero).toContain('<HeroTopRow topRow={topRow} ink={inkRow} rtl={rtl}');
     expect(hero).toContain('const rtl = isRtlLanguage(i18n.language);');
   });

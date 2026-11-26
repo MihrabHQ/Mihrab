@@ -135,7 +135,6 @@ const HERO_ASCENT_EM = 0.93;
 const HeroTopRow = memo(function HeroTopRow({
   topRow,
   ink,
-  rtl,
   onLayout,
 }: {
   topRow: {
@@ -144,18 +143,20 @@ const HeroTopRow = memo(function HeroTopRow({
     renderSettings?: (ink: SkyInkColors) => ReactNode;
   };
   ink: SkyInkColors;
-  /** The app's direction, for what is inside the chips. */
+  /** The app's direction. The row and its chips no longer turn with it; kept for the callers. */
   rtl: boolean;
   onLayout?: (e: LayoutChangeEvent) => void;
 }) {
-  const own = rtl ? styles.heroOwnRtl : undefined;
+  // The chips are laid out as the row is: left to right in every language, so
+  // the pin and the compass lead their words in Arabic and Urdu as they do in
+  // English. The words themselves still read their own way.
   const qibla = topRow.renderQibla?.(ink);
   return (
     <View style={styles.heroTopRow} onLayout={onLayout}>
       <View style={styles.heroTopLeading}>
-        <View style={own}>{topRow.renderLocation?.(ink)}</View>
+        {topRow.renderLocation?.(ink)}
       </View>
-      {qibla ? <View style={own}>{qibla}</View> : null}
+      {qibla}
       {topRow.renderSettings?.(ink)}
     </View>
   );
