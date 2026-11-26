@@ -8,6 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { applyMadhabNaming } from '../prayer/madhab';
+import { applyArabicTerms } from '../i18n/arabicTerms';
 import i18n from '../i18n';
 import { setActiveClockFormat } from '../utils/activeClock';
 import { setHadithLanguage } from '../hadith/hadithLang';
@@ -82,6 +83,8 @@ export type AppearanceSlice = Pick<
   | 'clockFormat'
   // The language hadith are read in rides here too: it decides how a page reads.
   | 'hadithLanguage'
+  // And which Arabic names are shown in Arabic.
+  | 'arabicTerms'
   // Not a colour, but it is the "what Home looks like" switch and it is
   // rendered by AppearanceCard, so it rides in this slice rather than
   // making the card subscribe to a second one.
@@ -252,8 +255,12 @@ export function PrayerSettingsProvider({
       // override lives in one language's bundle, so a language change
       // loads an untouched one and it has to be re-applied.
       applyMadhabNaming(i18n, settings.madhab, settings.language);
+      // And after THAT: the names a reader of Arabic has asked to see in
+      // Arabic (`i18n/arabicTerms.ts`), which re-applies the madhab's own.
+      applyArabicTerms(i18n, settings.arabicTerms, settings.madhab, settings.language);
     });
-  }, [hydrated, settings.language, settings.madhab]);
+    // The list is compared by what is in it, not by which array it is.
+  }, [hydrated, settings.language, settings.madhab, (settings.arabicTerms ?? []).join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // The widget and Live Activity payloads are built outside React and
   // cannot subscribe to this context, so the clock preference is mirrored
@@ -336,6 +343,7 @@ export function PrayerSettingsProvider({
       language: settings.language,
       clockFormat: settings.clockFormat,
       hadithLanguage: settings.hadithLanguage,
+      arabicTerms: settings.arabicTerms,
       appAccentId: settings.appAccentId,
       appAccentCustomHex: settings.appAccentCustomHex,
       tintedSurfaces: settings.tintedSurfaces,
@@ -354,6 +362,7 @@ export function PrayerSettingsProvider({
       settings.language,
       settings.clockFormat,
       settings.hadithLanguage,
+      settings.arabicTerms,
       settings.appAccentId,
       settings.appAccentCustomHex,
       settings.tintedSurfaces,

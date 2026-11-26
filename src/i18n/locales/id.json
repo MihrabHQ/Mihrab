@@ -605,7 +605,23 @@
     "hadithOfDay": "Notifikasi hadis harian",
     "hadithOfDayHelp": "Hadis hari ini — yang diriwayatkan oleh al-Bukhari dan Muslim — pada waktu yang Anda pilih. Hadis harus sudah diunduh.",
     "hadithPlanReminder": "Pengingat rencana membaca",
-    "hadithPlanReminderHelp": "Pada hari-hari ketika bagian hari ini dari rencana membaca hadis Anda belum dibaca."
+    "hadithPlanReminderHelp": "Pada hari-hari ketika bagian hari ini dari rencana membaca hadis Anda belum dibaca.",
+    "arabicTerms": {
+      "title": "Bahasa Arab untuk nama-nama Arab",
+      "help": "Bagi yang membaca bahasa Arab tetapi memakai aplikasi dalam bahasa lain: nama-nama yang Anda pilih ditampilkan dalam bahasa Arab, dan selebihnya, termasuk arah tata letak, tetap seperti semula.",
+      "quran": "Nama surah",
+      "quranHelp": "الفاتحة, البقرة",
+      "hadith": "Kitab hadis dan bab-babnya",
+      "hadithHelp": "صحيح البخاري, رياض الصالحين, كتاب الإيمان",
+      "prayers": "Nama salat",
+      "prayersHelp": "الفجر, الظهر, الوتر — di aplikasi, widget, dan notifikasinya",
+      "calendar": "Bulan dan hari Hijriah",
+      "calendarHelp": "رمضان, ذو الحجة, يوم عرفة",
+      "dhikr": "Lafaz zikir",
+      "dhikrHelp": "سبحان الله, الحمد لله",
+      "sections": "Bagian aplikasi",
+      "sectionsHelp": "القرآن, الحديث, الذكر, القبلة"
+    }
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",

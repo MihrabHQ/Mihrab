@@ -6,6 +6,7 @@ import { launchRead, launchWrite, launchClear } from '../boot/launchReads';
 import { coerceNotificationSoundId } from '../notifications/notificationSounds';
 import { coerceSavedAccents } from './accentColors';
 import { coerceClockFormat } from '../utils/clockFormat';
+import { coerceArabicTerms } from '../i18n/arabicTermGroups';
 import { coerceDhikrReminders } from '../dhikr/dhikrReminders';
 import { coerceDaruriAlerts } from '../prayer/daruriTimes';
 import {
@@ -596,6 +597,8 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
     parsed.widgetSinceAdhanMinutes,
   );
   merged.clockFormat = coerceClockFormat(parsed.clockFormat);
+  // A list of known kinds, whatever was stored: an older build has none, a hand-edited blob anything.
+  merged.arabicTerms = coerceArabicTerms(parsed.arabicTerms);
   // Snapped, not merged: a value between rungs — an older ladder, a
   // hand-edited blob — would leave the stepper unable to say where it is.
   merged.readingTextScale = clampReadingScale(parsed.readingTextScale);

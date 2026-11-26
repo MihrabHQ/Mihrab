@@ -606,7 +606,23 @@
     "hadithOfDay": "Notificación diaria de hadiz",
     "hadithOfDayHelp": "El hadiz del día —uno que transmiten tanto al-Bujari como Muslim— a la hora que elijas. Requiere tener los hadices descargados.",
     "hadithPlanReminder": "Recordatorio del plan de lectura",
-    "hadithPlanReminderHelp": "Los días en que la parte de hoy de tu plan de lectura de hadices aún no se ha leído."
+    "hadithPlanReminderHelp": "Los días en que la parte de hoy de tu plan de lectura de hadices aún no se ha leído.",
+    "arabicTerms": {
+      "title": "Árabe para los nombres árabes",
+      "help": "Para quien lee árabe y usa la app en otro idioma: los nombres que elijas se muestran en árabe, y todo lo demás, incluida la dirección de la interfaz, queda como está.",
+      "quran": "Nombres de las suras",
+      "quranHelp": "الفاتحة, البقرة",
+      "hadith": "Libros de hadiz y sus capítulos",
+      "hadithHelp": "صحيح البخاري, رياض الصالحين, كتاب الإيمان",
+      "prayers": "Nombres de las oraciones",
+      "prayersHelp": "الفجر, الظهر, الوتر — en la app, sus widgets y sus avisos",
+      "calendar": "Meses y días de la hégira",
+      "calendarHelp": "رمضان, ذو الحجة, يوم عرفة",
+      "dhikr": "Fórmulas de recuerdo",
+      "dhikrHelp": "سبحان الله, الحمد لله",
+      "sections": "Secciones de la app",
+      "sectionsHelp": "القرآن, الحديث, الذكر, القبلة"
+    }
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",

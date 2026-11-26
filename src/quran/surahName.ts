@@ -11,6 +11,7 @@
  * Arabic surah names, and that is the form printed in their mushafs too.
  */
 import i18n from '../i18n';
+import { arabicTermsHas } from '../i18n/arabicTermGroups';
 import { SURAHS } from './quran';
 
 const ARABIC_SCRIPT_LANGUAGES = ['ar', 'ur', 'fa', 'ps', 'sd', 'ckb'];
@@ -35,6 +36,8 @@ export function mushafSurahName(
   language?: string,
 ): string {
   if (usesArabicScript(language)) return meta.name;
+  // Asked for in Arabic in a left-to-right app: the name, with the page kept left-to-right round it.
+  if (arabicTermsHas('quran')) return `\u200E${meta.name}\u200E`;
   const own = meta.number == null ? undefined : SURAHS[meta.number - 1];
   return own && own.number === meta.number ? own.romanized : meta.englishName;
 }
@@ -44,5 +47,6 @@ export function surahName(
   meta: { arabic: string; romanized: string },
   language?: string,
 ): string {
-  return usesArabicScript(language) ? meta.arabic : meta.romanized;
+  if (usesArabicScript(language)) return meta.arabic;
+  return arabicTermsHas('quran') ? `\u200E${meta.arabic}\u200E` : meta.romanized;
 }

@@ -605,7 +605,23 @@
     "hadithOfDay": "Günlük hadis bildirimi",
     "hadithOfDayHelp": "Günün hadisi — Buhârî ve Müslim'in birlikte rivayet ettiği bir hadis — seçtiğiniz saatte. Hadislerin indirilmiş olması gerekir.",
     "hadithPlanReminder": "Okuma planı hatırlatıcısı",
-    "hadithPlanReminderHelp": "Hadis okuma planınızın bugünkü payının henüz okunmadığı günlerde."
+    "hadithPlanReminderHelp": "Hadis okuma planınızın bugünkü payının henüz okunmadığı günlerde.",
+    "arabicTerms": {
+      "title": "Arapça adlar Arapça",
+      "help": "Arapça okuyan ama uygulamayı başka dilde kullananlar için: seçtiğiniz adlar Arapça gösterilir; arayüzün yönü dâhil geri kalan her şey olduğu gibi kalır.",
+      "quran": "Sure adları",
+      "quranHelp": "الفاتحة, البقرة",
+      "hadith": "Hadis kitapları ve bölümleri",
+      "hadithHelp": "صحيح البخاري, رياض الصالحين, كتاب الإيمان",
+      "prayers": "Namaz adları",
+      "prayersHelp": "الفجر, الظهر, الوتر — uygulamada, widget'larda ve bildirimlerde",
+      "calendar": "Hicrî aylar ve günler",
+      "calendarHelp": "رمضان, ذو الحجة, يوم عرفة",
+      "dhikr": "Zikir lafızları",
+      "dhikrHelp": "سبحان الله, الحمد لله",
+      "sections": "Uygulamanın bölümleri",
+      "sectionsHelp": "القرآن, الحديث, الذكر, القبلة"
+    }
   },
   "locationSetup": {
     "headline": "Konumunuzu ayarlayın",

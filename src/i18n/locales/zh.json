@@ -605,7 +605,23 @@
     "hadithOfDay": "每日圣训通知",
     "hadithOfDayHelp": "今日圣训——布哈里和穆斯林共同传述的一段——在您选择的时间推送。需要先下载圣训。",
     "hadithPlanReminder": "阅读计划提醒",
-    "hadithPlanReminderHelp": "在您的圣训阅读计划当天份额尚未读完的日子提醒。"
+    "hadithPlanReminderHelp": "在您的圣训阅读计划当天份额尚未读完的日子提醒。",
+    "arabicTerms": {
+      "title": "阿拉伯语名称用阿拉伯文显示",
+      "help": "适合能读阿拉伯文、但把应用设为其他语言的读者：所选名称以阿拉伯文显示，其余内容（包括界面方向）保持不变。",
+      "quran": "章名",
+      "quranHelp": "الفاتحة, البقرة",
+      "hadith": "圣训集及其章节",
+      "hadithHelp": "صحيح البخاري, رياض الصالحين, كتاب الإيمان",
+      "prayers": "礼拜名称",
+      "prayersHelp": "الفجر, الظهر, الوتر — 在应用、小组件和通知中",
+      "calendar": "希吉来历月份与日子",
+      "calendarHelp": "رمضان, ذو الحجة, يوم عرفة",
+      "dhikr": "赞念词",
+      "dhikrHelp": "سبحان الله, الحمد لله",
+      "sections": "应用的各部分",
+      "sectionsHelp": "القرآن, الحديث, الذكر, القبلة"
+    }
   },
   "locationSetup": {
     "headline": "设置您的位置",

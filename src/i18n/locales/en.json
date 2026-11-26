@@ -605,7 +605,23 @@
     "hadithOfDay": "Daily hadith notification",
     "hadithOfDayHelp": "The hadith of the day — one that al-Bukhari and Muslim both report — at the time you choose. It needs the hadith downloaded.",
     "hadithPlanReminder": "Reading plan reminder",
-    "hadithPlanReminderHelp": "On the days today's share of your hadith reading plan is not yet read."
+    "hadithPlanReminderHelp": "On the days today's share of your hadith reading plan is not yet read.",
+    "arabicTerms": {
+      "title": "Arabic for Arabic names",
+      "help": "For readers of Arabic who keep the app in another language: the names you choose are shown in Arabic, and everything else, including the direction of the layout, stays as it is.",
+      "quran": "Surah names",
+      "quranHelp": "الفاتحة, البقرة",
+      "hadith": "Hadith books and their chapters",
+      "hadithHelp": "صحيح البخاري, رياض الصالحين, كتاب الإيمان",
+      "prayers": "Prayer names",
+      "prayersHelp": "الفجر, الظهر, الوتر — in the app, its widgets and its notifications",
+      "calendar": "Hijri months and days",
+      "calendarHelp": "رمضان, ذو الحجة, يوم عرفة",
+      "dhikr": "Phrases of remembrance",
+      "dhikrHelp": "سبحان الله, الحمد لله",
+      "sections": "Parts of the app",
+      "sectionsHelp": "القرآن, الحديث, الذكر, القبلة"
+    }
   },
   "locationSetup": {
     "headline": "Set your location",

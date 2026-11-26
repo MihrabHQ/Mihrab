@@ -605,7 +605,23 @@
     "hadithOfDay": "Daglig hadithavisering",
     "hadithOfDayHelp": "Dagens hadith – en som både al-Bukhari och Muslim återger – vid den tid du väljer. Haditherna måste vara nedladdade.",
     "hadithPlanReminder": "Påminnelse om läsplanen",
-    "hadithPlanReminderHelp": "De dagar då dagens del av din läsplan för hadither ännu inte är läst."
+    "hadithPlanReminderHelp": "De dagar då dagens del av din läsplan för hadither ännu inte är läst.",
+    "arabicTerms": {
+      "title": "Arabiska för arabiska namn",
+      "help": "För dig som läser arabiska men har appen på ett annat språk: namnen du väljer visas på arabiska, och allt annat, även layoutens riktning, förblir som det är.",
+      "quran": "Surornas namn",
+      "quranHelp": "الفاتحة, البقرة",
+      "hadith": "Hadithböcker och deras kapitel",
+      "hadithHelp": "صحيح البخاري, رياض الصالحين, كتاب الإيمان",
+      "prayers": "Bönernas namn",
+      "prayersHelp": "الفجر, الظهر, الوتر — i appen, widgetarna och aviseringarna",
+      "calendar": "Hijri-månader och dagar",
+      "calendarHelp": "رمضان, ذو الحجة, يوم عرفة",
+      "dhikr": "Fraser för åminnelse",
+      "dhikrHelp": "سبحان الله, الحمد لله",
+      "sections": "Appens delar",
+      "sectionsHelp": "القرآن, الحديث, الذكر, القبلة"
+    }
   },
   "locationSetup": {
     "headline": "Ange din plats",
