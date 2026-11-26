@@ -40,6 +40,8 @@ import SETS from './sets.json';
 import NAWAWI from './nawawi40.json';
 import AGREED from './agreed.json';
 import RIYAD from './compilations/riyad.json';
+import CHAPTERS from './chapters.json';
+import CHAPTER_NAMES from './chapterNames.json';
 import { IS_WEB_APP } from '../config/webApp';
 import { ALL_BOOKS, SAHIH_BOOKS } from './bookGrades';
 import type { CategoryRow, PackKey } from './packTypes';
@@ -180,6 +182,42 @@ export function compilationNeeds(c: Compilation): string[] {
   return compilationBooks(c).filter(b => SAHIH_BOOKS.includes(b));
 }
 
+/**
+ * The books ("كتاب") a collection is divided into by its compiler — the
+ * Book of Faith, the Book of Prayer — for the two Ṣaḥīḥs
+ * (`scripts/hadith/book-chapters.js` finds where each begins among our
+ * rows). A chapter is `no` (the compiler's count; Muslim's introduction
+ * is 0) and the places its rows run between, `from` up to but not `to`.
+ *
+ * Its names are the books' own in Arabic and ours in English
+ * (`chapterNames.json`); a reader in another language is shown the
+ * English, which `hadith.chapterNamesIn` says of each locale.
+ */
+export type BookChapter = { no: number; from: number; to: number };
+type RawChapters = { first: number; starts: number[] };
+type RawNames = { first: number; ar: string[]; en: string[] };
+const chapterCache = new Map<string, BookChapter[]>();
+export function bookChapters(book: string): readonly BookChapter[] {
+  let list = chapterCache.get(book);
+  if (!list) {
+    const raw = (CHAPTERS.books as Record<string, RawChapters | undefined>)[book];
+    list = raw
+      ? raw.starts.map((from, i) => ({ no: raw.first + i, from, to: raw.starts[i + 1] ?? Number.MAX_SAFE_INTEGER }))
+      : [];
+    chapterCache.set(book, list);
+  }
+  return list;
+}
+export function findChapter(book: string, no: number): BookChapter | undefined {
+  return bookChapters(book).find(c => c.no === no);
+}
+/** A chapter's name, in Arabic for `ar` and in English otherwise; '' where there is none. */
+export function chapterName(book: string, no: number, namesIn: string): string {
+  const names = (CHAPTER_NAMES as Record<string, RawNames | undefined>)[book];
+  if (!names) return '';
+  return (namesIn === 'ar' ? names.ar : names.en)[no - names.first] ?? '';
+}
+
 export const hencPackKey = (pack: string, lang: string): PackKey => `henc/${pack}/${lang}`;
 export const categoriesKey = (lang: string): PackKey => `categories/${lang}`;
 export const bookKey = (book: string): PackKey => `books/${book}`;
@@ -231,7 +269,8 @@ export type ListRef =
   | { kind: 'set'; id: string }
   | { kind: 'hub'; id: string }
   | { kind: 'cat'; id: string }
-  | { kind: 'book'; id: string }
+  /** A book, or one chapter of it (`book:<id>:<chapter>`). */
+  | { kind: 'book'; id: string; chapter?: number }
   | { kind: 'agreed' }
   | { kind: 'comp'; id: string }
   | { kind: 'bookmarks' };
@@ -240,9 +279,13 @@ export function parseList(list: string | undefined): ListRef | null {
   if (!list) return null;
   if (list === 'bookmarks') return { kind: 'bookmarks' };
   if (list === AGREED_LIST) return AGREED_OFFERED ? { kind: 'agreed' } : null;
-  const [kind, id] = list.split(':');
+  const [kind, id, part] = list.split(':');
   if (!id) return null;
-  if (kind === 'set' || kind === 'hub' || kind === 'cat' || kind === 'book') return { kind, id };
+  if (kind === 'book') {
+    const chapter = part != null && /^\d+$/.test(part) ? Number(part) : undefined;
+    return chapter != null && findChapter(id, chapter) ? { kind, id, chapter } : { kind, id };
+  }
+  if (kind === 'set' || kind === 'hub' || kind === 'cat') return { kind, id };
   if (kind === 'comp') return findCompilation(id) ? { kind, id } : null;
   return null;
 }

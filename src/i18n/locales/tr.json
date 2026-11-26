@@ -2811,6 +2811,7 @@
     "browse": "Bul",
     "searchPlaceholder": "Hadis ara veya {{example}}",
     "searchClear": "Aramayı temizle",
+    "chapterNamesIn": "en",
     "comp": {
       "section": "Okunacak kitaplar",
       "note": "{{title}} kitabındaki {{of}} hadisten {{held}} tanesi, {{compiler}}’nin sırası ve numaralarıyla: Mihrab’ın sunduğu bir kitaba nispet ettiği ve orada kesin olarak bulunanlar. Her biri o kitapta geçtiği şekliyle — HadeethEnc’te hadis varsa çevirisiyle — gösterilir; böylece onun kısalttığı bir hadis burada tam hâliyle yer alır. Diğerleri dâhil değildir.",

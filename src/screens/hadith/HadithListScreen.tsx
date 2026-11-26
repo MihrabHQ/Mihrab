@@ -41,9 +41,12 @@ import { CenteredColumn } from '../../responsive/CenteredColumn';
 import type { RootStackParamList } from '../../navigation/types';
 import {
   FIQH_ROOT,
+  bookChapters,
+  chapterName,
   findCompilation,
   findHub,
   findSet,
+  type BookChapter,
   LONG_LIST,
   opensOnContents,
   parseList,
@@ -54,6 +57,7 @@ import { isGradedBook } from '../../hadith/bookGrades';
 import { isBookmarked, isRead, isSetMarked, setSetMarked } from '../../hadith/hadithRecord';
 import { updateHadithRecord, useHadithRecord } from '../../hadith/hadithStore';
 import {
+  chapterCounts,
   foldForSearch,
   foldedTitle,
   latinDigits,
@@ -94,12 +98,17 @@ export function listTitle(
   if (ref.kind === 'comp') return t(`hadith.comp.${ref.id}.title`);
   if (ref.kind === 'set') return t(`hadith.set.${ref.id}.title`);
   if (ref.kind === 'hub') return t(`hadith.hub.${ref.id}`);
-  if (ref.kind === 'book') return t(`hadith.book.${ref.id}`);
+  if (ref.kind === 'book') {
+    // One of its chapters is named by the chapter: the book is where back goes.
+    const name = ref.chapter != null ? chapterName(ref.id, ref.chapter, t('hadith.chapterNamesIn')) : '';
+    return name || t(`hadith.book.${ref.id}`);
+  }
   return tree?.title(ref.id) ?? t(`hadith.topic.${ref.id}`, { defaultValue: t('nav.hadith') });
 }
 
 const ARABIC = /[\u0600-\u06FF]/;
 const NO_ROWS: ReadonlyArray<ListRow & Partial<SearchHit>> = [];
+const NO_CHAPTERS: readonly BookChapter[] = [];
 
 export function HadithListScreen() {
   const { t } = useTranslation();
@@ -135,8 +144,16 @@ export function HadithListScreen() {
     () => (tree && counts && topics ? topicContents(topics, tree, counts) : []),
     [tree, counts, topics],
   );
+  // A book its compiler divided opens on its chapters, as a topic opens on its parts.
+  const chapterOf = ref?.kind === 'book' ? ref.chapter : undefined;
+  const chapters = ref?.kind === 'book' && chapterOf == null ? bookChapters(ref.id) : NO_CHAPTERS;
+  const inChapters = useMemo(
+    () => (ref?.kind === 'book' && chapters.length && rows ? chapterCounts(ref.id, rows) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [list, chapters, rows],
+  );
   // Its parts first, unless the whole list was asked for.
-  const contents = !all && !!rows && opensOnContents(sections, rows.length);
+  const contents = !all && !!rows && (opensOnContents(sections, rows.length) || !!inChapters);
   const rulings = hub ? !!hub.fiqh : ref?.kind === 'cat' && (tree?.rootOf(ref.id) ?? ref.id) === FIQH_ROOT;
   const set = ref?.kind === 'set' ? findSet(ref.id) : undefined;
   const comp = ref?.kind === 'comp' ? findCompilation(ref.id) : undefined;
@@ -194,12 +211,17 @@ export function HadithListScreen() {
     };
   }, [searchesText, bookId, topics, filter, lang]);
 
+  const chapterIds = useMemo(
+    () => (chapterOf != null && rows ? new Set(rows.map(r => r.id)) : null),
+    [chapterOf, rows],
+  );
   const shown: ReadonlyArray<ListRow & Partial<SearchHit>> | null = useMemo(() => {
     if (!rows || !q) return rows;
     if (number) return rows.filter(r => String(r.number ?? '') === number);
-    if (searchesText) return found;
+    // A chapter's field looks through the book's text and keeps what is in the chapter.
+    if (searchesText) return chapterIds && found ? found.filter(h => chapterIds.has(h.id)) : found;
     return rows.filter(r => foldedTitle(r).includes(q));
-  }, [rows, q, number, searchesText, found]);
+  }, [rows, q, number, searchesText, found, chapterIds]);
 
   const open = useCallback((id: string) => navigation.push('HadithReader', { id, list }), [navigation, list]);
 
@@ -310,6 +332,31 @@ export function HadithListScreen() {
             </View>
           ))
         : null}
+      {contents && !q && inChapters && ref?.kind === 'book' ? (
+        <View style={styles.section}>
+          <Group>
+            <Row
+              title={t('hadith.allHadith')}
+              value={String(rows?.length ?? 0)}
+              onPress={() => navigation.push('HadithList', { list, all: true })}
+              testID="hadith-book-all"
+            />
+            {chapters.map(c => {
+              const count = inChapters.get(c.no) ?? 0;
+              // A chapter none of whose rows a graded book kept is not offered.
+              return count ? (
+                <Row
+                  key={c.no}
+                  title={chapterName(ref.id, c.no, t('hadith.chapterNamesIn')) || String(c.no)}
+                  value={String(count)}
+                  onPress={() => navigation.push('HadithList', { list: `book:${ref.id}:${c.no}` })}
+                  testID={`hadith-chapter-${c.no}`}
+                />
+              ) : null;
+            })}
+          </Group>
+        </View>
+      ) : null}
       {subtopics.length && !contents && !all ? (
         <View style={styles.subtopics}>
           {subtopics.map(id => (

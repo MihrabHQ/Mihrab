@@ -2811,6 +2811,7 @@
     "browse": "Slå upp",
     "searchPlaceholder": "Sök hadith, eller {{example}}",
     "searchClear": "Rensa sökningen",
+    "chapterNamesIn": "en",
     "comp": {
       "section": "Böcker att läsa",
       "note": "{{held}} av de {{of}} haditherna i {{title}}, i {{compiler}}s ordning och med hans nummer: de som han tillskriver en bok som Mihrab har, och som med säkerhet hittades där. Var och en visas som den står i den boken — med HadeethEncs översättning där den har hadithen — så en som han förkortade finns här i sin helhet. De övriga är inte med.",

@@ -2811,6 +2811,7 @@
     "browse": "Nachschlagen",
     "searchPlaceholder": "Hadithe durchsuchen oder {{example}}",
     "searchClear": "Suche löschen",
+    "chapterNamesIn": "en",
     "comp": {
       "section": "Bücher zum Lesen",
       "note": "{{held}} der {{of}} Hadithe von {{title}}, in {{compiler}}s Reihenfolge und unter seinen Nummern: jene, die er einem Buch zuschreibt, das Mihrab anbietet, und die dort sicher gefunden wurden. Jeder wird so gezeigt, wie ihn dieses Buch überliefert — mit der Übersetzung von HadeethEnc, wo es den Hadith hat —, ein von ihm gekürzter steht hier also vollständig. Die übrigen sind nicht enthalten.",

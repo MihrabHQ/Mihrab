@@ -2811,6 +2811,7 @@
     "browse": "Telusuri",
     "searchPlaceholder": "Cari hadis, atau {{example}}",
     "searchClear": "Hapus pencarian",
+    "chapterNamesIn": "en",
     "comp": {
       "section": "Kitab untuk dibaca",
       "note": "{{held}} dari {{of}} hadis {{title}}, menurut urutan dan nomor {{compiler}}: yang beliau nisbatkan kepada kitab yang disajikan Mihrab dan ditemukan di sana dengan yakin. Masing-masing ditampilkan sebagaimana ada dalam kitab itu — dengan terjemahan HadeethEnc bila hadisnya ada di sana — sehingga hadis yang beliau ringkas ada di sini secara utuh. Yang lain tidak disertakan.",

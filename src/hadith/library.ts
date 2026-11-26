@@ -7,6 +7,9 @@
  */
 import {
   AGREED_IDS,
+  bookChapters,
+  findChapter,
+  type BookChapter,
   compilationBooks,
   findCompilation,
   type Compilation,
@@ -425,6 +428,27 @@ export async function bookRows(book: string): Promise<ListRow[]> {
   return rows;
 }
 
+/** Is this row of a book (`b:<book>:<place>`) in the chapter? */
+export function inChapter(id: string, chapter: BookChapter): boolean {
+  const place = Number(id.slice(id.lastIndexOf(':') + 1));
+  return place >= chapter.from && place < chapter.to;
+}
+
+/** How many of a book's rows each of its chapters holds, by the chapter's number. */
+export function chapterCounts(book: string, rows: readonly ListRow[]): Map<number, number> {
+  const chapters = bookChapters(book);
+  const counts = new Map<number, number>();
+  let at = 0;
+  for (const r of rows) {
+    const place = Number(r.id.slice(r.id.lastIndexOf(':') + 1));
+    // The rows are in the book's order, and so are its chapters.
+    while (at + 1 < chapters.length && place >= chapters[at].to) at++;
+    const c = chapters[at];
+    if (c && place >= c.from && place < c.to) counts.set(c.no, (counts.get(c.no) ?? 0) + 1);
+  }
+  return counts;
+}
+
 /**
  * A compilation's rows, in its compiler's order and under his numbers:
  * the HadeethEnc entry where the hadith has one here (a translation), the
@@ -467,7 +491,11 @@ export async function listRows(list: string, appLang: string, bookmarks: readonl
     const hub = findHub(ref.id);
     return hub ? underTopics(await hencIndex(appLang), hub.topics, await categoryTree(appLang)) : [];
   }
-  if (ref.kind === 'book') return bookRows(ref.id);
+  if (ref.kind === 'book') {
+    const rows = await bookRows(ref.id);
+    const chapter = ref.chapter != null ? findChapter(ref.id, ref.chapter) : undefined;
+    return chapter ? rows.filter(r => inChapter(r.id, chapter)) : rows;
+  }
   if (ref.kind === 'comp') {
     const c = findCompilation(ref.id);
     return c ? compilationRows(c, appLang) : [];
