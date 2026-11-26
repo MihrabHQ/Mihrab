@@ -3037,6 +3037,7 @@
       "fullRule": "The full rule",
       "fullRuleSub": "Which hadith are served, source by source"
     },
-    "related": "More hadith on: {{topic}}"
+    "related": "More hadith on: {{topic}}",
+    "shareImage": "Share as an image"
   }
 }

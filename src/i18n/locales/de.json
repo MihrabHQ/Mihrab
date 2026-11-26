@@ -3037,6 +3037,7 @@
       "fullRule": "Die vollständige Regel",
       "fullRuleSub": "Welche Hadithe gezeigt werden, Quelle für Quelle"
     },
-    "related": "Weitere Hadithe zu: {{topic}}"
+    "related": "Weitere Hadithe zu: {{topic}}",
+    "shareImage": "Als Bild teilen"
   }
 }

@@ -69,8 +69,12 @@ Features that add no hadith:
    translations want a native reader, and nobody has seen the page on a
    device.
 2. ~~Related hadith~~ — done 2026-11-26 (§1).
-3. Arabic and translation side by side on tablets and desktop.
-4. Share as an image.
+3. ~~Arabic and translation side by side~~ — done 2026-11-26: from 800
+   points across (`PAIR_MIN_WIDTH`). Seen in the desktop app only
+   (`desktop/scripts/drive.js`; run `npm ci` in `desktop/` first if React
+   says its versions differ). Not seen on an iPad, a Mac, or in Urdu.
+4. ~~Share as an image~~ — done 2026-11-26 (`ShareHadithModal.tsx`): the
+   text whole or no picture (`fitsACard`, 1,200 characters).
 5. Memorisation mode; a reading plan ("Riyāḍ aṣ-Ṣāliḥīn in 90 days",
    with a reminder, as the Qur'an has its khatmah); bookmark folders.
    These three change the reader's stored record (`hadithRecord.ts`, and

@@ -3038,6 +3038,7 @@
       "fullRule": "La règle complète",
       "fullRuleSub": "Quels hadiths sont proposés, source par source"
     },
-    "related": "Autres hadiths sur : {{topic}}"
+    "related": "Autres hadiths sur : {{topic}}",
+    "shareImage": "Partager en image"
   }
 }

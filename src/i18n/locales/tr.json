@@ -3037,6 +3037,7 @@
       "fullRule": "Kuralın tamamı",
       "fullRuleSub": "Hangi hadislerin sunulduğu, kaynak kaynak"
     },
-    "related": "Bu konuda başka hadisler: {{topic}}"
+    "related": "Bu konuda başka hadisler: {{topic}}",
+    "shareImage": "Görsel olarak paylaş"
   }
 }

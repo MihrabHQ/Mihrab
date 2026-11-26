@@ -3037,6 +3037,7 @@
       "fullRule": "Aturan lengkapnya",
       "fullRuleSub": "Hadis mana yang dimuat, sumber demi sumber"
     },
-    "related": "Hadis lain tentang: {{topic}}"
+    "related": "Hadis lain tentang: {{topic}}",
+    "shareImage": "Bagikan sebagai gambar"
   }
 }

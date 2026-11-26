@@ -3038,6 +3038,7 @@
       "fullRule": "La regla completa",
       "fullRuleSub": "Qué hadices se ofrecen, fuente por fuente"
     },
-    "related": "Más hadices sobre: {{topic}}"
+    "related": "Más hadices sobre: {{topic}}",
+    "shareImage": "Compartir como imagen"
   }
 }

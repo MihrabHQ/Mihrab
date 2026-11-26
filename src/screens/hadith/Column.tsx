@@ -24,8 +24,11 @@ export function Column({
   children,
   style,
   outer,
+  maxWidth,
 }: {
   children: ReactNode;
+  /** The column's cap on a wide window, where it is not the usual reading measure. */
+  maxWidth?: number;
   /** Applied to the view that holds the children, at every width. */
   style?: StyleProp<ViewStyle>;
   /** Applied to the full-width band, at every width. */
@@ -33,7 +36,7 @@ export function Column({
 }) {
   const { bp } = useResponsive();
   return (
-    <CenteredColumn style={bp === 'compact' ? [outer, style] : outer} innerStyle={style}>
+    <CenteredColumn style={bp === 'compact' ? [outer, style] : outer} innerStyle={style} maxWidth={maxWidth}>
       {children}
     </CenteredColumn>
   );

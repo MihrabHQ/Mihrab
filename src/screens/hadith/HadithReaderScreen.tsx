@@ -68,6 +68,8 @@ import { CheckIcon, PenIcon, ShareIcon, StarIcon } from '../../theme/icons';
 import { cardEdgeStyle, inputChromeStyle } from '../../theme/chrome';
 import { TextAction } from '../../quran/downloadsUi';
 import { READING_BASE } from '../../theme/readingText';
+import { MAX_CONTENT_WIDTH, useResponsive } from '../../responsive/breakpoints';
+import { ShareHadithModal, fitsACard } from './ShareHadithModal';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE, arabicTextStyle } from '../../theme/typography';
 import { tabularNumeralStyle } from '../../theme/textScale';
@@ -77,6 +79,14 @@ import { listTitle } from './HadithListScreen';
 import { PackGate } from './PackGate';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
+
+/** The Arabic and its meaning side by side: two columns of an ordinary measure, and the gap between them. */
+export const PAIR_MAX_WIDTH = 1040;
+/**
+ * The narrowest window they are set side by side in. Under it each half would be narrower than a phone's own
+ * column — the desktop app's first window is 734 wide, an iPad mini upright 744 — and the two are stacked.
+ */
+export const PAIR_MIN_WIDTH = 800;
 
 /** Where an entry is from, in a line. */
 export function sourceLine(item: HadithItem, t: TFunction): string {
@@ -118,10 +128,23 @@ export function hadithShareText(item: HadithItem, t: TFunction): string {
   return parts.filter(Boolean).join('\n\n');
 }
 
+/**
+ * The lines under a hadith's text on its picture (`ShareHadithModal`), the
+ * same ones `hadithShareText` sends as text: who reported it and its grade
+ * in the source's words, the reference a book's hadith is cited by, and
+ * where the text is from. The first is the one a reader of the picture
+ * needs most, and is drawn as such.
+ */
+export function hadithCardLines(item: HadithItem, t: TFunction): string[] {
+  const cite = [item.attribution, item.grade].filter(Boolean).join(' · ');
+  return [cite, hadithReference(item, t) ?? '', sourceLine(item, t)].filter(Boolean);
+}
+
 export function HadithReaderScreen() {
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
   const layoutRtl = useLayoutRtl();
+  const { width: windowWidth } = useResponsive();
   const readingText = useReadingText();
   const navigation = useNavigation<Nav>();
   const params = useRoute<RouteProp<RootStackParamList, 'HadithReader'>>().params;
@@ -137,6 +160,7 @@ export function HadithReaderScreen() {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [editing, setEditing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [picture, setPicture] = useState(false);
   const scrollRef = useRef<ScrollViewInstance>(null);
 
   useEffect(() => {
@@ -244,10 +268,42 @@ export function HadithReaderScreen() {
     </Text>
   );
 
+  // ARABIC AND MEANING SIDE BY SIDE, on a window wide enough for two columns
+  // of text (a tablet, a desktop): a reader comparing the two had the whole
+  // Arabic to scroll past to reach its meaning, in a single column with a
+  // margin's worth of empty window either side. The pair is given a wider
+  // column than the reading measure (two measures of ordinary length); what
+  // follows it — the explanation, the buttons — keeps the usual one, since
+  // prose a thousand points wide is not read. A phone, a hadith in Arabic
+  // only, and an Arabic reader (who has no translation) are as they were.
+  const sideBySide = windowWidth >= PAIR_MIN_WIDTH && !!item?.arabic && !!item?.text;
+  const arabicText = item?.arabic ? (
+    <Text style={[styles.arabic, arabicAlign, { color: palette.text }]} selectable accessibilityLanguage="ar">
+      {item.arabic}
+    </Text>
+  ) : null;
+  const meaningText = item?.text ? (
+    <Text style={[styles.translation, readingText.style(READING_BASE), textDir?.style, { color: palette.text }]} selectable>
+      {textDir?.open}
+      {item.text}
+      {textDir?.close}
+    </Text>
+  ) : null;
+
   return (
     <HadithPage title={title} end={item?.text ? <TextSizeStepper /> : null}>
       {(bottom, onScroll) => (
         <View style={styles.flex}>
+          {item && picture ? (
+            <ShareHadithModal
+              visible
+              onClose={() => setPicture(false)}
+              arabic={item.arabic}
+              meaning={item.text}
+              meaningRtl={item.textLang === 'ur' || item.textLang === 'ar'}
+              lines={hadithCardLines(item, t)}
+            />
+          ) : null}
           {item === null ? (
             <Column>
               {list && listing.packs.missing.length ? (
@@ -266,7 +322,7 @@ export function HadithReaderScreen() {
               contentInsetAdjustmentBehavior="never"
             >
               {item ? (
-                <Column style={styles.page}>
+                <Column style={styles.page} maxWidth={sideBySide ? PAIR_MAX_WIDTH : undefined}>
                   {position ? (
                     <Text style={[styles.position, tabularNumeralStyle, { color: palette.muted }]} testID="hadith-position">
                       {position}
@@ -279,22 +335,24 @@ export function HadithReaderScreen() {
                       {textDir?.close}
                     </Text>
                   ) : null}
-                  {item.arabic ? (
-                    <Text
-                      style={[styles.arabic, arabicAlign, { color: palette.text }]}
-                      selectable
-                      accessibilityLanguage="ar"
-                    >
-                      {item.arabic}
-                    </Text>
-                  ) : null}
-                  {item.text ? (
-                    <Text style={[styles.translation, readingText.style(READING_BASE), textDir?.style, { color: palette.text }]} selectable>
-                      {textDir?.open}
-                      {item.text}
-                      {textDir?.close}
-                    </Text>
-                  ) : null}
+                  {sideBySide ? (
+                    // A wide window: the Arabic and its meaning beside each
+                    // other, the Arabic on the right whatever the app's
+                    // direction (`sideBySide`, above).
+                    <View style={styles.pair} testID="hadith-side-by-side">
+                      {(layoutRtl ? [arabicText, meaningText] : [meaningText, arabicText]).map((half, i) => (
+                        <View key={i} style={styles.half}>
+                          {half}
+                        </View>
+                      ))}
+                    </View>
+                  ) : (
+                    <>
+                      {arabicText}
+                      {meaningText}
+                    </>
+                  )}
+                  <View style={sideBySide ? styles.measure : styles.rest}>
                   {item.fallback ? (
                     <Text style={[styles.note, { color: palette.muted }]}>{t('hadith.fallbackNote')}</Text>
                   ) : null}
@@ -422,6 +480,11 @@ export function HadithReaderScreen() {
                     />
                   </View>
                   <View style={styles.report}>
+                    {/* As a picture, where it can be shown whole on one and the
+                        platform can hand a file to a share sheet (not a browser). */}
+                    {Platform.OS !== 'web' && fitsACard(item) ? (
+                      <TextAction label={t('hadith.shareImage')} color={palette.accentSolid} onPress={() => setPicture(true)} />
+                    ) : null}
                     {/* A grade is shown above, or a line saying there is none of
                         ours: this is where a reader asks what either means. */}
                     <TextAction
@@ -430,6 +493,7 @@ export function HadithReaderScreen() {
                       onPress={() => navigation.navigate('SettingsHadithGrades')}
                     />
                     <TextAction label={t('hadith.report')} color={palette.muted} onPress={() => report(item)} />
+                  </View>
                   </View>
                 </Column>
               ) : null}
@@ -594,6 +658,12 @@ function NoteEditor({
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   page: { paddingHorizontal: SPACING.lg, paddingTop: SPACING.sm, gap: SPACING.lg },
+  // What follows the text: the page's own gap on a phone; the usual reading
+  // measure, centred under the wider pair, where the two are side by side.
+  rest: { gap: SPACING.lg },
+  measure: { gap: SPACING.lg, width: '100%', maxWidth: MAX_CONTENT_WIDTH, alignSelf: 'center' },
+  pair: { flexDirection: 'row', alignItems: 'flex-start', gap: SPACING.xxl },
+  half: { flex: 1, minWidth: 0 },
   heading: { fontSize: TYPE.title3.fontSize, fontWeight: '500', lineHeight: 28 },
   arabic: { ...arabicTextStyle('body'), fontSize: TYPE.title2.fontSize, lineHeight: 46 },
   translation: { fontSize: TYPE.body.fontSize, lineHeight: 26 },

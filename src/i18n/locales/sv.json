@@ -3037,6 +3037,7 @@
       "fullRule": "Hela regeln",
       "fullRuleSub": "Vilka hadither som visas, källa för källa"
     },
-    "related": "Fler hadither om: {{topic}}"
+    "related": "Fler hadither om: {{topic}}",
+    "shareImage": "Dela som bild"
   }
 }

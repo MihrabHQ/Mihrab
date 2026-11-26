@@ -3037,6 +3037,7 @@
       "fullRule": "完整的规则",
       "fullRuleSub": "收录哪些圣训，按来源逐一说明"
     },
-    "related": "同一主题的其他圣训：{{topic}}"
+    "related": "同一主题的其他圣训：{{topic}}",
+    "shareImage": "以图片分享"
   }
 }

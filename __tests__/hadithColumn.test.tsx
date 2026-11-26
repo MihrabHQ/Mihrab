@@ -95,7 +95,8 @@ describe('the Hadith screens', () => {
     const reader = read('hadith/HadithReaderScreen.tsx');
     expect(reader).toContain('<Column style={styles.barInner}>');
     expect(reader).toMatch(/barInner: \{ flexDirection: 'row'/);
-    expect(reader).toContain('<Column style={styles.page}>');
+    // (And a wider cap where the Arabic and its meaning are side by side: hadithSideBySide.test.ts.)
+    expect(reader).toContain('<Column style={styles.page} maxWidth={sideBySide ? PAIR_MAX_WIDTH : undefined}>');
     expect(reader).toMatch(/page: \{ paddingHorizontal: SPACING\.lg/);
   });
 
