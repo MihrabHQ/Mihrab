@@ -3038,6 +3038,36 @@
       "fullRuleSub": "Hangi hadislerin sunulduğu, kaynak kaynak"
     },
     "related": "Bu konuda başka hadisler: {{topic}}",
-    "shareImage": "Görsel olarak paylaş"
+    "shareImage": "Görsel olarak paylaş",
+    "memo": {
+      "title": "Ezberleme",
+      "add": "Bu hadisi ezberle",
+      "remove": "Ezberlemeyi bırak",
+      "prompt": "Ezberden oku, sonra kontrol et.",
+      "show": "Metni göster",
+      "knew": "Biliyordum",
+      "notYet": "Henüz değil",
+      "done": "Ezberlendi",
+      "empty": "Henüz ezberlenecek bir şey yok. Bir hadis açın ve “Bu hadisi ezberle”yi seçin."
+    },
+    "folder": {
+      "new": "Yeni klasör",
+      "name": "Klasör adı",
+      "none": "Klasör yok",
+      "move": "Bir klasöre taşı",
+      "in": "Klasör: {{name}}",
+      "rename": "Klasörü yeniden adlandır",
+      "delete": "Klasörü sil",
+      "deleteNote": "Yer imleri klasörsüz olarak korunur."
+    },
+    "plan": {
+      "start": "Okuma planı başlat",
+      "choose": "Şu sürede oku",
+      "daysN": "{{n}} gün",
+      "line": "{{days}} günün {{day}}. günü · bugün {{target}} hadisten {{done}}",
+      "end": "Planı bitir",
+      "card": "Okuma planı",
+      "finished": "Tamamlandı: bütün hadisleri okundu."
+    }
   }
 }

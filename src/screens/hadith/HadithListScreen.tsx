@@ -54,8 +54,9 @@ import {
   type CategoryTree,
 } from '../../hadith/catalog';
 import { isGradedBook } from '../../hadith/bookGrades';
-import { isBookmarked, isRead, isSetMarked, setSetMarked } from '../../hadith/hadithRecord';
+import { foldersOf, isBookmarked, isRead, isSetMarked, setSetMarked, type HadithRecord } from '../../hadith/hadithRecord';
 import { updateHadithRecord, useHadithRecord } from '../../hadith/hadithStore';
+import { ListTools } from './ReaderExtras';
 import {
   chapterCounts,
   compilationWaiting,
@@ -91,10 +92,14 @@ export function listTitle(
   list: string,
   t: (k: string, o?: { defaultValue: string }) => string,
   tree: CategoryTree | null,
+  /** The reader's record, for a folder's name. */
+  rec?: HadithRecord,
 ): string {
   const ref = parseList(list);
   if (!ref) return t('nav.hadith');
   if (ref.kind === 'bookmarks') return t('hadith.bookmarks');
+  if (ref.kind === 'memo') return t('hadith.memo.title');
+  if (ref.kind === 'folder') return (rec && foldersOf(rec).find(f => f[0] === ref.id)?.[1]) || t('hadith.bookmarks');
   if (ref.kind === 'agreed') return t('hadith.agreed.title');
   if (ref.kind === 'comp') return t(`hadith.comp.${ref.id}.title`);
   if (ref.kind === 'set') return t(`hadith.set.${ref.id}.title`);
@@ -245,6 +250,19 @@ export function HadithListScreen() {
   const listed = contents && !q ? NO_ROWS : shown ?? NO_ROWS;
   const header = (
     <Column style={styles.headInner}>
+      {/* A plan on a list that is read through; the folders over the bookmarks; a folder's own actions. */}
+      {!q ? (
+        <ListTools
+          list={list}
+          kind={ref?.kind === 'bookmarks' ? 'bookmarks' : ref?.kind === 'folder' ? 'folder' : 'other'}
+          folder={ref?.kind === 'folder' ? ref.id : undefined}
+          plannable={ref?.kind === 'set' || ref?.kind === 'comp' || ref?.kind === 'book'}
+          rowIds={ids}
+          rec={rec}
+          onOpenFolder={id => navigation.push('HadithList', { list: `folder:${id}` })}
+          onFolderGone={() => navigation.goBack()}
+        />
+      ) : null}
       {rulings ? (
         <Text
           style={[styles.ruling, { color: palette.text, backgroundColor: palette.controlBg }]}
@@ -378,7 +396,7 @@ export function HadithListScreen() {
   );
 
   return (
-    <HadithPage title={listTitle(list, t, tree)}>
+    <HadithPage title={listTitle(list, t, tree, rec)}>
       {(bottom, onScroll) =>
         packs.missing.length ? (
           <Column>
@@ -402,7 +420,7 @@ export function HadithListScreen() {
                 </Text>
               ) : shown ? (
                 <Text style={[styles.empty, { color: palette.muted }]}>
-                  {ref?.kind === 'bookmarks' ? t('hadith.noBookmarks') : t('hadith.noResults')}
+                  {ref?.kind === 'memo' ? t('hadith.memo.empty') : ref?.kind === 'bookmarks' || ref?.kind === 'folder' ? t('hadith.noBookmarks') : t('hadith.noResults')}
                 </Text>
               ) : undefined
             }

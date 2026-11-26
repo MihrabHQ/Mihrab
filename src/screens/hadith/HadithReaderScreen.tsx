@@ -57,7 +57,7 @@ import { foreignText, ownSideAlign } from '../../i18n/foreignText';
 import { useSheetSides } from '../../responsive/sheetSides';
 import type { RootStackParamList } from '../../navigation/types';
 import { chapterAt, chapterName, homeList, parseList } from '../../hadith/catalog';
-import { isBookmarked, isRead, noteOf, setBookmark, setLast, setNote, setRead } from '../../hadith/hadithRecord';
+import { isBookmarked, isRead, memoOf, noteOf, setBookmark, setLast, setMemo, setNote, setRead } from '../../hadith/hadithRecord';
 import { updateHadithRecord, useHadithRecord } from '../../hadith/hadithStore';
 import { loadItem, type HadithItem, relatedHadith, type RelatedHadith } from '../../hadith/library';
 import { hadithReport, hadithReportIssueUrl, hadithReportMailUrl } from '../../hadith/report';
@@ -70,6 +70,7 @@ import { TextAction } from '../../quran/downloadsUi';
 import { READING_BASE } from '../../theme/readingText';
 import { MAX_CONTENT_WIDTH, useResponsive } from '../../responsive/breakpoints';
 import { ShareHadithModal, fitsACard } from './ShareHadithModal';
+import { MemoGate, ReaderTools } from './ReaderExtras';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE, arabicTextStyle } from '../../theme/typography';
 import { tabularNumeralStyle } from '../../theme/textScale';
@@ -161,6 +162,8 @@ export function HadithReaderScreen() {
   const [editing, setEditing] = useState(false);
   const [copied, setCopied] = useState(false);
   const [picture, setPicture] = useState(false);
+  // Read from the Memorising list, the text waits to be asked for (`MemoGate`).
+  const [recalled, setRecalled] = useState(false);
   const scrollRef = useRef<ScrollViewInstance>(null);
 
   useEffect(() => {
@@ -191,6 +194,7 @@ export function HadithReaderScreen() {
     void updateHadithRecord(r => setLast(r, id, list, Date.now()));
     setOpen({});
     setCopied(false);
+    setRecalled(false);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }, [id, list]);
 
@@ -222,7 +226,7 @@ export function HadithReaderScreen() {
     : item?.number != null && item.source !== 'hadeethenc' && !inCompilation
     ? `${list ? listTitle(list, t, tree) : t('nav.hadith')} · ${item.number}`
     : list
-      ? listTitle(list, t, tree)
+      ? listTitle(list, t, tree, rec)
       : t('nav.hadith');
 
   // Under the text: say it is read, and go on.
@@ -277,6 +281,7 @@ export function HadithReaderScreen() {
   // prose a thousand points wide is not read. A phone, a hadith in Arabic
   // only, and an Arabic reader (who has no translation) are as they were.
   const sideBySide = windowWidth >= PAIR_MIN_WIDTH && !!item?.arabic && !!item?.text;
+  const practising = parseList(list)?.kind === 'memo';
   const arabicText = item?.arabic ? (
     <Text style={[styles.arabic, arabicAlign, { color: palette.text }]} selectable accessibilityLanguage="ar">
       {item.arabic}
@@ -335,7 +340,30 @@ export function HadithReaderScreen() {
                       {textDir?.close}
                     </Text>
                   ) : null}
-                  {sideBySide ? (
+                  {practising ? (
+                    <>
+                      {/* A book's row has no heading: its opening words are the cue. */}
+                      {!recalled && item.source !== 'hadeethenc' ? (
+                        <Text style={[styles.arabic, arabicAlign, { color: palette.text }]} accessibilityLanguage="ar">
+                          {item.title}
+                        </Text>
+                      ) : null}
+                      <MemoGate
+                        shown={recalled}
+                        memorised={memoOf(rec, id) === 2}
+                        onShow={() => setRecalled(true)}
+                        onKnew={() => {
+                          void updateHadithRecord(r => setMemo(r, id, 2, now()));
+                          if (next) go(next);
+                        }}
+                        onNotYet={() => {
+                          void updateHadithRecord(r => setMemo(r, id, 1, now()));
+                          if (next) go(next);
+                        }}
+                      />
+                    </>
+                  ) : null}
+                  {practising && !recalled ? null : sideBySide ? (
                     // A wide window: the Arabic and its meaning beside each
                     // other, the Arabic on the right whatever the app's
                     // direction (`sideBySide`, above).
@@ -485,6 +513,7 @@ export function HadithReaderScreen() {
                     {Platform.OS !== 'web' && fitsACard(item) ? (
                       <TextAction label={t('hadith.shareImage')} color={palette.accentSolid} onPress={() => setPicture(true)} />
                     ) : null}
+                    <ReaderTools id={id} rec={rec} />
                     {/* A grade is shown above, or a line saying there is none of
                         ours: this is where a reader asks what either means. */}
                     <TextAction

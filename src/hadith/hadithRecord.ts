@@ -28,7 +28,20 @@ export type HadithItemMarks = {
   b?: Stamped<0 | 1>;
   /** The reader's own note; '' when cleared. */
   n?: Stamped<string>;
+  /** Being memorised: 1; memorised: 2; neither (taken back): 0. */
+  m?: Stamped<0 | 1 | 2>;
+  /** The bookmark folder it is filed in, by the folder's id; '' for none. */
+  f?: Stamped<string>;
 };
+
+/**
+ * A reading plan: a list read through in a number of days, from a day.
+ * `from` is the reader's own calendar day (YYYY-MM-DD), not an instant: a
+ * plan begun on the 3rd is on its second day on the 4th wherever the
+ * phone is. One plan at a time; ended, it is `0`, which a merge can keep
+ * over the plan another device still holds.
+ */
+export type ReadingPlan = { list: string; days: number; from: string };
 
 export type FamiliarityLevel = 'starting' | 'building' | 'depth';
 
@@ -42,6 +55,10 @@ export type HadithRecord = {
   level?: Stamped<FamiliarityLevel>;
   /** Where the reader was last: the entry and the list it was read in. */
   last?: Stamped<{ id: string; list?: string }>;
+  /** Bookmark folders, by id: each its name, or '' once deleted. Absent until one is made. */
+  folders?: Record<string, Stamped<string>>;
+  /** The reading plan, or 0 once ended. */
+  plan?: Stamped<ReadingPlan | 0>;
 };
 
 export const EMPTY_HADITH_RECORD: HadithRecord = { v: 1, items: {}, sets: {} };
@@ -49,6 +66,11 @@ export const EMPTY_HADITH_RECORD: HadithRecord = { v: 1, items: {}, sets: {} };
 const LEVELS: readonly FamiliarityLevel[] = ['starting', 'building', 'depth'];
 const MAX_NOTE = 4000;
 const MAX_ID = 64;
+const MAX_FOLDER_NAME = 60;
+export const MAX_FOLDERS = 50;
+/** The lengths a plan is offered in, and the most a stored one may claim. */
+export const PLAN_DAYS = [30, 60, 90] as const;
+const MAX_PLAN_DAYS = 730;
 
 function stamp<T>(raw: unknown, value: (v: unknown) => T | undefined): Stamped<T> | undefined {
   if (!Array.isArray(raw) || raw.length !== 2) return undefined;
@@ -70,6 +92,20 @@ const place = (v: unknown): { id: string; list?: string } | undefined => {
   return typeof r.list === 'string' && r.list.length <= MAX_ID ? { id: r.id, list: r.list } : { id: r.id };
 };
 
+const memo = (v: unknown): 0 | 1 | 2 | undefined => (v === 0 || v === 1 || v === 2 ? v : undefined);
+const folderId = (v: unknown): string | undefined => (typeof v === 'string' && v.length <= MAX_ID ? v : undefined);
+const folderName = (v: unknown): string | undefined =>
+  typeof v === 'string' ? v.replace(/\s+/g, ' ').trim().slice(0, MAX_FOLDER_NAME) : undefined;
+const plan = (v: unknown): ReadingPlan | 0 | undefined => {
+  if (v === 0) return 0;
+  if (!v || typeof v !== 'object') return undefined;
+  const r = v as Record<string, unknown>;
+  if (typeof r.list !== 'string' || !r.list || r.list.length > MAX_ID) return undefined;
+  if (typeof r.days !== 'number' || !Number.isInteger(r.days) || r.days < 1 || r.days > MAX_PLAN_DAYS) return undefined;
+  if (typeof r.from !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(r.from)) return undefined;
+  return { list: r.list, days: r.days, from: r.from };
+};
+
 /** Anything at all, as a record: what does not fit is dropped. */
 export function coerceHadithRecord(raw: unknown): HadithRecord {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return EMPTY_HADITH_RECORD;
@@ -86,7 +122,11 @@ export function coerceHadithRecord(raw: unknown): HadithRecord {
       if (rr) out.r = rr;
       if (bb) out.b = bb;
       if (nn) out.n = nn;
-      if (out.r || out.b || out.n) items[id] = out;
+      const mm = stamp(m.m, memo);
+      const ff = stamp(m.f, folderId);
+      if (mm) out.m = mm;
+      if (ff) out.f = ff;
+      if (out.r || out.b || out.n || out.m || out.f) items[id] = out;
     }
   }
   const sets: Record<string, Stamped<0 | 1>> = {};
@@ -101,6 +141,16 @@ export function coerceHadithRecord(raw: unknown): HadithRecord {
   const last = stamp(r.last, place);
   if (lv) out.level = lv;
   if (last) out.last = last;
+  if (r.folders && typeof r.folders === 'object' && !Array.isArray(r.folders)) {
+    const folders: Record<string, Stamped<string>> = {};
+    for (const [id, f] of Object.entries(r.folders as Record<string, unknown>)) {
+      const v = id && id.length <= MAX_ID ? stamp(f, folderName) : undefined;
+      if (v) folders[id] = v;
+    }
+    if (Object.keys(folders).length) out.folders = folders;
+  }
+  const pl = stamp(r.plan, plan);
+  if (pl) out.plan = pl;
   return out;
 }
 
@@ -130,6 +180,10 @@ export function mergeHadith(a: HadithRecord, b: HadithRecord): HadithRecord {
     if (r) m.r = r;
     if (bm) m.b = bm;
     if (n) m.n = n;
+    const mm = newer(x.m, y.m);
+    const f = newer(x.f, y.f);
+    if (mm) m.m = mm;
+    if (f) m.f = f;
     items[id] = m;
   }
   const sets: Record<string, Stamped<0 | 1>> = {};
@@ -141,6 +195,14 @@ export function mergeHadith(a: HadithRecord, b: HadithRecord): HadithRecord {
   const last = newer(a.last, b.last);
   if (lv) out.level = lv;
   if (last) out.last = last;
+  // Absent stays absent: a record that never had a folder or a plan merges to the bytes it had.
+  const folderIds = [...new Set([...Object.keys(a.folders ?? {}), ...Object.keys(b.folders ?? {})])].sort();
+  if (folderIds.length) {
+    out.folders = {};
+    for (const id of folderIds) out.folders[id] = newer(a.folders?.[id], b.folders?.[id])!;
+  }
+  const pl = newer(a.plan, b.plan);
+  if (pl) out.plan = pl;
   return out;
 }
 
@@ -158,6 +220,40 @@ export function bookmarkedIds(rec: HadithRecord): string[] {
     .sort((x, y) => (y[1].b?.[1] ?? 0) - (x[1].b?.[1] ?? 0))
     .map(([id]) => id);
 }
+
+/** 0 not being memorised, 1 being memorised, 2 memorised. */
+export const memoOf = (rec: HadithRecord, id: string): 0 | 1 | 2 => rec.items[id]?.m?.[0] ?? 0;
+
+/** What is being memorised, then what has been: each in the order it was taken up. */
+export function memoIds(rec: HadithRecord): string[] {
+  const of = (state: 1 | 2) =>
+    Object.entries(rec.items)
+      .filter(([, m]) => m.m?.[0] === state)
+      .sort((x, y) => (x[1].m?.[1] ?? 0) - (y[1].m?.[1] ?? 0) || (x[0] < y[0] ? -1 : 1))
+      .map(([id]) => id);
+  return [...of(1), ...of(2)];
+}
+
+/** The folders there are, by name: `[id, name]`. A deleted one ('' name) is not among them. */
+export function foldersOf(rec: HadithRecord): Array<[string, string]> {
+  return Object.entries(rec.folders ?? {})
+    .filter(([, f]) => f[0] !== '')
+    .map(([id, f]): [string, string] => [id, f[0]])
+    .sort((x, y) => x[1].localeCompare(y[1]) || (x[0] < y[0] ? -1 : 1));
+}
+
+/** The folder a bookmark is in, or '' — also '' where its folder has since been deleted. */
+export function folderOf(rec: HadithRecord, id: string): string {
+  const f = rec.items[id]?.f?.[0] ?? '';
+  return f && rec.folders?.[f]?.[0] ? f : '';
+}
+
+/** The bookmarks in a folder, newest first. */
+export const folderIds = (rec: HadithRecord, folder: string): string[] =>
+  bookmarkedIds(rec).filter(id => folderOf(rec, id) === folder);
+
+/** The plan being followed, or null. */
+export const planOf = (rec: HadithRecord): ReadingPlan | null => (rec.plan && rec.plan[0] !== 0 ? rec.plan[0] : null);
 
 // ── Changing it ────────────────────────────────────────────────────────
 
@@ -187,4 +283,31 @@ export const setLevel = (rec: HadithRecord, lv: FamiliarityLevel, at: number): H
 export const setLast = (rec: HadithRecord, id: string, list: string | undefined, at: number): HadithRecord => ({
   ...rec,
   last: [list ? { id, list } : { id }, at],
+});
+
+export const setMemo = (rec: HadithRecord, id: string, state: 0 | 1 | 2, at: number) =>
+  withItem(rec, id, { m: [state, at] });
+
+/** File a bookmark in a folder ('' for none). Filing bookmarks what was not. */
+export const setFolder = (rec: HadithRecord, id: string, folder: string, at: number) =>
+  withItem(rec, id, isBookmarked(rec, id) ? { f: [folder, at] } : { f: [folder, at], b: [1, at] });
+
+/**
+ * Name a folder: a new one under a new id, or an old one again. '' deletes
+ * it — its bookmarks stay bookmarks, in no folder (`folderOf`). Refused
+ * (the record unchanged) for a name that is empty once trimmed where a
+ * new folder is asked for, and past MAX_FOLDERS.
+ */
+export function nameFolder(rec: HadithRecord, id: string, name: string, at: number): HadithRecord {
+  const clean = name.replace(/\s+/g, ' ').trim().slice(0, MAX_FOLDER_NAME);
+  const exists = !!rec.folders?.[id]?.[0];
+  if (!id || id.length > MAX_ID) return rec;
+  if (!exists && (!clean || foldersOf(rec).length >= MAX_FOLDERS)) return rec;
+  return { ...rec, folders: { ...rec.folders, [id]: [clean, at] } };
+}
+
+/** Begin a plan (replacing any other), or end the one there is. */
+export const setPlan = (rec: HadithRecord, p: ReadingPlan | null, at: number): HadithRecord => ({
+  ...rec,
+  plan: [p ?? 0, at],
 });

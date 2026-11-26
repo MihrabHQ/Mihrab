@@ -3038,6 +3038,36 @@
       "fullRuleSub": "Vilka hadither som visas, källa för källa"
     },
     "related": "Fler hadither om: {{topic}}",
-    "shareImage": "Dela som bild"
+    "shareImage": "Dela som bild",
+    "memo": {
+      "title": "Memorerar",
+      "add": "Memorera den här hadithen",
+      "remove": "Sluta memorera",
+      "prompt": "Läs upp den ur minnet och kontrollera sedan.",
+      "show": "Visa texten",
+      "knew": "Jag kunde den",
+      "notYet": "Inte än",
+      "done": "Memorerad",
+      "empty": "Inget att memorera ännu. Öppna en hadith och välj ”Memorera den här hadithen”."
+    },
+    "folder": {
+      "new": "Ny mapp",
+      "name": "Mappnamn",
+      "none": "Ingen mapp",
+      "move": "Flytta till en mapp",
+      "in": "Mapp: {{name}}",
+      "rename": "Byt namn på mappen",
+      "delete": "Ta bort mappen",
+      "deleteNote": "Bokmärkena behålls, utan mapp."
+    },
+    "plan": {
+      "start": "Starta en läsplan",
+      "choose": "Läs den på",
+      "daysN": "{{n}} dagar",
+      "line": "Dag {{day}} av {{days}} · {{done}} av {{target}} i dag",
+      "end": "Avsluta planen",
+      "card": "Läsplan",
+      "finished": "Klar: alla dess hadither är lästa."
+    }
   }
 }

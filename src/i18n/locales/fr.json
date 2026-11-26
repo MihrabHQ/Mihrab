@@ -3039,6 +3039,36 @@
       "fullRuleSub": "Quels hadiths sont proposés, source par source"
     },
     "related": "Autres hadiths sur : {{topic}}",
-    "shareImage": "Partager en image"
+    "shareImage": "Partager en image",
+    "memo": {
+      "title": "Mémorisation",
+      "add": "Mémoriser ce hadith",
+      "remove": "Arrêter de mémoriser",
+      "prompt": "Récitez-le de mémoire, puis vérifiez.",
+      "show": "Afficher le texte",
+      "knew": "Je le savais",
+      "notYet": "Pas encore",
+      "done": "Mémorisé",
+      "empty": "Rien à mémoriser pour l'instant. Ouvrez un hadith et choisissez « Mémoriser ce hadith »."
+    },
+    "folder": {
+      "new": "Nouveau dossier",
+      "name": "Nom du dossier",
+      "none": "Aucun dossier",
+      "move": "Déplacer vers un dossier",
+      "in": "Dossier : {{name}}",
+      "rename": "Renommer le dossier",
+      "delete": "Supprimer le dossier",
+      "deleteNote": "Ses favoris sont conservés, sans dossier."
+    },
+    "plan": {
+      "start": "Commencer un plan de lecture",
+      "choose": "Le lire en",
+      "daysN": "{{n}} jours",
+      "line": "Jour {{day}} sur {{days}} · {{done}} sur {{target}} aujourd'hui",
+      "end": "Terminer le plan",
+      "card": "Plan de lecture",
+      "finished": "Terminé : tous ses hadiths sont lus."
+    }
   }
 }

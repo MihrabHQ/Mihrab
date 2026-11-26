@@ -3038,6 +3038,36 @@
       "fullRuleSub": "Hadis mana yang dimuat, sumber demi sumber"
     },
     "related": "Hadis lain tentang: {{topic}}",
-    "shareImage": "Bagikan sebagai gambar"
+    "shareImage": "Bagikan sebagai gambar",
+    "memo": {
+      "title": "Menghafal",
+      "add": "Hafalkan hadis ini",
+      "remove": "Berhenti menghafal",
+      "prompt": "Bacalah dari hafalan, lalu periksa.",
+      "show": "Tampilkan teks",
+      "knew": "Saya hafal",
+      "notYet": "Belum",
+      "done": "Sudah hafal",
+      "empty": "Belum ada yang dihafal. Buka sebuah hadis dan pilih “Hafalkan hadis ini”."
+    },
+    "folder": {
+      "new": "Folder baru",
+      "name": "Nama folder",
+      "none": "Tanpa folder",
+      "move": "Pindahkan ke folder",
+      "in": "Folder: {{name}}",
+      "rename": "Ganti nama folder",
+      "delete": "Hapus folder",
+      "deleteNote": "Penandanya tetap ada, tanpa folder."
+    },
+    "plan": {
+      "start": "Mulai rencana membaca",
+      "choose": "Baca dalam",
+      "daysN": "{{n}} hari",
+      "line": "Hari {{day}} dari {{days}} · {{done}} dari {{target}} hari ini",
+      "end": "Akhiri rencana",
+      "card": "Rencana membaca",
+      "finished": "Selesai: semua hadisnya sudah dibaca."
+    }
   }
 }

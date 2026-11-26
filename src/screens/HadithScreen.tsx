@@ -89,7 +89,9 @@ import {
 } from '../hadith/catalog';
 import { Column } from './hadith/Column';
 import { isGradedBook } from '../hadith/bookGrades';
-import { bookmarkedIds, isBookmarked, isRead, setLevel } from '../hadith/hadithRecord';
+import { bookmarkedIds, isBookmarked, isRead, memoIds, planOf, setLevel, type ReadingPlan } from '../hadith/hadithRecord';
+import { planProgress } from '../hadith/plan';
+import { planLine } from './hadith/ReaderExtras';
 import { updateHadithRecord, useHadithRecord } from '../hadith/hadithStore';
 import { dailyHadithId } from '../hadith/daily';
 import { gradesKnown, loadItem, searchHadith, setRows, warmSearch, type HadithItem, type SearchHit } from '../hadith/library';
@@ -434,6 +436,8 @@ function Learn({ navigation, lang, onLookUp }: { navigation: Nav; lang: string; 
   const resumeTitle = resumeItem?.title ?? null;
   const tree = useCategoryTree();
   const bookmarks = bookmarkedIds(rec);
+  const memorising = memoIds(rec);
+  const plan = planOf(rec);
 
   useEffect(() => {
     let live = true;
@@ -497,6 +501,8 @@ function Learn({ navigation, lang, onLookUp }: { navigation: Nav; lang: string; 
         </Pressable>
       ) : null}
 
+      {plan ? <PlanCard plan={plan} /> : null}
+
       {answered && !changing ? (
         <View style={styles.levelLine}>
           <Text style={[styles.label, styles.levelText, { color: palette.muted }]}>
@@ -534,6 +540,14 @@ function Learn({ navigation, lang, onLookUp }: { navigation: Nav; lang: string; 
             title={t('hadith.bookmarks')}
             value={String(bookmarks.length)}
             onPress={() => navigation.push('HadithList', { list: 'bookmarks' })}
+          />
+        ) : null}
+        {memorising.length ? (
+          <Row
+            title={t('hadith.memo.title')}
+            value={String(memorising.length)}
+            onPress={() => navigation.push('HadithList', { list: 'memo' })}
+            testID="hadith-memo-row"
           />
         ) : null}
       </Group>
@@ -1034,6 +1048,39 @@ function SearchResults({
         </Text>
       )}
     </View>
+  );
+}
+
+/**
+ * The reading plan, on Learn: what it is a plan of, which day it is and
+ * how much of today's share is read; a tap goes on from the first unread
+ * hadith of the list (`hadith/plan.ts`).
+ */
+function PlanCard({ plan }: { plan: ReadingPlan }) {
+  const { t } = useTranslation();
+  const { palette } = useAppPalette();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const rec = useHadithRecord();
+  const tree = useCategoryTree();
+  const { rows } = useListRows(plan.list);
+  const ids = useMemo(() => rows?.map(r => r.id) ?? null, [rows]);
+  if (!ids?.length) return null;
+  const p = planProgress(plan, ids, rec, new Date());
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={() =>
+        p.next ? navigation.push('HadithReader', { id: p.next, list: plan.list }) : navigation.push('HadithList', { list: plan.list })
+      }
+      style={({ pressed }) => [styles.resume, { backgroundColor: palette.card }, pressed && styles.pressed]}
+      testID="hadith-plan-card"
+    >
+      <Text style={[styles.label, { color: palette.accentSolid }]}>{t('hadith.plan.card')}</Text>
+      <Text style={[styles.resumeTitle, { color: palette.text }]} numberOfLines={1}>
+        {listTitle(plan.list, t, tree)}
+      </Text>
+      <Text style={[styles.small, tabularNumeralStyle, { color: palette.muted }]}>{planLine(p, t)}</Text>
+    </Pressable>
   );
 }
 

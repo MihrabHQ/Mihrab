@@ -3038,6 +3038,36 @@
       "fullRuleSub": "收录哪些圣训，按来源逐一说明"
     },
     "related": "同一主题的其他圣训：{{topic}}",
-    "shareImage": "以图片分享"
+    "shareImage": "以图片分享",
+    "memo": {
+      "title": "背诵",
+      "add": "背诵这段圣训",
+      "remove": "停止背诵",
+      "prompt": "先凭记忆诵读，再核对。",
+      "show": "显示原文",
+      "knew": "我记住了",
+      "notYet": "还没有",
+      "done": "已背诵",
+      "empty": "暂无要背诵的内容。打开一段圣训，选择“背诵这段圣训”。"
+    },
+    "folder": {
+      "new": "新建文件夹",
+      "name": "文件夹名称",
+      "none": "无文件夹",
+      "move": "移到文件夹",
+      "in": "文件夹：{{name}}",
+      "rename": "重命名文件夹",
+      "delete": "删除文件夹",
+      "deleteNote": "其中的书签会保留，不属于任何文件夹。"
+    },
+    "plan": {
+      "start": "开始阅读计划",
+      "choose": "计划用时",
+      "daysN": "{{n}} 天",
+      "line": "第 {{day}} 天，共 {{days}} 天 · 今日 {{done}}/{{target}}",
+      "end": "结束计划",
+      "card": "阅读计划",
+      "finished": "已完成：其中的圣训已全部读完。"
+    }
   }
 }

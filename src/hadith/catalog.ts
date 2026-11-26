@@ -287,11 +287,20 @@ export type ListRef =
   | { kind: 'book'; id: string; chapter?: number }
   | { kind: 'agreed' }
   | { kind: 'comp'; id: string }
-  | { kind: 'bookmarks' };
+  | { kind: 'bookmarks' }
+  /** What the reader is memorising, and has memorised (`hadithRecord.memoIds`). */
+  | { kind: 'memo' }
+  /** The bookmarks filed in one folder (`folder:<id>`). */
+  | { kind: 'folder'; id: string };
+
+/** A list whose rows are the reader's own marks, not a pack's contents. */
+export const isRecordList = (ref: ListRef | null): ref is Extract<ListRef, { kind: 'bookmarks' | 'memo' | 'folder' }> =>
+  ref?.kind === 'bookmarks' || ref?.kind === 'memo' || ref?.kind === 'folder';
 
 export function parseList(list: string | undefined): ListRef | null {
   if (!list) return null;
   if (list === 'bookmarks') return { kind: 'bookmarks' };
+  if (list === 'memo') return { kind: 'memo' };
   if (list === AGREED_LIST) return AGREED_OFFERED ? { kind: 'agreed' } : null;
   const [kind, id, part] = list.split(':');
   if (!id) return null;
@@ -301,6 +310,7 @@ export function parseList(list: string | undefined): ListRef | null {
   }
   if (kind === 'set' || kind === 'hub' || kind === 'cat') return { kind, id };
   if (kind === 'comp') return findCompilation(id) ? { kind, id } : null;
+  if (kind === 'folder') return { kind, id };
   return null;
 }
 

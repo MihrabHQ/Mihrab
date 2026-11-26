@@ -3039,6 +3039,36 @@
       "fullRuleSub": "Qué hadices se ofrecen, fuente por fuente"
     },
     "related": "Más hadices sobre: {{topic}}",
-    "shareImage": "Compartir como imagen"
+    "shareImage": "Compartir como imagen",
+    "memo": {
+      "title": "Memorizando",
+      "add": "Memorizar este hadiz",
+      "remove": "Dejar de memorizar",
+      "prompt": "Recítalo de memoria y luego comprueba.",
+      "show": "Mostrar el texto",
+      "knew": "Lo sabía",
+      "notYet": "Todavía no",
+      "done": "Memorizado",
+      "empty": "Aún no hay nada que memorizar. Abre un hadiz y elige «Memorizar este hadiz»."
+    },
+    "folder": {
+      "new": "Nueva carpeta",
+      "name": "Nombre de la carpeta",
+      "none": "Sin carpeta",
+      "move": "Mover a una carpeta",
+      "in": "Carpeta: {{name}}",
+      "rename": "Cambiar el nombre de la carpeta",
+      "delete": "Eliminar la carpeta",
+      "deleteNote": "Sus marcadores se conservan, sin carpeta."
+    },
+    "plan": {
+      "start": "Iniciar un plan de lectura",
+      "choose": "Leerlo en",
+      "daysN": "{{n}} días",
+      "line": "Día {{day}} de {{days}} · {{done}} de {{target}} hoy",
+      "end": "Terminar el plan",
+      "card": "Plan de lectura",
+      "finished": "Terminado: se han leído todos sus hadices."
+    }
   }
 }

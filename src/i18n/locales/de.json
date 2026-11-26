@@ -3038,6 +3038,36 @@
       "fullRuleSub": "Welche Hadithe gezeigt werden, Quelle für Quelle"
     },
     "related": "Weitere Hadithe zu: {{topic}}",
-    "shareImage": "Als Bild teilen"
+    "shareImage": "Als Bild teilen",
+    "memo": {
+      "title": "Auswendiglernen",
+      "add": "Diesen Hadith auswendig lernen",
+      "remove": "Nicht mehr auswendig lernen",
+      "prompt": "Sag ihn aus dem Gedächtnis auf und prüfe dann.",
+      "show": "Text anzeigen",
+      "knew": "Ich konnte ihn",
+      "notYet": "Noch nicht",
+      "done": "Auswendig gelernt",
+      "empty": "Noch nichts zum Auswendiglernen. Öffne einen Hadith und wähle „Diesen Hadith auswendig lernen“."
+    },
+    "folder": {
+      "new": "Neuer Ordner",
+      "name": "Ordnername",
+      "none": "Kein Ordner",
+      "move": "In einen Ordner verschieben",
+      "in": "Ordner: {{name}}",
+      "rename": "Ordner umbenennen",
+      "delete": "Ordner löschen",
+      "deleteNote": "Seine Lesezeichen bleiben erhalten, ohne Ordner."
+    },
+    "plan": {
+      "start": "Leseplan starten",
+      "choose": "Lesen in",
+      "daysN": "{{n}} Tagen",
+      "line": "Tag {{day}} von {{days}} · heute {{done}} von {{target}}",
+      "end": "Plan beenden",
+      "card": "Leseplan",
+      "finished": "Fertig: Alle seine Hadithe sind gelesen."
+    }
   }
 }

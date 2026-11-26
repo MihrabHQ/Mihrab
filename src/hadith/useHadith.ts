@@ -17,10 +17,11 @@ import {
   packsForTopics,
   compilationNeeds,
   findCompilation,
+  isRecordList,
   parseList,
   type CategoryTree,
 } from './catalog';
-import { bookmarkedIds } from './hadithRecord';
+import { folderIds, memoIds, type HadithRecord } from './hadithRecord';
 import { useHadithRecord } from './hadithStore';
 import { categoryTree, listRows, topicCounts, type ListRow } from './library';
 import { usePackStatuses, usePacksReadyKey, type PackStatus } from './packs';
@@ -29,7 +30,7 @@ import type { PackKey } from './packTypes';
 /** The packs a list reads from, in this language. */
 export function packsForList(list: string, appLang: string): PackKey[] {
   const ref = parseList(list);
-  if (!ref || ref.kind === 'bookmarks') return [];
+  if (!ref || isRecordList(ref)) return [];
   if (ref.kind === 'book') return [bookKey(ref.id)];
   // Every entry of it is HadeethEnc's: the one pack, and the topic tree.
   if (ref.kind === 'agreed') return packsForTopics([], appLang, false);
@@ -115,14 +116,23 @@ export function useTopicCounts(): Map<string, number> | null {
   return counts;
 }
 
+/** The ids of a list that is the reader's own marks — bookmarks, a folder of them, what is being memorised — or null. */
+export function recordListIds(list: string, rec: HadithRecord): string[] | null {
+  const ref = parseList(list);
+  // Those in no folder: the folders stand over them on the list (`ListTools`). With no folders, all of them.
+  if (ref?.kind === 'bookmarks') return folderIds(rec, '');
+  if (ref?.kind === 'memo') return memoIds(rec);
+  if (ref?.kind === 'folder') return folderIds(rec, ref.id);
+  return null;
+}
+
 /** A list's rows (null while reading) and the packs it is waiting on. */
 export function useListRows(list: string): { rows: ListRow[] | null; packs: PackSummary } {
   const lang = useAppLang();
   const statuses = usePackStatuses();
   const here = usePacksReadyKey();
   const rec = useHadithRecord();
-  const isBookmarks = list === 'bookmarks';
-  const bookmarks = isBookmarks ? bookmarkedIds(rec) : null;
+  const bookmarks = recordListIds(list, rec);
   const bookmarkKey = bookmarks?.join('|') ?? '';
   const keys = useMemo(() => packsForList(list, lang), [list, lang]);
   const packs = summarisePacks(keys, statuses);

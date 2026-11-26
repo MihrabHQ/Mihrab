@@ -3038,6 +3038,36 @@
       "fullRuleSub": "Which hadith are served, source by source"
     },
     "related": "More hadith on: {{topic}}",
-    "shareImage": "Share as an image"
+    "shareImage": "Share as an image",
+    "memo": {
+      "title": "Memorising",
+      "add": "Memorise this hadith",
+      "remove": "Stop memorising",
+      "prompt": "Recite it from memory, then check.",
+      "show": "Show the text",
+      "knew": "I knew it",
+      "notYet": "Not yet",
+      "done": "Memorised",
+      "empty": "Nothing to memorise yet. Open a hadith and choose “Memorise this hadith”."
+    },
+    "folder": {
+      "new": "New folder",
+      "name": "Folder name",
+      "none": "No folder",
+      "move": "Move to a folder",
+      "in": "Folder: {{name}}",
+      "rename": "Rename folder",
+      "delete": "Delete folder",
+      "deleteNote": "Its bookmarks are kept, in no folder."
+    },
+    "plan": {
+      "start": "Start a reading plan",
+      "choose": "Read it in",
+      "daysN": "{{n}} days",
+      "line": "Day {{day}} of {{days}} · {{done}} of {{target}} today",
+      "end": "End the plan",
+      "card": "Reading plan",
+      "finished": "Finished: every hadith of it is read."
+    }
   }
 }
