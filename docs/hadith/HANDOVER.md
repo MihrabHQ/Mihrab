@@ -54,10 +54,10 @@ al-ʿIqd is read from the Shamela transcription of the Dār al-Kutub
 al-ʿIlmiyya printing: the editor's note marks (`«1»`; the notes themselves
 are not in the file) and the printer's volume colophons are taken off,
 three lines the file has wrong are mended by name in the spec, and every
-Arabic letter of the file is in the pack (counted, difference 0). Two of
-its book headings carry the transcription's misspellings and are left as
-they are: "كتاب السدرة في النوادي والتعاذي والمراثي" (the author's list
-has الدرة في التعازي والمراثي) and "اللؤلوءة". **Not published until the maintainer sees the file
+Arabic letter of the file's body is in the pack (counted, difference 0).
+Two book headings the transcription misspelt ("السدرة في النوادي
+والتعاذي", "اللؤلوءة") are put as the author's own list in his preface has
+them, on the maintainer's word. **Not published until the maintainer sees the file
 list** (`upload-packs.sh` uploads whatever is under `build/hadith/v1`).
 
 Not built:
