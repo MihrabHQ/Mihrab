@@ -91,6 +91,16 @@ attributed elsewhere, 109 he reports as found wanting, 312 not found with
 confidence, 99 too short to tell, 13 not in the text read. Known
 conservative miss: "رواه أحمد، واللفظ له، والثلاثة" stops at "واللفظ".
 
+Commentaries are Library books reached from the hadith they explain
+(`src/hadith/commentary.ts`, `commentaryFor`): one so far, Ibn Rajab's
+Jāmiʿ (`jami`, 51 chapters = his preface + a chapter a hadith, so hadith N
+is chapter N; OpenITI, the transcription's `<span class="matn">` marks
+taken off as `debris`). The link is drawn only where the pack is on the
+device or in our copy's manifest. The maintainer wants each commentary to
+be the reader's choice: Fatḥ al-Bārī (OpenITI, ~31 MB) and an-Nawawī on
+Muslim are NOT built — each needs cutting into parts and a way from a
+hadith's number to its place.
+
 The reader folds a book hadith's chain (`src/hadith/isnad.ts`,
 `splitIsnad`): the report begins at the Companion, found from the first
 ṣalawāt and the words of handing-on before it; 92–97% of the six books'

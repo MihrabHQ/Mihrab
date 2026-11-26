@@ -124,6 +124,20 @@ const BOOKS = {
     cache: 'openiti-bahja.txt',
     read: '2026-11-26',
   },
+  // Ibn Rajab's commentary on the Forty and the eight he added: his preface,
+  // then a chapter a hadith, so chapter N is the commentary on hadith N
+  // (`explains` in libraryBooks.json). The file carries none of the printed
+  // edition's notes.
+  jami: {
+    title: 'جامع العلوم والحكم',
+    author: 'ابن رجب الحنبلي',
+    died: '795 هـ',
+    openiti: '0800AH/data/0795IbnRajabHanbali/0795IbnRajabHanbali.JamicCulumWaHikam/0795IbnRajabHanbali.JamicCulumWaHikam.Shamela0004268-ara1',
+    cache: 'openiti-jami.txt',
+    read: '2026-11-26',
+    // The transcription's own marks round each hadith commented on: not the author's.
+    debris: /<span class="matn(?:-hr)?">|<\/span>/g,
+  },
   iqd: {
     title: 'العقد الفريد',
     author: 'ابن عبد ربه الأندلسي',
@@ -372,7 +386,7 @@ function openitiChapters(text, where) {
     if (!c.b.length) throw new Error(`${where}: "${c.t}" has no text`);
     for (const b of c.b) {
       const s = typeof b === 'string' ? b : b.v.join(' ');
-      if (/#|~~|PageV|\bms\d|@[A-Z]|%~%/.test(s)) throw new Error(`${where}: markup left in the text: ${s.slice(0, 80)}`);
+      if (/#|~~|PageV|\bms\d|@[A-Z]|%~%|<\/?[a-z]/.test(s)) throw new Error(`${where}: markup left in the text: ${s.slice(0, 80)}`);
     }
   }
   return chapters;
@@ -536,7 +550,8 @@ function openitiParts(text, where, spec) {
 
 /** A pack from an OpenITI file. */
 function openitiPack(id, spec, text) {
-  const chapters = spec.parts ? openitiParts(text, id, spec) : openitiChapters(text, id);
+  const body = spec.debris ? text.replace(spec.debris, ' ') : text;
+  const chapters = spec.parts ? openitiParts(body, id, spec) : openitiChapters(body, id);
   const meta = key => (new RegExp(`#META# ${key}\\s*:: (.*)`).exec(text)?.[1] ?? '').trim();
   const edition = [meta('043.EdPUBLISHER'), meta('041.EdNUMBER')].filter(v => v && v !== 'NODATA' && v !== 'NOTGIVEN').join('، ');
   return {

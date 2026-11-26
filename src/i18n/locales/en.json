@@ -3144,7 +3144,8 @@
         "dawa": "Ibn al-Qayyim's answer to a man asking for a cure: on sin, what it does, and repentance.",
         "maqamat": "Fifty-one short tales in rhymed prose about a wandering trickster; a founding work of Arabic style. Some passages are coarse.",
         "bahja": "Ibn 'Abd al-Barr's gathering of sayings, verse and anecdotes, arranged by subject.",
-        "iqd": "An Andalusian anthology in twenty-five books: rulers, war, knowledge, proverbs, poetry, history. Some passages are coarse."
+        "iqd": "An Andalusian anthology in twenty-five books: rulers, war, knowledge, proverbs, poetry, history. Some passages are coarse.",
+        "jami": "Ibn Rajab's commentary on an-Nawawi's Forty and the eight hadith he added to them, a chapter for each hadith."
       },
       "levelFirst": "To begin with",
       "levelLater": "For a later stage"
@@ -3156,6 +3157,9 @@
       "show": "Show the chain of narrators",
       "hide": "Hide the chain of narrators",
       "note": "The chain is part of the text as {{book}} has it (Open-Hadith-Data); nothing is added or removed. Where the chain ends and the report begins is worked out by Mihrab from the wording, and may be off by a name."
+    },
+    "commentary": {
+      "jami": "Ibn Rajab's commentary (Arabic)"
     }
   }
 }

@@ -3144,7 +3144,8 @@
         "dawa": "İbnü'l-Kayyim'in şifa soran bir adama cevabı: günah, etkileri ve tövbe üzerine.",
         "maqamat": "Gezgin bir düzenbaz hakkında secili nesirle elli bir kısa hikâye; Arap üslubunun kurucu eserlerinden. Bazı bölümleri kabadır.",
         "bahja": "İbn Abdilberr'in konulara göre düzenlediği hikmetli sözler, şiirler ve kıssalar derlemesi.",
-        "iqd": "Yirmi beş kitaplık bir Endülüs antolojisi: hükümdarlar, savaş, ilim, atasözleri, şiir, tarih. Bazı bölümleri kabadır."
+        "iqd": "Yirmi beş kitaplık bir Endülüs antolojisi: hükümdarlar, savaş, ilim, atasözleri, şiir, tarih. Bazı bölümleri kabadır.",
+        "jami": "İbn Receb'in Nevevî'nin Kırk Hadis'ine ve kendisinin eklediği sekiz hadise şerhi; her hadise bir bölüm."
       },
       "levelFirst": "Başlangıç için",
       "levelLater": "İleri aşama için"
@@ -3156,6 +3157,9 @@
       "show": "Senedi göster",
       "hide": "Senedi gizle",
       "note": "Sened, metnin {{book}} içindeki hâlinin bir parçasıdır (Open-Hadith-Data); hiçbir şey eklenmez veya çıkarılmaz. Senedin nerede bitip metnin nerede başladığını Mihrab ifadeden çıkarır; bir isim kadar şaşabilir."
+    },
+    "commentary": {
+      "jami": "İbn Receb'in şerhi (Arapça)"
     }
   }
 }

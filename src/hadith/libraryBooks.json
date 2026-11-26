@@ -52,5 +52,14 @@
   "authorLatin": "Ibn 'Abd Rabbih",
   "died": "328 AH",
   "level": 2
+ },
+ {
+  "id": "jami",
+  "title": "جامع العلوم والحكم",
+  "latin": "Jami' al-'Ulum wa'l-Hikam",
+  "author": "ابن رجب الحنبلي",
+  "authorLatin": "Ibn Rajab",
+  "died": "795 AH",
+  "level": 2
  }
 ]

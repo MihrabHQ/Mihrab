@@ -47,6 +47,8 @@ import { useNavigation, useRoute, type RouteProp } from '@react-navigation/nativ
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
+import { IS_WEB_APP } from '../../config/webApp';
+import { commentaryFor } from '../../hadith/commentary';
 import { hadithHeading } from '../../hadith/heading';
 import { isnadShown, setIsnadShown, splitIsnad } from '../../hadith/isnad';
 import { Button, TextSizeStepper } from '../../components/ui';
@@ -62,7 +64,8 @@ import { isBookmarked, isRead, memoOf, noteOf, setBookmark, setLast, setMemo, se
 import { updateHadithRecord, useHadithRecord } from '../../hadith/hadithStore';
 import { loadItem, type HadithItem, relatedHadith, type RelatedHadith } from '../../hadith/library';
 import { hadithReport, hadithReportIssueUrl, hadithReportMailUrl } from '../../hadith/report';
-import { usePacksReadyKey } from '../../hadith/packs';
+import { fetchManifest, isPackReady, manifestEntry, usePacksReadyKey } from '../../hadith/packs';
+import type { PackKey } from '../../hadith/packTypes';
 import { useAppLang, useCategoryTree, useListRows } from '../../hadith/useHadith';
 import { copyToClipboard } from '../../sync/clipboard';
 import { CheckIcon, PenIcon, ShareIcon, StarIcon } from '../../theme/icons';
@@ -296,6 +299,24 @@ export function HadithReaderScreen() {
     void setIsnadShown(on);
   };
   const inBook = seeInBook(id);
+  // Not on the web app, which has no Library.
+  const explained = useMemo(() => (IS_WEB_APP ? null : commentaryFor(id, list)), [id, list]);
+  // Offered only where it can be had: on this device already, or named by our copy's manifest.
+  const [commentary, setCommentary] = useState<typeof explained>(null);
+  useEffect(() => {
+    let live = true;
+    setCommentary(null);
+    if (!explained) return undefined;
+    const key: PackKey = `library/${explained.book}`;
+    if (isPackReady(key)) setCommentary(explained);
+    else
+      void fetchManifest().then(m => {
+        if (live && manifestEntry(m, key)) setCommentary(explained);
+      });
+    return () => {
+      live = false;
+    };
+  }, [explained, here]);
   // A book's hadith is its chain and then its report (`isnad.ts`). The chain is folded
   // unless the reader wants it; nothing is cut — unfolded, the two are the text.
   const isnad = useMemo(() => (item?.source === 'book' && item.arabic ? splitIsnad(item.arabic) : null), [item]);
@@ -564,6 +585,15 @@ export function HadithReaderScreen() {
                         label={t('hadith.seeIn', { book: t(`hadith.book.${inBook.book}`) })}
                         color={palette.accentSolid}
                         onPress={() => navigation.push('HadithReader', { id: inBook.id, list: `book:${inBook.book}` })}
+                      />
+                    ) : null}
+                    {/* The chapter of a commentary that explains this hadith: a Library book, in
+                        Arabic, downloaded only if the reader opens it and asks. */}
+                    {commentary ? (
+                      <TextAction
+                        label={t('hadith.commentary.jami')}
+                        color={palette.accentSolid}
+                        onPress={() => navigation.push('LibraryBook', { id: commentary.book, chapter: commentary.chapter })}
                       />
                     ) : null}
                     <ReaderTools id={id} rec={rec} />

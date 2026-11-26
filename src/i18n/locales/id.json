@@ -3144,7 +3144,8 @@
         "dawa": "Jawaban Ibn al-Qayyim kepada seorang yang meminta obat: tentang dosa, akibatnya, dan tobat.",
         "maqamat": "Lima puluh satu kisah pendek dalam prosa bersajak tentang seorang penipu pengembara; karya dasar gaya bahasa Arab. Beberapa bagian kasar.",
         "bahja": "Himpunan Ibn 'Abd al-Barr berisi kata-kata hikmah, syair, dan anekdot, disusun menurut tema.",
-        "iqd": "Antologi Andalusia dalam dua puluh lima kitab: penguasa, perang, ilmu, peribahasa, syair, sejarah. Beberapa bagian kasar."
+        "iqd": "Antologi Andalusia dalam dua puluh lima kitab: penguasa, perang, ilmu, peribahasa, syair, sejarah. Beberapa bagian kasar.",
+        "jami": "Syarah Ibnu Rajab atas Arba'in an-Nawawi dan delapan hadis yang ia tambahkan, satu bab untuk tiap hadis."
       },
       "levelFirst": "Untuk memulai",
       "levelLater": "Untuk tahap lanjut"
@@ -3156,6 +3157,9 @@
       "show": "Tampilkan sanad",
       "hide": "Sembunyikan sanad",
       "note": "Sanad adalah bagian dari teks sebagaimana terdapat dalam {{book}} (Open-Hadith-Data); tidak ada yang ditambah atau dikurangi. Di mana sanad berakhir dan matan bermula ditentukan Mihrab dari susunan katanya, dan bisa meleset satu nama."
+    },
+    "commentary": {
+      "jami": "Syarah Ibnu Rajab (Arab)"
     }
   }
 }

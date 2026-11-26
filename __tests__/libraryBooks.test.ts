@@ -403,4 +403,43 @@ describe('the shelf', () => {
       for (const f of ['src/screens/HadithScreen.tsx', 'src/hadith/library.ts']) expect([f, /librarySearch/.test(read(f))]).toEqual([f, false]);
     });
   });
+
+  describe('a commentary, from the hadith it explains', () => {
+    const { commentaryFor } = require('../src/hadith/commentary') as typeof import('../src/hadith/commentary');
+    const { NAWAWI_CROSSWALK, findCompilation } = require('../src/hadith/catalog') as typeof import('../src/hadith/catalog');
+
+    it('opens Ibn Rajab at the chapter of the hadith: N of the Forty is chapter N', () => {
+      expect(commentaryFor('n:1')).toEqual({ book: 'jami', chapter: 1 });
+      expect(commentaryFor('n:42')).toEqual({ book: 'jami', chapter: 42 });
+      const withEntry = NAWAWI_CROSSWALK.find(c => c.henc)!;
+      expect(commentaryFor(`h:${withEntry.henc}`)).toEqual({ book: 'jami', chapter: withEntry.n });
+      // Not one of the Forty: no commentary to offer.
+      expect(commentaryFor('b:bukhari:500')).toBeNull();
+      expect(commentaryFor('h:0')).toBeNull();
+      expect(commentaryFor('n:43')).toBeNull();
+    });
+
+    it('opens his eight under his own numbers, read in the list of them', () => {
+      const rajab = findCompilation('rajab')!;
+      for (const r of rajab.rows) {
+        const id = r.book ? `b:${r.book}:${r.index}` : `h:${r.henc}`;
+        expect([r.n, commentaryFor(id, 'comp:rajab')]).toEqual([r.n, { book: 'jami', chapter: r.n }]);
+        // The same hadith met in its own book is that book's hadith, with no claim about a commentary.
+        if (r.book) expect(commentaryFor(id, `book:${r.book}`)).toBeNull();
+      }
+    });
+
+    it('is a chapter a hadith in the pack that is built here, and a Library book like the others', () => {
+      expect(findLibraryBook('jami')?.level).toBe(2);
+      const file = path.join(REPO, 'build/hadith/v1/library/jami.json');
+      if (!fs.existsSync(file)) return; // packs are not built on CI
+      const pack = JSON.parse(fs.readFileSync(file, 'utf8'));
+      expect(pack.chapters).toHaveLength(51);
+      expect(pack.chapters[0].t).toBe('مقدمة المؤلف');
+      expect(pack.chapters[1].t).toMatch(/^الحديث الأول /);
+      expect(pack.chapters[42].t).toMatch(/^الحديث الثاني والأربعون /);
+      expect(pack.chapters[50].t).toMatch(/^الحديث الخمسون /);
+      expect(JSON.stringify(pack.chapters)).not.toMatch(/<\/?span/);
+    });
+  });
 });

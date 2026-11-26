@@ -3145,7 +3145,8 @@
         "dawa": "La respuesta de Ibn al-Qayyim a un hombre que pedía una cura: sobre el pecado, sus efectos y el arrepentimiento.",
         "maqamat": "Cincuenta y un relatos breves en prosa rimada sobre un pícaro errante; obra fundacional del estilo árabe. Algunos pasajes son groseros.",
         "bahja": "La recopilación de Ibn 'Abd al-Barr de dichos, versos y anécdotas, ordenada por temas.",
-        "iqd": "Una antología andalusí en veinticinco libros: gobernantes, guerra, saber, proverbios, poesía, historia. Algunos pasajes son groseros."
+        "iqd": "Una antología andalusí en veinticinco libros: gobernantes, guerra, saber, proverbios, poesía, historia. Algunos pasajes son groseros.",
+        "jami": "El comentario de Ibn Rayab a los Cuarenta de an-Nawawi y a los ocho hadices que él añadió, un capítulo por hadiz."
       },
       "levelFirst": "Para empezar",
       "levelLater": "Para una etapa posterior"
@@ -3157,6 +3158,9 @@
       "show": "Mostrar la cadena de transmisores",
       "hide": "Ocultar la cadena de transmisores",
       "note": "La cadena forma parte del texto tal como lo tiene {{book}} (Open-Hadith-Data); no se añade ni se quita nada. Dónde termina la cadena y empieza el relato lo deduce Mihrab de la redacción, y puede errar por un nombre."
+    },
+    "commentary": {
+      "jami": "Comentario de Ibn Rayab (árabe)"
     }
   }
 }
