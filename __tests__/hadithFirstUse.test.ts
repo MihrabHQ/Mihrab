@@ -213,13 +213,15 @@ describe("a search's order", () => {
     delete mockPacks['henc/all/de'];
   });
 
-  it('has the hadith with the words in its title first, then the rest, each in the packs’ order', async () => {
-    expect((await searchHadith('intention', 'de')).map(h => h.id)).toEqual(['h:103', 'h:105', 'h:101', 'h:102']);
+  // Among the titles the word itself ("…and intention") comes before a word
+  // that runs on from it ("…the intentions") — hadithSearchNearest.test.ts.
+  it('has the hadith with the words in its title first, nearest match first, then the rest in the packs’ order', async () => {
+    expect((await searchHadith('intention', 'de')).map(h => h.id)).toEqual(['h:105', 'h:103', 'h:101', 'h:102']);
   });
 
   it('finds a title past the entries that would have filled the page', async () => {
-    expect((await searchHadith('intention', 'de', { limit: 2 })).map(h => h.id)).toEqual(['h:103', 'h:105']);
-    expect((await searchHadith('intention', 'de', { limit: 3 })).map(h => h.id)).toEqual(['h:103', 'h:105', 'h:101']);
+    expect((await searchHadith('intention', 'de', { limit: 2 })).map(h => h.id)).toEqual(['h:105', 'h:103']);
+    expect((await searchHadith('intention', 'de', { limit: 3 })).map(h => h.id)).toEqual(['h:105', 'h:103', 'h:101']);
   });
 
   it('shows, of a hadith held twice, the copy whose title has the words', async () => {
@@ -234,7 +236,7 @@ describe("a search's order", () => {
     mockPacks['henc/all/de'] = pack([entry('100', 'Something else', ['458'], { e: 'A note on intention.' }), ...entries]);
     mockPacks['henc/older/de'] = { pack: 'older', lang: 'de', source: '', retrieved: '', entries: [] };
     const hits = await searchHadith('intention', 'de');
-    expect(hits.map(h => h.id)).toEqual(['h:103', 'h:105', 'h:101', 'h:102', 'h:100']);
+    expect(hits.map(h => h.id)).toEqual(['h:105', 'h:103', 'h:101', 'h:102', 'h:100']);
     expect(hits[4].inExplanation).toBe(true);
     delete mockPacks['henc/older/de'];
   });

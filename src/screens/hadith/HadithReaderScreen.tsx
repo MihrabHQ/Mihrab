@@ -47,6 +47,7 @@ import { useNavigation, useRoute, type RouteProp } from '@react-navigation/nativ
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
+import { hadithHeading } from '../../hadith/heading';
 import { Button, TextSizeStepper } from '../../components/ui';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { useReadingText } from '../../hooks/useReadingText';
@@ -197,7 +198,7 @@ export function HadithReaderScreen() {
 
   return (
     <HadithPage title={title} end={item?.text ? <TextSizeStepper /> : null}>
-      {bottom => (
+      {(bottom, onScroll) => (
         <View style={styles.flex}>
           {item === null ? (
             <Column>
@@ -211,6 +212,8 @@ export function HadithReaderScreen() {
             <ScrollView
               ref={scrollRef}
               style={styles.flex}
+              onScroll={onScroll}
+              scrollEventThrottle={32}
               contentContainerStyle={{ paddingBottom: SPACING.lg }}
               contentInsetAdjustmentBehavior="never"
             >
@@ -224,7 +227,7 @@ export function HadithReaderScreen() {
                   {item.source === 'hadeethenc' ? (
                     <Text style={[styles.heading, textDir?.style, { color: palette.text }]} accessibilityRole="header">
                       {textDir?.open}
-                      {item.title}
+                      {hadithHeading(item.title, item.text ?? item.arabic)}
                       {textDir?.close}
                     </Text>
                   ) : null}
@@ -534,7 +537,8 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   sectionTitle: { fontSize: TYPE.headline.fontSize, fontWeight: '500' },
-  chevron: { fontSize: TYPE.callout.fontSize },
+  // ▸ at the text's own size was a speck beside its heading on Android.
+  chevron: { fontSize: TYPE.title3.fontSize, lineHeight: 22 },
   sectionBody: { paddingHorizontal: SPACING.lg, paddingBottom: SPACING.lg },
   list: { gap: SPACING.md },
   bulletRow: { flexDirection: 'row', gap: SPACING.sm },

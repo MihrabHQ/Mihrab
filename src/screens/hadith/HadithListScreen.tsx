@@ -309,7 +309,7 @@ export function HadithListScreen() {
 
   return (
     <HadithPage title={listTitle(list, t, tree)}>
-      {bottom =>
+      {(bottom, onScroll) =>
         packs.missing.length ? (
           <Column>
             {/* A book has no translation: said before it is downloaded. */}
@@ -322,6 +322,8 @@ export function HadithListScreen() {
           <FlatList
             data={listed}
             keyExtractor={r => r.id}
+            onScroll={onScroll}
+            scrollEventThrottle={32}
             ListHeaderComponent={header}
             ListEmptyComponent={
               contents && !q ? undefined : busy ? (

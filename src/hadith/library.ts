@@ -557,6 +557,42 @@ export function snippetAround(text: string, words: readonly string[], before = 4
   return `${from > 0 ? '… ' : ''}${parts.slice(from, to).join(' ')}${to < parts.length ? ' …' : ''}`;
 }
 
+/**
+ * How far a text's words are from the words asked for: 0 when each is
+ * there as a word of its own, a little more for each letter a word runs
+ * on by ("intentions" for "intention"), and more again when it is only
+ * found inside another word. Lower is nearer.
+ *
+ * This weighs the MATCH, not the hadith: "intention" was answered with
+ * "…falsely and intentionally…" above "…good intention…" and "…depends on
+ * the intentions…", because all three hold the letters and the pack had
+ * them in that order (Pixel 10 Pro, 2026-11-26). Among texts that match
+ * equally closely the packs' order still stands.
+ */
+export function matchDistance(hay: string, words: readonly string[]): number {
+  let sum = 0;
+  for (const w of words) {
+    let best = Infinity;
+    for (let at = hay.indexOf(w); at >= 0 && best > 0; at = hay.indexOf(w, at + 1)) {
+      const start = hay.lastIndexOf(' ', at) + 1;
+      let end = hay.indexOf(' ', at + w.length);
+      if (end < 0) end = hay.length;
+      const before = at - start;
+      const after = end - (at + w.length);
+      best = Math.min(best, (before ? INSIDE_A_WORD + before : 0) + after);
+    }
+    sum += best === Infinity ? NOT_THERE : best;
+  }
+  return sum;
+}
+const INSIDE_A_WORD = 3;
+const NOT_THERE = 99;
+
+/** Nearest match first; equal matches as they were found (the sort is stable). */
+function nearestFirst<T extends { near: number }>(rows: T[]): T[] {
+  return [...rows].sort((a, b) => a.near - b.near);
+}
+
 class Cancelled extends Error {}
 
 const matnWordsCache = new WeakMap<object, Set<string>>();
@@ -609,8 +645,10 @@ export function sameHadithTwice(a: HencEntry, b: HencEntry): boolean {
  * packs' order alone, "intention" answered with "An army will invade the
  * Kaʿbah…" (its last line has the word) and had "Verily, the reward of
  * deeds depends on the intentions…" further down the page (Pixel 10 Pro,
- * 2026-11-25). Within each of the two the packs' order stands: nothing
- * here weighs one hadith against another. So every HadeethEnc entry is
+ * 2026-11-25). Within each of the two, the nearest match comes first
+ * (`matchDistance`: the word itself before a longer word that holds it),
+ * and among equal matches the packs' order stands: nothing here weighs
+ * one hadith against another. So every HadeethEnc entry is
  * looked at before the answer is given, not only as many as fill a page —
  * a title on the pack's last entry is found — which is three and a half
  * thousand texts already folded (`warmSearch`).
@@ -628,8 +666,8 @@ export async function searchHadith(query: string, appLang: string, options: Sear
   if (!words.length) return [];
   const matches = (hay: string) => words.every(w => hay.includes(w));
   /** HadeethEnc's entries that hold it: in the title, and in the text only. */
-  const titled: Array<{ e: HencEntry; hit: SearchHit }> = [];
-  const inText: Array<{ e: HencEntry; hit: SearchHit }> = [];
+  const titled: Array<{ e: HencEntry; hit: SearchHit; near: number }> = [];
+  const inText: Array<{ e: HencEntry; hit: SearchHit; near: number }> = [];
   /** an-Nawawi's Arabic and the books. */
   const hits: SearchHit[] = [];
   const explained: SearchHit[] = [];
@@ -645,7 +683,8 @@ export async function searchHadith(query: string, appLang: string, options: Sear
   };
   const held = () => titled.length + inText.length;
   const full = () => held() + hits.length >= limit;
-  const result = () => [...titled.map(r => r.hit), ...inText.map(r => r.hit), ...hits, ...explained].slice(0, limit);
+  const result = () =>
+    [...nearestFirst(titled).map(r => r.hit), ...nearestFirst(inText).map(r => r.hit), ...hits, ...explained].slice(0, limit);
 
   // A topic or "al-Bukhārī and Muslim" is asked of HadeethEnc's entries:
   // a book's hadith has no topic, and the books are not searched then.
@@ -681,6 +720,7 @@ export async function searchHadith(query: string, appLang: string, options: Sear
             const snippet = titleHas ? undefined : snippetAround(e.h, words) ?? (e.ar ? snippetAround(e.ar, words) : null) ?? undefined;
             (titleHas ? titled : inText).push({
               e,
+              near: matchDistance(titleHas ? folded(titleOf(e), () => e.t) : folded(e, () => `${e.t} ${e.h} ${e.ar ?? ''}`), words),
               hit: { id: `h:${e.id}`, title: e.t, note: entryNote(e), where: 'hadeethenc', snippet },
             });
           } else if (explained.length < EXPLAINED_MOST && (e.e || e.x?.length)) {

@@ -82,7 +82,9 @@ function StepperImpl({
         {subtitle ? (
           <Text
             style={[typeStyle('footnote'), styles.subtitle, { color: palette.muted }]}
-            numberOfLines={1}>
+            // Two: the Log's "Thursday, November 26 · 16 Jumada II 1448" lost
+            // its month and year to an ellipsis between the arrows.
+            numberOfLines={2}>
             {subtitle}
           </Text>
         ) : null}

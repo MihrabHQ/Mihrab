@@ -14,6 +14,7 @@ import {
   AppearanceIcon,
   DevicesIcon,
   DownloadsIcon,
+  HadithIcon,
   LocationIcon,
   NotificationsIcon,
   PrayerTimesIcon,
@@ -166,6 +167,18 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
         getComponent: () => (require('./pages/TajweedSettingsScreen') as typeof import('./pages/TajweedSettingsScreen')).TajweedSettingsScreen,
       },
     ],
+  },
+  {
+    /**
+     * After the Qur'an's, in the tab bar's order. Hadith had a tab and
+     * nothing here: its level was changed only from the tab, and its
+     * downloads were found by knowing they were under Downloads.
+     */
+    route: 'SettingsHadith',
+    titleKey: 'nav.hadith',
+    blurbKey: 'settings.sectionHadithBlurb',
+    Icon: HadithIcon,
+    getComponent: () => (require('./pages/HadithSettingsScreen') as typeof import('./pages/HadithSettingsScreen')).HadithSettingsScreen,
   },
   {
     /**

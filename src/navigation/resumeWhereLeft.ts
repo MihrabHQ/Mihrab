@@ -103,6 +103,7 @@ export const RESTORABLE: Readonly<Record<string, Readonly<Record<string, ParamKi
   SettingsQuran: {},
   SettingsWordReader: {},
   SettingsTajweed: {},
+  SettingsHadith: {},
   SettingsDownloads: {},
   SettingsWidgets: {},
   SettingsDevices: {},

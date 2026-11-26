@@ -105,6 +105,20 @@ export const QuranIcon = memo(({ size = S, color }: P) => (
   </Svg>
 ));
 
+/** Books on a shelf, one leaning — the Hadith tab's own glyph (theme/icons `HadithBooksIcon`). */
+export const HadithIcon = memo(({ size = S, color }: P) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Path
+      d="M3 4h4v16H3zM3 8h4M9.2 6h4v14h-4zM9.2 10h4M17.82 20L13.2 7.31l3.76-1.37 4.62 12.69zM14.57 11.07l3.76-1.37"
+      stroke={color}
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+  </Svg>
+));
+
 /** A phone beside a laptop — the devices that sync. */
 export const DevicesIcon = memo(({ size = S, color }: P) => (
   <Svg width={size} height={size} viewBox="0 0 24 24">

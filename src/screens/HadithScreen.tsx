@@ -51,6 +51,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -96,7 +97,7 @@ import { lookUpReference, NAWAWI_REF, parseReference, type ReferenceAnswer } fro
 import { summarisePacks, useAppLang, useCategoryTree, useListRows } from '../hadith/useHadith';
 import type { PackKey } from '../hadith/packTypes';
 import { cardEdgeStyle, inputChromeStyle } from '../theme/chrome';
-import { SearchIcon } from '../theme/icons';
+import { CloseIcon, SearchIcon } from '../theme/icons';
 import { inlineSize, ProgressTrack, TextAction } from '../quran/downloadsUi';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
@@ -242,7 +243,10 @@ export function HadithScreen() {
         <ScrollView
           ref={scrollRef}
           style={styles.flex}
-          contentContainerStyle={{ paddingTop: pageTop + SPACING.sm, paddingBottom: tabBarInset }}
+          // The one card in the middle of the page: at its top it left
+          // four-fifths of a phone's screen empty under it, and read as a
+          // page that had not finished loading.
+          contentContainerStyle={[styles.firstOpen, { paddingTop: pageTop + SPACING.sm, paddingBottom: tabBarInset }]}
           contentInsetAdjustmentBehavior="never"
         >
           <Column style={styles.page}>{gate}</Column>
@@ -268,6 +272,20 @@ export function HadithScreen() {
             clearButtonMode="while-editing"
             testID="hadith-search"
           />
+          {/* iOS draws its own (clearButtonMode); Android and the web have none,
+              and a query was still in the field on coming back to the tab. */}
+          {Platform.OS !== 'ios' && query.length > 0 ? (
+            <Pressable
+              onPress={() => setQuery('')}
+              accessibilityRole="button"
+              accessibilityLabel={t('hadith.searchClear')}
+              hitSlop={12}
+              style={({ pressed }) => [styles.searchClear, pressed && styles.pressed]}
+              testID="hadith-search-clear"
+            >
+              <CloseIcon size={16} color={palette.mutedSolid} />
+            </Pressable>
+          ) : null}
         </View>
         {!searching ? (
           <SegmentedControl
@@ -324,7 +342,7 @@ function Fold({ title, open, onToggle, testID }: { title: string; open: boolean;
       style={({ pressed }) => [styles.fold, pressed && styles.pressed]}
     >
       <Text style={[styles.sectionTitle, { color: palette.text }]}>{title}</Text>
-      <Text style={{ color: palette.muted }}>{open ? '▾' : rtl ? '◂' : '▸'}</Text>
+      <Text style={[styles.foldMark, { color: palette.muted }]}>{open ? '▾' : rtl ? '◂' : '▸'}</Text>
     </Pressable>
   );
 }
@@ -940,6 +958,10 @@ const styles = StyleSheet.create({
     minHeight: 44,
   },
   searchInput: { flex: 1, fontSize: TYPE.body.fontSize, paddingVertical: SPACING.sm },
+  searchClear: { padding: SPACING.xs },
+  firstOpen: { flexGrow: 1, justifyContent: 'center' },
+  // ▸ at the text's own size was a speck beside its heading on Android.
+  foldMark: { fontSize: TYPE.title3.fontSize, lineHeight: 22 },
   page: { paddingHorizontal: SPACING.lg },
   stack: { gap: SPACING.md },
   levels: { gap: SPACING.sm },

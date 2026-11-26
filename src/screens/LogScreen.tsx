@@ -1144,7 +1144,8 @@ export function LogScreen() {
    */
   const selectedHijriLine = useMemo(() => {
     const hijri = formatHijriLabel(selectedDate);
-    return isToday ? `${selectedLabel} · ${hijri}` : hijri;
+    // Each on a line of its own: side by side they did not fit a phone.
+    return isToday ? `${selectedLabel}\n${hijri}` : hijri;
     // hijriVersion: the calendar the date is read in.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate, selectedLabel, isToday, hijriVersion]);
@@ -1535,7 +1536,7 @@ export function LogScreen() {
               onPress={() => navigation.navigate('Fasting' as never)}
               style={{ flex: 1 }}
             >
-              <Text style={[styles.fastState, { color: palette.text }]} numberOfLines={1}>
+              <Text style={[styles.fastState, { color: palette.text }]} numberOfLines={2}>
                 {dayFast
                   ? t('fasting.statusKept')
                   : ramadanDay != null

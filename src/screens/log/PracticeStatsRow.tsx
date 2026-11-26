@@ -97,7 +97,9 @@ function PracticeStatsRowImpl({
         style={[styles.owed, showingOwed && { backgroundColor: palette.controlBg }]}
       >
         <Tile
-          value={String(owed)}
+          // A tick, not "0": under a zero the label read as a count of
+          // something called "Nothing owed", beside three tiles that count.
+          value={owed === 0 ? '✓' : String(owed)}
           label={
             owed === 0
               ? t('stats.nothingOwed', 'Nothing owed')

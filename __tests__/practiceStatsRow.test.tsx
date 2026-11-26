@@ -192,6 +192,8 @@ describe('the owed tile', () => {
     expect(owedTile(tree).props.accessibilityState.disabled).toBe(true);
     expect(owedPressable(tree).props.disabled).toBe(true);
     expect(text(tree)).toContain('Nothing owed');
+    // A tick over it, not a "0" that reads as a count of the label.
+    expect(text(tree)).toContain('✓');
     // No call to action, because there is no action.
     expect(text(tree)).not.toContain('tap to see');
   });

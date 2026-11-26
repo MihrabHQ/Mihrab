@@ -140,6 +140,7 @@ export type RootStackParamList = {
   SettingsWordReader: undefined;
   SettingsTajweed: undefined;
   /** Settings → Downloads: the download manager, and the disk it uses. */
+  SettingsHadith: undefined;
   SettingsDownloads: undefined;
   /** Settings → Widgets (Android): every widget's look, and the prayer-times widget's own options. */
   SettingsWidgets: undefined;
