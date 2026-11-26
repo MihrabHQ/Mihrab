@@ -2811,6 +2811,11 @@
     "browse": "Nachschlagen",
     "searchPlaceholder": "Hadithe durchsuchen oder {{example}}",
     "searchClear": "Suche löschen",
+    "agreed": {
+      "title": "Übereinstimmend überliefert",
+      "row": "Bei al-Buchari und Muslim · übersetzt",
+      "blurb": "Die Hadithe, die HadeethEnc sowohl al-Buchari als auch Muslim zuschreibt — „übereinstimmend überliefert“ und nichts weiter — und als authentisch einstuft, jeweils mit Übersetzung und Erläuterung. Ein Eintrag mit einer Einschränkung steht in seinen Themen und in der Suche, nicht hier."
+    },
     "settingsNoDownloads": "Noch nichts heruntergeladen",
     "searchExample": "Nawawi 14",
     "searchScope": "Durchsucht wird, was auf diesem Gerät heruntergeladen ist.",

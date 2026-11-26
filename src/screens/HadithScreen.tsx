@@ -71,6 +71,8 @@ import { useTabPageTop } from '../navigation/useTabPageTop';
 import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import type { RootStackParamList } from '../navigation/types';
 import {
+  AGREED_LIST,
+  AGREED_OFFERED,
   BOOKS,
   bookKey,
   findHub,
@@ -617,6 +619,19 @@ function Browse({ navigation }: { navigation: Nav }) {
           </Group>
         ) : null}
       </View>
+
+      {/* The two Ṣaḥīḥs in translation, as near as there is: what HadeethEnc
+          says both report. Before the books, which are Arabic only. */}
+      {AGREED_OFFERED ? (
+        <Group>
+          <Row
+            title={t('hadith.agreed.title')}
+            subtitle={t('hadith.agreed.row')}
+            onPress={() => navigation.push('HadithList', { list: AGREED_LIST })}
+            testID="hadith-agreed"
+          />
+        </Group>
+      ) : null}
 
       <Text style={[styles.sectionTitle, { color: palette.text }]} accessibilityRole="header">
         {t('hadith.books')}

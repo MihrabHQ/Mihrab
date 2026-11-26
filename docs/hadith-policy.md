@@ -63,6 +63,13 @@ decided before any is served.
 | **Sunan Abī Dāwūd, Jāmiʿ at-Tirmidhī, Sunan an-Nasāʾī, Sunan Ibn Mājah, the Muwaṭṭaʾ** | Only the hadith every grader who ruled calls ṣaḥīḥ or ḥasan — and at least one did | `scripts/hadith/book-grades.js` (the build), `src/hadith/bookGrades.ts` (the app reads every row again and refuses a pack with one that does not pass) |
 | **Musnad Aḥmad, Sunan ad-Dārimī** | Not offered | No open dataset grades them. They come back when one does |
 
+**"Agreed upon"** (Look up, above the books) is not a further source: it
+is the HadeethEnc entries whose Arabic attribution is "متفق عليه" and
+nothing else, and whose Arabic grade is "صحيح" and nothing else
+(`scripts/hadith/agreed-list.js` writes `src/hadith/agreed.json`). An
+entry attributed with any qualification is served in its topics and in
+search, and is not on that list.
+
 Two details that follow from the rule:
 
 - **A translation is judged by the Arabic entry's grade as it stands

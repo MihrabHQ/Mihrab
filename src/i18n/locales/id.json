@@ -2811,6 +2811,11 @@
     "browse": "Telusuri",
     "searchPlaceholder": "Cari hadis, atau {{example}}",
     "searchClear": "Hapus pencarian",
+    "agreed": {
+      "title": "Muttafaq ‘alaih",
+      "row": "Dalam al-Bukhari dan Muslim · diterjemahkan",
+      "blurb": "Hadis-hadis yang oleh HadeethEnc dinisbatkan kepada al-Bukhari dan Muslim sekaligus — “muttafaq ‘alaih” dan tidak lebih — serta dinilai sahih, masing-masing dengan terjemahan dan penjelasannya. Entri yang dinisbatkan dengan catatan ada di topiknya dan di pencarian, bukan di sini."
+    },
     "settingsNoDownloads": "Belum ada yang diunduh",
     "searchExample": "Nawawi 14",
     "searchScope": "Mencari di konten yang sudah diunduh di perangkat ini.",

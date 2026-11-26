@@ -2811,6 +2811,11 @@
     "browse": "Bul",
     "searchPlaceholder": "Hadis ara veya {{example}}",
     "searchClear": "Aramayı temizle",
+    "agreed": {
+      "title": "Müttefekun aleyh",
+      "row": "Buhârî ve Müslim’de · çevirisiyle",
+      "blurb": "HadeethEnc’in hem Buhârî’ye hem Müslim’e nispet ettiği — yalnızca “müttefekun aleyh”, başka bir şey değil — ve sahih dediği hadisler; her biri çevirisi ve açıklamasıyla. Bir kayıtla nispet edilen hadis kendi konularında ve aramada yer alır, burada değil."
+    },
     "settingsNoDownloads": "Henüz bir şey indirilmedi",
     "searchExample": "Nevevî 14",
     "searchScope": "Bu cihaza indirilenler içinde aranıyor.",

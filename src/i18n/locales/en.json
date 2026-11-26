@@ -2811,6 +2811,11 @@
     "browse": "Look up",
     "searchPlaceholder": "Search hadith, or {{example}}",
     "searchClear": "Clear the search",
+    "agreed": {
+      "title": "Agreed upon",
+      "row": "In both al-Bukhari and Muslim · translated",
+      "blurb": "The hadith HadeethEnc attributes to both al-Bukhari and Muslim — “agreed upon” and nothing more — and grades authentic, each with its translation and explanation. An entry it attributes with any qualification is in its topics and in search, not here."
+    },
     "settingsNoDownloads": "Nothing downloaded yet",
     "searchExample": "Nawawi 14",
     "searchScope": "Searching what is downloaded on this device.",

@@ -9,7 +9,7 @@
  * place in Open-Hadith-Data's file, not in our pack. A list is
  * `set:<id>` (a curated set, `sets.json`), `hub:<id>` (one of Look up's
  * tiles: a few HadeethEnc topics under a name of ours), `cat:<id>` (a
- * HadeethEnc topic) or `book:<id>`. The reader's record keys on these, so
+ * HadeethEnc topic), `book:<id>`, or `agreed` (below). The reader's record keys on these, so
  * they are kept stable.
  *
  * ── WHAT IS DOWNLOADED ─────────────────────────────────────────────────
@@ -38,6 +38,7 @@
  */
 import SETS from './sets.json';
 import NAWAWI from './nawawi40.json';
+import AGREED from './agreed.json';
 import { IS_WEB_APP } from '../config/webApp';
 import { ALL_BOOKS, SAHIH_BOOKS } from './bookGrades';
 import type { CategoryRow, PackKey } from './packTypes';
@@ -100,6 +101,20 @@ export function packLangs(appLang: string): string[] {
   return lang === 'en' || lang === 'ar' ? [lang] : [lang, 'en'];
 }
 
+/**
+ * "Agreed upon": the entries HadeethEnc attributes to al-Bukhārī and
+ * Muslim both — "متفق عليه" and nothing else — and grades ṣaḥīḥ, in the
+ * packs' order (`scripts/hadith/agreed-list.js` has the rule and writes
+ * the list). The nearest thing here to the two Ṣaḥīḥs in translation:
+ * the books themselves are Arabic only.
+ *
+ * Not in a browser. It is over a thousand entries, and a browser can only
+ * fetch HadeethEnc one entry a request (`piecewise`, above).
+ */
+export const AGREED_IDS: readonly string[] = AGREED.ids;
+export const AGREED_LIST = 'agreed';
+export const AGREED_OFFERED = !IS_WEB_APP;
+
 export const hencPackKey = (pack: string, lang: string): PackKey => `henc/${pack}/${lang}`;
 export const categoriesKey = (lang: string): PackKey => `categories/${lang}`;
 export const bookKey = (book: string): PackKey => `books/${book}`;
@@ -152,11 +167,13 @@ export type ListRef =
   | { kind: 'hub'; id: string }
   | { kind: 'cat'; id: string }
   | { kind: 'book'; id: string }
+  | { kind: 'agreed' }
   | { kind: 'bookmarks' };
 
 export function parseList(list: string | undefined): ListRef | null {
   if (!list) return null;
   if (list === 'bookmarks') return { kind: 'bookmarks' };
+  if (list === AGREED_LIST) return AGREED_OFFERED ? { kind: 'agreed' } : null;
   const [kind, id] = list.split(':');
   if (!id) return null;
   if (kind === 'set' || kind === 'hub' || kind === 'cat' || kind === 'book') return { kind, id };

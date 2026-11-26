@@ -89,6 +89,7 @@ export function listTitle(
   const ref = parseList(list);
   if (!ref) return t('nav.hadith');
   if (ref.kind === 'bookmarks') return t('hadith.bookmarks');
+  if (ref.kind === 'agreed') return t('hadith.agreed.title');
   if (ref.kind === 'set') return t(`hadith.set.${ref.id}.title`);
   if (ref.kind === 'hub') return t(`hadith.hub.${ref.id}`);
   if (ref.kind === 'book') return t(`hadith.book.${ref.id}`);
@@ -239,6 +240,11 @@ export function HadithListScreen() {
       ) : null}
       {set ? (
         <Text style={[styles.blurb, { color: palette.muted }]}>{t(`hadith.set.${set.id}.blurb`)}</Text>
+      ) : null}
+      {ref?.kind === 'agreed' ? (
+        <Text style={[styles.blurb, { color: palette.muted }]} testID="hadith-agreed-note">
+          {t('hadith.agreed.blurb')}
+        </Text>
       ) : null}
       {progress && progress.total > 0 ? (
         <View style={styles.progress}>

@@ -6,6 +6,7 @@
  * arrives or goes; nothing in it is fetched.
  */
 import {
+  AGREED_IDS,
   BOOKS,
   CategoryTree,
   categoriesKey,
@@ -437,6 +438,12 @@ export async function listRows(list: string, appLang: string, bookmarks: readonl
     return hub ? underTopics(await hencIndex(appLang), hub.topics, await categoryTree(appLang)) : [];
   }
   if (ref.kind === 'book') return bookRows(ref.id);
+  if (ref.kind === 'agreed') {
+    // In the list's order. An entry HadeethEnc has since withdrawn or
+    // regraded is not in the pack, and the list is that much shorter.
+    const idx = await hencIndex(appLang);
+    return AGREED_IDS.flatMap(id => rowOf(id, idx) ?? []);
+  }
   const rows: ListRow[] = [];
   for (const id of bookmarks) {
     const item = await loadItem(id, appLang);

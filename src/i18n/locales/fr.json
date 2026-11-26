@@ -2812,6 +2812,11 @@
     "browse": "Consulter",
     "searchPlaceholder": "Rechercher des hadiths, ou {{example}}",
     "searchClear": "Effacer la recherche",
+    "agreed": {
+      "title": "Unanimement reconnu",
+      "row": "Chez al-Boukhari et Muslim · traduit",
+      "blurb": "Les hadiths que HadeethEnc attribue à la fois à al-Boukhari et à Muslim — « unanimement reconnu » et rien de plus — et juge authentiques, chacun avec sa traduction et son explication. Une entrée attribuée avec une réserve se trouve dans ses thèmes et dans la recherche, pas ici."
+    },
     "settingsNoDownloads": "Rien de téléchargé pour l’instant",
     "searchExample": "Nawawi 14",
     "searchScope": "Recherche dans ce qui est téléchargé sur cet appareil.",

@@ -2811,6 +2811,11 @@
     "browse": "Slå upp",
     "searchPlaceholder": "Sök hadith, eller {{example}}",
     "searchClear": "Rensa sökningen",
+    "agreed": {
+      "title": "Överensstämmande",
+      "row": "Hos både al-Bukhari och Muslim · översatt",
+      "blurb": "De hadither som HadeethEnc tillskriver både al-Bukhari och Muslim — ”överensstämmande” och inget mer — och bedömer som autentiska, var och en med översättning och förklaring. En post som tillskrivs med ett förbehåll finns i sina ämnen och i sökningen, inte här."
+    },
     "settingsNoDownloads": "Inget nedladdat ännu",
     "searchExample": "Nawawi 14",
     "searchScope": "Söker i det som är nedladdat på den här enheten.",

@@ -2812,6 +2812,11 @@
     "browse": "Consultar",
     "searchPlaceholder": "Buscar hadices, o {{example}}",
     "searchClear": "Borrar la búsqueda",
+    "agreed": {
+      "title": "Acordado",
+      "row": "En al-Bujari y Muslim · traducido",
+      "blurb": "Los hadices que HadeethEnc atribuye tanto a al-Bujari como a Muslim — «acordado» y nada más — y califica de auténticos, cada uno con su traducción y explicación. Una entrada atribuida con alguna salvedad está en sus temas y en la búsqueda, no aquí."
+    },
     "settingsNoDownloads": "Aún no se ha descargado nada",
     "searchExample": "Nawawi 14",
     "searchScope": "Se busca en lo descargado en este dispositivo.",
