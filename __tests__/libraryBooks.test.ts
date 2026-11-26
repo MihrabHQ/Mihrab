@@ -364,6 +364,12 @@ describe('the shelf', () => {
       expect(chapterHeadings(['نص'])).toEqual([]);
     });
 
+    it('keeps the screen on for a chapter, not for the book\'s page, under the reader\'s own setting', () => {
+      const src = read('src/screens/hadith/LibraryBookScreen.tsx');
+      expect(src).toContain('useKeepAwake(keepLit && chapter != null)');
+      expect(src).toContain('prefs.readerKeepAwake');
+    });
+
     it('is not the Hadith tab\'s search', () => {
       for (const f of ['src/screens/HadithScreen.tsx', 'src/hadith/library.ts']) expect([f, /librarySearch/.test(read(f))]).toEqual([f, false]);
     });

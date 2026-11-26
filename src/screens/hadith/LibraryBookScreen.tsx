@@ -61,6 +61,8 @@ import { foldForSearch } from '../../hadith/library';
 import { deletePack, loadPack, usePackStatuses } from '../../hadith/packs';
 import type { LibraryBlock, LibraryFile } from '../../hadith/packTypes';
 import { summarisePacks } from '../../hadith/useHadith';
+import { useKeepAwake } from '../../quran/keepAwakeLock';
+import { useQuranState } from '../../quran/quranState';
 import { copyToClipboard } from '../../sync/clipboard';
 import type { RootStackParamList } from '../../navigation/types';
 import { TextAction } from '../../quran/downloadsUi';
@@ -112,6 +114,10 @@ export function LibraryBookScreen() {
   const { id, chapter, block: toBlock } = useRoute<RouteProp<RootStackParamList, 'LibraryBook'>>().params;
   const layoutRtl = useLayoutRtl();
   const readingText = useReadingText();
+  // A chapter is read slowly: the screen stays lit while one is open, under the reader's own
+  // "Keep the screen on" (Settings → Quran), and is let go on leaving.
+  const keepLit = useQuranState().prefs.readerKeepAwake;
+  useKeepAwake(keepLit && chapter != null);
   // What was found runs on under the keyboard while the search field is open.
   const keyboard = useKeyboardInset();
   const statuses = usePackStatuses();

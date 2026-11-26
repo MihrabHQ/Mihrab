@@ -75,7 +75,9 @@ never the Hadith tab's search. Each book has a line about it (`hadith.library.ab
 languages, saying so where it has coarse passages) and a `level` in
 `libraryBooks.json` (1 to begin with, 2 for a later stage — the
 maintainer's two lists). Still to do from the plan: search across
-the shelf; keep awake, font choice, verse links.
+the shelf; font choice; verse links. A chapter holds the screen on
+under the Qur'an's own `readerKeepAwake` setting (the maintainer's yes,
+2026-11-26) — whose help text still names only the Qur'an screens.
 
 Not built:
 - بلد العميان — Hindawi's CC BY translation sits behind a bot check
