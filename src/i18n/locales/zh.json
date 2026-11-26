@@ -2811,6 +2811,10 @@
     "browse": "查阅",
     "searchPlaceholder": "搜索圣训，或{{example}}",
     "searchClear": "清除搜索",
+    "daily": {
+      "title": "每日圣训",
+      "from": "选自布哈里与穆斯林共同传述的圣训"
+    },
     "chapterNamesIn": "en",
     "comp": {
       "section": "可通读的书",

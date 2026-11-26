@@ -2811,6 +2811,10 @@
     "browse": "Nachschlagen",
     "searchPlaceholder": "Hadithe durchsuchen oder {{example}}",
     "searchClear": "Suche löschen",
+    "daily": {
+      "title": "Hadith des Tages",
+      "from": "Aus dem, was al-Buchari und Muslim beide überliefern"
+    },
     "chapterNamesIn": "en",
     "comp": {
       "section": "Bücher zum Lesen",

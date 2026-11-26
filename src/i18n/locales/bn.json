@@ -2811,6 +2811,10 @@
     "browse": "খুঁজে দেখুন",
     "searchPlaceholder": "হাদিস খুঁজুন, অথবা {{example}}",
     "searchClear": "অনুসন্ধান মুছুন",
+    "daily": {
+      "title": "আজকের হাদিস",
+      "from": "বুখারি ও মুসলিম উভয়ের বর্ণিত হাদিস থেকে"
+    },
     "chapterNamesIn": "en",
     "comp": {
       "section": "পড়ার বই",

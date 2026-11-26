@@ -2811,6 +2811,10 @@
     "browse": "Slå upp",
     "searchPlaceholder": "Sök hadith, eller {{example}}",
     "searchClear": "Rensa sökningen",
+    "daily": {
+      "title": "Dagens hadith",
+      "from": "Ur det som både al-Bukhari och Muslim återger"
+    },
     "chapterNamesIn": "en",
     "comp": {
       "section": "Böcker att läsa",

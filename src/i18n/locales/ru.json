@@ -2916,6 +2916,10 @@
     "browse": "Справочник",
     "searchPlaceholder": "Поиск хадисов или {{example}}",
     "searchClear": "Очистить поиск",
+    "daily": {
+      "title": "Хадис дня",
+      "from": "Из тех, что приводят и аль-Бухари, и Муслим"
+    },
     "chapterNamesIn": "en",
     "comp": {
       "section": "Книги для чтения",

@@ -2811,6 +2811,10 @@
     "browse": "ढूँढें",
     "searchPlaceholder": "हदीस खोजें, या {{example}}",
     "searchClear": "खोज साफ़ करें",
+    "daily": {
+      "title": "आज की हदीस",
+      "from": "उन हदीसों में से जो बुख़ारी और मुस्लिम दोनों ने रिवायत कीं"
+    },
     "chapterNamesIn": "en",
     "comp": {
       "section": "पढ़ने की किताबें",

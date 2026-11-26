@@ -2812,6 +2812,10 @@
     "browse": "Consulter",
     "searchPlaceholder": "Rechercher des hadiths, ou {{example}}",
     "searchClear": "Effacer la recherche",
+    "daily": {
+      "title": "Hadith du jour",
+      "from": "Parmi ceux que rapportent à la fois al-Boukhari et Muslim"
+    },
     "chapterNamesIn": "en",
     "comp": {
       "section": "Livres à lire",

@@ -2861,6 +2861,10 @@
     "browse": "ابحث",
     "searchPlaceholder": "ابحث في الأحاديث، أو {{example}}",
     "searchClear": "مسح البحث",
+    "daily": {
+      "title": "حديث اليوم",
+      "from": "مما اتفق عليه البخاري ومسلم"
+    },
     "chapterNamesIn": "ar",
     "comp": {
       "section": "كتب للقراءة",

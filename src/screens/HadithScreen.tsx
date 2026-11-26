@@ -91,6 +91,7 @@ import { Column } from './hadith/Column';
 import { isGradedBook } from '../hadith/bookGrades';
 import { bookmarkedIds, isBookmarked, isRead, setLevel } from '../hadith/hadithRecord';
 import { updateHadithRecord, useHadithRecord } from '../hadith/hadithStore';
+import { dailyHadithId } from '../hadith/daily';
 import { gradesKnown, loadItem, searchHadith, setRows, warmSearch, type HadithItem, type SearchHit } from '../hadith/library';
 import { GRADE_CLASSES, type GradeClass } from '../hadith/grade';
 import { packStatus, usePackStatuses, usePacksReadyKey, usePacksScanned } from '../hadith/packs';
@@ -352,6 +353,59 @@ function Fold({ title, open, onToggle, testID }: { title: string; open: boolean;
 
 // ── Learn ──────────────────────────────────────────────────────────────
 
+/**
+ * The hadith of the day, at the top of Learn: one a day, the same for
+ * everyone, from the hadith al-Bukhārī and Muslim both report
+ * (`hadith/daily.ts` has why from there and nowhere else). Shown once the
+ * hadith are on the device and the day's entry is among them; nothing in
+ * its place before that. Not in a browser, which does not hold the list.
+ */
+function DailyHadith({ navigation, lang }: { navigation: Nav; lang: string }) {
+  const { t } = useTranslation();
+  const { palette } = useAppPalette();
+  const rtl = useLayoutRtl();
+  const here = usePacksReadyKey();
+  // The day it was opened on: a page left open over midnight keeps its hadith until it is opened again.
+  const id = useMemo(() => (AGREED_OFFERED ? dailyHadithId(new Date()) : null), []);
+  const [title, setTitle] = useState<string | null>(null);
+  useEffect(() => {
+    if (!id) return undefined;
+    let live = true;
+    loadItem(id, lang)
+      .then(item => {
+        if (live) setTitle(item?.title ?? null);
+      })
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [id, lang, here]);
+  if (!id || !title) return null;
+  const arabic = /[\u0600-\u06FF]/.test(title);
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${t('hadith.daily.title')}. ${title}`}
+      onPress={() => navigation.push('HadithReader', { id, list: AGREED_LIST })}
+      style={({ pressed }) => [styles.resume, cardEdgeStyle(palette), { backgroundColor: palette.card }, pressed && styles.pressed]}
+      testID="hadith-daily"
+    >
+      <Text style={[styles.label, { color: palette.accentSolid }]}>{t('hadith.daily.title')}</Text>
+      <Text
+        style={[
+          styles.resumeTitle,
+          arabic && { writingDirection: 'rtl', textAlign: ownSideAlign(true, rtl) },
+          { color: palette.text },
+        ]}
+        numberOfLines={3}
+      >
+        {title}
+      </Text>
+      <Text style={[styles.small, { color: palette.muted }]}>{t('hadith.daily.from')}</Text>
+    </Pressable>
+  );
+}
+
 function Learn({ navigation, lang, onLookUp }: { navigation: Nav; lang: string; onLookUp: () => void }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
@@ -415,6 +469,7 @@ function Learn({ navigation, lang, onLookUp }: { navigation: Nav; lang: string; 
 
   return (
     <View style={styles.stack}>
+      <DailyHadith navigation={navigation} lang={lang} />
       {resume && resumeTitle ? (
         <Pressable
           accessibilityRole="button"

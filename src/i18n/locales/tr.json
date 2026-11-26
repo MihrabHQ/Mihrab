@@ -2811,6 +2811,10 @@
     "browse": "Bul",
     "searchPlaceholder": "Hadis ara veya {{example}}",
     "searchClear": "Aramayı temizle",
+    "daily": {
+      "title": "Günün hadisi",
+      "from": "Buhârî ve Müslim’in birlikte rivayet ettiklerinden"
+    },
     "chapterNamesIn": "en",
     "comp": {
       "section": "Okunacak kitaplar",

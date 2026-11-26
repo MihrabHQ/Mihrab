@@ -2811,6 +2811,10 @@
     "browse": "ڈھونڈیں",
     "searchPlaceholder": "احادیث تلاش کریں، یا {{example}}",
     "searchClear": "تلاش صاف کریں",
+    "daily": {
+      "title": "آج کی حدیث",
+      "from": "ان احادیث میں سے جو بخاری اور مسلم دونوں نے روایت کیں"
+    },
     "chapterNamesIn": "en",
     "comp": {
       "section": "پڑھنے کی کتابیں",

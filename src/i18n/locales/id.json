@@ -2811,6 +2811,10 @@
     "browse": "Telusuri",
     "searchPlaceholder": "Cari hadis, atau {{example}}",
     "searchClear": "Hapus pencarian",
+    "daily": {
+      "title": "Hadis hari ini",
+      "from": "Dari hadis yang diriwayatkan al-Bukhari dan Muslim"
+    },
     "chapterNamesIn": "en",
     "comp": {
       "section": "Kitab untuk dibaca",

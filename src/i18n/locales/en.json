@@ -2811,6 +2811,10 @@
     "browse": "Look up",
     "searchPlaceholder": "Search hadith, or {{example}}",
     "searchClear": "Clear the search",
+    "daily": {
+      "title": "Hadith of the day",
+      "from": "From what al-Bukhari and Muslim both report"
+    },
     "chapterNamesIn": "en",
     "comp": {
       "section": "Books to read",
