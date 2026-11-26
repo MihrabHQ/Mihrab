@@ -85,6 +85,12 @@ export function HadithPage({ title, end, children }: Props) {
           <Text
             style={[styles.title, { color: palette.text }]}
             numberOfLines={1}
+            // Beside the reader's text-size control a phone has room for
+            // "an-Nawawi's Forty" and not a point more: the two touched.
+            // The title gives up a little of its size before it gives up
+            // its last letters.
+            adjustsFontSizeToFit
+            minimumFontScale={0.85}
             maxFontSizeMultiplier={TITLE_BAND_MAX_FONT_SCALE}
             accessibilityRole="header"
           >
@@ -113,7 +119,7 @@ const styles = StyleSheet.create({
   root: { flex: 1 },
   body: { flex: 1 },
   barPinned: { paddingHorizontal: SPACING.lg, paddingBottom: SPACING.sm, borderBottomWidth: StyleSheet.hairlineWidth },
-  bar: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, marginStart: -SPACING.sm },
+  bar: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, marginStart: -SPACING.sm },
   title: { flexShrink: 1, fontSize: TYPE.title2.fontSize, fontWeight: '500', textAlign: 'center' },
   barSide: { flexGrow: 1, flexShrink: 0, flexBasis: 0, flexDirection: 'row', alignItems: 'center' },
   barSideEnd: { justifyContent: 'flex-end' },
