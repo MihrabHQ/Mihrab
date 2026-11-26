@@ -20,7 +20,7 @@
  * language. Nothing here is searched, graded or shown anywhere else
  * (`libraryShelf.ts`).
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -31,7 +31,7 @@ import { useReadingText } from '../../hooks/useReadingText';
 import { ownSideAlign } from '../../i18n/foreignText';
 import { isRtlLanguage } from '../../i18n/layoutDirection';
 import { useLayoutRtl } from '../../i18n/useLayoutRtl';
-import { findLibraryBook, libraryKey, libraryPlace, setLibraryPlace } from '../../hadith/libraryShelf';
+import { findLibraryBook, libraryKey, libraryParts, libraryPlace, setLibraryPlace } from '../../hadith/libraryShelf';
 import { loadPack, usePackStatuses } from '../../hadith/packs';
 import type { LibraryBlock, LibraryFile } from '../../hadith/packTypes';
 import { summarisePacks } from '../../hadith/useHadith';
@@ -95,6 +95,15 @@ export function LibraryBookScreen() {
   useEffect(() => {
     if (chapter != null && file && file.chapters[chapter]) void setLibraryPlace(id, chapter);
   }, [id, chapter, file]);
+
+  // A book of books lists its parts; the one last read in starts open.
+  const parts = useMemo(() => (file ? libraryParts(file.chapters) : null), [file]);
+  const [openPart, setOpenPart] = useState<number | null>(null);
+  useEffect(() => {
+    if (!parts || place == null) return;
+    const at = parts.findIndex(p => place >= p.first && place < p.first + p.count);
+    if (at >= 0) setOpenPart(at);
+  }, [parts, place]);
 
   // Arabic, against its own leading edge in either layout.
   const arabic = { textAlign: ownSideAlign(true, layoutRtl), writingDirection: 'rtl' as const };
@@ -223,11 +232,33 @@ export function LibraryBookScreen() {
                     <Text style={[styles.sectionTitle, { color: palette.text }]} accessibilityRole="header">
                       {t('hadith.library.chapters')}
                     </Text>
-                    <Group>
-                      {file.chapters.map((c, i) => (
-                        <Row key={i} title={c.t} onPress={() => open(i)} testID={`library-chapter-${i}`} />
-                      ))}
-                    </Group>
+                    {parts ? (
+                      // A book of books: its parts, and the chapters of the one that is open.
+                      parts.map((p, n) => (
+                        <View key={n} style={styles.part}>
+                          <Group>
+                            <Row
+                              title={p.name}
+                              onPress={() => (p.count === 1 ? open(p.first) : setOpenPart(openPart === n ? null : n))}
+                              testID={`library-part-${n}`}
+                            />
+                          </Group>
+                          {openPart === n && p.count > 1 ? (
+                            <Group>
+                              {file.chapters.slice(p.first, p.first + p.count).map((c, i) => (
+                                <Row key={i} title={c.t} onPress={() => open(p.first + i)} testID={`library-chapter-${p.first + i}`} />
+                              ))}
+                            </Group>
+                          ) : null}
+                        </View>
+                      ))
+                    ) : (
+                      <Group>
+                        {file.chapters.map((c, i) => (
+                          <Row key={i} title={c.t} onPress={() => open(i)} testID={`library-chapter-${i}`} />
+                        ))}
+                      </Group>
+                    )}
                     <Pressable
                       accessibilityRole="link"
                       onPress={() => void Linking.openURL(file.source.url).catch(() => undefined)}
@@ -253,6 +284,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   book: { padding: SPACING.lg },
   bookBody: { gap: SPACING.lg },
+  part: { gap: SPACING.sm },
   by: { ...arabicTextStyle('body'), fontSize: TYPE.title3.fontSize, lineHeight: 34 },
   byLatin: { fontSize: TYPE.body.fontSize, lineHeight: 22 },
   note: { fontSize: TYPE.footnote.fontSize, lineHeight: 19 },

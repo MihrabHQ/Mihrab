@@ -63,3 +63,20 @@ export async function setLibraryPlace(id: string, chapter: number): Promise<void
   all[id] = chapter;
   await AsyncStorage.setItem(PLACE_KEY, JSON.stringify(all)).catch(() => undefined);
 }
+
+/**
+ * A book's parts, where it has them: each a name, its first chapter and
+ * how many. `null` for a book whose chapters stand alone. Chapters of one
+ * part follow one another, so a part is a run.
+ */
+export function libraryParts(chapters: readonly { t: string; p?: string }[]): { name: string; first: number; count: number }[] | null {
+  if (!chapters.some(c => c.p)) return null;
+  const out: { name: string; first: number; count: number }[] = [];
+  chapters.forEach((c, i) => {
+    const name = c.p ?? c.t;
+    const last = out[out.length - 1];
+    if (last && last.name === name) last.count++;
+    else out.push({ name, first: i, count: 1 });
+  });
+  return out;
+}

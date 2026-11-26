@@ -10,7 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 import BOOKS from '../src/hadith/libraryBooks.json';
-import { LIBRARY_BOOKS, findLibraryBook, libraryKey, offeredLibraryBooks } from '../src/hadith/libraryShelf';
+import { LIBRARY_BOOKS, findLibraryBook, libraryKey, libraryParts, offeredLibraryBooks } from '../src/hadith/libraryShelf';
 import { validPack, type Manifest } from '../src/hadith/packTypes';
 import { blockKind } from '../src/screens/hadith/LibraryBookScreen';
 
@@ -183,5 +183,71 @@ describe('the shelf', () => {
       expect([f, Object.keys(k).sort()]).toEqual([f, ['bookNote', 'by', 'chapters', 'continue', 'empty', 'intro', 'needsDownload', 'next', 'previous', 'source', 'tab']]);
       for (const key of ['by', 'source', 'continue']) expect(k[key]).toMatch(/\{\{/);
     }
+  });
+
+  describe('a book of books (al-ʿIqd al-Farīd)', () => {
+    const { openitiParts } = builder;
+    const file = [
+      '#META#Header#End#',
+      '',
+      '# الجزء الأول',
+      '### | مقدمة المؤلف',
+      '# الحمد لله الأول «1» .',
+      '### | كتاب اللؤلؤة في السلطان',
+      '### || فرش الكتاب',
+      '### ||| للحكماء:',
+      '# : قالت الحكماء إمام عادل خير من مطر وابل وإن مثلك إذا عفا لم',
+      '# PageV01P019',
+      '# يعدد «2» ، وإذا صفح لم يثرب.',
+      '# .',
+      '# أسر وفاء ثم أظهر غدرة ... فمن لي بعذر يوسع الناس ظاهره',
+      '### |EDITOR|',
+      '# تم الجزء الأول ويليه الجزء الثاني',
+      '# الجزء الثانى',
+      '### | كتاب الزمردة في المواعظ والزهد',
+      '### || فرش كتاب الزمردة',
+      '# قول أول</span>',
+      '### | كتاب الزمردة في المواعظ والزهد',
+      '### || فرش كتاب الزمردة الثانية في فضائل الشعر',
+      'قول بلا علامة',
+    ].join('\n');
+    const spec = {
+      volumes: /^# الجزء \S+\s*$/,
+      editors: 1,
+      mend: { 'قول بلا علامة': '# قول بلا علامة' },
+      mendAt: { '### | كتاب الزمردة في المواعظ والزهد': [null, '### | كتاب الزمردة الثانية في فضائل الشعر'] },
+    };
+
+    it('reads parts, chapters and the headings inside them, and takes off what is not the author\'s', () => {
+      expect(openitiParts(file, 't', spec)).toEqual([
+        { t: 'مقدمة المؤلف', p: 'مقدمة المؤلف', b: ['الحمد لله الأول.'] },
+        {
+          t: 'فرش الكتاب',
+          p: 'كتاب اللؤلؤة في السلطان',
+          b: [
+            { h: 'للحكماء' },
+            'قالت الحكماء إمام عادل خير من مطر وابل وإن مثلك إذا عفا لم يعدد، وإذا صفح لم يثرب.',
+            { v: [`أسر وفاء ثم أظهر غدرة${builder.HALVES}فمن لي بعذر يوسع الناس ظاهره`] },
+          ],
+        },
+        { t: 'فرش كتاب الزمردة', p: 'كتاب الزمردة في المواعظ والزهد', b: ['قول أول'] },
+        { t: 'فرش كتاب الزمردة الثانية في فضائل الشعر', p: 'كتاب الزمردة الثانية في فضائل الشعر', b: ['قول بلا علامة'] },
+      ]);
+    });
+
+    it('stops on what it was not told about', () => {
+      expect(() => openitiParts(file, 't', { ...spec, mend: {} })).toThrow(/does not know/);
+      expect(() => openitiParts(file, 't', { ...spec, editors: 0 })).toThrow(/marked as the editor's/);
+      expect(() => openitiParts(file, 't', { ...spec, mend: { ...spec.mend, 'سطر ليس في الملف': '# x' } })).toThrow(/mended nothing/);
+      expect(() => openitiParts('#META#Header#End#\n### | كتاب\n### || باب\n### ||| عنوان', 't', {})).toThrow(/has no text/);
+    });
+
+    it('lists a book of books by its parts, and leaves the others alone', () => {
+      expect(libraryParts([{ t: 'a' }, { t: 'b' }])).toBeNull();
+      expect(libraryParts([{ t: 'م', p: 'م' }, { t: 'x', p: 'ك' }, { t: 'y', p: 'ك' }])).toEqual([
+        { name: 'م', first: 0, count: 1 },
+        { name: 'ك', first: 1, count: 2 },
+      ]);
+    });
   });
 });

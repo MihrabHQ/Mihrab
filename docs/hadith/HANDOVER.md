@@ -45,16 +45,22 @@ nothing of it is searched, graded or shown outside the book.
 | Tests | `__tests__/libraryBooks.test.ts` |
 
 Built: `kalila` (19 chapters), `maqamat` (51, in ʿAbduh's order), `ighatha`
-(48) from Wikisource; `dawa` (الداء والدواء, 116) and `bahja` (بهجة
-المجالس, 125) from OpenITI (CC BY-NC-SA, accepted by the maintainer;
-`openitiChapters`). **Not published until the maintainer sees the file
+(48) from Wikisource; `dawa` (الداء والدواء, 116), `bahja` (بهجة
+المجالس, 125) and `iqd` (العقد الفريد, 770 chapters in 26 parts, 5.4 MB)
+from OpenITI (CC BY-NC-SA, accepted by the maintainer; `openitiChapters`,
+and `openitiParts` for a book of books — a chapter carries its part in
+`p`, and the book's page lists parts that open onto their chapters).
+al-ʿIqd is read from the Shamela transcription of the Dār al-Kutub
+al-ʿIlmiyya printing: the editor's note marks (`«1»`; the notes themselves
+are not in the file) and the printer's volume colophons are taken off,
+three lines the file has wrong are mended by name in the spec, and every
+Arabic letter of the file is in the pack (counted, difference 0). Two of
+its book headings carry the transcription's misspellings and are left as
+they are: "كتاب السدرة في النوادي والتعاذي والمراثي" (the author's list
+has الدرة في التعازي والمراثي) and "اللؤلوءة". **Not published until the maintainer sees the file
 list** (`upload-packs.sh` uploads whatever is under `build/hadith/v1`).
 
 Not built:
-- العقد الفريد — Wikisource has it as 131 numbered pages over five parts
-  (3.1 MB), cut by size and not by Ibn ʿAbd Rabbih's own books, with
-  templates the builder does not know yet (`ربط بصفحة`, `smallrefs`). It
-  wants its chapters found from the headings inside the pages.
 - بلد العميان — Hindawi's CC BY translation sits behind a bot check
   (Cloudflare), which is not to be worked round. The maintainer can
   download the EPUB himself and hand it over.

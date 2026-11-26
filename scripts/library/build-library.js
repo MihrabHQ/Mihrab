@@ -124,6 +124,28 @@ const BOOKS = {
     cache: 'openiti-bahja.txt',
     read: '2026-11-26',
   },
+  iqd: {
+    title: 'العقد الفريد',
+    author: 'ابن عبد ربه الأندلسي',
+    died: '328 هـ',
+    openiti: '0350AH/data/0328IbnCabdRabbih/0328IbnCabdRabbih.CiqdFarid/0328IbnCabdRabbih.CiqdFarid.Shamela0023789-ara1.completed',
+    cache: 'openiti-iqd.txt',
+    read: '2026-11-26',
+    // Twenty-five books, each of many sections: a section is a chapter and
+    // its book is the part it is listed under.
+    parts: true,
+    // Lines the file has wrong, each written out so that nothing else is
+    // touched. Two lost their mark. The eighteenth book carries the eighth
+    // book's heading; its own name is in the line under it ("فرش كتاب
+    // الزمردة الثانية في فضائل الشعر") and in the author's list of his books.
+    mend: {
+      'احذر الموتور ولا تطمئن إليه، وكن أشد ما تكون حذرا منه': '~~احذر الموتور ولا تطمئن إليه، وكن أشد ما تكون حذرا منه',
+      ' ~~أبوك وعمك نعاقين «1» في فتنة ابن الأشعث. فقلت: يا أمير المؤمنين، إن مثلك': '~~أبوك وعمك نعاقين «1» في فتنة ابن الأشعث. فقلت: يا أمير المؤمنين، إن مثلك',
+    },
+    volumes: /^# الجزء \S+\s*$/,
+    editors: 7,
+    mendAt: { '### | كتاب الزمردة في المواعظ والزهد': [null, '### | كتاب الزمردة الثانية في فضائل الشعر'] },
+  },
 };
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -352,9 +374,165 @@ function openitiChapters(text, where) {
   return chapters;
 }
 
+/**
+ * OpenITI's file as chapters under parts: `[{ t, p, b }]`, for a book of
+ * books (`parts: true`).
+ *
+ * A first-level heading names a part; a second-level one begins a chapter
+ * in it; anything deeper is a heading inside the chapter (`{ h }`). Text
+ * straight under a part (the author's preface) is a chapter of the part's
+ * own name. Beyond what `openitiChapters` takes off:
+ *
+ * - `«12»` points at a note of the printed edition's editor. The notes are
+ *   not in the file and are not the author's; the marks go.
+ * - `</span>` is the conversion's debris.
+ * - `### |EDITOR|` opens what the printer wrote at a volume's end; it is
+ *   left out up to the next heading, and `editors` says how many to expect.
+ * - `volumes` matches the printed edition's volume on a line of its own
+ *   ("الجزء الأول"): where the printer cut the book, not the author.
+ * - A paragraph the printed page cut in two (`# PageV02P019` on a line of
+ *   its own between the halves) is one paragraph, unless the first half
+ *   ends a sentence or is a line of verse.
+ *
+ * `mend` puts right a line the file has wrong, by its whole text; `mendAt`
+ * does the same for a line that occurs more than once, by which occurrence
+ * (`null` leaves that one alone). Every mend must be used. Throws on a
+ * line it does not know.
+ */
+function openitiParts(text, where, spec) {
+  const start = text.indexOf('#META#Header#End#');
+  if (start < 0) throw new Error(`${where}: not an OpenITI file`);
+  const clean = s =>
+    s
+      .replace(/PageV\d+P\d+|ms\d+|<\/span>|«\d+»|\d+»|«\d+/g, ' ')
+      .replace(/\s+/g, ' ')
+      // The space a note's mark left before a stop; the three dots between a verse's halves keep theirs.
+      .replace(/ (?=[،؛:؟!]|\.(?!\.))/g, '')
+      // A heading's colon, set at the head of the paragraph under it.
+      .replace(/^(?:[؟:]+\s*)+/, '')
+      .trim();
+  const mend = spec.mend ?? {};
+  const mendAt = spec.mendAt ?? {};
+  const used = new Set();
+  const seen = {};
+  const chapters = [];
+  let part = '';
+  let fresh = false; // a part was named and has no chapter yet
+  let para = null;
+  let cut = false; // the last line was a page mark alone
+  let volumes = 0;
+  let editors = 0;
+  let skipping = false;
+  const chapter = () => {
+    if (fresh) {
+      chapters.push({ t: part, p: part, b: [] });
+      fresh = false;
+    }
+    if (!chapters.length) throw new Error(`${where}: text before the first heading`);
+    return chapters[chapters.length - 1];
+  };
+  const flush = () => {
+    if (para == null) return;
+    const s = clean(para);
+    para = null;
+    // A stop left alone on its line, where a note's mark stood.
+    if (!/[\u0621-\u064A]/.test(s)) return;
+    const b = chapter().b;
+    const halves = s.split(' ... ');
+    if (halves.length === 2 && s.length < 160) {
+      const line = halves.map(h => h.trim()).join(HALVES);
+      const last = b[b.length - 1];
+      if (last && typeof last === 'object' && last.v) last.v.push(line);
+      else b.push({ v: [line] });
+    } else b.push(s);
+  };
+  for (let line of text.slice(start).split('\n').slice(1)) {
+    if (!line.trim()) continue;
+    if (line in mendAt) {
+      const n = (seen[line] = (seen[line] ?? 0) + 1);
+      const to = mendAt[line][n - 1];
+      if (to != null) {
+        used.add(`${line}#${n}`);
+        line = to;
+      }
+    } else if (line in mend) {
+      used.add(line);
+      line = mend[line];
+    }
+    // What the printer added at a volume's end ("تم الجزء الأول … ويليه
+    // الجزء الثاني"), which OpenITI marks as the editor's: left out, up to
+    // the next heading.
+    if (/^### \|EDITOR\|\s*$/.test(line)) {
+      flush();
+      editors++;
+      skipping = true;
+      continue;
+    }
+    if (skipping) {
+      if (!line.startsWith('### ')) continue;
+      skipping = false;
+    }
+    if (line.startsWith('~~')) {
+      if (para == null) throw new Error(`${where}: a line going on from nothing: ${line.slice(0, 60)}`);
+      para += ` ${line.slice(2)}`;
+      continue;
+    }
+    if (/^# PageV\d+P\d+\s*$/.test(line)) {
+      cut = para != null;
+      continue;
+    }
+    // The printed edition's volume, on a line of its own: not the author's division.
+    if (spec.volumes?.test(line)) {
+      volumes++;
+      continue;
+    }
+    const h = /^### (\|+) ?(.*)$/.exec(line);
+    if (h) {
+      flush();
+      cut = false;
+      const title = clean(h[2]).replace(/^\[(.*)\]$/, '$1').replace(/:$/, '').trim();
+      if (!title) continue;
+      if (h[1].length === 1) {
+        part = title;
+        fresh = true;
+      } else if (h[1].length === 2) {
+        fresh = false;
+        chapters.push({ t: title, p: part, b: [] });
+      } else chapter().b.push({ h: title });
+      continue;
+    }
+    if (line.startsWith('# ')) {
+      const rest = line.slice(2);
+      if (cut && para != null && !/[.؟!:]\s*$|\.\.\./.test(clean(para)) && !rest.includes(' ... ')) {
+        para += ` ${rest}`;
+      } else {
+        flush();
+        para = rest;
+      }
+      cut = false;
+      continue;
+    }
+    throw new Error(`${where}: a line this file does not know: ${line.slice(0, 60)}`);
+  }
+  flush();
+  const wanted = [...Object.keys(mend), ...Object.entries(mendAt).flatMap(([l, tos]) => tos.map((to, i) => (to == null ? null : `${l}#${i + 1}`)).filter(Boolean))];
+  if (editors !== (spec.editors ?? 0)) throw new Error(`${where}: ${editors} passages marked as the editor's, not ${spec.editors ?? 0}`);
+  if (spec.volumes && !volumes) throw new Error(`${where}: no volume mark was met`);
+  for (const w of wanted) if (!used.has(w)) throw new Error(`${where}: a mend that mended nothing: ${w.slice(0, 60)}`);
+  for (const c of chapters) {
+    if (!c.t || !c.p) throw new Error(`${where}: a chapter without a name or a part`);
+    if (!c.b.some(b => typeof b === 'string' || b.v)) throw new Error(`${where}: "${c.t}" has no text`);
+    for (const b of c.b) {
+      const s = typeof b === 'string' ? b : b.h ?? b.v.join(' ');
+      if (/#|~~|PageV|\bms\d|@[A-Z]|%~%|[<>]|«\d/.test(s)) throw new Error(`${where}: markup left in the text: ${s.slice(0, 80)}`);
+    }
+  }
+  return chapters;
+}
+
 /** A pack from an OpenITI file. */
 function openitiPack(id, spec, text) {
-  const chapters = openitiChapters(text, id);
+  const chapters = spec.parts ? openitiParts(text, id, spec) : openitiChapters(text, id);
   const meta = key => (new RegExp(`#META# ${key}\\s*:: (.*)`).exec(text)?.[1] ?? '').trim();
   const edition = [meta('043.EdPUBLISHER'), meta('041.EdNUMBER')].filter(v => v && v !== 'NODATA' && v !== 'NOTGIVEN').join('، ');
   return {
@@ -439,4 +617,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-module.exports = { blocksOf, linksOf, packOf, openitiChapters, openitiPack, BOOKS, MAQAMAT, HALVES };
+module.exports = { blocksOf, linksOf, packOf, openitiChapters, openitiParts, openitiPack, BOOKS, MAQAMAT, HALVES };

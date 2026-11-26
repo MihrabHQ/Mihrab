@@ -71,7 +71,8 @@ export type BookFile = {
  * (docs/hadith-policy.md, "The Library").
  */
 export type LibraryBlock = string | { h: string } | { v: string[] };
-export type LibraryChapter = { t: string; b: LibraryBlock[] };
+/** `p`: the part a chapter stands in, in a book of books (al-ʿIqd al-Farīd's twenty-five); chapters of one part follow one another. */
+export type LibraryChapter = { t: string; p?: string; b: LibraryBlock[] };
 export type LibraryFile = {
   id: string;
   title: string;
@@ -140,7 +141,7 @@ export function validPack(key: PackKey, v: unknown): boolean {
       typeof v.source.license === 'string' &&
       Array.isArray(v.chapters) &&
       v.chapters.length > 0 &&
-      v.chapters.every(c => isObj(c) && typeof c.t === 'string' && Array.isArray(c.b) && c.b.length > 0 && c.b.every(block))
+      v.chapters.every(c => isObj(c) && typeof c.t === 'string' && (c.p === undefined || typeof c.p === 'string') && Array.isArray(c.b) && c.b.length > 0 && c.b.every(block))
     );
   }
   // A book that is offered, and where it is graded, sound in every row.
