@@ -3130,7 +3130,17 @@
       "remove": "Ta bort nedladdningen",
       "searchHint": "Sök i den här boken",
       "firstOnly": "Visar de första {{count}}. Skriv mer av frasen för att begränsa.",
-      "sections": "Avsnitt"
+      "sections": "Avsnitt",
+      "about": {
+        "kalila": "Djurfabler om styre, vänskap och omdöme, överförda till arabiska av Ibn al-Muqaffa'.",
+        "ighatha": "Ibn al-Qayyim om hjärtats sjukdomar och Shaytans fällor, och vägen ut ur dem.",
+        "dawa": "Ibn al-Qayyims svar till en man som bad om ett botemedel: om synden, dess följder och ånger.",
+        "maqamat": "Femtioen korta berättelser på rimmad prosa om en kringvandrande skälm; ett grundverk i arabisk stilkonst. Vissa stycken är grova.",
+        "bahja": "Ibn 'Abd al-Barrs samling av tänkespråk, verser och anekdoter, ordnade efter ämne.",
+        "iqd": "En andalusisk antologi i tjugofem böcker: härskare, krig, kunskap, ordspråk, poesi, historia. Vissa stycken är grova."
+      },
+      "levelFirst": "Att börja med",
+      "levelLater": "För ett senare skede"
     }
   }
 }

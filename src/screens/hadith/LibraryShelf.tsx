@@ -64,26 +64,37 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
         </Group>
       ) : null}
       {books.length ? (
-        <Group>
-          {books.map(b => {
-            const key = libraryKey(b.id);
-            const onDevice = statuses[key]?.state === 'ready';
-            const bytes = onDevice ? null : manifestBytes(manifest, key);
-            const at = onDevice ? readings[b.id] : undefined;
-            // A book only just opened says nothing: "0%" reads as a fault.
-            const percent = at ? Math.round(libraryProgress(at) * 100) : 0;
-            return (
-              <Row
-                key={b.id}
-                title={b.title}
-                subtitle={`${b.latin} · ${b.authorLatin}`}
-                value={bytes != null ? formatBytes(bytes) : percent >= 1 ? t('hadith.library.percent', { percent }) : undefined}
-                onPress={() => navigation.push('LibraryBook', { id: b.id })}
-                testID={`hadith-library-${b.id}`}
-              />
-            );
-          })}
-        </Group>
+        ([1, 2] as const).map(level => {
+          const shelf = books.filter(b => b.level === level);
+          if (!shelf.length) return null;
+          return (
+            <View key={level} style={styles.level}>
+              <Text style={[styles.levelTitle, { color: palette.text }]} accessibilityRole="header">
+                {t(level === 1 ? 'hadith.library.levelFirst' : 'hadith.library.levelLater')}
+              </Text>
+              <Group>
+                {shelf.map(b => {
+                  const key = libraryKey(b.id);
+                  const onDevice = statuses[key]?.state === 'ready';
+                  const bytes = onDevice ? null : manifestBytes(manifest, key);
+                  const at = onDevice ? readings[b.id] : undefined;
+                  // A book only just opened says nothing: "0%" reads as a fault.
+                  const percent = at ? Math.round(libraryProgress(at) * 100) : 0;
+                  return (
+                    <Row
+                      key={b.id}
+                      title={b.title}
+                      subtitle={`${b.latin} · ${b.authorLatin}\n${t(`hadith.library.about.${b.id}`)}`}
+                      value={bytes != null ? formatBytes(bytes) : percent >= 1 ? t('hadith.library.percent', { percent }) : undefined}
+                      onPress={() => navigation.push('LibraryBook', { id: b.id })}
+                      testID={`hadith-library-${b.id}`}
+                    />
+                  );
+                })}
+              </Group>
+            </View>
+          );
+        })
       ) : (
         <Text style={[styles.empty, { color: palette.text }]} testID="hadith-library-empty">
           {t('hadith.library.empty')}
@@ -96,5 +107,7 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
 const styles = StyleSheet.create({
   page: { gap: SPACING.lg, paddingTop: SPACING.md },
   intro: { fontSize: TYPE.footnote.fontSize, lineHeight: 19 },
+  level: { gap: SPACING.sm },
+  levelTitle: { fontSize: TYPE.headline.fontSize, fontWeight: '600' },
   empty: { fontSize: TYPE.body.fontSize, lineHeight: 22 },
 });

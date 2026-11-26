@@ -456,6 +456,11 @@ export function LibraryBookScreen() {
                         {t('hadith.library.by', { author: known.authorLatin, died: known.died })}
                       </Text>
                     )}
+                    {known ? (
+                      <Text style={[styles.about, { color: palette.text }]} testID="library-about">
+                        {t(`hadith.library.about.${known.id}`)}
+                      </Text>
+                    ) : null}
                     <Text style={[styles.note, { color: palette.muted }]} testID="library-note">
                       {t('hadith.library.bookNote')}
                     </Text>
@@ -608,6 +613,7 @@ const styles = StyleSheet.create({
   by: { ...arabicTextStyle('body'), fontSize: TYPE.title3.fontSize, lineHeight: 34 },
   byLatin: { fontSize: TYPE.body.fontSize, lineHeight: 22 },
   note: { fontSize: TYPE.footnote.fontSize, lineHeight: 19 },
+  about: { fontSize: TYPE.body.fontSize, lineHeight: 22 },
   sectionTitle: { fontSize: TYPE.headline.fontSize, fontWeight: '600' },
   text: { paddingHorizontal: SPACING.lg, paddingTop: SPACING.md },
   block: { marginBottom: SPACING.lg, paddingHorizontal: SPACING.sm, marginHorizontal: -SPACING.sm, borderRadius: RADIUS.sm },

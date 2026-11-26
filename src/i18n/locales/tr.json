@@ -3130,7 +3130,17 @@
       "remove": "İndirmeyi kaldır",
       "searchHint": "Bu kitapta ara",
       "firstOnly": "İlk {{count}} gösteriliyor. Daraltmak için ifadenin daha fazlasını yazın.",
-      "sections": "Bölümler"
+      "sections": "Bölümler",
+      "about": {
+        "kalila": "Yönetim, dostluk ve sağduyu üzerine hayvan masalları; Arapçaya İbnü'l-Mukaffa' aktarmıştır.",
+        "ighatha": "İbnü'l-Kayyim'den kalbin hastalıkları, şeytanın tuzakları ve bunlardan kurtuluş yolu.",
+        "dawa": "İbnü'l-Kayyim'in şifa soran bir adama cevabı: günah, etkileri ve tövbe üzerine.",
+        "maqamat": "Gezgin bir düzenbaz hakkında secili nesirle elli bir kısa hikâye; Arap üslubunun kurucu eserlerinden. Bazı bölümleri kabadır.",
+        "bahja": "İbn Abdilberr'in konulara göre düzenlediği hikmetli sözler, şiirler ve kıssalar derlemesi.",
+        "iqd": "Yirmi beş kitaplık bir Endülüs antolojisi: hükümdarlar, savaş, ilim, atasözleri, şiir, tarih. Bazı bölümleri kabadır."
+      },
+      "levelFirst": "Başlangıç için",
+      "levelLater": "İleri aşama için"
     }
   }
 }

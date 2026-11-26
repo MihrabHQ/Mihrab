@@ -3130,7 +3130,17 @@
       "remove": "Hapus unduhan",
       "searchHint": "Cari di buku ini",
       "firstOnly": "Menampilkan {{count}} yang pertama. Ketik lebih banyak dari frasa untuk mempersempit.",
-      "sections": "Bagian"
+      "sections": "Bagian",
+      "about": {
+        "kalila": "Fabel hewan tentang pemerintahan, persahabatan, dan kebijaksanaan, dialihkan ke bahasa Arab oleh Ibn al-Muqaffa'.",
+        "ighatha": "Ibn al-Qayyim tentang penyakit hati, perangkap setan, dan jalan keluar darinya.",
+        "dawa": "Jawaban Ibn al-Qayyim kepada seorang yang meminta obat: tentang dosa, akibatnya, dan tobat.",
+        "maqamat": "Lima puluh satu kisah pendek dalam prosa bersajak tentang seorang penipu pengembara; karya dasar gaya bahasa Arab. Beberapa bagian kasar.",
+        "bahja": "Himpunan Ibn 'Abd al-Barr berisi kata-kata hikmah, syair, dan anekdot, disusun menurut tema.",
+        "iqd": "Antologi Andalusia dalam dua puluh lima kitab: penguasa, perang, ilmu, peribahasa, syair, sejarah. Beberapa bagian kasar."
+      },
+      "levelFirst": "Untuk memulai",
+      "levelLater": "Untuk tahap lanjut"
     }
   }
 }

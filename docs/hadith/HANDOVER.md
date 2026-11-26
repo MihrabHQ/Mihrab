@@ -71,10 +71,11 @@ like the journal is the maintainer's to decide.** Tapping a paragraph
 shows its actions (holding selects text). Search inside ONE book and a
 chapter's "Sections" jump list are in `src/hadith/librarySearch.ts`
 (folded once per book in slices, a phrase match, first 100 places) —
-never the Hadith tab's search. Still to do from the plan: search across
-the shelf; a line
-about each book, levels/subjects and a note on coarse passages; keep
-awake, font choice, verse links.
+never the Hadith tab's search. Each book has a line about it (`hadith.library.about.<id>`, 13
+languages, saying so where it has coarse passages) and a `level` in
+`libraryBooks.json` (1 to begin with, 2 for a later stage — the
+maintainer's two lists). Still to do from the plan: search across
+the shelf; keep awake, font choice, verse links.
 
 Not built:
 - بلد العميان — Hindawi's CC BY translation sits behind a bot check

@@ -180,7 +180,12 @@ describe('the shelf', () => {
     expect(read('src/screens/hadith/LibraryBookScreen.tsx')).toContain("{t('hadith.library.bookNote')}");
     for (const f of fs.readdirSync(path.join(REPO, 'src/i18n/locales'))) {
       const k = JSON.parse(read(`src/i18n/locales/${f}`)).hadith.library;
-      expect([f, Object.keys(k).sort()]).toEqual([f, ['bookNote', 'by', 'chapterOf', 'chapters', 'continue', 'empty', 'firstOnly', 'intro', 'mark', 'marks', 'needsDownload', 'next', 'percent', 'previous', 'remove', 'searchHint', 'sections', 'source', 'tab', 'unmark']]);
+      expect([f, Object.keys(k).sort()]).toEqual([f, ['about', 'bookNote', 'by', 'chapterOf', 'chapters', 'continue', 'empty', 'firstOnly', 'intro', 'levelFirst', 'levelLater', 'mark', 'marks', 'needsDownload', 'next', 'percent', 'previous', 'remove', 'searchHint', 'sections', 'source', 'tab', 'unmark']]);
+      // Every book the app can name is described, and one with coarse passages says so.
+      expect([f, Object.keys(k.about).sort()]).toEqual([f, LIBRARY_BOOKS.map(b => b.id).sort()]);
+      for (const about of Object.values(k.about)) expect(String(about).length).toBeGreaterThan(10);
+      expect(k.about.maqamat.split(/[.。।۔]/).filter((x: string) => x.trim()).length).toBeGreaterThanOrEqual(2);
+      expect(k.about.iqd.split(/[.。।۔]/).filter((x: string) => x.trim()).length).toBeGreaterThanOrEqual(2);
       for (const key of ['by', 'source', 'continue', 'percent']) expect(k[key]).toMatch(/\{\{/);
       expect(k.chapterOf).toMatch(/\{\{n\}\}.*\{\{count\}\}|\{\{count\}\}.*\{\{n\}\}/);
     }

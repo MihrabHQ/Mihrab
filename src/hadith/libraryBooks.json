@@ -5,7 +5,8 @@
   "latin": "Kalila wa Dimna",
   "author": "عبد الله بن المقفع",
   "authorLatin": "Ibn al-Muqaffa'",
-  "died": "142 AH"
+  "died": "142 AH",
+  "level": 1
  },
  {
   "id": "maqamat",
@@ -13,7 +14,8 @@
   "latin": "Maqamat al-Hamadhani",
   "author": "بديع الزمان الهمذاني",
   "authorLatin": "Badi' az-Zaman al-Hamadhani",
-  "died": "398 AH"
+  "died": "398 AH",
+  "level": 2
  },
  {
   "id": "ighatha",
@@ -21,7 +23,8 @@
   "latin": "Ighathat al-Lahfan",
   "author": "ابن قيم الجوزية",
   "authorLatin": "Ibn al-Qayyim",
-  "died": "751 AH"
+  "died": "751 AH",
+  "level": 1
  },
  {
   "id": "dawa",
@@ -29,7 +32,8 @@
   "latin": "Ad-Da' wa'd-Dawa'",
   "author": "ابن قيم الجوزية",
   "authorLatin": "Ibn al-Qayyim",
-  "died": "751 AH"
+  "died": "751 AH",
+  "level": 1
  },
  {
   "id": "bahja",
@@ -37,7 +41,8 @@
   "latin": "Bahjat al-Majalis",
   "author": "ابن عبد البر",
   "authorLatin": "Ibn 'Abd al-Barr",
-  "died": "463 AH"
+  "died": "463 AH",
+  "level": 2
  },
  {
   "id": "iqd",
@@ -45,6 +50,7 @@
   "latin": "Al-'Iqd al-Farid",
   "author": "ابن عبد ربه الأندلسي",
   "authorLatin": "Ibn 'Abd Rabbih",
-  "died": "328 AH"
+  "died": "328 AH",
+  "level": 2
  }
 ]

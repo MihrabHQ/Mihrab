@@ -17,8 +17,9 @@ import BOOKS from './libraryBooks.json';
 import { manifestEntry } from './packs';
 import type { Manifest, PackKey } from './packTypes';
 
-export type LibraryBook = { id: string; title: string; latin: string; author: string; authorLatin: string; died: string };
-export const LIBRARY_BOOKS: readonly LibraryBook[] = BOOKS;
+/** `level`: 1 to begin with, 2 for a later stage — the maintainer's own two lists. What a book is, in the reader's language, is `hadith.library.about.<id>`. */
+export type LibraryBook = { id: string; title: string; latin: string; author: string; authorLatin: string; died: string; level: 1 | 2 };
+export const LIBRARY_BOOKS: readonly LibraryBook[] = BOOKS as LibraryBook[];
 export const libraryKey = (id: string): PackKey => `library/${id}`;
 export function findLibraryBook(id: string): LibraryBook | undefined {
   return LIBRARY_BOOKS.find(b => b.id === id);

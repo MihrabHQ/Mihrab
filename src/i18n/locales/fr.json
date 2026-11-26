@@ -3131,7 +3131,17 @@
       "remove": "Supprimer le téléchargement",
       "searchHint": "Rechercher dans ce livre",
       "firstOnly": "Les {{count}} premiers sont affichés. Saisissez davantage de la phrase pour affiner.",
-      "sections": "Sections"
+      "sections": "Sections",
+      "about": {
+        "kalila": "Fables animalières sur le pouvoir, l'amitié et le discernement, mises en arabe par Ibn al-Muqaffa'.",
+        "ighatha": "Ibn al-Qayyim sur les maladies du cœur, les pièges de Shaytan et le moyen d'en sortir.",
+        "dawa": "La réponse d'Ibn al-Qayyim à un homme qui demandait un remède : le péché, ses effets et le repentir.",
+        "maqamat": "Cinquante et un courts récits en prose rimée autour d'un vagabond rusé ; une œuvre fondatrice du style arabe. Certains passages sont crus.",
+        "bahja": "Le recueil d'Ibn 'Abd al-Barr : sentences, vers et anecdotes, classés par sujet.",
+        "iqd": "Une anthologie andalouse en vingt-cinq livres : souverains, guerre, savoir, proverbes, poésie, histoire. Certains passages sont crus."
+      },
+      "levelFirst": "Pour commencer",
+      "levelLater": "Pour une étape ultérieure"
     }
   }
 }

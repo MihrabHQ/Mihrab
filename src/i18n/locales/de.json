@@ -3130,7 +3130,17 @@
       "remove": "Download entfernen",
       "searchHint": "In diesem Buch suchen",
       "firstOnly": "Die ersten {{count}} werden angezeigt. Gib mehr von der Wendung ein, um einzugrenzen.",
-      "sections": "Abschnitte"
+      "sections": "Abschnitte",
+      "about": {
+        "kalila": "Tierfabeln über Herrschaft, Freundschaft und Urteilskraft, von Ibn al-Muqaffa' ins Arabische gebracht.",
+        "ighatha": "Ibn al-Qayyim über die Krankheiten des Herzens, die Fallen des Schaitan und den Weg heraus.",
+        "dawa": "Ibn al-Qayyims Antwort an einen Mann, der nach einem Heilmittel fragte: über die Sünde, ihre Folgen und die Reue.",
+        "maqamat": "Einundfünfzig kurze Erzählungen in Reimprosa über einen umherziehenden Schelm; ein Grundwerk arabischer Stilkunst. Manche Stellen sind derb.",
+        "bahja": "Ibn 'Abd al-Barrs Sammlung von Sprüchen, Versen und Anekdoten, nach Themen geordnet.",
+        "iqd": "Eine andalusische Anthologie in fünfundzwanzig Büchern: Herrscher, Krieg, Wissen, Sprichwörter, Dichtung, Geschichte. Manche Stellen sind derb."
+      },
+      "levelFirst": "Für den Anfang",
+      "levelLater": "Für später"
     }
   }
 }
