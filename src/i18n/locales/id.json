@@ -3109,6 +3109,19 @@
       "blurb": "Membaca hadis dalam bahasa selain bahasa aplikasi",
       "auto": "Sama dengan aplikasi",
       "note": "Terjemahan dan penjelasan berasal dari HadeethEnc.com, dalam semua bahasa yang diterbitkannya. Angka di samping bahasa menunjukkan jumlah hadis yang sudah diterjemahkan sejauh ini; untuk yang lain ditampilkan bahasa Inggris. Sebuah bahasa diunduh saat Anda pertama kali membuka daftar dalam bahasa itu."
+    },
+    "library": {
+      "tab": "Perpustakaan",
+      "intro": "Buku-buku utuh untuk dibaca, dalam bahasa Arab. Masing-masing adalah teks penulisnya; Mihrab tidak menilai apa yang dikutip sebuah buku.",
+      "empty": "Buku belum dapat ditampilkan saat ini. Sambungkan ke internet untuk melihatnya.",
+      "needsDownload": "Buku ini belum ada di perangkat Anda.",
+      "by": "{{author}} (w. {{died}})",
+      "source": "Teks: {{source}} · {{license}}",
+      "bookNote": "Ini adalah teks penulis secara utuh. Hadis yang dikutip di dalamnya tidak dinilai oleh Mihrab dan mungkin mencakup riwayat yang lemah; untuk hadis yang telah dinilai, gunakan Belajar dan Telusuri.",
+      "continue": "Lanjutkan: {{chapter}}",
+      "chapters": "Bab",
+      "next": "Bab berikutnya",
+      "previous": "Bab sebelumnya"
     }
   }
 }

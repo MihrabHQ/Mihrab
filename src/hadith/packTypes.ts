@@ -63,14 +63,35 @@ export type BookFile = {
   of?: number;
 };
 
+/**
+ * A book of the Library (`scripts/library/build-library.js`): its author's
+ * text, whole and in his order. A block is a paragraph (a string), a
+ * heading inside a chapter (`h`) or lines of verse (`v`). It is not hadith
+ * served by the app's rule, and nothing of it is read outside the book
+ * (docs/hadith-policy.md, "The Library").
+ */
+export type LibraryBlock = string | { h: string } | { v: string[] };
+export type LibraryChapter = { t: string; b: LibraryBlock[] };
+export type LibraryFile = {
+  id: string;
+  title: string;
+  author: string;
+  died: string;
+  lang: string;
+  source: { name: string; license: string; licenseUrl: string; url: string };
+  asOf: string;
+  chapters: LibraryChapter[];
+};
+
 /** The packs, by their key — also their path under build/hadith/v1 and on the device, less `.json`. */
 export type PackKey =
   | `henc/${string}/${string}`
   | `categories/${string}`
   | 'nawawi/ar'
+  | `library/${string}`
   | `books/${string}`;
 
-export type PackFile = HencPack | CategoriesFile | NawawiFile | BookFile;
+export type PackFile = HencPack | CategoriesFile | NawawiFile | BookFile | LibraryFile;
 
 /**
  * What the manifest says of one pack. `sha256` is the file's own, lower
@@ -94,6 +115,8 @@ export type Manifest = {
   books: Record<string, ManifestEntry>;
   nawawi: ManifestEntry | null;
   categories: Record<string, ManifestEntry>;
+  /** The Library's books. Absent from a manifest written before there were any. */
+  library?: Record<string, ManifestEntry>;
 };
 
 const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
@@ -105,6 +128,20 @@ export function validPack(key: PackKey, v: unknown): boolean {
     return Array.isArray(v.entries) && v.entries.every(e => isObj(e) && typeof e.id === 'string' && typeof e.h === 'string');
   }
   if (key.startsWith('categories/')) return Array.isArray(v.items) && v.items.length > 0;
+  if (key.startsWith('library/')) {
+    const block = (b: unknown) =>
+      typeof b === 'string' ||
+      (isObj(b) && (typeof b.h === 'string' || (Array.isArray(b.v) && b.v.every(l => typeof l === 'string'))));
+    return (
+      v.id === key.slice('library/'.length) &&
+      typeof v.title === 'string' &&
+      isObj(v.source) &&
+      typeof v.source.license === 'string' &&
+      Array.isArray(v.chapters) &&
+      v.chapters.length > 0 &&
+      v.chapters.every(c => isObj(c) && typeof c.t === 'string' && Array.isArray(c.b) && c.b.length > 0 && c.b.every(block))
+    );
+  }
   // A book that is offered, and where it is graded, sound in every row.
   if (key.startsWith('books/')) return validBookFile(key.slice('books/'.length), v);
   return Array.isArray(v.hadiths) && v.hadiths.length > 0 && v.hadiths.every(h => Array.isArray(h) && typeof h[1] === 'string');

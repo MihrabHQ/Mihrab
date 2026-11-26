@@ -249,7 +249,7 @@ export async function loadPack<T extends PackFile>(key: PackKey): Promise<T | nu
 
 export const hadithMirrorUrl = (asset: string) => mirrorUrl(MIRROR_TAGS.hadith, asset);
 
-const mirrorTimeout = (key: PackKey) => (key.startsWith('books/') ? 180_000 : 60_000);
+const mirrorTimeout = (key: PackKey) => (key.startsWith('books/') || key.startsWith('library/') ? 180_000 : 60_000);
 
 type Fetched = { file: PackFile; /** Set when it is already in its place on disk. */ bytes?: number };
 
@@ -414,7 +414,8 @@ export function downloadPack(key: PackKey): Promise<boolean> {
     setStatus(key, { state: 'downloading', progress: 0 });
     try {
       let got = await fromMirror(key, job);
-      if (!got && !signal.cancelled) {
+      // A Library book is our copy or nothing: it is built from its source's markup, which the app does not read.
+      if (!got && !signal.cancelled && !key.startsWith('library/')) {
         const file = await buildFromOrigin(
           key,
           (done, total) => {
@@ -572,6 +573,7 @@ export function manifestEntry(m: Manifest | null, key: PackKey): ManifestEntry |
   if (kind === 'henc') return m.henc?.[a]?.langs?.[b] ?? null;
   if (kind === 'categories') return m.categories?.[a] ?? null;
   if (kind === 'nawawi') return m.nawawi ?? null;
+  if (kind === 'library') return m.library?.[a] ?? null;
   return m.books?.[a] ?? null;
 }
 

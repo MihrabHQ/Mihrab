@@ -3109,6 +3109,19 @@
       "blurb": "Läs hadither på ett annat språk än appens",
       "auto": "Samma som appen",
       "note": "Översättningar och förklaringar kommer från HadeethEnc.com, på alla språk som de ger ut. Siffran bredvid ett språk är hur många hadither som hittills har översatts; engelska visas för de övriga. Ett språk laddas ned första gången du öppnar en lista på det."
+    },
+    "library": {
+      "tab": "Bibliotek",
+      "intro": "Hela böcker att läsa, på arabiska. Varje bok är författarens egen text; Mihrab graderar inte det en bok citerar.",
+      "empty": "Inga böcker kan visas just nu. Anslut till internet för att se dem.",
+      "needsDownload": "Den här boken finns inte på din enhet än.",
+      "by": "{{author}} (d. {{died}})",
+      "source": "Text: {{source}} · {{license}}",
+      "bookNote": "Det här är författarens text i sin helhet. Hadither som citeras i den är inte graderade av Mihrab och kan innehålla svaga återberättelser; för graderade hadither, använd Lär dig och Slå upp.",
+      "continue": "Fortsätt: {{chapter}}",
+      "chapters": "Kapitel",
+      "next": "Nästa kapitel",
+      "previous": "Föregående kapitel"
     }
   }
 }

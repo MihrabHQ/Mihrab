@@ -3110,6 +3110,19 @@
       "blurb": "Lire les hadiths dans une autre langue que celle de l'application",
       "auto": "La même que l'application",
       "note": "Les traductions et explications sont celles de HadeethEnc.com, dans toutes les langues qu'il publie. Le nombre à côté d'une langue indique combien de hadiths y sont traduits à ce jour ; l'anglais est affiché pour les autres. Une langue est téléchargée la première fois que vous ouvrez une liste dans cette langue."
+    },
+    "library": {
+      "tab": "Bibliothèque",
+      "intro": "Des livres entiers à lire, en arabe. Chacun est le texte de son auteur ; Mihrab ne classe pas ce qu'un livre cite.",
+      "empty": "Aucun livre ne peut être affiché pour le moment. Connectez-vous à Internet pour les voir.",
+      "needsDownload": "Ce livre n'est pas encore sur votre appareil.",
+      "by": "{{author}} (m. {{died}})",
+      "source": "Texte : {{source}} · {{license}}",
+      "bookNote": "Voici le texte intégral de l'auteur. Les hadiths qu'il cite ne sont pas classés par Mihrab et peuvent comprendre des récits faibles ; pour des hadiths classés, utilisez Apprendre et Consulter.",
+      "continue": "Continuer : {{chapter}}",
+      "chapters": "Chapitres",
+      "next": "Chapitre suivant",
+      "previous": "Chapitre précédent"
     }
   }
 }

@@ -171,3 +171,4 @@ fastlane/screenshots/*/
 
 # Hadith pack builder cache (scripts/hadith/build-packs.js)
 scripts/hadith/.cache/
+scripts/library/.cache/

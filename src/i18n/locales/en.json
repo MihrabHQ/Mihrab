@@ -3109,6 +3109,19 @@
       "blurb": "Read hadith in a language other than the app's",
       "auto": "Same as the app",
       "note": "Translations and explanations are HadeethEnc.com's, in every language it publishes. The number beside a language is how many hadith it has translated so far; English stands in for the rest. A language is downloaded the first time you open a list in it."
+    },
+    "library": {
+      "tab": "Library",
+      "intro": "Whole books to read, in Arabic. Each is its author's own text; Mihrab does not grade what a book quotes.",
+      "empty": "No books can be listed right now. Connect to the internet to see them.",
+      "needsDownload": "This book is not on your device yet.",
+      "by": "{{author}} (d. {{died}})",
+      "source": "Text: {{source}} · {{license}}",
+      "bookNote": "This is the author's text, whole. Hadith quoted in it are not graded by Mihrab and may include weak reports; for graded hadith, use Learn and Look up.",
+      "continue": "Continue: {{chapter}}",
+      "chapters": "Chapters",
+      "next": "Next chapter",
+      "previous": "Previous chapter"
     }
   }
 }

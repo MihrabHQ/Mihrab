@@ -158,7 +158,31 @@ changes. No count is typed here.
 - The rule decides what is **served**, not what is true of a hadith. A
   hadith left out is not thereby called weak by Mihrab.
 
-## 6. Changing anything
+## 6. The Library: a book is its author's text
+
+*The maintainer's decision of 2026-11-26.*
+
+The Hadith tab's Library holds whole books to read — Ibn al-Qayyim's
+*Ighāthat al-Lahfān*, *Kalīla wa-Dimna*, al-Hamadhānī's *Maqāmāt*. A book
+there is **not hadith served by this rule**:
+
+- It is its author's text, **whole and unmodified**, in his order. What
+  he quotes he quotes on his own authority, and a classical book quotes
+  hadith of every grade. Mihrab grades none of it and removes none of it.
+- The book's page says so, in the reader's language, before its chapters:
+  the hadith in it are not graded by Mihrab and may include weak reports,
+  and graded hadith are in Learn and Look up.
+- **Nothing of a book leaves the book.** Its text is not searched with the
+  hadith, is not a topic, a set, a compilation or the hadith of the day,
+  and is never shown with a grade or beside one.
+- A book is included only where its author's work is in the public domain
+  everywhere the app ships and the edition read may be republished; its
+  page names the source and the licence (`scripts/library/build-library.js`).
+
+So the rule above is unchanged: what the app *serves as hadith* is still
+only what §1 accepts. The Library is a shelf beside it.
+
+## 7. Changing anything
 
 - A new source, set, book or language of hadith is added **only under
   this rule**: a named grader, a sound grade, nobody cited calling it

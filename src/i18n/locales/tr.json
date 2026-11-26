@@ -3109,6 +3109,19 @@
       "blurb": "Hadisleri uygulamanın dilinden başka bir dilde okuyun",
       "auto": "Uygulamayla aynı",
       "note": "Çeviriler ve açıklamalar, yayımladığı bütün dillerde HadeethEnc.com'a aittir. Bir dilin yanındaki sayı, şimdiye kadar o dile çevrilen hadis sayısıdır; diğerleri için İngilizce gösterilir. Bir dil, o dilde ilk kez bir liste açtığınızda indirilir."
+    },
+    "library": {
+      "tab": "Kütüphane",
+      "intro": "Okumak için eksiksiz kitaplar, Arapça. Her biri yazarının kendi metnidir; Mihrab bir kitabın aktardıklarını derecelendirmez.",
+      "empty": "Şu anda kitaplar listelenemiyor. Görmek için internete bağlanın.",
+      "needsDownload": "Bu kitap henüz cihazınızda değil.",
+      "by": "{{author}} (ö. {{died}})",
+      "source": "Metin: {{source}} · {{license}}",
+      "bookNote": "Bu, yazarın metninin tamamıdır. İçinde aktarılan hadisler Mihrab tarafından derecelendirilmemiştir ve zayıf rivayetler içerebilir; derecelendirilmiş hadisler için Öğren ve Bul bölümlerini kullanın.",
+      "continue": "Devam et: {{chapter}}",
+      "chapters": "Bölümler",
+      "next": "Sonraki bölüm",
+      "previous": "Önceki bölüm"
     }
   }
 }

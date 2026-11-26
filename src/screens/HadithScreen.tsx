@@ -112,10 +112,13 @@ import { HadithRow, listTitle } from './hadith/HadithListScreen';
 import { PackGate, useManifest, packsBytes } from './hadith/PackGate';
 import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import { ownSideAlign } from '../i18n/foreignText';
+import { LibraryShelf } from './hadith/LibraryShelf';
+import { IS_WEB_APP } from '../config/webApp';
 import { useKeyboardInset } from '../hooks/useKeyboardInset';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
-type Mode = 'learn' | 'browse';
+/** `library`: whole books to read (`LibraryShelf.tsx`); not offered in a browser, which has no packs of them. */
+type Mode = 'learn' | 'browse' | 'library';
 const MODE_KEY = 'mihrab.hadith.mode';
 
 /**
@@ -175,7 +178,7 @@ export function HadithScreen() {
   useEffect(() => {
     AsyncStorage.getItem(MODE_KEY)
       .then(v => {
-        if (v === 'learn' || v === 'browse') setMode(v);
+        if (v === 'learn' || v === 'browse' || (v === 'library' && !IS_WEB_APP)) setMode(v);
       })
       .catch(() => undefined);
   }, []);
@@ -218,6 +221,7 @@ export function HadithScreen() {
     () => [
       { key: 'learn' as const, label: t('hadith.learn') },
       { key: 'browse' as const, label: t('hadith.browse') },
+      ...(IS_WEB_APP ? [] : [{ key: 'library' as const, label: t('hadith.library.tab') }]),
     ],
     [t],
   );
@@ -313,7 +317,7 @@ export function HadithScreen() {
         keyboardDismissMode="on-drag"
       >
         <Column style={styles.page}>
-          {library.missing.length && !searching ? gate : null}
+          {library.missing.length && !searching && mode !== 'library' ? gate : null}
           {searching ? (
             <SearchResults
               query={query}
@@ -326,6 +330,8 @@ export function HadithScreen() {
             />
           ) : mode === 'learn' ? (
             <Learn navigation={navigation} lang={lang} onLookUp={() => choose('browse')} />
+          ) : mode === 'library' ? (
+            <LibraryShelf navigation={navigation} />
           ) : (
             <Browse navigation={navigation} />
           )}

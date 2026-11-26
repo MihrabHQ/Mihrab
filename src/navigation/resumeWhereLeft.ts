@@ -95,6 +95,7 @@ export const RESTORABLE: Readonly<Record<string, Readonly<Record<string, ParamKi
   Fasting: {},
   HadithReader: { id: 'string', list: 'string' },
   HadithList: { list: 'string', all: 'boolean' },
+  LibraryBook: { id: 'string', chapter: 'number' },
   Settings: {},
   SettingsAppearance: {},
   SettingsPrayerTimes: {},

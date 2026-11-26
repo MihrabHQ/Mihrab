@@ -107,6 +107,8 @@ export type RootStackParamList = {
   /** A topic, a set or a book of hadith, listed. */
   /** `all`: a topic's every hadith in one list, past its page of sub-topics. */
   HadithList: { list: string; all?: boolean };
+  /** A book of the Library: its chapters, or one of them (by its place) to read. */
+  LibraryBook: { id: string; chapter?: number };
   /**
    * The Settings index. Pushed from Today's cog since it left the tab bar;
    * every section below is pushed over it.

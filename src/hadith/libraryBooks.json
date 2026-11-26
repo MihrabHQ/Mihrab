@@ -1,0 +1,26 @@
+[
+ {
+  "id": "kalila",
+  "title": "كليلة ودمنة",
+  "latin": "Kalila wa Dimna",
+  "author": "عبد الله بن المقفع",
+  "authorLatin": "Ibn al-Muqaffa'",
+  "died": "142 AH"
+ },
+ {
+  "id": "maqamat",
+  "title": "مقامات بديع الزمان الهمذاني",
+  "latin": "Maqamat al-Hamadhani",
+  "author": "بديع الزمان الهمذاني",
+  "authorLatin": "Badi' az-Zaman al-Hamadhani",
+  "died": "398 AH"
+ },
+ {
+  "id": "ighatha",
+  "title": "إغاثة اللهفان من مصائد الشيطان",
+  "latin": "Ighathat al-Lahfan",
+  "author": "ابن قيم الجوزية",
+  "authorLatin": "Ibn al-Qayyim",
+  "died": "751 AH"
+ }
+]

@@ -103,6 +103,7 @@ const TAB_UNDER: Readonly<Record<string, string>> = {
   Fasting: 'LogTab',
   HadithReader: 'HadithTab',
   HadithList: 'HadithTab',
+  LibraryBook: 'HadithTab',
   // Settings is opened from Today's cog.
   Settings: 'TodayTab',
   Backup: 'TodayTab',

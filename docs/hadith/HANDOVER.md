@@ -29,6 +29,34 @@ longer true.
 | Related hadith: others in the same HadeethEnc topic, folded under the one read | `relatedHadith` in `src/hadith/library.ts`, `__tests__/hadithRelated.test.ts` |
 | "What the grades mean": Settings → Hadith, and the foot of a hadith | `src/screens/settings/pages/HadithGradesSettingsScreen.tsx`, `hadith.grades.*`, `__tests__/hadithGradesGuide.test.ts` |
 
+### The Library (2026-11-26)
+
+A third page of the Hadith tab: whole books, each a pack `library/<id>`
+beside the hadith packs (same release, same manifest under `library`,
+same downloader). **Not hadith served by the rule** — policy §6, decided
+by the maintainer the same day: a book is its author's text, whole;
+nothing of it is searched, graded or shown outside the book.
+
+| What | Where |
+|---|---|
+| The builder: Wikisource pages → paragraphs, headings, verse; stops on markup it does not know | `scripts/library/build-library.js` (cache `scripts/library/.cache`, ignored) |
+| The books the app can name | `src/hadith/libraryBooks.json`, `src/hadith/libraryShelf.ts` (offered when the manifest names the pack or it is on the device) |
+| The shelf, and a book / a chapter | `src/screens/hadith/LibraryShelf.tsx`, `LibraryBookScreen.tsx` (route `LibraryBook`) |
+| Tests | `__tests__/libraryBooks.test.ts` |
+
+Built: `kalila` (19 chapters), `maqamat` (51, in ʿAbduh's order), `ighatha`
+(48). **Not published until the maintainer sees the file list**
+(`upload-packs.sh` uploads whatever is under `build/hadith/v1`, so the
+three packs and the manifest go up with the next run).
+
+Still to add, sources found: الداء والدواء and بهجة المجالس (OpenITI only,
+CC BY-NC-SA — the maintainer accepted that licence; OpenITI's markup
+needs its own reader in the builder), العقد الفريد (Wikisource, 157
+pages), بلد العميان (Hindawi's translation, CC BY 4.0). Tafsir (Ibn
+Kathīr first, from the Tafsir Center's CC BY 4.0 dataset) belongs in the
+Qur'an reader per āyah and is not started. Not looked at on a phone; the
+Maqāmāt include coarse passages (the edition's text is kept whole).
+
 ## 2. Not verified by anyone
 
 - **Seen on the Pixel 10 Pro on 2026-11-26 (English, the two Ṣaḥīḥs

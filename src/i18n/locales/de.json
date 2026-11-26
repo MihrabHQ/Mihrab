@@ -3109,6 +3109,19 @@
       "blurb": "Hadithe in einer anderen Sprache als der der App lesen",
       "auto": "Wie die App",
       "note": "Übersetzungen und Erläuterungen stammen von HadeethEnc.com, in allen Sprachen, die dort erscheinen. Die Zahl neben einer Sprache gibt an, wie viele Hadithe bisher übersetzt sind; für die übrigen wird Englisch gezeigt. Eine Sprache wird geladen, wenn du zum ersten Mal eine Liste in ihr öffnest."
+    },
+    "library": {
+      "tab": "Bibliothek",
+      "intro": "Ganze Bücher zum Lesen, auf Arabisch. Jedes ist der Text seines Verfassers; Mihrab bewertet nicht, was ein Buch zitiert.",
+      "empty": "Im Moment können keine Bücher angezeigt werden. Verbinde dich mit dem Internet, um sie zu sehen.",
+      "needsDownload": "Dieses Buch ist noch nicht auf deinem Gerät.",
+      "by": "{{author}} (gest. {{died}})",
+      "source": "Text: {{source}} · {{license}}",
+      "bookNote": "Dies ist der vollständige Text des Verfassers. Darin zitierte Hadithe sind von Mihrab nicht bewertet und können schwache Überlieferungen enthalten; für bewertete Hadithe nutze Lernen und Nachschlagen.",
+      "continue": "Weiterlesen: {{chapter}}",
+      "chapters": "Kapitel",
+      "next": "Nächstes Kapitel",
+      "previous": "Vorheriges Kapitel"
     }
   }
 }

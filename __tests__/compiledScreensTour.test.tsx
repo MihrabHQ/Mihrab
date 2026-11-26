@@ -123,6 +123,7 @@ const SCREENS: Screen[] = [
   { route: 'LogTab', get: () => require('../src/screens/LogScreen').LogScreen },
   { route: 'Settings', get: () => require('../src/screens/SettingsScreen').SettingsScreen },
   { route: 'HadithList', get: () => require('../src/screens/hadith/HadithListScreen').HadithListScreen, params: { list: 'set:nawawi40' } },
+  { route: 'LibraryBook', get: () => require('../src/screens/hadith/LibraryBookScreen').LibraryBookScreen, params: { id: 'maqamat' } },
   { route: 'HadithReader', get: () => require('../src/screens/hadith/HadithReaderScreen').HadithReaderScreen, params: { id: 'h:5456', list: 'set:nawawi40' } },
   { route: 'MonthTimes', get: () => require('../src/screens/MonthTimesScreen').MonthTimesScreen },
   { route: 'Compass', get: () => require('../src/screens/CompassScreen').CompassScreen },

@@ -3110,6 +3110,19 @@
       "blurb": "Leer los hadices en un idioma distinto al de la aplicación",
       "auto": "El mismo que la aplicación",
       "note": "Las traducciones y explicaciones son de HadeethEnc.com, en todos los idiomas que publica. El número junto a un idioma indica cuántos hadices se han traducido hasta ahora; para los demás se muestra el inglés. Un idioma se descarga la primera vez que abres una lista en él."
+    },
+    "library": {
+      "tab": "Biblioteca",
+      "intro": "Libros completos para leer, en árabe. Cada uno es el texto de su autor; Mihrab no califica lo que un libro cita.",
+      "empty": "Ahora no se pueden mostrar los libros. Conéctate a internet para verlos.",
+      "needsDownload": "Este libro aún no está en tu dispositivo.",
+      "by": "{{author}} (m. {{died}})",
+      "source": "Texto: {{source}} · {{license}}",
+      "bookNote": "Este es el texto íntegro del autor. Los hadices que cita no están calificados por Mihrab y pueden incluir relatos débiles; para hadices calificados, usa Aprender y Consultar.",
+      "continue": "Continuar: {{chapter}}",
+      "chapters": "Capítulos",
+      "next": "Capítulo siguiente",
+      "previous": "Capítulo anterior"
     }
   }
 }

@@ -366,6 +366,11 @@ export function RootNavigator() {
         getComponent={() => (require('../screens/hadith/HadithListScreen') as typeof import('../screens/hadith/HadithListScreen')).HadithListScreen}
         options={{ title: t('nav.hadith'), headerShown: false, contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 } }}
       />
+      <Stack.Screen
+        name="LibraryBook"
+        getComponent={() => (require('../screens/hadith/LibraryBookScreen') as typeof import('../screens/hadith/LibraryBookScreen')).LibraryBookScreen}
+        options={{ title: t('nav.hadith'), headerShown: false, contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 } }}
+      />
       {/* The Settings index, pushed from Today's cog. Drawn in SettingsPage's
           own bar, like the sections below. */}
       <Stack.Screen
