@@ -15,7 +15,7 @@ import type { LoggedStatus } from '../../journal/journal';
 import type { QuickLogPhase } from '../../journal/quickLog';
 import type { PrayerAlertMode } from '../../settings/alertModes';
 import { RADIUS, SPACING } from '../../theme/tokens';
-import { TYPE } from '../../theme/typography';
+import { TYPE, labelLineHeight } from '../../theme/typography';
 
 /**
  * Single prayer row inside a day card.
@@ -424,6 +424,7 @@ const styles = StyleSheet.create({
   },
   daruri: {
     fontSize: TYPE.caption.fontSize,
+    lineHeight: labelLineHeight(TYPE.caption.fontSize),
     marginTop: 2,
   },
   // Inset, rounded indicator pill instead of a full-bleed block — reads
@@ -437,7 +438,11 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 3,
     borderBottomEndRadius: 3,
   },
-  name: { fontSize: TYPE.title3.fontSize },
+  // The line is the Latin one in every script (`labelLineHeight`). Left to
+  // the font, an Arabic, Bengali or Devanagari name made its row several
+  // points taller than the same row in English, and six rows of that came
+  // out of the hero above.
+  name: { fontSize: TYPE.title3.fontSize, lineHeight: labelLineHeight(TYPE.title3.fontSize) },
   chosenDot: {
     width: 6,
     height: 6,
@@ -454,5 +459,5 @@ const styles = StyleSheet.create({
   // Laid over the sample, flush with the trailing edge — `end`, so it is
   // the right edge in English and the left in Arabic.
   timeReal: { position: 'absolute', top: 0, end: 0 },
-  time: { fontSize: TYPE.title3.fontSize },
+  time: { fontSize: TYPE.title3.fontSize, lineHeight: labelLineHeight(TYPE.title3.fontSize) },
 });

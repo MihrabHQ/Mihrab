@@ -130,3 +130,24 @@ export function arabicTextStyle(kind: 'quran' | 'body' = 'body'): {
     fontFamily: kind === 'quran' ? FONTS.arabicQuran : FONTS.arabicBody,
   };
 }
+
+/**
+ * The line a single-line label gets in Latin, for every script.
+ *
+ * A Text with no line height takes the font's own, and the fonts Android
+ * and iOS fall back to for Arabic, Urdu, Bengali and Devanagari carry
+ * taller metrics than the Latin one: the same 18-point prayer name made
+ * its row 4 points taller in Arabic. On Today that is paid six times in
+ * the table and again in the day bar, the hero's labels and the Quran
+ * card, and all of it comes out of the hero — the page was visibly
+ * shorter on sky in Arabic than in English on the same phone (2026-11-26,
+ * Pixel 10 Pro). This is Roboto's and San Francisco's own line (1.172 em,
+ * to a tenth of a point), so a Latin label is where it was to the pixel
+ * and every other script sits in the same box.
+ *
+ * For ONE-LINE labels only. A paragraph wants its token's leading, and a
+ * vocalised Arabic line wants more (`arabicTextStyle`).
+ */
+export function labelLineHeight(fontSize: number): number {
+  return Math.round(fontSize * 1.172 * 10) / 10;
+}

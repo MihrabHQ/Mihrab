@@ -788,12 +788,6 @@ export type PrayerAppSettings = {
    */
   hadithLanguage: string;
   /**
-   * Which kinds of Arabic names are shown in Arabic while the app is in
-   * another language (`i18n/arabicTerms.ts`): any of 'quran', 'hadith',
-   * 'prayers', 'calendar', 'dhikr', 'sections'. Empty: none, as before.
-   */
-  arabicTerms: string[];
-  /**
    * The two surahs with a time of their own — issue #36.
    *
    * Al-Kahf on Friday and Al-Mulk before sleeping are the two most
@@ -966,7 +960,6 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   hadithPlanReminderHour: 20,
   hadithPlanReminderMinute: 0,
   hadithLanguage: 'auto',
-  arabicTerms: [],
   kahfReminderEnabled: false,
   kahfReminderHour: 9,
   kahfReminderMinute: 0,

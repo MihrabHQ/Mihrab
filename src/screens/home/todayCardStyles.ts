@@ -4,9 +4,8 @@
  */
 import { Platform, StyleSheet } from 'react-native';
 import { HOME_SCREEN_PADDING, HOME_TABLE_RADIUS } from './tokens';
-import { SETTINGS_UNDER_RISE } from './SettingsChip';
 import { SPACING } from '../../theme/tokens';
-import { TYPE } from '../../theme/typography';
+import { TYPE, labelLineHeight } from '../../theme/typography';
 
 /** The rail's thread, its head, and the soft ring round the head (dp). */
 export const RAIL_LINE = 2;
@@ -92,9 +91,10 @@ export const styles = StyleSheet.create({
   },
   dayFaceLine: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   todayDot: { width: 5, height: 5, borderRadius: 2.5 },
-  dayWeekday: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
+  // One line each, on the Latin line in every script (`labelLineHeight`).
+  dayWeekday: { fontSize: TYPE.callout.fontSize, lineHeight: labelLineHeight(TYPE.callout.fontSize), fontWeight: '400' },
   dayDate: { fontWeight: '400' },
-  dayHijri: { fontSize: TYPE.caption.fontSize, marginTop: 2 },
+  dayHijri: { fontSize: TYPE.caption.fontSize, lineHeight: labelLineHeight(TYPE.caption.fontSize), marginTop: 2 },
   dayBack: { fontWeight: '500' },
   /**
    * THE TOP ROW IS PHYSICAL: left to right in every language. The place
@@ -150,14 +150,6 @@ export const styles = StyleSheet.create({
   heroTopHeart: { marginStart: -(SPACING.xs + 1) },
   /** Between Minimal's heart and its cog: the row's whole middle, which the heart's line opens across. */
   heroTopSpacer: { flexGrow: 1, flexShrink: 1 },
-  /**
-   * The cog under the Qibla chip: out of the band's top into the air
-   * under the top row (SettingsChip has the sum), at the hero's
-   * right-hand edge in every language, as the chip above it is — and
-   * left to right inside, so the chip's own start and end are sides.
-   */
-  // rtl-safe: the cog is on a physical side, under the Qibla chip (heroTopRow)
-  heroCogUnder: { position: 'absolute', top: -SETTINGS_UNDER_RISE, right: 0, direction: 'ltr' },
   hero: {},
   heroExpanded: { paddingVertical: SPACING.md },
   heroFill: { flexGrow: 1, flexShrink: 0, flexBasis: 'auto' },
@@ -185,6 +177,7 @@ export const styles = StyleSheet.create({
   // §2.1, the `label` token).
   heroEyebrow: {
     fontSize: TYPE.footnote.fontSize,
+    lineHeight: labelLineHeight(TYPE.footnote.fontSize),
     fontWeight: '400',
   },
   heroEyebrowRow: {
@@ -278,7 +271,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: SPACING.sm + 2,
   },
-  railLabel: { fontSize: TYPE.label.fontSize, fontWeight: '400' },
+  railLabel: { fontSize: TYPE.label.fontSize, lineHeight: labelLineHeight(TYPE.label.fontSize), fontWeight: '400' },
   // Minimal: the figures in the middle of the line, the name and time
   // under them in the muted ink, and the footer a label at the foot —
   // every line centred, nothing at the edges, the way a clock face is.

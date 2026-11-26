@@ -40,7 +40,7 @@ import { HifzIcon, QuranBookIcon } from '../theme/icons';
 import { HIFZ_COLOR } from './hifz';
 import { TABULAR_MAX_FONT_SCALE } from '../theme/textScale';
 import { RADIUS, SPACING } from '../theme/tokens';
-import { TYPE } from '../theme/typography';
+import { TYPE, labelLineHeight } from '../theme/typography';
 import { findSurah } from './quran';
 import { surahName } from './surahName';
 import { BOOKMARK_COLORS, READING_COLOR } from './quranState';
@@ -759,9 +759,9 @@ const styles = StyleSheet.create({
   },
   doorDense: { paddingVertical: SPACING.sm + 2, gap: SPACING.sm },
   denseBody: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'baseline' },
-  denseTitle: { fontSize: TYPE.footnote.fontSize, fontWeight: '400', flexShrink: 1 },
-  denseName: { fontSize: TYPE.caption.fontSize, flexShrink: 1, marginStart: SPACING.sm },
-  denseRef: { fontSize: TYPE.caption.fontSize },
+  denseTitle: { fontSize: TYPE.footnote.fontSize, lineHeight: labelLineHeight(TYPE.footnote.fontSize), fontWeight: '400', flexShrink: 1 },
+  denseName: { fontSize: TYPE.caption.fontSize, lineHeight: labelLineHeight(TYPE.caption.fontSize), flexShrink: 1, marginStart: SPACING.sm },
+  denseRef: { fontSize: TYPE.caption.fontSize, lineHeight: labelLineHeight(TYPE.caption.fontSize) },
   denseGap: { paddingHorizontal: SPACING.lg, paddingBottom: SPACING.sm, marginTop: -SPACING.xs },
   divided: { borderTopWidth: StyleSheet.hairlineWidth },
   columns: { flexDirection: 'row', alignItems: 'stretch' },
@@ -772,10 +772,10 @@ const styles = StyleSheet.create({
   body: { flex: 1, minWidth: 0 },
   titleRow: { flexDirection: 'row', alignItems: 'baseline', gap: SPACING.sm },
   titleRowColumn: { alignItems: 'center', gap: 0 },
-  title: { fontSize: TYPE.callout.fontSize, fontWeight: '400', flex: 1 },
-  trailing: { fontSize: TYPE.caption.fontSize, fontWeight: '400' },
+  title: { fontSize: TYPE.callout.fontSize, lineHeight: labelLineHeight(TYPE.callout.fontSize), fontWeight: '400', flex: 1 },
+  trailing: { fontSize: TYPE.caption.fontSize, lineHeight: labelLineHeight(TYPE.caption.fontSize), fontWeight: '400' },
   subtitleRow: { flexDirection: 'row', alignItems: 'baseline', marginTop: 1 },
-  subtitle: { fontSize: TYPE.caption.fontSize, marginTop: 1 },
+  subtitle: { fontSize: TYPE.caption.fontSize, lineHeight: labelLineHeight(TYPE.caption.fontSize), marginTop: 1 },
   shrinks: { flexShrink: 1 },
   track: { height: 3, borderRadius: 2, marginTop: SPACING.sm, overflow: 'hidden' },
   fill: { height: '100%', borderRadius: 2 },

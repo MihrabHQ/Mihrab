@@ -606,23 +606,7 @@
     "hadithOfDay": "Notification quotidienne de hadith",
     "hadithOfDayHelp": "Le hadith du jour — rapporté à la fois par al-Boukhari et Muslim — à l'heure de votre choix. Les hadiths doivent être téléchargés.",
     "hadithPlanReminder": "Rappel du plan de lecture",
-    "hadithPlanReminderHelp": "Les jours où la part du jour de votre plan de lecture de hadiths n'est pas encore lue.",
-    "arabicTerms": {
-      "title": "L'arabe pour les noms arabes",
-      "help": "Pour qui lit l'arabe et garde l'application dans une autre langue : les noms choisis s'affichent en arabe, et tout le reste, y compris le sens de l'interface, reste tel quel.",
-      "quran": "Noms des sourates",
-      "quranHelp": "الفاتحة, البقرة",
-      "hadith": "Livres de hadith et leurs chapitres",
-      "hadithHelp": "صحيح البخاري, رياض الصالحين, كتاب الإيمان",
-      "prayers": "Noms des prières",
-      "prayersHelp": "الفجر, الظهر, الوتر — dans l'application, ses widgets et ses notifications",
-      "calendar": "Mois et jours de l'Hégire",
-      "calendarHelp": "رمضان, ذو الحجة, يوم عرفة",
-      "dhikr": "Formules de rappel",
-      "dhikrHelp": "سبحان الله, الحمد لله",
-      "sections": "Sections de l'application",
-      "sectionsHelp": "القرآن, الحديث, الذكر, القبلة"
-    }
+    "hadithPlanReminderHelp": "Les jours où la part du jour de votre plan de lecture de hadiths n'est pas encore lue."
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",

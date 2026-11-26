@@ -1,6 +1,5 @@
 import i18n from './index';
 import { applyMadhabNaming } from '../prayer/madhab';
-import { applyArabicTerms } from './arabicTerms';
 import { loadSettings } from '../settings/storage';
 import type { Madhab } from '../prayer/madhab';
 
@@ -20,13 +19,10 @@ import type { Madhab } from '../prayer/madhab';
 export async function applyReaderLanguage(settings?: {
   language?: string | null;
   madhab?: Madhab | null;
-  arabicTerms?: string[] | null;
 }): Promise<void> {
   const s = settings ?? (await loadSettings());
   if (s.language && i18n.language !== s.language) {
     await i18n.changeLanguage(s.language);
   }
   applyMadhabNaming(i18n, s.madhab, s.language ?? undefined);
-  // The names asked for in Arabic: a notification written here names the prayer as the app does.
-  applyArabicTerms(i18n, s.arabicTerms, s.madhab, s.language ?? undefined);
 }

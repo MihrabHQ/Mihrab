@@ -22,14 +22,8 @@ import { create } from 'react-test-renderer';
 import { act } from 'react';
 import { Path } from 'react-native-svg';
 import { SettingsGearIcon } from '../src/theme/icons';
-import {
-  SETTINGS_GLYPH,
-  SETTINGS_GLYPH_STROKE,
-  SETTINGS_UNDER_DROP,
-  SETTINGS_UNDER_LINE,
-  SETTINGS_UNDER_RISE,
-} from '../src/screens/home/SettingsChip';
-import { MOON, SKY_CRAMPED_BELOW, STAR_FIELD_TOP, SUN_R, skyScene } from '../src/screens/home/HeroSky';
+import { SETTINGS_GLYPH, SETTINGS_GLYPH_STROKE } from '../src/screens/home/SettingsChip';
+import { SKY_CRAMPED_BELOW } from '../src/screens/home/HeroSky';
 import { HERO_SCENE_MIN, HOME_TIERS } from '../src/screens/home/homeBudget';
 import { SPACING } from '../src/theme/tokens';
 
@@ -115,132 +109,67 @@ describe("Today's way into Settings", () => {
 /**
  * Where the cog stands on Today's two faces.
  *
- * It stood after the Qibla chip in the hero's top row, and
- * "◎ Qibla 148° ⚙" read as one chip with an icon at each end. On the full
- * page it is now under the chip; under Minimal at the row's right-hand
- * end, the heart at the left. On the RIGHT on both in every language:
- * the hero's top row does not mirror, so Settings is in one corner.
- *
- * Under the chip is where the sky used to begin: the sun, the moon and
- * the stars were laid out from the top row's foot down. So the band they
- * are laid out in begins at the cog's foot instead, and these hold that
- * — for every size the page is drawn at, and without a point of height
- * added to it.
+ * On the full page it is at the row's right-hand end, after the Qibla
+ * chip and on the row's own line. It stood there first; then, because
+ * "◎ Qibla 148° ⚙" read as one chip with an icon at each end, it was put
+ * under the chip on a line of its own — where, on a phone, it hung by
+ * itself below everything else at the page's top. It is back on the
+ * line, beside the Qibla, with the row's gap between them.
+ * Under Minimal it is at the row's right-hand end, the heart at the
+ * left. On the RIGHT on both in every language: the hero's top row does
+ * not mirror, so Settings is in one corner.
  */
-describe('the cog on the full page, under the Qibla chip', () => {
+describe('the cog on the full page, at the row’s right-hand end beside the Qibla chip', () => {
   const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', p), 'utf-8');
   const hero = read('HeroToday.tsx');
   const card = read('TodayCard.tsx');
   const styles = read('todayCardStyles.ts');
   const chip = read('SettingsChip.tsx');
 
-  it('stands in the air the top row already had under it, so the page is no taller', () => {
-    // The row's own bottom margin, and a drop into the band's own view: the cog's line.
-    expect(styles).toMatch(/heroTopRow: \{[^}]*marginBottom: SPACING\.md[^}]*\}/s);
-    expect(SETTINGS_UNDER_LINE).toBe(SPACING.md + SETTINGS_UNDER_DROP);
-    const glyph = Number(/const GLYPH_UNDER = (\d+);/.exec(chip)?.[1]);
-    const padTop = Number(/const UNDER_PAD_TOP = (\d+);/.exec(chip)?.[1]);
-    expect(styles).toMatch(/heroCogUnder: \{ position: 'absolute', top: -SETTINGS_UNDER_RISE,/);
-    expect(chip).toMatch(/under: \{\s*paddingTop: UNDER_PAD_TOP,/);
-    // From the top of the band's view: the glyph's top and its foot.
-    const glyphTop = -SETTINGS_UNDER_RISE + padTop;
-    const glyphFoot = glyphTop + glyph;
-    // It ends where its line ends…
-    expect(glyphFoot).toBe(SETTINGS_UNDER_LINE - SPACING.md);
-    // …and begins at the row's foot, not inside the row: the air between the chip and the cog.
-    expect(glyphTop).toBe(-SPACING.md);
-    expect(glyph).toBe(SETTINGS_UNDER_LINE);
-  });
-
-  it('is on the right in every language, under the chip — a physical side, said so', () => {
-    expect(styles).toMatch(/\/\/ rtl-safe: [^\n]*\n\s*heroCogUnder: \{[^}]*\bright: 0, direction: 'ltr' \}/);
-    expect(styles).not.toMatch(/heroCogUnder: \{[^}]*\b(start|end|left):/);
-    // Left to right inside its holder, so the chip's start and end are sides.
-    expect(chip).toMatch(/paddingStart: SPACING\.md \+ 2,\s*paddingEnd: SPACING\.sm,/);
-    // The Qibla chip pads its words by the same `sm`: the glyph's edge is under the chip's own.
-    expect(read('QiblaChip.tsx')).toMatch(/chip: \{[^}]*paddingHorizontal: SPACING\.sm/s);
-  });
-
-  it('the top row has sides, not ends: the place on the left, the Qibla on the right', () => {
-    expect(styles).toMatch(/heroTopRow: \{\s*flexDirection: 'row',\s*direction: 'ltr',/);
-    expect(styles).toMatch(/heroOwnRtl: \{ direction: 'rtl' \}/);
-    // In the row's order: the place, the Qibla, the cog when there is no chip to stand under.
+  it('the place on the left; then the Qibla chip and the cog, in that order, at the right', () => {
     const at = hero.indexOf('<View style={styles.heroTopRow} onLayout={onLayout}>');
     const row = hero.slice(at, hero.indexOf('</View>\n  );', at));
     const place = row.indexOf('<View style={own}>{topRow.renderLocation?.(ink)}</View>');
+    const placeEnd = row.indexOf('</View>\n      </View>', place);
     const qibla = row.indexOf('{qibla ? <View style={own}>{qibla}</View> : null}');
-    const cog = row.indexOf('{settingsInRow ? topRow.renderSettings?.(ink) : null}');
+    const cog = row.indexOf('{topRow.renderSettings?.(ink)}');
     expect(place).toBeGreaterThan(-1);
-    expect(qibla).toBeGreaterThan(place);
+    // The Qibla chip is not in the place's group: it is the row's own child, as the cog is.
+    expect(qibla).toBeGreaterThan(placeEnd);
     expect(cog).toBeGreaterThan(qibla);
+    // The place's group takes the row's width, which is what puts the other two at the far end,
+    // and the row's own gap is what stands between the chip and the cog.
+    expect(styles).toMatch(/heroTopLeading: \{\s*flexShrink: 1,\s*flexGrow: 1,\s*alignItems: 'flex-start',/);
+    expect(styles).toMatch(/heroTopRow: \{[^}]*gap: SPACING\.md,/s);
+  });
+
+  it('is on the row’s own line: no line of its own under the chip, and nothing rising out of the sky’s band', () => {
+    for (const src of [hero, card, styles, chip]) {
+      expect(src).not.toMatch(/cogUnder|settingsUnder|heroCogUnder|SETTINGS_UNDER|GLYPH_UNDER/);
+    }
+    // The sky's band begins at the row's foot again, with the row's own margin under it.
+    expect(hero).toMatch(/\+ topRowH \+ SPACING\.md\n\s*: 0;/);
+    // And the cog is the size it is under Minimal: one cog, one size on the sky.
+    expect(chip).toMatch(/size=\{column \? 20 : GLYPH\} strokeWidth=\{SETTINGS_GLYPH_STROKE\}/);
+  });
+
+  it('the top row has sides, not ends: the place on the left, the Qibla and the cog on the right, in every language', () => {
+    expect(styles).toMatch(/heroTopRow: \{\s*flexDirection: 'row',\s*direction: 'ltr',/);
+    expect(styles).toMatch(/heroOwnRtl: \{ direction: 'rtl' \}/);
     // What is inside a chip still reads the language's way: the app's direction, not the OS's.
     expect(hero).toContain('const own = rtl ? styles.heroOwnRtl : undefined;');
-    expect(hero).toContain('settingsInRow={!cogUnder} rtl={rtl}');
+    expect(hero).toContain('<HeroTopRow topRow={topRow} ink={inkRow} rtl={rtl}');
     expect(hero).toContain('const rtl = isRtlLanguage(i18n.language);');
   });
 
-  it('the sky’s band begins at its foot: nothing is laid out behind the glyph', () => {
-    expect(hero).toMatch(/\+ topRowH \+ SPACING\.md \+ \(cogUnder \? SETTINGS_UNDER_LINE : 0\)/);
-    // In the sky's own measure: the row's foot, then the cog's line, then the band.
-    for (const tier of HOME_TIERS) {
-      for (const sceneH of [HERO_SCENE_MIN[tier], 96, 160, 320]) {
-        const rowFoot = 24 + SPACING.md + 40;
-        const glyphFoot = rowFoot + SETTINGS_UNDER_LINE;
-        const sceneTop = rowFoot + SETTINGS_UNDER_LINE;
-        const sceneBottom = 180;
-        // The band is the band's view less the cog's drop into it.
-        const scene = skyScene({ height: sceneTop + sceneH - SETTINGS_UNDER_DROP + sceneBottom, sceneTop, sceneBottom });
-        // The highest star, the moon at its highest and the sun at noon.
-        expect(scene.starY(STAR_FIELD_TOP)).toBeGreaterThanOrEqual(glyphFoot);
-        expect(scene.y(0.08) - MOON / 2).toBeGreaterThanOrEqual(glyphFoot);
-        expect(scene.y(0.08) - SUN_R).toBeGreaterThanOrEqual(glyphFoot);
-      }
-    }
-  });
-
-  it('where the band used to begin, the highest star and a high moon were behind it', () => {
-    // Why the band moved: laid out from the row's foot, as it was.
-    const rowFoot = 24 + SPACING.md + 40;
-    const glyphFoot = rowFoot + SETTINGS_UNDER_LINE;
-    for (const tier of HOME_TIERS) {
-      const room = SPACING.md + HERO_SCENE_MIN[tier];
-      const before = skyScene({ height: rowFoot + room + 180, sceneTop: rowFoot, sceneBottom: 180 });
-      expect(before.starY(STAR_FIELD_TOP)).toBeLessThan(glyphFoot);
-      expect(before.y(0.08) - MOON / 2).toBeLessThan(glyphFoot);
-    }
+  it('is there with or without a place: the same corner before a Qibla chip exists', () => {
+    expect(card).toContain('onOpenSettings ? <SettingsChip ink={ink} onPress={onOpenSettings} /> : null;');
+    // Beside the iPhone's vertical bar the column has it, and the row is not drawn.
+    expect(hero).toContain(') : topRow && fill && vbar ? null : topRow ? (');
   });
 
   it('the smallest page still has a sky with a sun and a moon in it', () => {
-    // The band is now the band's own view less the cog's drop into it —
-    // the twelve points above it are the cog's too — so each tier's floor,
-    // less the drop, is the room. This is what holds the drop at four.
-    for (const tier of HOME_TIERS) {
-      const room = HERO_SCENE_MIN[tier] - SETTINGS_UNDER_DROP;
-      expect(room).toBeGreaterThanOrEqual(SKY_CRAMPED_BELOW);
-      const scene = skyScene({ height: 88 + room + 180, sceneTop: 88, sceneBottom: 180 });
-      expect(scene.cramped).toBe(false);
-    }
-  });
-
-  it('is under the chip only where there is a chip, and never beside the iPhone’s vertical bar', () => {
-    expect(card).toContain('const settingsUnder = fullBleed && !minimal && qiblaBearing != null;');
-    // Both heroes — the live one and the posed twin the launch picture is drawn from.
-    expect(card.match(/settingsUnder=\{settingsUnder\}/g)).toHaveLength(2);
-    expect(hero).toContain("const cogUnder = settingsUnder && fill && !minimal && !vbar && !!topRow?.renderSettings;");
-    // No chip (no place yet): the cog keeps the row's end.
-    expect(hero).toContain('{settingsInRow ? topRow.renderSettings?.(ink) : null}');
-    expect(hero).toContain('settingsInRow={!cogUnder}');
-  });
-
-  it('is a child of the band’s view, after the Track’s tap target: a touch on it is its own', () => {
-    const at = hero.indexOf('{fill && cogUnder ? (');
-    expect(at).toBeGreaterThan(-1);
-    const band = hero.slice(at, hero.indexOf(') : fill ? (', at));
-    expect(band.indexOf('<TrackExplainer')).toBeGreaterThan(-1);
-    expect(band.indexOf('styles.heroCogUnder')).toBeGreaterThan(band.indexOf('<TrackExplainer'));
-    expect(band).toContain('{topRow?.renderSettings?.(inkRow, true)}');
-    // And it takes no touch upward, where the Qibla chip's own is.
-    expect(chip).toMatch(/const UNDER_HIT_SLOP = \{ top: 0,/);
+    for (const tier of HOME_TIERS) expect([tier, HERO_SCENE_MIN[tier] >= SKY_CRAMPED_BELOW]).toEqual([tier, true]);
   });
 });
 
@@ -267,7 +196,7 @@ describe('the cog under Minimal, across the row from the heart', () => {
   it('the heart is drawn as the cog is: its size, its line, the sky’s full ink', () => {
     // A small grey heart across from a larger white cog read as two things of different standing.
     expect(heart).toContain('<Heart color={ink.text} size={SETTINGS_GLYPH} strokeWidth={SETTINGS_GLYPH_STROKE} />');
-    expect(read('SettingsChip.tsx')).toMatch(/size=\{column \? 20 : under \? GLYPH_UNDER : GLYPH\} strokeWidth=\{SETTINGS_GLYPH_STROKE\}/);
+    expect(read('SettingsChip.tsx')).toMatch(/size=\{column \? 20 : GLYPH\} strokeWidth=\{SETTINGS_GLYPH_STROKE\}/);
     expect(read('SettingsChip.tsx')).toContain('export const SETTINGS_GLYPH = GLYPH;');
     expect(SETTINGS_GLYPH).toBe(18);
     expect(SETTINGS_GLYPH_STROKE).toBe(1.8);

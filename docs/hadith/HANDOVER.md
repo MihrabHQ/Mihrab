@@ -91,16 +91,11 @@ attributed elsewhere, 109 he reports as found wanting, 312 not found with
 confidence, 99 too short to tell, 13 not in the text read. Known
 conservative miss: "رواه أحمد، واللفظ له، والثلاثة" stops at "واللفظ".
 
-App-wide, same day: **Arabic names in Arabic** for a reader who keeps a
-left-to-right language (`src/i18n/arabicTerms.ts`, setting `arabicTerms`,
-Settings → Appearance, `ArabicTermsCard`). Done as the Mālikī name for
-dawn is — the key stays, its string moves — over listed keys that are
-names only, each wrapped in left-to-right marks so the page stays
-left-to-right round it (a row beginning with an Arabic name otherwise
-flies to the right edge, and a year after a month's name is drawn before
-it). Surah names ask `arabicTermsHas('quran')`. Applied in the provider
-and in `applyReaderLanguage` (headless). Seen in the desktop build on
-Today only; **not on a phone, a widget or a notification.**
+App-wide, same day, and gone the same day: two attempts at "Arabic
+without the mirrored page" — six switches that showed chosen names in
+Arabic inside another language (pushed as `9f3c58c0`), then Arabic kept
+left to right (never pushed). The maintainer had both removed; neither
+setting exists, and nothing reads `arabicTerms` or `rtlLeftToRight`.
 
 Commentaries are Library books reached from the hadith they explain
 (`src/hadith/commentary.ts`, `commentaryFor`): one so far, Ibn Rajab's

@@ -1,7 +1,5 @@
 /**
- * Settings → Appearance. Theme, accent, time format, language — and,
- * under the language, which Arabic names are shown in Arabic while the
- * rest of the app is not (`ArabicTermsCard`). The
+ * Settings → Appearance. Theme, accent, time format, language. The
  * widgets moved to Settings → Widgets (Android) once the prayer-times
  * widget had options of its own.
  *
@@ -21,7 +19,6 @@ import { useCallback, useState, useRef } from 'react';
 import { usePrayerSettings } from '../../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../../hooks/useAppPalette';
 import { AppearanceCard } from '../AppearanceCard';
-import { ArabicTermsCard } from '../ArabicTermsCard';
 import { LanguageCard } from '../LanguageCard';
 import { LanguageModal } from '../LanguageModal';
 import { SettingsPage } from '../SettingsPage';
@@ -42,7 +39,6 @@ export function AppearanceSettingsScreen() {
       <SettingsPage deferBackRef={deferBack}>
         <AppearanceCard />
         <LanguageCard onOpenLanguagePicker={open} />
-        <ArabicTermsCard />
       </SettingsPage>
       <LanguageModal
         visible={languageModal}

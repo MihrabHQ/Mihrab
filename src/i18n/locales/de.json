@@ -605,23 +605,7 @@
     "hadithOfDay": "Tägliche Hadith-Benachrichtigung",
     "hadithOfDayHelp": "Der Hadith des Tages – einer, den al-Bukhari und Muslim beide überliefern – zur gewählten Zeit. Die Hadithe müssen heruntergeladen sein.",
     "hadithPlanReminder": "Erinnerung an den Leseplan",
-    "hadithPlanReminderHelp": "An den Tagen, an denen der heutige Teil deines Hadith-Leseplans noch nicht gelesen ist.",
-    "arabicTerms": {
-      "title": "Arabisch für arabische Namen",
-      "help": "Für alle, die Arabisch lesen, die App aber in einer anderen Sprache nutzen: Die gewählten Namen erscheinen auf Arabisch; alles andere, auch die Leserichtung der Oberfläche, bleibt, wie es ist.",
-      "quran": "Surennamen",
-      "quranHelp": "الفاتحة, البقرة",
-      "hadith": "Hadithbücher und ihre Kapitel",
-      "hadithHelp": "صحيح البخاري, رياض الصالحين, كتاب الإيمان",
-      "prayers": "Gebetsnamen",
-      "prayersHelp": "الفجر, الظهر, الوتر — in der App, den Widgets und den Mitteilungen",
-      "calendar": "Hidschri-Monate und Tage",
-      "calendarHelp": "رمضان, ذو الحجة, يوم عرفة",
-      "dhikr": "Formeln des Gedenkens",
-      "dhikrHelp": "سبحان الله, الحمد لله",
-      "sections": "Bereiche der App",
-      "sectionsHelp": "القرآن, الحديث, الذكر, القبلة"
-    }
+    "hadithPlanReminderHelp": "An den Tagen, an denen der heutige Teil deines Hadith-Leseplans noch nicht gelesen ist."
   },
   "locationSetup": {
     "headline": "Legen Sie Ihren Standort fest",

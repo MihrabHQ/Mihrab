@@ -97,6 +97,9 @@ function QiblaChipImpl({ bearing, onPress, ink, column = false }: QiblaChipProps
         style={[
           typeStyle('caption'),
           styles.label,
+          // The word in Arabic letters stands higher in its line than Latin ones beside the same
+          // bearing (a taller script in a line set for Latin): brought down to the number's middle.
+          /[\u0600-\u06FF]/.test(t('nav.compass', 'Qibla')) && styles.labelArabic,
           { color: ink ? ink.text : palette.accent },
         ]}
         numberOfLines={1}
@@ -205,6 +208,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: 0.2,
   },
+  labelArabic: { includeFontPadding: false, lineHeight: 18, letterSpacing: 0, transform: [{ translateY: 1 }] },
   /** The bearing, a shade lighter than the word so the word leads. */
   degrees: {
     fontWeight: '400',
