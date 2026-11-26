@@ -18,6 +18,17 @@ describe('the place name follows the app language', () => {
     expect(hook).toContain("i18n.off('languageChanged', onLanguage)");
   });
 
+  it('only a name already held, in another language: start-up asks for nothing', () => {
+    const at = hook.indexOf("i18n.on('languageChanged', onLanguage)");
+    const effect = hook.slice(hook.lastIndexOf('useEffect(', at), at);
+    // i18next announces the language at start-up; on a fresh install that
+    // asked for the location permission over the welcome screen.
+    expect(effect).toContain('if (!held?.locality || held.lang === lng) return;');
+    expect(effect.indexOf('held.lang === lng')).toBeLessThan(effect.indexOf('requestAndLoad(true)'));
+    expect(hook).toContain('locality, lang: i18n.language };');
+    expect(hook).toContain('locality: late, lang: i18n.language };');
+  });
+
   it('a place chosen by hand keeps the name it was chosen under', () => {
     const at = hook.indexOf("i18n.on('languageChanged', onLanguage)");
     const effect = hook.slice(hook.lastIndexOf('useEffect(', at), at);

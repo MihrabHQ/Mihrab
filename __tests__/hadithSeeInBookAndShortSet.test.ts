@@ -63,6 +63,8 @@ describe('short hadith to memorise', () => {
     const agreed = new Set((AGREED as { ids: string[] }).ids);
     for (const id of set.ids!) expect(agreed.has(id)).toBe(true);
     expect(set.chosenBy).toContain('scripts/hadith/short-set.js');
+    // Only hadith the English pack has: every other language falls back to English.
+    expect(read('scripts/hadith/short-set.js')).toContain('if (!e || !english.has(id)) return;');
     // Not "rules": draft-sets.js leaves a set alone whose choosing is not its own.
     expect(set.chosenBy).not.toBe('rules');
     expect(read('scripts/hadith/draft-sets.js')).toContain("set.chosenBy !== 'rules'");

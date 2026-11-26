@@ -1,5 +1,5 @@
 import { memo, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type StyleProp, type TextStyle } from 'react-native';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { TYPE, typeStyle } from '../../theme/typography';
 import { ROW_PADDING } from './Group';
@@ -28,6 +28,8 @@ type Props = {
    *  the one destructive action in a group. */
   tone?: 'accent' | 'danger';
   testID?: string;
+  /** On the title, after its own: a title in another script sets its own side (an Arabic chapter in an English list). */
+  titleStyle?: StyleProp<TextStyle>;
 };
 
 function RowImpl({
@@ -40,6 +42,7 @@ function RowImpl({
   quiet,
   tone,
   testID,
+  titleStyle,
 }: Props) {
   const { palette } = useAppPalette();
   const rtl = useLayoutRtl();
@@ -49,7 +52,7 @@ function RowImpl({
     <>
       <View style={styles.text}>
         <Text
-          style={[typeStyle('headline'), { color: titleColor }]}
+          style={[typeStyle('headline'), { color: titleColor }, titleStyle]}
           numberOfLines={2}>
           {title}
         </Text>

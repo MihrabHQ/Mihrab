@@ -568,6 +568,7 @@ function LibraryBookScreenPage() {
                           <Group>
                             <Row
                               title={p.name}
+                              titleStyle={arabic}
                               onPress={() => (p.count === 1 ? open(p.first) : setOpenPart(openPart === n ? null : n))}
                               testID={`library-part-${n}`}
                             />
@@ -575,7 +576,7 @@ function LibraryBookScreenPage() {
                           {openPart === n && p.count > 1 ? (
                             <Group>
                               {file.chapters.slice(p.first, p.first + p.count).map((c, i) => (
-                                <Row key={i} title={c.t} onPress={() => open(p.first + i)} testID={`library-chapter-${p.first + i}`} />
+                                <Row key={i} title={c.t} titleStyle={arabic} onPress={() => open(p.first + i)} testID={`library-chapter-${p.first + i}`} />
                               ))}
                             </Group>
                           ) : null}
@@ -584,7 +585,7 @@ function LibraryBookScreenPage() {
                     ) : (
                       <Group>
                         {file.chapters.map((c, i) => (
-                          <Row key={i} title={c.t} onPress={() => open(i)} testID={`library-chapter-${i}`} />
+                          <Row key={i} title={c.t} titleStyle={arabic} onPress={() => open(i)} testID={`library-chapter-${i}`} />
                         ))}
                       </Group>
                     )}

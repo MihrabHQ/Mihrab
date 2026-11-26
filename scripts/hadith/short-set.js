@@ -14,7 +14,12 @@
  * filed twice is taken once. Shortest first; equal lengths in the order
  * the agreed-upon list has them.
  *
- * Reads the Arabic pack in build/hadith/v1 (scripts/hadith/build-packs.js).
+ * Only a hadith the English pack has: English is what every other language
+ * falls back to, so a hadith it lacks is one the set cannot show in most of
+ * them. Drawn from the Arabic alone, eleven of the forty were missing in
+ * English and the set said "Forty" over 29 (emulators, 2026-11-26).
+ *
+ * Reads the Arabic and English packs in build/hadith/v1 (scripts/hadith/build-packs.js).
  */
 'use strict';
 
@@ -32,13 +37,16 @@ const CHOSEN_BY = 'rule: the forty shortest of Agreed upon (scripts/hadith/short
 const agreed = require(path.join(ROOT, 'src', 'hadith', 'agreed.json'));
 const pack = JSON.parse(fs.readFileSync(path.join(ROOT, 'build', 'hadith', 'v1', 'henc', 'all', 'ar.json'), 'utf8'));
 const byId = new Map(pack.entries.map(e => [String(e.id), e]));
+const english = new Set(
+  JSON.parse(fs.readFileSync(path.join(ROOT, 'build', 'hadith', 'v1', 'henc', 'all', 'en.json'), 'utf8')).entries.map(e => String(e.id)),
+);
 const list = (agreed.ids ?? agreed).map(String);
 
 const seen = new Set();
 const sized = [];
 list.forEach((id, at) => {
   const e = byId.get(id);
-  if (!e) return;
+  if (!e || !english.has(id)) return;
   const w = words(e.h);
   const key = w.join(' ');
   if (w.length < FLOOR || seen.has(key)) return;

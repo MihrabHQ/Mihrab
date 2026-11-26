@@ -16,7 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { CompositeNavigationProp } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import { LocationChip } from '../screens/home/LocationChip';
 import { SettingsChip } from '../screens/home/SettingsChip';
 import { SPACING } from '../theme/tokens';
@@ -58,5 +58,17 @@ export function HomeHeaderControls() {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
+  // Shrinks into the header's right container, the place first. And off
+  // the edge on Android: the JS header gives its right container no inset,
+  // and the cog's ring — the only control here with a border — was drawn
+  // flush with the screen's edge and cut by it (Android 16 tablet emulator,
+  // 2026-11-27). iOS's native bar insets its items itself.
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    flexShrink: 1,
+    minWidth: 0,
+    marginEnd: Platform.OS === 'android' ? SPACING.md : 0,
+  },
 });

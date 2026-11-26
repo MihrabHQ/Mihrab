@@ -342,6 +342,8 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
     lat: number;
     lng: number;
     locality: ReverseLocality | null;
+    /** The app language the name was asked for in. */
+    lang?: string;
   } | null>(null);
   const loadedCityIdRef = useRef<string | null>(null);
   /**
@@ -1152,7 +1154,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
             lookup
               .then(late => {
                 if (!late || liveModeRef.current === 'manual') return;
-                lastGeocodeRef.current = { lat: fixLat, lng: fixLng, locality: late };
+                lastGeocodeRef.current = { lat: fixLat, lng: fixLng, locality: late, lang: i18n.language };
                 onFixChain = onFixChain.then(() =>
                   handleFix(fixLat, fixLng, fresh, late).catch(() => {}),
                 );
@@ -1161,7 +1163,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           } else {
             locality = answer;
             if (locality) {
-              lastGeocodeRef.current = { lat: fixLat, lng: fixLng, locality };
+              lastGeocodeRef.current = { lat: fixLat, lng: fixLng, locality, lang: i18n.language };
             }
           }
         }
@@ -1357,8 +1359,17 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
   // opened again (Pixel 10 Pro, 2026-11-26). The kept answer is in the
   // wrong language now: drop it and ask again, as a pull to refresh does.
   // A place chosen by hand keeps the name it was chosen under.
+  //
+  // Only a name this run actually holds, asked for in another language. i18next
+  // announces the language at start-up too, and on a fresh install that call
+  // asked for the location permission over the welcome screen, before anyone
+  // had chosen "Use my location" (emulators, 2026-11-26). With no name held
+  // there is nothing to put right: the next fix names the place in the
+  // language of the moment.
   useEffect(() => {
-    const onLanguage = () => {
+    const onLanguage = (lng: string) => {
+      const held = lastGeocodeRef.current;
+      if (!held?.locality || held.lang === lng) return;
       if (liveModeRef.current === 'manual') return;
       lastGeocodeRef.current = null;
       requestAndLoad(true);

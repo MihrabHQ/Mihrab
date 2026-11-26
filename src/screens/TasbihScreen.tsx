@@ -127,13 +127,23 @@ export function TasbihScreen({ header }: { header?: ReactNode } = {}) {
       : null;
   const split = upperH != null && upperH >= 220 ? upperH : null;
 
-  const ringSize = useMemo(
-    () =>
+  /**
+   * The room the ring actually has: its press area's height, less the
+   * "tap anywhere" line under it. The fraction of the window alone left it
+   * larger than its room on a small phone once the Tasbih | Duas switcher
+   * sat above it, and it rose over the line of meaning under the dhikr —
+   * in Arabic, whose lines are taller, by most of a line (360×640 dp,
+   * Android 16 emulator, 2026-11-27).
+   */
+  const [tapH, setTapH] = useState<number | null>(null);
+  const roomForRing = tapH != null ? tapH - (split == null ? 48 : 0) : null;
+  const ringSize = useMemo(() => {
+    const wanted =
       split != null
         ? Math.max(140, Math.min(260, width - 96, split - 150))
-        : Math.max(180, Math.min(300, Math.min(width - 96, height * 0.34))),
-    [width, height, split],
-  );
+        : Math.max(180, Math.min(300, Math.min(width - 96, height * 0.34)));
+    return roomForRing != null && roomForRing > 0 ? Math.max(120, Math.min(wanted, roomForRing)) : wanted;
+  }, [width, height, split, roomForRing]);
 
   const onIncrement = useCallback(() => {
     const { reachedTarget } = incrementTasbih();
@@ -203,6 +213,10 @@ export function TasbihScreen({ header }: { header?: ReactNode } = {}) {
         text: showCap ? `${count} / ${target}` : `${count}`,
       }}
       onPress={onIncrement}
+      onLayout={e => {
+        const h = Math.round(e.nativeEvent.layout.height);
+        setTapH(prev => (prev === h ? prev : h));
+      }}
       style={({ pressed }: { pressed: boolean }) => [
         styles.tapTarget,
         { transform: [{ scale: pressed ? 0.97 : 1 }] },

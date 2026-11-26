@@ -510,6 +510,9 @@ const styles = StyleSheet.create({
   },
   headerPin: {
     paddingHorizontal: SPACING.sm,
+    // Gives way to the cog beside it in the header (HomeHeaderControls).
+    flexShrink: 1,
+    minWidth: 0,
     paddingVertical: SPACING.xs,
     alignItems: 'center',
     justifyContent: 'center',
