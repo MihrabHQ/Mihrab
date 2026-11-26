@@ -17,5 +17,8 @@ export const MIHRAB_WEBSITE = 'https://mihrab.elghamri.se';
 /** Shown rather than linked — a bare host reads better than a URL. */
 export const MIHRAB_WEBSITE_LABEL = 'mihrab.elghamri.se';
 
+/** Where people write to the project: the address the privacy policy gives. */
+export const MIHRAB_CONTACT = 'mihrab@elghamri.se';
+
 /** The source. Still linked from the attributions, where it belongs. */
 export const MIHRAB_REPO = 'https://github.com/MihrabHQ/Mihrab';

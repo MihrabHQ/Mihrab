@@ -80,13 +80,25 @@ describe('every door in the app opens it', () => {
 });
 
 describe('a link that launches the app has Settings under its page', () => {
-  it('puts the Settings tab under a lone settings page', () => {
+  it('puts Today and the Settings index under a lone settings page', () => {
+    // Settings is pushed from Today's cog, not a tab of its own.
     const state = withSettingsUnder({ routes: [{ name: 'SettingsDownloads' }] });
     expect(state).toEqual({
+      index: 2,
+      routes: [
+        { name: 'Home', state: { index: 0, routes: [{ name: 'TodayTab' }] } },
+        { name: 'Settings' },
+        { name: 'SettingsDownloads' },
+      ],
+    });
+  });
+
+  it('puts Today under the Settings index itself', () => {
+    expect(withSettingsUnder({ routes: [{ name: 'Settings' }] })).toEqual({
       index: 1,
       routes: [
-        { name: 'Home', state: { index: 0, routes: [{ name: 'SettingsTab' }] } },
-        { name: 'SettingsDownloads' },
+        { name: 'Home', state: { index: 0, routes: [{ name: 'TodayTab' }] } },
+        { name: 'Settings' },
       ],
     });
   });
@@ -120,7 +132,7 @@ describe('a link that launches the app has Settings under its page', () => {
       .mockResolvedValue(`${MIHRAB_SCHEME}downloads`);
     await expect(linking.getInitialURL!()).resolves.toBe(`${MIHRAB_SCHEME}downloads`);
     const launched = linking.getStateFromPath!('downloads', linking.config);
-    expect(launched?.routes.map(r => r.name)).toEqual(['Home', 'SettingsDownloads']);
+    expect(launched?.routes.map(r => r.name)).toEqual(['Home', 'Settings', 'SettingsDownloads']);
     // The next link is not the launch link.
     const running = linking.getStateFromPath!('downloads', linking.config);
     expect(running?.routes.map(r => r.name)).toEqual(['SettingsDownloads']);
@@ -136,7 +148,7 @@ describe('the back control says where back goes', () => {
 
   it('"Settings" when opened from the Settings index', () => {
     expect(
-      previousIsSettings({ index: 1, routes: [home('SettingsTab'), { name: 'SettingsDownloads' }] }),
+      previousIsSettings({ index: 2, routes: [home('TodayTab'), { name: 'Settings' }, { name: 'SettingsDownloads' }] }),
     ).toBe(true);
   });
 
@@ -164,6 +176,8 @@ describe('the back control says where back goes', () => {
     const page = read('src/screens/settings/SettingsPage.tsx');
     expect(page).toMatch(/previousIsSettings\(navigation\.getState\(\)\)/);
     expect(page).toMatch(/canGoBack\(\)/);
-    expect(page).toMatch(/navigate\('Home', \{ screen: 'SettingsTab' \}\)/);
+    // With nothing under it: the index goes back to Today, a section to the index.
+    expect(page).toMatch(/CommonActions\.reset\(/);
+    expect(page).toMatch(/\[\{ name: 'Home' \}, \{ name: 'Settings' \}\]/);
   });
 });

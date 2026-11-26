@@ -64,7 +64,7 @@ describe('a Card inside a Card warns, once, by name', () => {
 });
 
 describe('every tab screen reserves the floating bar', () => {
-  // The six tab roots, as registered in MainTabs.
+  // The five tab roots, as registered in MainTabs.
   const tabs = read('src/navigation/MainTabs.tsx');
   // Home by `component`, the rest by `getComponent` (required at the
   // first open — docs/first-frame-plan.md).
@@ -73,8 +73,8 @@ describe('every tab screen reserves the floating bar', () => {
     ...[...tabs.matchAll(/getComponent=\{\(\) => \(require\('\.\.\/screens\/(\w+)'\)/g)].map(m => m[1]),
   ];
 
-  it('registers six tabs', () => {
-    expect(components).toHaveLength(6);
+  it('registers five tabs', () => {
+    expect(components).toHaveLength(5);
   });
 
   it.each(components)('%s calls useTabBarInset', name => {
@@ -86,6 +86,9 @@ describe('every tab screen reserves the floating bar', () => {
     const src = read(file);
     // Directly, or via the shared settings page shell.
     const viaShell = /SettingsPage/.test(src) && /useTabBarInset/.test(read('src/screens/settings/SettingsPage.tsx'));
-    expect(/useTabBarInset\(/.test(src) || viaShell).toBe(true);
+    // Or through the pages it switches between (Dhikr: Tasbih and Duas), every one of them.
+    const pages = [...src.matchAll(/import \{ (\w+Screen) \} from '\.\/(\w+)'/g)].map(m => m[2]);
+    const viaPages = pages.length > 0 && pages.every(p => /useTabBarInset\(/.test(read(`src/screens/${p}.tsx`)));
+    expect(/useTabBarInset\(/.test(src) || viaShell || viaPages).toBe(true);
   });
 });

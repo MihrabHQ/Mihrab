@@ -26,7 +26,7 @@ const TABS: { file: string; ref: string }[] = [
   { file: 'QuranScreen.tsx', ref: 'listRef' },
   { file: 'DuasScreen.tsx', ref: 'scrollRef' },
   { file: 'LogScreen.tsx', ref: 'scrollRef' },
-  { file: 'SettingsScreen.tsx', ref: 'scrollRef' },
+  { file: 'HadithScreen.tsx', ref: 'scrollRef' },
 ];
 
 describe('every scrolling tab returns to the top on a second tab press', () => {

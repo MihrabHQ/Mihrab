@@ -4,6 +4,7 @@
  */
 import { Platform, StyleSheet } from 'react-native';
 import { HOME_SCREEN_PADDING, HOME_TABLE_RADIUS } from './tokens';
+import { SETTINGS_UNDER_RISE } from './SettingsChip';
 import { SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 
@@ -95,13 +96,23 @@ export const styles = StyleSheet.create({
   dayDate: { fontWeight: '400' },
   dayHijri: { fontSize: TYPE.caption.fontSize, marginTop: 2 },
   dayBack: { fontWeight: '500' },
+  /**
+   * THE TOP ROW IS PHYSICAL: left to right in every language. The place
+   * (Minimal: the heart) is on the left and the Qibla and the cog on the
+   * right in Arabic and Urdu as in English — where Settings is does not
+   * move with the language. Its children are handed the app's direction
+   * back (`heroOwnRtl`), so a chip's own words still read their way.
+   */
   heroTopRow: {
     flexDirection: 'row',
+    direction: 'ltr',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: SPACING.md,
     marginBottom: SPACING.md,
   },
+  /** Inside the physical top row: a chip laid out the language's way. */
+  heroOwnRtl: { direction: 'rtl' },
   /**
    * The location chip, ON the hero's content edge.
    *
@@ -120,6 +131,33 @@ export const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginStart: -SPACING.sm,
   },
+  /**
+   * Minimal's cog, at the row's right-hand end (the row is left to
+   * right, so `end` is the right): its glyph ON the hero's content edge,
+   * as the location's pin is on the full page — the chip pads its glyph
+   * by `xs`, which the margin takes back.
+   */
+  heroTopCog: { marginEnd: -SPACING.xs },
+  /**
+   * Minimal's heart, at the left-hand end, as far from its edge as the
+   * cog is from the other. Not the glyph's box on the edge (that would
+   * be 6, the heart being the cog's 18 in a square of 30): the heart
+   * fills its box from side to side and the cog does not, so box on edge
+   * put the heart a point and a half nearer its edge than the cog is to
+   * its own. A point less, and the two are drawn as far in — measured on
+   * a Pixel, 4 px and 5 px.
+   */
+  heroTopHeart: { marginStart: -(SPACING.xs + 1) },
+  /** Between Minimal's heart and its cog: the row's whole middle, which the heart's line opens across. */
+  heroTopSpacer: { flexGrow: 1, flexShrink: 1 },
+  /**
+   * The cog under the Qibla chip: out of the band's top into the air
+   * under the top row (SettingsChip has the sum), at the hero's
+   * right-hand edge in every language, as the chip above it is — and
+   * left to right inside, so the chip's own start and end are sides.
+   */
+  // rtl-safe: the cog is on a physical side, under the Qibla chip (heroTopRow)
+  heroCogUnder: { position: 'absolute', top: -SETTINGS_UNDER_RISE, right: 0, direction: 'ltr' },
   hero: {},
   heroExpanded: { paddingVertical: SPACING.md },
   heroFill: { flexGrow: 1, flexShrink: 0, flexBasis: 'auto' },

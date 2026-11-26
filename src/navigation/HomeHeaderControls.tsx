@@ -1,5 +1,6 @@
 /**
- * Home header controls (the location chip) — v2.7.41, reduced in v2.8.5.
+ * Home header controls (the location chip and the Settings cog) — v2.7.41,
+ * reduced in v2.8.5, the cog back since Settings left the tab bar.
  *
  * Extracted from RootNavigator so the same row can render in two places:
  *
@@ -10,16 +11,15 @@
  *    DRAG REGION, so clicks on header buttons were intermittently
  *    swallowed as window drags ("the settings gear sometimes works").
  *    Content rows live below the drag region, so clicks always land.
- *
- * The Settings gear left this row when Settings became a tab — see the
- * comment on the returned element.
  */
 import { useNavigation } from '@react-navigation/native';
 import type { CompositeNavigationProp } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { LocationChip } from '../screens/home/LocationChip';
+import { SettingsChip } from '../screens/home/SettingsChip';
+import { SPACING } from '../theme/tokens';
 import type { MainTabParamList, RootStackParamList } from './types';
 
 export function HomeHeaderControls() {
@@ -35,19 +35,14 @@ export function HomeHeaderControls() {
     // presets) and shows the current location label; tapping it opens the
     // preset switcher when presets exist, otherwise Settings.
     //
-    // The gear is GONE from here (v2.8.5). It was the last survivor of a
-    // toolbar that once held Calendar, Compass and Settings, kept because
-    // "only Settings has no body-row equivalent" — and that stopped being
-    // true when Settings became the sixth tab. A control that duplicates a
-    // tab is not a shortcut, it is a second answer to the same question,
-    // and on a phone it was crowding the wordmark hard enough to overlap
-    // it. What's left is the one thing the header alone can say: where
-    // these times are for.
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    // The gear left this row in v2.8.5 because it duplicated the Settings
+    // tab. There is no tab now, so the cog is the one way in, here as on
+    // the phone's hero (SettingsChip) — one gear, still.
+    <View style={styles.row}>
       <LocationChip
         compactHeader
         // Straight to the page the saved locations are on, rather than
-        // to the Settings tab and a scroll: since the settings became an
+        // to the Settings index and a scroll: since the settings became an
         // index of sections there is a destination for this, and landing
         // on it is the whole of what "Add new location" promised.
         onAddLocation={() =>
@@ -57,6 +52,11 @@ export function HomeHeaderControls() {
           })
         }
       />
+      <SettingsChip onPress={() => navigation.navigate('Settings')} />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  row: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
+});

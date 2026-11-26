@@ -71,9 +71,10 @@ function positiveInt(value: string): number | undefined {
  * mihrab://downloads on a cold start — the "download stopped"
  * notification, tapped hours later — produced a stack of one: the page,
  * with nothing to go back to. Its back control then did nothing and
- * Android's back left the app. Every `Settings…` page is a page OF the
- * Settings tab, so that is what is put under it, and back lands where it
- * would have had the page been reached by hand.
+ * Android's back left the app. Every `Settings…` page is pushed over the
+ * Settings index, which is pushed over Today, so those two are put under
+ * it, and back lands where it would have had the page been reached by
+ * hand.
  *
  * ONLY for the link the app was launched with. A link that arrives while
  * the app is running is pushed onto the stack the reader already has, and
@@ -100,11 +101,20 @@ const TAB_UNDER: Readonly<Record<string, string>> = {
   ShareMonth: 'TodayTab',
   Compass: 'TodayTab',
   Fasting: 'LogTab',
-  Backup: 'SettingsTab',
+  HadithReader: 'HadithTab',
+  HadithList: 'HadithTab',
+  // Settings is opened from Today's cog.
+  Settings: 'TodayTab',
+  Backup: 'TodayTab',
 };
 
+/** Pages of Settings: opened by hand, they are pushed over its index. */
+export function isUnderSettings(name: string): boolean {
+  return name === 'Backup' || (name.startsWith('Settings') && name !== 'Settings');
+}
+
 export function tabUnder(name: string): string | null {
-  if (name.startsWith('Settings')) return 'SettingsTab';
+  if (isUnderSettings(name)) return 'TodayTab';
   return TAB_UNDER[name] ?? null;
 }
 
@@ -115,11 +125,18 @@ export function withSettingsUnder<S extends { routes: Array<{ name: string }> }>
   const only = state.routes[0];
   const tab = tabUnder(only.name);
   if (!tab) return state;
-  return {
-    ...state,
-    index: 1,
-    routes: [{ name: 'Home', state: { index: 0, routes: [{ name: tab }] } }, only],
-  } as unknown as S;
+  const home = { name: 'Home', state: { index: 0, routes: [{ name: tab }] } };
+  const routes = isUnderSettings(only.name) ? [home, { name: 'Settings' }, only] : [home, only];
+  return { ...state, index: routes.length - 1, routes } as unknown as S;
+}
+
+/**
+ * Paths from before the Dhikr tab, still sent: the Tasbih widget's
+ * mihrab://tasbih, and the adhkār reminders' mihrab://duas/<category>.
+ * Both are pages of Dhikr now.
+ */
+export function withDhikrAliases(path: string): string {
+  return path.replace(/^(\/?)(tasbih|duas)(?=$|[/?#])/, '$1dhikr/$2');
 }
 
 /** Set while the launch link has not yet been turned into a state. */
@@ -147,7 +164,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
       }
     : null),
   getStateFromPath(rawPath, options) {
-    const path = withoutBase(rawPath);
+    const path = withDhikrAliases(withoutBase(rawPath));
     const state = defaultGetStateFromPath(path, options);
     if (!launchLinkPending) return state;
     launchLinkPending = false;
@@ -187,21 +204,26 @@ export const linking: LinkingOptions<RootStackParamList> = {
         screens: {
           TodayTab: 'today',
           QuranTab: 'quran',
-          TasbihTab: 'tasbih',
+          HadithTab: 'hadith',
           /**
-           * mihrab://duas — the index; mihrab://duas/evening — that
-           * category, opened (#39).
+           * mihrab://dhikr — the counter; mihrab://dhikr/duas — the dua
+           * index; mihrab://dhikr/duas/evening — that category, opened
+           * (#39). The older mihrab://tasbih and mihrab://duas/… are
+           * rewritten to these (`withDhikrAliases`).
            *
-           * The name is checked by the screen rather than here: a
+           * The names are checked by the screens rather than here: a
            * `parse` that cannot say "not a category" has to invent a
            * value, and the honest answer to an unknown name is the
            * index, which is what the screen does with one.
            */
-          DuasTab: 'duas/:category?',
+          DhikrTab: 'dhikr/:view?/:category?',
           LogTab: 'log',
-          SettingsTab: 'settings',
         },
       },
+      /** mihrab://settings — the Settings index, over Today. */
+      Settings: 'settings',
+      /** mihrab://hadith/read/<id> — one hadith. */
+      HadithReader: 'hadith/read/:id',
       /**
        * mihrab://read/2?initialPage=3&scrollToAyah=5
        *

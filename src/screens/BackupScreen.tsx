@@ -73,6 +73,7 @@ const ROWS: SyncCategory[] = [
   'fasting',
   'dhikr',
   'quran',
+  'hadith',
   'settings',
   'location',
 ];

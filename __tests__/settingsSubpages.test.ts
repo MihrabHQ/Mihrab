@@ -125,8 +125,8 @@ describe('the index itself', () => {
     expect(INDEX).not.toMatch(/Modal/);
   });
 
-  it('returns to the top when the tab is tapped again', () => {
-    expect(INDEX).toMatch(/useScrollToTop\(scrollRef\)/);
+  it('sits in the same frame as its sections, now that it is pushed rather than a tab', () => {
+    expect(INDEX).toMatch(/<SettingsPage>/);
   });
 });
 

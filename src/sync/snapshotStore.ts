@@ -47,6 +47,8 @@ import { emptyData, type SnapshotData, type SyncSelection } from './snapshot';
 import { mergeData, mergeQuran, summarise, type MergeSummary } from './merge';
 import type { Snapshot } from './snapshot';
 import { quiet } from '../utils/quiet';
+import { coerceHadithRecord, HADITH_KEY } from '../hadith/hadithRecord';
+import { reloadHadithRecord } from '../hadith/hadithStore';
 
 /** Plaintext settings blob. Must match `KEY` in settings/storage.ts. */
 export const SETTINGS_KEY = 'prayerapp.settings.v1';
@@ -91,7 +93,7 @@ export async function collectData(
     options.strict
       ? durableEncryptedGet(key, { strict: true })
       : durableEncryptedGet(key).catch(() => null);
-  const [journal, fasting, dhikr, sunnah, quran, settings, location] =
+  const [journal, fasting, dhikr, sunnah, quran, settings, location, hadith] =
     await Promise.all([
       enc(JOURNAL_KEY),
       enc(FASTING_KEY),
@@ -100,6 +102,7 @@ export async function collectData(
       AsyncStorage.getItem(QURAN_STORAGE_KEY).catch(() => null),
       AsyncStorage.getItem(SETTINGS_KEY).catch(() => null),
       enc(LOCATION_KEY),
+      enc(HADITH_KEY),
     ]);
   /**
    * THE QURAN STORE IS READ LIVE, not off the disk. It holds its state in
@@ -116,6 +119,7 @@ export async function collectData(
     dhikr: parse(dhikr, coerceDhikrLog, base.dhikr),
     sunnah: parse(sunnah, coerceSunnahLog, base.sunnah),
     quran: liveQuran ?? parse(quran, coerceQuranState, base.quran),
+    hadith: parse(hadith, coerceHadithRecord, base.hadith),
     settings: parse(settings, asObject, base.settings),
     location: parse(location, asObject, base.location),
   };
@@ -145,6 +149,9 @@ export async function writeData(
   }
   if (touched.sunnah) {
     jobs.push(durableEncryptedSet(SUNNAH_KEY, JSON.stringify(next.sunnah)));
+  }
+  if (touched.hadith) {
+    jobs.push(durableEncryptedSet(HADITH_KEY, JSON.stringify(next.hadith)));
   }
   // The Quran store is written below, through the store, not here.
   if (touched.settings) {
@@ -187,6 +194,7 @@ export async function writeData(
     }
   }
   notifyPracticeChanged();
+  if (touched.hadith) await reloadHadithRecord();
 
   // The widget is a reader of every one of these and has no way to notice a
   // restore on its own.

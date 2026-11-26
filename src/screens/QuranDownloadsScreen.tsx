@@ -83,6 +83,8 @@ import {
   WORD_MEANINGS_SURAHS,
 } from '../quran/wordMeanings';
 import { RiwayahDownloadSection } from '../quran/RiwayahDownloadSection';
+import { HadithDownloadsSection, hadithBytes } from '../hadith/HadithDownloadsSection';
+import { usePackStatuses } from '../hadith/packs';
 import {
   hydrateRiwayahData,
   riwayahProvenance,
@@ -279,6 +281,7 @@ export function QuranDownloadsContent() {
     </>
   );
 
+  const hadithPacks = usePackStatuses();
   const total =
     mushafBytes +
     tajweed.light.bytes +
@@ -288,6 +291,7 @@ export function QuranDownloadsContent() {
     translationRows.reduce((s, e) => s + e.bytes, 0) +
     wordMeanings.bytes +
     riwayahBytes +
+    hadithBytes(hadithPacks) +
     audio.reduce((s, a) => s + a.bytes, 0);
 
   const items: ReactNode[] = [];
@@ -581,24 +585,29 @@ export function QuranDownloadsContent() {
         </SettingsGroup>
       ) : null}
 
-      <SettingsGroup title={t('downloads.groupOnDevice', 'On this device')}>
-        {items.length > 0 ? (
-          items
-        ) : (
-          <SettingsBlock>
-            <Text style={[styles.empty, { color: palette.muted }]}>
-              {loading
-                ? t('quran.loading', 'Loading…')
-                : t(
-                    'downloads.empty',
-                    'Nothing downloaded yet. Mushaf pages, recitation audio and tafsir you download appear here.',
-                  )}
-            </Text>
-          </SettingsBlock>
-        )}
-      </SettingsGroup>
+      {/* "Nothing downloaded yet" is not said over a list of downloaded hadith. */}
+      {items.length > 0 || loading || hadithBytes(hadithPacks) === 0 ? (
+        <SettingsGroup title={t('downloads.groupOnDevice', 'On this device')}>
+          {items.length > 0 ? (
+            items
+          ) : (
+            <SettingsBlock>
+              <Text style={[styles.empty, { color: palette.muted }]}>
+                {loading
+                  ? t('quran.loading', 'Loading…')
+                  : t(
+                      'downloads.empty',
+                      'Nothing downloaded yet. Mushaf pages, recitation audio and tafsir you download appear here.',
+                    )}
+              </Text>
+            </SettingsBlock>
+          )}
+        </SettingsGroup>
+      ) : null}
 
       <RiwayahDownloadSection onChanged={onRiwayahChanged} />
+
+      <HadithDownloadsSection />
 
       <ConfirmModal
         visible={pendingDelete != null}

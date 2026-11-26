@@ -40,7 +40,8 @@
  * them rather than in the background, which is the honest most that
  * platform allows.
  */
-import NetInfo, { type NetInfoState } from '@react-native-community/netinfo';
+import NetInfo from '@react-native-community/netinfo';
+import { isFreeConnection } from '../utils/freeConnection';
 import {
   hydrateResumableJob,
   quranDownloadState,
@@ -49,13 +50,9 @@ import {
   subscribeQuranDownload,
 } from './quranDownloadManager';
 
-/** Unmetered, and known to be: see the header on the null. */
-export function isFreeConnection(state: NetInfoState | null): boolean {
-  if (!state?.isConnected) return false;
-  if (state.type !== 'wifi' && state.type !== 'ethernet') return false;
-  const details = state.details as { isConnectionExpensive?: boolean } | null;
-  return details?.isConnectionExpensive !== true;
-}
+// Unmetered, and known to be: see the header on the null. The check itself
+// is shared with the Hadith packs (`utils/freeConnection.ts`).
+export { isFreeConnection };
 
 /**
  * How many times one stopped job may be picked up by itself.

@@ -94,6 +94,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVerticalBarActions, useVerticalBar } from '../../native/VerticalBar';
 import { QiblaChip } from './QiblaChip';
 import { HelpMihrabChip } from './HelpMihrabChip';
+import { SettingsChip } from './SettingsChip';
 import { PrayerRow } from './PrayerRow';
 import {
   useNextAlertOverride,
@@ -230,6 +231,11 @@ export type TodayCardProps = {
    * props); absent, there is no chip.
    */
   onHelpMihrab?: () => void;
+  /**
+   * Opens Settings, from the cog at the trailing end of the phone hero's
+   * top row. The dashboard and the Mac carry it in their header instead.
+   */
+  onOpenSettings?: () => void;
   /** Wide iPad/Mac dashboard: the hero gets more presence. */
   expanded?: boolean;
   /**
@@ -326,6 +332,7 @@ function TodayCardImpl({
   qiblaBearing,
   onOpenQibla,
   onHelpMihrab,
+  onOpenSettings,
   expanded = false,
   fullBleed = false,
   bannerAbove = false,
@@ -1247,10 +1254,15 @@ function TodayCardImpl({
     ) : null;
   // Not at a large text size: the heart's line would open across the
   // eyebrow's words. Help Mihrab is still in Settings → About.
-  const renderHelp = (ink: SkyInkColors) =>
+  const renderHelp = (ink: SkyInkColors, left?: boolean) =>
     onHelpMihrab && currentFontScale() < HELP_CHIP_MAX_FONT_SCALE ? (
-      <HelpMihrabChip ink={ink} onPress={onHelpMihrab} />
+      <HelpMihrabChip ink={ink} onPress={onHelpMihrab} left={left} />
     ) : null;
+  const renderSettings = (ink: SkyInkColors, under?: boolean) =>
+    onOpenSettings ? <SettingsChip ink={ink} onPress={onOpenSettings} under={under} /> : null;
+  // Under the Qibla chip where there is one; without a place there is no
+  // bearing and no chip, and the cog keeps the row's end (SettingsChip).
+  const settingsUnder = fullBleed && !minimal && qiblaBearing != null;
 
   /**
    * One day's table. Today's rows carry the live things — the next-prayer
@@ -1531,7 +1543,8 @@ function TodayCardImpl({
               bleed={{ horizontal: skySide, top: heroTop, bottom: footPad }}
               statusBarInset={underStatusBar ? insets.top : 0}
               fill={fullBleed}
-              topRow={fullBleed ? (minimal ? { renderHelp } : { renderLocation, renderQibla }) : undefined}
+              topRow={fullBleed ? (minimal ? { renderHelp, renderSettings } : { renderLocation, renderQibla, renderSettings }) : undefined}
+              settingsUnder={settingsUnder}
               minimal={minimal}
               footer={footer}
               frozenAt={interval.fromAt}
@@ -1567,7 +1580,8 @@ function TodayCardImpl({
             bleed={{ horizontal: skySide, top: heroTop, bottom: footPad }}
             statusBarInset={underStatusBar ? insets.top : 0}
             fill={fullBleed}
-            topRow={fullBleed ? (minimal ? { renderHelp } : { renderLocation, renderQibla, renderHelp }) : undefined}
+            topRow={fullBleed ? (minimal ? { renderHelp, renderSettings } : { renderLocation, renderQibla, renderHelp, renderSettings }) : undefined}
+            settingsUnder={settingsUnder}
             minimal={minimal}
             recess={recess}
             footer={footer}

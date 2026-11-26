@@ -22,10 +22,9 @@ const tabs = (index: number): BackNavState => ({
   routes: [
     { name: 'TodayTab' },
     { name: 'QuranTab' },
-    { name: 'TasbihTab' },
-    { name: 'DuasTab' },
+    { name: 'HadithTab' },
+    { name: 'DhikrTab' },
     { name: 'LogTab' },
-    { name: 'SettingsTab' },
   ],
 });
 
@@ -38,10 +37,9 @@ const stack = (index: number): BackNavState => ({
 describe('from a tab’s own root', () => {
   it.each([
     ['Quran', 1],
-    ['Tasbih', 2],
-    ['Duas', 3],
+    ['Hadith', 2],
+    ['Dhikr', 3],
     ['Log', 4],
-    ['Settings', 5],
   ])('goes to Today from the %s tab', (_name, index) => {
     expect(decideAndroidBack(tabs(index), false)).toBe('home');
   });

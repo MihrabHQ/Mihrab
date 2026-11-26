@@ -9,7 +9,7 @@
  *
  * ── WHY THE CIPHERTEXT CANNOT SIMPLY BE COPIED ────────────────────────
  *
- * The journal, fasting, dhikr and sunnah stores are encrypted at rest with a
+ * The journal, fasting, dhikr, sunnah and hadith stores are encrypted at rest with a
  * key that lives in the Android Keystore / iOS Keychain. That key is
  * device-bound and cannot be exported — that is the entire point of it. So a
  * byte copy of the encrypted blob is worthless on any other device, and a
@@ -42,6 +42,7 @@ import { coerceSunnahLog, type SunnahLog } from '../journal/sunnah';
 import { coerceDhikrLog, type DhikrLog } from '../practice/practiceStore';
 import { coerceQuranState, DEFAULT_QURAN_STATE } from '../quran/quranState';
 import type { QuranState } from '../quran/quranTypes';
+import { coerceHadithRecord, EMPTY_HADITH_RECORD, type HadithRecord } from '../hadith/hadithRecord';
 
 export const SNAPSHOT_FORMAT = 'mihrab.snapshot';
 export const SNAPSHOT_FORMAT_VERSION = 1;
@@ -60,6 +61,7 @@ export const SYNC_CATEGORIES = [
   'dhikr',
   'sunnah',
   'quran',
+  'hadith',
   'settings',
   'location',
 ] as const;
@@ -81,6 +83,7 @@ export const DEFAULT_SELECTION: SyncSelection = {
   dhikr: true,
   sunnah: true,
   quran: true,
+  hadith: true,
   settings: true,
   location: false,
 };
@@ -96,6 +99,7 @@ export function nothing(): SyncSelection {
     dhikr: false,
     sunnah: false,
     quran: false,
+    hadith: false,
     settings: false,
     location: false,
   };
@@ -118,6 +122,8 @@ export type SnapshotData = {
   dhikr: DhikrLog;
   sunnah: SunnahLog;
   quran: QuranState;
+  /** Read, bookmarked and noted hadith (`hadith/hadithRecord.ts`). */
+  hadith: HadithRecord;
   settings: Record<string, unknown>;
   location: Record<string, unknown>;
 };
@@ -146,6 +152,7 @@ export function emptyData(): SnapshotData {
     dhikr: {},
     sunnah: {},
     quran: DEFAULT_QURAN_STATE,
+    hadith: EMPTY_HADITH_RECORD,
     settings: {},
     location: {},
   };
@@ -164,6 +171,7 @@ export function buildSnapshot(
   if (selection.dhikr) out.dhikr = data.dhikr;
   if (selection.sunnah) out.sunnah = data.sunnah;
   if (selection.quran) out.quran = data.quran;
+  if (selection.hadith) out.hadith = data.hadith;
   if (selection.settings) out.settings = data.settings;
   if (selection.location) out.location = data.location;
   return {
@@ -220,6 +228,7 @@ export function readSnapshot(raw: unknown): Snapshot {
     data.sunnah = coerceSunnahLog(rawData.sunnah);
   }
   if (rawData.quran !== undefined) data.quran = coerceQuranState(rawData.quran);
+  if (rawData.hadith !== undefined) data.hadith = coerceHadithRecord(rawData.hadith);
   if (rawData.settings !== undefined) {
     data.settings = plainObject(rawData.settings);
   }

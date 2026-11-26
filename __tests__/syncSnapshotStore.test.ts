@@ -75,6 +75,7 @@ import {
   startKhatmah,
 } from '../src/quran/khatmahActions';
 import { durableEncryptedGet } from '../src/storage/durableWrite';
+import { EMPTY_HADITH_RECORD } from '../src/hadith/hadithRecord';
 
 const NOW = '2026-08-19T06:00:00.000Z';
 
@@ -285,6 +286,7 @@ describe('writeData', () => {
       dhikr: {},
       sunnah: {},
       quran: DEFAULT_QURAN_STATE,
+      hadith: EMPTY_HADITH_RECORD,
       settings: { a: 1 },
       location: { b: 2 },
     };

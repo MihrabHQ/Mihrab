@@ -207,7 +207,7 @@ export function RootNavigator() {
         // takes effect.
         orientation: 'portrait',
       })}>
-      {/* The six tabs are the app (design review 2e). Everything below is
+      {/* The five tabs are the app. Everything below is
           pushed ON TOP of them: sub-pages, readers and one-off flows. */}
       <Stack.Screen
         name="Home"
@@ -353,6 +353,30 @@ export function RootNavigator() {
         options={{ title: t('nav.fasting'), headerLargeTitle: false, contentStyle: edgeToEdge }}
       />
 
+      {/* One hadith, and a list of them (a topic, a set, a book): pushed
+          over the Hadith tab, in their own pinned bar like the settings
+          pages, so the native header is off. */}
+      <Stack.Screen
+        name="HadithReader"
+        getComponent={() => (require('../screens/hadith/HadithReaderScreen') as typeof import('../screens/hadith/HadithReaderScreen')).HadithReaderScreen}
+        options={{ title: t('nav.hadith'), headerShown: false, contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 } }}
+      />
+      <Stack.Screen
+        name="HadithList"
+        getComponent={() => (require('../screens/hadith/HadithListScreen') as typeof import('../screens/hadith/HadithListScreen')).HadithListScreen}
+        options={{ title: t('nav.hadith'), headerShown: false, contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 } }}
+      />
+      {/* The Settings index, pushed from Today's cog. Drawn in SettingsPage's
+          own bar, like the sections below. */}
+      <Stack.Screen
+        name="Settings"
+        getComponent={() => (require('../screens/SettingsScreen') as typeof import('../screens/SettingsScreen')).SettingsScreen}
+        options={{
+          title: t('nav.settings'),
+          headerShown: false,
+          contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 },
+        }}
+      />
       {/* The settings subpages.
        *
        * Native header is hidden: SettingsPage draws the same pinned bar as

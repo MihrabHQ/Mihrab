@@ -27,7 +27,7 @@ const HookIcon = ({ color }: { color: string; size: number; focused: boolean }) 
   return <>{tint}</>;
 };
 
-const names = ['TodayTab', 'QuranTab', 'TasbihTab', 'DuasTab', 'LogTab', 'SettingsTab'];
+const names = ['TodayTab', 'QuranTab', 'HadithTab', 'DhikrTab', 'LogTab'];
 const routes = names.map(name => ({ key: `${name}-k`, name, params: undefined }));
 const descriptors = Object.fromEntries(
   routes.map(r => [r.key, { options: { title: r.name, tabBarIcon: HookIcon } }]),

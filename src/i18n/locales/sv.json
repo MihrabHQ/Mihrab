@@ -17,7 +17,9 @@
     "fasting": "Fasta",
     "today": "Idag",
     "sync": "Synka mellan enheter",
-    "devices": "Enheter"
+    "devices": "Enheter",
+    "hadith": "Hadith",
+    "dhikr": "Dhikr"
   },
   "a11y": {
     "openSettings": "Öppna inställningar",
@@ -53,7 +55,8 @@
     "confirmDelete": "Tryck igen för att ta bort",
     "learnMore": "Läs mer",
     "dismiss": "Avfärda",
-    "hide": "Dölj"
+    "hide": "Dölj",
+    "save": "Spara"
   },
   "home": {
     "loadingPrayer": "Laddar bönetider…",
@@ -466,7 +469,7 @@
     "sectionQuran": "Koranen",
     "sectionQuranBlurb": "Läsning, översättning, tafsir",
     "sectionDownloads": "Nedladdningar",
-    "sectionDownloadsBlurb": "Muṣḥaf, reciteringar, tafsir, lagring",
+    "sectionDownloadsBlurb": "Muṣḥaf, reciteringar, tafsir, hadith, lagring",
     "sectionAbout": "Om",
     "sectionAboutBlurb": "Version, källor, licenser",
     "malikiRows": "Visa dem bland dagens tider",
@@ -2039,7 +2042,12 @@
     "surahHeaderFont": "Kalligrafi för surarubriker",
     "recitationWholeSurah": "Recitationer av hela suror (15): mp3quran.net · verstider anpassade till ljudet av Mihrab",
     "transliteration": "Koranens translittereringar, genererade från den arabiska texten; kontrollerade mot den vers för vers, {{n}} verser rättade",
-    "transliterationAbay": "Turkisk translitterering av Muhammet Abay; kontrollerad mot den arabiska texten vers för vers, {{n}} verser rättade"
+    "transliterationAbay": "Turkisk translitterering av Muhammet Abay; kontrollerad mot den arabiska texten vers för vers, {{n}} verser rättade",
+    "groupHadith": "Hadith",
+    "hadeethenc": "Hadithtexter, översättningar, förklaringar och lärdomar, återpublicerade oförändrade",
+    "nawawiArabic": "an-Nawawis fyrtio hadither, arabisk text",
+    "openHadithData": "Hadithböckerna, arabisk text",
+    "hadithGrades": "Graderingar av haditherna i de fyra Sunan-samlingarna och Muwatta"
   },
   "liveActivity": {
     "title": "Nästa bön",
@@ -2299,7 +2307,8 @@
       "dhikr": "Dhikr",
       "quran": "Koranen",
       "settings": "Inställningar",
-      "location": "Plats"
+      "location": "Plats",
+      "hadith": "Hadith"
     },
     "categoryHint": {
       "prayers": "Varje bön du har loggat, och dina anteckningar",
@@ -2308,7 +2317,8 @@
       "dhikr": "Avklarade tasbih-omgångar",
       "quran": "Bokmärken, stjärnmärkta ayat, khatmah-planer, senast lästa, reciterare och tafsir",
       "settings": "Utseende, beräkningsmetod, aviseringar och widgetar",
-      "location": "Sparade platser och koordinater"
+      "location": "Sparade platser och koordinater",
+      "hadith": "Lästa hadither, bokmärken, dina anteckningar och din nivå"
     },
     "count": {
       "prayers": "Böner",
@@ -2316,7 +2326,8 @@
       "dhikr": "Dhikr-dagar",
       "sunnah": "Sunnah-dagar",
       "bookmarks": "Bokmärken",
-      "khatmah": "Khatmah-planer"
+      "khatmah": "Khatmah-planer",
+      "hadith": "Lästa hadither"
     },
     "settingsRowHint": "Parkoppla en annan enhet",
     "pairIntro": "Synk håller din historik likadan på alla enheter du använder. Den är peer to peer: dina enheter utbyter krypterade filer direkt med varandra, utan konto och utan någon server från oss, och bara dina egna enheter kan läsa dem.",
@@ -2791,5 +2802,190 @@
     "missedAgain_one": "↺ {{count}} missad",
     "reciteMissedAgain": "Recitera de {{count}} missade verserna igen",
     "reciteMissedAgain_one": "Recitera den missade versen igen"
+  },
+  "hadith": {
+    "learn": "Lär dig",
+    "browse": "Slå upp",
+    "searchPlaceholder": "Sök hadith, eller {{example}}",
+    "searchExample": "Nawawi 14",
+    "searchScope": "Söker i det som är nedladdat på den här enheten.",
+    "searchNeedsDownload": "Inget är nedladdat ännu. Rensa sökningen och ladda ner haditherna först.",
+    "noResults": "Inget hittades.",
+    "filterPlaceholder": "Filtrera listan",
+    "filterBookPlaceholder": "Sök i boken, eller skriv ett nummer",
+    "levelPrompt": "Varifrån börjar du?",
+    "level": {
+      "starting": "Ny på hadith",
+      "building": "Börjar känna mig hemma",
+      "depth": "Djupare studier"
+    },
+    "welcomeTitle": "Ladda ner haditherna",
+    "welcomeBody": "En enda nedladdning ger dig HadeethEncs hadither på ditt språk, var och en med sin betydelse och förklaring, samt an-Nawawis fyrtio. Sedan fungerar alla samlingar, ämnen och sökningar offline. Böckerna på arabiska laddas ner var för sig.",
+    "continueReading": "Fortsätt läsa",
+    "bookmarks": "Bokmärken",
+    "noBookmarks": "Inga bokmärken än. Tryck på stjärnan under en hadith för att spara den här.",
+    "progress": "{{read}} av {{total}} lästa",
+    "markSetRead": "Markera som redan läst",
+    "markSetUnread": "Avmarkera",
+    "completed": "Avslutade · {{count}}",
+    "topics": "Ämnen",
+    "entries": "Hadither: {{count}}",
+    "books": "Böckerna",
+    "booksNote": "På arabiska, från Open-Hadith-Data. Sahih al-Bukhari och Sahih Muslim är fullständiga; de fem övriga innehåller bara de hadither som deras granskare kallar sahih eller hasan. Varje bok laddas ner för sig.",
+    "onDevice": "Nedladdad",
+    "attribution": "Texter, översättningar och förklaringar: HadeethEnc.com. an-Nawawis fyrtio på arabiska: fawazahmed0/hadith-api. Böckerna: Open-Hadith-Data (ODbL). Deras graderingar: fawazahmed0/hadith-api.",
+    "needsDownload": "Den här listan finns inte på din enhet än.",
+    "download": "Ladda ner",
+    "downloadSize": "Ladda ner · {{size}}",
+    "downloading": "Laddar ner…",
+    "downloadFailed": "Nedladdningen blev inte klar. Kontrollera anslutningen och försök igen.",
+    "downloadSourceNote": "Laddas ner från Mihrabs kopia på GitHub, eller från originalkällan om den inte går att nå. Ta bort den när du vill under Inställningar → Nedladdningar.",
+    "notOnDevice": "Den här hadithen finns inte på din enhet. Öppna den från fliken Hadith för att ladda ner den.",
+    "explanation": "Förklaring",
+    "benefits": "Lärdomar och nytta",
+    "wordMeanings": "Ordförklaringar",
+    "fallbackNote": "Visas på engelska: den här hadithen har ännu inte översatts till ditt språk.",
+    "arabicOnlyNote": "Den här texten finns bara på arabiska.",
+    "nawawiNumber": "an-Nawawis fyrtio · {{n}}",
+    "sourceHadeethenc": "Källa: HadeethEnc.com",
+    "sourceNawawi": "an-Nawawis fyrtio hadither (arabisk text)",
+    "sourceBook": "{{book}} · Open-Hadith-Data",
+    "markRead": "Markera som läst",
+    "markUnread": "Markera som oläst",
+    "readNext": "Markera som läst och fortsätt",
+    "read": "Läst",
+    "bookmark": "Bokmärk",
+    "removeBookmark": "Ta bort bokmärke",
+    "addNote": "Lägg till en anteckning",
+    "editNote": "Redigera din anteckning",
+    "yourNote": "Din anteckning",
+    "notePlaceholder": "Skriv en reflektion, en påminnelse, var du hörde den…",
+    "share": "Dela",
+    "copy": "Kopiera",
+    "copied": "Kopierat",
+    "previous": "Föregående hadith",
+    "next": "Nästa hadith",
+    "set": {
+      "nawawi40": {
+        "title": "an-Nawawis fyrtio",
+        "blurb": "De fyrtiotvå hadither som imam an-Nawawi samlade som religionens grunder."
+      },
+      "foundations": {
+        "title": "Trons grunder",
+        "blurb": "Tron, dess pelare och vad den begär av hjärtat."
+      },
+      "daily": {
+        "title": "Vardaglig gudsdyrkan",
+        "blurb": "Rening, bön, åminnelse och dagens små handlingar av gudsdyrkan."
+      },
+      "manners": {
+        "title": "Karaktär och uppförande",
+        "blurb": "Hur Profeten ﷺ lärde sina följeslagare att tala, umgås och uppföra sig."
+      },
+      "heart": {
+        "title": "Att rena hjärtat",
+        "blurb": "Uppriktighet, ånger, tålamod och det inre livet."
+      },
+      "family": {
+        "title": "Familj och grannar",
+        "blurb": "Föräldrar, släkt, makar, barn och de som bor bredvid oss."
+      },
+      "virtues": {
+        "title": "Gärningars förtjänster",
+        "blurb": "Lönen för goda gärningar, och för dem som utför dem."
+      },
+      "creed": {
+        "title": "Trosläran",
+        "blurb": "Tron på Allah, Hans namn och egenskaper, det fördolda och den Yttersta dagen."
+      },
+      "worship": {
+        "title": "Gudsdyrkan i detalj",
+        "blurb": "Bön, fasta, zakat och hajj – hadither med de lärdas förklaring."
+      },
+      "seerah": {
+        "title": "Profetens liv",
+        "blurb": "Siran och följeslagarnas historia, genom hadither."
+      },
+      "book-bukhari": {
+        "title": "Sahih al-Bukhari",
+        "blurb": "Hela samlingen, på arabiska."
+      },
+      "book-muslim": {
+        "title": "Sahih Muslim",
+        "blurb": "Hela samlingen, på arabiska."
+      }
+    },
+    "topic": {
+      "1": "Koranen och dess vetenskaper",
+      "2": "Hadith och dess vetenskaper",
+      "3": "Trosläran",
+      "4": "Rättslära (fiqh)",
+      "5": "Dygder och uppförande",
+      "6": "Kallelse till islam",
+      "7": "Sira och historia"
+    },
+    "book": {
+      "bukhari": "Sahih al-Bukhari",
+      "muslim": "Sahih Muslim",
+      "abudawud": "Sunan Abi Dawud",
+      "tirmidhi": "Jami' at-Tirmidhi",
+      "nasai": "Sunan an-Nasa'i",
+      "ibnmajah": "Sunan Ibn Majah",
+      "malik": "Muwatta Malik"
+    },
+    "packStarter": "Startsamlingar",
+    "packCategories": "Ämnesregister",
+    "packNawawi": "an-Nawawis fyrtio (arabiska)",
+    "downloadsFooter": "Hadithtexter du har laddat ner från fliken Hadith. Ta bort vilken som helst och ladda ner den igen därifrån.",
+    "levelNote": "Det här avgör bara vad som föreslås först. Inget är låst, och du kan ändra det när du vill.",
+    "levelLine": "Föreslås för: {{level}}",
+    "change": "Ändra",
+    "pickDirect": "Välj själv",
+    "pickDirectNote": "Vilket ämne som helst, eller en av böckerna.",
+    "allSets": "Alla samlingar",
+    "allTopics": "Alla ämnen",
+    "hub": {
+      "prayer": "Bön och rening",
+      "fasting": "Fasta",
+      "charity": "Zakat, välgörenhet och egendom",
+      "hajj": "Hajj och umra",
+      "family": "Familj och föräldrar",
+      "food": "Mat och dryck",
+      "character": "Karaktär och tal",
+      "etiquette": "Uppförande i vardagen",
+      "supplications": "Duor och dhikr",
+      "heart": "Hjärtat och ångern",
+      "faith": "Tro och troslära",
+      "prophet": "Profetens liv ﷺ"
+    },
+    "rulingNote": "En hadith är inte i sig ett rättsligt utslag. Vad som gäller för dig kan bero på andra texter och på hur de lärda har förstått dem. Om du undrar vad du ska göra, fråga en kvalificerad lärd eller följ din rättsskola (madhhab).",
+    "filterTopicPlaceholder": "Sök i det här ämnet",
+    "filter": {
+      "all": "Alla",
+      "sahihayn": "al-Bukhari eller Muslim",
+      "books": "Böckerna",
+      "topic": "Ämne",
+      "clearTopic": "Ta bort ämnet: {{topic}}",
+      "grade": "Gradering",
+      "sahih": "Sahih (autentisk)",
+      "hasan": "Hasan (god)",
+      "clearGrade": "Ta bort graderingen: {{grade}}",
+      "gradeNote": "Enligt HadeethEncs gradering. En hadith som den graderar med förbehåll hör till ingendera och hittas utan det här filtret."
+    },
+    "refHeading": "{{book}} · {{n}}",
+    "refNeedsBook": "{{book}} är inte nedladdad. Öppna den för att ladda ner den.",
+    "refNotFound": "Det finns ingen hadith med nummer {{n}} i den här utgåvan av {{book}}.",
+    "packAll": "Hadither och förklaringar",
+    "allHadith": "Alla hadither",
+    "position": "{{n}} av {{total}}",
+    "report": "Rapportera ett fel i den här hadithen",
+    "reportPrompt": "Vad är fel? (ett ord, översättningen, graderingen, numret …)",
+    "arabicTag": "Arabiska",
+    "refNeedsBookArabic": "{{book}} är inte nedladdad och finns bara på arabiska. Öppna den för att ladda ner den.",
+    "bookNeedsDownload": "Den här boken finns bara på arabiska, utan översättning. Den finns inte på din enhet än.",
+    "gradedBookNote": "Den här boken innehåller bara de hadither som varje granskare som har bedömt dem kallar sahih eller hasan. En hadith som någon av dem kallar svag, eller som saknar gradering, är utelämnad. Vid varje hadith visas granskarnas egna bedömningar, så som de står i fawazahmed0/hadith-api.",
+    "sahihCollectionNote": "{{book}} är erkänd som autentisk (sahih) som samling. Dess hadither graderas inte var för sig här.",
+    "refNotServed": "Ingen hadith med nummer {{n}} ur {{book}} finns med här. Den kan vara utelämnad: bara de hadither som varje granskare kallar sahih eller hasan finns med.",
+    "downloadGradedNote": "Laddas ner från Mihrabs kopia på GitHub. Ta bort den när du vill under Inställningar → Nedladdningar."
   }
 }

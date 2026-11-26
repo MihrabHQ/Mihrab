@@ -17,7 +17,9 @@
     "fasting": "Puasa",
     "today": "Hari ini",
     "sync": "Sinkronkan antar perangkat",
-    "devices": "Perangkat"
+    "devices": "Perangkat",
+    "hadith": "Hadis",
+    "dhikr": "Zikir"
   },
   "a11y": {
     "openSettings": "Buka pengaturan",
@@ -53,7 +55,8 @@
     "confirmDelete": "Ketuk lagi untuk menghapus",
     "learnMore": "Pelajari lebih lanjut",
     "dismiss": "Tutup",
-    "hide": "Sembunyikan"
+    "hide": "Sembunyikan",
+    "save": "Simpan"
   },
   "home": {
     "loadingPrayer": "Memuat waktu sholat…",
@@ -466,7 +469,7 @@
     "sectionQuran": "Al-Qur'an",
     "sectionQuranBlurb": "Bacaan, terjemahan, tafsir",
     "sectionDownloads": "Unduhan",
-    "sectionDownloadsBlurb": "Mushaf, tilawah, tafsir, penyimpanan",
+    "sectionDownloadsBlurb": "Mushaf, tilawah, tafsir, hadis, penyimpanan",
     "sectionAbout": "Tentang",
     "sectionAboutBlurb": "Versi, sumber, lisensi",
     "malikiRows": "Tampilkan di antara waktu hari ini",
@@ -2039,7 +2042,12 @@
     "surahHeaderFont": "Kaligrafi kepala surah",
     "recitationWholeSurah": "Tilawah surah utuh (15): mp3quran.net · waktu ayat diselaraskan dengan audio oleh Mihrab",
     "transliteration": "Transliterasi Al-Qur’an, dibuat dari teks Arab; diperiksa ayat demi ayat terhadap teks itu, {{n}} ayat diperbaiki",
-    "transliterationAbay": "Transliterasi Turki oleh Muhammet Abay; diperiksa ayat demi ayat terhadap teks Arab, {{n}} ayat diperbaiki"
+    "transliterationAbay": "Transliterasi Turki oleh Muhammet Abay; diperiksa ayat demi ayat terhadap teks Arab, {{n}} ayat diperbaiki",
+    "groupHadith": "Hadis",
+    "hadeethenc": "Teks hadis, terjemahan, penjelasan, dan pelajaran, diterbitkan ulang tanpa perubahan",
+    "nawawiArabic": "Hadis Arbain Nawawi, teks Arab",
+    "openHadithData": "Kitab-kitab hadis, teks Arab",
+    "hadithGrades": "Derajat hadis-hadis dalam empat kitab Sunan dan al-Muwaththa"
   },
   "liveActivity": {
     "title": "Salat berikutnya",
@@ -2299,7 +2307,8 @@
       "dhikr": "Zikir",
       "quran": "Al-Qur’an",
       "settings": "Pengaturan",
-      "location": "Lokasi"
+      "location": "Lokasi",
+      "hadith": "Hadis"
     },
     "categoryHint": {
       "prayers": "Setiap salat yang Anda catat, beserta catatannya",
@@ -2308,7 +2317,8 @@
       "dhikr": "Putaran tasbih yang selesai",
       "quran": "Penanda, ayat berbintang, rencana khatam, terakhir dibaca, qari, dan tafsir",
       "settings": "Tampilan, metode perhitungan, notifikasi, dan widget",
-      "location": "Tempat tersimpan dan koordinat"
+      "location": "Tempat tersimpan dan koordinat",
+      "hadith": "Hadis yang dibaca, penanda, catatan Anda, dan tingkat Anda"
     },
     "count": {
       "prayers": "Salat",
@@ -2316,7 +2326,8 @@
       "dhikr": "Hari zikir",
       "sunnah": "Hari sunah",
       "bookmarks": "Penanda",
-      "khatmah": "Rencana khatam"
+      "khatmah": "Rencana khatam",
+      "hadith": "Hadis dibaca"
     },
     "settingsRowHint": "Sandingkan perangkat lain",
     "pairIntro": "Sinkronisasi menjaga catatan Anda sama di setiap perangkat. Sinkronisasi ini bersifat peer to peer: perangkat Anda saling bertukar berkas terenkripsi secara langsung, tanpa akun dan tanpa server dari kami, dan hanya perangkat Anda sendiri yang dapat membacanya.",
@@ -2791,5 +2802,190 @@
     "missedAgain_one": "↺ {{count}} keliru",
     "reciteMissedAgain": "Baca lagi {{count}} ayat yang keliru",
     "reciteMissedAgain_one": "Baca lagi ayat yang keliru"
+  },
+  "hadith": {
+    "learn": "Belajar",
+    "browse": "Telusuri",
+    "searchPlaceholder": "Cari hadis, atau {{example}}",
+    "searchExample": "Nawawi 14",
+    "searchScope": "Mencari di konten yang sudah diunduh di perangkat ini.",
+    "searchNeedsDownload": "Belum ada yang diunduh. Hapus pencarian dan unduh hadisnya terlebih dahulu.",
+    "noResults": "Tidak ditemukan apa pun.",
+    "filterPlaceholder": "Saring daftar ini",
+    "filterBookPlaceholder": "Cari di kitab ini, atau ketik nomor",
+    "levelPrompt": "Anda mulai dari mana?",
+    "level": {
+      "starting": "Baru mengenal hadis",
+      "building": "Mulai terbiasa",
+      "depth": "Kajian lebih dalam"
+    },
+    "welcomeTitle": "Unduh hadis",
+    "welcomeBody": "Satu unduhan menghadirkan hadis-hadis HadeethEnc dalam bahasa Anda, masing-masing dengan makna dan penjelasannya, beserta Arbain Nawawi. Setelah itu, semua kumpulan, topik, dan pencarian berfungsi secara offline. Kitab-kitab berbahasa Arab diunduh terpisah.",
+    "continueReading": "Lanjutkan membaca",
+    "bookmarks": "Penanda",
+    "noBookmarks": "Belum ada penanda. Ketuk bintang di bawah hadis untuk menyimpannya di sini.",
+    "progress": "{{read}} dari {{total}} dibaca",
+    "markSetRead": "Tandai sudah pernah dibaca",
+    "markSetUnread": "Hapus tanda",
+    "completed": "Selesai · {{count}}",
+    "topics": "Topik",
+    "entries": "{{count}} hadis",
+    "books": "Kitab-kitab",
+    "booksNote": "Dalam bahasa Arab, dari Open-Hadith-Data. Shahih al-Bukhari dan Shahih Muslim lengkap; lima kitab lainnya hanya memuat hadis yang dinilai shahih atau hasan oleh para ulama penilainya. Masing-masing diunduh terpisah.",
+    "onDevice": "Sudah diunduh",
+    "attribution": "Teks, terjemahan, dan penjelasan: HadeethEnc.com. Arbain Nawawi dalam bahasa Arab: fawazahmed0/hadith-api. Kitab-kitab: Open-Hadith-Data (ODbL). Derajatnya: fawazahmed0/hadith-api.",
+    "needsDownload": "Daftar ini belum ada di perangkat Anda.",
+    "download": "Unduh",
+    "downloadSize": "Unduh · {{size}}",
+    "downloading": "Mengunduh…",
+    "downloadFailed": "Unduhan tidak selesai. Periksa koneksi Anda dan coba lagi.",
+    "downloadSourceNote": "Diunduh dari salinan Mihrab di GitHub, atau dari sumber aslinya jika salinan itu tidak dapat dijangkau. Hapus kapan saja di Pengaturan → Unduhan.",
+    "notOnDevice": "Hadis ini belum ada di perangkat Anda. Buka dari tab Hadis untuk mengunduhnya.",
+    "explanation": "Penjelasan",
+    "benefits": "Pelajaran dan faedah",
+    "wordMeanings": "Makna kata",
+    "fallbackNote": "Ditampilkan dalam bahasa Inggris: hadis ini belum diterjemahkan ke bahasa Anda.",
+    "arabicOnlyNote": "Teks ini hanya tersedia dalam bahasa Arab.",
+    "nawawiNumber": "Arbain Nawawi · {{n}}",
+    "sourceHadeethenc": "Sumber: HadeethEnc.com",
+    "sourceNawawi": "Hadis Arbain Nawawi (teks Arab)",
+    "sourceBook": "{{book}} · Open-Hadith-Data",
+    "markRead": "Tandai sudah dibaca",
+    "markUnread": "Tandai belum dibaca",
+    "readNext": "Tandai sudah dibaca dan lanjutkan",
+    "read": "Sudah dibaca",
+    "bookmark": "Beri penanda",
+    "removeBookmark": "Hapus penanda",
+    "addNote": "Tambah catatan",
+    "editNote": "Ubah catatan Anda",
+    "yourNote": "Catatan Anda",
+    "notePlaceholder": "Tulis renungan, pengingat, di mana Anda mendengarnya…",
+    "share": "Bagikan",
+    "copy": "Salin",
+    "copied": "Disalin",
+    "previous": "Hadis sebelumnya",
+    "next": "Hadis berikutnya",
+    "set": {
+      "nawawi40": {
+        "title": "Arbain Nawawi",
+        "blurb": "Empat puluh dua hadis yang dihimpun Imam an-Nawawi sebagai pokok-pokok agama."
+      },
+      "foundations": {
+        "title": "Dasar-dasar iman",
+        "blurb": "Iman, rukun-rukunnya, dan apa yang dituntutnya dari hati."
+      },
+      "daily": {
+        "title": "Ibadah sehari-hari",
+        "blurb": "Bersuci, salat, zikir, dan amalan-amalan kecil sepanjang hari."
+      },
+      "manners": {
+        "title": "Akhlak dan adab",
+        "blurb": "Bagaimana Nabi ﷺ mengajari para sahabatnya berbicara, bermuamalah, dan bersikap."
+      },
+      "heart": {
+        "title": "Menyucikan hati",
+        "blurb": "Ikhlas, tobat, sabar, dan kehidupan batin."
+      },
+      "family": {
+        "title": "Keluarga dan tetangga",
+        "blurb": "Orang tua, kerabat, suami istri, anak-anak, dan mereka yang tinggal di sekitar kita."
+      },
+      "virtues": {
+        "title": "Keutamaan amal",
+        "blurb": "Pahala amal saleh, dan orang-orang yang mengerjakannya."
+      },
+      "creed": {
+        "title": "Akidah",
+        "blurb": "Iman kepada Allah, nama-nama dan sifat-Nya, perkara gaib, dan Hari Akhir."
+      },
+      "worship": {
+        "title": "Ibadah secara rinci",
+        "blurb": "Salat, puasa, zakat, dan haji — hadis dengan penjelasan para ulama."
+      },
+      "seerah": {
+        "title": "Kehidupan Nabi",
+        "blurb": "Sirah dan sejarah para sahabat, melalui hadis."
+      },
+      "book-bukhari": {
+        "title": "Shahih al-Bukhari",
+        "blurb": "Kumpulan lengkap, dalam bahasa Arab."
+      },
+      "book-muslim": {
+        "title": "Shahih Muslim",
+        "blurb": "Kumpulan lengkap, dalam bahasa Arab."
+      }
+    },
+    "topic": {
+      "1": "Al-Qur'an dan ilmu-ilmunya",
+      "2": "Hadis dan ilmu-ilmunya",
+      "3": "Akidah",
+      "4": "Fikih",
+      "5": "Keutamaan dan adab",
+      "6": "Dakwah Islam",
+      "7": "Sirah dan sejarah"
+    },
+    "book": {
+      "bukhari": "Shahih al-Bukhari",
+      "muslim": "Shahih Muslim",
+      "abudawud": "Sunan Abu Dawud",
+      "tirmidhi": "Jami' at-Tirmidzi",
+      "nasai": "Sunan an-Nasa'i",
+      "ibnmajah": "Sunan Ibnu Majah",
+      "malik": "Al-Muwaththa' Imam Malik"
+    },
+    "packStarter": "Kumpulan awal",
+    "packCategories": "Indeks topik",
+    "packNawawi": "Arbain Nawawi (Arab)",
+    "downloadsFooter": "Teks hadis yang Anda unduh dari tab Hadis. Hapus mana saja, lalu unduh lagi dari sana.",
+    "levelNote": "Ini hanya menentukan apa yang disarankan lebih dulu. Tidak ada yang dikunci, dan Anda bisa mengubahnya kapan saja.",
+    "levelLine": "Disarankan untuk: {{level}}",
+    "change": "Ubah",
+    "pickDirect": "Pilih sendiri",
+    "pickDirectNote": "Topik apa saja, atau salah satu kitab.",
+    "allSets": "Semua kumpulan",
+    "allTopics": "Semua topik",
+    "hub": {
+      "prayer": "Salat dan bersuci",
+      "fasting": "Puasa",
+      "charity": "Zakat, sedekah, dan harta",
+      "hajj": "Haji dan Umrah",
+      "family": "Keluarga dan orang tua",
+      "food": "Makanan dan minuman",
+      "character": "Akhlak dan tutur kata",
+      "etiquette": "Adab sehari-hari",
+      "supplications": "Doa dan zikir",
+      "heart": "Hati dan tobat",
+      "faith": "Iman dan akidah",
+      "prophet": "Kehidupan Nabi ﷺ"
+    },
+    "rulingNote": "Sebuah hadis dengan sendirinya bukanlah ketetapan hukum. Apa yang berlaku bagi Anda bisa bergantung pada teks-teks lain dan pada cara para ulama memahaminya. Untuk pertanyaan tentang apa yang harus dilakukan, bertanyalah kepada ulama yang mumpuni atau ikutilah mazhab Anda.",
+    "filterTopicPlaceholder": "Cari di topik ini",
+    "filter": {
+      "all": "Semua",
+      "sahihayn": "al-Bukhari atau Muslim",
+      "books": "Kitab-kitab",
+      "topic": "Topik",
+      "clearTopic": "Hapus topik: {{topic}}",
+      "grade": "Derajat",
+      "sahih": "Shahih",
+      "hasan": "Hasan",
+      "clearGrade": "Hapus derajat: {{grade}}",
+      "gradeNote": "Menurut penilaian HadeethEnc. Hadis yang dinilainya dengan catatan tidak termasuk keduanya, dan dapat ditemukan tanpa filter ini."
+    },
+    "refHeading": "{{book}} · {{n}}",
+    "refNeedsBook": "{{book}} belum diunduh. Buka untuk mengunduhnya.",
+    "refNotFound": "Tidak ada hadis bernomor {{n}} dalam edisi {{book}} ini.",
+    "packAll": "Hadis dan penjelasan",
+    "allHadith": "Semua hadis",
+    "position": "{{n}} dari {{total}}",
+    "report": "Laporkan masalah pada hadis ini",
+    "reportPrompt": "Apa yang salah? (sebuah kata, terjemahan, derajat hadis, nomor…)",
+    "arabicTag": "Bahasa Arab",
+    "refNeedsBookArabic": "{{book}} belum diunduh, dan hanya tersedia dalam bahasa Arab. Buka untuk mengunduhnya.",
+    "bookNeedsDownload": "Kitab ini hanya tersedia dalam bahasa Arab, tanpa terjemahan. Kitab ini belum ada di perangkat Anda.",
+    "gradedBookNote": "Kitab ini di sini hanya memuat hadis yang dinilai shahih atau hasan oleh setiap ulama yang menilainya. Hadis yang dinilai lemah oleh salah satu dari mereka, atau yang tidak memiliki derajat, tidak dimuat. Setiap hadis menampilkan penilaian masing-masing ulama, sebagaimana tercatat di fawazahmed0/hadith-api.",
+    "sahihCollectionNote": "{{book}} diterima sebagai kitab yang shahih secara keseluruhan. Hadis-hadisnya tidak dinilai satu per satu di sini.",
+    "refNotServed": "Tidak ada hadis bernomor {{n}} dari {{book}} yang dimuat di sini. Mungkin hadis itu termasuk yang tidak dimuat: hanya hadis yang dinilai shahih atau hasan oleh setiap ulama yang dimuat.",
+    "downloadGradedNote": "Diunduh dari salinan Mihrab di GitHub. Hapus kapan saja di Pengaturan → Unduhan."
   }
 }

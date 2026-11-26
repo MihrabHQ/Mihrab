@@ -23,13 +23,12 @@ const src = (p: string) =>
 const TABS = src('MainTabs.tsx');
 const BUTTON = src('TabBackButton.tsx');
 
-/** The five tabs that are not Today. */
+/** The four tabs that are not Today. */
 const AWAY_FROM_HOME = [
   'QuranTab',
-  'TasbihTab',
-  'DuasTab',
+  'HadithTab',
+  'DhikrTab',
   'LogTab',
-  'SettingsTab',
 ];
 
 describe('the hardware button goes home from every tab but Today', () => {

@@ -1,25 +1,25 @@
 /**
- * The six tabs (design review 2e): Today · Quran · Tasbih · Duas · Log ·
- * Settings.
+ * The five tabs: Today · Quran · Hadith · Dhikr · Log.
  *
  * What moved and why:
  *
- *   • A "More" tab is an admission the deciding was never finished. With
- *     Mosques cut and Month folded into Settings there was nothing left for
- *     it to hold, so the sixth tab became what people were reaching for
- *     anyway.
- *   • Tasbih and Duas are separate. Bundling them as "Dhikr" saved a tab and
- *     cost clarity: one is a counter you tap fifty times, the other is a
- *     library you read. Tasbih is now one tap away right after prayer.
+ *   • A "More" tab is an admission the deciding was never finished, and
+ *     there is none.
+ *   • Hadith is a library of its own, beside the Qur'an.
+ *   • Tasbih and Duas are one tab again, Dhikr, to make room for it — the
+ *     re-merge this file always named as the way to a new tab. The tab
+ *     opens on the counter, the thing reached for right after prayer, and
+ *     a switcher at its top turns to the library (DhikrScreen).
+ *   • Settings is not a tab: it is a cog on Today, and its index is pushed
+ *     over the tabs like every section under it. A place visited to change
+ *     something is not a place that needs a fifth of the bar.
  *   • Find a masjid is gone — maps apps do it better, and it was the one
  *     feature needing a network round-trip in an otherwise offline app.
  *   • Qibla lost its tile and became a compass button in the Today header,
  *     next to the location it depends on.
  *
- * Six is the ceiling, not a target: iOS collapses to five-plus-More unless
- * the bar is explicitly six, and Android's guidance caps at five. If a
- * seventh is ever needed, re-merge Tasbih and Duas rather than bringing
- * "More" back.
+ * Five is Android's guidance and the iOS bar's comfortable width. A sixth
+ * would need a reason as good as each of these.
  *
  * The bar itself is a floating rounded pill rather than a full-width slab
  * welded to the bottom edge — see `tabBarStyle` below. Readers never see
@@ -60,11 +60,10 @@ import { MihrabHeaderTitle } from './MihrabHeaderTitle';
 import { desktopLayout, HOME_DASHBOARD_MIN_WIDTH } from '../responsive/breakpoints';
 import {
   TabBookIcon,
-  TabDuasIcon,
+  TabDhikrIcon,
+  TabHadithIcon,
   TabHomeIcon,
   TabLogIcon,
-  TabSettingsIcon,
-  TabTasbihIcon,
 } from './tabIcons';
 import type { MainTabParamList } from './types';
 import { useBookPanePadding } from '../native/FoldPosture';
@@ -563,20 +562,20 @@ export function MainTabs() {
         }}
       />
       <Tab.Screen
-        name="TasbihTab"
-        getComponent={() => (require('../screens/TasbihScreen') as typeof import('../screens/TasbihScreen')).TasbihScreen}
+        name="HadithTab"
+        getComponent={() => (require('../screens/HadithScreen') as typeof import('../screens/HadithScreen')).HadithScreen}
         options={{
-          title: t('nav.tasbih'),
-          tabBarIcon: TabTasbihIcon,
+          title: t('nav.hadith'),
+          tabBarIcon: TabHadithIcon,
           headerShown: false,
         }}
       />
       <Tab.Screen
-        name="DuasTab"
-        getComponent={() => (require('../screens/DuasScreen') as typeof import('../screens/DuasScreen')).DuasScreen}
+        name="DhikrTab"
+        getComponent={() => (require('../screens/DhikrScreen') as typeof import('../screens/DhikrScreen')).DhikrScreen}
         options={{
-          title: t('nav.duas'),
-          tabBarIcon: TabDuasIcon,
+          title: t('nav.dhikr'),
+          tabBarIcon: TabDhikrIcon,
           headerShown: false,
         }}
       />
@@ -586,15 +585,6 @@ export function MainTabs() {
         options={{
           title: t('log.title', 'Log'),
           tabBarIcon: TabLogIcon,
-          headerShown: false,
-        }}
-      />
-      <Tab.Screen
-        name="SettingsTab"
-        getComponent={() => (require('../screens/SettingsScreen') as typeof import('../screens/SettingsScreen')).SettingsScreen}
-        options={{
-          title: t('nav.settings'),
-          tabBarIcon: TabSettingsIcon,
           headerShown: false,
         }}
       />

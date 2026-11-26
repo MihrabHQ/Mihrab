@@ -9,11 +9,10 @@
  *
  */
 import {
-  DuaHandsIcon,
+  HadithBooksIcon,
   MihrabLogoIcon,
   PenIcon,
   QuranBookIcon,
-  SettingsGearIcon,
   TasbihIcon,
 } from '../theme/icons';
 import { desktopSize } from '../responsive/desktop';
@@ -41,27 +40,15 @@ export const TabBookIcon = ({ color, size, focused }: TabIconProps) => (
   <QuranBookIcon color={useTabHoverTint('QuranTab', color, focused ?? false)} size={iconSize(size)} />
 );
 
-export const TabTasbihIcon = ({ color, size, focused }: TabIconProps) => (
-  <TasbihIcon color={useTabHoverTint('TasbihTab', color, focused ?? false)} size={iconSize(size)} />
+export const TabHadithIcon = ({ color, size, focused }: TabIconProps) => (
+  <HadithBooksIcon color={useTabHoverTint('HadithTab', color, focused ?? false)} size={iconSize(size)} />
 );
 
-export const TabDuasIcon = ({ color, size, focused }: TabIconProps) => (
-  <DuaHandsIcon color={useTabHoverTint('DuasTab', color, focused ?? false)} size={iconSize(size)} />
+/** The beads: the tab opens on the counter, and Duas is a page of it. */
+export const TabDhikrIcon = ({ color, size, focused }: TabIconProps) => (
+  <TasbihIcon color={useTabHoverTint('DhikrTab', color, focused ?? false)} size={iconSize(size)} />
 );
 
 export const TabLogIcon = ({ color, size, focused }: TabIconProps) => (
   <PenIcon color={useTabHoverTint('LogTab', color, focused ?? false)} size={iconSize(size)} />
-);
-
-/**
- * The same cog the Home header used to carry. The tab previously drew a
- * ring with eight radial ticks, which at 22pt reads as a sun or a
- * brightness control before it reads as settings — and it no longer had a
- * gear anywhere else in the app to be consistent with.
- *
- * Stroke 1.8 rather than the icon's own 2: the tab bar sets these smaller
- * than the header chip did, and a 2pt stroke fills the cog's teeth in.
- */
-export const TabSettingsIcon = ({ color, size, focused }: TabIconProps) => (
-  <SettingsGearIcon color={useTabHoverTint('SettingsTab', color, focused ?? false)} size={iconSize(size)} strokeWidth={1.8} />
 );

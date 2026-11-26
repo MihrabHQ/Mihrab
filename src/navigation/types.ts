@@ -1,21 +1,23 @@
 import type { DuaCategory } from '../duas/duas';
 
+/** The two pages of the Dhikr tab: the counter, and the library. */
+export type DhikrView = 'tasbih' | 'duas';
+
 /**
- * The six tabs (design review 2e). They are the app; the stack below is
- * everything pushed on top of them.
+ * The five tabs. They are the app; the stack below is everything pushed
+ * on top of them.
  */
 export type MainTabParamList = {
   TodayTab: undefined;
   QuranTab: undefined;
-  TasbihTab: undefined;
+  HadithTab: undefined;
   /**
-   * `category` opens that category rather than the index — the morning
-   * and evening adhkār reminders, #39. Optional, and the tab opens on
-   * the index without it, which is every other way in.
+   * Tasbih unless `view` says Duas. `category` opens that dua category
+   * rather than the index — the morning and evening adhkār reminders,
+   * #39 — and implies Duas.
    */
-  DuasTab: { category?: DuaCategory } | undefined;
+  DhikrTab: { view?: DhikrView; category?: DuaCategory } | undefined;
   LogTab: undefined;
-  SettingsTab: undefined;
 };
 
 export type RootStackParamList = {
@@ -100,6 +102,16 @@ export type RootStackParamList = {
   Onboarding: undefined;
   Backup: undefined;
   Fasting: undefined;
+  /** One hadith, read: `id` is the entry, `list` the set it was opened from. */
+  HadithReader: { id: string; list?: string };
+  /** A topic, a set or a book of hadith, listed. */
+  /** `all`: a topic's every hadith in one list, past its page of sub-topics. */
+  HadithList: { list: string; all?: boolean };
+  /**
+   * The Settings index. Pushed from Today's cog since it left the tab bar;
+   * every section below is pushed over it.
+   */
+  Settings: undefined;
   /**
    * The settings subpages — one destination per section, pushed from the
    * Settings index.

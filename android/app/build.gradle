@@ -358,7 +358,9 @@ android {
         // ./gradlew bundlePlayBeta.
         beta {
             initWith release
-            applicationIdSuffix ".beta"
+            // -PbetaIdSuffix=.something installs a test build beside the
+            // stable app AND the regular beta, neither of them touched.
+            applicationIdSuffix(project.findProperty("betaIdSuffix") ?: ".beta")
             versionNameSuffix "-beta"
             matchingFallbacks = ['release']
             buildConfigField "boolean", "IS_BETA", "true"

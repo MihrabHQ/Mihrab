@@ -13,33 +13,20 @@
  * their modals now — twelve cards' worth of picker state used to sit on
  * this one screen, with nothing to say which card would open which.
  *
- * The header on each subpage — the title and the back control beside it
- * — is the native stack's own. See `RootNavigator`.
+ * The index is not a tab: it is pushed from the cog on Today, in the same
+ * frame as every section under it (`SettingsPage`), and back goes to
+ * Today.
  */
-import { useCallback, useRef } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  type ScrollViewInstance,
-} from 'react-native';
-import {
-  useNavigation,
-  useScrollToTop,
-  type NavigationProp,
-} from '@react-navigation/native';
+import { useCallback } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useNavigation, type NavigationProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import type { RootStackParamList } from '../navigation/types';
 import { useAppPalette } from '../hooks/useAppPalette';
-import { CenteredColumn } from '../responsive/CenteredColumn';
 import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import { cardEdgeStyle } from '../theme/chrome';
-import { useTabBarInset } from '../navigation/tabBarInset';
-import { useTabPageTop } from '../navigation/useTabPageTop';
-import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { ChevronIcon } from './settings/SettingsSectionIcons';
+import { SettingsPage } from './settings/SettingsPage';
 import { SETTINGS_SUBPAGES } from './settings/subpages';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
@@ -48,19 +35,7 @@ export function SettingsScreen() {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const tabBarInset = useTabBarInset();
-  const pageTop = useTabPageTop();
-  // The bar gets out of the way while reading — see tabBarVisibility.ts.
-  const tabBarScroll = useTabBarScroll();
   const isRtl = useLayoutRtl();
-
-  /**
-   * Tapping the Settings tab while already on it returns this list to
-   * the top — the standard idiom, and the fastest way back to the index
-   * after a long page.
-   */
-  const scrollRef = useRef<ScrollViewInstance>(null);
-  useScrollToTop(scrollRef);
 
   const go = useCallback(
     (route: (typeof SETTINGS_SUBPAGES)[number]['route']) => () =>
@@ -69,16 +44,7 @@ export function SettingsScreen() {
   );
 
   return (
-    <ScrollView
-      ref={scrollRef}
-      {...tabBarScroll}
-      style={[styles.scroll, { backgroundColor: palette.bg }]}
-      contentContainerStyle={[
-        styles.content,
-        { paddingTop: pageTop, paddingBottom: SPACING.xl + tabBarInset },
-      ]}
-      contentInsetAdjustmentBehavior="never">
-      <CenteredColumn>
+    <SettingsPage>
         <View
           style={[
             styles.group,
@@ -124,14 +90,11 @@ export function SettingsScreen() {
             </Pressable>
           ))}
         </View>
-      </CenteredColumn>
-    </ScrollView>
+    </SettingsPage>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1 },
-  content: { padding: SPACING.lg },
   group: { borderRadius: RADIUS.lg, overflow: 'hidden' },
   row: {
     flexDirection: 'row',

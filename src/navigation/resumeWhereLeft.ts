@@ -69,7 +69,7 @@ export type KeptPlace = {
 };
 type Kept = { v: 1; at: number; place: KeptPlace };
 
-const TABS = ['TodayTab', 'QuranTab', 'TasbihTab', 'DuasTab', 'LogTab', 'SettingsTab'] as const;
+const TABS = ['TodayTab', 'QuranTab', 'HadithTab', 'DhikrTab', 'LogTab'] as const;
 
 type ParamKind = 'string' | 'number' | 'boolean';
 /**
@@ -93,6 +93,9 @@ export const RESTORABLE: Readonly<Record<string, Readonly<Record<string, ParamKi
   Hifz: {},
   Backup: {},
   Fasting: {},
+  HadithReader: { id: 'string', list: 'string' },
+  HadithList: { list: 'string', all: 'boolean' },
+  Settings: {},
   SettingsAppearance: {},
   SettingsPrayerTimes: {},
   SettingsLocation: {},
@@ -116,7 +119,7 @@ const REFUSES: Readonly<Record<string, readonly string[]>> = {
   QuranSurah: ['playFromAyah', 'hifzReview', 'hifzPractice'],
 };
 const TAB_PARAMS: Readonly<Record<string, Readonly<Record<string, ParamKind>>>> = {
-  DuasTab: { category: 'string' },
+  DhikrTab: { view: 'string', category: 'string' },
 };
 
 function plainParams(

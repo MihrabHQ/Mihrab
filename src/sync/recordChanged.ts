@@ -48,6 +48,7 @@ const RECORD_KEYS = new Set([
   'prayerapp.fasting.v1',
   'prayerapp.dhikr.v1',
   'prayerapp.sunnah.v1',
+  'prayerapp.hadith.v1',
 ]);
 
 /**

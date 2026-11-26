@@ -170,7 +170,7 @@ finds itself inside another `Card`.
 | **Button, secondary** | `accentBg` fill, `accent` label. |
 | **Button, tertiary** | text only, `accent`. For `Reset`, `Previous day`, `Skip`. |
 | **Chip, selectable** | unselected: text only in `muted`, no fill, no border. Selected: `accent` fill, `onAccent` text, `RADIUS.full`. This is the day strip, the dua categories, the status pills. |
-| **Segmented control** *(new)* | one rounded container, selected segment filled `accentBg`, others plain. Replaces the three-outlined-buttons pattern in Appearance and the `Surah / Juz / Bookmarks` row. |
+| **Segmented control** *(new)* | one rounded container (`controlBg`); the selected segment is a surface set into it — `bg` in the dark, `card` in the light, with a hairline — and its label is `text`; the others are plain, in `muted`. (It was `accentBg` with an accent label, which no Sky hour set apart from the track: `SegmentedControl.tsx` has the measurements.) Replaces the three-outlined-buttons pattern in Appearance and the `Surah / Juz / Bookmarks` row. |
 | **Toggle** | platform switch, as now. |
 | **Disclosure** | `›` chevron in `muted`, trailing. Never `▸`, never `⌄` floating at the far right. |
 | **Status pill row** (Log) | four chips per the Chip spec; `On time` is selected-style when chosen and *secondary-style when it is the suggested default*; the other three are text until chosen. |

@@ -1,0 +1,563 @@
+/**
+ * One hadith: the Arabic with its diacritics, the meaning in the reader's
+ * language, where it is from and how it is graded, and — folded until
+ * asked for — HadeethEnc's explanation, the lessons drawn from it, and
+ * the meanings of its harder words.
+ *
+ * At the foot: back and forward through the list it was opened from (or,
+ * opened from a search, the book it is in — `homeList`), read, bookmark, a
+ * note of one's own, and share. Opening an entry
+ * remembers it for "Continue reading"; it does not mark it read — that is
+ * the reader's to say.
+ *
+ * Saying it is one tap, in one place, where the reading ends: under the
+ * text, "Mark as read and continue" marks it and turns to the next of the
+ * list ("Mark as read" where there is no next). Once read, the same place
+ * offers the next hadith and "Mark as unread". The bar had a tick as well,
+ * and opened from a search — no list, no next — the page showed "Mark as
+ * read" twice, a button and an icon, doing the same thing. What is read
+ * says so in words, in the line of badges.
+ *
+ * In a set or a topic the page says where it is — "3 of 25" — above the
+ * title: a list read through has an end, and the bar's arrows alone did
+ * not say how far off it was. A book's hadith has its own number, in the
+ * page's title.
+ *
+ * At the very foot, "Report a problem with this hadith" (`report.ts`).
+ *
+ * A translation the app's language does not have is shown in English and
+ * says so; an Arabic reader gets the Arabic and the explanation, no
+ * translation. The texts of the books are Arabic only.
+ */
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  Linking,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  type ScrollViewInstance,
+} from 'react-native';
+import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
+import { Button, TextSizeStepper } from '../../components/ui';
+import { useAppPalette } from '../../hooks/useAppPalette';
+import { useReadingText } from '../../hooks/useReadingText';
+import { useLayoutRtl } from '../../i18n/useLayoutRtl';
+import { useKeyboardInset } from '../../hooks/useKeyboardInset';
+import { foreignText, ownSideAlign } from '../../i18n/foreignText';
+import { useSheetSides } from '../../responsive/sheetSides';
+import type { RootStackParamList } from '../../navigation/types';
+import { homeList } from '../../hadith/catalog';
+import { isBookmarked, isRead, noteOf, setBookmark, setLast, setNote, setRead } from '../../hadith/hadithRecord';
+import { updateHadithRecord, useHadithRecord } from '../../hadith/hadithStore';
+import { loadItem, type HadithItem } from '../../hadith/library';
+import { hadithReport, hadithReportIssueUrl, hadithReportMailUrl } from '../../hadith/report';
+import { usePacksReadyKey } from '../../hadith/packs';
+import { useAppLang, useCategoryTree, useListRows } from '../../hadith/useHadith';
+import { copyToClipboard } from '../../sync/clipboard';
+import { CheckIcon, PenIcon, ShareIcon, StarIcon } from '../../theme/icons';
+import { cardEdgeStyle, inputChromeStyle } from '../../theme/chrome';
+import { TextAction } from '../../quran/downloadsUi';
+import { READING_BASE } from '../../theme/readingText';
+import { RADIUS, SPACING } from '../../theme/tokens';
+import { TYPE, arabicTextStyle } from '../../theme/typography';
+import { tabularNumeralStyle } from '../../theme/textScale';
+import { Column } from './Column';
+import { HadithPage } from './HadithPage';
+import { listTitle } from './HadithListScreen';
+import { PackGate } from './PackGate';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
+
+/** Where an entry is from, in a line. */
+export function sourceLine(item: HadithItem, t: TFunction): string {
+  if (item.source === 'hadeethenc') return t('hadith.sourceHadeethenc');
+  if (item.source === 'nawawi') return t('hadith.sourceNawawi');
+  return t('hadith.sourceBook', { book: t(`hadith.book.${item.book}`) });
+}
+
+/** What Share and Copy hand on: the text, its meaning, and where it is from. */
+export function hadithShareText(item: HadithItem, t: TFunction): string {
+  const parts = [item.arabic];
+  if (item.text) parts.push(item.text);
+  const cite = [item.attribution, item.grade].filter(Boolean).join(' · ');
+  if (cite) parts.push(cite);
+  parts.push(sourceLine(item, t));
+  return parts.filter(Boolean).join('\n\n');
+}
+
+export function HadithReaderScreen() {
+  const { t, i18n } = useTranslation();
+  const { palette } = useAppPalette();
+  const layoutRtl = useLayoutRtl();
+  const readingText = useReadingText();
+  const navigation = useNavigation<Nav>();
+  const params = useRoute<RouteProp<RootStackParamList, 'HadithReader'>>().params;
+  const { id } = params;
+  // Opened from a search, there is no list: a book's hadith reads on in its book.
+  const list = params.list ?? homeList(id);
+  const lang = useAppLang();
+  const here = usePacksReadyKey();
+  const tree = useCategoryTree();
+  const rec = useHadithRecord();
+  const listing = useListRows(list ?? '');
+  const [item, setItem] = useState<HadithItem | null | undefined>(undefined);
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [editing, setEditing] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const scrollRef = useRef<ScrollViewInstance>(null);
+
+  useEffect(() => {
+    let live = true;
+    loadItem(id, lang).then(x => {
+      if (live) setItem(x);
+    });
+    return () => {
+      live = false;
+    };
+  }, [id, lang, here]);
+
+  useEffect(() => {
+    void updateHadithRecord(r => setLast(r, id, list, Date.now()));
+    setOpen({});
+    setCopied(false);
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }, [id, list]);
+
+  const ids = useMemo(() => listing.rows?.map(r => r.id) ?? [], [listing.rows]);
+  const at = ids.indexOf(id);
+  const prev = at > 0 ? ids[at - 1] : null;
+  const next = at >= 0 && at < ids.length - 1 ? ids[at + 1] : null;
+  const go = (to: string) => navigation.setParams({ id: to, list });
+
+  const read = isRead(rec, id);
+  const marked = isBookmarked(rec, id);
+  const note = noteOf(rec, id);
+  const now = () => Date.now();
+
+  const textDir = item?.textLang ? foreignText(item.textLang, i18n.language) : null;
+  const arabicAlign = { textAlign: ownSideAlign(true, layoutRtl), writingDirection: 'rtl' as const };
+
+  const title = item?.number != null && item.source !== 'hadeethenc'
+    ? `${list ? listTitle(list, t, tree) : t('nav.hadith')} · ${item.number}`
+    : list
+      ? listTitle(list, t, tree)
+      : t('nav.hadith');
+
+  // Under the text: say it is read, and go on.
+  const readOn = () => {
+    if (!read) void updateHadithRecord(r => setRead(r, id, true, now()));
+    if (next) go(next);
+  };
+
+  // Where this is in the list it is being read through. A book's hadith
+  // carries its own number in the title.
+  const position =
+    item && item.source !== 'book' && at >= 0 && ids.length > 1
+      ? t('hadith.position', { n: at + 1, total: ids.length })
+      : null;
+
+  const report = (it: HadithItem) => {
+    const r = hadithReport(it, lang, t('hadith.reportPrompt'), Platform.OS);
+    Linking.openURL(hadithReportMailUrl(r)).catch(() =>
+      Linking.openURL(hadithReportIssueUrl(r)).catch(() => undefined),
+    );
+  };
+
+  const section = (key: string, label: string, body: ReactNode) => (
+    <View key={key} style={[styles.section, cardEdgeStyle(palette), { backgroundColor: palette.card }]}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ expanded: !!open[key] }}
+        onPress={() => setOpen(o => ({ ...o, [key]: !o[key] }))}
+        style={({ pressed }) => [styles.sectionHead, pressed && styles.pressed]}
+      >
+        <Text style={[styles.sectionTitle, { color: palette.text }]}>{label}</Text>
+        <Text style={[styles.chevron, { color: palette.muted }]}>{open[key] ? '▾' : '▸'}</Text>
+      </Pressable>
+      {open[key] ? <View style={styles.sectionBody}>{body}</View> : null}
+    </View>
+  );
+
+  const bodyText = (s: string) => (
+    <Text style={[styles.prose, readingText.style(READING_BASE), textDir?.style, { color: palette.text }]}>
+      {textDir?.open}
+      {s}
+      {textDir?.close}
+    </Text>
+  );
+
+  return (
+    <HadithPage title={title} end={item?.text ? <TextSizeStepper /> : null}>
+      {bottom => (
+        <View style={styles.flex}>
+          {item === null ? (
+            <Column>
+              {list && listing.packs.missing.length ? (
+                <PackGate packs={listing.packs} />
+              ) : (
+                <Text style={[styles.missing, { color: palette.muted }]}>{t('hadith.notOnDevice')}</Text>
+              )}
+            </Column>
+          ) : (
+            <ScrollView
+              ref={scrollRef}
+              style={styles.flex}
+              contentContainerStyle={{ paddingBottom: SPACING.lg }}
+              contentInsetAdjustmentBehavior="never"
+            >
+              {item ? (
+                <Column style={styles.page}>
+                  {position ? (
+                    <Text style={[styles.position, tabularNumeralStyle, { color: palette.muted }]} testID="hadith-position">
+                      {position}
+                    </Text>
+                  ) : null}
+                  {item.source === 'hadeethenc' ? (
+                    <Text style={[styles.heading, textDir?.style, { color: palette.text }]} accessibilityRole="header">
+                      {textDir?.open}
+                      {item.title}
+                      {textDir?.close}
+                    </Text>
+                  ) : null}
+                  {item.arabic ? (
+                    <Text
+                      style={[styles.arabic, arabicAlign, { color: palette.text }]}
+                      selectable
+                      accessibilityLanguage="ar"
+                    >
+                      {item.arabic}
+                    </Text>
+                  ) : null}
+                  {item.text ? (
+                    <Text style={[styles.translation, readingText.style(READING_BASE), textDir?.style, { color: palette.text }]} selectable>
+                      {textDir?.open}
+                      {item.text}
+                      {textDir?.close}
+                    </Text>
+                  ) : null}
+                  {item.fallback ? (
+                    <Text style={[styles.note, { color: palette.muted }]}>{t('hadith.fallbackNote')}</Text>
+                  ) : null}
+                  {!item.text && item.source !== 'hadeethenc' && lang.slice(0, 2) !== 'ar' ? (
+                    <Text style={[styles.note, { color: palette.muted }]}>{t('hadith.arabicOnlyNote')}</Text>
+                  ) : null}
+
+                  {/* al-Bukhārī's and Muslim's: what stands behind the text, since no grade does. */}
+                  {item.sahihCollection && item.book ? (
+                    <Text style={[styles.note, { color: palette.muted }]} testID="hadith-sahih-collection">
+                      {t('hadith.sahihCollectionNote', { book: t(`hadith.book.${item.book}`) })}
+                    </Text>
+                  ) : null}
+
+                  <View style={styles.badges}>
+                    {read ? <Badge text={t('hadith.read')} solid /> : null}
+                    {/* A graded book: each grader's own verdict, in the source's words. */}
+                    {item.verdicts
+                      ? item.verdicts.map(v => <Badge key={v.grader} text={`${v.grader}: ${v.grade}`} />)
+                      : item.grade
+                        ? <Badge text={item.grade} />
+                        : null}
+                    {item.attribution ? <Badge text={item.attribution} muted /> : null}
+                    {item.number != null && item.source === 'hadeethenc' ? (
+                      <Badge text={t('hadith.nawawiNumber', { n: item.number })} muted />
+                    ) : null}
+                  </View>
+
+                  {item.explanation
+                    ? section('sharh', t('hadith.explanation'), bodyText(item.explanation))
+                    : null}
+                  {item.hints.length
+                    ? section(
+                        'fawaid',
+                        t('hadith.benefits'),
+                        <View style={styles.list}>
+                          {item.hints.map((h, i) => (
+                            <View key={i} style={styles.bulletRow}>
+                              <Text style={[styles.bullet, { color: palette.accentSolid }]}>•</Text>
+                              <View style={styles.flex}>{bodyText(h)}</View>
+                            </View>
+                          ))}
+                        </View>,
+                      )
+                    : null}
+                  {item.words.length
+                    ? section(
+                        'words',
+                        t('hadith.wordMeanings'),
+                        <View style={styles.list}>
+                          {item.words.map((w, i) => (
+                            <View key={i} style={styles.wordRow}>
+                              <Text style={[styles.word, arabicAlign, { color: palette.text }]}>{w.word}</Text>
+                              {bodyText(w.meaning)}
+                            </View>
+                          ))}
+                        </View>,
+                      )
+                    : null}
+
+                  {note ? (
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={t('hadith.editNote')}
+                      onPress={() => setEditing(true)}
+                      style={[styles.noteBox, { backgroundColor: palette.accentBg }]}
+                    >
+                      <Text style={[styles.noteLabel, { color: palette.muted }]}>{t('hadith.yourNote')}</Text>
+                      <Text style={[styles.prose, { color: palette.text }]}>{note}</Text>
+                    </Pressable>
+                  ) : null}
+
+                  {!read || next ? (
+                    <Button
+                      label={read ? t('hadith.next') : next ? t('hadith.readNext') : t('hadith.markRead')}
+                      variant={read ? 'secondary' : 'primary'}
+                      onPress={readOn}
+                    />
+                  ) : null}
+                  {read ? (
+                    <View style={styles.unread}>
+                      <TextAction
+                        label={t('hadith.markUnread')}
+                        color={palette.muted}
+                        onPress={() => void updateHadithRecord(r => setRead(r, id, false, now()))}
+                      />
+                    </View>
+                  ) : null}
+
+                  <View style={styles.sourceRow}>
+                    <Text style={[styles.source, { color: palette.muted }]}>{sourceLine(item, t)}</Text>
+                    <TextAction
+                      label={copied ? t('hadith.copied') : t('hadith.copy')}
+                      color={palette.accentSolid}
+                      onPress={async () => {
+                        const r = await copyToClipboard(hadithShareText(item, t));
+                        setCopied(r !== 'failed');
+                      }}
+                    />
+                  </View>
+                  <View style={styles.report}>
+                    <TextAction label={t('hadith.report')} color={palette.muted} onPress={() => report(item)} />
+                  </View>
+                </Column>
+              ) : null}
+            </ScrollView>
+          )}
+
+          {item ? (
+            <View style={[styles.bar, { paddingBottom: bottom - SPACING.md, backgroundColor: palette.bg, borderTopColor: palette.border }]}>
+              <Column style={styles.barInner}>
+                <BarButton
+                  label={t('hadith.previous')}
+                  disabled={!prev}
+                  onPress={() => prev && go(prev)}
+                  icon={<Text style={[styles.arrow, { color: prev ? palette.text : palette.muted }]}>{layoutRtl ? '›' : '‹'}</Text>}
+                />
+                <BarButton
+                  label={marked ? t('hadith.removeBookmark') : t('hadith.bookmark')}
+                  selected={marked}
+                  onPress={() => void updateHadithRecord(r => setBookmark(r, id, !marked, now()))}
+                  icon={<StarIcon size={22} color={marked ? palette.accentSolid : palette.muted} filled={marked} />}
+                />
+                <BarButton
+                  label={note ? t('hadith.editNote') : t('hadith.addNote')}
+                  selected={!!note}
+                  onPress={() => setEditing(true)}
+                  icon={<PenIcon size={22} color={note ? palette.accentSolid : palette.mutedSolid} />}
+                />
+                <BarButton
+                  label={t('hadith.share')}
+                  onPress={() => void Share.share({ message: hadithShareText(item, t) }).catch(() => undefined)}
+                  icon={<ShareIcon size={22} color={palette.muted} />}
+                />
+                <BarButton
+                  label={t('hadith.next')}
+                  disabled={!next}
+                  onPress={() => next && go(next)}
+                  icon={<Text style={[styles.arrow, { color: next ? palette.text : palette.muted }]}>{layoutRtl ? '‹' : '›'}</Text>}
+                />
+              </Column>
+            </View>
+          ) : null}
+
+          <NoteEditor
+            visible={editing}
+            initial={note}
+            onClose={() => setEditing(false)}
+            onSave={text => {
+              setEditing(false);
+              void updateHadithRecord(r => setNote(r, id, text.trim(), now()));
+            }}
+          />
+        </View>
+      )}
+    </HadithPage>
+  );
+}
+
+function Badge({ text, muted, solid }: { text: string; muted?: boolean; solid?: boolean }) {
+  const { palette } = useAppPalette();
+  const bg = solid ? palette.accentSolid : muted ? palette.controlBg : palette.accentBg;
+  const fg = solid ? palette.onAccent : muted ? palette.muted : palette.accentSolid;
+  return (
+    <View style={[styles.badge, solid && styles.badgeSolid, { backgroundColor: bg }]}>
+      {solid ? <CheckIcon size={13} color={fg} /> : null}
+      <Text style={[styles.badgeText, { color: fg }]}>{text}</Text>
+    </View>
+  );
+}
+
+function BarButton({
+  label,
+  icon,
+  onPress,
+  disabled,
+  selected,
+}: {
+  label: string;
+  icon: ReactNode;
+  onPress: () => void;
+  disabled?: boolean;
+  selected?: boolean;
+}) {
+  const { palette } = useAppPalette();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled: !!disabled, selected: !!selected }}
+      disabled={disabled}
+      onPress={onPress}
+      hitSlop={6}
+      style={({ pressed }) => [
+        styles.barButton,
+        // Chosen sits on a tint: the icon's colour alone did not say so.
+        selected && { backgroundColor: palette.accentBg },
+        (pressed || disabled) && { opacity: disabled ? 0.4 : 0.6 },
+      ]}
+    >
+      {icon}
+    </Pressable>
+  );
+}
+
+function NoteEditor({
+  visible,
+  initial,
+  onClose,
+  onSave,
+}: {
+  visible: boolean;
+  initial: string;
+  onClose: () => void;
+  onSave: (text: string) => void;
+}) {
+  const { t } = useTranslation();
+  const { palette } = useAppPalette();
+  const [text, setText] = useState(initial);
+  // A Modal is its own window on Android: nothing resizes it for the keyboard.
+  const keyboard = useKeyboardInset();
+  const sides = useSheetSides();
+  useEffect(() => {
+    if (visible) setText(initial);
+  }, [visible, initial]);
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View
+        style={[
+          styles.scrim,
+          {
+            backgroundColor: palette.overlay,
+            paddingBottom: SPACING.lg + keyboard,
+            // rtl-safe: the vertical bar is on a physical side
+            paddingLeft: SPACING.lg + sides.left,
+            // rtl-safe: the vertical bar is on a physical side
+            paddingRight: SPACING.lg + sides.right,
+          },
+        ]}
+      >
+        <View style={[styles.sheet, { backgroundColor: palette.card }]}>
+          <Text style={[styles.sectionTitle, { color: palette.text }]}>{t('hadith.yourNote')}</Text>
+          <TextInput
+            value={text}
+            onChangeText={setText}
+            multiline
+            autoFocus
+            placeholder={t('hadith.notePlaceholder')}
+            placeholderTextColor={palette.muted}
+            style={[styles.noteInput, inputChromeStyle(palette), { color: palette.text, backgroundColor: palette.bg }]}
+            accessibilityLabel={t('hadith.yourNote')}
+            maxLength={4000}
+          />
+          <View style={styles.sheetActions}>
+            <Button label={t('common.cancel')} variant="tertiary" onPress={onClose} />
+            <Button label={t('common.save')} onPress={() => onSave(text)} />
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  page: { paddingHorizontal: SPACING.lg, paddingTop: SPACING.sm, gap: SPACING.lg },
+  heading: { fontSize: TYPE.title3.fontSize, fontWeight: '500', lineHeight: 28 },
+  arabic: { ...arabicTextStyle('body'), fontSize: TYPE.title2.fontSize, lineHeight: 46 },
+  translation: { fontSize: TYPE.body.fontSize, lineHeight: 26 },
+  prose: { fontSize: TYPE.callout.fontSize, lineHeight: 23 },
+  note: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginTop: -SPACING.sm },
+  // Sits on the title it counts: the page's gap is taken back.
+  position: { fontSize: TYPE.footnote.fontSize, marginBottom: -SPACING.md },
+  unread: { flexDirection: 'row', justifyContent: 'center', marginTop: -SPACING.sm },
+  report: { flexDirection: 'row', justifyContent: 'center' },
+  missing: { padding: SPACING.xl, textAlign: 'center', fontSize: TYPE.callout.fontSize },
+  badges: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
+  badge: { paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs, borderRadius: RADIUS.full },
+  badgeSolid: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
+  badgeText: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  section: { borderRadius: RADIUS.md, overflow: 'hidden' },
+  sectionHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    minHeight: 48,
+  },
+  sectionTitle: { fontSize: TYPE.headline.fontSize, fontWeight: '500' },
+  chevron: { fontSize: TYPE.callout.fontSize },
+  sectionBody: { paddingHorizontal: SPACING.lg, paddingBottom: SPACING.lg },
+  list: { gap: SPACING.md },
+  bulletRow: { flexDirection: 'row', gap: SPACING.sm },
+  bullet: { fontSize: TYPE.callout.fontSize, lineHeight: 23 },
+  wordRow: { gap: 2 },
+  word: { ...arabicTextStyle('body'), fontSize: TYPE.headline.fontSize, lineHeight: 30 },
+  noteBox: { borderRadius: RADIUS.md, padding: SPACING.lg, gap: SPACING.xs },
+  noteLabel: { fontSize: TYPE.footnote.fontSize },
+  sourceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SPACING.md },
+  source: { flex: 1, fontSize: TYPE.footnote.fontSize, lineHeight: 18 },
+  bar: { borderTopWidth: StyleSheet.hairlineWidth, paddingTop: SPACING.sm },
+  barInner: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingHorizontal: SPACING.sm },
+  barButton: { minWidth: 44, minHeight: 44, borderRadius: RADIUS.full, alignItems: 'center', justifyContent: 'center' },
+  arrow: { fontSize: 30, lineHeight: 34 },
+  pressed: { opacity: 0.6 },
+  scrim: { flex: 1, justifyContent: 'center', padding: SPACING.lg },
+  sheet: { borderRadius: RADIUS.lg, padding: SPACING.lg, gap: SPACING.md, maxWidth: 560, width: '100%', alignSelf: 'center' },
+  noteInput: {
+    minHeight: 140,
+    fontSize: TYPE.body.fontSize,
+    padding: SPACING.md,
+    borderRadius: RADIUS.md,
+    textAlignVertical: 'top',
+  },
+  sheetActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: SPACING.sm },
+});
