@@ -56,7 +56,7 @@ describe('drawing and announcing are separate', () => {
     expect(HOME).toMatch(
       /const drawDaruri =\s*tableWithDaruri != null && settings\.malikiSecondTimeRows;/,
     );
-    expect(HOME).toMatch(/table: drawDaruri\s*\?/);
+    expect(HOME).toMatch(/table: drawDaruri && drawnWeek\s*\?/);
   });
 
   it('schedules from the alert week, not the drawn one', () => {

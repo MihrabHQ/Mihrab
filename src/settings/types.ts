@@ -730,6 +730,20 @@ export type PrayerAppSettings = {
    */
   malikiSecondTimeRows: boolean;
   /**
+   * Leave a second time off the card where it is the next prayer's own
+   * time. Ẓuhr's first time runs to ʿAṣr and Maghrib's to ʿIshāʾ
+   * (`daruriTimes.ts`), so the line under each only repeats the row
+   * below it: Maghrib 15:09, "1st to 17:19", ʿIshāʾ 17:19. Off by
+   * default — the line was always there — and only ever about the
+   * drawing: the alerts read the boundaries from the undrawn week.
+   */
+  malikiSecondTimeHideMatching: boolean;
+  /**
+   * The second times' notifications arrive without sound or vibration
+   * (Android: a low-importance channel; iOS: a passive notification).
+   */
+  malikiSecondTimeAlertsSilent: boolean;
+  /**
    * Also announce the far end of each chosen window — the instant the
    * prayer becomes qaḍāʾ (issue #19).
    *
@@ -967,6 +981,8 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   // default; the end-of-window alert is new and opts in like every other
   // notification the user did not ask for.
   malikiSecondTimeRows: true,
+  malikiSecondTimeHideMatching: false,
+  malikiSecondTimeAlertsSilent: false,
   malikiSecondTimeEndAlerts: false,
   // Ayah of the day: off by default (no surprise notifications); 9:00 AM
   // when enabled — a quiet mid-morning moment.

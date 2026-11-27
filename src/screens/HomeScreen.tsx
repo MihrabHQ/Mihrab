@@ -70,7 +70,7 @@ import {
 import { filterOptionalTimes } from '../utils/nightTimes';
 import { DISPLAY_ORDER, displayRowsFor, groupDayRows, type TimingsMap } from '../types/prayer';
 import { FOOT_GAP, pickHomeTier, type HomeTier } from './home/homeBudget';
-import { injectDaruriTimes } from '../prayer/daruriTimes';
+import { injectDaruriTimes, withoutMatchingDaruri } from '../prayer/daruriTimes';
 import { useClockFormatter } from '../hooks/useClockFormatter';
 import { qiblaBearingFrom } from '../utils/qibla';
 import type { RootStackParamList } from '../navigation/types';
@@ -755,13 +755,18 @@ export function HomeScreen() {
       : null;
     const drawDaruri =
       tableWithDaruri != null && settings.malikiSecondTimeRows;
+    // What is DRAWN may leave out a second time that is the next prayer's
+    // own time (`withoutMatchingDaruri`); the alert week below never does.
+    const drawn = (days: TimingsMap[]) =>
+      settings.malikiSecondTimeHideMatching ? days.map(withoutMatchingDaruri) : days;
+    const drawnWeek = tableWithDaruri ? drawn(tableWithDaruri) : null;
     return {
-      table: drawDaruri
+      table: drawDaruri && drawnWeek
         ? {
-            today: tableWithDaruri[0],
-            tomorrow: tableWithDaruri[1],
-            week: tableWithDaruri,
-            past: pastWithDaruri ?? table.past,
+            today: drawnWeek[0],
+            tomorrow: drawnWeek[1],
+            week: drawnWeek,
+            past: pastWithDaruri ? drawn(pastWithDaruri) : table.past,
           }
         : table,
       /**
@@ -807,6 +812,7 @@ export function HomeScreen() {
     settings.firstThirdEnabled,
     settings.malikiSecondTimesEnabled,
     settings.malikiSecondTimeRows,
+    settings.malikiSecondTimeHideMatching,
     settings.school,
   ]);
 
@@ -854,6 +860,7 @@ export function HomeScreen() {
       malikiSecondTimeAlerts: settings.malikiSecondTimeAlerts,
       malikiSecondTimeAlertMinutes: settings.malikiSecondTimeAlertMinutes,
       malikiSecondTimeEndAlerts: settings.malikiSecondTimeEndAlerts,
+      malikiSecondTimeAlertsSilent: settings.malikiSecondTimeAlertsSilent,
       prayerAlertModes: settings.prayerAlertModes,
       journalNotificationActionsEnabled: settings.journalNotificationActionsEnabled,
       tintedSurfaces: settings.tintedSurfaces,
@@ -868,6 +875,7 @@ export function HomeScreen() {
       settings.malikiSecondTimeAlerts,
       settings.malikiSecondTimeAlertMinutes,
       settings.malikiSecondTimeEndAlerts,
+      settings.malikiSecondTimeAlertsSilent,
       settings.prayerAlertModes,
       settings.journalNotificationActionsEnabled,
       settings.tintedSurfaces,

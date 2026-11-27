@@ -59,6 +59,7 @@ import {
   ymdLocal,
 } from './scheduling';
 import { quiet } from '../utils/quiet';
+import { loadSettings } from '../settings/storage';
 import { SILENT_CHANNEL_IDS, SYSTEM_TONE, retireSilentChannel } from './systemTone';
 
 // Re-exported: this was its home before the Live Activity's button became
@@ -459,6 +460,44 @@ export { JOURNAL_LOG_ACTION_ID };
  * a partially-answered one is REDRAWN with the remaining prayers rather
  * than dropped — same instant, same trigger, one fewer name.
  */
+/** The second times' silent channel on Android: in the shade, no sound, no vibration. */
+export const DARURI_SILENT_CHANNEL_ID = 'prayer-second-times-silent';
+
+/**
+ * HOW A SECOND-TIME NOTIFICATION IS DELIVERED: as the reminders are, or
+ * silently (`malikiSecondTimeAlertsSilent`).
+ *
+ * A boundary is not a prayer, and someone who wants to be told that
+ * ʿAṣr's first time is closing may not want five more sounds a day for
+ * it. Silent is Android's own notion — a channel of LOW importance, which
+ * the shade files under "Silent": no sound, no vibration, no heads-up —
+ * and iOS's nearest: a passive notification with no sound, which is
+ * added to the list without lighting the screen.
+ *
+ * The channel is made here, when something is about to be scheduled on
+ * it, and named for what it carries so it can be found in Android's
+ * settings.
+ */
+async function daruriDelivery(
+  silent: boolean,
+  normal: { iosSound: string | undefined; androidChannelId: string },
+): Promise<{ ios: { sound?: string; interruptionLevel?: 'passive' }; androidChannelId: string }> {
+  if (!silent) return { ios: { sound: normal.iosSound }, androidChannelId: normal.androidChannelId };
+  if (Platform.OS === 'android') {
+    await notifee
+      .createChannel({
+        id: DARURI_SILENT_CHANNEL_ID,
+        name: i18n.t('settings.malikiSilentChannel', { defaultValue: 'Second times (silent)' }),
+        importance: AndroidImportance.LOW,
+        vibration: false,
+        // Silent on purpose, and said so (#134, `systemTone.ts`).
+        sound: undefined,
+      })
+      .catch(() => {});
+  }
+  return { ios: { interruptionLevel: 'passive' }, androidChannelId: DARURI_SILENT_CHANNEL_ID };
+}
+
 export async function dropDaruriAlertsForLogged(
   date: string,
   prayers: readonly string[],
@@ -469,6 +508,9 @@ export async function dropDaruriAlertsForLogged(
   // prayer and never speaks with the adhan.
   const sound = getNotificationSoundOption('default');
   const ids = await notifee.getTriggerNotificationIds().catch(() => []);
+  // Redrawn as it was scheduled: silently, where that is the setting. Read
+  // only when there is something to redraw.
+  let delivery: Awaited<ReturnType<typeof daruriDelivery>> | null = null;
 
   for (const id of ids) {
     const start = parseDaruriStartId(id);
@@ -502,16 +544,22 @@ export async function dropDaruriAlertsForLogged(
     const body = i18n.t('alertCopy.daruriExpired', {
       defaultValue: 'The time has ended — pray it as qada',
     });
+    if (!delivery) {
+      const silent = await loadSettings()
+        .then(st => st.malikiSecondTimeAlertsSilent === true)
+        .catch(() => false);
+      delivery = await daruriDelivery(silent, sound);
+    }
     await notifee
       .createTriggerNotification(
         {
           id: daruriEndId(end.ms, keep),
           title: names,
           body,
-          ios: { sound: sound.iosSound },
+          ios: delivery.ios,
           android: {
             style: { type: AndroidStyle.BIGTEXT, text: body },
-            channelId: sound.androidChannelId,
+            channelId: delivery.androidChannelId,
             smallIcon: 'ic_stat_prayer',
             color: DEFAULT_NOTIFICATION_ACCENT,
             pressAction: { id: 'default' },
@@ -633,6 +681,8 @@ async function syncPrayerNotificationsNow(params: {
    * two lists to keep in step would be two chances to disagree.
    */
   daruriEndAlerts?: boolean;
+  /** The second times' notifications arrive silently (`daruriDelivery`). */
+  daruriSilent?: boolean;
   /**
    * Which prayers are already recorded, by local date — issue #23.
    *
@@ -1156,7 +1206,12 @@ async function syncPrayerNotificationsNow(params: {
   // Never the adhan, never a log action, never a snooze: a boundary is
   // not a prayer, and the call to prayer belongs to the five. Same
   // reasoning as Sunrise and the night marks, and the same sound.
+  const daruriHow =
+    daruriEvents.length > 0 || daruriEndEvents.length > 0
+      ? await daruriDelivery(params.daruriSilent === true, reminderSound)
+      : null;
   for (const e of daruriEvents) {
+    if (!daruriHow) break;
     const notificationId = `${PRAYER_NOTIFICATION_ID_PREFIX}daruri-${e.at.getTime()}-${
       e.name
     }`;
@@ -1182,10 +1237,10 @@ async function syncPrayerNotificationsNow(params: {
         id: notificationId,
         title: prayerName,
         body,
-        ios: { sound: reminderSound.iosSound },
+        ios: daruriHow.ios,
         android: {
           style: { type: AndroidStyle.BIGTEXT, text: body },
-          channelId: reminderSound.androidChannelId,
+          channelId: daruriHow.androidChannelId,
           smallIcon: 'ic_stat_prayer',
           color: accent,
           colorized,
@@ -1208,6 +1263,7 @@ async function syncPrayerNotificationsNow(params: {
   // one notification per instant, because Ẓuhr and ʿAṣr run out together
   // at Maghrib and so do Maghrib and Ishāʾ at the next Fajr.
   for (const e of daruriEndEvents) {
+    if (!daruriHow) break;
     const names = e.keys
       .map(k =>
         i18n.t(`prayer.${DARURI_OF[k]}`, { defaultValue: DARURI_OF[k] }),
@@ -1221,10 +1277,10 @@ async function syncPrayerNotificationsNow(params: {
         id: daruriEndId(e.at.getTime(), e.keys),
         title: names,
         body,
-        ios: { sound: reminderSound.iosSound },
+        ios: daruriHow.ios,
         android: {
           style: { type: AndroidStyle.BIGTEXT, text: body },
-          channelId: reminderSound.androidChannelId,
+          channelId: daruriHow.androidChannelId,
           smallIcon: 'ic_stat_prayer',
           color: accent,
           colorized,

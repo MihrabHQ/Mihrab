@@ -575,6 +575,31 @@ export function injectDaruriTimes(
 /**
  * Is `key` one of the five? Storage hands us whatever was on disk.
  */
+/**
+ * A day without the second times that are the NEXT PRAYER'S OWN TIME.
+ *
+ * Ẓuhr's boundary is ʿAṣr's beginning and Maghrib's is ʿIshāʾ's (above:
+ * reused, not recomputed), so on the card the line under each says what
+ * the row below it says: Maghrib 15:09 · "1st to 17:19" · ʿIshāʾ 17:19.
+ * A reader may leave those two out (`malikiSecondTimeHideMatching`).
+ *
+ * By comparison, not by name: on Ḥanafī ʿAṣr Ẓuhr's boundary is the 1:1
+ * shadow and is NOT the ʿAṣr row — it says something the card does not,
+ * and stays. For the DRAWN day only; the alert schedule reads the
+ * boundaries from the week this was not applied to.
+ */
+export function withoutMatchingDaruri(day: TimingsMap): TimingsMap {
+  const same = (a: string | undefined, b: string | undefined) =>
+    a != null && b != null && a === b;
+  const dropDhuhr = same(day.DhuhrDaruri, day.Asr);
+  const dropMaghrib = same(day.MaghribDaruri, day.Isha);
+  if (!dropDhuhr && !dropMaghrib) return day;
+  const out: TimingsMap = { ...day };
+  if (dropDhuhr) delete out.DhuhrDaruri;
+  if (dropMaghrib) delete out.MaghribDaruri;
+  return out;
+}
+
 export function isDaruriKey(key: unknown): key is DaruriKey {
   return (
     typeof key === 'string' && (DARURI_KEYS as readonly string[]).includes(key)

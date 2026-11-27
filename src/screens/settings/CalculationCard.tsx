@@ -268,6 +268,21 @@ function CalculationCardImpl({
             value={settings.malikiSecondTimeRows}
             onValueChange={v => updateSettings({ malikiSecondTimeRows: v })}
           />
+          {/* Dhuhr's first time runs to Asr and Maghrib's to Isha: under
+              those two the line only repeats the row below it. Offered
+              where the lines are drawn at all. */}
+          {settings.malikiSecondTimeRows ? (
+            <SettingsToggleRow
+              title={t(
+                'settings.malikiHideMatching',
+                'Hide a second time that matches the next prayer',
+              )}
+              help={t('settings.malikiHideMatchingHelp')}
+              value={settings.malikiSecondTimeHideMatching}
+              onValueChange={v => updateSettings({ malikiSecondTimeHideMatching: v })}
+              testID="settings-maliki-hide-matching"
+            />
+          ) : null}
         </SettingsBlock>
       ) : null}
 

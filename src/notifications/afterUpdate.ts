@@ -183,6 +183,7 @@ export async function resyncPrayerAlertsFromStorage(
       : [],
     daruriAlertMinutes: settings.malikiSecondTimeAlertMinutes,
     daruriEndAlerts: settings.malikiSecondTimeEndAlerts,
+    daruriSilent: settings.malikiSecondTimeAlertsSilent,
     alertModes: settings.prayerAlertModes,
     journalLogActionEnabled: settings.journalNotificationActionsEnabled,
     // Set from the settings by the widget's republish, which runs first.

@@ -173,6 +173,22 @@ function MalikiAlertsCardImpl({
             }
           />
         ) : null}
+        {/* An ordinary notification, or a silent one: a boundary is not a
+            prayer, and five more sounds a day is how an app gets muted. */}
+        {alerts.length > 0 ? (
+          <SettingsToggleRow
+            title={t('settings.malikiAlertsSilent', 'Silent notifications')}
+            help={t(
+              'settings.malikiAlertsSilentHelp',
+              'They arrive without sound or vibration.',
+            )}
+            value={settings.malikiSecondTimeAlertsSilent}
+            onValueChange={v =>
+              updateSettings({ malikiSecondTimeAlertsSilent: v })
+            }
+            testID="settings-maliki-alerts-silent"
+          />
+        ) : null}
       </View>
         </SettingsBlock>
       ) : (

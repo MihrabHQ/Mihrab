@@ -51,6 +51,7 @@ export type TodayAlertsSettings = Pick<
   | 'malikiSecondTimeAlerts'
   | 'malikiSecondTimeAlertMinutes'
   | 'malikiSecondTimeEndAlerts'
+  | 'malikiSecondTimeAlertsSilent'
   | 'prayerAlertModes'
   | 'journalNotificationActionsEnabled'
   | 'tintedSurfaces'
@@ -108,6 +109,7 @@ export function todayAlertsJob(
     daruriAlerts,
     daruriAlertMinutes: s.malikiSecondTimeAlertMinutes,
     daruriEndAlerts: s.malikiSecondTimeEndAlerts,
+    daruriSilent: s.malikiSecondTimeAlertsSilent,
     alertModes: s.prayerAlertModes,
     journalLogActionEnabled: s.journalNotificationActionsEnabled,
     hour12: i.hour12,
@@ -134,6 +136,8 @@ export function todayAlertsJob(
     daruriAlerts.join(','),
     String(s.malikiSecondTimeAlertMinutes),
     String(s.malikiSecondTimeEndAlerts),
+    // Which channel they are scheduled against.
+    String(s.malikiSecondTimeAlertsSilent),
     // Which prayers speak, and how.
     JSON.stringify(s.prayerAlertModes),
     String(s.journalNotificationActionsEnabled),

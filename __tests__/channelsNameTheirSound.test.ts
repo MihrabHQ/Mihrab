@@ -47,6 +47,7 @@ const SILENT_ON_PURPOSE = [
   'notifications/liveActivity.ts', // the countdown: the alert is the prayer's, not the card's
   'notifications/dhikrReminders.ts', // only its "(silent)" twin, at LOW importance
   'quran/downloadNotification.ts', // a progress bar
+  'notifications/prayerNotifications.ts', // only the Maliki second times' "(silent)" channel, at LOW importance
 ];
 
 describe('every notification channel says what it sounds like (#134)', () => {
@@ -63,6 +64,15 @@ describe('every notification channel says what it sounds like (#134)', () => {
   it.each(channels.map(c => [c.where, c.body]))('%s is silent only where silence is the point', (where, body) => {
     if (!/\bsound:\s*undefined\b/.test(body)) return;
     expect(SILENT_ON_PURPOSE.some(f => where.startsWith(f))).toBe(true);
+  });
+
+  it('the prayer alerts have one silent channel only: the second times\' own, where silent was chosen', () => {
+    const silent = channels.filter(
+      c => c.where.startsWith('notifications/prayerNotifications.ts') && /\bsound:\s*undefined\b/.test(c.body),
+    );
+    expect(silent).toHaveLength(1);
+    expect(silent[0].body).toContain('id: DARURI_SILENT_CHANNEL_ID,');
+    expect(silent[0].body).toContain('importance: AndroidImportance.LOW,');
   });
 
   it('the reminders meant to sound use the phone’s own tone', () => {

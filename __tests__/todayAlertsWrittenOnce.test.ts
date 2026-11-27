@@ -34,6 +34,7 @@ const input = (over: Partial<TodayAlertsInput> = {}): TodayAlertsInput => ({
     malikiSecondTimeAlerts: [],
     malikiSecondTimeAlertMinutes: 15,
     malikiSecondTimeEndAlerts: false,
+    malikiSecondTimeAlertsSilent: false,
     prayerAlertModes: {} as never,
     journalNotificationActionsEnabled: true,
     tintedSurfaces: false,

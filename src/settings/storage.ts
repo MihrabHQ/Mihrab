@@ -641,6 +641,8 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   // notifications, and an hour of NaN is a trigger that never fires or
   // fires now. Same treatment as the location presets beside them.
   merged.dhikrReminders = coerceDhikrReminders(parsed.dhikrReminders);
+  merged.malikiSecondTimeHideMatching = parsed.malikiSecondTimeHideMatching === true;
+  merged.malikiSecondTimeAlertsSilent = parsed.malikiSecondTimeAlertsSilent === true;
   merged.malikiSecondTimeAlertMinutes = coercePrePrayerReminderMinutes(
     parsed.malikiSecondTimeAlertMinutes ??
       DEFAULT_SETTINGS.malikiSecondTimeAlertMinutes,
