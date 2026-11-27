@@ -31,7 +31,7 @@ import { TYPE, arabicTextStyle } from '../../theme/typography';
 import { READING_BASE } from '../../theme/readingText';
 import { useReadingText } from '../../hooks/useReadingText';
 import { TextSizeStepper } from '../../components/ui';
-import { findSurah, loadSurah } from '../quran';
+import { bundledSurahArabic, findSurah, loadSurah } from '../quran';
 import { resolveRiwayah, riwayahById, riwayahTextFontFamily } from '../riwayat';
 import { riwayahAyahText } from '../riwayahData';
 import {
@@ -142,6 +142,7 @@ import { IS_WEB_APP } from '../../config/webApp';
 import { useSheetSides } from '../../responsive/sheetSides';
 import { drawableText } from '../maddaWajibFallback';
 import { useRenderClock } from '../../hooks/useRenderClock';
+import { useModalSheetCap } from '../../hooks/useModalSheetCap';
 
 /** The sheet's own padding, before the safe-area insets are added to it. */
 const SHEET_H_PADDING = 18;
@@ -305,7 +306,7 @@ export function AyahActionSheet({
       : { surah: openedSurah, ayah: openedAyah, page: openedPage };
   const { surah, ayah, page } = at;
 
-  const [arabic, setArabic] = useState<string>('');
+  const [arabicLoaded, setArabic] = useState<string>('');
   /** The "as text or as a card" question — see `share` below. */
   const [formatPicker, setFormatPicker] = useState(false);
   const [shareCardVisible, setShareCardVisible] = useState(false);
@@ -336,6 +337,26 @@ export function AyahActionSheet({
   // in plain Unicode under tajwīd-coloured page fonts, and its Tajweed
   // tab looked for Warsh's rules and found none.
   const shownRiwayah = resolveRiwayah(state.prefs.riwayah);
+  /**
+   * THE ĀYAH'S TEXT ON THE FIRST FRAME, WHERE IT IS ALREADY IN MEMORY.
+   *
+   * It was state filled by an effect, so the sheet always opened without
+   * its āyah and grew when the text arrived a frame or more later — and
+   * emptied and refilled on every step to the next āyah. A riwayah's own
+   * text and a surah the reader has open are both held in memory and can
+   * be read here, while rendering. The effect below still loads a surah
+   * that is not.
+   */
+  const arabicHeld = useMemo(
+    () =>
+      visible
+        ? riwayahAyahText(shownRiwayah, surah, ayah) ?? bundledSurahArabic(surah)?.[ayah - 1] ?? ''
+        : '',
+    [visible, shownRiwayah, surah, ayah],
+  );
+  const arabic = arabicHeld || arabicLoaded;
+  // The sheet's height limit, as a number that holds still (the hook has the why).
+  const cap = useModalSheetCap(0.82, visible);
   const prevAyah = adjacentAyah(surah, ayah, -1, shownRiwayah);
   const nextAyah = adjacentAyah(surah, ayah, 1, shownRiwayah);
   const stepTo = (to: { surah: number; ayah: number } | null) => {
@@ -768,10 +789,15 @@ export function AyahActionSheet({
         style={[styles.backdrop, { backgroundColor: palette.overlay }]}
         accessibilityLabel={t('common.close', 'Close')}
         onPress={onClose}
+        // The Modal's own box, edge to edge: what the sheet's limit is a part of.
+        onLayout={cap.onContainerLayout}
       />
       <View
         style={[
           styles.sheet,
+          // Not '82%': on Android the Modal's box changes size after the
+          // sheet is up, and a percentage followed it (useModalSheetCap).
+          { maxHeight: cap.maxHeight },
           // On a wide Android screen, a phone's width in the middle — or one
           // page of a foldable held as a book (`sheetSides.ts`).
           sides,
@@ -896,7 +922,10 @@ export function AyahActionSheet({
               The Tajweed tab draws its own tinted copy only when this one
               is plain — the colours off — so a coloured āyah is never
               shown twice. With the tab open a tapped word is read out. */}
-          {arabic && riwayahById(shownRiwayah).render === 'glyph' ? (
+          {/* Not waiting on `arabic`: this is drawn from the page's own
+              glyphs by surah and āyah, and the text is only what is copied
+              and shared. Waiting made the sheet open short and grow. */}
+          {riwayahById(shownRiwayah).render === 'glyph' ? (
             <View style={styles.arabicGlyphs}>
               <TajweedAyahGlyphs
                 surah={surah}
@@ -1871,7 +1900,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    maxHeight: '82%',
     borderTopStartRadius: 18,
     borderTopEndRadius: 18,
     // The horizontal and bottom padding are applied inline — they carry the
