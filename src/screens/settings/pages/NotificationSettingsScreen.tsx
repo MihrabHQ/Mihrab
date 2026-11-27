@@ -21,6 +21,7 @@ import { useAppPalette } from '../../../hooks/useAppPalette';
 import { LiveActivityCard } from '../LiveActivityCard';
 import { LIVE_ACTIVITY_SHOW_BEFORE_OPTIONS } from '../../../settings/prePrayerReminder';
 import { MalikiAlertsCard } from '../MalikiAlertsCard';
+import { LogRemindersGroup } from '../LogRemindersGroup';
 import { NestedPageRows } from '../NestedPageRows';
 import { NotificationsCard } from '../NotificationsCard';
 import { PreReminderModal } from '../PreReminderModal';
@@ -159,7 +160,7 @@ export function NotificationSettingsScreen() {
           onOpenSoundPicker={openSound}
           onOpenPreReminderPicker={openPreReminder}
         />
-        {/* The extra times and the daily Qur'an reminders. Both were
+        {/* The prayer sounds and the daily Qur'an reminders. Both were
             headings further down this same scroll, which is where a
             setting goes to be missed. */}
         <NestedPageRows parent="SettingsNotifications" />
@@ -183,6 +184,7 @@ export function NotificationSettingsScreen() {
             nobody thought to look. It owns no modals, so the page's
             back-deferral is unaffected. */}
         <LiveActivityCard onOpenShowFromPicker={openShowFrom} />
+        <LogRemindersGroup />
       </SettingsPage>
 
       <SoundPickerModal

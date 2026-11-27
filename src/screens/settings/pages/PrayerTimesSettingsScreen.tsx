@@ -26,6 +26,7 @@ import { asrSchoolFor, selectedMadhab } from '../../../prayer/madhab';
 import { MonthTimesCard } from '../MonthTimesCard';
 import { HijriCalendarCard } from '../HijriCalendarCard';
 import { PrayerOffsetsModal } from '../PrayerOffsetsModal';
+import { NestedPageRows } from '../NestedPageRows';
 import { SettingsPage } from '../SettingsPage';
 import { DataStatsPanel } from '../../home/DataStatsPanel';
 import { useKeepLatest } from '../../../hooks/useLatest';
@@ -58,6 +59,9 @@ export function PrayerTimesSettingsScreen() {
           onOpenOffsetsModal={openOffsets}
           onOpenMadhabPicker={openMadhab}
         />
+        {/* Sunrise, Islamic midnight and the thirds of the night: which of
+            them the day's table carries. */}
+        <NestedPageRows parent="SettingsPrayerTimes" />
         <MonthTimesCard />
         <HijriCalendarCard />
         {/* The data statistics — where the times come from, how much is

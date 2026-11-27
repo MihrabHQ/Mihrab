@@ -83,6 +83,17 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
     blurbKey: 'settings.sectionPrayerTimesBlurb',
     Icon: PrayerTimesIcon,
     getComponent: () => (require('./pages/PrayerTimesSettingsScreen') as typeof import('./pages/PrayerTimesSettingsScreen')).PrayerTimesSettingsScreen,
+    children: [
+      // Which times the day's table holds beside the five: a question
+      // about the prayer times, asked under Notifications until now
+      // because each can also be announced.
+      {
+        route: 'SettingsExtraTimes',
+        titleKey: 'settings.additionalTimes',
+        blurbKey: 'settings.additionalTimesBlurb',
+        getComponent: () => (require('./pages/ExtraTimesSettingsScreen') as typeof import('./pages/ExtraTimesSettingsScreen')).ExtraTimesSettingsScreen,
+      },
+    ],
   },
   {
     route: 'SettingsNotifications',
@@ -96,12 +107,6 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
         titleKey: 'settings.prayerSounds',
         blurbKey: 'settings.prayerSoundsBlurb',
         getComponent: () => (require('./pages/PrayerSoundsSettingsScreen') as typeof import('./pages/PrayerSoundsSettingsScreen')).PrayerSoundsSettingsScreen,
-      },
-      {
-        route: 'SettingsExtraTimes',
-        titleKey: 'settings.additionalTimes',
-        blurbKey: 'settings.additionalTimesBlurb',
-        getComponent: () => (require('./pages/ExtraTimesSettingsScreen') as typeof import('./pages/ExtraTimesSettingsScreen')).ExtraTimesSettingsScreen,
       },
       {
         route: 'SettingsDailyReminders',

@@ -1,31 +1,25 @@
 /**
- * Settings → Notifications → Extra times.
+ * Settings → Prayer times → Additional times.
  *
  * The moments that are not one of the five, each gating one entry across
  * the prayer table, the notifications, the home-screen widget and the
  * Live Activity at once. They sit behind their own row rather than under
  * the prayer alerts because they are not alerts: a switch here changes
  * what the app SHOWS, and only then what it announces — which is why
- * they stay usable with the master alerts toggle off.
+ * they stay usable with the master alerts toggle off. And it is why the
+ * page is under Prayer times: it was under Notifications, where someone
+ * looking for "show sunrise in the table" had no reason to go. The log
+ * prompt that shared the page is a notification and stayed behind
+ * (`LogRemindersGroup`).
  */
 import { useTranslation } from 'react-i18next';
 import { useNotificationsSettings } from '../../../context/PrayerSettingsContext';
-import { ensureNotifPermission } from '../../../notifications/ensureNotifPermission';
 import { SettingsGroup, SettingsToggleRow } from '../SettingsGroup';
 import { SettingsPage } from '../SettingsPage';
 
 export function ExtraTimesSettingsScreen() {
   const { t } = useTranslation();
   const { slice: settings, update: updateSettings } = useNotificationsSettings();
-
-  const onToggleEndOfDayLog = async (value: boolean) => {
-    if (!value) {
-      updateSettings({ endOfDayLogReminderEnabled: false });
-      return;
-    }
-    if (!(await ensureNotifPermission())) return;
-    updateSettings({ endOfDayLogReminderEnabled: true });
-  };
 
   return (
     <SettingsPage>
@@ -63,26 +57,6 @@ export function ExtraTimesSettingsScreen() {
           help={t('settings.lastThirdHelp')}
           value={settings.lastThirdEnabled}
           onValueChange={v => updateSettings({ lastThirdEnabled: v })}
-        />
-      </SettingsGroup>
-
-      {/* End-of-day log prompt (v2.8.5). Not a time of day the sky
-          decides, so it keeps its own group — and the same switch lives
-          on the Log screen, where the thing it affects is visible. */}
-      <SettingsGroup title={t('settings.logSection', 'Log')}>
-        <SettingsToggleRow
-          title={t('settings.endOfDayLog')}
-          help={t('settings.endOfDayLogHelp')}
-          value={settings.endOfDayLogReminderEnabled}
-          onValueChange={onToggleEndOfDayLog}
-        />
-        {/* Issue #74, off by default: a log made from outside the app
-            takes the clock's answer — see journal/logTiming. */}
-        <SettingsToggleRow
-          title={t('settings.logLateByClock')}
-          help={t('settings.logLateByClockHelp')}
-          value={settings.logLateByClock}
-          onValueChange={v => updateSettings({ logLateByClock: v })}
         />
       </SettingsGroup>
     </SettingsPage>
