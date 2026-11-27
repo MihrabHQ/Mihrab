@@ -3185,7 +3185,9 @@
         "pageFailed": "এই পৃষ্ঠাটি দেখানো যায়নি।",
         "find": "খুঁজুন",
         "findPrevious": "পূর্ববর্তী",
-        "findNext": "পরবর্তী"
+        "findNext": "পরবর্তী",
+        "fullScreen": "পূর্ণ পর্দা",
+        "exitFullScreen": "পূর্ণ পর্দা থেকে বের হোন"
       },
       "subject": {
         "quran": "কুরআন",

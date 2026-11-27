@@ -3185,7 +3185,9 @@
         "pageFailed": "Bu sayfa gösterilemedi.",
         "find": "Ara",
         "findPrevious": "Önceki",
-        "findNext": "Sonraki"
+        "findNext": "Sonraki",
+        "fullScreen": "Tam ekran",
+        "exitFullScreen": "Tam ekrandan çık"
       },
       "subject": {
         "quran": "Kur’an",

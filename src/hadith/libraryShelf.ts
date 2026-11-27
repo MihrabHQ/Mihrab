@@ -72,6 +72,16 @@ export function libraryBookTags(book: Pick<LibraryBook, 'kind' | 'level' | 'madh
     ...(book.level === 2 ? ['hadith.library.levelLater'] : []),
   ];
 }
+/**
+ * The language to name on a book, in that language's own name: a book in a language the reader asked for
+ * (or holds already), among books in the reader's own. Arabic is everyone's and a reader's own languages
+ * are what the shelf is in; neither is named. null: nothing to say.
+ */
+export function libraryBookLanguageChip(book: Pick<LibraryBook, 'lang'>, own: readonly string[]): string | null {
+  const lang = libraryBookLang(book);
+  if (lang === 'ar' || own.some(o => sameLanguage(o, lang))) return null;
+  return LIBRARY_LANGUAGE_NAMES[lang] ?? null;
+}
 export const libraryKey = (id: string): PackKey => `library/${id}`;
 export function findLibraryBook(id: string): LibraryBook | undefined {
   return LIBRARY_BOOKS.find(b => b.id === id);

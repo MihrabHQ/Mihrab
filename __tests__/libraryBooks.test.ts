@@ -10,7 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 import BOOKS from '../src/hadith/libraryBooks.json';
-import { LIBRARY_BOOKS, findLibraryBook, libraryKey, libraryParts, offeredLibraryBooks, LIBRARY_SUBJECTS, libraryBookLang, libraryBookTags, libraryShelves, LIBRARY_LANGUAGE_NAMES, libraryOtherLanguages, libraryOwnLanguages } from '../src/hadith/libraryShelf';
+import { LIBRARY_BOOKS, findLibraryBook, libraryKey, libraryParts, offeredLibraryBooks, LIBRARY_SUBJECTS, libraryBookLang, libraryBookLanguageChip, libraryBookTags, libraryShelves, LIBRARY_LANGUAGE_NAMES, libraryOtherLanguages, libraryOwnLanguages } from '../src/hadith/libraryShelf';
 import { LONG_PASSAGE, PARAGRAPH_MIN, readingParagraphs } from '../src/hadith/libraryParagraphs';
 import { validPack, type Manifest } from '../src/hadith/packTypes';
 import { blockKind } from '../src/screens/hadith/LibraryBookScreen';
@@ -704,5 +704,28 @@ describe('a matn with no chapter headings, bound with another work', () => {
       // Marking, copying and sharing are still of the whole block.
       expect(page).toContain('toggleLibraryBookmark(id, chapter, index)');
     });
+  });
+});
+
+describe('a book in a language the reader asked for', () => {
+  const fs = require('fs') as typeof import('fs');
+  const path = require('path') as typeof import('path');
+  const src = (f: string) => fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
+
+  it('names its language on the shelf, in that language; Arabic and the reader\'s own are not named', () => {
+    expect(libraryBookLanguageChip({ lang: 'id' }, ['ar'])).toBe('Bahasa Indonesia');
+    expect(libraryBookLanguageChip({ lang: 'ur' }, ['en', 'sv'])).toBe('اردو');
+    expect(libraryBookLanguageChip({ lang: 'id' }, ['id-ID'])).toBeNull();
+    expect(libraryBookLanguageChip({ lang: 'ar' }, ['en'])).toBeNull();
+    expect(libraryBookLanguageChip({} as { lang: string }, ['en'])).toBeNull();
+    // Every language a book is in has a name to show.
+    for (const b of LIBRARY_BOOKS) if (libraryBookLang(b) !== 'ar') expect([b.id, libraryBookLanguageChip(b, [])]).toEqual([b.id, LIBRARY_LANGUAGE_NAMES[libraryBookLang(b)]]);
+    expect(src('src/screens/hadith/LibraryShelf.tsx')).toContain('chip={libraryBookLanguageChip(b, own) ?? undefined}');
+  });
+
+  it('is read with the phone held either way, and the rest of the app stays upright', () => {
+    const nav = src('src/navigation/RootNavigator.tsx');
+    expect(nav).toMatch(/name="LibraryBook"[\s\S]{0,700}orientation: 'default'/);
+    expect(nav).toContain("        orientation: 'portrait',\n      })}>");
   });
 });

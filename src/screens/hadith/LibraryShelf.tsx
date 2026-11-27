@@ -28,6 +28,7 @@ import {
   LIBRARY_LANGUAGE_NAMES,
   deviceLanguage,
   lastReadBook,
+  libraryBookLanguageChip,
   libraryBookTags,
   libraryOtherLanguages,
   libraryOwnLanguages,
@@ -129,6 +130,7 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
                     <Row
                       key={b.id}
                       title={b.title}
+                      chip={libraryBookLanguageChip(b, own) ?? undefined}
                       // On the author's line, not one of their own: a row shows three lines, and what the book is must keep two.
                       subtitle={`${[by, ...tags].join(' · ')}\n${b.about ?? t(`hadith.library.about.${b.id}`)}`}
                       value={bytes != null ? formatBytes(bytes) : percent >= 1 ? t('hadith.library.percent', { percent }) : undefined}

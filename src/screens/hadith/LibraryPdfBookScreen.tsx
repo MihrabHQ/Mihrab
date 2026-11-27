@@ -18,10 +18,11 @@
  * A file that will not open at all is offered to be fetched again.
  */
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentRef } from 'react';
-import { Animated, FlatList, Image, Linking, PixelRatio, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Animated, BackHandler, FlatList, Image, Linking, PixelRatio, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Button, Group, Row } from '../../components/ui';
 import { useAppPalette } from '../../hooks/useAppPalette';
@@ -321,6 +322,21 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
     look('');
   };
 
+  // ── Full screen: the pages and nothing else ──
+  // The bar, the title and the status bar go. The way back is a button that stays in the corner — a tap on
+  // the page is not it: a page is tapped by accident, and to select its words — and Android's back button,
+  // which leaves the book only once the bars are back.
+  const [full, setFull] = useState(false);
+  useEffect(() => {
+    if (!full) return undefined;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      setFull(false);
+      return true;
+    });
+    return () => sub.remove();
+  }, [full]);
+  const insets = useSafeAreaInsets();
+
   // Going to a page by its number.
   const [asking, setAsking] = useState(false);
   const [typed, setTyped] = useState('');
@@ -340,6 +356,7 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
   return (
     <HadithPage
       title={title}
+      bare={full}
       end={
         <Pressable
           onPress={() => {
@@ -359,16 +376,19 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
     >
       {bottom => (
         <View style={styles.flex}>
+          {full ? null : (
           <View style={[styles.bar, { borderBottomColor: palette.border }]}>
             <Pressable onPress={() => setAsking(true)} accessibilityRole="button" accessibilityLabel={t('quran.jumpToPage')} hitSlop={8} testID="library-pdf-where">
               <Text style={[styles.where, { color: palette.text }]}>{t('hadith.library.chapterOf', { n: at + 1, count: pages })}</Text>
             </Pressable>
             <View style={styles.barEnd}>
               {system && canFind ? <TextAction label={t('hadith.library.pdf.find')} color={palette.accentSolid} onPress={() => (finding ? stopFinding() : setFinding(true))} /> : null}
+              <TextAction label={t('hadith.library.pdf.fullScreen')} color={palette.accentSolid} onPress={() => { setAsking(false); setFull(true); }} />
               <TextAction label={marked ? t('hadith.library.unmark') : t('hadith.library.mark')} color={palette.accentSolid} onPress={() => toggle(at)} />
             </View>
           </View>
-          {finding && system ? (
+          )}
+          {finding && system && !full ? (
             <View style={[styles.goRow, { backgroundColor: palette.card }]}>
               <TextInput
                 value={words}
@@ -400,7 +420,7 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
               <TextAction label={t('common.cancel')} color={palette.mutedSolid} onPress={stopFinding} />
             </View>
           ) : null}
-          {asking ? (
+          {asking && !full ? (
             <View style={[styles.goRow, { backgroundColor: palette.card }]}>
               <TextInput
                 value={typed}
@@ -480,6 +500,18 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
             </GestureDetector>
           </GestureHandlerRootView>
           )}
+          {full ? (
+            <Pressable
+              onPress={() => setFull(false)}
+              accessibilityRole="button"
+              accessibilityLabel={t('hadith.library.pdf.exitFullScreen')}
+              hitSlop={12}
+              style={({ pressed }) => [styles.exitFull, { top: insets.top + SPACING.sm, end: insets.right + SPACING.md }, pressed && styles.pressed]}
+              testID="library-pdf-exit-full"
+            >
+              <Text style={styles.exitFullText}>✕</Text>
+            </Pressable>
+          ) : null}
         </View>
       )}
     </HadithPage>
@@ -702,7 +734,10 @@ const styles = StyleSheet.create({
   note: { fontSize: TYPE.footnote.fontSize, lineHeight: 19 },
   sectionTitle: { fontSize: TYPE.headline.fontSize, fontWeight: '600' },
   gate: { gap: SPACING.md },
-  bar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm, borderBottomWidth: StyleSheet.hairlineWidth },
+  // Over the pages, which are white paper whatever the theme: dark glass, white mark.
+  exitFull: { position: 'absolute', width: 40, height: 40, borderRadius: RADIUS.full, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.55)' },
+  exitFullText: { color: PAPER, fontSize: TYPE.headline.fontSize, fontWeight: '600' },
+  bar: { flexDirection: 'row', flexWrap: 'wrap', rowGap: SPACING.xs, alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm, borderBottomWidth: StyleSheet.hairlineWidth },
   where: { fontSize: TYPE.footnote.fontSize, fontVariant: ['tabular-nums'] },
   goRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.lg, paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm },
   barEnd: { flexDirection: 'row', alignItems: 'center', gap: SPACING.lg },

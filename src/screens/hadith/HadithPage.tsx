@@ -7,7 +7,7 @@
  */
 import type { ReactNode } from 'react';
 import { useCallback, useLayoutEffect, useState } from 'react';
-import { StyleSheet, Text, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { StatusBar, StyleSheet, Text, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,6 +28,11 @@ type Props = {
   title: string;
   /** Opposite the back arrow. */
   end?: ReactNode;
+  /**
+   * The page alone: no bar and no status bar, the whole glass the body's (a book's pages read full
+   * screen). The caller gives the way back out; Android's back button is the caller's to answer too.
+   */
+  bare?: boolean;
   /**
    * The page, given the room it must leave at its foot, and what its
    * scroller reports its scrolling to: the bar draws a line under itself
@@ -50,7 +55,7 @@ export function titleScale(room: number, natural: number): number {
   return Math.max(TITLE_MIN_SCALE, Math.floor((room / natural) * 100) / 100 - 0.01);
 }
 
-export function HadithPage({ title, end, children }: Props) {
+export function HadithPage({ title, end, bare, children }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const navigation = useNavigation();
@@ -99,6 +104,16 @@ export function HadithPage({ title, end, children }: Props) {
     return setSystemBarSurface({ color: pageBg, isDark: palette.isDark });
   }, [pageBg, palette.isDark]);
 
+  if (bare) {
+    return (
+      <View style={[styles.root, { backgroundColor: palette.bg }]}>
+        {/* As the muṣḥaf's full screen has it: RN applies the most recently mounted StatusBar, and the
+            root's is applied again when this one is gone. */}
+        <StatusBar hidden animated />
+        <View style={styles.body}>{children(systemBottom, onScroll)}</View>
+      </View>
+    );
+  }
   return (
     <View style={[styles.root, { backgroundColor: palette.bg }]}>
       <CenteredColumn

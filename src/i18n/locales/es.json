@@ -3186,7 +3186,9 @@
         "pageFailed": "No se pudo mostrar esta página.",
         "find": "Buscar",
         "findPrevious": "Anterior",
-        "findNext": "Siguiente"
+        "findNext": "Siguiente",
+        "fullScreen": "Pantalla completa",
+        "exitFullScreen": "Salir de pantalla completa"
       },
       "subject": {
         "quran": "Corán",

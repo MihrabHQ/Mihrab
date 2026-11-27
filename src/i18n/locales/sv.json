@@ -3185,7 +3185,9 @@
         "pageFailed": "Den här sidan kunde inte visas.",
         "find": "Sök",
         "findPrevious": "Föregående",
-        "findNext": "Nästa"
+        "findNext": "Nästa",
+        "fullScreen": "Helskärm",
+        "exitFullScreen": "Lämna helskärm"
       },
       "subject": {
         "quran": "Koranen",

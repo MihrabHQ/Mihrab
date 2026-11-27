@@ -3290,7 +3290,9 @@
         "pageFailed": "Не удалось показать эту страницу.",
         "find": "Поиск",
         "findPrevious": "Назад",
-        "findNext": "Далее"
+        "findNext": "Далее",
+        "fullScreen": "Во весь экран",
+        "exitFullScreen": "Выйти из полноэкранного режима"
       },
       "subject": {
         "quran": "Коран",

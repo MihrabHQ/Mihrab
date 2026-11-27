@@ -298,6 +298,17 @@ class MihrabPdfReaderView(private val reactContext: ThemedReactContext) : FrameL
     layout(left, top, right, bottom)
   }
 
+  // The phone was turned: a page as wide as the view is now another zoom, by as much as the view is wider
+  // (a page that fitted read "220%" on its side, seen on an emulator).
+  override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    super.onSizeChanged(w, h, oldw, oldh)
+    if (w > 0 && oldw > 0 && w != oldw && baseZoom > 0f) {
+      baseZoom *= w.toFloat() / oldw
+      saidZoom = -1
+      post { report(saidPage.coerceAtLeast(0), pdf.zoom) }
+    }
+  }
+
   override fun requestLayout() {
     super.requestLayout()
     if (built) post(settle)

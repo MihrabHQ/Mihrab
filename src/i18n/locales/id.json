@@ -3185,7 +3185,9 @@
         "pageFailed": "Halaman ini tidak dapat ditampilkan.",
         "find": "Cari",
         "findPrevious": "Sebelumnya",
-        "findNext": "Berikutnya"
+        "findNext": "Berikutnya",
+        "fullScreen": "Layar penuh",
+        "exitFullScreen": "Keluar dari layar penuh"
       },
       "subject": {
         "quran": "Al-Qur’an",

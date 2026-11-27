@@ -3185,7 +3185,9 @@
         "pageFailed": "无法显示此页。",
         "find": "搜索",
         "findPrevious": "上一个",
-        "findNext": "下一个"
+        "findNext": "下一个",
+        "fullScreen": "全屏",
+        "exitFullScreen": "退出全屏"
       },
       "subject": {
         "quran": "《古兰经》",

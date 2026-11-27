@@ -369,7 +369,10 @@ export function RootNavigator() {
       <Stack.Screen
         name="LibraryBook"
         getComponent={() => (require('../screens/hadith/LibraryBookScreen') as typeof import('../screens/hadith/LibraryBookScreen')).LibraryBookScreen}
-        options={{ title: t('nav.hadith'), headerShown: false, contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 } }}
+        // A book is read with the phone held either way: a printed page is wider across the long side, and a
+        // long line of text is easier there. 'default' as the muṣḥaf has it: the phone's own rotation lock is
+        // kept. Leaving the book, the app is upright again.
+        options={{ title: t('nav.hadith'), headerShown: false, orientation: 'default', contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 } }}
       />
       {/* The Settings index, pushed from Today's cog. Drawn in SettingsPage's
           own bar, like the sections below. */}

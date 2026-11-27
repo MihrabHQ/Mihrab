@@ -3235,7 +3235,9 @@
         "pageFailed": "تعذّر عرض هذه الصفحة.",
         "find": "بحث",
         "findPrevious": "السابق",
-        "findNext": "التالي"
+        "findNext": "التالي",
+        "fullScreen": "ملء الشاشة",
+        "exitFullScreen": "الخروج من ملء الشاشة"
       },
       "subject": {
         "quran": "القرآن",

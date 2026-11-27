@@ -180,6 +180,8 @@ describe('the reader', () => {
     expect(view).toContain('if (zoom <= 0f || baseZoom <= 0f) return');
     expect(view).toContain('if (middle != null) pdf.scrollToPosition(middle) else if (page >= 0) pdf.scrollToPage(page)');
     expect(view).toContain('pdf.postDelayed({ pdf.scrollBy(0, 1); pdf.scrollBy(0, -1) }, REDRAW_MS)');
+    // Turned on its side, a page that fits is still 100%.
+    expect(view).toContain('baseZoom *= w.toFloat() / oldw');
     // The screen: the same place, bookmarks and go-to-page, through the view; and the list of pages when
     // the view is not there or cannot open the file.
     expect(page).toContain('const system = !systemFailed && nativePdfViewAvailable();');
@@ -206,11 +208,24 @@ describe('the reader', () => {
     for (const k of ['find', 'findNext', 'findPrevious']) expect(page).toContain(`hadith.library.pdf.${k}`);
   });
 
+  it('can be read full screen, with a button that stays to leave it, and the back button', () => {
+    const frame = read('src/screens/hadith/HadithPage.tsx');
+    expect(page).toContain('bare={full}');
+    expect(page).toContain("t('hadith.library.pdf.fullScreen')");
+    expect(frame).toMatch(/if \(bare\) \{[\s\S]*?<StatusBar hidden animated \/>/);
+    // The way out is a button in the corner, clear of the camera and the corners of the glass; not a tap on
+    // the page, which happens by accident and is how words are selected.
+    expect(page).toMatch(/\{full \? \(\s*<Pressable\s*onPress=\{\(\) => setFull\(false\)\}\s*accessibilityRole="button"\s*accessibilityLabel=\{t\('hadith\.library\.pdf\.exitFullScreen'\)\}/);
+    expect(page).toContain('top: insets.top + SPACING.sm, end: insets.right + SPACING.md');
+    expect(page).not.toContain('onPdfTap');
+    expect(page).toMatch(/BackHandler\.addEventListener\('hardwareBackPress', \(\) => \{\s*setFull\(false\);\s*return true;/);
+  });
+
   it('has a sentence for each way the file can fail, in every language', () => {
     for (const k of ['note', 'read', 'zoom', 'noSpace', 'badFile', 'unreadable', 'pageFailed']) expect(page + read('src/screens/hadith/LibraryShelf.tsx')).toContain(`hadith.library.pdf.${k}`);
     for (const f of fs.readdirSync(path.join(REPO, 'src/i18n/locales'))) {
       const pdf = JSON.parse(read(`src/i18n/locales/${f}`)).hadith.library.pdf;
-      expect([f, Object.keys(pdf).sort()]).toEqual([f, ['badFile', 'find', 'findNext', 'findPrevious', 'noSpace', 'note', 'pageFailed', 'read', 'unreadable', 'zoom']]);
+      expect([f, Object.keys(pdf).sort()]).toEqual([f, ['badFile', 'exitFullScreen', 'find', 'findNext', 'findPrevious', 'fullScreen', 'noSpace', 'note', 'pageFailed', 'read', 'unreadable', 'zoom']]);
       expect([f, pdf.noSpace.includes('{{size}}')]).toEqual([f, true]);
     }
   });

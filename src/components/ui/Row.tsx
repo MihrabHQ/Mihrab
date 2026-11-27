@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View, type StyleProp, type TextStyle } fro
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { TYPE, typeStyle } from '../../theme/typography';
 import { ROW_PADDING } from './Group';
-import { SPACING } from '../../theme/tokens';
+import { RADIUS, SPACING } from '../../theme/tokens';
 import { useLayoutRtl } from '../../i18n/useLayoutRtl';
 
 /**
@@ -18,6 +18,8 @@ type Props = {
   title: string;
   subtitle?: string;
   trailing?: ReactNode;
+  /** A word in a small outlined box under the title: what kind of thing this row is (a book's language). */
+  chip?: string;
   /** A plain value on the right, muted. Convenience for the common case. */
   value?: string;
   onPress?: () => void;
@@ -35,6 +37,7 @@ type Props = {
 function RowImpl({
   title,
   subtitle,
+  chip,
   trailing,
   value,
   onPress,
@@ -56,6 +59,13 @@ function RowImpl({
           numberOfLines={2}>
           {title}
         </Text>
+        {chip ? (
+          <View style={[styles.chip, { borderColor: palette.border }]}>
+            <Text style={[typeStyle('caption'), { color: palette.muted }]} numberOfLines={1}>
+              {chip}
+            </Text>
+          </View>
+        ) : null}
         {subtitle ? (
           <Text
             style={[typeStyle('footnote'), styles.subtitle, { color: palette.muted }]}
@@ -116,6 +126,14 @@ const styles = StyleSheet.create({
   },
   text: { flex: 1, minWidth: 0 },
   subtitle: { marginTop: 2 },
+  chip: {
+    alignSelf: 'flex-start',
+    marginTop: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 2,
+    borderRadius: RADIUS.full,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
   chevron: { fontSize: TYPE.title2.fontSize, lineHeight: 24, marginStart: -4 },
   quiet: { opacity: 0.55 },
 });

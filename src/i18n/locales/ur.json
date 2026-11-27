@@ -3185,7 +3185,9 @@
         "pageFailed": "یہ صفحہ دکھایا نہ جا سکا۔",
         "find": "تلاش",
         "findPrevious": "پچھلا",
-        "findNext": "اگلا"
+        "findNext": "اگلا",
+        "fullScreen": "پوری اسکرین",
+        "exitFullScreen": "پوری اسکرین سے باہر نکلیں"
       },
       "subject": {
         "quran": "قرآن",
