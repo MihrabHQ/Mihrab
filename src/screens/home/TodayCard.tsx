@@ -60,7 +60,7 @@ import {
 import { GlassSurface } from '../../components/GlassSurface';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { TITLE_BAND_MAX_FONT_SCALE } from '../../theme/textScale';
-import { DISPLAY_ORDER, OPTIONAL_TIME_KEYS } from '../../types/prayer';
+import { DISPLAY_ORDER, OPTIONAL_TIME_KEYS, displayRowsFor } from '../../types/prayer';
 import {
   DARURI_CONFIDENCE,
   DARURI_KEYS,
@@ -787,7 +787,7 @@ function TodayCardImpl({
     [alertModeOf, alertsEnabled, settings.prayerAlertModes, updateSettings],
   );
   const visibleRows = useMemo(
-    () => DISPLAY_ORDER.filter(key => timings[key]),
+    () => displayRowsFor(timings),
     [timings],
   );
   /**
@@ -1277,7 +1277,7 @@ function TodayCardImpl({
     const loggable = isToday || isPast;
     const day = addDays(startOfLocalDay(logNow), offset);
     const nextDay = dayAt(offset + 1);
-    const rows = DISPLAY_ORDER.filter(key => dayTimings[key]);
+    const rows = displayRowsFor(dayTimings);
     const overrideKey = overrideKeyFor(offset, dayTimings, rows);
     const timeSample = timeSampleFor(dayTimings, rows);
     const daruriRows: Record<
@@ -1382,7 +1382,7 @@ function TodayCardImpl({
     const loggable = offset <= 0;
     const day = addDays(startOfLocalDay(logNow), offset);
     const nextDay = dayAt(offset + 1);
-    return DISPLAY_ORDER.filter(key => dayTimings[key]).map(key => ({
+    return displayRowsFor(dayTimings).map(key => ({
       key,
       name: t(`prayer.${key}`),
       time: clock(dayTimings[key] as string),

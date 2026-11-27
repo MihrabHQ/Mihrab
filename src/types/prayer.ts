@@ -30,6 +30,46 @@ export const DISPLAY_ORDER = [
 
 export type DisplayPrayerKey = (typeof DISPLAY_ORDER)[number];
 
+const NIGHT_MARKS_IN_ORDER = ['Firstthird', 'Midnight', 'Lastthird'] as const;
+
+function clockMinutes(raw: string | undefined): number | null {
+  const m = raw ? /(\d{1,2}):(\d{2})/.exec(raw) : null;
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+}
+
+/**
+ * The rows of ONE day's card, in the order the day itself runs.
+ *
+ * `DISPLAY_ORDER` puts Midnight and the Last Third above Fajr, which is
+ * where they fall when they are after 00:00. They are not always: each is
+ * written as the mark that falls on the card's own date (`nightTimes.ts`),
+ * and in a Stockholm November the night is long enough that Islamic
+ * Midnight is at 22:23 — tonight, five hours after Isha. Listed first it
+ * read as the earliest thing in the day, over a Last Third of 00:46.
+ *
+ * So a mark later on the clock than Fajr is an evening one (no mark falls
+ * between Fajr and Maghrib) and goes under Isha, with the First Third, in
+ * the order the night reaches them. A fixed table (the month's columns)
+ * keeps `DISPLAY_ORDER`: a column cannot move from one row to the next.
+ */
+export function displayRowsFor(timings: TimingsMap): DisplayPrayerKey[] {
+  const present = DISPLAY_ORDER.filter(key => timings[key]);
+  const fajr = clockMinutes(timings.Fajr);
+  if (fajr == null) return present;
+  const evening = new Set<string>(
+    (['Midnight', 'Lastthird'] as const).filter(key => {
+      const at = clockMinutes(timings[key]);
+      return at != null && at > fajr;
+    }),
+  );
+  if (evening.size === 0) return present;
+  if (timings.Firstthird) evening.add('Firstthird');
+  return [
+    ...present.filter(key => !evening.has(key)),
+    ...NIGHT_MARKS_IN_ORDER.filter(key => evening.has(key)),
+  ];
+}
+
 export const NEXT_SALAH_ORDER = [
   'Midnight',
   'Lastthird',
