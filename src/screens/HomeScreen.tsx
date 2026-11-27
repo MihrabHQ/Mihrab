@@ -68,7 +68,7 @@ import {
   readZone,
 } from '../utils/prayerTimes';
 import { filterOptionalTimes } from '../utils/nightTimes';
-import { DISPLAY_ORDER, displayRowsFor, splitDayRows, type TimingsMap } from '../types/prayer';
+import { DISPLAY_ORDER, displayRowsFor, groupDayRows, type TimingsMap } from '../types/prayer';
 import { FOOT_GAP, pickHomeTier, type HomeTier } from './home/homeBudget';
 import { injectDaruriTimes } from '../prayer/daruriTimes';
 import { useClockFormatter } from '../hooks/useClockFormatter';
@@ -1831,14 +1831,14 @@ export function HomeScreen() {
     minimalFooter = [cityOf(locationLabel), getHijriDate(0)].filter(Boolean).join(' · ');
   }
   const budgeted = !isDashboard && !desktopLayout && !isRoomy && !book && !tabletop && viewport > 0;
-  const todaySplit = splitDayRows(displayRowsFor(todayMap));
+  const todayGroups = groupDayRows(displayRowsFor(todayMap));
   const budgetInput = {
     viewport,
     topInset: bannerInFlow ? 0 : insets.top,
     fontScale,
-    // A prayer is a row; the optional times share one block under them.
-    rows: todaySplit.prayers.length,
-    extraBlock: todaySplit.extras.length > 0,
+    // A prayer is a row; the optional times share thin strips.
+    rows: todayGroups.filter(g => g.kind === 'row').length,
+    stripRows: todayGroups.reduce((n, g) => n + (g.kind === 'strip' ? (g.keys.length > 2 ? 2 : 1) : 0), 0),
     sublineRows: daruriBelow
       ? DISPLAY_ORDER.filter(key => todayMap[`${key}Daruri` as keyof TimingsMap]).length
       : 0,

@@ -37,8 +37,12 @@ export type HomeBudgetInput = {
   fontScale: number;
   /** Rows on today's table — six with Sunrise; more with the extra times. */
   rows: number;
-  /** The block of optional times under the table is there (`splitDayRows`). */
-  extraBlock: boolean;
+  /**
+   * Strips of optional times (Sunrise, the night marks): `groupDayRows`.
+   * Each is a thin line; a strip of three counts twice, for the second
+   * line it usually takes.
+   */
+  stripRows: number;
   /**
    * Rows carrying a second line: the Mālikī tag, where it does not fit
    * beside the name and sits under it (a narrow phone, a large text
@@ -74,10 +78,9 @@ export const ROW_PAD: Record<HomeTier, number> = {
   comfortable: HOME_ROW_PADDING_V,
   compact: SPACING.sm,
 };
-/** The block of optional times: its padding; a name (two lines at most), a time, a bell. */
-export const EXTRA_BLOCK_PAD: Record<HomeTier, number> = { roomy: 10, comfortable: 8, compact: 6 };
-const EXTRA_BLOCK_TEXT = Math.round(TYPE.caption.fontSize * 1.172) * 2 + 2 + Math.round(TYPE.footnote.fontSize * 1.172);
-const EXTRA_BLOCK_BELL = 22;
+/** A strip of optional times: its padding, and its line (footnote). */
+export const STRIP_PAD: Record<HomeTier, number> = { roomy: 8, comfortable: 6, compact: 4 };
+const STRIP_LINE = Math.round(TYPE.footnote.fontSize * 1.172);
 /** The Mālikī tag under a name (PrayerRow.daruriBelow: caption + 2). */
 const ROW_SUBLINE = TYPE.caption.lineHeight + 2;
 /** A row's name line (TYPE.title3). */
@@ -164,7 +167,7 @@ export function homeSegmentHeights(tier: HomeTier, input: HomeBudgetInput): Home
   const sublines = input.sublineRows;
   const table =
     input.rows * (ROW_PAD[tier] * 2 + ROW_LINE * tabular) +
-    (input.extraBlock ? EXTRA_BLOCK_PAD[tier] * 2 + EXTRA_BLOCK_TEXT * tabular + EXTRA_BLOCK_BELL : 0) +
+    input.stripRows * (STRIP_PAD[tier] * 2 + STRIP_LINE * tabular) +
     sublines * ROW_SUBLINE * tabular;
   const below =
     BELOW_GAP[tier] +
