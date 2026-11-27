@@ -443,3 +443,35 @@ describe('the shelf', () => {
     });
   });
 });
+
+describe('a matn with no chapter headings, bound with another work', () => {
+  const file = [
+    '######OpenITI#',
+    '#META# x',
+    '#META#Header#End#',
+    '',
+    '# بسم الله الرحمن الرحيم',
+    '# (فصل) أركان الإسلام خمسة',
+    '~~وإقام الصلاة',
+    'PageV01P001',
+    '# (فصل) أركان الإيمان ستة PageV01P002',
+    '# متن آخر',
+    '# ليس من الكتاب',
+  ].join('\n');
+
+  it('is one chapter under the book\'s name, the printed page numbers gone', () => {
+    const chapters = builder.openitiChapters(file, 'test', { one: 'الكتاب', until: '# متن آخر' });
+    expect(chapters).toEqual([
+      { t: 'الكتاب', b: ['بسم الله الرحمن الرحيم', '(فصل) أركان الإسلام خمسة وإقام الصلاة', '(فصل) أركان الإيمان ستة'] },
+    ]);
+  });
+
+  it('stops the build where the line the book ends at is not found, or there is no name to file it under', () => {
+    expect(() => builder.openitiChapters(file, 'test', { one: 'الكتاب', until: '# لا يوجد' })).toThrow(/ends at was not found/);
+    expect(() => builder.openitiChapters(file, 'test', { until: '# متن آخر' })).toThrow(/before the first heading/);
+  });
+
+  it('is how Safinat an-Naja is built: its own text, without the work bound after it', () => {
+    expect(builder.BOOKS.safina).toMatchObject({ one: 'سفينة النجاة', until: '# متن سفينة الصلاة' });
+  });
+});

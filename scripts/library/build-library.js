@@ -138,6 +138,49 @@ const BOOKS = {
     // The transcription's own marks round each hadith commented on: not the author's.
     debris: /<span class="matn(?:-hr)?">|<\/span>/g,
   },
+  // ── The Shāfiʿī primers a student begins with, and two of adab ─────────
+  // Read in Arabic in the pesantren of Indonesia and Malaysia and far
+  // beyond them; each its author's own short text.
+  safina: {
+    title: 'سفينة النجاة',
+    author: 'سالم بن سمير الحضرمي',
+    died: '1271 هـ',
+    openiti: '1275AH/data/1271SalimHadrami/1271SalimHadrami.MatnSafinatNaja/1271SalimHadrami.MatnSafinatNaja.ShamAY0037367-ara1',
+    cache: 'openiti-safina.txt',
+    read: '2026-11-27',
+    // A matn of sections ("فصل") with no chapter headings: one chapter.
+    one: 'سفينة النجاة',
+    // The file binds a second work after it — ʿAbd Allāh ibn ʿUmar ibn
+    // Yaḥyā's Safīnat aṣ-Ṣalāh — which is not this author's book.
+    until: '# متن سفينة الصلاة',
+  },
+  abushuja: {
+    title: 'الغاية والتقريب (متن أبي شجاع)',
+    author: 'أبو شجاع الأصفهاني',
+    died: '593 هـ',
+    openiti: '0600AH/data/0593IbnHusaynShihabDinIsbahani/0593IbnHusaynShihabDinIsbahani.GhayaWaTaqrib/0593IbnHusaynShihabDinIsbahani.GhayaWaTaqrib.Shamela0011370-ara1',
+    cache: 'openiti-abushuja.txt',
+    read: '2026-11-27',
+    // A line of three dots before the basmala: the conversion's, where the
+    // printed title page was. Not the author's.
+    debris: /^# \.\.\.$/m,
+  },
+  nihayatzayn: {
+    title: 'نهاية الزين في إرشاد المبتدئين',
+    author: 'محمد نووي الجاوي البنتني',
+    died: '1316 هـ',
+    openiti: '1325AH/data/1316IbnCumarBantaniJawi/1316IbnCumarBantaniJawi.NihayatZayn/1316IbnCumarBantaniJawi.NihayatZayn.Shamela0006146-ara1',
+    cache: 'openiti-nihayatzayn.txt',
+    read: '2026-11-27',
+  },
+  bidaya: {
+    title: 'بداية الهداية',
+    author: 'أبو حامد الغزالي',
+    died: '505 هـ',
+    openiti: '0525AH/data/0505Ghazali/0505Ghazali.BidayatHidaya/0505Ghazali.BidayatHidaya.Shamela0012718-ara1',
+    cache: 'openiti-bidaya.txt',
+    read: '2026-11-27',
+  },
   iqd: {
     title: 'العقد الفريد',
     author: 'ابن عبد ربه الأندلسي',
@@ -335,11 +378,16 @@ async function openiti(repoPath, cache) {
  * in the margin, not a word of the author's, and is taken off the start
  * of a line. Throws on a line it does not know.
  */
-function openitiChapters(text, where) {
+function openitiChapters(text, where, spec = {}) {
   const start = text.indexOf('#META#Header#End#');
   if (start < 0) throw new Error(`${where}: not an OpenITI file`);
+  // A short text with no headings of its own (a matn of sections) is one
+  // chapter under the book's name (`one`). `until` is the line another
+  // work begins at, where the file binds two together: this book ends
+  // there, and the line must be found.
+  let ended = !spec.until;
   const clean = s => s.replace(/PageV\d+P\d+|ms\d+/g, ' ').replace(/\s+/g, ' ').replace(/^(?:؟+\s*)+/, '').trim();
-  const chapters = [];
+  const chapters = spec.one ? [{ t: spec.one, b: [] }] : [];
   let para = null;
   const flush = () => {
     if (para == null) return;
@@ -364,6 +412,12 @@ function openitiChapters(text, where) {
       continue;
     }
     flush();
+    if (spec.until && line.trim() === spec.until) {
+      ended = true;
+      break;
+    }
+    // The printed page's number on a line of its own: not the author's.
+    if (/^PageV\d+P\d+(?:\s+ms\d+)?$/.test(line.trim())) continue;
     const h = /^### \|+ ?(.*)$/.exec(line);
     if (h) {
       const title = clean(h[1]).replace(/^\[(.*)\]$/, '$1').trim();
@@ -381,6 +435,7 @@ function openitiChapters(text, where) {
     throw new Error(`${where}: a line this file does not know: ${line.slice(0, 60)}`);
   }
   flush();
+  if (!ended) throw new Error(`${where}: the line the book ends at was not found: ${spec.until}`);
   for (const c of chapters) {
     if (!c.t) throw new Error(`${where}: text before the first heading`);
     if (!c.b.length) throw new Error(`${where}: "${c.t}" has no text`);
@@ -551,7 +606,7 @@ function openitiParts(text, where, spec) {
 /** A pack from an OpenITI file. */
 function openitiPack(id, spec, text) {
   const body = spec.debris ? text.replace(spec.debris, ' ') : text;
-  const chapters = spec.parts ? openitiParts(body, id, spec) : openitiChapters(body, id);
+  const chapters = spec.parts ? openitiParts(body, id, spec) : openitiChapters(body, id, spec);
   const meta = key => (new RegExp(`#META# ${key}\\s*:: (.*)`).exec(text)?.[1] ?? '').trim();
   const edition = [meta('043.EdPUBLISHER'), meta('041.EdNUMBER')].filter(v => v && v !== 'NODATA' && v !== 'NOTGIVEN').join('، ');
   return {

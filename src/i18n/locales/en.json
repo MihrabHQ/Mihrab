@@ -3161,7 +3161,11 @@
         "maqamat": "Fifty-one short tales in rhymed prose about a wandering trickster; a founding work of Arabic style. Some passages are coarse.",
         "bahja": "Ibn 'Abd al-Barr's gathering of sayings, verse and anecdotes, arranged by subject.",
         "iqd": "An Andalusian anthology in twenty-five books: rulers, war, knowledge, proverbs, poetry, history. Some passages are coarse.",
-        "jami": "Ibn Rajab's commentary on an-Nawawi's Forty and the eight hadith he added to them, a chapter for each hadith."
+        "jami": "Ibn Rajab's commentary on an-Nawawi's Forty and the eight hadith he added to them, a chapter for each hadith.",
+        "safina": "Salim al-Hadrami's short primer of the Shafi'i school: the basics of belief, purification, prayer, zakat and fasting, section by section.",
+        "abushuja": "Abu Shuja''s concise text of Shafi'i law (al-Ghaya wa't-Taqrib), from purification to manumission, written to be memorised.",
+        "bidaya": "Al-Ghazali's guide for a beginner on the path: the manners of the day from waking to sleep, sins to leave, and keeping company.",
+        "nihayatzayn": "Nawawi al-Bantani's commentary on Qurrat al-'Ayn, a full course of Shafi'i law by the Javanese scholar of Makkah."
       },
       "levelFirst": "To begin with",
       "levelLater": "For a later stage"

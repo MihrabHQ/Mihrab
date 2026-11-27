@@ -61,5 +61,41 @@
   "authorLatin": "Ibn Rajab",
   "died": "795 AH",
   "level": 2
+ },
+ {
+  "id": "safina",
+  "title": "سفينة النجاة",
+  "latin": "Safinat an-Naja",
+  "author": "سالم بن سمير الحضرمي",
+  "authorLatin": "Salim ibn Sumayr al-Hadrami",
+  "died": "1271 AH",
+  "level": 1
+ },
+ {
+  "id": "abushuja",
+  "title": "الغاية والتقريب (متن أبي شجاع)",
+  "latin": "Matn Abi Shuja'",
+  "author": "أبو شجاع الأصفهاني",
+  "authorLatin": "Abu Shuja' al-Isfahani",
+  "died": "593 AH",
+  "level": 1
+ },
+ {
+  "id": "bidaya",
+  "title": "بداية الهداية",
+  "latin": "Bidayat al-Hidaya",
+  "author": "أبو حامد الغزالي",
+  "authorLatin": "Al-Ghazali",
+  "died": "505 AH",
+  "level": 1
+ },
+ {
+  "id": "nihayatzayn",
+  "title": "نهاية الزين في إرشاد المبتدئين",
+  "latin": "Nihayat az-Zayn",
+  "author": "محمد نووي الجاوي البنتني",
+  "authorLatin": "Nawawi al-Bantani",
+  "died": "1316 AH",
+  "level": 2
  }
 ]

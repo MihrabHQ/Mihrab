@@ -3162,7 +3162,11 @@
         "maqamat": "Cincuenta y un relatos breves en prosa rimada sobre un pícaro errante; obra fundacional del estilo árabe. Algunos pasajes son groseros.",
         "bahja": "La recopilación de Ibn 'Abd al-Barr de dichos, versos y anécdotas, ordenada por temas.",
         "iqd": "Una antología andalusí en veinticinco libros: gobernantes, guerra, saber, proverbios, poesía, historia. Algunos pasajes son groseros.",
-        "jami": "El comentario de Ibn Rayab a los Cuarenta de an-Nawawi y a los ocho hadices que él añadió, un capítulo por hadiz."
+        "jami": "El comentario de Ibn Rayab a los Cuarenta de an-Nawawi y a los ocho hadices que él añadió, un capítulo por hadiz.",
+        "safina": "El breve manual de Salim al-Hadrami en la escuela shafií: fundamentos de la fe, purificación, oración, zakat y ayuno, sección por sección.",
+        "abushuja": "El texto conciso de Abu Shuja sobre derecho shafií (al-Ghaya wa't-Taqrib), de la purificación a la manumisión, escrito para memorizarse.",
+        "bidaya": "La guía de al-Ghazali para el principiante: los modales del día desde el despertar hasta el sueño, los pecados que evitar y el trato con los demás.",
+        "nihayatzayn": "El comentario de Nawawi al-Bantani a Qurrat al-'Ayn, un curso completo de derecho shafií del sabio javanés de La Meca."
       },
       "levelFirst": "Para empezar",
       "levelLater": "Para una etapa posterior"
