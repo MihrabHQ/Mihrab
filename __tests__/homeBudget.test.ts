@@ -28,7 +28,7 @@ const pixel: HomeBudgetInput = {
   fontScale: 1,
   rows: 6,
   sublineRows: 0,
-  stripRows: 0,
+  extraBlock: false,
   extra: 0,
 };
 

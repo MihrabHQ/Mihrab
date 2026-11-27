@@ -64,7 +64,7 @@ import {
   DISPLAY_ORDER,
   OPTIONAL_TIME_KEYS,
   displayRowsFor,
-  groupDayRows,
+  splitDayRows,
   type DisplayPrayerKey,
 } from '../../types/prayer';
 import {
@@ -101,7 +101,7 @@ import { useVerticalBarActions, useVerticalBar } from '../../native/VerticalBar'
 import { QiblaChip } from './QiblaChip';
 import { HelpMihrabChip } from './HelpMihrabChip';
 import { SettingsChip } from './SettingsChip';
-import { ExtraTimesStrip } from './ExtraTimesStrip';
+import { ExtraTimesBlock } from './ExtraTimesBlock';
 import { PrayerRow } from './PrayerRow';
 import {
   useNextAlertOverride,
@@ -1301,10 +1301,9 @@ function TodayCardImpl({
     const nextDay = dayAt(offset + 1);
     const rows = displayRowsFor(dayTimings);
     const overrideKey = overrideKeyFor(offset, dayTimings, rows);
-    // The prayers are rows; each run of optional times is one thin strip
-    // (`groupDayRows`). Only the rows have a time column to size.
-    const groups = groupDayRows(rows);
-    const fullRows = groups.flatMap(g => (g.kind === 'row' ? [g.key] : []));
+    // The prayers are rows; the optional times stand in one block under
+    // them (`splitDayRows`). Only the rows have a time column to size.
+    const { prayers: fullRows, extras } = splitDayRows(rows);
     const timeSample = timeSampleFor(dayTimings, fullRows);
     const timePeers = timePeersFor(dayTimings, fullRows);
     const daruriRows: Record<
@@ -1399,20 +1398,13 @@ function TodayCardImpl({
         tier={fullBleed ? tier : 'comfortable'}
       />
     );
-    return groups.map((group, index) => {
-      const last = index === groups.length - 1;
-      if (group.kind === 'row') {
-        // No hairline between a prayer and the strip under it: Sunrise
-        // belongs with Fajr, the night's marks with Isha.
-        return prayerRow(group.key, last || groups[index + 1]?.kind === 'strip');
-      }
-      return (
-        <ExtraTimesStrip
-          key={group.keys.join('+')}
-          hasCheckColumn={loggable}
-          isLast={last}
+    return [
+      ...fullRows.map((key, index) => prayerRow(key, index === fullRows.length - 1 && extras.length === 0)),
+      extras.length > 0 ? (
+        <ExtraTimesBlock
+          key="extra-times"
           tier={fullBleed ? tier : 'comfortable'}
-          items={group.keys.map(key => ({
+          items={extras.map(key => ({
             key,
             name: t(`prayer.${key}`),
             time: clock(dayTimings[key]),
@@ -1426,8 +1418,8 @@ function TodayCardImpl({
             emphasised: overrideKey === key && !!override,
           }))}
         />
-      );
-    });
+      ) : null,
+    ];
   };
 
   /**

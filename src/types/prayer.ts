@@ -115,34 +115,25 @@ export function isNonPrayerEvent(name: string): boolean {
   return NON_PRAYER_EVENTS.has(name);
 }
 
-/** One line of a day's card: a prayer's row, or a strip of the times that are not prayers. */
-export type DayRowGroup =
-  | { kind: 'row'; key: DisplayPrayerKey }
-  | { kind: 'strip'; keys: DisplayPrayerKey[] };
-
 /**
- * A day's rows as the card draws them: each prayer on a row of its own,
- * and each RUN of optional times (Sunrise, Islamic Midnight, the thirds
- * of the night) together on one thin strip where the run falls.
+ * A day's rows as the card draws them: the prayers, each on a row of its
+ * own, and the optional times (Sunrise, Islamic Midnight, the thirds of
+ * the night) apart from them, in the order the day reaches them
+ * (`displayRowsFor`) — a night time after 00:00 first, then Sunrise, then
+ * the evening's.
  *
  * They were a full row each — four of the nine rows on a card with all of
  * them on, for times that are not prayed, not logged and carry no second
- * time. Any of the four can be off, and a night mark can fall before Fajr
- * or after Isha (`displayRowsFor`), so nothing here names a combination:
- * whatever stands next to each other in the day's order shares a strip.
- * Sunrise alone sits under Fajr; the First Third and an evening Midnight
- * share the line under Isha; with every toggle off there are no strips.
+ * time. The card now lists the prayers unbroken and stands these together
+ * in one block under them (`ExtraTimesBlock`). Any of the four can be
+ * off: `extras` is whatever is on, and empty when none is.
  */
-export function groupDayRows(rows: readonly DisplayPrayerKey[]): DayRowGroup[] {
-  const out: DayRowGroup[] = [];
-  for (const key of rows) {
-    if (!NON_PRAYER_EVENTS.has(key)) {
-      out.push({ kind: 'row', key });
-      continue;
-    }
-    const last = out[out.length - 1];
-    if (last?.kind === 'strip') last.keys.push(key);
-    else out.push({ kind: 'strip', keys: [key] });
-  }
-  return out;
+export function splitDayRows(rows: readonly DisplayPrayerKey[]): {
+  prayers: DisplayPrayerKey[];
+  extras: DisplayPrayerKey[];
+} {
+  return {
+    prayers: rows.filter(key => !NON_PRAYER_EVENTS.has(key)),
+    extras: rows.filter(key => NON_PRAYER_EVENTS.has(key)),
+  };
 }
