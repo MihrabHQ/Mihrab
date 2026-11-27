@@ -3173,6 +3173,15 @@
         "umda": "Ibn Qudama's short text of Hanbali law, giving one position on each question with its evidence from the hadith."
       },
       "commentary": "Commentary",
+      "pdf": {
+        "note": "This book is a typeset file: its pages are shown as printed, and the text size does not change them.",
+        "read": "Read",
+        "zoom": "Zoom",
+        "noSpace": "There is not enough room on this device for this book ({{size}}).",
+        "badFile": "What was downloaded is not the book. Try again.",
+        "unreadable": "This book could not be opened. Download it again.",
+        "pageFailed": "This page could not be shown."
+      },
       "subject": {
         "quran": "Qur'an",
         "hadith": "Hadith",

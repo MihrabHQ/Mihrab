@@ -530,6 +530,9 @@ export async function deletePack(key: PackKey): Promise<void> {
     try {
       const path = filePath(key);
       if (await ReactNativeBlobUtil.fs.exists(path)) await ReactNativeBlobUtil.fs.unlink(path);
+      // A Library book that is a file (`libraryPdf.ts`) goes with its pack, from wherever the pack is removed:
+      // a few megabytes left behind by "Remove download" would be nobody's to find.
+      if (key.startsWith('library/')) await ReactNativeBlobUtil.fs.unlink(`${ROOT()}/${key}.pdf`).catch(() => undefined);
     } catch (e) {
       quiet('hadith/packs', e);
     }

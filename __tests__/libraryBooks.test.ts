@@ -181,7 +181,7 @@ describe('the shelf', () => {
     expect(read('src/screens/hadith/LibraryBookScreen.tsx')).toContain("{t('hadith.library.bookNote')}");
     for (const f of fs.readdirSync(path.join(REPO, 'src/i18n/locales'))) {
       const k = JSON.parse(read(`src/i18n/locales/${f}`)).hadith.library;
-      expect([f, Object.keys(k).sort()]).toEqual([f, ['about', 'bookNote', 'by', 'chapterOf', 'chapters', 'commentary', 'continue', 'empty', 'firstOnly', 'intro', 'levelLater', 'mark', 'marks', 'needsDownload', 'next', 'percent', 'previous', 'remove', 'searchHint', 'sections', 'source', 'subject', 'tab', 'unmark']]);
+      expect([f, Object.keys(k).sort()]).toEqual([f, ['about', 'bookNote', 'by', 'chapterOf', 'chapters', 'commentary', 'continue', 'empty', 'firstOnly', 'intro', 'levelLater', 'mark', 'marks', 'needsDownload', 'next', 'pdf', 'percent', 'previous', 'remove', 'searchHint', 'sections', 'source', 'subject', 'tab', 'unmark']]);
       // Every shelf has its name, and a school a book can name has one too.
       expect([f, Object.keys(k.subject).sort()]).toEqual([f, [...LIBRARY_SUBJECTS].sort()]);
       for (const m of ['hanafi', 'maliki', 'shafii', 'hanbali']) expect([f, m, typeof JSON.parse(read(`src/i18n/locales/${f}`)).settings[`madhab_${m}`]]).toEqual([f, m, 'string']);

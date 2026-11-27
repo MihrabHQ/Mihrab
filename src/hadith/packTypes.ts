@@ -82,7 +82,10 @@ export type LibraryFile = {
   /** `edition`: the printed edition the transcription was made from, where the source says. */
   source: { name: string; license: string; licenseUrl: string; url: string; edition?: string };
   asOf: string;
+  /** Empty for a book that is a file (`pdf`): its pack says what it is and whose, and the file is the book. */
   chapters: LibraryChapter[];
+  /** A book published as a typeset file and passed on unaltered: the file's size, SHA-256 and pages (`libraryPdf.ts`). */
+  pdf?: { bytes: number; sha256: string; pages: number };
 };
 
 /** The packs, by their key — also their path under build/hadith/v1 and on the device, less `.json`. */
@@ -109,6 +112,8 @@ export type ManifestEntry = {
   /** A graded book: the rows its source has, and how many were left out, by why. */
   of?: number;
   left?: Record<string, number>;
+  /** A Library book that is a file: what the file is, so the shelf can say what it weighs before anything is fetched. */
+  pdf?: { bytes: number; sha256: string; pages: number };
 };
 
 export type Manifest = {
@@ -122,6 +127,9 @@ export type Manifest = {
 };
 
 const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+/** A book's file as a pack may name it (the size the shelf will offer is `libraryPdf.ts`'s to say). */
+const validPdf = (p: unknown): boolean =>
+  isObj(p) && Number.isInteger(p.bytes) && (p.bytes as number) > 0 && typeof p.sha256 === 'string' && /^[0-9a-f]{64}$/.test(p.sha256) && Number.isInteger(p.pages) && (p.pages as number) > 0;
 
 /** Is this the file `key` names? Anything else is not written to disk. */
 export function validPack(key: PackKey, v: unknown): boolean {
@@ -140,7 +148,9 @@ export function validPack(key: PackKey, v: unknown): boolean {
       isObj(v.source) &&
       typeof v.source.license === 'string' &&
       Array.isArray(v.chapters) &&
-      v.chapters.length > 0 &&
+      // A book is its text, or it is a file: never neither.
+      (v.chapters.length > 0 || validPdf(v.pdf)) &&
+      (v.pdf === undefined || validPdf(v.pdf)) &&
       v.chapters.every(c => isObj(c) && typeof c.t === 'string' && (c.p === undefined || typeof c.p === 'string') && Array.isArray(c.b) && c.b.length > 0 && c.b.every(block))
     );
   }

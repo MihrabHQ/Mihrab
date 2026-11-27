@@ -58,6 +58,7 @@ class MihrabPackage : BaseReactPackage() {
         "MihrabFoldPosture" -> FoldPostureModule(reactContext)
         "MihrabLaunchSnapshot" -> LaunchSnapshotModule(reactContext)
         "MihrabLiveActivity" -> MihrabLiveActivityModule(reactContext)
+        "MihrabPdf" -> MihrabPdfModule(reactContext)
         "MihrabRotationCover" -> RotationCoverModule(reactContext)
         "MihrabSecureStore" -> SecureStoreModule(reactContext)
         "MihrabVolumeKeys" -> VolumeKeysModule(reactContext)
@@ -102,6 +103,7 @@ class MihrabPackage : BaseReactPackage() {
             "MihrabFoldPosture" to FoldPostureModule::class.java,
             "MihrabLaunchSnapshot" to LaunchSnapshotModule::class.java,
             "MihrabLiveActivity" to MihrabLiveActivityModule::class.java,
+            "MihrabPdf" to MihrabPdfModule::class.java,
             "MihrabRotationCover" to RotationCoverModule::class.java,
             "MihrabSecureStore" to SecureStoreModule::class.java,
             "MihrabVolumeKeys" to VolumeKeysModule::class.java,

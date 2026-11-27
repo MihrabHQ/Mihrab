@@ -3174,6 +3174,15 @@
         "umda": "El texto breve de derecho hanbalí de Ibn Qudama, que da una sola posición en cada cuestión con su prueba en los hadices."
       },
       "commentary": "Comentario",
+      "pdf": {
+        "note": "Este libro es un archivo maquetado: sus páginas se muestran tal como se imprimieron y el tamaño del texto no las cambia.",
+        "read": "Leer",
+        "zoom": "Zoom",
+        "noSpace": "No hay espacio suficiente en este dispositivo para este libro ({{size}}).",
+        "badFile": "Lo descargado no es el libro. Inténtalo de nuevo.",
+        "unreadable": "No se pudo abrir este libro. Descárgalo de nuevo.",
+        "pageFailed": "No se pudo mostrar esta página."
+      },
       "subject": {
         "quran": "Corán",
         "hadith": "Hadiz",

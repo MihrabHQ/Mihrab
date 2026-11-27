@@ -3173,6 +3173,15 @@
         "umda": "Ibn Qudamas kurzer Text des hanbalitischen Rechts, der zu jeder Frage eine Position mit ihrem Beleg aus den Hadithen gibt."
       },
       "commentary": "Kommentar",
+      "pdf": {
+        "note": "Dieses Buch ist eine gesetzte Datei: Seine Seiten werden wie gedruckt gezeigt, und die Textgröße ändert sie nicht.",
+        "read": "Lesen",
+        "zoom": "Zoom",
+        "noSpace": "Auf diesem Gerät ist nicht genug Platz für dieses Buch ({{size}}).",
+        "badFile": "Was geladen wurde, ist nicht das Buch. Versuche es erneut.",
+        "unreadable": "Dieses Buch ließ sich nicht öffnen. Lade es erneut.",
+        "pageFailed": "Diese Seite konnte nicht angezeigt werden."
+      },
       "subject": {
         "quran": "Koran",
         "hadith": "Hadith",

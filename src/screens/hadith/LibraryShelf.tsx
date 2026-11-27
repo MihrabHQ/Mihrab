@@ -15,7 +15,7 @@
  * one read last is offered above the rest, to go on from the paragraph it
  * was left at.
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -33,7 +33,8 @@ import {
   offeredLibraryBooks,
   type LibraryReading,
 } from '../../hadith/libraryShelf';
-import { manifestBytes, usePackStatuses } from '../../hadith/packs';
+import { manifestBytes, manifestEntry, usePackStatuses } from '../../hadith/packs';
+import { checkLibraryPdf, useLibraryPdfStatuses, validLibraryPdf } from '../../hadith/libraryPdf';
 import type { RootStackParamList } from '../../navigation/types';
 import { formatBytes } from '../../quran/downloadsUi';
 import { SPACING } from '../../theme/tokens';
@@ -64,7 +65,17 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
       };
     }, []),
   );
-  const here = books.filter(b => statuses[libraryKey(b.id)]?.state === 'ready');
+  // A book that is a file is on the device when its file is: asked once the manifest says what the file is.
+  const files = useLibraryPdfStatuses();
+  useEffect(() => {
+    for (const b of books) {
+      const pdf = b.format === 'pdf' ? manifestEntry(manifest, libraryKey(b.id))?.pdf : undefined;
+      if (validLibraryPdf(pdf)) void checkLibraryPdf(b.id, pdf);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- by which books, not by the array made each time
+  }, [manifest, books.map(b => b.id).join(',')]);
+  const held = (b: (typeof books)[number]) => statuses[libraryKey(b.id)]?.state === 'ready' && (b.format !== 'pdf' || files[b.id]?.state === 'ready');
+  const here = books.filter(held);
   const lastId = lastReadBook(readings, here.map(b => b.id));
   const last = here.find(b => b.id === lastId);
 
@@ -91,12 +102,15 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
               <Group>
                 {shelf.map(b => {
                   const key = libraryKey(b.id);
-                  const onDevice = statuses[key]?.state === 'ready';
-                  const bytes = onDevice ? null : manifestBytes(manifest, key);
+                  const onDevice = held(b);
+                  // A file's weight is the file's: its pack is a few lines.
+                  const pdf = b.format === 'pdf' ? manifestEntry(manifest, key)?.pdf : undefined;
+                  const bytes = onDevice ? null : validLibraryPdf(pdf) ? pdf.bytes : manifestBytes(manifest, key);
                   const at = onDevice ? readings[b.id] : undefined;
                   // A book only just opened says nothing: "0%" reads as a fault.
                   const percent = at ? Math.round(libraryProgress(at) * 100) : 0;
-                  const tags = libraryBookTags(b).map(k => t(k));
+                  // "PDF" is said beside the author: its pages are as printed, and the text size does not reach them.
+                  const tags = [...libraryBookTags(b).map(k => t(k)), ...(b.format === 'pdf' ? ['PDF'] : [])];
                   // A book in the reader's own language is named as it names itself.
                   const by = arabicReader || b.lang !== 'ar' ? b.author : `${b.latin} · ${b.authorLatin}`;
                   return (

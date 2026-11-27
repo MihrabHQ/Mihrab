@@ -3173,6 +3173,15 @@
         "umda": "İbn Kudâme’nin Hanbelî fıkhına dair kısa metni; her meselede tek görüş ve hadisten delili."
       },
       "commentary": "Şerh",
+      "pdf": {
+        "note": "Bu kitap dizilmiş bir dosyadır: sayfaları basıldığı gibi gösterilir ve metin boyutu onları değiştirmez.",
+        "read": "Oku",
+        "zoom": "Yakınlaştır",
+        "noSpace": "Bu cihazda bu kitap için yeterli yer yok ({{size}}).",
+        "badFile": "İndirilen dosya kitap değil. Yeniden deneyin.",
+        "unreadable": "Bu kitap açılamadı. Yeniden indirin.",
+        "pageFailed": "Bu sayfa gösterilemedi."
+      },
       "subject": {
         "quran": "Kur’an",
         "hadith": "Hadis",

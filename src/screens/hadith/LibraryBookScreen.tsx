@@ -75,6 +75,7 @@ import { CloseIcon, SearchIcon } from '../../theme/icons';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE, arabicTextStyle } from '../../theme/typography';
 import { Column } from './Column';
+import { LibraryPdfBookScreenPage } from './LibraryPdfBookScreen';
 import { HadithPage } from './HadithPage';
 import { PackGate } from './PackGate';
 
@@ -115,7 +116,13 @@ const ProgressLine = forwardRef<{ set: (f: number) => void }, { start: number; t
 /** Inside `HadithUiScope`: Arabic and mirrored when the hadith language is Arabic. */
 export const LibraryBookScreen = withHadithUi(LibraryBookScreenPage, 'LibraryBookScreen');
 
+/** A book that is a typeset file has a page and a reader of its own (LibraryPdfBookScreen); every other is text. */
 function LibraryBookScreenPage() {
+  const { id } = useRoute<RouteProp<RootStackParamList, 'LibraryBook'>>().params;
+  return findLibraryBook(id)?.format === 'pdf' ? <LibraryPdfBookScreenPage /> : <LibraryTextBookPage />;
+}
+
+function LibraryTextBookPage() {
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

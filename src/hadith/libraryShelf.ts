@@ -18,6 +18,8 @@ import { libraryMarkKey, libraryMarksOf, setLibraryMark } from './hadithRecord';
 import { getHadithRecord, hydrateHadithRecord, updateHadithRecord } from './hadithStore';
 import { manifestEntry } from './packs';
 import type { Manifest, PackKey } from './packTypes';
+import { validLibraryPdf } from './libraryPdf';
+import { pdfSupported } from '../native/MihrabPdf';
 
 /** `level`: 1 to begin with, 2 for a later stage — the maintainer's own two lists. What a book is, in the reader's language, is `hadith.library.about.<id>`. */
 export type LibraryBook = {
@@ -36,6 +38,8 @@ export type LibraryBook = {
   kind: 'book' | 'matn' | 'sharh';
   /** The school a book of fiqh is written in. Said on the shelf: a primer of one school is not every reader's. */
   madhhab?: 'hanafi' | 'maliki' | 'shafii' | 'hanbali';
+  /** A book that is a typeset file, read page by page (`libraryPdf.ts`); absent for a book that is text. */
+  format?: 'pdf';
 };
 /** The shelves, in the order they stand. */
 export const LIBRARY_SUBJECTS = ['quran', 'hadith', 'fiqh', 'heart', 'letters'] as const;
@@ -77,7 +81,13 @@ export function findLibraryBook(id: string): LibraryBook | undefined {
  */
 export function offeredLibraryBooks(manifest: Manifest | null, here: (key: PackKey) => boolean, reads?: readonly string[]): LibraryBook[] {
   const read = (b: LibraryBook) => !reads || b.lang === 'ar' || reads.some(l => sameLanguage(l, b.lang));
-  return LIBRARY_BOOKS.filter(b => here(libraryKey(b.id)) || (manifestEntry(manifest, libraryKey(b.id)) != null && read(b)));
+  // A book that is a file is offered where the file can be had and read: named by the manifest, of a size
+  // a phone is asked to fetch, on a build that can draw it.
+  const had = (b: LibraryBook) => {
+    const entry = manifestEntry(manifest, libraryKey(b.id));
+    return entry != null && (b.format !== 'pdf' || (pdfSupported() && validLibraryPdf(entry.pdf)));
+  };
+  return LIBRARY_BOOKS.filter(b => (here(libraryKey(b.id)) && (b.format !== 'pdf' || pdfSupported())) || (had(b) && read(b)));
 }
 
 /** "id" and "id-ID" are one language. */

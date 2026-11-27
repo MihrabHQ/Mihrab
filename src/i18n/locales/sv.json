@@ -3173,6 +3173,15 @@
         "umda": "Ibn Qudamas korta text i hanbalitisk rättslära, med en ståndpunkt i varje fråga och dess belägg ur haditherna."
       },
       "commentary": "Kommentar",
+      "pdf": {
+        "note": "Den här boken är en färdigsatt fil: sidorna visas som de är tryckta, och textstorleken ändrar dem inte.",
+        "read": "Läs",
+        "zoom": "Zooma",
+        "noSpace": "Det finns inte tillräckligt med utrymme på enheten för den här boken ({{size}}).",
+        "badFile": "Det som laddades ner är inte boken. Försök igen.",
+        "unreadable": "Boken kunde inte öppnas. Ladda ner den igen.",
+        "pageFailed": "Den här sidan kunde inte visas."
+      },
       "subject": {
         "quran": "Koranen",
         "hadith": "Hadith",
