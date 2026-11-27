@@ -829,7 +829,9 @@
     "approx": "लगभग",
     "Subh": "सुब्ह",
     "Subh_abbr": "सुब्ह",
-    "Jumuah": "जुमा"
+    "Jumuah": "जुमा",
+    "firstTimeShort": "पहला {{time}} तक",
+    "secondTimeShort": "दूसरा {{time}} तक"
   },
   "placeSearch": {
     "label": "शहर या पता खोजें",

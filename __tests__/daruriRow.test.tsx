@@ -48,6 +48,8 @@ jest.mock('react-i18next', () => ({
       if (key === 'prayer.secondTimeUntil') {
         return `Second time until ${(vars as { time: string }).time}`;
       }
+      if (key === 'prayer.firstTimeShort') return `1st to ${(vars as { time: string }).time}`;
+      if (key === 'prayer.secondTimeShort') return `2nd to ${(vars as { time: string }).time}`;
       if (key === 'prayer.approx') return 'approx.';
       return key;
     },
@@ -84,7 +86,11 @@ function render(props: Record<string, unknown>): string[] {
     const n = node as { children?: unknown[]; type?: string } | null;
     if (!n || !n.children) return;
     const own = n.children.filter(c => typeof c === 'string') as string[];
-    if (own.length > 0) joined.push(own.join(''));
+    // The clock rides in a first-strong isolate so it keeps its own
+    // direction in an Arabic line; the marks are not what is read.
+    if (own.length > 0) joined.push(own.join('').replace(/[\u2068\u2069]/g, ''));
+    const label = (n as { props?: { accessibilityLabel?: string } }).props?.accessibilityLabel;
+    if (label) joined.push(`a11y: ${label}`);
     n.children.forEach(collect);
   };
   collect(tree.toJSON());
@@ -95,12 +101,14 @@ describe('the second-time line', () => {
   it('is absent when the feature is off', () => {
     const lines = render({});
     expect(lines).toContain('17:04');
-    expect(lines.some(l => l.includes('First time until'))).toBe(false);
+    expect(lines.some(l => l.includes('First time until') || l.includes('1st to'))).toBe(false);
   });
 
   it('says when the preferred window closes', () => {
     const lines = render({ daruriAt: '19:44' });
-    expect(lines).toContain('First time until 19:44');
+    expect(lines).toContain('1st to 19:44');
+    // The whole sentence is what a screen reader says.
+    expect(lines).toContain('a11y: First time until 19:44');
   });
 
   /**
@@ -110,7 +118,8 @@ describe('the second-time line', () => {
    */
   it('marks a modelled boundary as approximate', () => {
     const lines = render({ daruriAt: '19:44', daruriApprox: true });
-    expect(lines).toContain('First time until approx. 19:44');
+    expect(lines).toContain('1st to ~19:44');
+    expect(lines).toContain('a11y: First time until approx. 19:44');
   });
 
   /**
@@ -120,14 +129,14 @@ describe('the second-time line', () => {
    */
   it('says when the second window closes, once the first has', () => {
     const lines = render({ daruriAt: '04:30', daruriPhase: 'second' });
-    expect(lines).toContain('Second time until 04:30');
-    expect(lines.some(l => l.includes('First time'))).toBe(false);
+    expect(lines).toContain('2nd to 04:30');
+    expect(lines.some(l => l.includes('First time') || l.includes('1st'))).toBe(false);
   });
 
   it('leaves the row alone where the sky produced no boundary', () => {
     // What `daruriTimesForDay` returns in Malmö in June: nothing.
     const lines = render({ daruriAt: undefined, daruriApprox: true });
-    expect(lines.some(l => l.includes('First time until'))).toBe(false);
+    expect(lines.some(l => l.includes('First time until') || l.includes('1st to'))).toBe(false);
   });
 
   it('formats it the way the user reads a clock', () => {
@@ -138,9 +147,7 @@ describe('the second-time line', () => {
       .spyOn(hook, 'useClockFormatter')
       .mockReturnValue(twelve);
     try {
-      expect(render({ daruriAt: '19:44' })).toContain(
-        'First time until 7:44 PM',
-      );
+      expect(render({ daruriAt: '19:44' })).toContain('1st to 7:44 PM');
     } finally {
       spy.mockRestore();
     }

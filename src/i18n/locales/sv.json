@@ -829,7 +829,9 @@
     "approx": "ca",
     "Subh": "Subh",
     "Subh_abbr": "Subh",
-    "Jumuah": "Jumu'ah"
+    "Jumuah": "Jumu'ah",
+    "firstTimeShort": "1:a till {{time}}",
+    "secondTimeShort": "2:a till {{time}}"
   },
   "placeSearch": {
     "label": "Sök stad eller adress",

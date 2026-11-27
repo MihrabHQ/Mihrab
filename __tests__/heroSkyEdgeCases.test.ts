@@ -450,8 +450,10 @@ describe('the rows adapt to the phone and to the table', () => {
     expect(row).toMatch(/tier === 'compact' && styles\.rowCompact/);
     expect(row).toMatch(/tier === 'roomy' && styles\.rowRoomy/);
     expect(row).toMatch(/rowCompact: \{ paddingVertical: ROW_PAD\.compact \}/);
-    // Compact keeps the Mālikī line on the current row alone.
-    expect(row).toMatch(/daruriAt && \(tier !== 'compact' \|\| isNext\)/);
+    // The Mālikī boundary is a tag on the name's line in every tier: it
+    // costs no height, so compact no longer hides it.
+    expect(row).not.toMatch(/tier !== 'compact' \|\| isNext/);
+    expect(row).toMatch(/<View style=\{styles\.nameLine\}>/);
   });
 });
 

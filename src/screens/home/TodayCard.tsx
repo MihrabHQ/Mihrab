@@ -869,6 +869,15 @@ function TodayCardImpl({
       }, ''),
     [clock],
   );
+  /**
+   * Every time on the card: `timePeers` in PrayerRow. All of them, not the
+   * longest ones — in Arabic a shorter time can be the wider ("6:01 ص"
+   * against "12:57 م", #71).
+   */
+  const timePeersFor = useCallback(
+    (dayTimings: TimingsMap, rows: readonly string[]) => [...new Set(rows.map(key => clock(dayTimings[key])))],
+    [clock],
+  );
   /** Which way the day bar can step, and whether it is on today. */
   const onToday = selected === 0;
   const canGoBack = selected > -pastDays.length;
@@ -1280,6 +1289,7 @@ function TodayCardImpl({
     const rows = displayRowsFor(dayTimings);
     const overrideKey = overrideKeyFor(offset, dayTimings, rows);
     const timeSample = timeSampleFor(dayTimings, rows);
+    const timePeers = timePeersFor(dayTimings, rows);
     const daruriRows: Record<
       string,
       { phase: 'first' | 'second'; at: string; approx: boolean } | null
@@ -1346,6 +1356,7 @@ function TodayCardImpl({
         standingAlertMode={overrideKey === key ? standingModeOf(key) : undefined}
         onResetAlertMode={overrideKey === key ? resetOverride : undefined}
         timeSample={timeSample}
+        timePeers={timePeers}
         log={
           loggable && isSalah(key)
             ? {

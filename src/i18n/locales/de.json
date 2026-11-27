@@ -829,7 +829,9 @@
     "approx": "ca.",
     "Subh": "Subh",
     "Subh_abbr": "Subh",
-    "Jumuah": "Dschumua"
+    "Jumuah": "Dschumua",
+    "firstTimeShort": "1. bis {{time}}",
+    "secondTimeShort": "2. bis {{time}}"
   },
   "placeSearch": {
     "label": "Stadt oder Adresse suchen",

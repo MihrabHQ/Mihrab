@@ -829,7 +829,9 @@
     "approx": "approx.",
     "Subh": "Subh",
     "Subh_abbr": "Subh",
-    "Jumuah": "Jumu'ah"
+    "Jumuah": "Jumu'ah",
+    "firstTimeShort": "1st to {{time}}",
+    "secondTimeShort": "2nd to {{time}}"
   },
   "placeSearch": {
     "label": "Search city or address",

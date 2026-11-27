@@ -1819,7 +1819,6 @@ export function HomeScreen() {
     topInset: bannerInFlow ? 0 : insets.top,
     fontScale,
     rows: DISPLAY_ORDER.filter(key => todayMap[key]).length,
-    sublineRows: DISPLAY_ORDER.filter(key => todayMap[`${key}Daruri` as keyof TimingsMap]).length,
     // A banner's height is its own; this is a notice's usual size.
     extra: bannerInFlow ? 72 : 0,
   };

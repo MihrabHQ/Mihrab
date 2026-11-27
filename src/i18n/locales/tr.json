@@ -829,7 +829,9 @@
     "approx": "yaklaşık",
     "Subh": "Sabah",
     "Subh_abbr": "Sabah",
-    "Jumuah": "Cuma"
+    "Jumuah": "Cuma",
+    "firstTimeShort": "1. {{time}} kadar",
+    "secondTimeShort": "2. {{time}} kadar"
   },
   "placeSearch": {
     "label": "Şehir veya adres arayın",

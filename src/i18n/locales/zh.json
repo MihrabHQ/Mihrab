@@ -829,7 +829,9 @@
     "approx": "约",
     "Subh": "晨礼",
     "Subh_abbr": "晨礼",
-    "Jumuah": "主麻"
+    "Jumuah": "主麻",
+    "firstTimeShort": "首选至 {{time}}",
+    "secondTimeShort": "必要至 {{time}}"
   },
   "placeSearch": {
     "label": "搜索城市或地址",

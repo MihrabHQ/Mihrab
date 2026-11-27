@@ -128,6 +128,17 @@ type PrayerRowProps = {
    */
   timeSample?: string;
   /**
+   * The card's other times: any of them may be the WIDEST.
+   *
+   * A row sized itself by the sample and by its own time, so a row whose
+   * own time was wider than everything else stood alone at that width.
+   * In Arabic on a 12-hour clock that is ʿAṣr: "12:52 م" is as long as
+   * "11:40 ص" and wider, so its bell sat a few pixels out of the line the
+   * other bells keep. Every row now carries each of these as a sizer with
+   * no height, and the column is the widest of them on all rows alike.
+   */
+  timePeers?: readonly string[];
+  /**
    * The check at the leading edge — today's five salāh only. `log` says
    * what today's journal holds for this prayer and where the clock is in
    * its window; `onToggleLog` records or un-records it (quickLog.ts).
@@ -175,6 +186,7 @@ function PrayerRowImpl({
   standingAlertMode,
   onResetAlertMode,
   timeSample,
+  timePeers,
   log,
   onToggleLog,
   hasCheckColumn = false,
@@ -245,44 +257,50 @@ function PrayerRowImpl({
         <View style={styles.checkSlot} />
       ) : null}
       <View style={styles.nameWrap}>
-        <Text
-          style={[
-            styles.name,
-            {
-              color: isNext ? palette.accent : isSecondary ? palette.muted : palette.text,
-              fontStyle: isSecondary ? 'italic' : 'normal',
-            },
-          ]}
-          maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
-          {t(`prayer.${prayerKey}`)}
-        </Text>
-        {/* Under the name rather than beside the time: the time column is
-            the one thing on this screen that is scanned rather than read,
-            and a second number in it would cost more than this line is
-            worth. */}
-        {daruriAt && (tier !== 'compact' || isNext) ? (
+        {/* The name, and at the line's far end the Mālikī boundary as a
+            short tag ("1st to 07:10"). It was a second line under the
+            name: with it on, five rows of the table each grew by a line,
+            and on a card already carrying the night times that was the
+            hero's room. On the row's own line it costs no height, and it
+            sits beside the bell and the time it is about. The whole
+            sentence is still what a screen reader says. */}
+        <View style={styles.nameLine}>
           <Text
-            style={[styles.daruri, { color: palette.muted }]}
-            numberOfLines={1}
-            maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
-            {t(
-              daruriPhase === 'second'
-                ? 'prayer.secondTimeUntil'
-                : 'prayer.firstTimeUntil',
+            style={[
+              styles.name,
+              isSecondary && styles.nameSlanted,
               {
-              defaultValue:
-                daruriPhase === 'second'
-                  ? 'Second time until {{time}}'
-                  : 'First time until {{time}}',
-              time: daruriApprox
-                ? `${t('prayer.approx', { defaultValue: 'approx.' })} ${clock(
-                    daruriAt,
-                  )}`
-                : clock(daruriAt),
+                color: isNext ? palette.accent : isSecondary ? palette.muted : palette.text,
+                fontStyle: isSecondary ? 'italic' : 'normal',
               },
-            )}
+            ]}
+            maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
+            {t(`prayer.${prayerKey}`)}
           </Text>
-        ) : null}
+          {daruriAt ? (
+            <Text
+              style={[styles.daruri, { color: palette.muted }]}
+              numberOfLines={1}
+              accessibilityLabel={t(
+                daruriPhase === 'second' ? 'prayer.secondTimeUntil' : 'prayer.firstTimeUntil',
+                {
+                  time: daruriApprox
+                    ? `${t('prayer.approx', { defaultValue: 'approx.' })} ${clock(daruriAt)}`
+                    : clock(daruriAt),
+                },
+              )}
+              maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+              testID={`daruri-${prayerKey}`}>
+              {t(daruriPhase === 'second' ? 'prayer.secondTimeShort' : 'prayer.firstTimeShort', {
+                // The clock keeps its own direction inside the sentence
+                // (first-strong isolate): "5:31 م" stays as the time
+                // column writes it, in an Arabic line or a Latin one.
+                time: `${daruriApprox ? '~' : ''}\u2068${clock(daruriAt)}\u2069`,
+                interpolation: { escapeValue: false },
+              })}
+            </Text>
+          ) : null}
+        </View>
         {/* Under the name for the same reason the line above is, and for
             one more: the trailing edge is a COLUMN, aligned across every
             row of the card. A control that appeared on one row would push
@@ -364,6 +382,20 @@ function PrayerRowImpl({
             maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
             {shown}
           </Text>
+          {timePeers?.map(peer =>
+            peer === shown || peer === sizingTime ? null : (
+              <Text
+                key={peer}
+                aria-hidden
+                accessible={false}
+                importantForAccessibility="no-hide-descendants"
+                style={[styles.time, tabularNumeralStyle, styles.timeSampleRoom, styles.timeSample, styles.timeOwnWidth]}
+                numberOfLines={1}
+                maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
+                {peer}
+              </Text>
+            ),
+          )}
           <Text
             style={[
               styles.time,
@@ -435,10 +467,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  // One line: the name keeps its width, the tag gives way first.
+  nameLine: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   daruri: {
     fontSize: TYPE.caption.fontSize,
     lineHeight: labelLineHeight(TYPE.caption.fontSize),
-    marginTop: 2,
+    flexShrink: 1,
+    marginStart: SPACING.sm,
+    // And the tag keeps its distance from the bell, for the same reason.
+    marginEnd: SPACING.lg,
   },
   // Inset, rounded indicator pill instead of a full-bleed block — reads
   // as a quieter, more refined "current" marker against the tinted row.
@@ -456,12 +497,21 @@ const styles = StyleSheet.create({
   // points taller than the same row in English, and six rows of that came
   // out of the hero above.
   name: { fontSize: TYPE.title3.fontSize, lineHeight: labelLineHeight(TYPE.title3.fontSize) },
+  // A slanted name leans out of its own box, and Android cuts a text at
+  // its box: "الشروق" lost the top of its first letter at the right edge.
+  // Room for the lean on both sides, taken back so the name still starts
+  // on the column's line.
+  nameSlanted: { paddingHorizontal: 4, marginHorizontal: -4 },
   chosenDot: {
     width: 6,
     height: 6,
     borderRadius: RADIUS.xs,
-    marginStart: SPACING.md,
-    marginEnd: SPACING.sm,
+    // Tight: the bell belongs to the time beside it. With the slot at its
+    // old 26 dp the bell stood nearer the Mālikī tag on its other side
+    // than the time it sets the alert for — plainest in Arabic, where a
+    // "م" time is narrower than the column and sits further off still.
+    marginStart: SPACING.xs,
+    marginEnd: SPACING.xs,
     backgroundColor: 'transparent',
   },
   timeCol: { justifyContent: 'center' },

@@ -829,7 +829,9 @@
     "approx": "kira-kira",
     "Subh": "Subuh",
     "Subh_abbr": "Subuh",
-    "Jumuah": "Jumat"
+    "Jumuah": "Jumat",
+    "firstTimeShort": "Ke-1 s.d. {{time}}",
+    "secondTimeShort": "Ke-2 s.d. {{time}}"
   },
   "placeSearch": {
     "label": "Cari kota atau alamat",

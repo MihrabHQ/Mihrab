@@ -216,3 +216,17 @@ describe('the time column is the card’s width, not the row’s', () => {
     expect(chosen.backgroundColor).toBe('#0F5132');
   });
 });
+
+describe('a row is as wide as the widest time on the card, not only its own', () => {
+  it('carries the card’s other longest times as sizers with no height', () => {
+    // Arabic, 12-hour: "12:52 م" is as long as "11:40 ص" and wider. The
+    // row showing the one holds the other, so both columns agree.
+    const tree = renderRow({ rawTime: '11:40', timeSample: '11:40 AM', timePeers: ['11:40 AM', '12:52 PM'] });
+    const sizers = texts(tree).filter(n => flat(n.props.style).opacity === 0);
+    expect(sizers.map(n => n.props.children)).toContain('12:52 PM');
+    const peer = sizers.find(n => n.props.children === '12:52 PM')!;
+    expect(flat(peer.props.style).height).toBe(0);
+    // And never its own time a third time over.
+    expect(sizers.filter(n => n.props.children === '11:40 AM').length).toBe(2);
+  });
+});

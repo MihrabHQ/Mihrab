@@ -27,7 +27,6 @@ const pixel: HomeBudgetInput = {
   topInset: 24,
   fontScale: 1,
   rows: 6,
-  sublineRows: 0,
   extra: 0,
 };
 
@@ -61,10 +60,9 @@ describe('the pick', () => {
     expect(pickHomeTier({ ...pixel, viewport: 800 - 62 })).toBe('comfortable');
   });
 
-  it('stays comfortable on the Pixel at a large text size, until the Mālikī lines are on', () => {
+  it('stays comfortable on the Pixel at a large text size', () => {
     expect(pickHomeTier({ ...pixel, fontScale: 1.5 })).toBe('comfortable');
     expect(pickHomeTier({ ...pixel, fontScale: 2 })).toBe('comfortable');
-    expect(pickHomeTier({ ...pixel, fontScale: 1.5, sublineRows: 5 })).toBe('compact');
     expect(pickHomeTier({ ...pixel, viewport: 800 - 62, fontScale: 1.3 })).toBe('compact');
   });
 
@@ -73,15 +71,12 @@ describe('the pick', () => {
     expect(pickHomeTier({ ...pixel, viewport: 1006 - 62 })).toBe('roomy');
   });
 
-  it('counts the extra rows and the Mālikī lines, and folds the lines in compact', () => {
-    const malik = { ...pixel, sublineRows: 5 };
-    expect(homeSegmentHeights('comfortable', malik).table).toBeGreaterThan(homeSegmentHeights('comfortable', pixel).table);
-    // Compact keeps one line, so five cost what one costs.
-    expect(homeSegmentHeights('compact', malik).table - homeSegmentHeights('compact', pixel).table).toBe(
-      homeSegmentHeights('compact', { ...pixel, sublineRows: 1 }).table - homeSegmentHeights('compact', pixel).table,
+  it('counts the extra rows, and nothing for the Mālikī boundaries: they are on the row’s own line', () => {
+    expect(homeSegmentHeights('comfortable', { ...pixel, rows: 8 }).table).toBeGreaterThan(
+      homeSegmentHeights('comfortable', pixel).table,
     );
     expect(pickHomeTier({ ...pixel, rows: 8 })).toBe('comfortable');
-    expect(pickHomeTier({ ...pixel, rows: 8, sublineRows: 5 })).toBe('compact');
+    expect('sublineRows' in pixel).toBe(false);
   });
 
   it('caps the text size the way the texts do', () => {

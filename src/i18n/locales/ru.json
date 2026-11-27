@@ -841,7 +841,9 @@
     "approx": "прибл.",
     "Subh": "Субх",
     "Subh_abbr": "Субх",
-    "Jumuah": "Джума"
+    "Jumuah": "Джума",
+    "firstTimeShort": "1-е до {{time}}",
+    "secondTimeShort": "2-е до {{time}}"
   },
   "placeSearch": {
     "label": "Поиск города или адреса",

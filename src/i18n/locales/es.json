@@ -830,7 +830,9 @@
     "approx": "aprox.",
     "Subh": "Subh",
     "Subh_abbr": "Subh",
-    "Jumuah": "Yumu'ah"
+    "Jumuah": "Yumu'ah",
+    "firstTimeShort": "1.º hasta {{time}}",
+    "secondTimeShort": "2.º hasta {{time}}"
   },
   "placeSearch": {
     "label": "Buscar ciudad o dirección",

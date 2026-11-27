@@ -829,7 +829,9 @@
     "approx": "تقریباً",
     "Subh": "صبح",
     "Subh_abbr": "صبح",
-    "Jumuah": "جمعہ"
+    "Jumuah": "جمعہ",
+    "firstTimeShort": "پہلا {{time}} تک",
+    "secondTimeShort": "دوسرا {{time}} تک"
   },
   "placeSearch": {
     "label": "شہر یا پتہ تلاش کریں۔",

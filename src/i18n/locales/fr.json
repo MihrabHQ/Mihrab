@@ -830,7 +830,9 @@
     "approx": "env.",
     "Subh": "Sobh",
     "Subh_abbr": "Sobh",
-    "Jumuah": "Joumou'a"
+    "Jumuah": "Joumou'a",
+    "firstTimeShort": "1er jusqu'à {{time}}",
+    "secondTimeShort": "2e jusqu'à {{time}}"
   },
   "placeSearch": {
     "label": "Rechercher une ville ou une adresse",

@@ -833,7 +833,9 @@
     "approx": "تقريبًا",
     "Subh": "الصبح",
     "Subh_abbr": "الصبح",
-    "Jumuah": "الجمعة"
+    "Jumuah": "الجمعة",
+    "firstTimeShort": "اختياري إلى {{time}}",
+    "secondTimeShort": "ضروري إلى {{time}}"
   },
   "placeSearch": {
     "label": "ابحث عن مدينة أو عنوان",

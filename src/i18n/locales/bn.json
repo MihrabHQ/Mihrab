@@ -829,7 +829,9 @@
     "approx": "আনুমানিক",
     "Subh": "সুবহ",
     "Subh_abbr": "সুবহ",
-    "Jumuah": "জুমুআ"
+    "Jumuah": "জুমুআ",
+    "firstTimeShort": "প্রথম {{time}} পর্যন্ত",
+    "secondTimeShort": "দ্বিতীয় {{time}} পর্যন্ত"
   },
   "placeSearch": {
     "label": "শহর বা ঠিকানা খুঁজুন",
