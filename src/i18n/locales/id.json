@@ -140,7 +140,10 @@
     "coordLng": "Garis bujur harus antara -180 dan 180.",
     "gpsPermission": "Izin lokasi diperlukan untuk menggunakan lokasi perangkat.",
     "gpsRead": "Tidak dapat membaca posisi GPS.",
-    "gpsRequest": "Tidak dapat meminta lokasi."
+    "gpsRequest": "Tidak dapat meminta lokasi.",
+    "locationOff": "Lokasi dimatikan di perangkat ini. Nyalakan, atau masukkan tempat Anda di bawah.",
+    "locationNone": "Perangkat ini tidak dapat menemukan posisinya sendiri. Masukkan tempat Anda di bawah.",
+    "locationNotFound": "Lokasi Anda tidak dapat ditemukan. Pastikan Lokasi menyala lalu coba lagi, atau masukkan tempat Anda di bawah."
   },
   "month": {
     "locationNotReadyTitle": "Lokasi belum siap",
@@ -614,7 +617,8 @@
     "searchCoords": "Cari atau masukkan koordinat",
     "manualHeadline": "Lokasi manual",
     "manualSub": "Cari dan ketuk hasil untuk menyelesaikannya — atau ketik lintang dan bujur di bawah dan tekan Lanjutkan.",
-    "decimalCoords": "Koordinat desimal"
+    "decimalCoords": "Koordinat desimal",
+    "openLocationSettings": "Buka pengaturan lokasi"
   },
   "provider": {
     "timesSource": "Sumber waktu",

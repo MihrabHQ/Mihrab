@@ -116,6 +116,43 @@ public class GeolocationModule extends ReactContextBaseJavaModule {
    * @param options map containing optional arguments: timeout (millis), maximumAge (millis) and
    *        highAccuracy (boolean)
    */
+  /**
+   * Whether a position can be had at all, asked before one is asked for.
+   *
+   * {@code enabled}: the phone's Location switch. {@code hasProvider}: the
+   * device has something to find a position with (satellites, the network,
+   * the platform's fused provider) — a tablet without GPS and without a
+   * network provider has only "passive", which finds nothing itself.
+   * Needs no permission. Without it, "Use my location" on such a device
+   * spun until a timeout and then said only that the request timed out.
+   */
+  @ReactMethod
+  public void getAvailability(final com.facebook.react.bridge.Promise promise) {
+    try {
+      android.location.LocationManager lm =
+          (android.location.LocationManager) getReactApplicationContext().getSystemService(android.content.Context.LOCATION_SERVICE);
+      boolean hasProvider = false;
+      boolean anyEnabled = false;
+      if (lm != null) {
+        for (String name : lm.getAllProviders()) {
+          if (android.location.LocationManager.PASSIVE_PROVIDER.equals(name)) continue;
+          hasProvider = true;
+          try {
+            if (lm.isProviderEnabled(name)) anyEnabled = true;
+          } catch (Exception ignored) {
+          }
+        }
+      }
+      boolean enabled = lm != null && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? lm.isLocationEnabled() : anyEnabled);
+      com.facebook.react.bridge.WritableMap out = com.facebook.react.bridge.Arguments.createMap();
+      out.putBoolean("enabled", enabled);
+      out.putBoolean("hasProvider", hasProvider);
+      promise.resolve(out);
+    } catch (Exception e) {
+      promise.reject("availability", e);
+    }
+  }
+
   @ReactMethod
   public void getCurrentPosition(
       final ReadableMap options,

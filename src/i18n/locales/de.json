@@ -140,7 +140,10 @@
     "coordLng": "Der Längengrad muss zwischen -180 und 180 liegen.",
     "gpsPermission": "Für die Nutzung des Gerätestandorts ist eine Standortberechtigung erforderlich.",
     "gpsRead": "Die GPS-Position konnte nicht gelesen werden.",
-    "gpsRequest": "Der Standort konnte nicht angefordert werden."
+    "gpsRequest": "Der Standort konnte nicht angefordert werden.",
+    "locationOff": "Der Standort ist auf diesem Gerät ausgeschaltet. Schalte ihn ein oder gib deinen Ort unten ein.",
+    "locationNone": "Dieses Gerät kann seine Position nicht selbst bestimmen. Gib deinen Ort unten ein.",
+    "locationNotFound": "Dein Standort konnte nicht ermittelt werden. Prüfe, ob der Standort eingeschaltet ist, und versuche es erneut, oder gib deinen Ort unten ein."
   },
   "month": {
     "locationNotReadyTitle": "Standort nicht bereit",
@@ -614,7 +617,8 @@
     "searchCoords": "Koordinaten suchen oder eingeben",
     "manualHeadline": "Manueller Standort",
     "manualSub": "Suchen Sie und tippen Sie auf ein Ergebnis, um den Vorgang abzuschließen – oder geben Sie unten Breiten- und Längengrad ein und klicken Sie auf „Weiter“.",
-    "decimalCoords": "Dezimalkoordinaten"
+    "decimalCoords": "Dezimalkoordinaten",
+    "openLocationSettings": "Standorteinstellungen öffnen"
   },
   "provider": {
     "timesSource": "Times-Quelle",

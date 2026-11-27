@@ -140,7 +140,10 @@
     "coordLng": "Boylam -180 ile 180 arasında olmalıdır.",
     "gpsPermission": "Cihaz konumunu kullanmak için konum izni gereklidir.",
     "gpsRead": "GPS konumu okunamadı.",
-    "gpsRequest": "Konum isteğinde bulunulamadı."
+    "gpsRequest": "Konum isteğinde bulunulamadı.",
+    "locationOff": "Bu cihazda konum kapalı. Konumu açın veya yerinizi aşağıya girin.",
+    "locationNone": "Bu cihaz kendi konumunu bulamıyor. Yerinizi aşağıya girin.",
+    "locationNotFound": "Konumunuz bulunamadı. Konumun açık olduğunu kontrol edip yeniden deneyin veya yerinizi aşağıya girin."
   },
   "month": {
     "locationNotReadyTitle": "Konum hazır değil",
@@ -614,7 +617,8 @@
     "searchCoords": "Koordinatları arayın veya girin",
     "manualHeadline": "Manuel konum",
     "manualSub": "Bitirmek için bir sonucu arayın ve dokunun — veya aşağıya enlem ve boylam yazın ve Devam'a basın.",
-    "decimalCoords": "Ondalık koordinatlar"
+    "decimalCoords": "Ondalık koordinatlar",
+    "openLocationSettings": "Konum ayarlarını aç"
   },
   "provider": {
     "timesSource": "Times kaynağı",

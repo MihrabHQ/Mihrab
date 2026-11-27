@@ -64,7 +64,7 @@ export function useNonReadyPhaseElement(args: {
   // so they can type a city or paste coordinates instead of staring at a
   // "Could not get location" wall (#125).
   if (state.phase === 'manual_required') {
-    return createElement(LocationSetup, { palette });
+    return createElement(LocationSetup, { palette, unavailable: state.reason });
   }
   if (state.phase === 'api_error') {
     return createElement(PhaseScreen, {

@@ -14,6 +14,7 @@ import {
   type PrayerDay,
 } from '../prayer/prayerStorage';
 import { getPositionStaged } from '../utils/getPosition';
+import { locationAvailability } from '../native/Geolocation';
 import { onLiveMove, onLiveRecheck } from '../location/liveMove';
 import {
   SLOW_AFTER_MS,
@@ -111,7 +112,8 @@ export type PrayerDayState =
    * adhan calculation here, but with no coords there is nothing to calculate
    * from. The user must provide a location.
    */
-  | { phase: 'manual_required'; message: string }
+  /** `reason`: the phone's Location is off, or it has nothing to find a position with. */
+  | { phase: 'manual_required'; message: string; reason?: 'off' | 'none' }
   | { phase: 'api_error'; message: string }
   | {
       phase: 'ready';
@@ -1072,6 +1074,24 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       // Accepts an "Approximate" (COARSE-only) grant — that's enough for
       // prayer times and is the Wi-Fi positioning the user wants when GPS is
       // unavailable, so a coarse grant must NOT be treated as a refusal.
+      // With nothing to show yet, ask the phone first whether a position can
+      // be had at all. Location switched off, or a tablet with nothing to
+      // find one with, used to mean a permission question and then 25 s of
+      // spinner before a setup screen that did not say why.
+      if (!hasCached && !isBackgroundRefresh) {
+        const can = await locationAvailability();
+        if (can !== 'ok') {
+          setState({
+            phase: 'manual_required',
+            message: can === 'off' ? 'Location is off' : 'No location provider',
+            reason: can,
+          });
+          endSearch(false);
+          settleOwedShift();
+          return;
+        }
+      }
+
       if (Platform.OS === 'android') {
         const perm = await requestAndroidLocationPermission();
         if (perm !== 'granted') {

@@ -140,7 +140,10 @@
     "coordLng": "经度必须介于 -180 到 180 之间。",
     "gpsPermission": "使用设备位置需要位置权限。",
     "gpsRead": "无法读取 GPS 位置。",
-    "gpsRequest": "无法请求位置。"
+    "gpsRequest": "无法请求位置。",
+    "locationOff": "此设备的定位已关闭。请开启定位，或在下方输入你的地点。",
+    "locationNone": "此设备无法自行确定位置。请在下方输入你的地点。",
+    "locationNotFound": "无法找到你的位置。请确认定位已开启后重试，或在下方输入你的地点。"
   },
   "month": {
     "locationNotReadyTitle": "位置未准备好",
@@ -614,7 +617,8 @@
     "searchCoords": "搜索或输入坐标",
     "manualHeadline": "手动定位",
     "manualSub": "搜索并点击结果即可完成 - 或在下面输入纬度和经度，然后按继续。",
-    "decimalCoords": "十进制坐标"
+    "decimalCoords": "十进制坐标",
+    "openLocationSettings": "打开定位设置"
   },
   "provider": {
     "timesSource": "时代来源",

@@ -51,10 +51,11 @@ describe('the check is for where the phone is, not the last fix', () => {
   });
 
   it('and one owed is settled when no new place comes', () => {
-    // Same city, no permission, no fix: the place on screen is where the
-    // phone is, so it is checked there.
+    // Same city, no permission, no fix, no way to get one (Location off,
+    // or nothing to find a position with): the place on screen is where
+    // the phone is, so it is checked there.
     const calls = hook.match(/settleOwedShift\(\);/g) ?? [];
-    expect(calls.length).toBe(3);
+    expect(calls.length).toBe(4);
     expect(hook).toContain('timezoneShiftAwaitingFix()');
   });
 });

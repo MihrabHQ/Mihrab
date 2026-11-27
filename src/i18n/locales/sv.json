@@ -140,7 +140,10 @@
     "coordLng": "Longitud måste vara mellan -180 och 180.",
     "gpsPermission": "Platsbehörighet krävs för att använda enhetens plats.",
     "gpsRead": "Kunde inte läsa GPS-position.",
-    "gpsRequest": "Kunde inte begära plats."
+    "gpsRequest": "Kunde inte begära plats.",
+    "locationOff": "Platstjänster är avstängda på den här enheten. Slå på dem, eller ange din plats nedan.",
+    "locationNone": "Den här enheten kan inte hitta sin egen position. Ange din plats nedan.",
+    "locationNotFound": "Din plats kunde inte hittas. Kontrollera att platstjänster är på och försök igen, eller ange din plats nedan."
   },
   "month": {
     "locationNotReadyTitle": "Platsen är inte klar",
@@ -614,7 +617,8 @@
     "searchCoords": "Sök eller ange koordinater",
     "manualHeadline": "Manuell plats",
     "manualSub": "Sök och tryck på ett resultat för att slutföra — eller skriv latitud och longitud nedan och tryck Fortsätt.",
-    "decimalCoords": "Decimala koordinater"
+    "decimalCoords": "Decimala koordinater",
+    "openLocationSettings": "Öppna platsinställningar"
   },
   "provider": {
     "timesSource": "Tidskälla",

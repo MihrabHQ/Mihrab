@@ -1,8 +1,11 @@
 import { getPositionStaged } from '../utils/getPosition';
+import { locationAvailability } from '../native/Geolocation';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  AppState,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -52,9 +55,15 @@ type Props = {
    * them.
    */
   hideIntro?: boolean;
+  /**
+   * Why the app is showing this instead of the day: the phone's Location is
+   * off, or it has nothing to find a position with. Said at once, so the
+   * screen does not arrive unexplained.
+   */
+  unavailable?: 'off' | 'none';
 };
 
-export function LocationSetup({ palette, hideIntro }: Props) {
+export function LocationSetup({ palette, hideIntro, unavailable }: Props) {
   const { t } = useTranslation();
   const { updateSettings } = usePrayerSettings();
   const [step, setStep] = useState<'choose' | 'manual'>('choose');
@@ -63,7 +72,28 @@ export function LocationSetup({ palette, hideIntro }: Props) {
   // ref is, to the React Compiler, a ref read while rendering.
   const { ref: kbRef, contentPadding: kbPadding } = useKeyboardAwareScroll<ScrollViewInstance>();
   const [gpsBusy, setGpsBusy] = useState(false);
-  const [gpsError, setGpsError] = useState<string | null>(null);
+  const [gpsError, setGpsError] = useState<string | null>(() =>
+    unavailable ? t(unavailable === 'off' ? 'errors.locationOff' : 'errors.locationNone') : null,
+  );
+  /** Location is switched off on the phone: the message offers the way to its switch. */
+  const [locationOff, setLocationOff] = useState(unavailable === 'off');
+
+  // Back from the phone's settings with Location on: the message is no
+  // longer true, so it goes. The button is theirs to press.
+  useEffect(() => {
+    if (!locationOff) return undefined;
+    const sub = AppState.addEventListener('change', next => {
+      if (next !== 'active') return;
+      locationAvailability()
+        .then(can => {
+          if (can !== 'ok') return;
+          setLocationOff(false);
+          setGpsError(null);
+        })
+        .catch(() => undefined);
+    });
+    return () => sub.remove();
+  }, [locationOff]);
   const [draftLat, setDraftLat] = useState('');
   const [draftLng, setDraftLng] = useState('');
   const [placeLabel, setPlaceLabel] = useState<string | undefined>();
@@ -106,8 +136,21 @@ export function LocationSetup({ palette, hideIntro }: Props) {
 
   const useDeviceLocation = () => {
     setGpsError(null);
+    setLocationOff(false);
     setGpsBusy(true);
     const run = async () => {
+      // Asked first, and of the phone rather than found out by waiting: a
+      // phone with Location off, or a tablet with nothing to find a
+      // position with, spun here until a timeout and then said only
+      // "Location request timed out" (Android 16 tablet emulator,
+      // 2026-11-27). Each is said, with what to do about it.
+      const can = await locationAvailability();
+      if (can !== 'ok') {
+        setLocationOff(can === 'off');
+        setGpsError(t(can === 'off' ? 'errors.locationOff' : 'errors.locationNone'));
+        setGpsBusy(false);
+        return;
+      }
       try {
         if (Platform.OS === 'android') {
           // Accept an "Approximate" (coarse) grant too — enough for prayer
@@ -122,8 +165,20 @@ export function LocationSetup({ palette, hideIntro }: Props) {
         // Staged locator: a fast Wi-Fi/cell fix first (works indoors, where
         // people usually set the app up), refined by GPS. onFix may fire
         // twice — the second (precise) fix just updates the saved coords.
+        // And a limit of our own: a provider that is there and never
+        // answers must not leave the button spinning.
+        let settled = false;
+        const giveUp = setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          setGpsError(t('errors.locationNotFound'));
+          setGpsBusy(false);
+        }, 30_000);
         getPositionStaged(
           fix => {
+            settled = true;
+            clearTimeout(giveUp);
+            setGpsError(null);
             // Persist the coords as lastFetched so usePrayerDay's effect
             // re-fires even when locationMode/onboardingComplete are
             // already set (e.g., re-entering after a manual_required
@@ -138,8 +193,13 @@ export function LocationSetup({ palette, hideIntro }: Props) {
             });
             setGpsBusy(false);
           },
-          err => {
-            setGpsError(err.message || t('errors.gpsRead'));
+          () => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(giveUp);
+            // In the reader's language, with what to do next: the native
+            // message is English and names only the failure.
+            setGpsError(t('errors.locationNotFound'));
             setGpsBusy(false);
           },
         );
@@ -210,6 +270,21 @@ export function LocationSetup({ palette, hideIntro }: Props) {
         {gpsError && (
           <Text style={[styles.err, { color: palette.danger }]}>{gpsError}</Text>
         )}
+        {locationOff && Platform.OS === 'android' ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              Linking.sendIntent('android.settings.LOCATION_SOURCE_SETTINGS').catch(() => {
+                Linking.openSettings().catch(() => undefined);
+              });
+            }}
+            testID="location-open-settings"
+            style={({ pressed }) => [styles.linkBtn, pressed && { opacity: 0.6 }]}>
+            <Text style={[styles.linkBtnLabel, { color: palette.accent }]}>
+              {t('locationSetup.openLocationSettings')}
+            </Text>
+          </Pressable>
+        ) : null}
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('locationSetup.searchCoords')}
@@ -367,6 +442,8 @@ const styles = StyleSheet.create({
     fontSize: 14, // tokens-ok-line: TYPE.footnote target
     textAlign: 'center',
   },
+  linkBtn: { alignSelf: 'center', paddingVertical: 8, paddingHorizontal: 12 },
+  linkBtnLabel: { fontSize: 16, fontWeight: '500', textAlign: 'center' },
   back: {
     fontSize: 17, // tokens-ok-line: TYPE.headline target
     fontWeight: '400',

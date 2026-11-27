@@ -140,7 +140,10 @@
     "coordLng": "La longitud debe estar entre -180 y 180.",
     "gpsPermission": "Se requiere permiso de ubicación para usar la ubicación del dispositivo.",
     "gpsRead": "No se pudo leer la posición GPS.",
-    "gpsRequest": "No se pudo solicitar la ubicación."
+    "gpsRequest": "No se pudo solicitar la ubicación.",
+    "locationOff": "La ubicación está desactivada en este dispositivo. Actívala o introduce tu lugar abajo.",
+    "locationNone": "Este dispositivo no puede determinar su propia posición. Introduce tu lugar abajo.",
+    "locationNotFound": "No se pudo encontrar tu ubicación. Comprueba que la ubicación esté activada e inténtalo de nuevo, o introduce tu lugar abajo."
   },
   "month": {
     "locationNotReadyTitle": "Ubicación no lista",
@@ -615,7 +618,8 @@
     "searchCoords": "Buscar o ingresar coordenadas",
     "manualHeadline": "Ubicación manual",
     "manualSub": "Busque y toque un resultado para finalizar, o escriba latitud y longitud a continuación y presione Continuar.",
-    "decimalCoords": "Coordenadas decimales"
+    "decimalCoords": "Coordenadas decimales",
+    "openLocationSettings": "Abrir los ajustes de ubicación"
   },
   "provider": {
     "timesSource": "fuente de tiempos",

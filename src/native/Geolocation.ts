@@ -52,6 +52,8 @@ export type GeolocationError = {
 
 type Native = {
   setConfiguration(config: Record<string, unknown>): void;
+  /** Android only. */
+  getAvailability?: () => Promise<{ enabled: boolean; hasProvider: boolean }>;
   getCurrentPosition(
     options: GeolocationOptions,
     success: (position: GeolocationResponse) => void,
@@ -85,5 +87,25 @@ const Geolocation = {
     native().getCurrentPosition(options, success, error);
   },
 };
+
+/**
+ * Whether a position can be had at all: `off` — the phone's Location
+ * switch is off (it can be turned on); `none` — the device has nothing to
+ * find a position with; `ok` otherwise, and wherever the question cannot
+ * be asked (iOS answers a request with its own refusal).
+ */
+export type LocationAvailability = 'ok' | 'off' | 'none';
+
+export async function locationAvailability(): Promise<LocationAvailability> {
+  try {
+    const ask = (NativeModules.MihrabGeolocation as Native | undefined)?.getAvailability;
+    if (!ask) return 'ok';
+    const a = await ask();
+    if (!a.hasProvider) return 'none';
+    return a.enabled ? 'ok' : 'off';
+  } catch {
+    return 'ok';
+  }
+}
 
 export default Geolocation;

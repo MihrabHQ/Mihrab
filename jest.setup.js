@@ -67,6 +67,7 @@ jest.mock('./src/native/Geolocation', () => ({
       success({ coords: { latitude: 51.5, longitude: -0.12 } }),
     ),
   },
+  locationAvailability: jest.fn(async () => 'ok'),
 }));
 
 // react-native-mmkv is a native module (boot/launchReads.ts keeps the launch's
