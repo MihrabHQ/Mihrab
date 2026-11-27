@@ -105,6 +105,8 @@ const MINIMAL_CAPTION_UP = 0.014;
 const MINIMAL_CAPTION_SPAN = 0.012;
 /** Minimal: the seconds appear this close to the prayer — the last five minutes. */
 const MINIMAL_SECONDS_UNDER = 5 * 60;
+/** How far under Minimal's top row (the heart, the cog) the sun and the moon stay, dp: `skyScene`. */
+const MINIMAL_SKY_HEADROOM = 56;
 /** The unit letters' size in the figures' em, and the seconds' unit in theirs. */
 const UNIT_EM = 0.4;
 const SECONDS_UNIT_EM = 0.7;
@@ -1120,6 +1122,8 @@ export const HeroToday = memo(function HeroToday({
         still={posed || !lively}
         sceneTop={sceneTop}
         sceneBottom={sceneBottom}
+        // Minimal: the bodies keep clear of the heart and the cog.
+        bodyHeadroom={minimal ? MINIMAL_SKY_HEADROOM : 0}
         track={track}
         trackInk={inkBand.text}
         trackLabelInk={inkBand.muted}

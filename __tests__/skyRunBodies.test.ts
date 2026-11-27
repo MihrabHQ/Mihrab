@@ -89,8 +89,14 @@ describe("the Track look's run", () => {
     expect(view).not.toMatch(/body\.kind/);
   });
 
-  it("fades the moon's landmark in with the end, rather than popping it in after", () => {
+  it('carries the moon through the run on its own places, not held back to the end and not on the sun’s arc', () => {
     const end = src.slice(src.indexOf('// The run: the chart'), src.indexOf('{bodyView}'));
-    expect(end).toMatch(/track\.moon && body\.kind === 'moon'/);
+    // It rides: from where the launch picture has it to where it is now.
+    expect(end).toMatch(/ride\.moon && body\.kind === 'moon'/);
+    expect(end).toMatch(/translateX: ride\.moon\.tx \}, \{ translateY: ride\.moon\.ty/);
+    // Its places are the chart's moon at each keyframe (2.38: never the sun's).
+    expect(src).toMatch(/run\.tracks\.map\(t => \(t && t\.moon \?/);
+    // And it is no longer drawn a second time with the end's marks.
+    expect(end).not.toMatch(/cx=\{track\.moon\.x \* width\}/);
   });
 });

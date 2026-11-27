@@ -57,7 +57,18 @@ export function skyScene({
   height,
   sceneTop,
   sceneBottom,
+  bodyHeadroom = 0,
 }: {
+  /**
+   * Room kept clear above the BODIES, under the band's top, dp. The band
+   * is still the band — the stars fill it and the halo is held back from
+   * the chrome at its top — but the sun and the moon come no higher than
+   * this far into it. For Minimal, whose band is most of the screen and
+   * whose top row is a heart in one corner and a cog in the other: a moon
+   * high in the night stood level with the two of them, an icon among the
+   * icons, where on the full page it sits under a row of chips.
+   */
+  bodyHeadroom?: number;
   /** The sky's measured height, dp (0 before layout). */
   height: number;
   sceneTop: number;
@@ -68,6 +79,8 @@ export function skyScene({
   cramped: boolean;
   /** The band's top: the foot of the chips' row, dp from the sky's top. */
   top: number;
+  /** Where the bodies' room begins: the band's top and the headroom under it. */
+  bodyTop: number;
   /** dp from the sky's top for a model fraction. */
   y: (fraction: number) => number;
   /** dp from the sky's top for a star's card fraction — see `STAR_FIELD`. */
@@ -86,7 +99,10 @@ export function skyScene({
   // top row above and the countdown below — on a 40dp band as on a
   // tablet's 600.
   const margin = MOON / 2;
-  const inner = Math.max(0, room - 2 * margin);
+  // Never so much headroom that the bodies lose their room: at most a
+  // third of the band, so a short band keeps two thirds for the sky.
+  const head = Math.max(0, Math.min(bodyHeadroom, room / 3));
+  const inner = Math.max(0, room - head - 2 * margin);
   const spread = (fraction: number) => Math.max(0, Math.min(1, (fraction - 0.08) / 0.22));
   // The stars are written on the card, 6–44 % of it (`STAR_FIELD`), and
   // keep that spread over the whole band — no moon's margin, a star has
@@ -100,7 +116,8 @@ export function skyScene({
     room,
     cramped,
     top: sceneTop,
-    y: (fraction: number) => sceneTop + margin + spread(fraction) * inner,
+    bodyTop: sceneTop + head,
+    y: (fraction: number) => sceneTop + head + margin + spread(fraction) * inner,
     starY: (fraction: number) => sceneTop + starSpread(fraction) * Math.max(0, room),
   };
 }
@@ -140,6 +157,7 @@ function HeroSkyImpl({
   bleed,
   sceneTop = 0,
   sceneBottom = 0,
+  bodyHeadroom = 0,
   track,
   trackInk,
   trackLabelInk,
@@ -193,6 +211,8 @@ function HeroSkyImpl({
    * pass behind. The gradient still paints it.
    */
   sceneBottom?: number;
+  /** See `skyScene`. */
+  bodyHeadroom?: number;
 }) {
   const { top, bottom, glow, stars, body } = frame;
 
@@ -218,7 +238,8 @@ function HeroSkyImpl({
   // One scene per layout, not per render: the stars below are memoised on
   // it, and a fresh object every render would redraw them every frame of
   // a launch run for nothing.
-  const scene = useMemo(() => skyScene({ height, sceneTop, sceneBottom }), [height, sceneTop, sceneBottom]);
+  // prettier-ignore
+  const scene = useMemo(() => skyScene({ height, sceneTop, sceneBottom, bodyHeadroom }), [height, sceneTop, sceneBottom, bodyHeadroom]);
   const { cramped } = scene;
   const sceneY = (fraction: number) => sceneYOf(scene, fraction);
 
@@ -228,7 +249,19 @@ function HeroSkyImpl({
   // The Track look takes the band once there is one to draw in; until
   // then (and in a cramped band) the sky draws as it always has.
   const tracked = !!track && !!trackInk && !cramped && size.width > 0 && height > 0;
-  const bodyXY = body.kind === 'none' || cramped || tracked ? null : { x: body.x, y: body.y };
+  /**
+   * The Track is ASKED FOR, whether or not there is yet a size to draw it
+   * in. The painted bodies stood down only once the chart could be drawn,
+   * so for the frames before the sky had measured itself the sky painted
+   * its own moon — at the model's fraction of a height it did not have,
+   * which is the top of the screen — and then dropped it as the chart
+   * took over: at every launch in the Track look, a moon that flashed at
+   * the top and vanished. Plainest in Minimal, where nothing else is up
+   * there. A cramped band still paints as it always has: there the chart
+   * is not drawn at all.
+   */
+  const trackWanted = !!track && !!trackInk && !cramped;
+  const bodyXY = body.kind === 'none' || cramped || trackWanted ? null : { x: body.x, y: body.y };
   /**
    * ── THE HORIZON ──────────────────────────────────────────────────────
    * The line the sun rises over and sets under: where the model puts a
@@ -299,7 +332,7 @@ function HeroSkyImpl({
           // Under the Track the chart draws the body (below), on its own
           // track; the run's sun, moon and halo stand down as the live
           // sky's do.
-          noBodies={tracked && !!run.tracks}
+          noBodies={trackWanted && !!run.tracks}
         />
       ) : null}
       {running ? null : (
@@ -364,7 +397,7 @@ function HeroSkyImpl({
           {drawStars && size.width > 0 && height > 0 ? (
             <StarField scene={scene} glow={glow} stars={stars} dense={denseStars} width={size.width} height={height} />
           ) : null}
-          {body.kind === 'sun' && !cramped && !tracked && typeof sunCy === 'number' && size.width > 0 ? (
+          {body.kind === 'sun' && !cramped && !trackWanted && typeof sunCy === 'number' && size.width > 0 ? (
             // Clipped at the horizon when it is going under it.
             <View
               pointerEvents="none"
@@ -395,7 +428,7 @@ function HeroSkyImpl({
       {!running && !still && drawStars && denseStars ? (
         <Twinkle scene={scene} glow={glow} stars={stars} width={size.width} height={size.height} />
       ) : null}
-      {!running && body.kind === 'moon' && !cramped && !tracked ? (
+      {!running && body.kind === 'moon' && !cramped && !trackWanted ? (
         <View style={[styles.moon, { start: `${body.x * 100}%`, top: sceneY(body.y), opacity: body.alpha }]}>
           <Moon illuminated={body.illuminated} tilt={body.tilt} lit={body.light} />
         </View>
@@ -405,7 +438,11 @@ function HeroSkyImpl({
           track={track}
           frame={frame}
           width={size.width}
-          bandTop={scene.top}
+          // The chart's ceiling is the bodies': a moon higher than the
+          // chart goes (the winter chart tops out at 45°, the moon rides
+          // at 55°) is drawn AT the ceiling, which in Minimal was level
+          // with the heart and the cog.
+          bandTop={scene.bodyTop}
           horizon={horizon}
           ink={trackInk}
           labelInk={trackLabelInk}

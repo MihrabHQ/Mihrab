@@ -251,15 +251,26 @@ function HeroTrackImpl({
       K <= 1
         ? run.progress.interpolate({ inputRange: [0, 1], outputRange: [values[0], values[0]] })
         : run.progress.interpolate({ inputRange: es, outputRange: values, extrapolate: 'clamp' });
+    // The moon, where the chart has it at each keyframe: its own place,
+    // not the sun's, and held where it is not up.
+    const moons = run.tracks.map(t => (t && t.moon ? { x: t.moon.x * width, y: roomTop + t.moon.y * room } : null));
+    const firstMoon = moons.find(p => p != null);
+    let heldMoon = firstMoon ?? { x: 0, y: 0 };
+    const mxs = moons.map(p => (heldMoon = p ?? heldMoon).x);
+    heldMoon = firstMoon ?? { x: 0, y: 0 };
+    const mys = moons.map(p => (heldMoon = p ?? heldMoon).y);
     return {
       tx: through(xs),
       ty: through(ys),
       up: through(ups),
+      moon: firstMoon
+        ? { tx: through(mxs), ty: through(mys), up: through(moons.map(p => (p ? 1 : 0))) }
+        : null,
       light: runSunLight(run.tracks),
       // The end's stretch and its under-the-line outline come in over the last third.
       end: run.progress.interpolate({ inputRange: [0.66, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
     };
-  }, [run, X, Y, horizon]);
+  }, [run, X, Y, horizon, width, roomTop, room]);
   // THE BODY THAT RIDES IS THE SUN. The chart is the sun's, day and night
   // (trackWindow), and the run's places are the sun's on it. It was drawn
   // as the sky's body at the run's end — a moon, opened after sunset — so
@@ -414,20 +425,33 @@ function HeroTrackImpl({
           {at && at.under ? (
             <Circle cx={X(at)} cy={Y(at)} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
           ) : null}
-          {track.moon && body.kind === 'moon' ? (
-            // The moon where it is at the end, in with the rest of the end's
-            // marks — not drawn through the run and then popped in.
+        </Svg>
+      </Animated.View>
+      {/* The moon crosses the run where the chart has it at each keyframe.
+          It was held back and faded in with the end's marks, which from
+          the launch picture — where it stands at the interval's start —
+          read as a moon that vanished at the top of the sky and came back
+          somewhere else. On its own places, never the sun's arc (2.38). */}
+      {ride.moon && body.kind === 'moon' ? (
+        <Animated.View
+          style={{
+            ...styles.origin,
+            opacity: ride.moon.up,
+            transform: [{ translateX: ride.moon.tx }, { translateY: ride.moon.ty }],
+          }}
+          pointerEvents="none">
+          <Svg width={MOON} height={MOON} style={styles.rideMoon} pointerEvents="none">
             <MoonDisc
-              cx={track.moon.x * width}
-              cy={roomTop + track.moon.y * room}
+              cx={MOON / 2}
+              cy={MOON / 2}
               illuminated={body.illuminated}
               tilt={body.tilt}
               lit={body.light}
               alpha={body.alpha}
             />
-          ) : null}
-        </Svg>
-      </Animated.View>
+          </Svg>
+        </Animated.View>
+      ) : null}
       {bodyView}
       {named}
     </>
@@ -486,4 +510,5 @@ const styles = StyleSheet.create({
   svg: { position: 'absolute', left: 0, top: 0 },
   clip: { position: 'absolute', left: 0, top: 0, overflow: 'hidden' },
   origin: { position: 'absolute', left: 0, top: 0 },
+  rideMoon: { transform: [{ translateX: -MOON / 2 }, { translateY: -MOON / 2 }] },
 });

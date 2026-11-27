@@ -450,3 +450,28 @@ describe("the sun's glow", () => {
     expect(sky).toMatch(/width: haloR \* 2,\s*height: haloR \* 2,/);
   });
 });
+
+describe('the bodies keep clear of Minimal’s top row', () => {
+  const { skyScene: scene, MOON: moon } = require('../src/screens/home/HeroSky');
+  it('a body at its highest is the headroom lower, and one at the horizon where it was', () => {
+    const plain = scene({ height: 900, sceneTop: 120, sceneBottom: 380 });
+    const kept = scene({ height: 900, sceneTop: 120, sceneBottom: 380, bodyHeadroom: 56 });
+    expect(kept.y(0.08) - plain.y(0.08)).toBe(56);
+    expect(kept.y(0.3)).toBeCloseTo(plain.y(0.3), 5);
+    // The band itself is unmoved: the stars and the halo's fade are its.
+    expect(kept.top).toBe(plain.top);
+    expect(kept.starY(0.06)).toBe(plain.starY(0.06));
+  });
+
+  it('a short band gives up a third of itself at most', () => {
+    const short = scene({ height: 300, sceneTop: 120, sceneBottom: 120, bodyHeadroom: 56 });
+    expect(short.y(0.08)).toBe(120 + 20 + moon / 2);
+    expect(short.y(0.3)).toBeLessThanOrEqual(300 - 120 - moon / 2 + 0.001);
+  });
+
+  it('none asked for, nothing changes', () => {
+    const a = scene({ height: 700, sceneTop: 96, sceneBottom: 180 });
+    const b = scene({ height: 700, sceneTop: 96, sceneBottom: 180, bodyHeadroom: 0 });
+    for (const f of [0.08, 0.15, 0.22, 0.3]) expect(a.y(f)).toBe(b.y(f));
+  });
+});
