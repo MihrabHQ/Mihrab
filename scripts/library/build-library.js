@@ -206,6 +206,41 @@ const BOOKS = {
     // on from the paragraph before.
     sections: / (?=[()] فصل(?: :[^()]{1,120})? [()] )/,
   },
+  fathmuin: {
+    title: 'فتح المعين بشرح قرة العين',
+    author: 'زين الدين المليباري',
+    died: '987 هـ',
+    // Of the four transcriptions, the one that is the author's text whole
+    // and alone: two begin at the first chapter, without his opening; the
+    // fourth is an edition with an editor's headings and numbering set into
+    // it. This one sets the matn in brackets, as Nihāyat az-Zayn's does.
+    openiti: '1000AH/data/0987ZaynDinMalibari/0987ZaynDinMalibari.FathMucin/0987ZaynDinMalibari.FathMucin.JK011226-ara1',
+    cache: 'openiti-fathmuin.txt',
+    read: '2026-11-27',
+    one: 'خطبة الكتاب',
+    debris: [
+      // The printer's pages, not the author's: the first volume's title
+      // and imprint, and each later volume's (with the motto set on two of
+      // them), up to the page the text goes on from.
+      [/(?<=^# )فتح المعين لشرح قرة العين[\s\S]{0,700}?PageV01P007 (?=بسم الله الرحمن الرحيم)/m, ''],
+      [
+        /\*\d\*\*\s+(?:~~)?فتح المعين - المليباري\s+(?:~~)?الهندي ج \d\n# فتح المعين المليباري الهندي ج \d[\s\S]{0,800}?دولي: \d+ PageV0\dP004 (?:" من يرد الله به خيرا يفقهه في الدين " "\s+(?:~~)?حديث شريف " )?بسم الله الرحمن الرحيم /g,
+        '\n# ',
+      ],
+      // A page with nothing of the text on it.
+      [/(?<=PageV\d+P\d+) \.\.\.(?=\s+(?:~~)?PageV)/g, ''],
+      // The conversion's stars around a verse it already brackets.
+      [/\*\s+(?:~~)?(?=\()|(?<=\))\s+(?:~~)?\*/g, ''],
+      // Four marks that called a footnote of the edition's, which the file does not carry.
+      [/\(1\) ?| 2(?= (?:فيه|ضعفه))/g, ''],
+    ],
+    // The book's own chapters, which the file prints and does not mark.
+    heads: [
+      'باب الصلاة', 'باب الزكاة', 'باب الصوم', 'باب الحج', 'باب البيع', 'باب في الوكالة والقراض', 'باب في الاجارة',
+      'باب في العارية', 'باب في الهبة', 'باب في الوقف', 'باب في الاقرار', 'باب في الوصية', 'باب الفرائض', 'باب النكاح',
+      'باب الجناية', 'باب في الردة', 'باب الحدود', 'باب الجهاد', 'باب القضاء', 'باب الدعوى والبينات', 'باب في الاعتاق',
+    ],
+  },
   iqd: {
     title: 'العقد الفريد',
     author: 'ابن عبد ربه الأندلسي',
@@ -655,7 +690,24 @@ function openitiParts(text, where, spec) {
 
 /** A pack from an OpenITI file. */
 function openitiPack(id, spec, text) {
-  const body = spec.debris ? text.replace(spec.debris, ' ') : text;
+  // What is not the author's is taken out before anything is read: a
+  // pattern (a space is left where it stood), or a list of them each with
+  // what is left in its place (a paragraph's beginning, where one was cut).
+  let body = text;
+  const debris = !spec.debris ? [] : spec.debris instanceof RegExp ? [[spec.debris, ' ']] : spec.debris;
+  for (const [what, left] of debris) body = body.replace(what, left);
+  // A book whose chapters the file does not mark, only prints: each name
+  // in `heads`, where it opens a page or a paragraph, is made the heading
+  // it is. Every one must be found once, or the book is not built.
+  if (spec.heads) {
+    for (const head of spec.heads) {
+      const words = head.split(' ').join('(?:\\s*\\n~~\\s*|\\s+)');
+      const at = new RegExp(`(?:PageV\\d+P\\d+\\s+|\\n# )${words}(?=\\s)`, 'g');
+      const n = (body.match(at) ?? []).length;
+      if (n !== 1) throw new Error(`${id}: the chapter "${head}" was to open once and was found ${n} time(s)`);
+      body = body.replace(at, `\n### | ${head}\n# `);
+    }
+  }
   const chapters = spec.parts ? openitiParts(body, id, spec) : openitiChapters(body, id, spec);
   const meta = key => (new RegExp(`#META# ${key}\\s*:: (.*)`).exec(text)?.[1] ?? '').trim();
   const edition = [meta('043.EdPUBLISHER'), meta('041.EdNUMBER')].filter(v => v && v !== 'NODATA' && v !== 'NOTGIVEN').join('، ');

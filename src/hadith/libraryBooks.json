@@ -122,6 +122,19 @@
   "kind": "book"
  },
  {
+  "id": "fathmuin",
+  "title": "فتح المعين بشرح قرة العين",
+  "latin": "Fath al-Mu'in",
+  "author": "زين الدين المليباري",
+  "authorLatin": "Zayn ad-Din al-Malibari",
+  "died": "987 AH",
+  "level": 2,
+  "lang": "ar",
+  "subject": "fiqh",
+  "kind": "sharh",
+  "madhhab": "shafii"
+ },
+ {
   "id": "nihayatzayn",
   "title": "نهاية الزين في إرشاد المبتدئين",
   "latin": "Nihayat az-Zayn",

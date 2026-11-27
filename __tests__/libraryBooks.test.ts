@@ -533,6 +533,34 @@ describe('a matn with no chapter headings, bound with another work', () => {
     });
   });
 
+  describe('a book whose chapters the file prints and does not mark (Fath al-Mu\'in)', () => {
+    const file = ['#META#Header#End#', '', '# كتاب في الفقه الجزء الاول PageV01P003 حقوق الطبع محفوظة PageV01P007 بسم الله الرحمن الرحيم الحمد لله', '# (وبعد) فهذا شرح. PageV01P028 باب', '~~الصلاة هي شرعا: أقوال * (أقيموا الصلاة) * وأفعال.', '# ثم كذا. PageV02P164 باب الزكاة هي لغة: التطهير.'].join('\n');
+    const spec = {
+      title: 'ك', author: 'م', died: '1 هـ', read: '2026-11-27', one: 'خطبة الكتاب',
+      openiti: '1000AH/data/0001Author/0001Author.Book/0001Author.Book.X-ara1',
+      debris: [[/(?<=^# )كتاب في الفقه[\s\S]{0,200}?PageV01P007 (?=بسم)/m, ''], [/\*\s+(?=\()|(?<=\))\s+\*/g, '']] as [RegExp, string][],
+      heads: ['باب الصلاة', 'باب الزكاة'],
+    };
+
+    it('takes the printer\'s page out, and makes each chapter\'s name the heading it is, even across a line', () => {
+      expect(builder.openitiPack('test', spec, file).chapters).toEqual([
+        { t: 'خطبة الكتاب', b: ['بسم الله الرحمن الرحيم الحمد لله', '(وبعد) فهذا شرح.'] },
+        { t: 'باب الصلاة', b: ['هي شرعا: أقوال (أقيموا الصلاة) وأفعال.', 'ثم كذا.'] },
+        { t: 'باب الزكاة', b: ['هي لغة: التطهير.'] },
+      ]);
+    });
+
+    it('is not built when a chapter is not found once', () => {
+      expect(() => builder.openitiPack('test', { ...spec, heads: ['باب الصوم'] }, file)).toThrow(/"باب الصوم" was to open once and was found 0/);
+      expect(() => builder.openitiPack('test', spec, `${file}\n# وقد تقدم. PageV02P200 باب الزكاة ثانيا`)).toThrow(/found 2/);
+    });
+
+    it('is built from the transcription that has the author\'s opening, and names its 21 chapters', () => {
+      expect(builder.BOOKS.fathmuin.openiti).toContain('JK011226');
+      expect(builder.BOOKS.fathmuin.heads).toHaveLength(21);
+    });
+  });
+
   it('builds at-Tibyan from the transcription that is an-Nawawi\'s text alone', () => {
     expect(builder.BOOKS.tibyan.openiti).toContain('ShamAY0034087');
     expect(builder.BOOKS.tibyan.openiti).not.toMatch(/Shamela0001969|Shia002636/);
