@@ -181,6 +181,23 @@ const BOOKS = {
     cache: 'openiti-bidaya.txt',
     read: '2026-11-27',
   },
+  tibyan: {
+    title: 'التبيان في آداب حملة القرآن',
+    author: 'يحيى بن شرف النووي',
+    died: '676 هـ',
+    // This transcription, not the Dār Ibn Ḥazm one beside it (Shamela0001969,
+    // Shia002636): that one opens with its modern editor's preface and ends
+    // with his additions, which are not the author's and not free to
+    // republish. This one runs from an-Nawawī's own opening to his own close.
+    openiti: '0700AH/data/0676Nawawi/0676Nawawi.Tibyan/0676Nawawi.Tibyan.ShamAY0034087-ara1',
+    cache: 'openiti-tibyan.txt',
+    read: '2026-11-27',
+    // The conversion's own marks, none of them the author's: "AUTO" on a
+    // heading it placed; the sixth chapter's name set again, bare, where it
+    // cut a long chapter for its own convenience (twice); and a heading mark
+    // doubled before the tenth chapter's.
+    debris: /^### \| AUTO الباب السادس$|### \| AUTO (?=### \|)|(?<=### \|+ ?)AUTO /gm,
+  },
   iqd: {
     title: 'العقد الفريد',
     author: 'ابن عبد ربه الأندلسي',
@@ -389,6 +406,9 @@ function openitiChapters(text, where, spec = {}) {
   const clean = s => s.replace(/PageV\d+P\d+|ms\d+/g, ' ').replace(/\s+/g, ' ').replace(/^(?:؟+\s*)+/, '').trim();
   const chapters = spec.one ? [{ t: spec.one, b: [] }] : [];
   let para = null;
+  // The chapter whose heading was the line before: a "~~" line straight
+  // after it is the rest of a title the file wrapped, not text from nowhere.
+  let headed = null;
   const flush = () => {
     if (para == null) return;
     const s = clean(para);
@@ -404,14 +424,22 @@ function openitiChapters(text, where, spec = {}) {
       else b.push({ v: [line] });
     } else b.push(s);
   };
-  for (const line of text.slice(start).split('\n').slice(1)) {
-    if (!line.trim()) continue;
+  for (const raw of text.slice(start).split('\n').slice(1)) {
+    if (!raw.trim()) continue;
+    // A heading the debris left a space in front of is still a heading.
+    const line = raw.replace(/^\s+(?=### )/, '');
     if (line.startsWith('~~')) {
+      if (para == null && headed) {
+        headed.t = `${headed.t} ${clean(line.slice(2))}`.trim();
+        continue;
+      }
       if (para == null) throw new Error(`${where}: a line going on from nothing: ${line.slice(0, 60)}`);
       para += ` ${line.slice(2)}`;
       continue;
     }
     flush();
+    const wasHeaded = headed;
+    headed = null;
     if (spec.until && line.trim() === spec.until) {
       ended = true;
       break;
@@ -425,9 +453,13 @@ function openitiChapters(text, where, spec = {}) {
       if (prev && !prev.b.length && prev.t) {
         if (title.startsWith('و')) prev.t = `${prev.t} ${title}`;
         else if (title) prev.b.push(title);
-      } else if (title) chapters.push({ t: title, b: [] });
+      } else if (title) {
+        chapters.push({ t: title, b: [] });
+        headed = chapters[chapters.length - 1];
+      }
       continue;
     }
+    void wasHeaded;
     if (line.startsWith('# ')) {
       para = line.slice(2);
       continue;

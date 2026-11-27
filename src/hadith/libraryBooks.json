@@ -97,5 +97,14 @@
   "authorLatin": "Nawawi al-Bantani",
   "died": "1316 AH",
   "level": 2
+ },
+ {
+  "id": "tibyan",
+  "title": "التبيان في آداب حملة القرآن",
+  "latin": "At-Tibyan fi Adab Hamalat al-Qur'an",
+  "author": "يحيى بن شرف النووي",
+  "authorLatin": "An-Nawawi",
+  "died": "676 AH",
+  "level": 1
  }
 ]

@@ -471,6 +471,18 @@ describe('a matn with no chapter headings, bound with another work', () => {
     expect(() => builder.openitiChapters(file, 'test', { until: '# متن آخر' })).toThrow(/before the first heading/);
   });
 
+  it('takes a heading the file set on two lines as one title, and one the debris left a space before', () => {
+    const two = ['#META#Header#End#', ' ### || الباب العاشر : في ضبط الأسماء', '~~في الكتاب', '# هي كثيرة'].join('\n');
+    expect(builder.openitiChapters(two, 'test')).toEqual([{ t: 'الباب العاشر : في ضبط الأسماء في الكتاب', b: ['هي كثيرة'] }]);
+    // A line going on from nothing is still an error.
+    expect(() => builder.openitiChapters(['#META#Header#End#', '~~نص'].join('\n'), 'test')).toThrow(/going on from nothing/);
+  });
+
+  it('builds at-Tibyan from the transcription that is an-Nawawi\'s text alone', () => {
+    expect(builder.BOOKS.tibyan.openiti).toContain('ShamAY0034087');
+    expect(builder.BOOKS.tibyan.openiti).not.toMatch(/Shamela0001969|Shia002636/);
+  });
+
   it('is how Safinat an-Naja is built: its own text, without the work bound after it', () => {
     expect(builder.BOOKS.safina).toMatchObject({ one: 'سفينة النجاة', until: '# متن سفينة الصلاة' });
   });
