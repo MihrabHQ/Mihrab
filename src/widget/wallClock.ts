@@ -50,8 +50,10 @@ export function contractClock(
   const names = dayPeriodNames(locale);
   return {
     hour12: true,
-    am: names.am,
-    pm: names.pm,
+    // A leading marker carries its own gap ("ÖS " in Turkish): the
+    // widgets join marker and digits with nothing, as Chinese wants.
+    am: names.prefix ? names.am + names.gap : names.am,
+    pm: names.prefix ? names.pm + names.gap : names.pm,
     periodFirst: names.prefix,
   };
 }

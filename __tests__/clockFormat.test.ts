@@ -128,6 +128,18 @@ describe('localisation', () => {
     expect(formatClock('17:31', true, 'zh').endsWith('5:31')).toBe(zh.prefix);
   });
 
+  it('keeps the space a leading marker has in its own language', () => {
+    // Turkish writes "ÖS 5:31", Chinese "下午5:31": both lead, only one
+    // with a space. Each is held to what Intl itself writes.
+    for (const locale of ['tr', 'zh']) {
+      const own = new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit', hour12: true })
+        .format(new Date(2020, 0, 1, 17, 31))
+        .replace(/[\u202f\u00a0]/g, ' ');
+      expect(formatClock('17:31', true, locale)).toBe(own);
+    }
+    expect(formatClock('17:31', true, 'tr')).toMatch(/ 5:31$/);
+  });
+
   it('falls back to English markers when Intl cannot answer', () => {
     const real = Intl.DateTimeFormat;
     (Intl as any).DateTimeFormat = function () {

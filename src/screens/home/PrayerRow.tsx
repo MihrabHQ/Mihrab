@@ -343,7 +343,7 @@ function PrayerRowImpl({
             aria-hidden
             accessible={false}
             importantForAccessibility="no-hide-descendants"
-            style={[styles.time, tabularNumeralStyle, styles.timeSample]}
+            style={[styles.time, tabularNumeralStyle, styles.timeSampleRoom, styles.timeSample]}
             numberOfLines={1}
             maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
             {sizingTime}
@@ -359,7 +359,7 @@ function PrayerRowImpl({
             aria-hidden
             accessible={false}
             importantForAccessibility="no-hide-descendants"
-            style={[styles.time, tabularNumeralStyle, styles.timeSample, styles.timeOwnWidth]}
+            style={[styles.time, tabularNumeralStyle, styles.timeSampleRoom, styles.timeSample, styles.timeOwnWidth]}
             numberOfLines={1}
             maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
             {shown}
@@ -467,6 +467,11 @@ const styles = StyleSheet.create({
   timeCol: { justifyContent: 'center' },
   // The column's one weight: the accent alone marks the current time.
   timeSample: { opacity: 0 },
+  // A hair of room at the leading edge. The time laid over the sizer
+  // measures to the same width, and Android rounds the two apart: in
+  // Swedish ʿAṣr's "12:52 em", the one time on the card as wide as the
+  // column, lost its "m" to an ellipsis.
+  timeSampleRoom: { paddingStart: 2 },
   // Width without height: see the own-time sizer above.
   timeOwnWidth: { height: 0, overflow: 'hidden' },
   // Laid over the sample, flush with the trailing edge — `end`, so it is

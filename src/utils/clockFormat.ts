@@ -40,9 +40,16 @@ export type DayPeriodNames = {
   am: string;
   pm: string;
   prefix: boolean;
+  /**
+   * What stands between a leading marker and the digits: nothing in
+   * Chinese ("下午5:31"), a space in Turkish ("ÖS 5:31"). Every marker
+   * that came first was once joined with nothing, so Turkish read
+   * "ÖS5:31". A trailing marker always takes a space.
+   */
+  gap: string;
 };
 
-const FALLBACK_PERIODS: DayPeriodNames = { am: 'AM', pm: 'PM', prefix: false };
+const FALLBACK_PERIODS: DayPeriodNames = { am: 'AM', pm: 'PM', prefix: false, gap: '' };
 
 const periodCache = new Map<string, DayPeriodNames>();
 
@@ -72,11 +79,11 @@ export function dayPeriodNames(locale: string): DayPeriodNames {
     if (am && pm) {
       const hourIndex = morning.findIndex(p => p.type === 'hour');
       const periodIndex = morning.findIndex(p => p.type === 'dayPeriod');
-      resolved = {
-        am,
-        pm,
-        prefix: periodIndex >= 0 && hourIndex >= 0 && periodIndex < hourIndex,
-      };
+      const prefix = periodIndex >= 0 && hourIndex >= 0 && periodIndex < hourIndex;
+      const between = prefix
+        ? morning.slice(periodIndex + 1, hourIndex).map(p => p.value).join('')
+        : '';
+      resolved = { am, pm, prefix, gap: /\s/.test(between) ? ' ' : '' };
     }
   } catch {
     // No Intl, or a locale it refuses. English markers still read as a
@@ -128,6 +135,8 @@ export type ClockParts = {
   dayPeriod?: string;
   /** True when the day period is written before the digits. */
   dayPeriodFirst: boolean;
+  /** Between a leading day period and the digits (`DayPeriodNames.gap`). */
+  gap?: string;
 };
 
 /**
@@ -153,13 +162,14 @@ export function clockParts(
     digits: `${hour12Of(normalised)}:${m}`,
     dayPeriod: normalised < 12 ? names.am : names.pm,
     dayPeriodFirst: names.prefix,
+    ...(names.prefix ? { gap: names.gap } : {}),
   };
 }
 
 export function joinClockParts(parts: ClockParts): string {
   if (!parts.dayPeriod) return parts.digits;
   return parts.dayPeriodFirst
-    ? `${parts.dayPeriod}${parts.digits}`
+    ? `${parts.dayPeriod}${parts.gap ?? ''}${parts.digits}`
     : `${parts.digits} ${parts.dayPeriod}`;
 }
 
