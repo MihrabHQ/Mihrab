@@ -3173,6 +3173,8 @@
         "umda": "Matan ringkas fikih Hanbali karya Ibnu Qudamah, dengan satu pendapat pada tiap masalah beserta dalilnya dari hadis."
       },
       "commentary": "Syarah",
+      "otherLanguages": "Buku dalam bahasa lain",
+      "otherLanguagesHelp": "Aktifkan suatu bahasa untuk melihat bukunya di sini, apa pun bahasa aplikasinya.",
       "pdf": {
         "note": "Buku ini berupa berkas cetak: halamannya ditampilkan sebagaimana dicetak, dan ukuran teks tidak mengubahnya.",
         "read": "Baca",

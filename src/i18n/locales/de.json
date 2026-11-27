@@ -3173,6 +3173,8 @@
         "umda": "Ibn Qudamas kurzer Text des hanbalitischen Rechts, der zu jeder Frage eine Position mit ihrem Beleg aus den Hadithen gibt."
       },
       "commentary": "Kommentar",
+      "otherLanguages": "Bücher in anderen Sprachen",
+      "otherLanguagesHelp": "Schalte eine Sprache ein, um ihre Bücher hier zu sehen, gleich in welcher Sprache die App ist.",
       "pdf": {
         "note": "Dieses Buch ist eine gesetzte Datei: Seine Seiten werden wie gedruckt gezeigt, und die Textgröße ändert sie nicht.",
         "read": "Lesen",

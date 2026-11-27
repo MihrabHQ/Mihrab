@@ -739,6 +739,14 @@ export type PrayerAppSettings = {
    */
   malikiSecondTimeHideMatching: boolean;
   /**
+   * Languages whose Library books the reader asked to be shown, beyond
+   * the ones shown anyway (Arabic, the app's language, the hadith
+   * language, the phone's). A reader may keep the app in Arabic or
+   * English and still want the books in Indonesian: the shelf says which
+   * languages there are books in, and this is what was switched on.
+   */
+  libraryLanguages: string[];
+  /**
    * The second times' notifications arrive without sound or vibration
    * (Android: a low-importance channel; iOS: a passive notification).
    */
@@ -982,6 +990,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   // notification the user did not ask for.
   malikiSecondTimeRows: true,
   malikiSecondTimeHideMatching: false,
+  libraryLanguages: [],
   malikiSecondTimeAlertsSilent: false,
   malikiSecondTimeEndAlerts: false,
   // Ayah of the day: off by default (no surprise notifications); 9:00 AM

@@ -3173,6 +3173,8 @@
         "umda": "Ibn Qudamas korta text i hanbalitisk rättslära, med en ståndpunkt i varje fråga och dess belägg ur haditherna."
       },
       "commentary": "Kommentar",
+      "otherLanguages": "Böcker på andra språk",
+      "otherLanguagesHelp": "Slå på ett språk för att se dess böcker här, oavsett vilket språk appen har.",
       "pdf": {
         "note": "Den här boken är en färdigsatt fil: sidorna visas som de är tryckta, och textstorleken ändrar dem inte.",
         "read": "Läs",

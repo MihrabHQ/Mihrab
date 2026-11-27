@@ -3174,6 +3174,8 @@
         "umda": "Le court texte de droit hanbalite d’Ibn Qudama, qui donne une seule position sur chaque question avec sa preuve tirée des hadiths."
       },
       "commentary": "Commentaire",
+      "otherLanguages": "Livres dans d’autres langues",
+      "otherLanguagesHelp": "Activez une langue pour voir ses livres ici, quelle que soit la langue de l’application.",
       "pdf": {
         "note": "Ce livre est un fichier mis en page : ses pages sont affichées telles qu’imprimées, et la taille du texte ne les modifie pas.",
         "read": "Lire",

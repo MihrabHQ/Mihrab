@@ -3173,6 +3173,8 @@
         "umda": "İbn Kudâme’nin Hanbelî fıkhına dair kısa metni; her meselede tek görüş ve hadisten delili."
       },
       "commentary": "Şerh",
+      "otherLanguages": "Başka dillerdeki kitaplar",
+      "otherLanguagesHelp": "Bir dili açın; uygulama hangi dilde olursa olsun kitapları burada görünür.",
       "pdf": {
         "note": "Bu kitap dizilmiş bir dosyadır: sayfaları basıldığı gibi gösterilir ve metin boyutu onları değiştirmez.",
         "read": "Oku",

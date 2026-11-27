@@ -4,62 +4,239 @@
   "title": "Hadis Arba’in Nawawiyah",
   "author": "Imam an-Nawawi",
   "item": 1617,
-  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id_forty_hadith_of_nawawi.pdf"
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id_forty_hadith_of_nawawi.pdf",
+  "lang": "id"
  },
  {
   "id": "hisnulid",
   "title": "Hisnul Muslim",
   "author": "Sa’id bin Ali al-Qahthani",
   "item": 2846946,
-  "url": "https://d1.islamhouse.com/data/id/ih_books/single/risala_id_hisnul_muslim.pdf"
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/risala_id_hisnul_muslim.pdf",
+  "lang": "id"
  },
  {
   "id": "juzammaid",
   "title": "Tarjamah Al-Fatihah dan Juz Amma",
   "author": "Tim Indonesia IslamHouse",
   "item": 387336,
-  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id_Tarjamah_Al_Fatihah_dan_Juz_Amma.pdf"
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id_Tarjamah_Al_Fatihah_dan_Juz_Amma.pdf",
+  "lang": "id"
  },
  {
   "id": "sirahid",
   "title": "Ringkasan Sirah Nabi Muhammad",
   "author": "Lembaga Layanan Konten Islami",
   "item": 2834049,
-  "url": "https://d1.islamhouse.com/data/id/ih_books/single/arc_id-2834049-id2-rasul-al-islam-indu-m-a-assuhaaim-p.pdf"
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/arc_id-2834049-id2-rasul-al-islam-indu-m-a-assuhaaim-p.pdf",
+  "lang": "id"
  },
  {
   "id": "rukunimanid",
   "title": "Rukun Iman",
   "author": "Universitas Islam Madinah",
   "item": 76540,
-  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id_the_pillars_of_faith.pdf"
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id_the_pillars_of_faith.pdf",
+  "lang": "id"
  },
  {
   "id": "pelajaranid",
   "title": "Pelajaran Penting bagi Setiap Muslim",
   "author": "Abdul Aziz bin Baz",
   "item": 2842320,
-  "url": "https://d1.islamhouse.com/data/id/ih_books/single/risala_id-addurus_almuhimmah-2.pdf"
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/risala_id-addurus_almuhimmah-2.pdf",
+  "lang": "id"
  },
  {
   "id": "mualafid",
   "title": "Panduan Ringkas untuk Mualaf",
   "author": "Lembaga Layanan Konten Islami",
   "item": 2834047,
-  "url": "https://d1.islamhouse.com/data/id/ih_books/single/arc1_id-indonis-amuf-lilmu-aljad-pp.pdf"
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/arc1_id-indonis-amuf-lilmu-aljad-pp.pdf",
+  "lang": "id"
  },
  {
   "id": "thaharahid",
   "title": "Tuntunan Thaharah dan Shalat",
   "author": "Ibnu Utsaimin dan Ibnu Baz",
   "item": 70865,
-  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id_messages_in_purification_and_prayer.pdf"
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id_messages_in_purification_and_prayer.pdf",
+  "lang": "id"
  },
  {
   "id": "akhlakid",
   "title": "Akhlak Mulia",
   "author": "Muhammad bin Shalih al-Utsaimin",
   "item": 2837179,
-  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id-akhlaq.pdf"
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id-akhlaq.pdf",
+  "lang": "id"
+ },
+ {
+  "id": "hisnulen",
+  "title": "Hisn Al-Muslim (Fortress of the Muslim)",
+  "author": "Saeed Bin Ali Bin Wahf Al-Qahtani",
+  "item": 2846907,
+  "url": "https://d1.islamhouse.com/data/en/ih_books/single/risala_en_hisnulmuslim.pdf",
+  "lang": "en"
+ },
+ {
+  "id": "durusen",
+  "title": "Important Lessons for the General Ummah",
+  "author": "Abdul Aziz bin Abdullah bin Baz",
+  "item": 2842316,
+  "url": "https://d1.islamhouse.com/data/en/ih_books/single/risala_en-addurus_almuhimmah-2.1.pdf",
+  "lang": "en"
+ },
+ {
+  "id": "hisnulsv",
+  "title": "Hisnul Muslim",
+  "author": "Sa'id bin Ali al-Qahtani",
+  "item": 2833377,
+  "url": "https://d1.islamhouse.com/data/sv/ih_books/single/sv-hisnul-muslim.pdf",
+  "lang": "sv"
+ },
+ {
+  "id": "durussv",
+  "title": "Viktiga lektioner för den muslimska gemenskapen",
+  "author": "Abdul Aziz bin Baz",
+  "item": 2846166,
+  "url": "https://d1.islamhouse.com/data/sv/ih_books/single/risala_sv_addurusalmuhimmah.pdf",
+  "lang": "sv"
+ },
+ {
+  "id": "hisnulbn",
+  "title": "কুরআন-সুন্নাহ’র যিকির সংবলিত হিসনুল মুসলিম [মুসলিমের দুর্গ]",
+  "author": "সা‘ঈদ ইবন আলী ইবন ওয়াহাফ আল-ক্বাহত্বানী",
+  "item": 2842275,
+  "url": "https://d1.islamhouse.com/data/bn/ih_books/single/risala_bn-hisnul_muslim.pdf",
+  "lang": "bn"
+ },
+ {
+  "id": "durusbn",
+  "title": "মুসলিম উম্মতের সর্বসাধারণের জন্য গুরুত্বপূর্ণ দার্সসমূহ",
+  "author": "আব্দুল আযীয ইবন আবদুল্লাহ ইবন বায",
+  "item": 2842276,
+  "url": "https://d1.islamhouse.com/data/bn/ih_books/single/risala_bn-addurus_almuhimmah-2.1.pdf",
+  "lang": "bn"
+ },
+ {
+  "id": "hisnulde",
+  "title": "Hisnul Muslim – Bittgebete aus dem Qur’an und der Sunnah",
+  "author": "Said ibn Ali ibn Uahf al-Qahtani",
+  "item": 247027,
+  "url": "https://d1.islamhouse.com/data/de/ih_books/single/de_Hisnul_ElMuslim.pdf",
+  "lang": "de"
+ },
+ {
+  "id": "durusde",
+  "title": "Wichtige Lektionen für die allgemeine muslimische Gemeinschaft",
+  "author": "Abdulaziz ibn Abdullah ibn Baz",
+  "item": 2846142,
+  "url": "https://d1.islamhouse.com/data/de/ih_books/single/risala_de-addurus_almuhimmah-2.pdf",
+  "lang": "de"
+ },
+ {
+  "id": "hisnules",
+  "title": "La fortaleza del musulmán: súplicas del Corán y la Sunnah",
+  "author": "Said ibn Ali ibn Wahb Al-Qahtani",
+  "item": 2846934,
+  "url": "https://d1.islamhouse.com/data/es/ih_books/single/risala_es_hisnul_muslim.pdf",
+  "lang": "es"
+ },
+ {
+  "id": "duruses",
+  "title": "Lecciones importantes para la comunidad en general",
+  "author": "Abdul Aziz ibn Abdullah ibn Baaz",
+  "item": 2844258,
+  "url": "https://d1.islamhouse.com/data/es/ih_books/single/risala_es_addurus_almuhimmah_v2_1_1.pdf",
+  "lang": "es"
+ },
+ {
+  "id": "hisnulfr",
+  "title": "La Citadelle du Musulman",
+  "author": "Said Ibn Ali Ibn Wahf Al-Qahtany",
+  "item": 2846930,
+  "url": "https://d1.islamhouse.com/data/fr/ih_books/single/risala_fr_hisnul_muslim.pdf",
+  "lang": "fr"
+ },
+ {
+  "id": "durusfr",
+  "title": "Les leçons importantes pour toute la communauté",
+  "author": "Abdulaziz Ibn Abdillah Ibn Baz",
+  "item": 2842292,
+  "url": "https://d1.islamhouse.com/data/fr/ih_books/single/risala_fr-addurus_almuhimmah-2.pdf",
+  "lang": "fr"
+ },
+ {
+  "id": "hisnulhi",
+  "title": "हिस्नुल्-मुस्लिम (कुरान एवं हदीस की दुआएं)",
+  "author": "सईद बिन अली बिन वहफ अल-क़हतानी",
+  "item": 2842335,
+  "url": "https://d1.islamhouse.com/data/hi/ih_books/single/risala_hi-hisnul_muslim-5.pdf",
+  "lang": "hi"
+ },
+ {
+  "id": "durushi",
+  "title": "महत्वपूर्ण पाठ उम्मत के सामान्य लोगों के लिए",
+  "author": "अब्दुल अज़ीज़ बिन अब्दुल्लाह बिन बाज़",
+  "item": 2842264,
+  "url": "https://d1.islamhouse.com/data/hi/ih_books/single/risala_hi-addurus_almuhimmah-2.1.pdf",
+  "lang": "hi"
+ },
+ {
+  "id": "hisnulru",
+  "title": "Крепость мусульманина",
+  "author": "Саид ибн Али ибн Вахб",
+  "item": 2846938,
+  "url": "https://d1.islamhouse.com/data/ru/ih_books/single/risala_ru-hisnul_muslim.pdf",
+  "lang": "ru"
+ },
+ {
+  "id": "durusru",
+  "title": "Важные уроки для всей уммы",
+  "author": "Абдульазиз ибн Абдулла ибн Баз",
+  "item": 2842296,
+  "url": "https://d1.islamhouse.com/data/ru/ih_books/single/risala_ru-addurus_almuhimmah-2.1.pdf",
+  "lang": "ru"
+ },
+ {
+  "id": "hisnultr",
+  "title": "Hisnu'l-Muslim",
+  "author": "Said b. Ali el-Kahtani",
+  "item": 2846936,
+  "url": "https://d1.islamhouse.com/data/tr/ih_books/single/risala_tr-hisnul_muslim.pdf",
+  "lang": "tr"
+ },
+ {
+  "id": "hisnulur",
+  "title": "حِصن المسلم کتاب وسنت کے منتخب اذکار",
+  "author": "سعيد بن علي بن وهف قحطاني",
+  "item": 2846918,
+  "url": "https://d1.islamhouse.com/data/ur/ih_books/single/risala_ur_hisnul_muslim.pdf",
+  "lang": "ur"
+ },
+ {
+  "id": "durusur",
+  "title": "اہم اسباق عام مسلمانوں کے لیے",
+  "author": "عبد العزيز بن عبد الله بن باز",
+  "item": 2842284,
+  "url": "https://d1.islamhouse.com/data/ur/ih_books/single/risala_ur-addurus_almuhimmah-2.1.pdf",
+  "lang": "ur"
+ },
+ {
+  "id": "hisnulzh",
+  "title": "《穆斯林的堡垒》——源自 《古兰经》和圣训的记主词",
+  "author": "塞义德•格哈塔尼 博士",
+  "item": 2846954,
+  "url": "https://d1.islamhouse.com/data/zh/ih_books/single/risala_zh-hisnul_muslim.pdf",
+  "lang": "zh"
+ },
+ {
+  "id": "duruszh",
+  "title": "大众必修课",
+  "author": "阿布杜阿齐兹·本·巴兹",
+  "item": 2846273,
+  "url": "https://d1.islamhouse.com/data/zh/ih_books/single/risala_zh_addurus_muhimah_2.pdf",
+  "lang": "zh"
  }
 ]

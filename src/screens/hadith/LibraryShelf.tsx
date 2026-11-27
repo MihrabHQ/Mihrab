@@ -23,9 +23,14 @@ import { useTranslation } from 'react-i18next';
 import { isRtlLanguage } from '../../i18n/layoutDirection';
 import { Group, Row } from '../../components/ui';
 import { useAppPalette } from '../../hooks/useAppPalette';
+import { usePrayerSettingsOrDefaults } from '../../context/PrayerSettingsContext';
 import {
+  LIBRARY_LANGUAGE_NAMES,
+  deviceLanguage,
   lastReadBook,
   libraryBookTags,
+  libraryOtherLanguages,
+  libraryOwnLanguages,
   libraryKey,
   libraryProgress,
   libraryReadings,
@@ -50,8 +55,15 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
   const { palette } = useAppPalette();
   const manifest = useManifest();
   const statuses = usePackStatuses();
-  // i18n here is the Hadith tab's: the reader's hadith language where one is set, else the app's.
-  const books = offeredLibraryBooks(manifest, key => statuses[key]?.state === 'ready', [i18n.language]);
+  // Whose books: Arabic for everyone; then the languages this reader has without asking (the Hadith tab's,
+  // the app's, the phone's), and the ones switched on below.
+  const { settings, updateSettings } = usePrayerSettingsOrDefaults();
+  const own = libraryOwnLanguages(i18n.language, settings.language, deviceLanguage());
+  const chosen = settings.libraryLanguages ?? [];
+  const others = libraryOtherLanguages(own);
+  const books = offeredLibraryBooks(manifest, key => statuses[key]?.state === 'ready', [...own, ...chosen]);
+  const toggleLanguage = (lang: string) =>
+    updateSettings({ libraryLanguages: chosen.includes(lang) ? chosen.filter(l => l !== lang) : [...chosen, lang] });
   // Read again on coming back from a book: the place has moved.
   const [readings, setReadings] = useState<Record<string, LibraryReading>>({});
   useFocusEffect(
@@ -134,6 +146,25 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
           {t('hadith.library.empty')}
         </Text>
       )}
+      {others.length ? (
+        <View style={styles.level} testID="hadith-library-languages">
+          <Text style={[styles.levelTitle, { color: palette.text }]} accessibilityRole="header">
+            {t('hadith.library.otherLanguages')}
+          </Text>
+          <Text style={[styles.intro, { color: palette.muted }]}>{t('hadith.library.otherLanguagesHelp')}</Text>
+          <Group>
+            {others.map(lang => (
+              <Row
+                key={lang}
+                title={LIBRARY_LANGUAGE_NAMES[lang] ?? lang}
+                value={chosen.includes(lang) ? '✓' : undefined}
+                onPress={() => toggleLanguage(lang)}
+                testID={`hadith-library-language-${lang}`}
+              />
+            ))}
+          </Group>
+        </View>
+      ) : null}
     </View>
   );
 }

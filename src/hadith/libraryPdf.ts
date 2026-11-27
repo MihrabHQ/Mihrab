@@ -22,7 +22,7 @@ import ReactNativeBlobUtil from 'react-native-blob-util';
 import { IS_WEB_APP } from '../config/webApp';
 import { mkdirDeep } from '../quran/mushafDownload';
 import { quiet } from '../utils/quiet';
-import { hadithMirrorUrl } from './packs';
+import { hadithMirrorUrl, refreshPacks } from './packs';
 
 /** What the manifest says of a book's file. */
 export type LibraryPdfEntry = { bytes: number; sha256: string; pages: number };
@@ -212,6 +212,8 @@ export async function downloadLibraryPdf(id: string, want: LibraryPdfEntry): Pro
     if (await ReactNativeBlobUtil.fs.exists(path)) await ReactNativeBlobUtil.fs.unlink(path);
     await ReactNativeBlobUtil.fs.mv(tmp, path);
     set(id, { state: 'ready' });
+    // Settings → Downloads counts the file with its pack.
+    void refreshPacks();
     return true;
   } catch (e) {
     quiet('hadith/libraryPdf', e);

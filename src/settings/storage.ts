@@ -642,6 +642,10 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   // fires now. Same treatment as the location presets beside them.
   merged.dhikrReminders = coerceDhikrReminders(parsed.dhikrReminders);
   merged.malikiSecondTimeHideMatching = parsed.malikiSecondTimeHideMatching === true;
+  // Language codes and nothing else; a list that is not one is no languages.
+  merged.libraryLanguages = Array.isArray(parsed.libraryLanguages)
+    ? [...new Set(parsed.libraryLanguages.filter((l: unknown): l is string => typeof l === 'string' && /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/.test(l)))].slice(0, 30)
+    : [];
   merged.malikiSecondTimeAlertsSilent = parsed.malikiSecondTimeAlertsSilent === true;
   merged.malikiSecondTimeAlertMinutes = coercePrePrayerReminderMinutes(
     parsed.malikiSecondTimeAlertMinutes ??

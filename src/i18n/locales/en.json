@@ -3173,6 +3173,8 @@
         "umda": "Ibn Qudama's short text of Hanbali law, giving one position on each question with its evidence from the hadith."
       },
       "commentary": "Commentary",
+      "otherLanguages": "Books in other languages",
+      "otherLanguagesHelp": "Switch a language on to see its books here, whatever language the app is in.",
       "pdf": {
         "note": "This book is a typeset file: its pages are shown as printed, and the text size does not change them.",
         "read": "Read",

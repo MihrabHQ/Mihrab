@@ -98,6 +98,55 @@ export function offeredLibraryBooks(manifest: Manifest | null, here: (key: PackK
 /** "id" and "id-ID" are one language. */
 const sameLanguage = (a: string, b: string) => a.toLowerCase().split('-')[0] === b.toLowerCase().split('-')[0];
 
+/** A language's own name for itself, for the languages there are books in. */
+export const LIBRARY_LANGUAGE_NAMES: Record<string, string> = {
+  id: 'Bahasa Indonesia',
+  en: 'English',
+  sv: 'Svenska',
+  bn: 'বাংলা',
+  de: 'Deutsch',
+  es: 'Español',
+  fr: 'Français',
+  hi: 'हिन्दी',
+  ru: 'Русский',
+  tr: 'Türkçe',
+  ur: 'اردو',
+  zh: '中文',
+};
+
+/**
+ * The languages a reader is shown books in without asking: the app's,
+ * the one hadith are read in, and the phone's own — an Indonesian reader
+ * who keeps the app in Arabic or English has a phone that says so.
+ */
+export function libraryOwnLanguages(...langs: (string | null | undefined)[]): string[] {
+  const out: string[] = [];
+  for (const l of langs) {
+    const base = typeof l === 'string' ? l.toLowerCase().split(/[-_]/)[0] : '';
+    if (/^[a-z]{2,3}$/.test(base) && !out.includes(base)) out.push(base);
+  }
+  return out;
+}
+
+/**
+ * The languages there are books in that this reader is not shown already:
+ * what the shelf offers to switch on. Arabic is never one (its books are
+ * everyone's).
+ */
+export function libraryOtherLanguages(own: readonly string[], books: readonly LibraryBook[] = LIBRARY_BOOKS): string[] {
+  const all = [...new Set(books.map(b => b.lang))].filter(l => l !== 'ar' && !own.some(o => sameLanguage(o, l)));
+  return all.sort((a, b) => (LIBRARY_LANGUAGE_NAMES[a] ?? a).localeCompare(LIBRARY_LANGUAGE_NAMES[b] ?? b));
+}
+
+/** The phone's own language, where it can be asked. */
+export function deviceLanguage(): string | null {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().locale || null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Where a reader is in each book: the chapter last opened, by its place.
  * Kept on the device and not carried to another (`syncCompleteness`): a

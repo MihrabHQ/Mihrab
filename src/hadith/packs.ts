@@ -160,10 +160,16 @@ export async function refreshPacks(): Promise<void> {
         const key = `${prefix}${name.slice(0, -5)}`;
         if (notOffered(key)) await ReactNativeBlobUtil.fs.unlink(`${dir}/${name}`).catch(() => undefined);
         else found[key] = { state: 'ready', bytes: Number(e.size) || 0 };
-      }
+      } else if (name.endsWith('.pdf')) files[`${prefix}${name.slice(0, -4)}`] = Number(e.size) || 0;
     }
   };
+  // A Library book that is a file (`libraryPdf.ts`): what it weighs is the file, not its few lines of pack.
+  const files: Record<string, number> = {};
   await walk(ROOT(), '');
+  for (const [key, bytes] of Object.entries(files)) {
+    const pack = found[key];
+    if (pack?.state === 'ready') found[key] = { state: 'ready', bytes: pack.bytes + bytes };
+  }
   const next = { ...statuses };
   for (const [k, s] of Object.entries(next)) if (s.state === 'ready' && !found[k]) delete next[k];
   publish({ ...next, ...found });

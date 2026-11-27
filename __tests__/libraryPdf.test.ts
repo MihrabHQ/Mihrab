@@ -182,6 +182,9 @@ describe('the books that are files, as they are built', () => {
     expect(pack.chapters).toEqual([]);
     expect(pack.source.name).toBe(SOURCE.name);
     expect(pack.source.url).toMatch(/^https:\/\/islamhouse\.com\/id\/books\/\d+$/);
+    // A book's pack is in the book's language, and its source is that language's page.
+    const sv = BOOKS.find((b: { lang: string }) => b.lang === 'sv');
+    expect(pdfPack(sv, { bytes: 10, sha256: SHA, pages: 3 })).toMatchObject({ lang: 'sv', source: { url: `https://islamhouse.com/sv/books/${sv.item}` } });
     for (const b of BOOKS) expect([b.id, /^https:\/\/d1\.islamhouse\.com\/.+\.pdf$/.test(b.url), b.author.length > 2]).toEqual([b.id, true, true]);
   });
 
