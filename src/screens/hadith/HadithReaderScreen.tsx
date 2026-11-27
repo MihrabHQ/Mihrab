@@ -269,7 +269,7 @@ function HadithReaderScreenPage() {
         style={({ pressed }) => [styles.sectionHead, pressed && styles.pressed]}
       >
         <Text style={[styles.sectionTitle, { color: palette.text }]}>{label}</Text>
-        <Text style={[styles.chevron, { color: palette.muted }]}>{open[key] ? '▾' : '▸'}</Text>
+        <Text style={[styles.chevron, { color: palette.muted }]}>{open[key] ? '▾' : layoutRtl ? '◂' : '▸'}</Text>
       </Pressable>
       {open[key] ? <View style={styles.sectionBody}>{body}</View> : null}
     </View>
@@ -606,7 +606,7 @@ function HadithReaderScreenPage() {
                     <TextAction
                       label={t('hadith.grades.title')}
                       color={palette.muted}
-                      onPress={() => navigation.navigate('SettingsHadithGrades')}
+                      onPress={() => navigation.navigate('SettingsHadithGrades', { fromHadith: true })}
                     />
                     <TextAction label={t('hadith.report')} color={palette.muted} onPress={() => report(item)} />
                   </View>
@@ -623,7 +623,7 @@ function HadithReaderScreenPage() {
                   label={t('hadith.previous')}
                   disabled={!prev}
                   onPress={() => prev && go(prev)}
-                  icon={<Text style={[styles.arrow, { color: prev ? palette.text : palette.muted }]}>{layoutRtl ? '›' : '‹'}</Text>}
+                  icon={<Text style={[styles.arrow, { color: prev ? palette.text : palette.muted }]}>{layoutRtl ? '\u200E›\u200E' : '‹'}</Text>}
                 />
                 <BarButton
                   label={marked ? t('hadith.removeBookmark') : t('hadith.bookmark')}
@@ -646,7 +646,7 @@ function HadithReaderScreenPage() {
                   label={t('hadith.next')}
                   disabled={!next}
                   onPress={() => next && go(next)}
-                  icon={<Text style={[styles.arrow, { color: next ? palette.text : palette.muted }]}>{layoutRtl ? '‹' : '›'}</Text>}
+                  icon={<Text style={[styles.arrow, { color: next ? palette.text : palette.muted }]}>{layoutRtl ? '\u200E‹\u200E' : '›'}</Text>}
                 />
               </Column>
             </View>

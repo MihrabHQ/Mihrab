@@ -146,7 +146,7 @@ export type RootStackParamList = {
   /** Settings → Hadith → Hadith language. */
   SettingsHadithLanguage: undefined;
   /** Settings → Hadith → What the grades mean; also opened from a hadith's foot. */
-  SettingsHadithGrades: undefined;
+  SettingsHadithGrades: { fromHadith?: boolean } | undefined;
   SettingsDownloads: undefined;
   /** Settings → Widgets (Android): every widget's look, and the prayer-times widget's own options. */
   SettingsWidgets: undefined;

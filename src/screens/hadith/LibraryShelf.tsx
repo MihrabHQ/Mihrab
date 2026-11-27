@@ -17,6 +17,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
+import { isRtlLanguage } from '../../i18n/layoutDirection';
 import { Group, Row } from '../../components/ui';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { lastReadBook, libraryKey, libraryProgress, libraryReadings, offeredLibraryBooks, type LibraryReading } from '../../hadith/libraryShelf';
@@ -28,7 +29,11 @@ import { TYPE } from '../../theme/typography';
 import { useManifest } from './PackGate';
 
 export function LibraryShelf({ navigation }: { navigation: NativeStackNavigationProp<RootStackParamList> }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  // One script a line, as on the book's own page: a reader of Arabic
+  // script is given the author as the book names him, not the title
+  // over again in Latin letters.
+  const arabicReader = isRtlLanguage(i18n.language);
   const { palette } = useAppPalette();
   const manifest = useManifest();
   const statuses = usePackStatuses();
@@ -84,7 +89,7 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
                     <Row
                       key={b.id}
                       title={b.title}
-                      subtitle={`${b.latin} · ${b.authorLatin}\n${t(`hadith.library.about.${b.id}`)}`}
+                      subtitle={`${arabicReader ? b.author : `${b.latin} · ${b.authorLatin}`}\n${t(`hadith.library.about.${b.id}`)}`}
                       value={bytes != null ? formatBytes(bytes) : percent >= 1 ? t('hadith.library.percent', { percent }) : undefined}
                       onPress={() => navigation.push('LibraryBook', { id: b.id })}
                       testID={`hadith-library-${b.id}`}

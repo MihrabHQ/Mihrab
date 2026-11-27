@@ -67,7 +67,9 @@ describe('the guide to the grades', () => {
     expect(hadith.children?.map(c => c.route)).toEqual(['SettingsHadithLanguage', 'SettingsHadithGrades']);
     expect(SETTINGS_STACK_PAGES.some(p => p.route === 'SettingsHadithGrades')).toBe(true);
     expect(read('src/screens/settings/pages/HadithSettingsScreen.tsx')).toContain('<NestedPageRows parent="SettingsHadith" />');
-    expect(read('src/screens/hadith/HadithReaderScreen.tsx')).toContain("navigation.navigate('SettingsHadithGrades')");
+    expect(read('src/screens/hadith/HadithReaderScreen.tsx')).toContain("navigation.navigate('SettingsHadithGrades', { fromHadith: true })");
+    // From a hadith it is a Hadith page: Arabic when the hadith are.
+    expect(read('src/screens/settings/pages/HadithGradesSettingsScreen.tsx')).toMatch(/fromHadith \? \(\s*<HadithUiScope>/);
     const page = read('src/screens/settings/pages/HadithGradesSettingsScreen.tsx');
     expect(page).toContain('Linking.openURL(HADITH_POLICY_URL)');
     expect(read('src/navigation/resumeWhereLeft.ts')).toContain('SettingsHadithGrades: {},');
