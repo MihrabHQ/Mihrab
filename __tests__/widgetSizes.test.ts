@@ -82,7 +82,19 @@ describe('one composition per size the launcher can show', () => {
     // RemoteViews takes at most sixteen sizes in a map.
     expect(count).toBeLessThanOrEqual(16);
     expect(glance('PrayerGlanceWidget')).toMatch(/if \(entry == Entry\.SMALL\) SizeMode\.Exact else SizeMode\.Responsive\(STRETCHABLE_SIZES\)/);
-    expect(glance('LogGlanceWidget')).toMatch(/override val sizeMode: SizeMode = SizeMode\.Responsive\(STRETCHABLE_SIZES\)/);
+    // The Log cards have their own list (cardfit/LogSizes: one-row heights a
+    // launcher really gives, and a column under 280dp), held to the same sixteen.
+    const logCard = glance('LogGlanceWidget');
+    expect(logCard).toContain('else LogSizes.ROW.map { (w, h) -> DpSize(w.dp, h.dp) }.toSet(),');
+    expect(logCard).toMatch(/STRETCHABLE_SIZES - LogSizes\.TALL_DROPPED\.map \{ \(w, h\) -> DpSize\(w\.dp, h\.dp\) \}\.toSet\(\) \+\s*LogSizes\.TALL_NARROW\.map/);
+    const sizes = readFileSync(path.join(__dirname, '..', 'android/app/src/main/java/com/prayer_times/cardfit/LogSizes.kt'), 'utf8');
+    const rows = [...sizes.matchAll(/for \(h in listOf\(([\d, ]+)\)\) add\(\d+ to h\)/g)];
+    expect(rows.reduce((n, l) => n + l[1].split(',').length, 0)).toBeLessThanOrEqual(16);
+    expect(sizes).toContain('val TALL_NARROW: List<Pair<Int, Int>> = listOf(220 to 112, 220 to 176)');
+    expect(sizes).toContain('val TALL_DROPPED: List<Pair<Int, Int>> = listOf(370 to 92, 280 to 66)');
+    // The pill is its share of the row, not 52dp: five of those do not fit a narrow cell.
+    expect(logCard).not.toContain('.size(52.dp, chipHeight.dp)');
+    expect(logCard).toMatch(/\.fillMaxWidth\(\)\s*\.height\(chipHeight\.dp\)\s*\.background\(/);
     // The graph by the room, not the entry: `stripPlan` decides it from
     // the card's height and its summed chrome; the tall entry only gets
     // the tighter layout to fall back on.

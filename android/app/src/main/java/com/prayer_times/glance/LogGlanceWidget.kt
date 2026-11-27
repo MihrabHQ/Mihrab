@@ -2,6 +2,7 @@ package com.prayer_times.glance
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.ColorFilter
@@ -33,6 +34,7 @@ import com.prayer_times.R
 import com.prayer_times.WidgetLogQueue
 import com.prayer_times.WidgetQueueEvents
 import com.prayer_times.cardfit.GraphRoom
+import com.prayer_times.cardfit.LogSizes
 import com.prayer_times.cardfit.fitLogCard
 import com.prayer_times.cardfit.graphBoxDp
 import com.prayer_times.cardfit.graphRoom
@@ -63,7 +65,19 @@ internal class LogGlanceWidget(
   private val tall: Boolean = false,
 ) : MihrabGlanceWidget("log") {
 
-  override val sizeMode: SizeMode = SizeMode.Responsive(STRETCHABLE_SIZES)
+  /**
+   * The card's own sizes (cardfit/LogSizes has the why): heights a one-row
+   * cell is actually given, and a column narrower than 280dp, without
+   * which a 4-column cell on most phones fitted nothing and was drawn
+   * with the shortest layout whatever its height.
+   */
+  override val sizeMode: SizeMode = SizeMode.Responsive(
+    if (tall) {
+      STRETCHABLE_SIZES - LogSizes.TALL_DROPPED.map { (w, h) -> DpSize(w.dp, h.dp) }.toSet() +
+        LogSizes.TALL_NARROW.map { (w, h) -> DpSize(w.dp, h.dp) }
+    }
+    else LogSizes.ROW.map { (w, h) -> DpSize(w.dp, h.dp) }.toSet(),
+  )
 
   private class Chip(
     val key: String,
@@ -329,6 +343,8 @@ internal class LogGlanceWidget(
           ChipCell(
             chip, i, chipHeight, gapDp, nameSp, timeSp,
             fit.showName, fit.showTime, m, GlanceModifier.defaultWeight(),
+            // A little more air between the pills where the card is wide.
+            sideDp = if (size.widthDp >= WIDE_CARD_DP) 4 else 2,
           )
         }
       }
@@ -418,10 +434,11 @@ internal class LogGlanceWidget(
     showTime: Boolean,
     m: Model,
     modifier: GlanceModifier,
+    sideDp: Int = 2,
   ) {
     // Only a chip that can legitimately change takes a tap; the rest fall
     // through to the card's own "open the Log".
-    val cell = modifier.padding(horizontal = 2.dp)
+    val cell = modifier.padding(horizontal = sideDp.dp)
     DirColumn(
       modifier = if (chip.due || chip.queued) cell.clickable(tap(chip.key, index)) else cell,
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -437,8 +454,15 @@ internal class LogGlanceWidget(
         else -> Triple(R.drawable.widget_log_chip_idle, "·", Palette.MUTED)
       }
       DirBox(
+        // THE PILL IS AS WIDE AS ITS SHARE OF THE ROW, not a number. It was
+        // 52dp: five of them and their gaps are 280dp, and a 4-column
+        // cell is narrower than that on most phones (277dp on a 411dp
+        // screen, about 250dp on a 360dp one) — so each pill ran past its
+        // own cell and was cut at both ends. The row is shared by weight,
+        // which the launcher resolves against the cell it really has.
         modifier = GlanceModifier
-          .size(52.dp, chipHeight.dp)
+          .fillMaxWidth()
+          .height(chipHeight.dp)
           .background(
             ImageProvider(drawable),
             // The done chip in the accent the user picked, as the RemoteViews
@@ -492,6 +516,8 @@ internal class LogGlanceWidget(
 
   companion object {
     private const val CHIPS = 5
+    /** From this composed width the pills stand a little further apart. */
+    private const val WIDE_CARD_DP = 370
     /** The shortest a chip gets to make room for a taller script's names. */
     private const val CHIP_MIN_HEIGHT_DP = 22
     /** The tallest a chip grows into a footer's room: still a pill, not a tile. */
