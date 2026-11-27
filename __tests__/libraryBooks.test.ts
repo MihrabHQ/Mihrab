@@ -500,6 +500,39 @@ describe('a matn with no chapter headings, bound with another work', () => {
     for (const kept of ['من الدين نور', 'كان ن والقلم', 'المؤمنين، نور']) expect(kept.replace(debris, ' ')).toBe(kept);
   });
 
+  describe('words a transcription broke, joined (mends.js)', () => {
+    const { mend, MENDS } = builder;
+    const pack = (b: unknown[]) => ({ id: 'test', chapters: [{ t: 'باب', b }] });
+
+    it('joins the places that were read, in text, verse and heading, and nothing else', () => {
+      const out = mend(pack(['انه قا ل ما من قوم', { v: ['فقا ل له'] }, { h: 'يقا ل' }, 'فِ لي بشرطي']), [[/(?<=^| )(ف|و|ي)?قا ل(?= |$)/g, '$1قال', 3]]);
+      expect(out.chapters[0].b).toEqual(['انه قال ما من قوم', { v: ['فقال له'] }, { h: 'يقال' }, 'فِ لي بشرطي']);
+      expect(mend(pack(['جبي ر وأحمد']), [['جبي ر وأحمد', 'جبير وأحمد', 1]]).chapters[0].b).toEqual(['جبير وأحمد']);
+      // A book with nothing to mend is itself.
+      const same = pack(['نص']);
+      expect(mend(same, undefined)).toBe(same);
+    });
+
+    it('stops when a place is not found as many times as it was read', () => {
+      expect(() => mend(pack(['نص آخر']), [['جبي ر', 'جبير', 1]])).toThrow(/was to be mended 1 time\(s\) and was found 0/);
+      expect(() => mend(pack(['قا ل', 'قا ل']), [['قا ل', 'قال', 1]])).toThrow(/found 2/);
+    });
+
+    it('is a list of joins: no entry adds a letter or changes one, but the madda an alif and a space stood for', () => {
+      const letters = (x: string) => x.replace(/\$\d/g, '').replace(/[^\u0621-\u064A]/g, '');
+      for (const [id, list] of Object.entries(MENDS) as [string, [string | RegExp, string, number][]][]) {
+        expect(builder.BOOKS[id]).toBeDefined();
+        for (const [from, to, count] of list) {
+          expect(count).toBeGreaterThan(0);
+          if (typeof from === 'string') expect([id, from, letters(to).replace(/آ/g, 'ا')]).toEqual([id, from, letters(from)]);
+          else expect([id, String(from), ['قال', 'رسولالله', 'آ'].includes(letters(to))]).toEqual([id, String(from), true]);
+        }
+      }
+      // The one place a letter changes: آ for the alif the conversion left of it.
+      expect(MENDS.ighatha.filter(([, to]: [unknown, string]) => to.includes('آ'))).toHaveLength(2);
+    });
+  });
+
   it('builds at-Tibyan from the transcription that is an-Nawawi\'s text alone', () => {
     expect(builder.BOOKS.tibyan.openiti).toContain('ShamAY0034087');
     expect(builder.BOOKS.tibyan.openiti).not.toMatch(/Shamela0001969|Shia002636/);

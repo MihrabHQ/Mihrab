@@ -44,6 +44,7 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..', '..');
 const OUT = path.join(ROOT, 'build', 'hadith', 'v1');
+const { MENDS, mend } = require('./mends');
 const CACHE = path.join(__dirname, '.cache');
 const WIKISOURCE = 'https://ar.wikisource.org/w/api.php';
 const SOURCE = { name: 'Arabic Wikisource', license: 'CC BY-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/' };
@@ -715,7 +716,9 @@ async function main() {
   for (const id of ids) {
     const spec = BOOKS[id];
     if (!spec) throw new Error(`no such book: ${id} (${Object.keys(BOOKS).join(', ')})`);
-    const pack = spec.openiti ? openitiPack(id, spec, await openiti(spec.openiti, spec.cache)) : packOf(id, spec, await wikisource(spec.prefix, spec.cache));
+    const made = spec.openiti ? openitiPack(id, spec, await openiti(spec.openiti, spec.cache)) : packOf(id, spec, await wikisource(spec.prefix, spec.cache));
+    // Words the transcription broke with a space, joined (mends.js): a list of places read, not a rule.
+    const pack = mend(made, MENDS[id], id);
     const json = JSON.stringify(pack);
     const file = path.join(OUT, 'library', `${id}.json`);
     fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -740,4 +743,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-module.exports = { blocksOf, linksOf, packOf, openitiChapters, openitiParts, openitiPack, BOOKS, MAQAMAT, HALVES };
+module.exports = { blocksOf, linksOf, packOf, openitiChapters, openitiParts, openitiPack, BOOKS, MAQAMAT, HALVES, MENDS, mend };
