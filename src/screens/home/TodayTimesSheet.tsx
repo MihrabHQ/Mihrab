@@ -342,9 +342,14 @@ function DayRows({ rows, onBackToToday }: { rows: TimesSheetRow[]; onBackToToday
                       its own measure, and Android cuts it at the line's
                       start (the first letter of "الثلث الأخير"). */}
                   {i > 0 ? '   ·   ' : '\u2009'}
-                  <Text style={styles.secondary}>{r.name}</Text>
-                  {'  '}
-                  <Text style={[tabularNumeralStyle, !r.lit && { color: palette.text }]}>{r.time}</Text>
+                  <Text style={styles.secondary}>{r.name.replace(/ /g, '\u00A0')}</Text>
+                  {/* Each item whole — its name, its time, nothing broken
+                      between or inside them; the line breaks only at the
+                      dots between items. In Russian "Исламская полночь
+                      10:23 PM" ran to the line's end and left "PM" alone on
+                      the next, and then "полночь" without "Исламская". */}
+                  {'\u00A0\u00A0'}
+                  <Text style={[tabularNumeralStyle, !r.lit && { color: palette.text }]}>{r.time.replace(/ /g, '\u00A0')}</Text>
                 </Text>
               ))}
             </Text>

@@ -263,7 +263,7 @@ function HeroTrackImpl({
         : run.progress.interpolate({ inputRange: es, outputRange: values, extrapolate: 'clamp' });
     // The moon, where the chart has it at each keyframe: its own place,
     // not the sun's, and held where it is not up.
-    const moons = run.tracks.map(t => (t && t.moon ? { x: t.moon.x * width, y: roomTop + t.moon.y * room } : null));
+    const moons = run.tracks.map(t => (t && t.moon ? { x: moonX(t.moon.x, width), y: roomTop + t.moon.y * room } : null));
     const firstMoon = moons.find(p => p != null);
     let heldMoon = firstMoon ?? { x: 0, y: 0 };
     const mxs = moons.map(p => (heldMoon = p ?? heldMoon).x);
@@ -364,7 +364,7 @@ function HeroTrackImpl({
       {!running && track.moon && body.kind === 'moon' ? (
         // The moon where it is, while it is up: seen, not counted.
         <MoonDisc
-          cx={track.moon.x * width}
+          cx={moonX(track.moon.x, width)}
           cy={roomTop + track.moon.y * room}
           illuminated={body.illuminated}
           tilt={body.tilt}
@@ -470,6 +470,18 @@ function HeroTrackImpl({
       {named}
     </>
   );
+}
+
+/**
+ * The moon's x, kept whole on the chart. The chart's width is the SUN's
+ * span (today's rising and setting azimuths and a margin), and a moon near
+ * full rises well north of where the sun does: across clamps it to the
+ * edge, and it was drawn there — half of it off the screen, low in the
+ * east of an evening (the foldable, open, at 21:00 in Stockholm).
+ */
+export function moonX(across: number, width: number): number {
+  const half = MOON / 2;
+  return Math.max(half, Math.min(width - half, across * width));
 }
 
 /** The moon in its phase and tilt, drawn in the track's own SVG (HeroSky's Moon is a view of its own). */

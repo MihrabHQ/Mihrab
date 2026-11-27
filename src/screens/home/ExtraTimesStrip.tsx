@@ -88,6 +88,7 @@ function ExtraTimesStripImpl({ items, hasCheckColumn = false, isLast = false, ti
                 </Text>
                 <Text
                   style={[styles.time, tabularNumeralStyle, { color: item.isNext ? palette.accent : palette.text }]}
+                  numberOfLines={1}
                   maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
                   {item.time}
                 </Text>
