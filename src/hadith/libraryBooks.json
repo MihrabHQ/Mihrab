@@ -312,6 +312,21 @@
   "madhhab": "hanbali"
  },
  {
+  "id": "fiqihid",
+  "title": "Ringkasan Fiqih Islam",
+  "latin": "Ringkasan Fiqih Islam",
+  "author": "Muhammad bin Ibrahim at-Tuwaijri",
+  "authorLatin": "Muhammad bin Ibrahim at-Tuwaijri",
+  "died": "",
+  "level": 2,
+  "lang": "id",
+  "subject": "fiqh",
+  "kind": "book",
+  "format": "pdf",
+  "about": "Ringkasan fikih Islam dalam sepuluh bagian: tauhid dan iman, keutamaan amal dan adab, ibadah, muamalah, waris, nikah, kisas dan hudud, peradilan, jihad, dan dakwah. Penerjemah: Tim Indonesia IslamHouse; editor: Eko Haryanto Abu Ziyad dan Mohammad Latif.",
+  "madhhab": "evidence"
+ },
+ {
   "id": "akhlakid",
   "title": "Akhlak Mulia",
   "latin": "Akhlak Mulia",

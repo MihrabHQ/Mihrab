@@ -37,7 +37,8 @@ export type LibraryBook = {
   /** A book, a short text made to be learnt (`matn`), or a commentary on another's (`sharh`). */
   kind: 'book' | 'matn' | 'sharh';
   /** The school a book of fiqh is written in. Said on the shelf: a primer of one school is not every reader's. */
-  madhhab?: 'hanafi' | 'maliki' | 'shafii' | 'hanbali';
+  /** A school; or 'evidence': a work that argues from the evidence across the schools and is of no one of them. */
+  madhhab?: 'hanafi' | 'maliki' | 'shafii' | 'hanbali' | 'evidence';
   /** A book that is a typeset file, read page by page (`libraryPdf.ts`); absent for a book that is text. */
   format?: 'pdf';
   /**
@@ -67,7 +68,7 @@ export function libraryShelves(books: readonly LibraryBook[]): { subject: Librar
 /** What the shelf says of a book beside its author: its school, that it is a commentary, that it is for later. Keys for `t`. */
 export function libraryBookTags(book: Pick<LibraryBook, 'kind' | 'level' | 'madhhab'>): string[] {
   return [
-    ...(book.madhhab ? [`settings.madhab_${book.madhhab}`] : []),
+    ...(book.madhhab ? [book.madhhab === 'evidence' ? 'hadith.library.acrossSchools' : `settings.madhab_${book.madhhab}`] : []),
     ...(book.kind === 'sharh' ? ['hadith.library.commentary'] : []),
     ...(book.level === 2 ? ['hadith.library.levelLater'] : []),
   ];

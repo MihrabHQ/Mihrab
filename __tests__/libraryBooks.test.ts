@@ -185,7 +185,7 @@ describe('the shelf', () => {
     expect(read('src/screens/hadith/LibraryBookScreen.tsx')).toContain("{t('hadith.library.bookNote')}");
     for (const f of fs.readdirSync(path.join(REPO, 'src/i18n/locales'))) {
       const k = JSON.parse(read(`src/i18n/locales/${f}`)).hadith.library;
-      expect([f, Object.keys(k).sort()]).toEqual([f, ['about', 'bookNote', 'by', 'chapterOf', 'chapters', 'commentary', 'continue', 'empty', 'firstOnly', 'intro', 'levelLater', 'mark', 'marks', 'needsDownload', 'next', 'otherLanguages', 'otherLanguagesHelp', 'pdf', 'percent', 'previous', 'remove', 'searchHint', 'sections', 'source', 'subject', 'tab', 'unmark']]);
+      expect([f, Object.keys(k).sort()]).toEqual([f, ['about', 'acrossSchools', 'bookNote', 'by', 'chapterOf', 'chapters', 'commentary', 'continue', 'empty', 'firstOnly', 'intro', 'levelLater', 'mark', 'marks', 'needsDownload', 'next', 'otherLanguages', 'otherLanguagesHelp', 'pdf', 'percent', 'previous', 'remove', 'searchHint', 'sections', 'source', 'subject', 'tab', 'unmark']]);
       // Every shelf has its name, and a school a book can name has one too.
       expect([f, Object.keys(k.subject).sort()]).toEqual([f, [...LIBRARY_SUBJECTS].sort()]);
       for (const m of ['hanafi', 'maliki', 'shafii', 'hanbali']) expect([f, m, typeof JSON.parse(read(`src/i18n/locales/${f}`)).settings[`madhab_${m}`]]).toEqual([f, m, 'string']);
@@ -727,5 +727,18 @@ describe('a book in a language the reader asked for', () => {
     const nav = src('src/navigation/RootNavigator.tsx');
     expect(nav).toMatch(/name="LibraryBook"[\s\S]{0,700}orientation: 'default'/);
     expect(nav).toContain("        orientation: 'portrait',\n      })}>");
+  });
+});
+
+describe('a book of fiqh that is of no one school', () => {
+  it('says so in place of a school: by evidence, across the schools', () => {
+    const book = findLibraryBook('fiqihid');
+    expect(book?.madhhab).toBe('evidence');
+    expect(libraryBookTags(book!)).toContain('hadith.library.acrossSchools');
+    expect(libraryBookTags({ kind: 'matn', level: 1, madhhab: 'hanbali' })).toEqual(['settings.madhab_hanbali']);
+    const fs = require('fs') as typeof import('fs');
+    const path = require('path') as typeof import('path');
+    const dir = path.join(__dirname, '..', 'src', 'i18n', 'locales');
+    for (const f of fs.readdirSync(dir)) expect([f, typeof JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')).hadith.library.acrossSchools]).toEqual([f, 'string']);
   });
 });

@@ -30,6 +30,7 @@ const CACHE = path.join(__dirname, '.cache');
 const BOOKS = require('./pdf-books.json');
 /** src/hadith/libraryPdf.ts `LIBRARY_PDF_MAX_BYTES`: past this the shelf does not offer a book. */
 const MAX_BYTES = 25 * 1024 * 1024;
+/** When the files were read from the publisher; a book added later says its own day (`read`). */
 const READ = '2026-11-27';
 
 const SOURCE = {
@@ -47,7 +48,7 @@ function pdfPack(book, file) {
     died: '',
     lang: book.lang,
     source: { ...SOURCE, url: `https://islamhouse.com/${book.lang}/books/${book.item}` },
-    asOf: READ,
+    asOf: book.read ?? READ,
     chapters: [],
     pdf: file,
   };
@@ -87,7 +88,7 @@ function main() {
       bytes: Buffer.byteLength(json),
       sha256: crypto.createHash('sha256').update(json).digest('hex'),
       count: 0,
-      retrieved: READ,
+      retrieved: book.read ?? READ,
       pdf: file,
     };
     console.log(`${book.id}: ${file.pages} pages, ${(file.bytes / 1e6).toFixed(2)} MB`);
