@@ -191,3 +191,41 @@ describe('the Log card’s chips are in the card’s colours', () => {
     expect(log).toContain('drawable == R.drawable.widget_log_chip_missed -> ColorFilter.tint(provider(Palette.DANGER))');
   });
 });
+
+describe('a card that turns with the phone does not wait to be redrawn', () => {
+  const support = kt('glance/GlanceSupport.kt');
+  const provider = kt('PrayerWidgetProvider.kt');
+
+  it('knows when it follows the phone: System, or App under an app on System and not the Sky', () => {
+    expect(provider).toContain('if (mode == BG_SYSTEM) return true');
+    expect(provider).toContain('if (!followsApp(mode)) return false');
+    expect(provider).toContain('if (!(prefs.getString(PREFS_WIDGET_SKY_BG, "") ?: "").isBlank()) return false');
+    expect(provider).toContain('return (prefs.getString(PREFS_WIDGET_APP_THEME, "") ?: "").trim().lowercase() == "system"');
+  });
+
+  it('reads its look for both modes, and pairs every colour with its counterpart', () => {
+    expect(provider).toContain('fun resolvedColors(context: Context, night: Boolean = isNight(context)): Pair<Int, Int> {');
+    expect(kt('PrayerWidgetDisplay.kt')).toContain('PrayerWidgetProvider.resolvedColors(context, night)');
+    expect(support).toContain('val other = PrayerWidgetDisplay.read(context, 0, !now)');
+    expect(support).toContain('for ((a, b) in colours(style, card, accent).zip(colours(other, card2, accent2))) {');
+    expect(support).toContain('if (a != b && !map.containsKey(a)) map[a] = b');
+  });
+
+  it('hands every colour over as a pair, where every int becomes a colour', () => {
+    expect(support).toContain('internal fun provider(argb: Int): ColorProvider = DayNight.provider(argb)');
+    expect(support).toContain('androidx.glance.color.ColorProvider(day = Color(argb), night = Color(other))');
+    // The card itself and the countdown are RemoteViews of the widgets' own.
+    expect(support).toContain('WidgetCard.paint(it, background, DayNight.twin(background), DayNight.night)');
+    expect(kt('WidgetCard.kt')).toContain(
+      'views.setColorInt(R.id.widget_card, "setColorFilter", if (night) there else here, if (night) here else there)',
+    );
+    expect(support.match(/DayNight\.textColor\(this, R\.id\.glance_countdown, color\)/g)).toHaveLength(2);
+  });
+
+  it('only where the launcher can pick (Android 12+), and only for a card that follows the phone', () => {
+    expect(support).toContain('if (android.os.Build.VERSION.SDK_INT < 31) return');
+    expect(support).toContain('if (!PrayerWidgetProvider.followsPhone(context)) return');
+    // A colour with no counterpart is itself in both.
+    expect(support).toContain('val other = twins[argb] ?: return ColorProvider(Color(argb))');
+  });
+});

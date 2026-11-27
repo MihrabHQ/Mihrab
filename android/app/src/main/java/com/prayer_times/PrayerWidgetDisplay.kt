@@ -122,7 +122,12 @@ data class PrayerWidgetDisplay(
       e.apply()
     }
 
-    fun read(context: Context, appWidgetId: Int = 0): PrayerWidgetDisplay {
+    fun read(
+      context: Context,
+      appWidgetId: Int = 0,
+      /** The mode to answer for: the phone's own, or the other one (`DayNight`). */
+      night: Boolean = PrayerWidgetProvider.isNight(context),
+    ): PrayerWidgetDisplay {
       val p = context.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
       // This widget's own answer where it has one, else the common one.
       fun bool(key: String): Boolean {
@@ -138,7 +143,7 @@ data class PrayerWidgetDisplay(
       // The card the text stands on, and the highlight as it is drawn on
       // it: one reading of the widgets' look for the text to be judged by.
       val (cardArgb, accent) = try {
-        PrayerWidgetProvider.resolvedColors(context)
+        PrayerWidgetProvider.resolvedColors(context, night)
       } catch (_: Exception) {
         Pair(0, 0)
       }

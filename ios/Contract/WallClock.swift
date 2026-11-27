@@ -45,7 +45,11 @@ enum WallClock {
 
   /// The pieces of a time, for a layout that draws the marker smaller.
   static func parts(_ minutes: Int, clock: WidgetContract.Clock) -> Parts {
-    let m = ((minutes % minutesPerDay) + minutesPerDay) % minutesPerDay
+    // Written on the place's clock where that is not the phone's
+    // (`Clock.shiftMinutes`): the text only. Instants are made from
+    // `minutes` as they are (`date(dateKey:minutes:)`).
+    let shifted = minutes + clock.shiftMinutes
+    let m = ((shifted % minutesPerDay) + minutesPerDay) % minutesPerDay
     let hour = m / 60
     let minute = String(format: "%02d", m % 60)
     guard clock.hour12 else {

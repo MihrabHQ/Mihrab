@@ -102,6 +102,15 @@ export type WidgetContractClock = {
    * 5:35".
    */
   isolate?: boolean;
+  /**
+   * How far the place's clock runs ahead of the phone's, in minutes (0: the
+   * same clock). A time is WRITTEN this much later than its `minutes` — the
+   * place's own clock, as the app writes it — and nothing else changes:
+   * `minutes` stay on the phone's clock, which is what every instant,
+   * countdown and alarm is made from. A place in another zone only (a saved
+   * Makkah on a phone in Stockholm: 120).
+   */
+  shiftMinutes?: number;
 };
 
 /** One local calendar day of prayer times. */
@@ -506,6 +515,7 @@ export function readWidgetContractClock(
     pm: wcString(input.pm) ?? 'PM',
     periodFirst: wcBool(input.periodFirst) ?? false,
     isolate: wcBool(input.isolate) ?? false,
+    shiftMinutes: wcInt(input.shiftMinutes) ?? 0,
   };
   return out;
 }

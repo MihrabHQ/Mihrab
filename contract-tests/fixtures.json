@@ -5618,7 +5618,7 @@
     {
       "name": "a full payload reads back whole",
       "type": "Payload",
-      "input": "{\"schemaVersion\":2,\"language\":\"ar\",\"clock\":{\"hour12\":true,\"am\":\"ص\",\"pm\":\"م\",\"periodFirst\":false,\"isolate\":false},\"locationName\":\"Malmö\",\"days\":[{\"dateKey\":\"2026-09-28\",\"utcOffsetMinutes\":120,\"label\":\"Mon, Sep 28\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Faj\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhu\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Mag\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Ish\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425},\"extras\":[{\"key\":\"Lastthird\",\"name\":\"الثلث الأخير\",\"abbr\":\"Las\",\"minutes\":150}],\"estimated\":false},{\"dateKey\":\"2026-09-29\",\"utcOffsetMinutes\":120,\"label\":\"Tue, Sep 29\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Faj\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhu\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Mag\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Ish\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425},\"extras\":[],\"estimated\":false}],\"seasonal\":{\"jumuah\":false,\"ramadan\":false,\"eid\":\"adha\"},\"today\":{\"dateKey\":\"2026-09-28\",\"logged\":2,\"loggable\":3,\"owed\":1,\"prayers\":[{\"key\":\"Fajr\",\"name\":\"الفجر\",\"minutes\":312,\"status\":\"on-time\",\"due\":true},{\"key\":\"Dhuhr\",\"name\":\"الظهر\",\"minutes\":752,\"status\":\"qadha\",\"due\":true},{\"key\":\"Asr\",\"name\":\"العصر\",\"minutes\":950,\"due\":false}]},\"practice\":{\"streak\":12,\"bestStreak\":40,\"loggedToday\":2,\"owed\":3,\"sunnahRate\":0.25,\"fastsThisMonth\":1,\"days\":[{\"d\":\"2026-09-27\",\"kw\":470,\"l\":5,\"m\":false,\"f\":false,\"s\":4,\"p\":\"oooll\"},{\"d\":\"2026-09-28\",\"kw\":200,\"l\":2,\"m\":true,\"f\":true,\"s\":0,\"p\":\"om---\"}],\"since\":\"2025-01-03\"},\"reading\":{\"surah\":18,\"surahName\":\"الكهف\",\"ayah\":10,\"page\":294,\"juz\":15,\"pagesRead\":293,\"totalPages\":604,\"bookmarks\":4,\"lastReadAt\":1758990000000,\"mode\":\"mushaf\",\"khatmah\":{\"day\":12,\"targetDays\":30,\"pagesToday\":20,\"doneToday\":5,\"behindBy\":0,\"daysLeft\":18,\"skipped\":2},\"started\":true,\"downloaded\":true},\"hijri\":{\"dateKey\":\"\",\"day\":6,\"month\":4,\"year\":1448,\"monthName\":\"ربيع الآخر\",\"label\":\"6 ربيع الآخر 1448\",\"nextMonthName\":\"جمادى الأولى\",\"nextMonthInDays\":24},\"hijriDays\":[{\"dateKey\":\"2026-09-29\",\"day\":7,\"month\":4,\"year\":1448,\"monthName\":\"ربيع الآخر\",\"label\":\"7 ربيع الآخر 1448\",\"nextMonthName\":\"جمادى الأولى\",\"nextMonthInDays\":23}],\"tasbih\":{\"presetId\":\"subhanallah\",\"label\":\"Subḥān Allāh\",\"arabic\":\"سُبْحَانَ ٱللَّٰهِ\",\"count\":12,\"target\":33,\"unbounded\":false,\"index\":0,\"total\":3,\"counts\":[12,0,33],\"labels\":[\"Subḥān Allāh\",\"Al-ḥamdu lillāh\",\"Allāhu akbar\"],\"targets\":[33,33,34],\"unboundedFlags\":[false,false,false],\"todayTotal\":45,\"todayRounds\":1},\"sinceAdhanMinutes\":20}",
+      "input": "{\"schemaVersion\":2,\"language\":\"ar\",\"clock\":{\"hour12\":true,\"am\":\"ص\",\"pm\":\"م\",\"periodFirst\":false,\"isolate\":false,\"shiftMinutes\":0},\"locationName\":\"Malmö\",\"days\":[{\"dateKey\":\"2026-09-28\",\"utcOffsetMinutes\":120,\"label\":\"Mon, Sep 28\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Faj\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhu\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Mag\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Ish\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425},\"extras\":[{\"key\":\"Lastthird\",\"name\":\"الثلث الأخير\",\"abbr\":\"Las\",\"minutes\":150}],\"estimated\":false},{\"dateKey\":\"2026-09-29\",\"utcOffsetMinutes\":120,\"label\":\"Tue, Sep 29\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Faj\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhu\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Mag\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Ish\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425},\"extras\":[],\"estimated\":false}],\"seasonal\":{\"jumuah\":false,\"ramadan\":false,\"eid\":\"adha\"},\"today\":{\"dateKey\":\"2026-09-28\",\"logged\":2,\"loggable\":3,\"owed\":1,\"prayers\":[{\"key\":\"Fajr\",\"name\":\"الفجر\",\"minutes\":312,\"status\":\"on-time\",\"due\":true},{\"key\":\"Dhuhr\",\"name\":\"الظهر\",\"minutes\":752,\"status\":\"qadha\",\"due\":true},{\"key\":\"Asr\",\"name\":\"العصر\",\"minutes\":950,\"due\":false}]},\"practice\":{\"streak\":12,\"bestStreak\":40,\"loggedToday\":2,\"owed\":3,\"sunnahRate\":0.25,\"fastsThisMonth\":1,\"days\":[{\"d\":\"2026-09-27\",\"kw\":470,\"l\":5,\"m\":false,\"f\":false,\"s\":4,\"p\":\"oooll\"},{\"d\":\"2026-09-28\",\"kw\":200,\"l\":2,\"m\":true,\"f\":true,\"s\":0,\"p\":\"om---\"}],\"since\":\"2025-01-03\"},\"reading\":{\"surah\":18,\"surahName\":\"الكهف\",\"ayah\":10,\"page\":294,\"juz\":15,\"pagesRead\":293,\"totalPages\":604,\"bookmarks\":4,\"lastReadAt\":1758990000000,\"mode\":\"mushaf\",\"khatmah\":{\"day\":12,\"targetDays\":30,\"pagesToday\":20,\"doneToday\":5,\"behindBy\":0,\"daysLeft\":18,\"skipped\":2},\"started\":true,\"downloaded\":true},\"hijri\":{\"dateKey\":\"\",\"day\":6,\"month\":4,\"year\":1448,\"monthName\":\"ربيع الآخر\",\"label\":\"6 ربيع الآخر 1448\",\"nextMonthName\":\"جمادى الأولى\",\"nextMonthInDays\":24},\"hijriDays\":[{\"dateKey\":\"2026-09-29\",\"day\":7,\"month\":4,\"year\":1448,\"monthName\":\"ربيع الآخر\",\"label\":\"7 ربيع الآخر 1448\",\"nextMonthName\":\"جمادى الأولى\",\"nextMonthInDays\":23}],\"tasbih\":{\"presetId\":\"subhanallah\",\"label\":\"Subḥān Allāh\",\"arabic\":\"سُبْحَانَ ٱللَّٰهِ\",\"count\":12,\"target\":33,\"unbounded\":false,\"index\":0,\"total\":3,\"counts\":[12,0,33],\"labels\":[\"Subḥān Allāh\",\"Al-ḥamdu lillāh\",\"Allāhu akbar\"],\"targets\":[33,33,34],\"unboundedFlags\":[false,false,false],\"todayTotal\":45,\"todayRounds\":1},\"sinceAdhanMinutes\":20}",
       "expected": {
         "schemaVersion": 2,
         "language": "ar",
@@ -5627,7 +5627,8 @@
           "am": "ص",
           "pm": "م",
           "periodFirst": false,
-          "isolate": false
+          "isolate": false,
+          "shiftMinutes": 0
         },
         "locationName": "Malmö",
         "days": [
@@ -5883,7 +5884,8 @@
           "am": "AM",
           "pm": "PM",
           "periodFirst": false,
-          "isolate": false
+          "isolate": false,
+          "shiftMinutes": 0
         },
         "locationName": "",
         "days": [],
@@ -5903,7 +5905,8 @@
           "am": "AM",
           "pm": "PM",
           "periodFirst": false,
-          "isolate": false
+          "isolate": false,
+          "shiftMinutes": 0
         },
         "locationName": "",
         "days": [
@@ -6171,7 +6174,8 @@
           "am": "AM",
           "pm": "PM",
           "periodFirst": false,
-          "isolate": false
+          "isolate": false,
+          "shiftMinutes": 0
         },
         "locationName": "",
         "days": [
@@ -6221,7 +6225,8 @@
           "am": "AM",
           "pm": "PM",
           "periodFirst": false,
-          "isolate": false
+          "isolate": false,
+          "shiftMinutes": 0
         },
         "locationName": "",
         "days": [
@@ -6257,7 +6262,8 @@
           "am": "AM",
           "pm": "PM",
           "periodFirst": false,
-          "isolate": false
+          "isolate": false,
+          "shiftMinutes": 0
         },
         "locationName": "",
         "days": [],
@@ -6307,7 +6313,8 @@
           "am": "AM",
           "pm": "PM",
           "periodFirst": false,
-          "isolate": false
+          "isolate": false,
+          "shiftMinutes": 0
         },
         "locationName": "",
         "days": [],
@@ -7688,6 +7695,546 @@
         "am": "AM",
         "pm": "PM",
         "isolate": true
+      },
+      "text": "—"
+    },
+    {
+      "minutes": 0,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "02:00"
+    },
+    {
+      "minutes": 1,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "02:01"
+    },
+    {
+      "minutes": 59,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "02:59"
+    },
+    {
+      "minutes": 60,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "03:00"
+    },
+    {
+      "minutes": 312,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "07:12"
+    },
+    {
+      "minutes": 719,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "13:59"
+    },
+    {
+      "minutes": 720,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "14:00"
+    },
+    {
+      "minutes": 721,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "14:01"
+    },
+    {
+      "minutes": 779,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "14:59"
+    },
+    {
+      "minutes": 780,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "15:00"
+    },
+    {
+      "minutes": 1215,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "22:15"
+    },
+    {
+      "minutes": 1439,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "01:59"
+    },
+    {
+      "minutes": 1445,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "02:05"
+    },
+    {
+      "minutes": -1,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "01:59"
+    },
+    {
+      "minutes": null,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": 120
+      },
+      "text": "—"
+    },
+    {
+      "minutes": 0,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "2:00 AM"
+    },
+    {
+      "minutes": 1,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "2:01 AM"
+    },
+    {
+      "minutes": 59,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "2:59 AM"
+    },
+    {
+      "minutes": 60,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "3:00 AM"
+    },
+    {
+      "minutes": 312,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "7:12 AM"
+    },
+    {
+      "minutes": 719,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "1:59 PM"
+    },
+    {
+      "minutes": 720,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "2:00 PM"
+    },
+    {
+      "minutes": 721,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "2:01 PM"
+    },
+    {
+      "minutes": 779,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "2:59 PM"
+    },
+    {
+      "minutes": 780,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "3:00 PM"
+    },
+    {
+      "minutes": 1215,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "10:15 PM"
+    },
+    {
+      "minutes": 1439,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "1:59 AM"
+    },
+    {
+      "minutes": 1445,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "2:05 AM"
+    },
+    {
+      "minutes": -1,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "1:59 AM"
+    },
+    {
+      "minutes": null,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "shiftMinutes": 120
+      },
+      "text": "—"
+    },
+    {
+      "minutes": 0,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "20:30"
+    },
+    {
+      "minutes": 1,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "20:31"
+    },
+    {
+      "minutes": 59,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "21:29"
+    },
+    {
+      "minutes": 60,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "21:30"
+    },
+    {
+      "minutes": 312,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "01:42"
+    },
+    {
+      "minutes": 719,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "08:29"
+    },
+    {
+      "minutes": 720,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "08:30"
+    },
+    {
+      "minutes": 721,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "08:31"
+    },
+    {
+      "minutes": 779,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "09:29"
+    },
+    {
+      "minutes": 780,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "09:30"
+    },
+    {
+      "minutes": 1215,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "16:45"
+    },
+    {
+      "minutes": 1439,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "20:29"
+    },
+    {
+      "minutes": 1445,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "20:35"
+    },
+    {
+      "minutes": -1,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "20:29"
+    },
+    {
+      "minutes": null,
+      "clock": {
+        "hour12": false,
+        "shiftMinutes": -210
+      },
+      "text": "—"
+    },
+    {
+      "minutes": 0,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "12:45 م"
+    },
+    {
+      "minutes": 1,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "12:46 م"
+    },
+    {
+      "minutes": 59,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "1:44 م"
+    },
+    {
+      "minutes": 60,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "1:45 م"
+    },
+    {
+      "minutes": 312,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "5:57 م"
+    },
+    {
+      "minutes": 719,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "12:44 ص"
+    },
+    {
+      "minutes": 720,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "12:45 ص"
+    },
+    {
+      "minutes": 721,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "12:46 ص"
+    },
+    {
+      "minutes": 779,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "1:44 ص"
+    },
+    {
+      "minutes": 780,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "1:45 ص"
+    },
+    {
+      "minutes": 1215,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "9:00 ص"
+    },
+    {
+      "minutes": 1439,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "12:44 م"
+    },
+    {
+      "minutes": 1445,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "12:50 م"
+    },
+    {
+      "minutes": -1,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
+      },
+      "text": "12:44 م"
+    },
+    {
+      "minutes": null,
+      "clock": {
+        "hour12": true,
+        "am": "ص",
+        "pm": "م",
+        "shiftMinutes": 765
       },
       "text": "—"
     }

@@ -266,7 +266,7 @@
     "widgetBackgroundOpacity": "Widgetbakgrund (Android)",
     "widgetBackgroundColor": "Bakgrundsfärg",
     "widgetBackground_app": "Appen",
-    "widgetBackgroundHelp": "Appen följer appen: Himmel-temat, toningen och ljust eller mörkt. System är ljust eller mörkt som telefonen. Mörk, Ljus eller en egen färg förblir densamma.",
+    "widgetBackgroundHelp": "”Appen” följer appen: Himmel-temat, toningen och ljust eller mörkt läge. ”System” är ljust eller mörkt som telefonen. Mörk, Ljus eller en egen färg ändras inte.",
     "widgetTextAuto": "Automatiskt",
     "widgetTextAutoHelp": "Automatisk är ljus på ett mörkt kort och mörk på ett ljust. Accent är markeringens färg. # är en egen färg. Alla hålls läsbara på kortet.",
     "widgetHighlightOwnHelp": "Den första är appens accentfärg och följer den. De övriga är widgetarnas egen markering.",

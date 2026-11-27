@@ -138,6 +138,11 @@ module.exports = {
           t.bool({ default: false }),
           'Wrap a joined time in LRI…PDI: a right-to-left language with a Latin marker (Urdu "AM"), which a right-to-left line would otherwise set as "AM 5:35".',
         ],
+        [
+          'shiftMinutes',
+          t.int({ default: 0 }),
+          "How far the place's clock runs ahead of the phone's, in minutes (0: the same clock). A time is WRITTEN this much later than its `minutes` — the place's own clock, as the app writes it — and nothing else changes: `minutes` stay on the phone's clock, which is what every instant, countdown and alarm is made from. A place in another zone only (a saved Makkah on a phone in Stockholm: 120).",
+        ],
       ],
     },
     {

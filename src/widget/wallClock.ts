@@ -45,8 +45,11 @@ export function minutesFromHHmm(
 export function contractClock(
   hour12: boolean,
   locale: string,
+  /** The place's clock ahead of the phone's (`placeClockShiftMinutes`); 0 on the same clock. */
+  shiftMinutes = 0,
 ): WidgetContractClock {
-  if (!hour12) return { hour12: false };
+  const shift = shiftMinutes ? { shiftMinutes } : {};
+  if (!hour12) return { hour12: false, ...shift };
   const names = dayPeriodNames(locale);
   return {
     hour12: true,
@@ -58,6 +61,7 @@ export function contractClock(
     // Urdu's "AM"/"PM" in a right-to-left line: the joined time isolated
     // left to right, as `joinClockParts` does in the app.
     ...(clockParts(9, 0, true, locale).isolate ? { isolate: true } : {}),
+    ...shift,
   };
 }
 
@@ -70,9 +74,9 @@ export function formatContractMinutes(
   clock: WidgetContractClock,
 ): string {
   if (minutes == null || !Number.isFinite(minutes)) return NO_TIME;
-  const m =
-    ((Math.trunc(minutes) % MINUTES_PER_DAY) + MINUTES_PER_DAY) %
-    MINUTES_PER_DAY;
+  // Written on the place's clock where that is not the phone's (`Clock.shiftMinutes`).
+  const shifted = Math.trunc(minutes) + Math.trunc(clock.shiftMinutes ?? 0);
+  const m = ((shifted % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
   const hour = Math.floor(m / 60);
   const minute = m % 60;
   // A 24-hour clock needs no locale; the locale passed is never read.

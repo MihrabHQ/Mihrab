@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { placeClockShiftMinutes } from '../utils/prayerTimes';
 import type { TimingsMap } from '../types/prayer';
 import {
   buildWidgetPayload,
@@ -37,6 +38,12 @@ export async function syncPrayerWidget(
   extras?: WidgetExtras,
   /** The day before `today`: last night's ʿIshāʾ past midnight is still ahead. */
   yesterday?: TimingsMap,
+  /**
+   * The clock the PLACE's times are written on (`PrayerTimesResult.clock`),
+   * where it is not the phone's. The days above are on the phone's clock
+   * either way; this is only how they are written (`Clock.shiftMinutes`).
+   */
+  placeClock?: string | null,
 ): Promise<void> {
   if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
     return;
@@ -65,7 +72,7 @@ export async function syncPrayerWidget(
   if (mod.setDataV2) {
     try {
       const v2 = widgetPayloadV2FromV1(payload, {
-        clock: contractClock(activeClock().hour12, i18n.language),
+        clock: contractClock(activeClock().hour12, i18n.language, placeClockShiftMinutes(placeClock, now)),
         now,
         sinceAdhanMinutes: widgetSinceAdhanMinutes(),
       });

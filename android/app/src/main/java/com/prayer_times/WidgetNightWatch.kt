@@ -17,15 +17,21 @@ import android.util.Log
  * are drawn in the colours of the moment they are drawn at, so when the
  * phone's mode turns they have to be drawn again.
  *
- * Nothing tells a widget that. ACTION_CONFIGURATION_CHANGED is delivered
- * only to receivers registered in a live process — a manifest receiver
- * never gets it — so this is registered when the app's process starts,
- * which it does for every widget update, alert and open, and it lives as
- * long as the process does. A process that is not alive when the mode
- * turns is caught by what already redraws the cards: the next unlock
- * (ACTION_USER_PRESENT), the next prayer's boundary, the half-hourly
- * update. So the card is right at once on a phone that has used Mihrab
- * lately, and by the next unlock on one that has not.
+ * ON ANDROID 12+ THE CARD DOES NOT NEED THIS: it carries both modes'
+ * colours and the launcher picks (glance/GlanceSupport `DayNight`), with
+ * this process alive or not. This is for what that cannot reach — Android
+ * 11 and older, where a card has one set of colours, and the pictures
+ * drawn in a colour (the practice grid) on any version.
+ *
+ * And it only works while the process is alive. ACTION_CONFIGURATION_CHANGED
+ * is delivered only to receivers registered in a live process — a manifest
+ * receiver never gets it — so this is registered when the app's process
+ * starts and lives as long as it does. A process that is not alive when
+ * the mode turns hears nothing, and the unlock does not wake it either:
+ * ACTION_USER_PRESENT is not delivered to a manifest receiver on Android
+ * 8+ (seen: "Skipped (manifest)"). On those older phones the card is right
+ * again at its next redraw: the next prayer's boundary, the prayer cards'
+ * half-hourly update, or the app being opened.
  *
  * THE BROADCAST CAN ARRIVE BEFORE THE NEW MODE HAS. The process's resources
  * take the new configuration on the same thread the broadcast is delivered

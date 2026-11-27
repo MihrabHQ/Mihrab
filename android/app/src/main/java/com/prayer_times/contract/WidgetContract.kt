@@ -212,6 +212,15 @@ object WidgetContract {
      * "AM 5:35".
      */
     val isolate: Boolean = false,
+    /**
+     * How far the place's clock runs ahead of the phone's, in minutes (0: the
+     * same clock). A time is WRITTEN this much later than its `minutes` — the
+     * place's own clock, as the app writes it — and nothing else changes:
+     * `minutes` stay on the phone's clock, which is what every instant,
+     * countdown and alarm is made from. A place in another zone only (a saved
+     * Makkah on a phone in Stockholm: 120).
+     */
+    val shiftMinutes: Int = 0,
   ) {
     fun toJson(): JSONObject = JSONObject().apply {
       put("hour12", hour12)
@@ -219,6 +228,7 @@ object WidgetContract {
       put("pm", pm)
       put("periodFirst", periodFirst)
       put("isolate", isolate)
+      put("shiftMinutes", shiftMinutes)
     }
 
     companion object {
@@ -230,6 +240,7 @@ object WidgetContract {
           pm = o.wcString("pm") ?: "PM",
           periodFirst = o.wcBool("periodFirst") ?: false,
           isolate = o.wcBool("isolate") ?: false,
+          shiftMinutes = o.wcRaw("shiftMinutes").wcAsInt() ?: 0,
         )
       }
 

@@ -1268,7 +1268,8 @@ export function HomeScreen() {
       {
         // The widget and the Live Activity read every time on the phone's
         // clock (WallClock.kt / WallClock.swift): they are handed the days
-        // on it.
+        // on it. The widget WRITES them on the place's, as the card does
+        // (`Clock.shiftMinutes`): it is told which clock that is.
         const t = computeSeasonalTreatment(
           phoneView.table.today,
           phoneView.table.tomorrow,
@@ -1286,6 +1287,8 @@ export function HomeScreen() {
               phoneView.widget.week,
               extras,
               phoneView.widget.yesterday,
+              // Written on the place's clock, as the card above is.
+              state.clock,
             ),
           )
           .catch(e => console.warn('syncPrayerWidget (focus):', e));
@@ -1405,6 +1408,8 @@ export function HomeScreen() {
           phoneView.widget.week,
           extras,
           phoneView.widget.yesterday,
+          // Written on the place's clock, as the card is.
+          state.clock,
         ),
       )
       .catch(e => console.warn('syncPrayerWidget (effect):', e));

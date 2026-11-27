@@ -170,14 +170,16 @@ export async function rawWindow(
 export async function rawWindowWithYesterday(
   params: DayWindowParams,
   now: Date,
-): Promise<{ yesterday?: TimingsMap; days: TimingsMap[] }> {
+): Promise<{ yesterday?: TimingsMap; days: TimingsMap[]; clock?: string | null }> {
   const place = await placeWindow(params, now);
+  // The clock the place's days are written on: how the widgets write them.
+  const clock = place[0]?.clock;
   const before = place.length
     ? await cachedPrayerDaysBefore(params, now).catch(() => [])
     : [];
-  if (before.length === 0) return { days: phoneDaysOf(place, now) };
+  if (before.length === 0) return { days: phoneDaysOf(place, now), clock };
   const all = phoneDaysOf([before[0], ...place], addDays(now, -1));
-  return { yesterday: all[0], days: all.slice(1) };
+  return { yesterday: all[0], days: all.slice(1), clock };
 }
 
 /** The window on the place's own days, each with its clock. */
@@ -272,7 +274,7 @@ export async function republishWidgetPayload(
       school: settings.school,
     };
 
-    const { yesterday: rawYesterday, days: raw } = await rawWindowWithYesterday(
+    const { yesterday: rawYesterday, days: raw, clock: placeClock } = await rawWindowWithYesterday(
       params,
       now,
     );
@@ -358,6 +360,7 @@ export async function republishWidgetPayload(
       week,
       extras,
       yesterday,
+      placeClock,
     );
     return true;
   } catch (e) {

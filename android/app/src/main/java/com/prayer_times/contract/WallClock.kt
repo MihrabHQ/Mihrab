@@ -65,7 +65,10 @@ object WallClock {
 
   /** The pieces of a time, for a layout that draws the marker smaller. */
   fun parts(minutes: Int, clock: WidgetContract.Clock): Parts {
-    val m = Math.floorMod(minutes, MINUTES_PER_DAY)
+    // Written on the place's clock where that is not the phone's
+    // (`Clock.shiftMinutes`): the text only. Instants are made from
+    // `minutes` as they are (`epochMs`).
+    val m = Math.floorMod(minutes + clock.shiftMinutes, MINUTES_PER_DAY)
     val hour = m / 60
     val minute = String.format(Locale.ROOT, "%02d", m % 60)
     if (!clock.hour12) {

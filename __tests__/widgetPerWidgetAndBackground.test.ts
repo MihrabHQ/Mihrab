@@ -77,7 +77,7 @@ describe('the widgets’ background', () => {
   it('keeps the text readable on it: the light or the dark, whichever it holds better', () => {
     const display = kt('PrayerWidgetDisplay.kt');
     // Whatever the card is — the Sky's hour, a colour of its own, the app's light or dark.
-    expect(display).toContain('PrayerWidgetProvider.resolvedColors(context)');
+    expect(display).toContain('PrayerWidgetProvider.resolvedColors(context, night)');
     expect(display).toContain('return if (text == DEFAULT_TEXT) CardInk.fallbackText(card) else CardInk.text(text, card)');
     // The rule itself is swept over every card colour off a device (CardInkTest).
     expect(kt('cardfit/CardInk.kt')).toContain(

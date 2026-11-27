@@ -5,7 +5,7 @@ import {
   LATE_EVENING_THRESHOLD_MIN,
   LATE_MAGHRIB_LIMIT_MIN,
 } from '../providers/validateTimings';
-import { civilInZone, deviceZone, instantOnZoneClock } from './zoneClock';
+import { civilInZone, deviceZone, instantOnZoneClock, zoneOffsetMinutes } from './zoneClock';
 
 /**
  * WHOSE CLOCK A DAY'S "HH:mm" STRINGS ARE WRITTEN ON.
@@ -34,6 +34,26 @@ export function readZone(clock: string | null | undefined): string | null {
   if (!clock || clock === DEVICE_CLOCK) return null;
   if (clock === deviceZone()) return null;
   return clock;
+}
+
+/**
+ * How far a place's clock runs ahead of the phone's at `at`, in minutes: 0
+ * on the phone's own clock (`readZone`) and where the phone cannot say.
+ *
+ * The widgets are handed every time on the phone's clock — their
+ * countdowns and alarms are made from it — and write it this much later,
+ * so that a saved Makkah on a phone in Stockholm reads 19:07 on the home
+ * screen as it does in the app, not 17:07 (`Clock.shiftMinutes`).
+ */
+export function placeClockShiftMinutes(
+  clock: string | null | undefined,
+  at: Date = new Date(),
+): number {
+  const zone = readZone(clock);
+  if (!zone) return 0;
+  const there = zoneOffsetMinutes(zone, at);
+  if (there == null || !Number.isFinite(there)) return 0;
+  return Math.round(there - (0 - at.getTimezoneOffset()));
 }
 
 /**

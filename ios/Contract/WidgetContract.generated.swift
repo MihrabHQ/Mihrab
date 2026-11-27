@@ -170,19 +170,28 @@ enum WidgetContract {
     /// marker (Urdu "AM"), which a right-to-left line would otherwise set as
     /// "AM 5:35".
     var isolate: Bool
+    /// How far the place's clock runs ahead of the phone's, in minutes (0:
+    /// the same clock). A time is WRITTEN this much later than its `minutes`
+    /// — the place's own clock, as the app writes it — and nothing else
+    /// changes: `minutes` stay on the phone's clock, which is what every
+    /// instant, countdown and alarm is made from. A place in another zone
+    /// only (a saved Makkah on a phone in Stockholm: 120).
+    var shiftMinutes: Int
 
     init(
       hour12: Bool = false,
       am: String = "AM",
       pm: String = "PM",
       periodFirst: Bool = false,
-      isolate: Bool = false
+      isolate: Bool = false,
+      shiftMinutes: Int = 0
     ) {
       self.hour12 = hour12
       self.am = am
       self.pm = pm
       self.periodFirst = periodFirst
       self.isolate = isolate
+      self.shiftMinutes = shiftMinutes
     }
 
     enum CodingKeys: String, CodingKey {
@@ -191,6 +200,7 @@ enum WidgetContract {
       case pm
       case periodFirst
       case isolate
+      case shiftMinutes
     }
 
     init(from decoder: Decoder) throws {
@@ -200,6 +210,7 @@ enum WidgetContract {
       pm = c.wcValue(String.self, .pm) ?? "PM"
       periodFirst = c.wcValue(Bool.self, .periodFirst) ?? false
       isolate = c.wcValue(Bool.self, .isolate) ?? false
+      shiftMinutes = c.wcInt(.shiftMinutes).flatMap(wcInt32) ?? 0
     }
   }
 

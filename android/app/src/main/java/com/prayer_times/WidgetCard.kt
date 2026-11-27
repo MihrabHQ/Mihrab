@@ -39,7 +39,17 @@ object WidgetCard {
    *   is split out and applied separately; passing it through the colour
    *   filter alone would let the white source show through.
    */
-  fun paint(views: RemoteViews, argb: Int) {
+  fun paint(views: RemoteViews, argb: Int, other: Int? = null, night: Boolean = false) {
+    // A card that turns with the phone's dark mode carries both colours
+    // (API 31+), and the launcher draws the one for the mode it is in —
+    // with Mihrab's process alive or not (glance/GlanceSupport `DayNight`).
+    if (other != null && android.os.Build.VERSION.SDK_INT >= 31) {
+      val here = argb or 0xFF000000.toInt()
+      val there = other or 0xFF000000.toInt()
+      views.setColorInt(R.id.widget_card, "setColorFilter", if (night) there else here, if (night) here else there)
+      views.setInt(R.id.widget_card, "setImageAlpha", Color.alpha(argb))
+      return
+    }
     views.setInt(R.id.widget_card, "setColorFilter", argb or 0xFF000000.toInt())
     views.setInt(R.id.widget_card, "setImageAlpha", Color.alpha(argb))
   }

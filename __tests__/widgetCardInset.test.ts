@@ -80,7 +80,7 @@ describe('the Glance widgets draw on the inset card', () => {
   it('MihrabCard draws the rounded, recolourable card, not a Glance background', () => {
     const support = read(GLANCE_DIR, 'GlanceSupport.kt');
     expect(support).toContain('R.layout.glance_card');
-    expect(support).toMatch(/WidgetCard\.paint\(it, background\)/);
+    expect(support).toMatch(/WidgetCard\.paint\(it, background, DayNight\.twin\(background\), DayNight\.night\)/);
     const body = support.slice(support.indexOf('fun MihrabCard('));
     // Glance's cornerRadius is Android 12+ only — a slab below that.
     expect(body.slice(0, body.indexOf('\n}\n'))).not.toMatch(/cornerRadius|\.background\(/);

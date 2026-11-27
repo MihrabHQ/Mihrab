@@ -421,9 +421,24 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
       }
     }
 
-    fun resolvedColors(context: Context): Pair<Int, Int> {
+    /**
+     * Does the card turn with the phone's dark mode? The background on
+     * System, or on App under an app that itself follows the system (the
+     * Sky theme's hour is the app's own, whatever the phone is in).
+     */
+    fun followsPhone(context: Context): Boolean {
       val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-      val style = readWidgetStyle(prefs, isNight(context))
+      val mode = prefs.getString(PREFS_WIDGET_BG_MODE, BG_APP)?.trim()?.lowercase()
+      if (mode == BG_SYSTEM) return true
+      if (!followsApp(mode)) return false
+      if (!(prefs.getString(PREFS_WIDGET_SKY_BG, "") ?: "").isBlank()) return false
+      return (prefs.getString(PREFS_WIDGET_APP_THEME, "") ?: "").trim().lowercase() == "system"
+    }
+
+    /** `night`: the mode to answer for — the phone's own unless asked for the other (`DayNight`). */
+    fun resolvedColors(context: Context, night: Boolean = isNight(context)): Pair<Int, Int> {
+      val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+      val style = readWidgetStyle(prefs, night)
       val bg = style.backgroundArgb()
       // The highlight is what the next prayer's time is drawn in. Where the
       // card is what it stands on, it is kept readable on it — a pastel

@@ -34,7 +34,7 @@
     <string name="widget_configure_prayer_note">Bara den här widgeten. Dina andra widgetar behåller sina egna.</string>
     <string name="widget_configure_text_auto">Automatiskt</string>
     <string name="widget_configure_text_note">Automatisk är ljus på ett mörkt kort och mörk på ett ljust. Accent är markeringens färg. # är en egen färg. Alla hålls läsbara på kortet.</string>
-    <string name="widget_configure_highlight_app">Med Appen är även markeringen appens: accentfärgen, eller Himmel-temats färg för timmen. Välj en annan bakgrund för att välja en här.</string>
+    <string name="widget_configure_highlight_app">Med ”Appen” är även markeringen appens: accentfärgen, eller Himmel-temats färg för timmen. Välj en annan bakgrund för att välja en här.</string>
     <string name="widget_configure_highlight_app_accent">Appens accent</string>
     <string name="widget_configure_text_accent">Accent</string>
     <string name="widget_configure_bg_system">System</string>
@@ -42,7 +42,7 @@
     <string name="widget_configure_prayer_all_title">Alla bönetidswidgetar</string>
     <string name="widget_configure_bg_colour">Bakgrundsfärg</string>
     <string name="widget_configure_bg_app">Appen</string>
-    <string name="widget_configure_bg_note">Appen följer appen: Himmel-temat, toningen och ljust eller mörkt. System är ljust eller mörkt som telefonen. Mörk, Ljus eller en egen färg förblir densamma.</string>
+    <string name="widget_configure_bg_note">”Appen” följer appen: Himmel-temat, toningen och ljust eller mörkt läge. ”System” är ljust eller mörkt som telefonen. Mörk, Ljus eller en egen färg ändras inte.</string>
     <string name="widget_configure_text_color">Textfärg</string>
     <string name="widget_configure_text_light">Ljus</string>
     <string name="widget_configure_text_dark">Mörk</string>

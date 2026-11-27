@@ -200,7 +200,11 @@ internal object Palette {
   /** Read the user's text colour; called once per composition. */
   fun sync(context: Context) {
     style = PrayerWidgetDisplay.read(context)
+    DayNight.sync(context, style)
   }
+
+  /** A missed prayer's red on a card of `style`. */
+  internal fun dangerOf(style: PrayerWidgetDisplay): Int = if (style.onLight) 0xFFC62828.toInt() else 0xFFF87171.toInt()
 
   val TEXT: Int get() = style.text
   val MUTED: Int get() = style.muted
@@ -216,7 +220,7 @@ internal object Palette {
    */
   val onLight: Boolean get() = style.onLight
   /** A missed prayer, a count owed: never ordinary text. */
-  val DANGER: Int get() = if (onLight) 0xFFC62828.toInt() else 0xFFF87171.toInt()
+  val DANGER: Int get() = dangerOf(style)
   /** What cannot be pressed, or has passed. */
   val DISABLED: Int get() = style.disabled
   /** The text colour, opaque: what a white-at-a-few-percent mark is tinted to. */
@@ -708,7 +712,100 @@ internal data class Colors(val background: Int, val accent: Int) {
   }
 }
 
-internal fun provider(argb: Int): ColorProvider = ColorProvider(Color(argb))
+internal fun provider(argb: Int): ColorProvider = DayNight.provider(argb)
+
+/**
+ * A CARD THAT TURNS WITH THE PHONE'S DARK MODE CARRIES BOTH SETS OF COLOURS.
+ *
+ * The widgets' background can follow the phone (System, or App under an
+ * app that follows the system). A card is drawn in the colours of the
+ * moment it is drawn at, so when the mode turns it has to be drawn again —
+ * and nothing can be relied on to ask for that. Mihrab's process is told
+ * only while it is alive (WidgetNightWatch), and it usually is not: the
+ * unlock broadcast the widgets were thought to wake on is not delivered to
+ * a manifest receiver at all (Android 8+; `dumpsys activity broadcasts`
+ * shows it "Skipped (manifest)"). Seen on an emulator: with the process
+ * gone, the cards stayed light in a dark phone through an unlock.
+ *
+ * So on Android 12+ the card is not redrawn at all. Every colour it is
+ * drawn in is handed over as a pair — this mode's and the other's — and
+ * the launcher, which is always alive and re-applies the card when the
+ * mode turns, picks.
+ *
+ * The widgets draw in plain colour ints (`Palette`, `Colors`), far too
+ * many to thread a pair through by hand. So the pairing is done where
+ * every int becomes a colour: `sync` reads the look for both modes and
+ * keeps, for each colour of this mode, its counterpart in the other;
+ * `provider` and the card's and the countdown's own RemoteViews look it
+ * up. A colour with no counterpart (a fixed one, a colour of the reader's
+ * own that reads on both) is itself in both.
+ *
+ * What is not paired: a picture drawn in a colour (the practice grid).
+ * It is right again at the card's next redraw.
+ */
+internal object DayNight {
+  @Volatile private var twins: Map<Int, Int> = emptyMap()
+  @Volatile var night: Boolean = false
+    private set
+
+  /** The colours a card is drawn in, in one order for both modes. */
+  private fun colours(style: PrayerWidgetDisplay, card: Int, accent: Int): List<Int> = listOf(
+    style.text,
+    style.muted,
+    Palette.dangerOf(style),
+    style.disabled,
+    style.text or 0xFF000000.toInt(),
+    style.muted or 0xFF000000.toInt(),
+    style.refresh,
+    style.rule,
+    style.ruleStrong,
+    card,
+    card or 0xFF000000.toInt(),
+    accent,
+    accent or 0xFF000000.toInt(),
+    Palette.on(accent),
+  )
+
+  fun sync(context: Context, style: PrayerWidgetDisplay) {
+    twins = emptyMap()
+    if (android.os.Build.VERSION.SDK_INT < 31) return
+    try {
+      if (!PrayerWidgetProvider.followsPhone(context)) return
+      val now = PrayerWidgetProvider.isNight(context)
+      val other = PrayerWidgetDisplay.read(context, 0, !now)
+      val (card, accent) = PrayerWidgetProvider.resolvedColors(context, now)
+      val (card2, accent2) = PrayerWidgetProvider.resolvedColors(context, !now)
+      val map = HashMap<Int, Int>()
+      for ((a, b) in colours(style, card, accent).zip(colours(other, card2, accent2))) {
+        // The first role to claim a colour keeps it: the text before the marks drawn in it.
+        if (a != b && !map.containsKey(a)) map[a] = b
+      }
+      night = now
+      twins = map
+    } catch (_: Exception) {
+      twins = emptyMap()
+    }
+  }
+
+  /** This colour in the other mode, where the card has another for it. */
+  fun twin(argb: Int): Int? = twins[argb]
+
+  fun provider(argb: Int): ColorProvider {
+    val other = twins[argb] ?: return ColorProvider(Color(argb))
+    return if (night) androidx.glance.color.ColorProvider(day = Color(other), night = Color(argb))
+    else androidx.glance.color.ColorProvider(day = Color(argb), night = Color(other))
+  }
+
+  /** A text colour on a RemoteViews of the widgets' own (the countdown). */
+  fun textColor(views: RemoteViews, id: Int, argb: Int) {
+    val other = twins[argb]
+    if (other != null && android.os.Build.VERSION.SDK_INT >= 31) {
+      views.setColorInt(id, "setTextColor", if (night) other else argb, if (night) argb else other)
+    } else {
+      views.setTextColor(id, argb)
+    }
+  }
+}
 
 /** One line of text in the widgets' type: sans-serif, or its medium weight. */
 @Composable
@@ -754,7 +851,9 @@ internal fun MihrabCard(
   content: @Composable () -> Unit,
 ) {
   val context = LocalContext.current
-  val card = RemoteViews(context.packageName, R.layout.glance_card).also { WidgetCard.paint(it, background) }
+  val card = RemoteViews(context.packageName, R.layout.glance_card).also {
+    WidgetCard.paint(it, background, DayNight.twin(background), DayNight.night)
+  }
   DirBox(modifier = GlanceModifier.fillMaxSize().padding(R.dimen.widget_card_inset)) {
     AndroidRemoteViews(card, GlanceModifier.fillMaxSize())
     val inner = GlanceModifier.fillMaxSize().padding(horizontal = contentPadding, vertical = verticalPadding)
@@ -852,7 +951,7 @@ internal fun CountUp(sinceEpochMs: Long, format: String, now: Now, sp: Float, co
   val views = RemoteViews(context.packageName, layout).apply {
     setChronometerCountDown(R.id.glance_countdown, false)
     setChronometer(R.id.glance_countdown, SystemClock.elapsedRealtime() - elapsed, iso(format), true)
-    setTextColor(R.id.glance_countdown, color)
+    DayNight.textColor(this, R.id.glance_countdown, color)
     setTextViewTextSize(R.id.glance_countdown, TypedValue.COMPLEX_UNIT_SP, sp)
   }
   AndroidRemoteViews(views, modifier)
@@ -883,7 +982,7 @@ internal fun Countdown(targetEpochMs: Long, now: Now, sp: Float, color: Int, mod
       iso(context.getString(R.string.widget_countdown_format)),
       true,
     )
-    setTextColor(R.id.glance_countdown, color)
+    DayNight.textColor(this, R.id.glance_countdown, color)
     setTextViewTextSize(R.id.glance_countdown, TypedValue.COMPLEX_UNIT_SP, sp)
   }
   AndroidRemoteViews(views, modifier)
