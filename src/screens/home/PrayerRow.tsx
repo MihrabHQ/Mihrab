@@ -291,8 +291,14 @@ function PrayerRowImpl({
               style={[styles.daruri, { color: palette.muted }]}
               // Wrapped onto a line of its own: it does not fit here. The
               // card moves every row's tag under its name.
+              // "Wrapped" is a whole line down, not a few points: the tag
+              // is shorter than the name and centred on its line, so on
+              // the name's own line it already sits 4–5 dp from the top.
+              // The test was `y > 4`, which a Pixel 10 Pro's rounding
+              // crossed — every card there took the tags for wrapped and
+              // put them under the names with all the room in the world.
               onLayout={e => {
-                if (e.nativeEvent.layout.y > 4) onDaruriWrap?.();
+                if (e.nativeEvent.layout.y >= WRAPPED_FROM) onDaruriWrap?.();
               }}
               numberOfLines={1}
               accessibilityLabel={t(
@@ -465,6 +471,9 @@ function PrayerRowImpl({
 }
 
 export const PrayerRow = memo(PrayerRowImpl);
+
+/** A tag this far down its line box is on a second line (three quarters of the name's line). */
+export const WRAPPED_FROM = labelLineHeight(TYPE.title3.fontSize) * 0.75;
 
 const styles = StyleSheet.create({
   // The row's inset is the hero's: its name begins where the hero's text

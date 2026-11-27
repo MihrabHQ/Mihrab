@@ -155,6 +155,37 @@ describe('the second-time line', () => {
 });
 
 /**
+ * Beside the name when it fits, under it when it does not — and "does not
+ * fit" is a tag a whole line down, not one resting a few points below the
+ * top of the line it shares with a taller name.
+ */
+describe('where the tag sits', () => {
+  const { WRAPPED_FROM } = require('../src/screens/home/PrayerRow');
+  const layoutAt = (y: number) => {
+    const onWrap = jest.fn();
+    let tree!: ReactTestRenderer;
+    act(() => {
+      tree = create(
+        <PrayerRow prayerKey="Asr" rawTime="17:04" isNext={false} isSecondary={false} isLast={false} daruriAt="19:44" onDaruriWrap={onWrap} />,
+      );
+    });
+    const tag = tree.root.findAll(n => n.props.testID === 'daruri-Asr' && typeof n.props.onLayout === 'function')[0];
+    act(() => tag.props.onLayout({ nativeEvent: { layout: { x: 0, y, width: 80, height: 13 } } }));
+    return onWrap;
+  };
+
+  it('centred on the name’s line is not wrapped, at any density’s rounding', () => {
+    for (const y of [3.6, 4.2, 5.3, 6]) expect(layoutAt(y)).not.toHaveBeenCalled();
+    expect(WRAPPED_FROM).toBeGreaterThan(12);
+  });
+
+  it('a line down is', () => {
+    expect(layoutAt(24)).toHaveBeenCalled();
+    expect(layoutAt(30)).toHaveBeenCalled();
+  });
+});
+
+/**
  * The Ḥanafī conflict, which is the one place this feature can make a
  * card contradict itself.
  *

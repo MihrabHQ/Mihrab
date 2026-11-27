@@ -187,6 +187,30 @@ function MonthGlyph({ color }: { color: string }) {
   );
 }
 
+/**
+ * The height the pager holds a page at, given the height the page has
+ * just measured.
+ *
+ * The two feed each other. The pager is held to the page's height; the
+ * hero above fills what the pager leaves; so a change in the pager's
+ * height moves every row by a fraction of a point, the pixel grid rounds
+ * each row at its new place, and the page measures a fraction different
+ * (331.43, then 331.05, on a Pixel 10 Pro). It was `Math.round` of the
+ * measure, which is steady until two such measures fall either side of a
+ * half: then 331 and 332 answer each other without end, and React stops
+ * the app ("Maximum update depth exceeded") — the crash at launch on
+ * 2026-11-27, once rows with a line under them brought the heights there.
+ *
+ * So the held height only moves for a real change: it stays while it is
+ * at least the measure and less than a point and a half above it, and
+ * otherwise becomes the measure rounded UP — never shorter than the page,
+ * so nothing is cut, and never chasing a fraction.
+ */
+export function settledPageHeight(held: number | undefined, measured: number): number {
+  if (held != null && held >= measured - 0.01 && held - measured < 1.5) return held;
+  return Math.ceil(measured - 0.01);
+}
+
 export type TodayCardProps = {
   /** Today first, then the next six days. */
   week: TimingsMap[];
@@ -640,8 +664,11 @@ function TodayCardImpl({
     return kept ? { [landedAtMount]: kept } : {};
   });
   const onPageLayout = useCallback((offset: number, e: LayoutChangeEvent) => {
-    const h = Math.round(e.nativeEvent.layout.height);
-    setPageHeights(prev => (prev[offset] === h ? prev : { ...prev, [offset]: h }));
+    const raw = e.nativeEvent.layout.height;
+    setPageHeights(prev => {
+      const h = settledPageHeight(prev[offset], raw);
+      return prev[offset] === h ? prev : { ...prev, [offset]: h };
+    });
   }, []);
   const landedHeight = pageHeights[landedAtMount];
   useEffect(() => {
