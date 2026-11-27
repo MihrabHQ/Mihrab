@@ -122,11 +122,12 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val context = localizedContext()
     val size = cardSize()
     val design = designFor(size)
+    val widgetId = LocalWidgetId.current
     val result = guarded("prayer") {
       val now = Now.current()
       // An expired payload is not drawn as today: ask, don't guess.
       val display = try {
-        PrayerWidgetDisplay.read(context)
+        PrayerWidgetDisplay.read(context, widgetId)
       } catch (e: Exception) {
         PrayerWidgetDisplay.DEFAULT
       }

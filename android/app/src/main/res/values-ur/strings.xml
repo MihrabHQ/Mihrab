@@ -33,7 +33,10 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">محفوظ کریں</string>
     <string name="widget_configure_prayer_title">نماز کے اوقات کا ویجیٹ</string>
-    <string name="widget_configure_prayer_note">یہ صرف نماز کے اوقات کے ویجیٹس پر لاگو ہوتے ہیں۔</string>
+    <string name="widget_configure_prayer_note">شہر، الٹی گنتی، دن کے اوقات اور اوقات کا سائز صرف اسی ویجیٹ کے ہیں۔ اذان کے بعد کا وقت نماز کے اوقات کے تمام ویجیٹس میں مشترک ہے۔</string>
+    <string name="widget_configure_bg_colour">پس منظر کا رنگ</string>
+    <string name="widget_configure_bg_app">ایپ</string>
+    <string name="widget_configure_bg_note">«ایپ» ایپ کے رنگوں کی پیروی کرتا ہے: آسمان تھیم اور رنگ آمیز سطحیں۔ گہرا، ہلکا یا آپ کا اپنا رنگ ویسا ہی رہتا ہے، ایپ جیسی بھی نظر آئے۔</string>
     <string name="widget_configure_text_color">متن کا رنگ</string>
     <string name="widget_configure_text_light">ہلکا</string>
     <string name="widget_configure_text_white">سفید</string>

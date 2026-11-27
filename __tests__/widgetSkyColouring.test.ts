@@ -71,7 +71,9 @@ describe('the widget under the Sky theme, natively', () => {
   it('does not leave a dark text on the Sky\'s dark card', () => {
     expect(display).toContain('text = legibleOnSky(context, text),');
     expect(display).toContain('if (card.second < SKY_CARD_MIN_OPACITY) return text');
-    expect(display).toContain('return if (contrast(text, card.first) < SKY_TEXT_MIN_CONTRAST) DEFAULT_TEXT else text');
+    // On the Sky's dark card that is the light text (the better of the two there).
+    expect(display).toContain('if (contrast(text, card.first) >= SKY_TEXT_MIN_CONTRAST) return text');
+    expect(display).toContain('return if (contrast(DEFAULT_TEXT, card.first) >= contrast(DARK_TEXT, card.first)) DEFAULT_TEXT else DARK_TEXT');
     // The rule, in numbers: the Dark preset fails on any hour's card, the light ones never do.
     for (const day of DAYS) {
       for (const [, bg] of widgetSkySchedule(day)) {
@@ -84,7 +86,9 @@ describe('the widget under the Sky theme, natively', () => {
   });
 
   it('says whose the highlight is on the widget\'s settings screen, in the swatches\' place', () => {
-    expect(activity).toMatch(/val skyOn = try \{\s*PrayerWidgetProvider\.skyCard\(this\) != null/);
+    // …while the card follows the app: with a background of its own the highlight is the chosen one.
+    expect(activity).toMatch(/val skyStored = try \{\s*PrayerWidgetProvider\.skyStored\(this\)/);
+    expect(activity).toContain('val skyOn = skyStored && bgMode == PrayerWidgetProvider.BG_APP');
     expect(activity).toContain('findViewById<View>(R.id.widget_configure_highlight_scroll).visibility = if (skyOn) View.GONE else View.VISIBLE');
     expect(layout).toContain('android:id="@+id/widget_configure_highlight_sky"');
     const res = path.join(root, 'android/app/src/main/res');

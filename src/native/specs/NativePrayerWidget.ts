@@ -17,6 +17,7 @@ export interface Spec extends TurboModule {
   renderPreviews?: (widthDp: number) => Promise<Object>;
   setAndroidWidgetAppearance?: (opacity: number, highlightId: string, highlightHex: string | null, highlightDynamic: boolean, tinted: boolean) => Promise<void>;
   setAndroidWidgetSky?: (bgHex: string | null, accentHex: string | null) => Promise<void>;
+  setAndroidWidgetBackground?: (mode: string, hex: string | null) => Promise<void>;
   getAndroidPrayerWidgetDisplay?: () => Promise<Object>;
   setAndroidPrayerWidgetDisplay?: (textHex: string, showLocation: boolean, showCountdown: boolean, showTable: boolean, timeScalePercent: number, sinceAdhanMinutes: number) => Promise<void>;
   setWidgetHighlightDynamic?: (enabled: boolean) => Promise<void>;

@@ -33,7 +33,10 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Kaydet</string>
     <string name="widget_configure_prayer_title">Namaz vakitleri widget’ı</string>
-    <string name="widget_configure_prayer_note">Yalnızca namaz vakitleri widget’ları için geçerlidir.</string>
+    <string name="widget_configure_prayer_note">Şehir, geri sayım, günün vakitleri ve boyut yalnızca bu widget’a aittir. Ezandan bu yana geçen süre tüm namaz vakitleri widget’ları için ortaktır.</string>
+    <string name="widget_configure_bg_colour">Arka plan rengi</string>
+    <string name="widget_configure_bg_app">Uygulama</string>
+    <string name="widget_configure_bg_note">“Uygulama”, uygulamanın renklerini izler: Gökyüzü teması ve tonlu yüzeyler. Koyu, Açık veya kendi seçtiğiniz renk, uygulama nasıl görünürse görünsün aynı kalır.</string>
     <string name="widget_configure_text_color">Yazı rengi</string>
     <string name="widget_configure_text_light">Açık</string>
     <string name="widget_configure_text_white">Beyaz</string>

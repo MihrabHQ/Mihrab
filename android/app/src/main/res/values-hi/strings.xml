@@ -33,7 +33,10 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">सहेजें</string>
     <string name="widget_configure_prayer_title">नमाज़ समय विजेट</string>
-    <string name="widget_configure_prayer_note">ये केवल नमाज़ समय विजेट पर लागू होते हैं।</string>
+    <string name="widget_configure_prayer_note">शहर, उलटी गिनती, दिन के समय और समय का आकार केवल इसी विजेट के हैं। अज़ान के बाद का समय सभी नमाज़ समय विजेट में एक जैसा रहता है।</string>
+    <string name="widget_configure_bg_colour">पृष्ठभूमि का रंग</string>
+    <string name="widget_configure_bg_app">ऐप</string>
+    <string name="widget_configure_bg_note">«ऐप» ऐप के रंगों का अनुसरण करता है: आकाश थीम और रंगीन सतहें। गहरा, हल्का या आपका अपना रंग वैसा ही रहता है, ऐप जैसा भी दिखे।</string>
     <string name="widget_configure_text_color">टेक्स्ट का रंग</string>
     <string name="widget_configure_text_light">हल्का</string>
     <string name="widget_configure_text_white">सफ़ेद</string>

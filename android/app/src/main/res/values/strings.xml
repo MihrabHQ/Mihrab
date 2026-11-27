@@ -42,7 +42,10 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Save</string>
     <string name="widget_configure_prayer_title">Prayer times widget</string>
-    <string name="widget_configure_prayer_note">These apply to the prayer times widgets only.</string>
+    <string name="widget_configure_prayer_note">The city, the countdown, the day’s times and the time size are this widget’s alone. Time since the adhan is shared by all prayer times widgets.</string>
+    <string name="widget_configure_bg_colour">Background color</string>
+    <string name="widget_configure_bg_app">App</string>
+    <string name="widget_configure_bg_note">App follows the app’s colors: its Sky theme and its tinted surfaces. Dark, Light or a color of your own stays the same whatever the app looks like.</string>
     <string name="widget_configure_text_color">Text color</string>
     <string name="widget_configure_text_light">Light</string>
     <string name="widget_configure_text_white">White</string>

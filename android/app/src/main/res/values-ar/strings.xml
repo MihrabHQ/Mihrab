@@ -33,7 +33,10 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">حفظ</string>
     <string name="widget_configure_prayer_title">ودجة مواقيت الصلاة</string>
-    <string name="widget_configure_prayer_note">تنطبق على ودجات مواقيت الصلاة فقط.</string>
+    <string name="widget_configure_prayer_note">المدينة والعد التنازلي ومواقيت اليوم وحجم الأوقات خاصة بهذه الودجة وحدها. الوقت منذ الأذان مشترك بين كل ودجات مواقيت الصلاة.</string>
+    <string name="widget_configure_bg_colour">لون الخلفية</string>
+    <string name="widget_configure_bg_app">التطبيق</string>
+    <string name="widget_configure_bg_note">«التطبيق» يتبع ألوان التطبيق: سمة السماء والأسطح الملوّنة. «داكن» أو «فاتح» أو لون تختاره يبقى كما هو مهما تغيّر مظهر التطبيق.</string>
     <string name="widget_configure_text_color">لون النص</string>
     <string name="widget_configure_text_light">فاتح</string>
     <string name="widget_configure_text_white">أبيض</string>

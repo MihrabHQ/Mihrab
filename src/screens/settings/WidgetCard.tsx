@@ -14,6 +14,7 @@ import {
 } from '../../settings/widgetAccent';
 import { Stepper } from '../../components/ui';
 import { SettingsBlock, SettingsGroup } from './SettingsGroup';
+import { WidgetBackground } from './WidgetBackground';
 import { WidgetTextColor } from './WidgetTextColor';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
@@ -83,6 +84,8 @@ function WidgetCardImpl() {
       // would now be sending them here. What is left is the hint that
       // there is a second way in, from the widget itself.
       footer={t('settings.widgetConfigureHint')}>
+      {/* Whose colour the card is, then how strongly it is drawn. */}
+      <WidgetBackground />
       <SettingsBlock>
         <Text style={[styles.label, { color: palette.muted }]}>
           {t('settings.widgetBackgroundOpacity')}

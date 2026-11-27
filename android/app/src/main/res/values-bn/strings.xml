@@ -33,7 +33,10 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">সংরক্ষণ করুন</string>
     <string name="widget_configure_prayer_title">নামাজের সময়ের উইজেট</string>
-    <string name="widget_configure_prayer_note">এগুলো শুধু নামাজের সময়ের উইজেটে প্রযোজ্য।</string>
+    <string name="widget_configure_prayer_note">শহর, কাউন্টডাউন, দিনের সময় ও সময়ের আকার শুধু এই উইজেটের। আজানের পর থেকে সময় সব নামাজের সময়ের উইজেটে একই।</string>
+    <string name="widget_configure_bg_colour">ব্যাকগ্রাউন্ডের রং</string>
+    <string name="widget_configure_bg_app">অ্যাপ</string>
+    <string name="widget_configure_bg_note">«অ্যাপ» অ্যাপের রং অনুসরণ করে: আকাশ থিম ও রঙিন পৃষ্ঠ। গাঢ়, হালকা বা আপনার নিজের রং অ্যাপ যেমনই দেখাক একই থাকে।</string>
     <string name="widget_configure_text_color">লেখার রং</string>
     <string name="widget_configure_text_light">হালকা</string>
     <string name="widget_configure_text_white">সাদা</string>

@@ -33,7 +33,10 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Speichern</string>
     <string name="widget_configure_prayer_title">Gebetszeiten-Widget</string>
-    <string name="widget_configure_prayer_note">Gilt nur für die Gebetszeiten-Widgets.</string>
+    <string name="widget_configure_prayer_note">Stadt, Countdown, die Zeiten des Tages und die Größe gelten nur für dieses Widget. Die Zeit seit dem Adhan gilt für alle Gebetszeiten-Widgets.</string>
+    <string name="widget_configure_bg_colour">Hintergrundfarbe</string>
+    <string name="widget_configure_bg_app">App</string>
+    <string name="widget_configure_bg_note">„App“ folgt den Farben der App: dem Himmel-Design und den eingefärbten Flächen. Dunkel, Hell oder eine eigene Farbe bleibt gleich, egal wie die App aussieht.</string>
     <string name="widget_configure_text_color">Textfarbe</string>
     <string name="widget_configure_text_light">Hell</string>
     <string name="widget_configure_text_white">Weiß</string>

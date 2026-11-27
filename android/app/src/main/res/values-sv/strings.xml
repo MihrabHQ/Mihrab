@@ -33,7 +33,10 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Spara</string>
     <string name="widget_configure_prayer_title">Bönetidswidget</string>
-    <string name="widget_configure_prayer_note">Gäller bara bönetidswidgetarna.</string>
+    <string name="widget_configure_prayer_note">Staden, nedräkningen, dagens tider och storleken gäller bara den här widgeten. Tid sedan adhan delas av alla bönetidswidgetar.</string>
+    <string name="widget_configure_bg_colour">Bakgrundsfärg</string>
+    <string name="widget_configure_bg_app">Appen</string>
+    <string name="widget_configure_bg_note">Appen följer appens färger: Himmel-temat och tonade ytor. Mörk, Ljus eller en egen färg förblir densamma oavsett hur appen ser ut.</string>
     <string name="widget_configure_text_color">Textfärg</string>
     <string name="widget_configure_text_light">Ljus</string>
     <string name="widget_configure_text_white">Vit</string>

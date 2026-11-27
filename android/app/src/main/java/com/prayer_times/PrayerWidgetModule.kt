@@ -97,6 +97,9 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       map.putString("highlightHex", prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_HEX, ""))
       map.putBoolean("highlightDynamic", prefs.getBoolean(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_DYNAMIC, false))
       map.putBoolean("tinted", prefs.getBoolean(PrayerWidgetProvider.PREFS_WIDGET_TINTED, false))
+      // Whose colour the card is — the widget's own settings screen can change it.
+      map.putString("bgMode", prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_MODE, PrayerWidgetProvider.BG_APP))
+      map.putString("bgHex", prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_HEX, ""))
       promise.resolve(map)
     } catch (e: Exception) {
       promise.reject("E_WIDGET_APPEARANCE_GET", e.message, e)
@@ -363,6 +366,27 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       promise.resolve(null)
     } catch (e: Exception) {
       promise.reject("E_WIDGET_APPEARANCE", e.message, e)
+    }
+  }
+
+  /**
+   * Whose colour the widgets' card is: "app" (the app's — its Sky theme,
+   * its tint), or "dark", "light" or "custom" with a #RRGGBB, which stay
+   * whatever the app looks like. See PrayerWidgetProvider.PREFS_WIDGET_BG_MODE.
+   */
+  override fun setAndroidWidgetBackground(mode: String, hex: String?, promise: Promise) {
+    try {
+      val m = mode.trim().lowercase().takeIf { it in PrayerWidgetProvider.BG_MODES } ?: PrayerWidgetProvider.BG_APP
+      reactContext
+        .getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
+        .edit()
+        .putString(PrayerWidgetProvider.PREFS_WIDGET_BG_MODE, m)
+        .putString(PrayerWidgetProvider.PREFS_WIDGET_BG_HEX, hex?.trim() ?: "")
+        .apply()
+      fanOut()
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject("E_WIDGET_BACKGROUND", e.message, e)
     }
   }
 

@@ -33,7 +33,10 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">保存</string>
     <string name="widget_configure_prayer_title">礼拜时间小组件</string>
-    <string name="widget_configure_prayer_note">仅适用于礼拜时间小组件。</string>
+    <string name="widget_configure_prayer_note">城市、倒计时、当天的时间和字号仅属于这个小组件。宣礼后的时间由所有礼拜时间小组件共用。</string>
+    <string name="widget_configure_bg_colour">背景颜色</string>
+    <string name="widget_configure_bg_app">应用</string>
+    <string name="widget_configure_bg_note">“应用”跟随应用的颜色：天空主题和色调化界面。深色、浅色或自选颜色则保持不变，无论应用外观如何。</string>
     <string name="widget_configure_text_color">文字颜色</string>
     <string name="widget_configure_text_light">浅色</string>
     <string name="widget_configure_text_white">白色</string>

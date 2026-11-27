@@ -49,18 +49,71 @@ data class PrayerWidgetDisplay(
     const val SCALE_MAX = 150
     private const val DEFAULT_TEXT = 0xFFE8EAED.toInt()
 
-    fun read(context: Context): PrayerWidgetDisplay {
+    /**
+     * PER WIDGET (issue #144). City, countdown, table and time size were
+     * one answer for every prayer-times widget: two placed side by side —
+     * the day's times on one, the countdown alone on the other — both took
+     * whichever was saved last. A widget saved from its own settings screen
+     * now keeps these four under its own id (`ownKey`), and is drawn from
+     * them; a widget that has none of its own follows the common ones, which
+     * are the app's (Settings → Widgets) — so every widget placed before
+     * this looks as it did, and the app's page is the default for new ones.
+     * Colours, the background and the time since the adhan stay common.
+     */
+    val PER_WIDGET_KEYS = listOf(KEY_SHOW_LOCATION, KEY_SHOW_COUNTDOWN, KEY_SHOW_TABLE, KEY_TIME_SCALE)
+
+    /** The key one widget's own value is stored under. */
+    fun ownKey(key: String, appWidgetId: Int): String = "$key#$appWidgetId"
+
+    /** A placed widget's id; anything else (a sample, a card not placed) has no choices of its own. */
+    private fun placed(appWidgetId: Int): Boolean = appWidgetId > 0
+
+    /** Drop the choices of widgets that are gone. */
+    fun forget(context: Context, appWidgetIds: IntArray) {
+      val e = context.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE).edit()
+      for (id in appWidgetIds) for (key in PER_WIDGET_KEYS) e.remove(ownKey(key, id))
+      e.apply()
+    }
+
+    /** Widgets given new ids (a restored home screen): their choices under the new ones. */
+    fun moved(context: Context, oldIds: IntArray, newIds: IntArray) {
       val p = context.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
+      val all = p.all
+      val e = p.edit()
+      for (i in oldIds.indices) {
+        val to = newIds.getOrNull(i) ?: continue
+        for (key in PER_WIDGET_KEYS) {
+          val from = ownKey(key, oldIds[i])
+          when (val v = all[from]) {
+            is Boolean -> e.putBoolean(ownKey(key, to), v)
+            is Int -> e.putInt(ownKey(key, to), v)
+            else -> {}
+          }
+          e.remove(from)
+        }
+      }
+      e.apply()
+    }
+
+    fun read(context: Context, appWidgetId: Int = 0): PrayerWidgetDisplay {
+      val p = context.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
+      // This widget's own answer where it has one, else the common one.
+      fun bool(key: String): Boolean {
+        val own = ownKey(key, appWidgetId)
+        return if (placed(appWidgetId) && p.contains(own)) p.getBoolean(own, true) else p.getBoolean(key, true)
+      }
+      val scaleOwn = ownKey(KEY_TIME_SCALE, appWidgetId)
+      val scale = if (placed(appWidgetId) && p.contains(scaleOwn)) p.getInt(scaleOwn, 100) else p.getInt(KEY_TIME_SCALE, 100)
       val hex = p.getString(KEY_TEXT_HEX, "")?.trim().orEmpty()
       val text = if (hex.matches(Regex("^#[0-9A-Fa-f]{6}$"))) {
         try { Color.parseColor(hex) } catch (_: Exception) { DEFAULT_TEXT }
       } else DEFAULT_TEXT
       return PrayerWidgetDisplay(
         text = legibleOnSky(context, text),
-        showLocation = p.getBoolean(KEY_SHOW_LOCATION, true),
-        showCountdown = p.getBoolean(KEY_SHOW_COUNTDOWN, true),
-        showTable = p.getBoolean(KEY_SHOW_TABLE, true),
-        timeScale = p.getInt(KEY_TIME_SCALE, 100).coerceIn(SCALE_MIN, SCALE_MAX) / 100f,
+        showLocation = bool(KEY_SHOW_LOCATION),
+        showCountdown = bool(KEY_SHOW_COUNTDOWN),
+        showTable = bool(KEY_SHOW_TABLE),
+        timeScale = scale.coerceIn(SCALE_MIN, SCALE_MAX) / 100f,
       )
     }
 
@@ -76,16 +129,27 @@ data class PrayerWidgetDisplay(
      * SKY_TEXT_MIN_CONTRAST against it, the card's own light text is used.
      * A see-through card is the wallpaper's to judge, and the choice
      * stands. Nothing is stored: with the theme off the choice is back.
+     *
+     * THE SAME FOR A CARD OF ITS OWN COLOUR (`PrayerWidgetProvider.fixedCard`):
+     * Light, or a pale colour of the reader's, under the default light text
+     * would be a card nobody can read the moment it is chosen. There the
+     * text is the light one or the dark one, whichever the card holds
+     * better. The neutral dark card that follows the app is left alone, as
+     * it was: a dark text on it is a choice made for a see-through card.
      */
     internal fun legibleOnSky(context: Context, text: Int): Int {
       val card = try {
-        PrayerWidgetProvider.skyCard(context)
+        PrayerWidgetProvider.skyCard(context) ?: PrayerWidgetProvider.fixedCard(context)
       } catch (_: Exception) {
         null
       } ?: return text
       if (card.second < SKY_CARD_MIN_OPACITY) return text
-      return if (contrast(text, card.first) < SKY_TEXT_MIN_CONTRAST) DEFAULT_TEXT else text
+      if (contrast(text, card.first) >= SKY_TEXT_MIN_CONTRAST) return text
+      return if (contrast(DEFAULT_TEXT, card.first) >= contrast(DARK_TEXT, card.first)) DEFAULT_TEXT else DARK_TEXT
     }
+
+    /** The Dark preset (settings/WidgetTextColor.tsx). */
+    private const val DARK_TEXT = 0xFF1C1C1E.toInt()
 
     const val SKY_CARD_MIN_OPACITY = 60
     const val SKY_TEXT_MIN_CONTRAST = 3.0

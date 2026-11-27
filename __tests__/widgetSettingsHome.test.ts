@@ -118,6 +118,6 @@ describe('the text colour is common to every widget', () => {
     expect(SUPPORT).toMatch(/val TEXT: Int get\(\) = style\.text/);
     expect(SUPPORT).toMatch(/val MUTED: Int get\(\) = style\.muted/);
     // Content composed right after, inside the card's reading direction (#118).
-    expect(BASE).toMatch(/Palette\.sync\(context\)[\s\S]{0,400}?CompositionLocalProvider\(LocalDirection provides WidgetDirection\.of\(context\)\) \{\s*Content\(\)/);
+    expect(BASE).toMatch(/Palette\.sync\(context\)[\s\S]{0,800}?CompositionLocalProvider\(\s*LocalDirection provides WidgetDirection\.of\(context\),\s*LocalWidgetId provides appWidgetId,\s*\) \{\s*Content\(\)/);
   });
 });

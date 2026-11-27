@@ -50,7 +50,9 @@ import {
   DEFAULT_SETTINGS,
   isHeroLook,
   PRAYER_DATA_PROVIDER_IDS,
+  WIDGET_BACKGROUND_MODES,
   type PrayerAppSettings,
+  type WidgetBackgroundMode,
 } from './types';
 import { quiet } from '../utils/quiet';
 
@@ -578,6 +580,15 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   }
   merged.androidWidgetBackgroundOpacity = coerceWidgetOpacity(
     parsed.androidWidgetBackgroundOpacity,
+  );
+  merged.androidWidgetBackgroundMode = (WIDGET_BACKGROUND_MODES as readonly unknown[]).includes(
+    parsed.androidWidgetBackgroundMode,
+  )
+    ? (parsed.androidWidgetBackgroundMode as WidgetBackgroundMode)
+    : DEFAULT_SETTINGS.androidWidgetBackgroundMode;
+  merged.androidWidgetBackgroundCustomHex = coerceHexColor(
+    parsed.androidWidgetBackgroundCustomHex,
+    DEFAULT_SETTINGS.androidWidgetBackgroundCustomHex,
   );
   merged.hijriCalendar = coerceHijriCalendarId(parsed.hijriCalendar);
   merged.hijriAdjustDays = coerceHijriAdjust(parsed.hijriAdjustDays);

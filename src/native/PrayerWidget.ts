@@ -39,6 +39,8 @@ export interface PrayerWidgetInterface {
    * colours, or both null to hand the widget back to its own settings.
    */
   setAndroidWidgetSky?(bgHex: string | null, accentHex: string | null): Promise<void>;
+  /** Whose colour the widgets' card is: 'app', or 'dark' | 'light' | 'custom' (+ #RRGGBB). */
+  setAndroidWidgetBackground?(mode: string, hex: string | null): Promise<void>;
   /**
    * The Sky theme's whole day on the widgets, Android and iOS: the JSON
    * of `widgetSkySchedule` (widget/widgetSkySchedule.ts) — from which
@@ -76,6 +78,8 @@ export interface PrayerWidgetInterface {
     highlightHex: string;
     highlightDynamic: boolean;
     tinted?: boolean;
+    bgMode?: string;
+    bgHex?: string;
   } | null>;
 
   // ── iOS appearance ────────────────────────────────────────────────────────

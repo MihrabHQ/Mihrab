@@ -33,7 +33,10 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Сохранить</string>
     <string name="widget_configure_prayer_title">Виджет времени намаза</string>
-    <string name="widget_configure_prayer_note">Только для виджетов времени намаза.</string>
+    <string name="widget_configure_prayer_note">Город, обратный отсчёт, время на день и размер — только для этого виджета. Время после азана общее для всех виджетов времени намаза.</string>
+    <string name="widget_configure_bg_colour">Цвет фона</string>
+    <string name="widget_configure_bg_app">Приложение</string>
+    <string name="widget_configure_bg_note">«Приложение» повторяет цвета приложения: тему «Небо» и цветные поверхности. Тёмный, Светлый или свой цвет остаётся прежним, как бы ни выглядело приложение.</string>
     <string name="widget_configure_text_color">Цвет текста</string>
     <string name="widget_configure_text_light">Светлый</string>
     <string name="widget_configure_text_white">Белый</string>

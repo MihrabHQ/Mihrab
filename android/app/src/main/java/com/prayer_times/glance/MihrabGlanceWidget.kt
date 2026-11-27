@@ -8,6 +8,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.key
 import androidx.glance.GlanceId
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.provideContent
 import com.prayer_times.PrayerWidgetProvider
@@ -28,6 +29,9 @@ import com.prayer_times.WidgetErrorCard
  * `Content` is a function of `LocalSize` and nothing else, which is the
  * contract the RemoteViews `render(size)` functions already kept.
  */
+/** The launcher's id of the widget being composed; 0 for a sample. */
+internal val LocalWidgetId = androidx.compose.runtime.compositionLocalOf { 0 }
+
 internal abstract class MihrabGlanceWidget(private val what: String) :
   GlanceAppWidget(errorUiLayout = R.layout.glance_error_card) {
 
@@ -45,9 +49,20 @@ internal abstract class MihrabGlanceWidget(private val what: String) :
         // The user's text colour, read from disk with everything else the
         // card is drawn from.
         Palette.sync(context)
+        // Which placed widget this is, for what a widget keeps of its own
+        // (PrayerWidgetDisplay, "per widget"). A sample composed for a
+        // settings page has no id of the launcher's, and gets none.
+        val appWidgetId = try {
+          GlanceAppWidgetManager(context).getAppWidgetId(id)
+        } catch (_: Exception) {
+          0
+        }
         // Which way the card reads: Mihrab's language's, whatever the
         // launcher's is (#118; GlanceSupport, "Direction").
-        CompositionLocalProvider(LocalDirection provides WidgetDirection.of(context)) {
+        CompositionLocalProvider(
+          LocalDirection provides WidgetDirection.of(context),
+          LocalWidgetId provides appWidgetId,
+        ) {
           Content()
         }
       }

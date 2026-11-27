@@ -40,7 +40,7 @@ describe('the sample is the widget itself', () => {
     expect(live).toMatch(/override fun createConfigurationContext[\s\S]*?Overlay\(super\.createConfigurationContext\(overrideConfiguration\), overrides\)/);
     // What is seen before Save is what Save stores: one list for both.
     expect(activity).toContain('val choices = pending()');
-    expect(activity).toMatch(/for \(\(key, value\) in pending\(\)\) \{/);
+    expect(activity).toMatch(/for \(\(name, value\) in pending\(\)\) \{/);
   });
 
   it('cannot be touched: the Log\'s card would log a prayer', () => {

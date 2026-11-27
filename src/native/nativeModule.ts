@@ -44,6 +44,7 @@ export const ANDROID_ONLY: Record<string, readonly string[]> = {
     'renderPreviews',
     'setAndroidWidgetAppearance',
     'setAndroidWidgetSky',
+    'setAndroidWidgetBackground',
     'getAndroidPrayerWidgetDisplay',
     'setAndroidPrayerWidgetDisplay',
   ],

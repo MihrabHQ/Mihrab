@@ -60,6 +60,10 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
 
   // What the screen holds, as chosen so far.
   private var opacity = 88
+  private var bgMode = PrayerWidgetProvider.BG_APP
+  private var bgCustomHex = DEFAULT_BG_CUSTOM
+  /** Redraws the highlight's controls: whose it is turns on the background. */
+  private var refreshHighlight: () -> Unit = {}
   private var highlightId = "green"
   private var highlightCustomHex = DEFAULT_HIGHLIGHT
   private var textHex = TEXT_PRESETS[0].second
@@ -82,6 +86,8 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   private var previewJob: Job? = null
   private var sample: WidgetSample? = null
   private var cardRgb = 0x101418
+  /** The card where it follows the app, for the drawn stand-in. */
+  private var appCardRgb = 0x101418
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -145,6 +151,11 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     } catch (_: Exception) {
       0x101418
     }
+    appCardRgb = try {
+      PrayerWidgetProvider.appCardRgb(this)
+    } catch (_: Exception) {
+      0x101418
+    }
 
     bindBackground()
     bindTextColour()
@@ -160,6 +171,9 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   private fun readStored() {
     val prefs = getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
     opacity = prefs.getInt(PrayerWidgetProvider.PREFS_WIDGET_BG_OPACITY, 88).coerceIn(0, 100)
+    val storedMode = prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_MODE, PrayerWidgetProvider.BG_APP)?.trim()?.lowercase().orEmpty()
+    bgMode = if (storedMode in PrayerWidgetProvider.BG_MODES) storedMode else PrayerWidgetProvider.BG_APP
+    bgCustomHex = normaliseHex(prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_HEX, "")) ?: DEFAULT_BG_CUSTOM
     // Dynamic (phone accent) is gone (2026-08-27, by request). The stored
     // flag is not read back into a selection: a widget configured by an
     // older build opens on the colour it will actually be drawn in, which
@@ -172,7 +186,8 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     textHex = storedText
     textCustom = TEXT_PRESETS.none { it.second == storedText }
 
-    val display = PrayerWidgetDisplay.read(this)
+    // This widget's own, where it has them (PrayerWidgetDisplay, "per widget").
+    val display = PrayerWidgetDisplay.read(this, widgetId)
     showLocation = display.showLocation
     showCountdown = display.showCountdown
     showTable = display.showTable
@@ -198,8 +213,19 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
       return
     }
 
+    val bgLayout = findViewById<TextInputLayout>(R.id.widget_configure_bg_hex_layout)
+    if (bgMode == PrayerWidgetProvider.BG_CUSTOM && normaliseHex(findViewById<TextInputEditText>(R.id.widget_configure_bg_hex_input).text?.toString()) == null) {
+      bgLayout.error = getString(R.string.widget_configure_hex_invalid)
+      bgLayout.requestFocus()
+      return
+    }
+
     val editor = getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE).edit()
-    for ((key, value) in pending()) {
+    for ((name, value) in pending()) {
+      // What is shown is THIS widget's (issue #144): stored under its own
+      // id, and the common answer — the app's, and every other widget's
+      // default — is left as it was.
+      val key = if (name in PrayerWidgetDisplay.PER_WIDGET_KEYS) PrayerWidgetDisplay.ownKey(name, appWidgetId) else name
       when (value) {
         is Boolean -> editor.putBoolean(key, value)
         is Int -> editor.putInt(key, value)
@@ -220,7 +246,10 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   /**
    * What Save writes, as chosen so far: the store's keys and their values.
    * The sample is composed over exactly this (`WidgetLivePreview`), so what
-   * is seen before Save is what is stored by it.
+   * is seen before Save is what is stored by it. The four that are this
+   * widget's alone are named here by their common keys — a sample has no
+   * id of the launcher's and reads those — and `save` puts them under the
+   * widget's own.
    */
   private fun pending(): Map<String, Any> {
     val out = LinkedHashMap<String, Any>()
@@ -236,6 +265,8 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
       }
     }
     out[PrayerWidgetProvider.PREFS_WIDGET_BG_OPACITY] = opacity
+    out[PrayerWidgetProvider.PREFS_WIDGET_BG_MODE] = bgMode
+    out[PrayerWidgetProvider.PREFS_WIDGET_BG_HEX] = if (bgMode == PrayerWidgetProvider.BG_CUSTOM) bgCustomHex else ""
     out[PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_ID] = highlightId
     out[PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_HEX] = if (highlightId == "custom") highlightCustomHex else ""
     // Written as false rather than left alone: saving here is the one
@@ -260,6 +291,53 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   // ── The controls ───────────────────────────────────────────────────────
 
   private fun bindBackground() {
+    // Whose colour the card is: the app's (its Sky theme, its tint), or one
+    // that stays whatever the app looks like.
+    val group = findViewById<MaterialButtonToggleGroup>(R.id.widget_configure_bg_group)
+    val hexLayout = findViewById<TextInputLayout>(R.id.widget_configure_bg_hex_layout)
+    val hexInput = findViewById<TextInputEditText>(R.id.widget_configure_bg_hex_input)
+    hexInput.setText(bgCustomHex)
+    val names = listOf(
+      PrayerWidgetProvider.BG_APP to getString(R.string.widget_configure_bg_app),
+      PrayerWidgetProvider.BG_DARK to getString(R.string.widget_configure_text_dark),
+      PrayerWidgetProvider.BG_LIGHT to getString(R.string.widget_configure_text_light),
+      // "#", as the colour swatches write a colour of one's own.
+      PrayerWidgetProvider.BG_CUSTOM to "#",
+    )
+    val modes = HashMap<Int, String>()
+    for ((mode, name) in names) {
+      val b = MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle)
+      b.id = View.generateViewId()
+      b.text = name
+      b.isAllCaps = false
+      b.maxLines = 1
+      if (mode == PrayerWidgetProvider.BG_CUSTOM) b.contentDescription = getString(R.string.widget_configure_highlight_custom)
+      group.addView(b, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+      modes[b.id] = mode
+      if (mode == bgMode) group.check(b.id)
+    }
+    fun applied() {
+      hexLayout.visibility = if (bgMode == PrayerWidgetProvider.BG_CUSTOM) View.VISIBLE else View.GONE
+      hexLayout.error = null
+      cardRgb = (PrayerWidgetProvider.fixedBackground(bgMode, bgCustomHex) ?: appCardRgb) and 0x00FFFFFF
+      refreshHighlight()
+      renderPreview()
+    }
+    group.addOnButtonCheckedListener { _, checkedId, isChecked ->
+      if (isChecked) {
+        bgMode = modes[checkedId] ?: PrayerWidgetProvider.BG_APP
+        applied()
+      }
+    }
+    hexInput.addTextChangedListener(afterText {
+      hexLayout.error = null
+      normaliseHex(it)?.let { hex ->
+        bgCustomHex = hex
+        if (bgMode == PrayerWidgetProvider.BG_CUSTOM) applied()
+      }
+    })
+    hexLayout.visibility = if (bgMode == PrayerWidgetProvider.BG_CUSTOM) View.VISIBLE else View.GONE
+
     val seek = findViewById<SeekBar>(R.id.widget_configure_opacity_seek)
     val label = findViewById<TextView>(R.id.widget_configure_opacity_value)
     seek.max = 100
@@ -318,19 +396,23 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     // moving when one is tapped — so in their place a line says whose the
     // colour is. The stored choice is kept, and is the card's again when
     // the theme is turned off.
-    val skyOn = try {
-      PrayerWidgetProvider.skyCard(this) != null
+    //
+    // Only while the card follows the app: with a background of its own
+    // the highlight is the one chosen here (`readWidgetStyle`).
+    val skyStored = try {
+      PrayerWidgetProvider.skyStored(this)
     } catch (_: Exception) {
       false
     }
-    findViewById<View>(R.id.widget_configure_highlight_sky).visibility = if (skyOn) View.VISIBLE else View.GONE
-    findViewById<View>(R.id.widget_configure_highlight_scroll).visibility = if (skyOn) View.GONE else View.VISIBLE
-    if (skyOn) {
-      layout.visibility = View.GONE
-      return
-    }
 
     fun redraw() {
+      val skyOn = skyStored && bgMode == PrayerWidgetProvider.BG_APP
+      findViewById<View>(R.id.widget_configure_highlight_sky).visibility = if (skyOn) View.VISIBLE else View.GONE
+      findViewById<View>(R.id.widget_configure_highlight_scroll).visibility = if (skyOn) View.GONE else View.VISIBLE
+      if (skyOn) {
+        layout.visibility = View.GONE
+        return
+      }
       row.removeAllViews()
       for ((id, hex, nameRes) in HIGHLIGHTS) {
         row.addView(swatch(Color.parseColor(hex), getString(nameRes), highlightId == id) {
@@ -353,6 +435,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
         renderPreview()
       }
     })
+    refreshHighlight = { redraw() }
     redraw()
   }
 
@@ -511,6 +594,8 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
 
   companion object {
     private const val DEFAULT_HIGHLIGHT = "#46A081"
+    /** What the custom background's field opens on: the neutral dark card. */
+    private const val DEFAULT_BG_CUSTOM = "#1C1C1E"
 
     /** The cards PrayerGlanceWidget draws: Next prayer, Prayer times, tall. */
     private val PRAYER_TIMES_PROVIDERS = setOf(

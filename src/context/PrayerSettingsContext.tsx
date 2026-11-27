@@ -161,6 +161,8 @@ export type DataSourceSlice = Pick<
 export type WidgetSlice = Pick<
   PrayerAppSettings,
   | 'androidWidgetBackgroundOpacity'
+  | 'androidWidgetBackgroundMode'
+  | 'androidWidgetBackgroundCustomHex'
   | 'widgetHighlightId'
   | 'widgetHighlightCustomHex'
   | 'androidWidgetTextColor'
@@ -501,6 +503,8 @@ export function PrayerSettingsProvider({
   const widget = useMemo<WidgetSlice>(
     () => ({
       androidWidgetBackgroundOpacity: settings.androidWidgetBackgroundOpacity,
+      androidWidgetBackgroundMode: settings.androidWidgetBackgroundMode,
+      androidWidgetBackgroundCustomHex: settings.androidWidgetBackgroundCustomHex,
       widgetHighlightId: settings.widgetHighlightId,
       widgetHighlightCustomHex: settings.widgetHighlightCustomHex,
       androidWidgetTextColor: settings.androidWidgetTextColor,
@@ -512,6 +516,8 @@ export function PrayerSettingsProvider({
     }),
     [
       settings.androidWidgetBackgroundOpacity,
+      settings.androidWidgetBackgroundMode,
+      settings.androidWidgetBackgroundCustomHex,
       settings.widgetHighlightId,
       settings.widgetHighlightCustomHex,
       settings.androidWidgetTextColor,

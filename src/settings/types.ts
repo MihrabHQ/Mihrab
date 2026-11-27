@@ -126,6 +126,12 @@ export type LocationPreset = {
   label?: string;
 };
 
+export const WIDGET_BACKGROUND_MODES = ['app', 'dark', 'light', 'custom'] as const;
+export type WidgetBackgroundMode = (typeof WIDGET_BACKGROUND_MODES)[number];
+/** The cards 'dark' and 'light' draw (PrayerWidgetProvider BG_DARK_RGB, BG_LIGHT_RGB). */
+export const WIDGET_BACKGROUND_DARK = '#1C1C1E';
+export const WIDGET_BACKGROUND_LIGHT = '#FAF7F2';
+
 export type PrayerAppSettings = {
   /** Follow OS light/dark, or force one mode. */
   appearance: AppearancePreference;
@@ -303,6 +309,15 @@ export type PrayerAppSettings = {
   garminWatch: GarminWatchSettings;
   /** Android: widget background opacity 0–100. */
   androidWidgetBackgroundOpacity: number;
+  /**
+   * Android: whose colour the widgets' card is. 'app' (the default) follows
+   * the app — its Sky theme's hour, its tinted surfaces, else the neutral
+   * dark card. 'dark', 'light' and 'custom' are a colour that stays
+   * whatever the app looks like.
+   */
+  androidWidgetBackgroundMode: WidgetBackgroundMode;
+  /** With `androidWidgetBackgroundMode` 'custom': #RRGGBB. */
+  androidWidgetBackgroundCustomHex: string;
   /** Highlight style for the widget next-prayer row. */
   widgetHighlightId: WidgetHighlightId;
   /** When `widgetHighlightId` is `custom`, #RRGGBB (e.g. #6BC98A). */
@@ -855,6 +870,8 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   garminWatch: { ...DEFAULT_GARMIN_WATCH },
   prayerAlertModes: {},
   androidWidgetBackgroundOpacity: 88,
+  androidWidgetBackgroundMode: 'app',
+  androidWidgetBackgroundCustomHex: '#1C1C1E',
   widgetHighlightId: 'green',
   widgetHighlightCustomHex: '#6BC98A',
   hijriCalendar: 'tabular',

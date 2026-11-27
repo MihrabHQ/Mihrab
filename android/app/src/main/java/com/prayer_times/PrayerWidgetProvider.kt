@@ -40,12 +40,20 @@ private data class WidgetStyle(
    */
   val skyBg: String = "",
   val skyAccent: String = "",
+  /**
+   * A card of its own colour, where the reader has asked the widgets not to
+   * follow the app (`PREFS_WIDGET_BG_MODE`): opaque RGB; the strength is
+   * still `bgOpacityPercent`. Null: the card follows the app, as it always
+   * did — the Sky theme's hour, the tint, or the neutral dark.
+   */
+  val fixedBg: Int? = null,
 ) {
   private fun parseHexOrNull(h: String): Int? =
     if (h.matches(Regex("^#([0-9A-Fa-f]{6})$"))) try { Color.parseColor(h) } catch (_: Exception) { null } else null
 
   fun backgroundArgb(): Int {
     val a = (bgOpacityPercent.coerceIn(0, 100) * 255 / 100f).toInt().coerceIn(0, 255)
+    fixedBg?.let { return Color.argb(a, Color.red(it), Color.green(it), Color.blue(it)) }
     parseHexOrNull(skyBg)?.let { return Color.argb(a, Color.red(it), Color.green(it), Color.blue(it)) }
     if (!tinted) return Color.argb(a, BASE_BG_R, BASE_BG_G, BASE_BG_B)
     // Wash the neutral card toward the accent. A modest fraction: the widget
@@ -148,6 +156,19 @@ private fun readWidgetStyle(prefs: SharedPreferences): WidgetStyle {
   )
   val skyBg = sky?.first ?: prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_SKY_BG, "") ?: ""
   val skyAccent = sky?.second ?: prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_SKY_ACCENT, "") ?: ""
+  // A CARD OF ITS OWN COLOUR (issue #144's companion ask). "Follow the app"
+  // is the card as it always was. Dark, Light or a colour of the reader's
+  // own is that colour whatever the app looks like: the Sky theme's hour
+  // and the tint are the app's colouring, so neither is taken — and the
+  // highlight is then the one chosen for the widgets, since the hour's
+  // accent was mixed for the hour's card and not for this one.
+  val fixed = PrayerWidgetProvider.fixedBackground(
+    prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_MODE, PrayerWidgetProvider.BG_APP),
+    prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_HEX, ""),
+  )
+  if (fixed != null) {
+    return WidgetStyle(opacity.coerceIn(0, 100), hid.ifEmpty { "green" }, hex, false, "", "", fixed)
+  }
   return WidgetStyle(
     opacity.coerceIn(0, 100),
     hid.ifEmpty { "green" },
@@ -190,6 +211,24 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
     }
   }
 
+  /** A removed widget's own choices go with it (PrayerWidgetDisplay, "per widget"). */
+  override fun onDeleted(context: Context, appWidgetIds: IntArray) {
+    super.onDeleted(context, appWidgetIds)
+    try {
+      PrayerWidgetDisplay.forget(context, appWidgetIds)
+    } catch (_: Exception) {
+    }
+  }
+
+  /** A restored home screen gives its widgets new ids: their choices follow them. */
+  override fun onRestored(context: Context, oldWidgetIds: IntArray, newWidgetIds: IntArray) {
+    super.onRestored(context, oldWidgetIds, newWidgetIds)
+    try {
+      PrayerWidgetDisplay.moved(context, oldWidgetIds, newWidgetIds)
+    } catch (_: Exception) {
+    }
+  }
+
   companion object {
     private const val TAG = "MihrabWidget"
 
@@ -207,6 +246,63 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
     const val PREFS_WIDGET_SKY_ACCENT = "widget_sky_accent"
     /** The Sky theme's day ahead, as JSON segments (WidgetSkySchedule). */
     const val PREFS_WIDGET_SKY_SCHEDULE = "widget_sky_schedule"
+    /**
+     * Whose colour the card is: `BG_APP` (the default: the app's — its Sky
+     * theme's hour, its tint, else the neutral dark), or a colour that
+     * stays whatever the app looks like: `BG_DARK`, `BG_LIGHT`, or
+     * `BG_CUSTOM` with `PREFS_WIDGET_BG_HEX`.
+     */
+    const val PREFS_WIDGET_BG_MODE = "widget_bg_mode"
+    const val PREFS_WIDGET_BG_HEX = "widget_bg_hex"
+    const val BG_APP = "app"
+    const val BG_DARK = "dark"
+    const val BG_LIGHT = "light"
+    const val BG_CUSTOM = "custom"
+    val BG_MODES = listOf(BG_APP, BG_DARK, BG_LIGHT, BG_CUSTOM)
+    /** The neutral dark card (BASE_BG) and the app's light page (theme/tokens.ts `paperWarm`). */
+    const val BG_DARK_RGB = 0xFF1C1C1E.toInt()
+    const val BG_LIGHT_RGB = 0xFFFAF7F2.toInt()
+
+    /** The card's own colour for a stored mode, opaque; null where it follows the app. */
+    fun fixedBackground(mode: String?, hex: String?): Int? =
+      when (mode?.trim()?.lowercase()) {
+        BG_DARK -> BG_DARK_RGB
+        BG_LIGHT -> BG_LIGHT_RGB
+        BG_CUSTOM -> {
+          val h = hex?.trim().orEmpty()
+          // A custom colour that is not one yet draws the dark card, not the app's.
+          if (h.matches(Regex("^#[0-9A-Fa-f]{6}$"))) try { Color.parseColor(h) } catch (_: Exception) { BG_DARK_RGB }
+          else BG_DARK_RGB
+        }
+        else -> null
+      }
+
+    /**
+     * The card's own colour (opaque) and how strongly it is drawn, 0–100,
+     * where the widgets do not follow the app. Null where they do.
+     */
+    /** Is the app's Sky theme written for the widgets (whether or not they follow it)? */
+    fun skyStored(context: Context): Boolean {
+      val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+      val sky = WidgetSkySchedule.colorsNow(prefs.getString(PREFS_WIDGET_SKY_SCHEDULE, "") ?: "")
+      val bg = sky?.first ?: prefs.getString(PREFS_WIDGET_SKY_BG, "") ?: ""
+      return bg.matches(Regex("^#([0-9A-Fa-f]{6})$"))
+    }
+
+    /** The card's colour (RGB) as it is when it follows the app, whatever is stored for the mode. */
+    fun appCardRgb(context: Context): Int {
+      val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+      val following = object : SharedPreferences by prefs {
+        override fun getString(key: String?, defValue: String?): String? =
+          if (key == PREFS_WIDGET_BG_MODE) BG_APP else prefs.getString(key, defValue)
+      }
+      return readWidgetStyle(following).backgroundArgb() and 0x00FFFFFF
+    }
+
+    fun fixedCard(context: Context): Pair<Int, Int>? {
+      val style = readWidgetStyle(context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE))
+      return style.fixedBg?.let { Pair(it, style.bgOpacityPercent) }
+    }
     /**
      * The language tag Mihrab itself is running in, copied out of the payload
      * when JS saves it. See `localized`.

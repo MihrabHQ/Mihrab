@@ -43,7 +43,10 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Enregistrer</string>
     <string name="widget_configure_prayer_title">Widget des horaires</string>
-    <string name="widget_configure_prayer_note">S’applique uniquement aux widgets des horaires.</string>
+    <string name="widget_configure_prayer_note">La ville, le compte à rebours, les horaires du jour et la taille ne concernent que ce widget. Le temps depuis l’adhan est commun à tous les widgets des horaires.</string>
+    <string name="widget_configure_bg_colour">Couleur du fond</string>
+    <string name="widget_configure_bg_app">Appli</string>
+    <string name="widget_configure_bg_note">« Appli » suit les couleurs de l’appli : le thème Ciel et les surfaces teintées. Sombre, Clair ou une couleur de votre choix reste la même, quelle que soit l’apparence de l’appli.</string>
     <string name="widget_configure_text_color">Couleur du texte</string>
     <string name="widget_configure_text_light">Clair</string>
     <string name="widget_configure_text_white">Blanc</string>

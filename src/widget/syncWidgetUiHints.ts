@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Platform, AppState } from 'react-native';
 import { afterFirstPaint } from '../boot/firstPaint';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
-import type { PrayerAppSettings, WidgetHighlightId } from '../settings/types';
-import { WIDGET_SINCE_ADHAN_CHOICES } from '../settings/types';
+import type { PrayerAppSettings, WidgetBackgroundMode, WidgetHighlightId } from '../settings/types';
+import { WIDGET_BACKGROUND_MODES, WIDGET_SINCE_ADHAN_CHOICES } from '../settings/types';
 import { getPrayerWidgetModule } from '../native/PrayerWidget';
 import { coerceWidgetTimeScale } from '../settings/storage';
 import { getSkyThemeDay, useSkyTheme } from '../theme/skyTheme';
@@ -57,6 +57,10 @@ function syncNativeWidgetAppearance(
       hex,
       dynamicHl,
       settings.tintedSurfaces,
+    );
+    void mod.setAndroidWidgetBackground?.(
+      settings.androidWidgetBackgroundMode,
+      settings.androidWidgetBackgroundMode === 'custom' ? settings.androidWidgetBackgroundCustomHex : null,
     );
     void mod.setAndroidPrayerWidgetDisplay?.(
       settings.androidWidgetTextColor,
@@ -130,6 +134,27 @@ export function prayerWidgetDisplayUpdates(
   return updates;
 }
 
+/**
+ * What the app should adopt of the widgets' background, which the widget's
+ * own settings screen can change while the app is closed. Only a mode the
+ * app knows, and a custom colour only where it is one.
+ */
+export function widgetBackgroundUpdates(
+  native: { bgMode?: string; bgHex?: string },
+  current: PrayerAppSettings,
+): Partial<PrayerAppSettings> {
+  const updates: Partial<PrayerAppSettings> = {};
+  const mode = typeof native.bgMode === 'string' ? native.bgMode.trim().toLowerCase() : '';
+  if ((WIDGET_BACKGROUND_MODES as readonly string[]).includes(mode) && mode !== current.androidWidgetBackgroundMode) {
+    updates.androidWidgetBackgroundMode = mode as WidgetBackgroundMode;
+  }
+  const hex = typeof native.bgHex === 'string' ? native.bgHex.trim().toUpperCase() : '';
+  if (/^#[0-9A-F]{6}$/.test(hex) && hex !== current.androidWidgetBackgroundCustomHex.toUpperCase()) {
+    updates.androidWidgetBackgroundCustomHex = hex;
+  }
+  return updates;
+}
+
 /** Syncs widget highlight / Android opacity with app settings (and Theme → System colors for dynamic accent). */
 export function useSyncWidgetUiHints(): void {
   const { hydrated, settings, updateSettings } = usePrayerSettings();
@@ -167,6 +192,7 @@ export function useSyncWidgetUiHints(): void {
             if (nativeSettings.highlightHex && nativeSettings.highlightHex !== currentSettings.widgetHighlightCustomHex) {
               updates.widgetHighlightCustomHex = nativeSettings.highlightHex;
             }
+            Object.assign(updates, widgetBackgroundUpdates(nativeSettings, currentSettings));
             if (Object.keys(updates).length > 0) {
               updateSettings(updates);
             }

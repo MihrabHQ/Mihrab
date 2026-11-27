@@ -47,7 +47,7 @@ describe('the option is not offered', () => {
     // right moment to stop an old `true` sitting there for ever.
     expect(repo(...CONFIGURE_ACTIVITY)).toMatch(/out\[PrayerWidgetProvider\.PREFS_WIDGET_HIGHLIGHT_DYNAMIC\] = false/);
     // …and what `pending()` lists is written, a Boolean as a Boolean.
-    expect(repo(...CONFIGURE_ACTIVITY)).toMatch(/for \(\(key, value\) in pending\(\)\) \{\s*when \(value\) \{\s*is Boolean -> editor\.putBoolean\(key, value\)/);
+    expect(repo(...CONFIGURE_ACTIVITY)).toMatch(/for \(\(name, value\) in pending\(\)\) \{[\s\S]{0,420}?when \(value\) \{\s*is Boolean -> editor\.putBoolean\(key, value\)/);
   });
 
   it('the strings it used are gone from every locale', () => {

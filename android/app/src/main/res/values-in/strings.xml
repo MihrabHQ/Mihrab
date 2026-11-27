@@ -33,7 +33,10 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Simpan</string>
     <string name="widget_configure_prayer_title">Widget waktu salat</string>
-    <string name="widget_configure_prayer_note">Hanya berlaku untuk widget waktu salat.</string>
+    <string name="widget_configure_prayer_note">Kota, hitung mundur, waktu hari ini, dan ukuran hanya untuk widget ini. Waktu sejak azan berlaku untuk semua widget waktu salat.</string>
+    <string name="widget_configure_bg_colour">Warna latar belakang</string>
+    <string name="widget_configure_bg_app">Aplikasi</string>
+    <string name="widget_configure_bg_note">“Aplikasi” mengikuti warna aplikasi: tema Langit dan permukaan bertinta. Gelap, Terang, atau warna pilihan Anda tetap sama, seperti apa pun tampilan aplikasi.</string>
     <string name="widget_configure_text_color">Warna teks</string>
     <string name="widget_configure_text_light">Terang</string>
     <string name="widget_configure_text_white">Putih</string>
