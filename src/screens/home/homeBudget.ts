@@ -38,6 +38,12 @@ export type HomeBudgetInput = {
   /** Rows on today's table — six with Sunrise; more with the extra times. */
   rows: number;
   /**
+   * Strips of optional times (Sunrise, the night marks): `groupDayRows`.
+   * Each is a thin line; a strip of three counts twice, for the second
+   * line it usually takes.
+   */
+  stripRows: number;
+  /**
    * Rows carrying a second line: the Mālikī tag, where it does not fit
    * beside the name and sits under it (a narrow phone, a large text
    * size). Zero while the tags are on the rows' own lines.
@@ -72,6 +78,9 @@ export const ROW_PAD: Record<HomeTier, number> = {
   comfortable: HOME_ROW_PADDING_V,
   compact: SPACING.sm,
 };
+/** A strip of optional times: its padding, and its line (footnote). */
+export const STRIP_PAD: Record<HomeTier, number> = { roomy: 8, comfortable: 6, compact: 4 };
+const STRIP_LINE = Math.round(TYPE.footnote.fontSize * 1.172);
 /** The Mālikī tag under a name (PrayerRow.daruriBelow: caption + 2). */
 const ROW_SUBLINE = TYPE.caption.lineHeight + 2;
 /** A row's name line (TYPE.title3). */
@@ -155,7 +164,10 @@ export function homeSegmentHeights(tier: HomeTier, input: HomeBudgetInput): Home
   const dayBar = DAY_BAR_PAD[tier] + DAY_BAR_TEXT[tier] * band;
   // Compact keeps the second line on the current row alone.
   const sublines = tier === 'compact' ? Math.min(input.sublineRows, 1) : input.sublineRows;
-  const table = input.rows * (ROW_PAD[tier] * 2 + ROW_LINE * tabular) + sublines * ROW_SUBLINE * tabular;
+  const table =
+    input.rows * (ROW_PAD[tier] * 2 + ROW_LINE * tabular) +
+    input.stripRows * (STRIP_PAD[tier] * 2 + STRIP_LINE * tabular) +
+    sublines * ROW_SUBLINE * tabular;
   const below =
     BELOW_GAP[tier] +
     QURAN_PAD[tier] * 2 +

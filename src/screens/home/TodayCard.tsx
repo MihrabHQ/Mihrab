@@ -60,7 +60,13 @@ import {
 import { GlassSurface } from '../../components/GlassSurface';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { TITLE_BAND_MAX_FONT_SCALE } from '../../theme/textScale';
-import { DISPLAY_ORDER, OPTIONAL_TIME_KEYS, displayRowsFor } from '../../types/prayer';
+import {
+  DISPLAY_ORDER,
+  OPTIONAL_TIME_KEYS,
+  displayRowsFor,
+  groupDayRows,
+  type DisplayPrayerKey,
+} from '../../types/prayer';
 import {
   DARURI_CONFIDENCE,
   DARURI_KEYS,
@@ -95,6 +101,7 @@ import { useVerticalBarActions, useVerticalBar } from '../../native/VerticalBar'
 import { QiblaChip } from './QiblaChip';
 import { HelpMihrabChip } from './HelpMihrabChip';
 import { SettingsChip } from './SettingsChip';
+import { ExtraTimesStrip } from './ExtraTimesStrip';
 import { PrayerRow } from './PrayerRow';
 import {
   useNextAlertOverride,
@@ -1294,8 +1301,12 @@ function TodayCardImpl({
     const nextDay = dayAt(offset + 1);
     const rows = displayRowsFor(dayTimings);
     const overrideKey = overrideKeyFor(offset, dayTimings, rows);
-    const timeSample = timeSampleFor(dayTimings, rows);
-    const timePeers = timePeersFor(dayTimings, rows);
+    // The prayers are rows; each run of optional times is one thin strip
+    // (`groupDayRows`). Only the rows have a time column to size.
+    const groups = groupDayRows(rows);
+    const fullRows = groups.flatMap(g => (g.kind === 'row' ? [g.key] : []));
+    const timeSample = timeSampleFor(dayTimings, fullRows);
+    const timePeers = timePeersFor(dayTimings, fullRows);
     const daruriRows: Record<
       string,
       { phase: 'first' | 'second'; at: string; approx: boolean } | null
@@ -1318,7 +1329,7 @@ function TodayCardImpl({
             approx: DARURI_CONFIDENCE[daruriKey] === 'modelled',
           };
     }
-    return rows.map((key, rowIndex) => (
+    const prayerRow = (key: DisplayPrayerKey, isLast: boolean) => (
       <PrayerRow
         key={key}
         prayerKey={key}
@@ -1330,7 +1341,7 @@ function TodayCardImpl({
         isChosen={isToday && chosenKey === key}
         onSelect={isToday && aimable.has(key) ? () => aimAt(key) : undefined}
         isSecondary={(OPTIONAL_TIME_KEYS as readonly string[]).includes(key)}
-        isLast={rowIndex === rows.length - 1}
+        isLast={isLast}
         // Mālikī second times (issue #19). The boundaries ride in the
         // same map under keys nothing else iterates, so a row that has
         // one shows it and every other row is unchanged. On today's card
@@ -1387,7 +1398,36 @@ function TodayCardImpl({
         hasCheckColumn={loggable}
         tier={fullBleed ? tier : 'comfortable'}
       />
-    ));
+    );
+    return groups.map((group, index) => {
+      const last = index === groups.length - 1;
+      if (group.kind === 'row') {
+        // No hairline between a prayer and the strip under it: Sunrise
+        // belongs with Fajr, the night's marks with Isha.
+        return prayerRow(group.key, last || groups[index + 1]?.kind === 'strip');
+      }
+      return (
+        <ExtraTimesStrip
+          key={group.keys.join('+')}
+          hasCheckColumn={loggable}
+          isLast={last}
+          tier={fullBleed ? tier : 'comfortable'}
+          items={group.keys.map(key => ({
+            key,
+            name: t(`prayer.${key}`),
+            time: clock(dayTimings[key]),
+            isNext: isToday && target?.name === key,
+            isChosen: isToday && chosenKey === key,
+            onSelect: isToday && aimable.has(key) ? () => aimAt(key) : undefined,
+            // As on a row: the bell shows what will happen at this time,
+            // which is the one-off override when there is one.
+            alertMode: isToday ? (overrideKey === key && override ? override.mode : alertModeOf(key)) : undefined,
+            onCycleAlertMode: isToday ? () => cycleAlertMode(key) : undefined,
+            emphasised: overrideKey === key && !!override,
+          }))}
+        />
+      );
+    });
   };
 
   /**

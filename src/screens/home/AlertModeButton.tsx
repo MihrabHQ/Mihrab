@@ -108,6 +108,8 @@ type Props = {
   /** This prayer differs from the standing setting — the one case that
    *  earns the accent. */
   emphasised?: boolean;
+  /** A narrower target, for the strip of optional times (ExtraTimesStrip). */
+  compact?: boolean;
 };
 
 function AlertModeButtonImpl({
@@ -117,6 +119,7 @@ function AlertModeButtonImpl({
   prayerLabel,
   secondary = false,
   emphasised = false,
+  compact = false,
 }: Props) {
   const { t } = useTranslation();
 
@@ -146,7 +149,7 @@ function AlertModeButtonImpl({
       )}
       hitSlop={8}
       onPress={onPress}
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.button, compact && styles.buttonCompact, pressed && styles.pressed]}>
       {/* The glyph alone. The word under it ("Silent", "Adhan") was a
           second line on every row of a list that has to fit the screen,
           and the glyph already says it — a struck bell is silence, the
@@ -175,6 +178,7 @@ const styles = StyleSheet.create({
     width: 44,
     paddingVertical: 2,
   },
+  buttonCompact: { width: 26, transform: [{ scale: 0.85 }] },
   pressed: { opacity: 0.55 },
   glyph: { height: SIZE, justifyContent: 'center' },
   quiet: { opacity: 0.55 },
