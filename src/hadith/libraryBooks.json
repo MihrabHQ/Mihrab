@@ -122,6 +122,45 @@
   "kind": "book"
  },
  {
+  "id": "quduri",
+  "title": "مختصر القدوري",
+  "latin": "Mukhtasar al-Quduri",
+  "author": "أبو الحسين القدوري",
+  "authorLatin": "Al-Quduri",
+  "died": "428 AH",
+  "level": 1,
+  "lang": "ar",
+  "subject": "fiqh",
+  "kind": "matn",
+  "madhhab": "hanafi"
+ },
+ {
+  "id": "risala",
+  "title": "الرسالة",
+  "latin": "Ar-Risala",
+  "author": "ابن أبي زيد القيرواني",
+  "authorLatin": "Ibn Abi Zayd al-Qayrawani",
+  "died": "386 AH",
+  "level": 1,
+  "lang": "ar",
+  "subject": "fiqh",
+  "kind": "matn",
+  "madhhab": "maliki"
+ },
+ {
+  "id": "umda",
+  "title": "عمدة الفقه",
+  "latin": "Umdat al-Fiqh",
+  "author": "موفق الدين ابن قدامة المقدسي",
+  "authorLatin": "Ibn Qudama al-Maqdisi",
+  "died": "620 AH",
+  "level": 1,
+  "lang": "ar",
+  "subject": "fiqh",
+  "kind": "matn",
+  "madhhab": "hanbali"
+ },
+ {
   "id": "fathmuin",
   "title": "فتح المعين بشرح قرة العين",
   "latin": "Fath al-Mu'in",

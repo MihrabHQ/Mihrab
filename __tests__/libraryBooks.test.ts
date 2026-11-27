@@ -606,6 +606,17 @@ describe('a matn with no chapter headings, bound with another work', () => {
       expect(read('src/screens/hadith/LibraryShelf.tsx')).toContain("offeredLibraryBooks(manifest, key => statuses[key]?.state === 'ready', [i18n.language])");
     });
 
+    it('has a first book of fiqh for each of the four schools', () => {
+      const first = (m: string) => LIBRARY_BOOKS.filter(b => b.subject === 'fiqh' && b.madhhab === m && b.level === 1 && b.kind === 'matn').map(b => b.id);
+      expect(first('hanafi')).toEqual(['quduri']);
+      expect(first('maliki')).toEqual(['risala']);
+      expect(first('hanbali')).toEqual(['umda']);
+      expect(first('shafii').sort()).toEqual(['abushuja', 'safina']);
+      // Each is built from the transcription that has the author's opening.
+      expect(builder.BOOKS.risala.openiti).toContain('JK000171');
+      expect(builder.BOOKS.umda.openiti).toContain('Shamela0011315');
+    });
+
     it('says a book\'s school, that it is a commentary, and that it is for later', () => {
       const of = (id: string) => libraryBookTags(LIBRARY_BOOKS.find(b => b.id === id)!);
       expect(of('safina')).toEqual(['settings.madhab_shafii']);

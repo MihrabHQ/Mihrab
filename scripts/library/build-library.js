@@ -241,6 +241,69 @@ const BOOKS = {
       'باب الجناية', 'باب في الردة', 'باب الحدود', 'باب الجهاد', 'باب القضاء', 'باب الدعوى والبينات', 'باب في الاعتاق',
     ],
   },
+  quduri: {
+    title: 'مختصر القدوري',
+    author: 'أبو الحسين القدوري',
+    died: '428 هـ',
+    openiti: '0450AH/data/0428AbuHusaynQuduri/0428AbuHusaynQuduri.Mukhtasar/0428AbuHusaynQuduri.Mukhtasar.Sham19Y0124336-ara1',
+    cache: 'openiti-quduri.txt',
+    read: '2026-11-27',
+    debris: [
+      // The conversion's mark on a heading it placed, and its count of the books.
+      [/(?<=### \|+ ?)AUTO (?:\d+ - )?/g, ''],
+      // One book's name it counted and did not mark.
+      [/^# \d+ - (?=(?:كتاب|باب) )/gm, '### | '],
+      // The opening words stand before the first book's name; a chapter with
+      // no name cannot hold them, so they open the first book.
+      [/^# (بسم الله الرحمن الرحيم)\s+(### \| كتاب الطهارة)\n/m, '$2\n# $1\n'],
+    ],
+  },
+  risala: {
+    title: 'الرسالة',
+    author: 'ابن أبي زيد القيرواني',
+    died: '386 هـ',
+    // The transcription with the author's opening; the other that has
+    // headings begins at the first chapter, without it.
+    openiti: '0400AH/data/0386IbnAbiZaydQayrawani/0386IbnAbiZaydQayrawani.Risala/0386IbnAbiZaydQayrawani.Risala.JK000171-ara1',
+    cache: 'openiti-risala.txt',
+    read: '2026-11-27',
+    one: 'خطبة الكتاب',
+    debris: [
+      // A paragraph mark with nothing after it.
+      [/^#\n/gm, ''],
+      // A chapter's name, which this file sets as a line of its own kind (the opening words are set so too).
+      [/^# \| (?!باب )/m, '# '],
+      [/^# \| (?=باب )/gm, '### | '],
+      // The edition's note of where a verse is from, after the verse.
+      [/@QE@\s+(?:~~)?(?:[\u0621-\u064A]+\s+(?:~~)?){1,2}\d+/g, ' '],
+      [/@Q[BE]@/g, ' '],
+      // …and the one a page's end stood between.
+      [/(?<=PageV01P044\n~~)الحج 18 /, ''],
+      // Where the printed line ended.
+      [/(?<!#) \|(?= |$)/gm, ''],
+    ],
+  },
+  umda: {
+    title: 'عمدة الفقه',
+    author: 'موفق الدين ابن قدامة المقدسي',
+    died: '620 هـ',
+    // The transcription with the author's opening; the other begins at the
+    // first chapter.
+    openiti: '0625AH/data/0620IbnQudamaMaqdisi/0620IbnQudamaMaqdisi.CumdatFiqh/0620IbnQudamaMaqdisi.CumdatFiqh.Shamela0011315-ara1',
+    cache: 'openiti-umda.txt',
+    read: '2026-11-27',
+    debris: [
+      // The editor's, not the author's: the name he gave the opening (set
+      // on two lines), his "مدخل" over a book's first words, his note of
+      // where a verse is from, and the marks that called his footnotes.
+      [/^# (بسم الله الرحمن الرحيم)\n### \| مقدمة\n# المؤلف\n/m, '### | خطبة الكتاب\n# $1\n'],
+      [/^### \| مدخل\n/gm, ''],
+      [/ ?\[[\u0621-\u064A ]{2,14}: ?[\d،\- ]+\]/g, ''],
+      [/^# (?:\d{1,3}|No pages)\n?/gm, ''],
+      [/(?<=[\u0621-\u064A"}.،:؟])[ \t]?\d{1,3}(?!\d)/g, ''],
+      [/^(~~)\d{1,3} ?/gm, '$1'],
+    ],
+  },
   iqd: {
     title: 'العقد الفريد',
     author: 'ابن عبد ربه الأندلسي',
