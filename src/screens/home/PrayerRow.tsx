@@ -146,6 +146,12 @@ type PrayerRowProps = {
   daruriBelow?: boolean;
   onDaruriWrap?: () => void;
   /**
+   * The tag, once it no longer fits beside the name, is on the strip
+   * under this row instead of under the name: Fajr's, when Sunrise has
+   * its line there anyway (TodayCard). The row then stays one line tall.
+   */
+  daruriInStrip?: boolean;
+  /**
    * The check at the leading edge — today's five salāh only. `log` says
    * what today's journal holds for this prayer and where the clock is in
    * its window; `onToggleLog` records or un-records it (quickLog.ts).
@@ -196,6 +202,7 @@ function PrayerRowImpl({
   timePeers,
   daruriBelow = false,
   onDaruriWrap,
+  daruriInStrip = false,
   log,
   onToggleLog,
   hasCheckColumn = false,
@@ -327,7 +334,7 @@ function PrayerRowImpl({
             beside it — on every row that has one. The smallest layout
             used to keep this line on the current prayer alone, which on a
             small phone read as the other four having no second time. */}
-        {daruriAt && daruriBelow ? (
+        {daruriAt && daruriBelow && !daruriInStrip ? (
         <Text
             style={[styles.daruri, styles.daruriBelow, { color: palette.muted }]}
             numberOfLines={1}

@@ -58,6 +58,9 @@ jest.mock('react-i18next', () => ({
 }));
 
 import { PrayerRow } from '../src/screens/home/PrayerRow';
+import { ExtraTimesStrip } from '../src/screens/home/ExtraTimesStrip';
+import fs from 'fs';
+import path from 'path';
 
 /** Every run of text the row actually put on screen, in order. */
 function render(props: Record<string, unknown>): string[] {
@@ -220,5 +223,40 @@ describe('the boundary a Hanafi user would find surprising', () => {
     // a runner whose zone puts the Moroccan afternoon across local
     // midnight (UTC+8:45 does) measures the same gap.
     expect((asrMinutes - (h * 60 + m) + 1440) % 1440).toBeGreaterThan(20);
+  });
+});
+
+describe("Fajr's tag on Sunrise's strip, where the tags have left the names' line", () => {
+  it('leaves the row one line tall: no tag under the name', () => {
+    const below = render({ prayerKey: 'Fajr', daruriAt: '07:18', daruriBelow: true });
+    expect(below).toContain('1st to 07:18');
+    const moved = render({ prayerKey: 'Fajr', daruriAt: '07:18', daruriBelow: true, daruriInStrip: true });
+    expect(moved.some(l => l.includes('1st to'))).toBe(false);
+    // Beside the name, while it fits, nothing moves.
+    expect(render({ prayerKey: 'Fajr', daruriAt: '07:18', daruriInStrip: true })).toContain('1st to 07:18');
+  });
+
+  it('is on the strip before Sunrise, read with the prayer it belongs to', () => {
+    let tree!: ReactTestRenderer;
+    act(() => {
+      tree = create(
+        <ExtraTimesStrip
+          lead={{ prayerKey: 'Fajr', text: '1st to ~07:18', label: 'Fajr, First time until approx. 07:18' }}
+          items={[{ key: 'Sunrise', name: 'Sunrise', time: '08:01' }]}
+        />,
+      );
+    });
+    const flat = JSON.stringify(tree.toJSON());
+    expect(flat.indexOf('1st to ~07:18')).toBeGreaterThan(-1);
+    expect(flat.indexOf('1st to ~07:18')).toBeLessThan(flat.indexOf('08:01'));
+    expect(tree.root.findByProps({ testID: 'daruri-Fajr' }).props.accessibilityLabel).toBe(
+      'Fajr, First time until approx. 07:18',
+    );
+  });
+
+  it("is Fajr's alone, and only over a strip that holds Sunrise", () => {
+    const card = fs.readFileSync(path.join(__dirname, '..', 'src/screens/home/TodayCard.tsx'), 'utf-8');
+    expect(card).toMatch(/key === 'Fajr' &&\s+groups\[at \+ 1\]\?\.kind === 'strip' &&[\s\S]{0,90}keys\.includes\('Sunrise'\)/);
+    expect(card).toContain('fajrTag && fajrTagInStrip(index - 1)');
   });
 });

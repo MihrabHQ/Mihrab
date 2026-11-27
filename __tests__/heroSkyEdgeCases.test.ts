@@ -455,7 +455,7 @@ describe('the rows adapt to the phone and to the table', () => {
     // under the name — on every row, in every tier.
     expect(row).toMatch(/<View style=\{styles\.nameLine\}>/);
     expect(row).toMatch(/daruriAt && !daruriBelow \?/);
-    expect(row).toMatch(/daruriAt && daruriBelow \? \(/);
+    expect(row).toMatch(/daruriAt && daruriBelow && !daruriInStrip \? \(/);
     expect(row).not.toMatch(/tier !== 'compact' \|\| isNext/);
   });
 });

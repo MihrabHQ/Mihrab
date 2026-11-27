@@ -42,7 +42,25 @@ export type ExtraTimeItem = {
   emphasised?: boolean;
 };
 
+/**
+ * A prayer's Mālikī tag, borrowed onto this line: Fajr's, on a display
+ * too narrow to keep it beside the name, when Sunrise's strip is under
+ * Fajr anyway — the tag first, then Sunrise, and Fajr's row stays one
+ * line tall. Only Fajr's: the strip under Isha holds the night's marks,
+ * and a second time among them would read as one of them.
+ */
+export type StripLead = {
+  /** The prayer it belongs to — its testID is the tag's own (`daruri-Fajr`). */
+  prayerKey: string;
+  /** The short tag, as the row writes it ("1st to ~07:18"). */
+  text: string;
+  /** The whole sentence, with the prayer's name, for a screen reader. */
+  label: string;
+};
+
 type Props = {
+  /** Before the items (see `StripLead`). */
+  lead?: StripLead;
   items: readonly ExtraTimeItem[];
   /** The card has a check column: the strip starts where the names do. */
   hasCheckColumn?: boolean;
@@ -50,7 +68,7 @@ type Props = {
   tier?: HomeTier;
 };
 
-function ExtraTimesStripImpl({ items, hasCheckColumn = false, isLast = false, tier = 'comfortable' }: Props) {
+function ExtraTimesStripImpl({ lead, items, hasCheckColumn = false, isLast = false, tier = 'comfortable' }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   return (
@@ -60,6 +78,16 @@ function ExtraTimesStripImpl({ items, hasCheckColumn = false, isLast = false, ti
       ) : null}
       {hasCheckColumn ? <View style={styles.checkSlot} /> : null}
       <View style={styles.items}>
+        {lead ? (
+          <Text
+            style={[styles.lead, { color: palette.muted }]}
+            numberOfLines={1}
+            accessibilityLabel={lead.label}
+            maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+            testID={`daruri-${lead.prayerKey}`}>
+            {lead.text}
+          </Text>
+        ) : null}
         {items.map(item => {
           const ink = item.isNext ? palette.accent : palette.muted;
           const Item = item.onSelect ? Pressable : View;
@@ -144,6 +172,16 @@ const styles = StyleSheet.create({
     marginStart: -4,
   },
   item: { flexDirection: 'row', alignItems: 'center' },
+  // The tag as a row writes it (PrayerRow `daruri`): the caption size,
+  // upright, so it does not read as one more of the strip's names. The
+  // items' column starts 4 to the left for their thin space; this has none.
+  lead: {
+    fontSize: TYPE.caption.fontSize,
+    lineHeight: LINE,
+    marginStart: 4,
+    flexShrink: 0,
+    maxWidth: '100%',
+  },
   label: { flexDirection: 'row', alignItems: 'center' },
   dot: { width: 5, height: 5, borderRadius: RADIUS.xs, marginEnd: SPACING.xs },
   name: { fontSize: TYPE.footnote.fontSize, lineHeight: LINE, fontStyle: 'italic' },

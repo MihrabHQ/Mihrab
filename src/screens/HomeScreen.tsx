@@ -1839,8 +1839,22 @@ export function HomeScreen() {
     // A prayer is a row; the optional times share thin strips.
     rows: todayGroups.filter(g => g.kind === 'row').length,
     stripRows: todayGroups.reduce((n, g) => n + (g.kind === 'strip' ? (g.keys.length > 2 ? 2 : 1) : 0), 0),
+    // Fajr's tag is on Sunrise's strip then, not under its name (TodayCard).
     sublineRows: daruriBelow
-      ? DISPLAY_ORDER.filter(key => todayMap[`${key}Daruri` as keyof TimingsMap]).length
+      ? DISPLAY_ORDER.filter(
+          key =>
+            todayMap[`${key}Daruri` as keyof TimingsMap] &&
+            !(
+              key === 'Fajr' &&
+              todayGroups.some(
+                (g, i) =>
+                  g.kind === 'row' &&
+                  g.key === 'Fajr' &&
+                  todayGroups[i + 1]?.kind === 'strip' &&
+                  (todayGroups[i + 1] as { keys: readonly string[] }).keys.includes('Sunrise'),
+              )
+            ),
+        ).length
       : 0,
     // A banner's height is its own; this is a notice's usual size.
     extra: bannerInFlow ? 72 : 0,

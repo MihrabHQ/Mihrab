@@ -1356,7 +1356,18 @@ function TodayCardImpl({
             approx: DARURI_CONFIDENCE[daruriKey] === 'modelled',
           };
     }
-    const prayerRow = (key: DisplayPrayerKey, isLast: boolean) => (
+    // Fajr's tag rides on Sunrise's strip once the tags have left the
+    // names' line: the strip is there either way, so Fajr's row need not
+    // grow a second line for it. Fajr's alone — not Isha's.
+    const fajrTag = daruriRows.Fajr;
+    const fajrTagInStrip = (at: number) =>
+      daruriBelow &&
+      !!fajrTag &&
+      groups[at]?.kind === 'row' &&
+      (groups[at] as { key: DisplayPrayerKey }).key === 'Fajr' &&
+      groups[at + 1]?.kind === 'strip' &&
+      (groups[at + 1] as { keys: DisplayPrayerKey[] }).keys.includes('Sunrise');
+    const prayerRow = (key: DisplayPrayerKey, isLast: boolean, daruriInStrip = false) => (
       <PrayerRow
         key={key}
         prayerKey={key}
@@ -1403,6 +1414,7 @@ function TodayCardImpl({
         timePeers={timePeers}
         daruriBelow={daruriBelow}
         onDaruriWrap={onDaruriWrap}
+        daruriInStrip={daruriInStrip}
         log={
           loggable && isSalah(key)
             ? {
@@ -1431,11 +1443,30 @@ function TodayCardImpl({
       if (group.kind === 'row') {
         // No hairline between a prayer and the strip under it: Sunrise
         // belongs with Fajr, the night's marks with Isha.
-        return prayerRow(group.key, last || groups[index + 1]?.kind === 'strip');
+        return prayerRow(group.key, last || groups[index + 1]?.kind === 'strip', fajrTagInStrip(index));
       }
       return (
         <ExtraTimesStrip
           key={group.keys.join('+')}
+          lead={
+            fajrTag && fajrTagInStrip(index - 1)
+              ? {
+                  prayerKey: 'Fajr',
+                  text: t(fajrTag.phase === 'second' ? 'prayer.secondTimeShort' : 'prayer.firstTimeShort', {
+                    time: `\u2068${fajrTag.approx ? '~' : ''}${clock(fajrTag.at)}\u2069`,
+                    interpolation: { escapeValue: false },
+                  }),
+                  label: `${t('prayer.Fajr')}, ${t(
+                    fajrTag.phase === 'second' ? 'prayer.secondTimeUntil' : 'prayer.firstTimeUntil',
+                    {
+                      time: fajrTag.approx
+                        ? `${t('prayer.approx', { defaultValue: 'approx.' })} ${clock(fajrTag.at)}`
+                        : clock(fajrTag.at),
+                    },
+                  )}`,
+                }
+              : undefined
+          }
           hasCheckColumn={loggable}
           isLast={last}
           tier={fullBleed ? tier : 'comfortable'}
