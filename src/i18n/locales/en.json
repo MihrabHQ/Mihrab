@@ -3168,7 +3168,14 @@
         "nihayatzayn": "Nawawi al-Bantani's commentary on Qurrat al-'Ayn, a full course of Shafi'i law by the Javanese scholar of Makkah.",
         "tibyan": "An-Nawawi on the manners of those who carry the Qur'an: reciting it, teaching and learning it, and honouring the mushaf."
       },
-      "levelFirst": "To begin with",
+      "commentary": "Commentary",
+      "subject": {
+        "quran": "Qur'an",
+        "hadith": "Hadith",
+        "fiqh": "Fiqh",
+        "heart": "Purifying the heart",
+        "letters": "Literature"
+      },
       "levelLater": "For a later stage"
     },
     "recentSearches": "Recent searches",

@@ -3168,7 +3168,14 @@
         "nihayatzayn": "Nawawi al-Bantanis Kommentar zu Qurrat al-'Ayn, ein vollständiger Lehrgang des schafiitischen Rechts vom javanischen Gelehrten in Mekka.",
         "tibyan": "An-Nawawi über das Benehmen derer, die den Koran tragen: seine Rezitation, das Lehren und Lernen und die Achtung vor dem Mushaf."
       },
-      "levelFirst": "Für den Anfang",
+      "commentary": "Kommentar",
+      "subject": {
+        "quran": "Koran",
+        "hadith": "Hadith",
+        "fiqh": "Fiqh",
+        "heart": "Läuterung des Herzens",
+        "letters": "Literatur"
+      },
       "levelLater": "Für später"
     },
     "recentSearches": "Letzte Suchen",

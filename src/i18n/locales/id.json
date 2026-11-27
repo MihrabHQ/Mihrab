@@ -3168,7 +3168,14 @@
         "nihayatzayn": "Syarah Syekh Nawawi al-Bantani atas Qurratul 'Ain, pelajaran fikih Syafi'i yang lengkap dari ulama Jawa di Makkah.",
         "tibyan": "Kitab an-Nawawi tentang adab para pengemban Al-Qur'an: membacanya, mengajarkan dan mempelajarinya, serta memuliakan mushaf."
       },
-      "levelFirst": "Untuk memulai",
+      "commentary": "Syarah",
+      "subject": {
+        "quran": "Al-Qur’an",
+        "hadith": "Hadis",
+        "fiqh": "Fikih",
+        "heart": "Penyucian jiwa",
+        "letters": "Sastra"
+      },
       "levelLater": "Untuk tahap lanjut"
     },
     "recentSearches": "Pencarian terakhir",

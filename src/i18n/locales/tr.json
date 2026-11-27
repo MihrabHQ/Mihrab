@@ -3168,7 +3168,14 @@
         "nihayatzayn": "Nevevî el-Bentenî'nin Kurretü'l-Ayn şerhi; Mekke'deki Cavalı âlimden eksiksiz bir Şâfiî fıkhı dersi.",
         "tibyan": "Nevevî'nin Kur'an taşıyıcılarının âdâbına dair eseri: okunması, öğretilmesi ve öğrenilmesi, mushafa saygı."
       },
-      "levelFirst": "Başlangıç için",
+      "commentary": "Şerh",
+      "subject": {
+        "quran": "Kur’an",
+        "hadith": "Hadis",
+        "fiqh": "Fıkıh",
+        "heart": "Kalbin arınması",
+        "letters": "Edebiyat"
+      },
       "levelLater": "İleri aşama için"
     },
     "recentSearches": "Son aramalar",

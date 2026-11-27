@@ -197,6 +197,10 @@ const BOOKS = {
     // cut a long chapter for its own convenience (twice); and a heading mark
     // doubled before the tenth chapter's.
     debris: /^### \| AUTO الباب السادس$|### \| AUTO (?=### \|)|(?<=### \|+ ?)AUTO /gm,
+    // "( فصل )", ") فصل (" as the file sometimes turns it, and
+    // "( فصل : في … )": an-Nawawī's section mark, which the file often runs
+    // on from the paragraph before.
+    sections: / (?=[()] فصل(?: :[^()]{1,120})? [()] )/,
   },
   iqd: {
     title: 'العقد الفريد',
@@ -411,9 +415,19 @@ function openitiChapters(text, where, spec = {}) {
   let headed = null;
   const flush = () => {
     if (para == null) return;
-    const s = clean(para);
+    const all = clean(para);
     para = null;
-    if (!s) return;
+    if (!all) return;
+    // The author's own section mark set in the middle of a paragraph
+    // (`sections`) begins a paragraph, as it does wherever the file gave
+    // it a line of its own. Nothing is added or taken: the cut is at a space.
+    if (spec.sections) {
+      const pieces = all.split(spec.sections).map(x => x.trim()).filter(Boolean);
+      if (pieces.join(' ') !== all) throw new Error(`${where}: cutting at the section marks changed the text: ${all.slice(0, 60)}`);
+      for (const piece of pieces) put(piece);
+    } else put(all);
+  };
+  const put = s => {
     if (!chapters.length) chapters.push({ t: '', b: [] });
     const b = chapters[chapters.length - 1].b;
     const halves = s.split(' ... ');

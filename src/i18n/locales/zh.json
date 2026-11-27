@@ -3168,7 +3168,14 @@
         "nihayatzayn": "奈瓦维·万丹尼对《眼之慰藉》的注释，出自麦加的爪哇学者的一部完整的沙斐仪教法教程。",
         "tibyan": "脑威论承载《古兰经》者的礼仪：诵读、教与学，以及尊重经本。"
       },
-      "levelFirst": "入门",
+      "commentary": "注释",
+      "subject": {
+        "quran": "《古兰经》",
+        "hadith": "圣训",
+        "fiqh": "教法",
+        "heart": "净化心灵",
+        "letters": "文学"
+      },
       "levelLater": "进阶"
     },
     "recentSearches": "最近搜索",

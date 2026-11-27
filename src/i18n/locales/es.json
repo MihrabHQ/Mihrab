@@ -3169,7 +3169,14 @@
         "nihayatzayn": "El comentario de Nawawi al-Bantani a Qurrat al-'Ayn, un curso completo de derecho shafií del sabio javanés de La Meca.",
         "tibyan": "An-Nawawi sobre los modales de quienes portan el Corán: recitarlo, enseñarlo y aprenderlo, y honrar el mushaf."
       },
-      "levelFirst": "Para empezar",
+      "commentary": "Comentario",
+      "subject": {
+        "quran": "Corán",
+        "hadith": "Hadiz",
+        "fiqh": "Fiqh",
+        "heart": "Purificación del corazón",
+        "letters": "Literatura"
+      },
       "levelLater": "Para una etapa posterior"
     },
     "recentSearches": "Búsquedas recientes",

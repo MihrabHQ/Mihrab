@@ -20,8 +20,49 @@ import { manifestEntry } from './packs';
 import type { Manifest, PackKey } from './packTypes';
 
 /** `level`: 1 to begin with, 2 for a later stage — the maintainer's own two lists. What a book is, in the reader's language, is `hadith.library.about.<id>`. */
-export type LibraryBook = { id: string; title: string; latin: string; author: string; authorLatin: string; died: string; level: 1 | 2 };
+export type LibraryBook = {
+  id: string;
+  title: string;
+  latin: string;
+  author: string;
+  authorLatin: string;
+  died: string;
+  level: 1 | 2;
+  /** The language the book is written in: what its page is set in, whatever the app's is. */
+  lang: string;
+  /** What it is about: the shelf it stands on. */
+  subject: LibrarySubject;
+  /** A book, a short text made to be learnt (`matn`), or a commentary on another's (`sharh`). */
+  kind: 'book' | 'matn' | 'sharh';
+  /** The school a book of fiqh is written in. Said on the shelf: a primer of one school is not every reader's. */
+  madhhab?: 'hanafi' | 'maliki' | 'shafii' | 'hanbali';
+};
+/** The shelves, in the order they stand. */
+export const LIBRARY_SUBJECTS = ['quran', 'hadith', 'fiqh', 'heart', 'letters'] as const;
+export type LibrarySubject = (typeof LIBRARY_SUBJECTS)[number];
 export const LIBRARY_BOOKS: readonly LibraryBook[] = BOOKS as LibraryBook[];
+
+/** The language a book's page is set in; Arabic for a book this build does not know. */
+export function libraryBookLang(book: Pick<LibraryBook, 'lang'> | undefined): string {
+  return book?.lang ?? 'ar';
+}
+
+/** The books by shelf: each subject that has any, the ones to begin with first, otherwise in the list's order. */
+export function libraryShelves(books: readonly LibraryBook[]): { subject: LibrarySubject; books: LibraryBook[] }[] {
+  return LIBRARY_SUBJECTS.map(subject => ({
+    subject,
+    books: [1, 2].flatMap(level => books.filter(b => b.subject === subject && b.level === level)),
+  })).filter(s => s.books.length > 0);
+}
+
+/** What the shelf says of a book beside its author: its school, that it is a commentary, that it is for later. Keys for `t`. */
+export function libraryBookTags(book: Pick<LibraryBook, 'kind' | 'level' | 'madhhab'>): string[] {
+  return [
+    ...(book.madhhab ? [`settings.madhab_${book.madhhab}`] : []),
+    ...(book.kind === 'sharh' ? ['hadith.library.commentary'] : []),
+    ...(book.level === 2 ? ['hadith.library.levelLater'] : []),
+  ];
+}
 export const libraryKey = (id: string): PackKey => `library/${id}`;
 export function findLibraryBook(id: string): LibraryBook | undefined {
   return LIBRARY_BOOKS.find(b => b.id === id);

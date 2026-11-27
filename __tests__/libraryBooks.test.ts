@@ -10,7 +10,8 @@
 import fs from 'fs';
 import path from 'path';
 import BOOKS from '../src/hadith/libraryBooks.json';
-import { LIBRARY_BOOKS, findLibraryBook, libraryKey, libraryParts, offeredLibraryBooks } from '../src/hadith/libraryShelf';
+import { LIBRARY_BOOKS, findLibraryBook, libraryKey, libraryParts, offeredLibraryBooks, LIBRARY_SUBJECTS, libraryBookLang, libraryBookTags, libraryShelves } from '../src/hadith/libraryShelf';
+import { LONG_PASSAGE, PARAGRAPH_MIN, readingParagraphs } from '../src/hadith/libraryParagraphs';
 import { validPack, type Manifest } from '../src/hadith/packTypes';
 import { blockKind } from '../src/screens/hadith/LibraryBookScreen';
 
@@ -180,7 +181,10 @@ describe('the shelf', () => {
     expect(read('src/screens/hadith/LibraryBookScreen.tsx')).toContain("{t('hadith.library.bookNote')}");
     for (const f of fs.readdirSync(path.join(REPO, 'src/i18n/locales'))) {
       const k = JSON.parse(read(`src/i18n/locales/${f}`)).hadith.library;
-      expect([f, Object.keys(k).sort()]).toEqual([f, ['about', 'bookNote', 'by', 'chapterOf', 'chapters', 'continue', 'empty', 'firstOnly', 'intro', 'levelFirst', 'levelLater', 'mark', 'marks', 'needsDownload', 'next', 'percent', 'previous', 'remove', 'searchHint', 'sections', 'source', 'tab', 'unmark']]);
+      expect([f, Object.keys(k).sort()]).toEqual([f, ['about', 'bookNote', 'by', 'chapterOf', 'chapters', 'commentary', 'continue', 'empty', 'firstOnly', 'intro', 'levelLater', 'mark', 'marks', 'needsDownload', 'next', 'percent', 'previous', 'remove', 'searchHint', 'sections', 'source', 'subject', 'tab', 'unmark']]);
+      // Every shelf has its name, and a school a book can name has one too.
+      expect([f, Object.keys(k.subject).sort()]).toEqual([f, [...LIBRARY_SUBJECTS].sort()]);
+      for (const m of ['hanafi', 'maliki', 'shafii', 'hanbali']) expect([f, m, typeof JSON.parse(read(`src/i18n/locales/${f}`)).settings[`madhab_${m}`]]).toEqual([f, m, 'string']);
       // Every book the app can name is described, and one with coarse passages says so.
       expect([f, Object.keys(k.about).sort()]).toEqual([f, LIBRARY_BOOKS.map(b => b.id).sort()]);
       for (const about of Object.values(k.about)) expect(String(about).length).toBeGreaterThan(10);
@@ -478,6 +482,16 @@ describe('a matn with no chapter headings, bound with another work', () => {
     expect(() => builder.openitiChapters(['#META#Header#End#', '~~نص'].join('\n'), 'test')).toThrow(/going on from nothing/);
   });
 
+  it('begins a paragraph at the author\'s section mark where the file ran it on, and changes no word', () => {
+    const sections = builder.BOOKS.tibyan.sections;
+    const file = ['#META#Header#End#', '### | باب', '# أول الكلام ( فصل ) وينبغي له كذا ) فصل ( ثم كذا ( فصل : في المحافظة ) ينبغي', '~~أن يحافظ وفي هذا الفصل بقايا'].join('\n');
+    expect(builder.openitiChapters(file, 'test', { sections })).toEqual([
+      { t: 'باب', b: ['أول الكلام', '( فصل ) وينبغي له كذا', ') فصل ( ثم كذا', '( فصل : في المحافظة ) ينبغي أن يحافظ وفي هذا الفصل بقايا'] },
+    ]);
+    // Without the rule the paragraph is as the file has it.
+    expect(builder.openitiChapters(file, 'test')[0].b).toHaveLength(1);
+  });
+
   it('builds at-Tibyan from the transcription that is an-Nawawi\'s text alone', () => {
     expect(builder.BOOKS.tibyan.openiti).toContain('ShamAY0034087');
     expect(builder.BOOKS.tibyan.openiti).not.toMatch(/Shamela0001969|Shia002636/);
@@ -485,5 +499,83 @@ describe('a matn with no chapter headings, bound with another work', () => {
 
   it('is how Safinat an-Naja is built: its own text, without the work bound after it', () => {
     expect(builder.BOOKS.safina).toMatchObject({ one: 'سفينة النجاة', until: '# متن سفينة الصلاة' });
+  });
+
+  describe('what the shelf knows of a book', () => {
+    it('knows each book\'s language, subject and kind, and a book of fiqh its school', () => {
+      for (const b of LIBRARY_BOOKS) {
+        expect([b.id, b.lang]).toEqual([b.id, 'ar']);
+        expect([b.id, (LIBRARY_SUBJECTS as readonly string[]).includes(b.subject)]).toEqual([b.id, true]);
+        expect([b.id, ['book', 'matn', 'sharh'].includes(b.kind)]).toEqual([b.id, true]);
+        // A school is said of fiqh and of nothing else, and never left unsaid of fiqh.
+        expect([b.id, b.madhhab != null]).toEqual([b.id, b.subject === 'fiqh']);
+      }
+      expect(libraryBookLang(undefined)).toBe('ar');
+      expect(libraryBookLang({ lang: 'id' })).toBe('id');
+    });
+
+    it('stands the books by subject, the ones to begin with first, and loses none', () => {
+      const shelves = libraryShelves(LIBRARY_BOOKS);
+      expect(shelves.map(s => s.subject)).toEqual(LIBRARY_SUBJECTS.filter(s => LIBRARY_BOOKS.some(b => b.subject === s)));
+      expect(shelves.flatMap(s => s.books.map(b => b.id)).sort()).toEqual(LIBRARY_BOOKS.map(b => b.id).sort());
+      for (const s of shelves) expect(s.books.map(b => b.level)).toEqual([...s.books.map(b => b.level)].sort());
+      // A shelf with no book offered is not drawn.
+      expect(libraryShelves(LIBRARY_BOOKS.filter(b => b.subject === 'fiqh')).map(s => s.subject)).toEqual(['fiqh']);
+      expect(libraryShelves([])).toEqual([]);
+    });
+
+    it('says a book\'s school, that it is a commentary, and that it is for later', () => {
+      const of = (id: string) => libraryBookTags(LIBRARY_BOOKS.find(b => b.id === id)!);
+      expect(of('safina')).toEqual(['settings.madhab_shafii']);
+      expect(of('nihayatzayn')).toEqual(['settings.madhab_shafii', 'hadith.library.commentary', 'hadith.library.levelLater']);
+      expect(of('kalila')).toEqual([]);
+      const shelf = read('src/screens/hadith/LibraryShelf.tsx');
+      expect(shelf).toContain('libraryShelves(books).map(');
+      expect(shelf).toContain("{t(`hadith.library.subject.${subject}`)}");
+    });
+
+    it('sets a book\'s page in the book\'s language, not the app\'s', () => {
+      const page = read('src/screens/hadith/LibraryBookScreen.tsx');
+      expect(page).toContain('const lang = libraryBookLang(known);');
+      expect(page).toContain("writingDirection: bookRtl ? ('rtl' as const) : ('ltr' as const)");
+      expect(page).not.toContain('accessibilityLanguage="ar"');
+    });
+  });
+
+  describe('a long passage set in paragraphs', () => {
+    const sentence = 'قال الملك للفيلسوف: قد سمعت هذا المثل، فاضرب لي مثلاً آخر.';
+    it('leaves an ordinary paragraph alone', () => {
+      expect(readingParagraphs(sentence)).toEqual([sentence]);
+      const under = Array(12).fill(sentence).join(' ');
+      expect(under.length).toBeLessThan(LONG_PASSAGE);
+      expect(readingParagraphs(under)).toEqual([under]);
+    });
+
+    it('cuts a long one where its sentences end, and the pieces are the passage again', () => {
+      const long = Array(80).fill(sentence).join(' ');
+      const pieces = readingParagraphs(long);
+      expect(pieces.length).toBeGreaterThan(3);
+      expect(pieces.join(' ')).toBe(long);
+      for (const piece of pieces) {
+        expect(piece.length).toBeGreaterThanOrEqual(PARAGRAPH_MIN / 2);
+        expect(piece).toMatch(/\.$/);
+      }
+      // The question mark and what closes a quotation end one too.
+      const asked = Array(60).fill('فقال له: «ما الذي حملك على هذا؟» ثم سكت طويلاً ولم يزد على ذلك شيئاً').join(' ');
+      expect(readingParagraphs(asked).join(' ')).toBe(asked);
+      expect(readingParagraphs(asked).length).toBeGreaterThan(2);
+    });
+
+    it('leaves a text with no sentence marks whole: there is nowhere honest to cut it', () => {
+      const bare = Array(200).fill('وينبغي له أن يرفق بمن يقرأ عليه وأن يرحب به').join(' ');
+      expect(readingParagraphs(bare)).toEqual([bare]);
+    });
+
+    it('is how the page draws a paragraph, and the block stays one', () => {
+      const page = read('src/screens/hadith/LibraryBookScreen.tsx');
+      expect(page).toContain('readingParagraphs(item as string).map((words, i) => (');
+      // Marking, copying and sharing are still of the whole block.
+      expect(page).toContain('toggleLibraryBookmark(id, chapter, index)');
+    });
   });
 });

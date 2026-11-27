@@ -45,6 +45,7 @@ import { isRtlLanguage } from '../../i18n/layoutDirection';
 import { useLayoutRtl } from '../../i18n/useLayoutRtl';
 import {
   findLibraryBook,
+  libraryBookLang,
   libraryBlockText,
   libraryBookmarks,
   libraryKey,
@@ -57,6 +58,7 @@ import {
   toggleLibraryBookmark,
   type LibraryBookmark,
 } from '../../hadith/libraryShelf';
+import { readingParagraphs } from '../../hadith/libraryParagraphs';
 import { LIBRARY_HITS_MAX, LIBRARY_QUERY_MIN, chapterHeadings, libraryIndex, searchLibrary, type LibraryHit } from '../../hadith/librarySearch';
 import { foldForSearch } from '../../hadith/library';
 import { deletePack, loadPack, usePackStatuses } from '../../hadith/packs';
@@ -80,6 +82,8 @@ import { PackGate } from './PackGate';
 // band, and a band without a height lets the list grow to its whole text and never scroll.
 /** The size a book's Arabic is set at before the reader's own − A +: larger than Latin body text, with room for its marks. */
 const ARABIC_READING = { fontSize: 20, lineHeight: 38 };
+/** …and a book in a script that needs no such room. */
+const PLAIN_READING = { fontSize: 17, lineHeight: 27 };
 
 /** A block's kind, for its row. */
 export function blockKind(b: LibraryBlock): 'p' | 'h' | 'v' {
@@ -285,7 +289,12 @@ function LibraryBookScreenPage() {
   }, [parts, place]);
 
   // Arabic, against its own leading edge in either layout.
-  const arabic = { textAlign: ownSideAlign(true, layoutRtl), writingDirection: 'rtl' as const };
+  // The book's own language decides how its words are set — their side,
+  // their direction, their face and size — whatever the app's is.
+  const lang = libraryBookLang(known);
+  const bookRtl = isRtlLanguage(lang);
+  const arabic = { textAlign: ownSideAlign(bookRtl, layoutRtl), writingDirection: bookRtl ? ('rtl' as const) : ('ltr' as const) };
+  const reading = bookRtl ? ARABIC_READING : PLAIN_READING;
   const open = useCallback((n: number) => navigation.push('LibraryBook', { id, chapter: n }), [navigation, id]);
 
   const arabicReader = isRtlLanguage(i18n.language);
@@ -298,7 +307,7 @@ function LibraryBookScreenPage() {
       const kind = blockKind(item);
       if (kind === 'h') {
         return (
-          <Text style={[styles.heading, arabic, { color: palette.text }]} accessibilityRole="header" accessibilityLanguage="ar">
+          <Text style={[bookRtl ? styles.heading : styles.headingPlain, arabic, { color: palette.text }]} accessibilityRole="header" accessibilityLanguage={lang}>
             {(item as { h: string }).h}
           </Text>
         );
@@ -318,15 +327,24 @@ function LibraryBookScreenPage() {
           {kind === 'v' ? (
             <Pressable onPress={pick} style={styles.verse} accessibilityRole="button">
               {(item as { v: string[] }).v.map((verseLine, i) => (
-                <Text key={i} style={[styles.verseLine, readingText.style(ARABIC_READING), { color: palette.text }]} selectable accessibilityLanguage="ar">
+                <Text key={i} style={[bookRtl ? styles.verseLine : styles.verseLinePlain, readingText.style(reading), { color: palette.text }]} selectable accessibilityLanguage={lang}>
                   {verseLine}
                 </Text>
               ))}
             </Pressable>
           ) : (
-            <Text style={[styles.para, readingText.style(ARABIC_READING), arabic, { color: palette.text }]} selectable onPress={pick} accessibilityLanguage="ar">
-              {item as string}
-            </Text>
+            // A long passage is set in paragraphs (libraryParagraphs): still one block to mark, copy and find.
+            readingParagraphs(item as string).map((words, i) => (
+              <Text
+                key={i}
+                style={[bookRtl ? styles.para : styles.paraPlain, i > 0 && styles.paraNext, readingText.style(reading), arabic, { color: palette.text }]}
+                selectable
+                onPress={pick}
+                accessibilityLanguage={lang}
+              >
+                {words}
+              </Text>
+            ))
           )}
           {on ? (
             <View style={styles.actions} testID="library-actions">
@@ -458,7 +476,7 @@ function LibraryBookScreenPage() {
                     {/* One script a line: the author as the book names him for a reader of
                         Arabic script, in Latin letters otherwise ("d. 398 هـ" set both ways at once). */}
                     {arabicReader || !known ? (
-                      <Text style={[styles.by, arabic, { color: palette.text }]} accessibilityLanguage="ar" testID="library-by">
+                      <Text style={[styles.by, arabic, { color: palette.text }]} accessibilityLanguage={lang} testID="library-by">
                         {t('hadith.library.by', { author: file.author, died: file.died })}
                       </Text>
                     ) : (
@@ -638,6 +656,10 @@ const styles = StyleSheet.create({
   progress: { height: StyleSheet.hairlineWidth * 3 },
   progressFill: { height: '100%' },
   para: { ...arabicTextStyle('body') },
+  paraPlain: { fontSize: TYPE.body.fontSize },
+  paraNext: { marginTop: SPACING.md },
+  headingPlain: { fontSize: TYPE.title3.fontSize, lineHeight: 30, fontWeight: '600', marginTop: SPACING.md, marginBottom: SPACING.md },
+  verseLinePlain: { fontSize: TYPE.body.fontSize, textAlign: 'center' },
   heading: { ...arabicTextStyle('body'), fontSize: TYPE.title3.fontSize, lineHeight: 36, fontWeight: '600', marginTop: SPACING.md, marginBottom: SPACING.md },
   verse: { alignItems: 'center', gap: SPACING.xs },
   verseLine: { ...arabicTextStyle('body'), textAlign: 'center', writingDirection: 'rtl' },

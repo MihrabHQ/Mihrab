@@ -6,7 +6,10 @@
   "author": "عبد الله بن المقفع",
   "authorLatin": "Ibn al-Muqaffa'",
   "died": "142 AH",
-  "level": 1
+  "level": 1,
+  "lang": "ar",
+  "subject": "letters",
+  "kind": "book"
  },
  {
   "id": "maqamat",
@@ -15,7 +18,10 @@
   "author": "بديع الزمان الهمذاني",
   "authorLatin": "Badi' az-Zaman al-Hamadhani",
   "died": "398 AH",
-  "level": 2
+  "level": 2,
+  "lang": "ar",
+  "subject": "letters",
+  "kind": "book"
  },
  {
   "id": "ighatha",
@@ -24,7 +30,10 @@
   "author": "ابن قيّم الجوزية",
   "authorLatin": "Ibn al-Qayyim",
   "died": "751 AH",
-  "level": 1
+  "level": 1,
+  "lang": "ar",
+  "subject": "heart",
+  "kind": "book"
  },
  {
   "id": "dawa",
@@ -33,7 +42,10 @@
   "author": "ابن قيّم الجوزية",
   "authorLatin": "Ibn al-Qayyim",
   "died": "751 AH",
-  "level": 1
+  "level": 1,
+  "lang": "ar",
+  "subject": "heart",
+  "kind": "book"
  },
  {
   "id": "bahja",
@@ -42,7 +54,10 @@
   "author": "ابن عبد البر",
   "authorLatin": "Ibn 'Abd al-Barr",
   "died": "463 AH",
-  "level": 2
+  "level": 2,
+  "lang": "ar",
+  "subject": "letters",
+  "kind": "book"
  },
  {
   "id": "iqd",
@@ -51,7 +66,10 @@
   "author": "ابن عبد ربه الأندلسي",
   "authorLatin": "Ibn 'Abd Rabbih",
   "died": "328 AH",
-  "level": 2
+  "level": 2,
+  "lang": "ar",
+  "subject": "letters",
+  "kind": "book"
  },
  {
   "id": "jami",
@@ -60,7 +78,10 @@
   "author": "ابن رجب الحنبلي",
   "authorLatin": "Ibn Rajab",
   "died": "795 AH",
-  "level": 2
+  "level": 2,
+  "lang": "ar",
+  "subject": "hadith",
+  "kind": "sharh"
  },
  {
   "id": "safina",
@@ -69,7 +90,11 @@
   "author": "سالم بن سمير الحضرمي",
   "authorLatin": "Salim ibn Sumayr al-Hadrami",
   "died": "1271 AH",
-  "level": 1
+  "level": 1,
+  "lang": "ar",
+  "subject": "fiqh",
+  "kind": "matn",
+  "madhhab": "shafii"
  },
  {
   "id": "abushuja",
@@ -78,7 +103,11 @@
   "author": "أبو شجاع الأصفهاني",
   "authorLatin": "Abu Shuja' al-Isfahani",
   "died": "593 AH",
-  "level": 1
+  "level": 1,
+  "lang": "ar",
+  "subject": "fiqh",
+  "kind": "matn",
+  "madhhab": "shafii"
  },
  {
   "id": "bidaya",
@@ -87,7 +116,10 @@
   "author": "أبو حامد الغزالي",
   "authorLatin": "Al-Ghazali",
   "died": "505 AH",
-  "level": 1
+  "level": 1,
+  "lang": "ar",
+  "subject": "heart",
+  "kind": "book"
  },
  {
   "id": "nihayatzayn",
@@ -96,7 +128,11 @@
   "author": "محمد نووي الجاوي البنتني",
   "authorLatin": "Nawawi al-Bantani",
   "died": "1316 AH",
-  "level": 2
+  "level": 2,
+  "lang": "ar",
+  "subject": "fiqh",
+  "kind": "sharh",
+  "madhhab": "shafii"
  },
  {
   "id": "tibyan",
@@ -105,6 +141,9 @@
   "author": "يحيى بن شرف النووي",
   "authorLatin": "An-Nawawi",
   "died": "676 AH",
-  "level": 1
+  "level": 1,
+  "lang": "ar",
+  "subject": "quran",
+  "kind": "book"
  }
 ]

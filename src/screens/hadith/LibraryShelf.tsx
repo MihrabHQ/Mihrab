@@ -5,6 +5,9 @@
  * author's in Latin letters under it for a reader who does not yet read
  * Arabic titles, and what it weighs while it is not on the device. Which
  * books are listed is `offeredLibraryBooks`: the ones our copy carries.
+ * They stand by subject (`libraryShelves`), and a book says beside its
+ * author what a reader should know before opening it: the school a book
+ * of fiqh is written in, that it is a commentary, that it is for later.
  * The line above them says what a book here is and is not (the policy's
  * "The Library").
  *
@@ -20,7 +23,16 @@ import { useTranslation } from 'react-i18next';
 import { isRtlLanguage } from '../../i18n/layoutDirection';
 import { Group, Row } from '../../components/ui';
 import { useAppPalette } from '../../hooks/useAppPalette';
-import { lastReadBook, libraryKey, libraryProgress, libraryReadings, offeredLibraryBooks, type LibraryReading } from '../../hadith/libraryShelf';
+import {
+  lastReadBook,
+  libraryBookTags,
+  libraryKey,
+  libraryProgress,
+  libraryReadings,
+  libraryShelves,
+  offeredLibraryBooks,
+  type LibraryReading,
+} from '../../hadith/libraryShelf';
 import { manifestBytes, usePackStatuses } from '../../hadith/packs';
 import type { RootStackParamList } from '../../navigation/types';
 import { formatBytes } from '../../quran/downloadsUi';
@@ -69,13 +81,11 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
         </Group>
       ) : null}
       {books.length ? (
-        ([1, 2] as const).map(level => {
-          const shelf = books.filter(b => b.level === level);
-          if (!shelf.length) return null;
+        libraryShelves(books).map(({ subject, books: shelf }) => {
           return (
-            <View key={level} style={styles.level}>
+            <View key={subject} style={styles.level} testID={`hadith-library-shelf-${subject}`}>
               <Text style={[styles.levelTitle, { color: palette.text }]} accessibilityRole="header">
-                {t(level === 1 ? 'hadith.library.levelFirst' : 'hadith.library.levelLater')}
+                {t(`hadith.library.subject.${subject}`)}
               </Text>
               <Group>
                 {shelf.map(b => {
@@ -85,11 +95,14 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
                   const at = onDevice ? readings[b.id] : undefined;
                   // A book only just opened says nothing: "0%" reads as a fault.
                   const percent = at ? Math.round(libraryProgress(at) * 100) : 0;
+                  const tags = libraryBookTags(b).map(k => t(k));
+                  const by = arabicReader ? b.author : `${b.latin} · ${b.authorLatin}`;
                   return (
                     <Row
                       key={b.id}
                       title={b.title}
-                      subtitle={`${arabicReader ? b.author : `${b.latin} · ${b.authorLatin}`}\n${t(`hadith.library.about.${b.id}`)}`}
+                      // On the author's line, not one of their own: a row shows three lines, and what the book is must keep two.
+                      subtitle={`${[by, ...tags].join(' · ')}\n${t(`hadith.library.about.${b.id}`)}`}
                       value={bytes != null ? formatBytes(bytes) : percent >= 1 ? t('hadith.library.percent', { percent }) : undefined}
                       onPress={() => navigation.push('LibraryBook', { id: b.id })}
                       testID={`hadith-library-${b.id}`}

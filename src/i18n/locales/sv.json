@@ -3168,7 +3168,14 @@
         "nihayatzayn": "Nawawi al-Bantanis kommentar till Qurrat al-'Ayn, en hel kurs i shafiitisk rätt av den javanesiske lärde i Mekka.",
         "tibyan": "An-Nawawi om hur de som bär Koranen bör uppträda: att recitera den, lära ut och lära sig den, och att hedra mushafen."
       },
-      "levelFirst": "Att börja med",
+      "commentary": "Kommentar",
+      "subject": {
+        "quran": "Koranen",
+        "hadith": "Hadith",
+        "fiqh": "Fiqh",
+        "heart": "Hjärtats rening",
+        "letters": "Litteratur"
+      },
       "levelLater": "För ett senare skede"
     },
     "recentSearches": "Senaste sökningar",
