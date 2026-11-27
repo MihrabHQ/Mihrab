@@ -318,8 +318,10 @@ function PrayerRowImpl({
           ) : null}
         </View>
         {/* Under the name, where the card has found the tags do not fit
-            beside it. Compact keeps this line on the current row alone. */}
-        {daruriAt && daruriBelow && (tier !== 'compact' || isNext) ? (
+            beside it — on every row that has one. The smallest layout
+            used to keep this line on the current prayer alone, which on a
+            small phone read as the other four having no second time. */}
+        {daruriAt && daruriBelow ? (
         <Text
             style={[styles.daruri, styles.daruriBelow, { color: palette.muted }]}
             numberOfLines={1}

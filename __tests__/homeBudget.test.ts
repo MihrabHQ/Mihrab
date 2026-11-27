@@ -76,9 +76,9 @@ describe('the pick', () => {
   it('counts the extra rows, and the Mālikī tags only where they sit under the names', () => {
     const below = { ...pixel, sublineRows: 5 };
     expect(homeSegmentHeights('comfortable', below).table).toBeGreaterThan(homeSegmentHeights('comfortable', pixel).table);
-    // Compact keeps one line, so five cost what one costs.
+    // Compact shows them all too, so five cost five times what one costs.
     expect(homeSegmentHeights('compact', below).table - homeSegmentHeights('compact', pixel).table).toBe(
-      homeSegmentHeights('compact', { ...pixel, sublineRows: 1 }).table - homeSegmentHeights('compact', pixel).table,
+      5 * (homeSegmentHeights('compact', { ...pixel, sublineRows: 1 }).table - homeSegmentHeights('compact', pixel).table),
     );
     expect(pickHomeTier({ ...pixel, rows: 8 })).toBe('comfortable');
     expect(pickHomeTier({ ...pixel, rows: 8, sublineRows: 5 })).toBe('compact');

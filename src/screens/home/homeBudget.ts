@@ -162,8 +162,9 @@ export function homeSegmentHeights(tier: HomeTier, input: HomeBudgetInput): Home
     HERO_TEXT * tabular +
     Math.round(HERO_COUNTDOWN_SIZE[tier] * COUNTDOWN_LINE) * tabular;
   const dayBar = DAY_BAR_PAD[tier] + DAY_BAR_TEXT[tier] * band;
-  // Compact keeps the second line on the current row alone.
-  const sublines = tier === 'compact' ? Math.min(input.sublineRows, 1) : input.sublineRows;
+  // Every row that has a tag under its name is a line taller, in every
+  // tier: compact no longer folds them onto the current row.
+  const sublines = input.sublineRows;
   const table =
     input.rows * (ROW_PAD[tier] * 2 + ROW_LINE * tabular) +
     input.stripRows * (STRIP_PAD[tier] * 2 + STRIP_LINE * tabular) +
