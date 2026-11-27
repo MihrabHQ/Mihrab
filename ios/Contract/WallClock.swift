@@ -64,7 +64,9 @@ enum WallClock {
     guard let minutes else { return noTime }
     let p = parts(minutes, clock: clock)
     guard let period = p.period, !period.isEmpty else { return p.digits }
-    return p.periodFirst ? period + p.digits : p.digits + " " + period
+    let joined = p.periodFirst ? period + p.digits : p.digits + " " + period
+    // Urdu's Latin "AM" in a right-to-left line (src/utils/clockFormat.ts).
+    return clock.isolate ? "\u{2066}" + joined + "\u{2069}" : joined
   }
 
   // MARK: - Dates and instants

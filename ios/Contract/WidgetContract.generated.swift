@@ -166,17 +166,23 @@ enum WidgetContract {
     var pm: String
     /// Marker before the digits (下午5:31).
     var periodFirst: Bool
+    /// Wrap a joined time in LRI…PDI: a right-to-left language with a Latin
+    /// marker (Urdu "AM"), which a right-to-left line would otherwise set as
+    /// "AM 5:35".
+    var isolate: Bool
 
     init(
       hour12: Bool = false,
       am: String = "AM",
       pm: String = "PM",
-      periodFirst: Bool = false
+      periodFirst: Bool = false,
+      isolate: Bool = false
     ) {
       self.hour12 = hour12
       self.am = am
       self.pm = pm
       self.periodFirst = periodFirst
+      self.isolate = isolate
     }
 
     enum CodingKeys: String, CodingKey {
@@ -184,6 +190,7 @@ enum WidgetContract {
       case am
       case pm
       case periodFirst
+      case isolate
     }
 
     init(from decoder: Decoder) throws {
@@ -192,6 +199,7 @@ enum WidgetContract {
       am = c.wcValue(String.self, .am) ?? "AM"
       pm = c.wcValue(String.self, .pm) ?? "PM"
       periodFirst = c.wcValue(Bool.self, .periodFirst) ?? false
+      isolate = c.wcValue(Bool.self, .isolate) ?? false
     }
   }
 

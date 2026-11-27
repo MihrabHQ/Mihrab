@@ -147,7 +147,8 @@ describe('localisation', () => {
     };
     try {
       _resetClockFormatCaches();
-      expect(formatClock('17:31', true, 'ar')).toBe('5:31 PM');
+      // A Latin marker in a right-to-left language: isolated (see below).
+      expect(formatClock('17:31', true, 'ar')).toBe('\u20665:31 PM\u2069');
     } finally {
       (Intl as any).DateTimeFormat = real;
       _resetClockFormatCaches();
@@ -185,5 +186,24 @@ describe('makeClockFormatter', () => {
 
   it('returns null parts for something that is not a clock', () => {
     expect(makeClockFormatter(true, 'en').parts('—')).toBeNull();
+  });
+});
+
+describe('a Latin day period in a right-to-left language (Urdu)', () => {
+  // "فجر · 5:35 AM" in a right-to-left line was set as "AM 5:35": the
+  // digits and the marker are two bidi runs unless the time is isolated.
+  it('is isolated left to right, as one run', () => {
+    _resetClockFormatCaches();
+    const ur = formatClock('05:35', true, 'ur');
+    expect(ur.startsWith('\u2066') && ur.endsWith('\u2069')).toBe(true);
+    expect(ur.slice(1, -1)).toMatch(/^5:35 \S+$/);
+    expect(clockParts(5, 35, true, 'ur').isolate).toBe(true);
+  });
+
+  it('leaves Arabic markers, English, and every 24-hour clock alone', () => {
+    _resetClockFormatCaches();
+    expect(formatClock('17:31', true, 'en')).toBe('5:31 PM');
+    expect(formatClock('17:31', false, 'ur')).toBe('17:31');
+    expect(formatClock('17:31', true, 'ar')).not.toContain('\u2066');
   });
 });

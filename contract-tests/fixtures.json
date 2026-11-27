@@ -5618,7 +5618,7 @@
     {
       "name": "a full payload reads back whole",
       "type": "Payload",
-      "input": "{\"schemaVersion\":2,\"language\":\"ar\",\"clock\":{\"hour12\":true,\"am\":\"ص\",\"pm\":\"م\",\"periodFirst\":false},\"locationName\":\"Malmö\",\"days\":[{\"dateKey\":\"2026-09-28\",\"utcOffsetMinutes\":120,\"label\":\"Mon, Sep 28\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Faj\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhu\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Mag\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Ish\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425},\"extras\":[{\"key\":\"Lastthird\",\"name\":\"الثلث الأخير\",\"abbr\":\"Las\",\"minutes\":150}],\"estimated\":false},{\"dateKey\":\"2026-09-29\",\"utcOffsetMinutes\":120,\"label\":\"Tue, Sep 29\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Faj\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhu\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Mag\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Ish\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425},\"extras\":[],\"estimated\":false}],\"seasonal\":{\"jumuah\":false,\"ramadan\":false,\"eid\":\"adha\"},\"today\":{\"dateKey\":\"2026-09-28\",\"logged\":2,\"loggable\":3,\"owed\":1,\"prayers\":[{\"key\":\"Fajr\",\"name\":\"الفجر\",\"minutes\":312,\"status\":\"on-time\",\"due\":true},{\"key\":\"Dhuhr\",\"name\":\"الظهر\",\"minutes\":752,\"status\":\"qadha\",\"due\":true},{\"key\":\"Asr\",\"name\":\"العصر\",\"minutes\":950,\"due\":false}]},\"practice\":{\"streak\":12,\"bestStreak\":40,\"loggedToday\":2,\"owed\":3,\"sunnahRate\":0.25,\"fastsThisMonth\":1,\"days\":[{\"d\":\"2026-09-27\",\"kw\":470,\"l\":5,\"m\":false,\"f\":false,\"s\":4,\"p\":\"oooll\"},{\"d\":\"2026-09-28\",\"kw\":200,\"l\":2,\"m\":true,\"f\":true,\"s\":0,\"p\":\"om---\"}],\"since\":\"2025-01-03\"},\"reading\":{\"surah\":18,\"surahName\":\"الكهف\",\"ayah\":10,\"page\":294,\"juz\":15,\"pagesRead\":293,\"totalPages\":604,\"bookmarks\":4,\"lastReadAt\":1758990000000,\"mode\":\"mushaf\",\"khatmah\":{\"day\":12,\"targetDays\":30,\"pagesToday\":20,\"doneToday\":5,\"behindBy\":0,\"daysLeft\":18,\"skipped\":2},\"started\":true,\"downloaded\":true},\"hijri\":{\"dateKey\":\"\",\"day\":6,\"month\":4,\"year\":1448,\"monthName\":\"ربيع الآخر\",\"label\":\"6 ربيع الآخر 1448\",\"nextMonthName\":\"جمادى الأولى\",\"nextMonthInDays\":24},\"hijriDays\":[{\"dateKey\":\"2026-09-29\",\"day\":7,\"month\":4,\"year\":1448,\"monthName\":\"ربيع الآخر\",\"label\":\"7 ربيع الآخر 1448\",\"nextMonthName\":\"جمادى الأولى\",\"nextMonthInDays\":23}],\"tasbih\":{\"presetId\":\"subhanallah\",\"label\":\"Subḥān Allāh\",\"arabic\":\"سُبْحَانَ ٱللَّٰهِ\",\"count\":12,\"target\":33,\"unbounded\":false,\"index\":0,\"total\":3,\"counts\":[12,0,33],\"labels\":[\"Subḥān Allāh\",\"Al-ḥamdu lillāh\",\"Allāhu akbar\"],\"targets\":[33,33,34],\"unboundedFlags\":[false,false,false],\"todayTotal\":45,\"todayRounds\":1},\"sinceAdhanMinutes\":20}",
+      "input": "{\"schemaVersion\":2,\"language\":\"ar\",\"clock\":{\"hour12\":true,\"am\":\"ص\",\"pm\":\"م\",\"periodFirst\":false,\"isolate\":false},\"locationName\":\"Malmö\",\"days\":[{\"dateKey\":\"2026-09-28\",\"utcOffsetMinutes\":120,\"label\":\"Mon, Sep 28\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Faj\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhu\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Mag\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Ish\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425},\"extras\":[{\"key\":\"Lastthird\",\"name\":\"الثلث الأخير\",\"abbr\":\"Las\",\"minutes\":150}],\"estimated\":false},{\"dateKey\":\"2026-09-29\",\"utcOffsetMinutes\":120,\"label\":\"Tue, Sep 29\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Faj\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhu\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Mag\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Ish\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425},\"extras\":[],\"estimated\":false}],\"seasonal\":{\"jumuah\":false,\"ramadan\":false,\"eid\":\"adha\"},\"today\":{\"dateKey\":\"2026-09-28\",\"logged\":2,\"loggable\":3,\"owed\":1,\"prayers\":[{\"key\":\"Fajr\",\"name\":\"الفجر\",\"minutes\":312,\"status\":\"on-time\",\"due\":true},{\"key\":\"Dhuhr\",\"name\":\"الظهر\",\"minutes\":752,\"status\":\"qadha\",\"due\":true},{\"key\":\"Asr\",\"name\":\"العصر\",\"minutes\":950,\"due\":false}]},\"practice\":{\"streak\":12,\"bestStreak\":40,\"loggedToday\":2,\"owed\":3,\"sunnahRate\":0.25,\"fastsThisMonth\":1,\"days\":[{\"d\":\"2026-09-27\",\"kw\":470,\"l\":5,\"m\":false,\"f\":false,\"s\":4,\"p\":\"oooll\"},{\"d\":\"2026-09-28\",\"kw\":200,\"l\":2,\"m\":true,\"f\":true,\"s\":0,\"p\":\"om---\"}],\"since\":\"2025-01-03\"},\"reading\":{\"surah\":18,\"surahName\":\"الكهف\",\"ayah\":10,\"page\":294,\"juz\":15,\"pagesRead\":293,\"totalPages\":604,\"bookmarks\":4,\"lastReadAt\":1758990000000,\"mode\":\"mushaf\",\"khatmah\":{\"day\":12,\"targetDays\":30,\"pagesToday\":20,\"doneToday\":5,\"behindBy\":0,\"daysLeft\":18,\"skipped\":2},\"started\":true,\"downloaded\":true},\"hijri\":{\"dateKey\":\"\",\"day\":6,\"month\":4,\"year\":1448,\"monthName\":\"ربيع الآخر\",\"label\":\"6 ربيع الآخر 1448\",\"nextMonthName\":\"جمادى الأولى\",\"nextMonthInDays\":24},\"hijriDays\":[{\"dateKey\":\"2026-09-29\",\"day\":7,\"month\":4,\"year\":1448,\"monthName\":\"ربيع الآخر\",\"label\":\"7 ربيع الآخر 1448\",\"nextMonthName\":\"جمادى الأولى\",\"nextMonthInDays\":23}],\"tasbih\":{\"presetId\":\"subhanallah\",\"label\":\"Subḥān Allāh\",\"arabic\":\"سُبْحَانَ ٱللَّٰهِ\",\"count\":12,\"target\":33,\"unbounded\":false,\"index\":0,\"total\":3,\"counts\":[12,0,33],\"labels\":[\"Subḥān Allāh\",\"Al-ḥamdu lillāh\",\"Allāhu akbar\"],\"targets\":[33,33,34],\"unboundedFlags\":[false,false,false],\"todayTotal\":45,\"todayRounds\":1},\"sinceAdhanMinutes\":20}",
       "expected": {
         "schemaVersion": 2,
         "language": "ar",
@@ -5626,7 +5626,8 @@
           "hour12": true,
           "am": "ص",
           "pm": "م",
-          "periodFirst": false
+          "periodFirst": false,
+          "isolate": false
         },
         "locationName": "Malmö",
         "days": [
@@ -5881,7 +5882,8 @@
           "hour12": false,
           "am": "AM",
           "pm": "PM",
-          "periodFirst": false
+          "periodFirst": false,
+          "isolate": false
         },
         "locationName": "",
         "days": [],
@@ -5900,7 +5902,8 @@
           "hour12": false,
           "am": "AM",
           "pm": "PM",
-          "periodFirst": false
+          "periodFirst": false,
+          "isolate": false
         },
         "locationName": "",
         "days": [
@@ -6167,7 +6170,8 @@
           "hour12": false,
           "am": "AM",
           "pm": "PM",
-          "periodFirst": false
+          "periodFirst": false,
+          "isolate": false
         },
         "locationName": "",
         "days": [
@@ -6216,7 +6220,8 @@
           "hour12": false,
           "am": "AM",
           "pm": "PM",
-          "periodFirst": false
+          "periodFirst": false,
+          "isolate": false
         },
         "locationName": "",
         "days": [
@@ -6251,7 +6256,8 @@
           "hour12": false,
           "am": "AM",
           "pm": "PM",
-          "periodFirst": false
+          "periodFirst": false,
+          "isolate": false
         },
         "locationName": "",
         "days": [],
@@ -6300,7 +6306,8 @@
           "hour12": false,
           "am": "AM",
           "pm": "PM",
-          "periodFirst": false
+          "periodFirst": false,
+          "isolate": false
         },
         "locationName": "",
         "days": [],
@@ -7531,6 +7538,156 @@
         "am": "vorm.",
         "pm": "nachm.",
         "periodFirst": true
+      },
+      "text": "—"
+    },
+    {
+      "minutes": 0,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦12:00 AM⁩"
+    },
+    {
+      "minutes": 1,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦12:01 AM⁩"
+    },
+    {
+      "minutes": 59,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦12:59 AM⁩"
+    },
+    {
+      "minutes": 60,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦1:00 AM⁩"
+    },
+    {
+      "minutes": 312,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦5:12 AM⁩"
+    },
+    {
+      "minutes": 719,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦11:59 AM⁩"
+    },
+    {
+      "minutes": 720,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦12:00 PM⁩"
+    },
+    {
+      "minutes": 721,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦12:01 PM⁩"
+    },
+    {
+      "minutes": 779,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦12:59 PM⁩"
+    },
+    {
+      "minutes": 780,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦1:00 PM⁩"
+    },
+    {
+      "minutes": 1215,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦8:15 PM⁩"
+    },
+    {
+      "minutes": 1439,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦11:59 PM⁩"
+    },
+    {
+      "minutes": 1445,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦12:05 AM⁩"
+    },
+    {
+      "minutes": -1,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
+      },
+      "text": "⁦11:59 PM⁩"
+    },
+    {
+      "minutes": null,
+      "clock": {
+        "hour12": true,
+        "am": "AM",
+        "pm": "PM",
+        "isolate": true
       },
       "text": "—"
     }

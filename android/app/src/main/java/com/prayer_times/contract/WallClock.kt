@@ -81,7 +81,9 @@ object WallClock {
     val p = parts(minutes, clock)
     val period = p.period
     if (period.isNullOrEmpty()) return p.digits
-    return if (p.periodFirst) period + p.digits else p.digits + " " + period
+    val joined = if (p.periodFirst) period + p.digits else p.digits + " " + period
+    // Urdu's Latin "AM" in a right-to-left line (src/utils/clockFormat.ts).
+    return if (clock.isolate) "\u2066" + joined + "\u2069" else joined
   }
 
   // ── Dates and instants ────────────────────────────────────────────────

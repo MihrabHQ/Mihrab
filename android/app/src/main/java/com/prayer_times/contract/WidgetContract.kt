@@ -206,12 +206,19 @@ object WidgetContract {
     val pm: String = "PM",
     /** Marker before the digits (下午5:31). */
     val periodFirst: Boolean = false,
+    /**
+     * Wrap a joined time in LRI…PDI: a right-to-left language with a Latin
+     * marker (Urdu "AM"), which a right-to-left line would otherwise set as
+     * "AM 5:35".
+     */
+    val isolate: Boolean = false,
   ) {
     fun toJson(): JSONObject = JSONObject().apply {
       put("hour12", hour12)
       put("am", am)
       put("pm", pm)
       put("periodFirst", periodFirst)
+      put("isolate", isolate)
     }
 
     companion object {
@@ -222,6 +229,7 @@ object WidgetContract {
           am = o.wcString("am") ?: "AM",
           pm = o.wcString("pm") ?: "PM",
           periodFirst = o.wcBool("periodFirst") ?: false,
+          isolate = o.wcBool("isolate") ?: false,
         )
       }
 

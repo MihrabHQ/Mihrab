@@ -96,6 +96,12 @@ export type WidgetContractClock = {
   pm?: string;
   /** Marker before the digits (下午5:31). */
   periodFirst?: boolean;
+  /**
+   * Wrap a joined time in LRI…PDI: a right-to-left language with a Latin
+   * marker (Urdu "AM"), which a right-to-left line would otherwise set as "AM
+   * 5:35".
+   */
+  isolate?: boolean;
 };
 
 /** One local calendar day of prayer times. */
@@ -499,6 +505,7 @@ export function readWidgetContractClock(
     am: wcString(input.am) ?? 'AM',
     pm: wcString(input.pm) ?? 'PM',
     periodFirst: wcBool(input.periodFirst) ?? false,
+    isolate: wcBool(input.isolate) ?? false,
   };
   return out;
 }

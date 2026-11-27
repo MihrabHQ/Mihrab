@@ -137,7 +137,20 @@ export type ClockParts = {
   dayPeriodFirst: boolean;
   /** Between a leading day period and the digits (`DayPeriodNames.gap`). */
   gap?: string;
+  /**
+   * Set when a right-to-left language writes its day period in Latin
+   * letters (Urdu: "AM", "PM"). Joined, the time is then isolated left to
+   * right (LRI…PDI): otherwise, inside a right-to-left line — "فجر · 5:35 AM"
+   * in a notification, a Live Activity, a widget — the bidi algorithm sets
+   * the digits and the marker as two runs and shows "AM 5:35". Arabic's
+   * own "ص"/"م" read right to left and need nothing.
+   */
+  isolate?: boolean;
 };
+
+/** Languages written right to left, as the app ships them (and kin). */
+const RTL_LANGUAGES = new Set(['ar', 'ur', 'fa', 'he']);
+const LATIN_MARKER = /^[A-Za-z][A-Za-z. ]*$/;
 
 /**
  * Split rendering, so a caller that wants the marker smaller or quieter
@@ -158,19 +171,24 @@ export function clockParts(
   }
   const names = dayPeriodNames(locale);
   const normalised = ((hour % 24) + 24) % 24;
+  const dayPeriod = normalised < 12 ? names.am : names.pm;
+  const isolate =
+    RTL_LANGUAGES.has(locale.split(/[-_]/)[0].toLowerCase()) && LATIN_MARKER.test(dayPeriod);
   return {
     digits: `${hour12Of(normalised)}:${m}`,
-    dayPeriod: normalised < 12 ? names.am : names.pm,
+    dayPeriod,
     dayPeriodFirst: names.prefix,
     ...(names.prefix ? { gap: names.gap } : {}),
+    ...(isolate ? { isolate: true } : {}),
   };
 }
 
 export function joinClockParts(parts: ClockParts): string {
   if (!parts.dayPeriod) return parts.digits;
-  return parts.dayPeriodFirst
+  const joined = parts.dayPeriodFirst
     ? `${parts.dayPeriod}${parts.gap ?? ''}${parts.digits}`
     : `${parts.digits} ${parts.dayPeriod}`;
+  return parts.isolate ? `\u2066${joined}\u2069` : joined;
 }
 
 /**

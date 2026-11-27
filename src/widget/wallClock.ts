@@ -55,6 +55,9 @@ export function contractClock(
     am: names.prefix ? names.am + names.gap : names.am,
     pm: names.prefix ? names.pm + names.gap : names.pm,
     periodFirst: names.prefix,
+    // Urdu's "AM"/"PM" in a right-to-left line: the joined time isolated
+    // left to right, as `joinClockParts` does in the app.
+    ...(clockParts(9, 0, true, locale).isolate ? { isolate: true } : {}),
   };
 }
 
@@ -78,6 +81,7 @@ export function formatContractMinutes(
     digits: `${hour12Of(hour)}:${String(minute).padStart(2, '0')}`,
     dayPeriod: hour < 12 ? clock.am ?? 'AM' : clock.pm ?? 'PM',
     dayPeriodFirst: clock.periodFirst ?? false,
+    ...(clock.isolate ? { isolate: true } : {}),
   });
 }
 

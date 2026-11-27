@@ -66,7 +66,7 @@ const DAY_1 = {
 const FULL_PAYLOAD = {
   schemaVersion: 2,
   language: 'ar',
-  clock: { hour12: true, am: 'ص', pm: 'م', periodFirst: false },
+  clock: { hour12: true, am: 'ص', pm: 'م', periodFirst: false, isolate: false },
   locationName: 'Malmö',
   days: [
     DAY_1,
@@ -431,6 +431,8 @@ export const TEXT_CLOCKS: Record<string, unknown>[] = [
   { hour12: true },
   { hour12: true, am: '', pm: '' },
   { hour12: true, am: 'vorm.', pm: 'nachm.', periodFirst: true },
+  // Urdu: a Latin marker in a right-to-left language, isolated.
+  { hour12: true, am: 'AM', pm: 'PM', isolate: true },
 ];
 
 /** Zones whose 2026 rules are settled in every tz database we meet. */
