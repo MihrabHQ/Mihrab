@@ -130,4 +130,63 @@ class CardInkTest {
       assertTrue(c <= CardInk.contrast(text, card) + 1e-9 || muted == grey)
     }
   }
+
+  // ── The text in the accent ─────────────────────────────────────────────
+
+  private val appAccents = listOf(
+    0xFF46A081.toInt(), 0xFF5EEAD4.toInt(), 0xFF7DD3FC.toInt(), 0xFFFBBF24.toInt(), 0xFFE58FA6.toInt(), 0xFFB4A6E8.toInt(),
+    0xFF1F5F4A.toInt(), 0xFF2563EB.toInt(), 0xFFB45309.toInt(), 0xFF9F2D4D.toInt(), 0xFFFF0000.toInt(), 0xFF808080.toInt(),
+  )
+
+  @Test
+  fun `a text in the accent reads as text on the Dark and the Light card, every accent`() {
+    for (card in listOf(0xFF1C1C1E.toInt(), 0xFFFAF7F2.toInt())) {
+      for (accent in appAccents) {
+        val text = CardInk.accentText(accent, card)
+        assertTrue("accent ${accent.toUInt().toString(16)} on ${card.toUInt().toString(16)}", CardInk.contrast(text, card) >= CardInk.ACCENT_TEXT_MIN)
+      }
+    }
+  }
+
+  @Test
+  fun `a text in the accent reads on every card there is`() {
+    for (card in cards()) {
+      for (accent in appAccents) {
+        val text = CardInk.accentText(accent, card)
+        assertTrue("accent ${accent.toUInt().toString(16)} on ${card.toUInt().toString(16)}", CardInk.contrast(text, card) >= CardInk.TEXT_MIN)
+      }
+    }
+  }
+
+  @Test
+  fun `an accent that already reads as text is left as it is`() {
+    // The app's dark-theme green on the Dark card, its light-theme green on the Light one.
+    assertEquals(0xFF46A081.toInt(), CardInk.accentText(0xFF46A081.toInt(), 0xFF1C1C1E.toInt()))
+    assertEquals(0xFF1F5F4A.toInt(), CardInk.accentText(0xFF1F5F4A.toInt(), 0xFFFAF7F2.toInt()))
+  }
+
+  @Test
+  fun `a text in the accent keeps its hue where it is moved - the pastel green on the Light card is still a green`() {
+    val moved = CardInk.accentText(0xFF46A081.toInt(), 0xFFFAF7F2.toInt())
+    val r = (moved shr 16) and 0xFF; val g = (moved shr 8) and 0xFF; val b = moved and 0xFF
+    assertTrue("moved to ${moved.toUInt().toString(16)}", g > r && g > b)
+  }
+
+  @Test
+  fun `the text in the accent and the highlight land on the same side of the card`() {
+    for (card in cards()) {
+      val light = CardInk.lightTextCard(card)
+      for (accent in appAccents) {
+        val text = CardInk.accentText(accent, card)
+        val hl = CardInk.accent(accent, card)
+        // Moved, if at all, the way the card's own text goes: never one up and one down.
+        if (text != (accent or 0xFF000000.toInt())) {
+          assertTrue("text of ${accent.toUInt().toString(16)} on ${card.toUInt().toString(16)}", (CardInk.luminance(text) >= CardInk.luminance(accent)) == light)
+        }
+        if (hl != (accent or 0xFF000000.toInt())) {
+          assertTrue("highlight of ${accent.toUInt().toString(16)} on ${card.toUInt().toString(16)}", (CardInk.luminance(hl) >= CardInk.luminance(accent)) == light)
+        }
+      }
+    }
+  }
 }

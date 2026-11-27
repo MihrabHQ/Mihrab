@@ -123,7 +123,11 @@ private data class WidgetStyle(
 // System-colours setting is on. That is a notification, not a widget, and
 // it was not part of what was asked for.
 
-private fun readWidgetStyle(prefs: SharedPreferences): WidgetStyle {
+/**
+ * `night`: is the device in dark mode — what the System background, and an
+ * app that follows the system, are decided by.
+ */
+private fun readWidgetStyle(prefs: SharedPreferences, night: Boolean): WidgetStyle {
   val opacity = prefs.getInt(PrayerWidgetProvider.PREFS_WIDGET_BG_OPACITY, 88)
   val hid =
     prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_ID, "green")?.trim()
@@ -163,17 +167,37 @@ private fun readWidgetStyle(prefs: SharedPreferences): WidgetStyle {
   // and the tint are the app's colouring, so neither is taken — and the
   // highlight is then the one chosen for the widgets, since the hour's
   // accent was mixed for the hour's card and not for this one.
-  val fixed = PrayerWidgetProvider.fixedBackground(
-    prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_MODE, PrayerWidgetProvider.BG_APP),
-    prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_HEX, ""),
-  )
+  val mode = prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_MODE, PrayerWidgetProvider.BG_APP)
+  val fixed = PrayerWidgetProvider.fixedBackground(mode, prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_HEX, ""), night)
+  // THE HIGHLIGHT IS THE APP'S ACCENT unless the reader chose one for the
+  // widgets (`PREFS_WIDGET_HIGHLIGHT_OWN`) — on any card, the app's or
+  // not. The app writes its accent here as a colour (`PREFS_WIDGET_APP_ACCENT`)
+  // so the widget's own settings screen can offer it, and a card drawn
+  // while the app is closed is in it. Where the app has none to give (it
+  // follows the phone's Material You colours, which the widgets do not),
+  // the stored highlight is the answer, as it always was.
+  val appAccent = (prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_APP_ACCENT, "") ?: "").trim()
+  val own = prefs.getBoolean(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_OWN, false)
+  val followsApp = PrayerWidgetProvider.followsApp(mode)
+  val useApp = (followsApp || !own) && appAccent.matches(Regex("^#[0-9A-Fa-f]{6}$"))
+  val hlId = if (useApp) "custom" else hid.ifEmpty { "green" }
+  val hlHex = if (useApp) appAccent else hex
   if (fixed != null) {
-    return WidgetStyle(opacity.coerceIn(0, 100), hid.ifEmpty { "green" }, hex, false, "", "", fixed)
+    return WidgetStyle(opacity.coerceIn(0, 100), hlId, hlHex, false, "", "", fixed)
+  }
+  // THE APP'S OWN LIGHT AND DARK. "App" was the Sky theme's hour, the tint,
+  // or a dark card — dark even under an app set to Light. It is the app's
+  // page now: light under a light app (its own paper, `BG_LIGHT_RGB`), and
+  // under an app that follows the phone, whichever the phone is in.
+  if (skyBg.isEmpty()) {
+    val theme = (prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_APP_THEME, "") ?: "").trim().lowercase()
+    val light = theme == "light" || (theme == "system" && !night)
+    if (light) return WidgetStyle(opacity.coerceIn(0, 100), hlId, hlHex, false, "", "", PrayerWidgetProvider.BG_LIGHT_RGB)
   }
   return WidgetStyle(
     opacity.coerceIn(0, 100),
-    hid.ifEmpty { "green" },
-    hex,
+    hlId,
+    hlHex,
     tinted,
     skyBg,
     skyAccent,
@@ -256,17 +280,43 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
     const val PREFS_WIDGET_BG_MODE = "widget_bg_mode"
     const val PREFS_WIDGET_BG_HEX = "widget_bg_hex"
     const val BG_APP = "app"
+    /** Light or dark with the phone's own dark mode, whatever the app is set to. */
+    const val BG_SYSTEM = "system"
     const val BG_DARK = "dark"
     const val BG_LIGHT = "light"
     const val BG_CUSTOM = "custom"
-    val BG_MODES = listOf(BG_APP, BG_DARK, BG_LIGHT, BG_CUSTOM)
+    val BG_MODES = listOf(BG_APP, BG_SYSTEM, BG_DARK, BG_LIGHT, BG_CUSTOM)
+    /** The app's theme as the app wrote it: "light", "dark", "system" or "sky". */
+    const val PREFS_WIDGET_APP_THEME = "widget_app_theme"
+    /** The app's accent as a colour, #RRGGBB; empty where it has none to give. */
+    const val PREFS_WIDGET_APP_ACCENT = "widget_app_accent"
+    /** The widgets have a highlight of their own (the stored one), not the app's accent. */
+    const val PREFS_WIDGET_HIGHLIGHT_OWN = "widget_highlight_own"
+
+    /** Is the card the app's (and with it the highlight)? */
+    fun followsApp(mode: String?): Boolean = mode?.trim()?.lowercase().let { it == null || it == BG_APP || it !in BG_MODES }
+
+    /** Is the device in dark mode? */
+    fun isNight(context: Context): Boolean =
+      // The application's resources: a widget's own context can be a copy
+      // made for the app's language (`localized`), with the mode it was
+      // copied under.
+      ((context.applicationContext ?: context).resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+        android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+    /** The app's accent as the widgets have it, or null: nothing written, or the app has none to give. */
+    fun appAccent(context: Context): Int? {
+      val hex = (context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getString(PREFS_WIDGET_APP_ACCENT, "") ?: "").trim()
+      return if (hex.matches(Regex("^#[0-9A-Fa-f]{6}$"))) try { Color.parseColor(hex) } catch (_: Exception) { null } else null
+    }
     /** The neutral dark card (BASE_BG) and the app's light page (theme/tokens.ts `paperWarm`). */
     const val BG_DARK_RGB = 0xFF1C1C1E.toInt()
     const val BG_LIGHT_RGB = 0xFFFAF7F2.toInt()
 
     /** The card's own colour for a stored mode, opaque; null where it follows the app. */
-    fun fixedBackground(mode: String?, hex: String?): Int? =
+    fun fixedBackground(mode: String?, hex: String?, night: Boolean = false): Int? =
       when (mode?.trim()?.lowercase()) {
+        BG_SYSTEM -> if (night) BG_DARK_RGB else BG_LIGHT_RGB
         BG_DARK -> BG_DARK_RGB
         BG_LIGHT -> BG_LIGHT_RGB
         BG_CUSTOM -> {
@@ -297,11 +347,11 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
         override fun getString(key: String?, defValue: String?): String? =
           if (key == PREFS_WIDGET_BG_MODE) BG_APP else prefs.getString(key, defValue)
       }
-      return readWidgetStyle(following).backgroundArgb() and 0x00FFFFFF
+      return readWidgetStyle(following, isNight(context)).backgroundArgb() and 0x00FFFFFF
     }
 
     fun fixedCard(context: Context): Pair<Int, Int>? {
-      val style = readWidgetStyle(context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE))
+      val style = readWidgetStyle(context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE), isNight(context))
       return style.fixedBg?.let { Pair(it, style.bgOpacityPercent) }
     }
     /**
@@ -362,7 +412,7 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
      */
     fun skyCard(context: Context): Pair<Int, Int>? {
       val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-      val style = readWidgetStyle(prefs)
+      val style = readWidgetStyle(prefs, isNight(context))
       if (!style.skyBg.matches(Regex("^#([0-9A-Fa-f]{6})$"))) return null
       return try {
         Pair(Color.parseColor(style.skyBg), style.bgOpacityPercent)
@@ -373,7 +423,7 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
 
     fun resolvedColors(context: Context): Pair<Int, Int> {
       val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-      val style = readWidgetStyle(prefs)
+      val style = readWidgetStyle(prefs, isNight(context))
       val bg = style.backgroundArgb()
       // The highlight is what the next prayer's time is drawn in. Where the
       // card is what it stands on, it is kept readable on it — a pastel

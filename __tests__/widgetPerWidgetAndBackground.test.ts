@@ -59,8 +59,8 @@ describe('the widgets’ background', () => {
 
   it('follows the app until asked not to', () => {
     expect(DEFAULT_SETTINGS.androidWidgetBackgroundMode).toBe('app');
-    expect(WIDGET_BACKGROUND_MODES).toEqual(['app', 'dark', 'light', 'custom']);
-    expect(provider).toContain('prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_MODE, PrayerWidgetProvider.BG_APP)');
+    expect(WIDGET_BACKGROUND_MODES).toEqual(['app', 'system', 'dark', 'light', 'custom']);
+    expect(provider).toContain('val mode = prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_MODE, PrayerWidgetProvider.BG_APP)');
     expect(provider).toContain('else -> null');
   });
 
@@ -70,16 +70,15 @@ describe('the widgets’ background', () => {
   });
 
   it('takes neither the Sky theme’s hour nor the tint on a card of its own colour', () => {
-    expect(provider).toContain(
-      'return WidgetStyle(opacity.coerceIn(0, 100), hid.ifEmpty { "green" }, hex, false, "", "", fixed)',
-    );
+    expect(provider).toContain('return WidgetStyle(opacity.coerceIn(0, 100), hlId, hlHex, false, "", "", fixed)');
     expect(provider).toMatch(/fixedBg\?\.let \{ return Color\.argb\(a,/);
   });
 
   it('keeps the text readable on it: the light or the dark, whichever it holds better', () => {
     const display = kt('PrayerWidgetDisplay.kt');
-    expect(display).toContain('PrayerWidgetProvider.skyCard(context) ?: PrayerWidgetProvider.fixedCard(context)');
-    expect(display).toContain('return if (text == DEFAULT_TEXT) CardInk.fallbackText(card.first) else CardInk.text(text, card.first)');
+    // Whatever the card is — the Sky's hour, a colour of its own, the app's light or dark.
+    expect(display).toContain('PrayerWidgetProvider.resolvedColors(context)');
+    expect(display).toContain('return if (text == DEFAULT_TEXT) CardInk.fallbackText(card) else CardInk.text(text, card)');
     // The rule itself is swept over every card colour off a device (CardInkTest).
     expect(kt('cardfit/CardInk.kt')).toContain(
       'val soft = if (contrast(LIGHT_TEXT, card) >= contrast(DARK_TEXT, card)) LIGHT_TEXT else DARK_TEXT',
@@ -168,9 +167,10 @@ describe('the widget’s settings screen is laid out for what someone came to do
     expect(screen).toContain('val appsOwn = bgMode == PrayerWidgetProvider.BG_APP');
     expect(screen).toMatch(/widget_configure_highlight_scroll\)\.visibility = if \(appsOwn\) View\.GONE else View\.VISIBLE/);
     expect(layout).toContain('@string/widget_configure_highlight_app');
-    // …and the app's accent picker leaves a widget highlight of its own alone.
+    // …and the app's accent picker leaves a widget highlight of its own alone
+    // (widgetSystemAndAccent.test.ts has the rule).
     const shelf = readFileSync(join(__dirname, '..', 'src/components/AccentShelf.tsx'), 'utf8');
-    expect(shelf).toContain("if (widget.androidWidgetBackgroundMode === 'app') writeWidget(patch);");
+    expect(shelf).toContain('!widget.androidWidgetHighlightOwn) writeWidget(patch);');
     const card = readFileSync(join(__dirname, '..', 'src/screens/settings/WidgetCard.tsx'), 'utf8');
     expect(card).toContain('const needsOwnPicker = appearance.useSystemDynamicTheme || ownBackground;');
   });

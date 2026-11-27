@@ -9,6 +9,7 @@ import {
 import { useAppPalette } from '../../hooks/useAppPalette';
 import {
   APP_ACCENT_SWATCHES,
+  appAccentHexForWidget,
   widgetPatchForAccent,
   widgetSwatchSelected,
 } from '../../settings/widgetAccent';
@@ -75,6 +76,14 @@ function WidgetCardImpl() {
   // picker leaves it alone then (AccentShelf, `mirrorToWidget`).
   const ownBackground = settings.androidWidgetBackgroundMode !== 'app';
   const needsOwnPicker = appearance.useSystemDynamicTheme || ownBackground;
+  // The app's accent is the widgets' highlight on any background unless
+  // they are given one of their own here (`androidWidgetHighlightOwn`):
+  // the first swatch is the app's, ringed while it is the one in force.
+  // Under Material You the app has none to give, and there is no such swatch.
+  const appAccentHex = appearance.useSystemDynamicTheme
+    ? null
+    : appAccentHexForWidget(appearance.appAccentId, appearance.appAccentCustomHex);
+  const followsApp = appAccentHex != null && !settings.androidWidgetHighlightOwn;
   const opacity = settings.androidWidgetBackgroundOpacity;
 
   return (
@@ -125,19 +134,41 @@ function WidgetCardImpl() {
             {t('settings.widgetHighlight')}
           </Text>
           <View style={styles.swatchRow}>
+            {appAccentHex ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('settings.widgetHighlightAppAccent', 'App accent')}
+                accessibilityState={{ selected: followsApp }}
+                testID="widget-highlight-app"
+                onPress={() =>
+                  updateSettings({
+                    androidWidgetHighlightOwn: false,
+                    ...widgetPatchForAccent(appearance.appAccentId, appearance.appAccentCustomHex),
+                  })
+                }
+                style={[
+                  styles.swatch,
+                  styles.appSwatch,
+                  {
+                    backgroundColor: appAccentHex, // tokens-ok-line: the swatch IS the app's accent
+                    borderColor: followsApp ? palette.accent : palette.border,
+                    borderWidth: followsApp ? 3 : 2,
+                  },
+                ]}>
+                <Text style={styles.appSwatchGlyph}>A</Text>
+              </Pressable>
+            ) : null}
             {APP_ACCENT_SWATCHES.map(sw => {
-              const selected = widgetSwatchSelected(
-                sw,
-                settings.widgetHighlightId,
-                settings.widgetHighlightCustomHex,
-              );
+              const selected =
+                !followsApp &&
+                widgetSwatchSelected(sw, settings.widgetHighlightId, settings.widgetHighlightCustomHex);
               return (
                 <Pressable
                   key={sw.id}
                   accessibilityRole="button"
                   accessibilityLabel={t(`settings.accent_${sw.id}`, sw.id)}
                   accessibilityState={{ selected }}
-                  onPress={() => updateSettings(widgetPatchForAccent(sw.id))}
+                  onPress={() => updateSettings({ androidWidgetHighlightOwn: true, ...widgetPatchForAccent(sw.id) })}
                   style={[
                     styles.swatch,
                     {
@@ -154,7 +185,7 @@ function WidgetCardImpl() {
             {ownBackground
               ? t(
                   'settings.widgetHighlightOwnHelp',
-                  'With a background of their own, the widgets\u2019 highlight is chosen here.',
+                  'The first is the app\u2019s accent, and follows it. The others are a highlight of the widgets\u2019 own.',
                 )
               : t(
                   'settings.widgetColorOwnHelp',
@@ -187,4 +218,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: RADIUS.xl,
   },
+  appSwatch: { alignItems: 'center', justifyContent: 'center' },
+  // tokens-ok-line: white on the accent swatch, as the app's own filled buttons are
+  appSwatchGlyph: { color: '#FFFFFF', fontSize: TYPE.footnote.fontSize, fontWeight: '700' },
 });

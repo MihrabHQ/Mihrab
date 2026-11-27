@@ -100,6 +100,9 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       // Whose colour the card is — the widget's own settings screen can change it.
       map.putString("bgMode", prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_MODE, PrayerWidgetProvider.BG_APP))
       map.putString("bgHex", prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_HEX, ""))
+      // …and whose the highlight is, and whether the text is in the accent.
+      map.putBoolean("highlightOwn", prefs.getBoolean(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_OWN, false))
+      map.putBoolean("textAccent", prefs.getBoolean(PrayerWidgetDisplay.KEY_TEXT_ACCENT, false))
       promise.resolve(map)
     } catch (e: Exception) {
       promise.reject("E_WIDGET_APPEARANCE_GET", e.message, e)
@@ -387,6 +390,30 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       promise.resolve(null)
     } catch (e: Exception) {
       promise.reject("E_WIDGET_BACKGROUND", e.message, e)
+    }
+  }
+
+  /**
+   * What the widgets take from the app's own look: its theme ("light",
+   * "dark", "system", "sky") for a card that follows the app, its accent as
+   * a colour (null where it has none to give — Material You), and the two
+   * choices that turn on it: whether the widgets' highlight is their own,
+   * and whether their text is drawn in the accent.
+   */
+  override fun setAndroidWidgetAppLook(theme: String, accentHex: String?, highlightOwn: Boolean, textAccent: Boolean, promise: Promise) {
+    try {
+      reactContext
+        .getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
+        .edit()
+        .putString(PrayerWidgetProvider.PREFS_WIDGET_APP_THEME, theme.trim().lowercase())
+        .putString(PrayerWidgetProvider.PREFS_WIDGET_APP_ACCENT, accentHex?.trim() ?: "")
+        .putBoolean(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_OWN, highlightOwn)
+        .putBoolean(PrayerWidgetDisplay.KEY_TEXT_ACCENT, textAccent)
+        .apply()
+      fanOut()
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject("E_WIDGET_APP_LOOK", e.message, e)
     }
   }
 

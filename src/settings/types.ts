@@ -126,7 +126,7 @@ export type LocationPreset = {
   label?: string;
 };
 
-export const WIDGET_BACKGROUND_MODES = ['app', 'dark', 'light', 'custom'] as const;
+export const WIDGET_BACKGROUND_MODES = ['app', 'system', 'dark', 'light', 'custom'] as const;
 export type WidgetBackgroundMode = (typeof WIDGET_BACKGROUND_MODES)[number];
 /** The cards 'dark' and 'light' draw (PrayerWidgetProvider BG_DARK_RGB, BG_LIGHT_RGB). */
 export const WIDGET_BACKGROUND_DARK = '#1C1C1E';
@@ -311,13 +311,26 @@ export type PrayerAppSettings = {
   androidWidgetBackgroundOpacity: number;
   /**
    * Android: whose colour the widgets' card is. 'app' (the default) follows
-   * the app — its Sky theme's hour, its tinted surfaces, else the neutral
-   * dark card. 'dark', 'light' and 'custom' are a colour that stays
-   * whatever the app looks like.
+   * the app — its Sky theme's hour, its tinted surfaces, its own light or
+   * dark. 'system' is light or dark with the phone's dark mode, whatever
+   * the app is set to. 'dark', 'light' and 'custom' are a colour that stays.
    */
   androidWidgetBackgroundMode: WidgetBackgroundMode;
   /** With `androidWidgetBackgroundMode` 'custom': #RRGGBB. */
   androidWidgetBackgroundCustomHex: string;
+  /**
+   * Android: the widgets' highlight is their own (`widgetHighlightId`), not
+   * the app's accent. Off (the default) it is the app's accent on any
+   * background, and follows it. Under the 'app' background it is always
+   * the app's.
+   */
+  androidWidgetHighlightOwn: boolean;
+  /**
+   * Android: the widgets' text is drawn in the highlight's colour (the
+   * app's accent, unless the widgets have their own), kept readable on the
+   * card. Off: `androidWidgetTextColor` (Automatic, or a colour).
+   */
+  androidWidgetTextAccent: boolean;
   /** Highlight style for the widget next-prayer row. */
   widgetHighlightId: WidgetHighlightId;
   /** When `widgetHighlightId` is `custom`, #RRGGBB (e.g. #6BC98A). */
@@ -872,6 +885,8 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   androidWidgetBackgroundOpacity: 88,
   androidWidgetBackgroundMode: 'app',
   androidWidgetBackgroundCustomHex: '#1C1C1E',
+  androidWidgetHighlightOwn: false,
+  androidWidgetTextAccent: false,
   widgetHighlightId: 'green',
   widgetHighlightCustomHex: '#6BC98A',
   hijriCalendar: 'tabular',

@@ -106,7 +106,7 @@ describe('the text colour is Automatic, or one colour of your own', () => {
   it('offers the two choices, not six swatches the card overrode', () => {
     expect(kt).not.toMatch(/TEXT_PRESETS/);
     expect(kt).toContain('val auto = choice(getString(R.string.widget_configure_text_auto))');
-    expect(kt).toContain('textCustom = storedText != AUTO_TEXT');
+    expect(kt).toContain('textCustom = !textAccent && storedText != AUTO_TEXT');
     expect(app).not.toMatch(/WIDGET_TEXT_SWATCHES/);
     expect(app).toMatch(/\{ key: 'auto', label: t\('settings\.widgetTextAuto', 'Automatic'\) \}/);
     // A colour someone had picked from the old swatches is now their own.

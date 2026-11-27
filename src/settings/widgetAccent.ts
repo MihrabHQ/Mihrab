@@ -87,3 +87,16 @@ export function widgetSwatchSelected(
   if (highlightId !== 'custom') return false;
   return (customHex ?? '').toLowerCase() === swatch.light.toLowerCase();
 }
+
+/**
+ * The app's accent as ONE colour, for the Android widgets to draw in
+ * (`setAndroidWidgetAppLook`): a highlight, or the text, on a card that may
+ * be light or dark. The brighter of the swatch's pair — the widget moves it
+ * toward black on a light card, only as far as it needs (cardfit/CardInk.kt)
+ * — and a custom accent as it is.
+ */
+export function appAccentHexForWidget(id: AppAccentId, customHex?: string): string | null {
+  if (id === 'custom') return customHex && /^#[0-9a-fA-F]{6}$/.test(customHex) ? customHex.toUpperCase() : null;
+  const sw = APP_ACCENT_SWATCHES.find(x => x.id === id);
+  return sw ? sw.dark.toUpperCase() : null;
+}

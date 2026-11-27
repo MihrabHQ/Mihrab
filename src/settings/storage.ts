@@ -590,6 +590,8 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
     parsed.androidWidgetBackgroundCustomHex,
     DEFAULT_SETTINGS.androidWidgetBackgroundCustomHex,
   );
+  merged.androidWidgetHighlightOwn = parsed.androidWidgetHighlightOwn === true;
+  merged.androidWidgetTextAccent = parsed.androidWidgetTextAccent === true;
   merged.hijriCalendar = coerceHijriCalendarId(parsed.hijriCalendar);
   merged.hijriAdjustDays = coerceHijriAdjust(parsed.hijriAdjustDays);
   merged.androidWidgetTextColor = coerceHexColor(

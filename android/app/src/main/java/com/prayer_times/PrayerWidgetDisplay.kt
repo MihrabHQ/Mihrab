@@ -28,6 +28,14 @@ data class PrayerWidgetDisplay(
    */
   val card: Int? = null,
 ) {
+  /**
+   * Is the card a light one? Read off the card where there is one — a text
+   * in the app's accent can be mid in tone on either — and off the text on
+   * a see-through card. The state colours (a missed prayer's red, a passed
+   * time's grey) and the ink of the marks follow it.
+   */
+  val onLight: Boolean get() = card?.let { !CardInk.lightTextCard(it) } ?: CardInk.onLight(text)
+
   /** Secondary text: the same colour, faded, as the grey was to the white. */
   // The default text keeps the exact colours the card always had.
   // …and on a card that grey does not show on (a colour of the reader's
@@ -38,7 +46,7 @@ data class PrayerWidgetDisplay(
   }
   /** What has passed or cannot be pressed: the dark card's grey, or the text at half. */
   val disabled: Int get() {
-    val base = if (CardInk.onLight(text)) 0xFF7A8087.toInt() else 0xFF6B7076.toInt()
+    val base = if (onLight) 0xFF7A8087.toInt() else 0xFF6B7076.toInt()
     return card?.let { CardInk.quiet(base, text, it, 0x8C) } ?: base
   }
   /** The refresh glyph. */
@@ -48,6 +56,8 @@ data class PrayerWidgetDisplay(
 
   companion object {
     const val KEY_TEXT_HEX = "widget_text_hex"
+    /** The text is drawn in the highlight's colour (the app's accent, unless the widgets have their own). */
+    const val KEY_TEXT_ACCENT = "widget_text_accent"
     const val KEY_SHOW_LOCATION = "widget_show_location"
     const val KEY_SHOW_COUNTDOWN = "widget_show_countdown"
     const val KEY_SHOW_TABLE = "widget_show_table"
@@ -125,16 +135,28 @@ data class PrayerWidgetDisplay(
       val text = if (hex.matches(Regex("^#[0-9A-Fa-f]{6}$"))) {
         try { Color.parseColor(hex) } catch (_: Exception) { DEFAULT_TEXT }
       } else DEFAULT_TEXT
-      val card = try {
-        PrayerWidgetProvider.resolvedColors(context).first
-          .takeIf { ((it ushr 24) and 0xFF) >= 255 * CardInk.MIN_OPACITY / 100 }
-          ?.let { it or 0xFF000000.toInt() }
+      // The card the text stands on, and the highlight as it is drawn on
+      // it: one reading of the widgets' look for the text to be judged by.
+      val (cardArgb, accent) = try {
+        PrayerWidgetProvider.resolvedColors(context)
       } catch (_: Exception) {
-        null
+        Pair(0, 0)
+      }
+      val card = cardArgb
+        .takeIf { ((it ushr 24) and 0xFF) >= 255 * CardInk.MIN_OPACITY / 100 }
+        ?.let { it or 0xFF000000.toInt() }
+      // THE TEXT IN THE APP'S ACCENT (`KEY_TEXT_ACCENT`): the highlight's
+      // colour, as the app's own headings are — on any background, and kept
+      // readable on it as text must be (CardInk.accentText: its hue, moved
+      // only as far as the card needs). On a see-through card, as chosen.
+      val inAccent = p.getBoolean(KEY_TEXT_ACCENT, false) && accent != 0
+      val resolved = when {
+        inAccent -> card?.let { CardInk.accentText(accent, it) } ?: (accent or 0xFF000000.toInt())
+        else -> legible(text, card)
       }
       return PrayerWidgetDisplay(
         card = card,
-        text = legibleOnSky(context, text),
+        text = resolved,
         showLocation = bool(KEY_SHOW_LOCATION),
         showCountdown = bool(KEY_SHOW_COUNTDOWN),
         showTable = bool(KEY_SHOW_TABLE),
@@ -164,20 +186,16 @@ data class PrayerWidgetDisplay(
      * better. The neutral dark card that follows the app is left alone, as
      * it was: a dark text on it is a choice made for a see-through card.
      */
-    internal fun legibleOnSky(context: Context, text: Int): Int {
-      val card = try {
-        PrayerWidgetProvider.skyCard(context) ?: PrayerWidgetProvider.fixedCard(context)
-      } catch (_: Exception) {
-        null
-      } ?: return text
-      if (card.second < SKY_CARD_MIN_OPACITY) return text
+    internal fun legible(text: Int, card: Int?): Int {
+      // A see-through card (`card` null) is the wallpaper's to judge.
+      card ?: return text
       // The rules themselves, swept off a device over every card colour:
       // cardfit/CardInk. Automatic (the light text every card had, which is
       // what is stored for it) is whichever of the light and the dark the
       // card holds better — so on a mid-toned card the text and the
       // highlight, which is moved the same way, land on the same side. A
       // colour of the reader's own is kept wherever it can be read.
-      return if (text == DEFAULT_TEXT) CardInk.fallbackText(card.first) else CardInk.text(text, card.first)
+      return if (text == DEFAULT_TEXT) CardInk.fallbackText(card) else CardInk.text(text, card)
     }
 
     const val SKY_CARD_MIN_OPACITY = CardInk.MIN_OPACITY

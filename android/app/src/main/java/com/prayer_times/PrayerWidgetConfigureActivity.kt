@@ -77,6 +77,12 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   private var highlightCustomHex = DEFAULT_HIGHLIGHT
   private var textHex = AUTO_TEXT
   private var textCustom = false
+  /** The text is drawn in the highlight's colour (the app's accent, unless the widgets have their own). */
+  private var textAccent = false
+  /** The widgets' highlight is their own (a swatch here), not the app's accent. */
+  private var highlightOwn = false
+  /** The app's accent as it wrote it, or null: the "App accent" choices are offered where there is one. */
+  private var appAccent: Int? = null
   private var showLocation = true
   private var showCountdown = true
   private var showTable = true
@@ -196,7 +202,12 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     // of the old swatches among them — is the reader's own.
     val storedText = normaliseHex(prefs.getString(PrayerWidgetDisplay.KEY_TEXT_HEX, "")) ?: AUTO_TEXT
     textHex = storedText
-    textCustom = storedText != AUTO_TEXT
+    textAccent = prefs.getBoolean(PrayerWidgetDisplay.KEY_TEXT_ACCENT, false)
+    textCustom = !textAccent && storedText != AUTO_TEXT
+    highlightOwn = prefs.getBoolean(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_OWN, false)
+    appAccent = PrayerWidgetProvider.appAccent(this)
+    // With no accent of the app's to take, the highlight is the widgets' own.
+    if (appAccent == null) highlightOwn = true
 
     // This widget's own, where it has them (PrayerWidgetDisplay, "per widget").
     val display = PrayerWidgetDisplay.read(this, widgetId)
@@ -219,7 +230,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
       textLayout.requestFocus()
       return
     }
-    if (highlightId == "custom" && normaliseHex(findViewById<TextInputEditText>(R.id.widget_configure_hex_input).text?.toString()) == null) {
+    if (highlightOwn && highlightId == "custom" && bgMode != PrayerWidgetProvider.BG_APP && normaliseHex(findViewById<TextInputEditText>(R.id.widget_configure_hex_input).text?.toString()) == null) {
       highlightLayout.error = getString(R.string.widget_configure_hex_invalid)
       highlightLayout.requestFocus()
       return
@@ -266,6 +277,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   private fun pending(): Map<String, Any> {
     val out = LinkedHashMap<String, Any>()
     out[PrayerWidgetDisplay.KEY_TEXT_HEX] = textHex
+    out[PrayerWidgetDisplay.KEY_TEXT_ACCENT] = textAccent
     if (isPrayerWidget) {
       out[PrayerWidgetDisplay.KEY_SHOW_LOCATION] = showLocation
       out[PrayerWidgetDisplay.KEY_SHOW_COUNTDOWN] = showCountdown
@@ -279,6 +291,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     out[PrayerWidgetProvider.PREFS_WIDGET_BG_OPACITY] = opacity
     out[PrayerWidgetProvider.PREFS_WIDGET_BG_MODE] = bgMode
     out[PrayerWidgetProvider.PREFS_WIDGET_BG_HEX] = if (bgMode == PrayerWidgetProvider.BG_CUSTOM) bgCustomHex else ""
+    out[PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_OWN] = highlightOwn
     out[PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_ID] = highlightId
     out[PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_HEX] = if (highlightId == "custom") highlightCustomHex else ""
     // Written as false rather than left alone: saving here is the one
@@ -311,6 +324,8 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     hexInput.setText(bgCustomHex)
     val names = listOf(
       PrayerWidgetProvider.BG_APP to getString(R.string.widget_configure_bg_app),
+      // Light or dark with the phone's own dark mode.
+      PrayerWidgetProvider.BG_SYSTEM to getString(R.string.widget_configure_bg_system),
       PrayerWidgetProvider.BG_DARK to getString(R.string.widget_configure_text_dark),
       PrayerWidgetProvider.BG_LIGHT to getString(R.string.widget_configure_text_light),
       // "#", as the colour swatches write a colour of one's own.
@@ -327,7 +342,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     fun applied() {
       hexLayout.visibility = if (bgMode == PrayerWidgetProvider.BG_CUSTOM) View.VISIBLE else View.GONE
       hexLayout.error = null
-      cardRgb = (PrayerWidgetProvider.fixedBackground(bgMode, bgCustomHex) ?: appCardRgb) and 0x00FFFFFF
+      cardRgb = (PrayerWidgetProvider.fixedBackground(bgMode, bgCustomHex, PrayerWidgetProvider.isNight(this)) ?: appCardRgb) and 0x00FFFFFF
       refreshHighlight()
       renderPreview()
     }
@@ -365,11 +380,15 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     input.setText(if (textCustom) textHex else "")
 
     val auto = choice(getString(R.string.widget_configure_text_auto))
+    // The highlight's colour — the app's accent, unless the widgets have
+    // their own — as the text, kept readable on the card (CardInk.accentText).
+    val accent = choice(getString(R.string.widget_configure_text_accent))
     // "#", as the background writes a colour of one's own.
     val own = choice("#").apply { contentDescription = getString(R.string.widget_configure_highlight_custom) }
     group.addView(auto, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+    group.addView(accent, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
     group.addView(own, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-    group.check(if (textCustom) own.id else auto.id)
+    group.check(if (textAccent) accent.id else if (textCustom) own.id else auto.id)
 
     fun applied() {
       layout.visibility = if (textCustom) View.VISIBLE else View.GONE
@@ -378,6 +397,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     }
     group.addOnButtonCheckedListener { _, checkedId, isChecked ->
       if (!isChecked) return@addOnButtonCheckedListener
+      textAccent = checkedId == accent.id
       textCustom = checkedId == own.id
       // Automatic is stored as the card's light text; a colour of one's own
       // only once it is one (Save refuses a field that is not).
@@ -434,17 +454,30 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
         return
       }
       row.removeAllViews()
+      // THE APP'S ACCENT, ON ANY BACKGROUND. A card that is not the app's
+      // can still take the app's colour: first in the row, ringed while the
+      // highlight is the app's (the default), and it follows the app's
+      // accent when that changes. The swatches after it are a highlight of
+      // the widgets' own.
+      appAccent?.let { accent ->
+        row.addView(swatch(accent or 0xFF000000.toInt(), getString(R.string.widget_configure_highlight_app_accent), !highlightOwn) {
+          highlightOwn = false
+          redraw()
+        })
+      }
       for ((id, hex, nameRes) in HIGHLIGHTS) {
-        row.addView(swatch(Color.parseColor(hex), getString(nameRes), highlightId == id) {
+        row.addView(swatch(Color.parseColor(hex), getString(nameRes), highlightOwn && highlightId == id) {
+          highlightOwn = true
           highlightId = id
           redraw()
         })
       }
-      row.addView(swatch(null, getString(R.string.widget_configure_highlight_custom), highlightId == "custom") {
+      row.addView(swatch(null, getString(R.string.widget_configure_highlight_custom), highlightOwn && highlightId == "custom") {
+        highlightOwn = true
         highlightId = "custom"
         redraw()
       })
-      layout.visibility = if (highlightId == "custom") View.VISIBLE else View.GONE
+      layout.visibility = if (highlightOwn && highlightId == "custom") View.VISIBLE else View.GONE
       layout.error = null
       renderPreview()
     }
@@ -515,7 +548,8 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   // ── The sample ─────────────────────────────────────────────────────────
 
   private fun highlightColour(): Int =
-    if (highlightId == "custom") Color.parseColor(highlightCustomHex)
+    if (!highlightOwn && appAccent != null) appAccent!! or 0xFF000000.toInt()
+    else if (highlightId == "custom") Color.parseColor(highlightCustomHex)
     else Color.parseColor(HIGHLIGHTS.firstOrNull { it.first == highlightId }?.second ?: DEFAULT_HIGHLIGHT)
 
   private fun renderPreview() {
@@ -555,7 +589,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     val look = WidgetPreviewCard.Look(
       opacity = opacity,
       cardRgb = cardRgb,
-      text = Color.parseColor(textHex),
+      text = if (textAccent) com.prayer_times.cardfit.CardInk.accentText(highlightColour(), cardRgb or 0xFF000000.toInt()) else Color.parseColor(textHex),
       accent = highlightColour(),
       showLocation = !prayer || showLocation,
       showCountdown = !prayer || showCountdown,

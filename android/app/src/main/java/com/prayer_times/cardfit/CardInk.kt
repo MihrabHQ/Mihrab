@@ -94,9 +94,19 @@ object CardInk {
    * (a light card) or white (a dark one), in twentieths, as far as
    * `ACCENT_MIN` needs and no further. Opaque.
    */
-  fun accent(accent: Int, card: Int): Int {
+  fun accent(accent: Int, card: Int): Int = tint(accent, card, ACCENT_MIN)
+
+  /** A text drawn in the accent must read as text does: this, not the highlight's 3. */
+  const val ACCENT_TEXT_MIN = 4.5
+
+  /** The accent as the widgets' text colour: its hue, moved as far as text needs. */
+  fun accentText(accent: Int, card: Int): Int = tint(accent, card, ACCENT_TEXT_MIN)
+
+  /** `color` where it reaches `min` on `card`; else its hue moved toward the text's end until it does. */
+  fun tint(color: Int, card: Int, min: Double): Int {
+    val accent = color
     val opaque = accent or 0xFF000000.toInt()
-    if (contrast(opaque, card) >= ACCENT_MIN) return opaque
+    if (contrast(opaque, card) >= min) return opaque
     // Toward the end the text is at: a light text's card takes a lighter
     // highlight, a dark text's a darker one. (Toward whichever end is
     // merely further from the card, a mid blue got a near-black time
@@ -104,7 +114,7 @@ object CardInk {
     val toward = if (lightTextCard(card)) 0xFFFFFFFF.toInt() else 0xFF000000.toInt()
     for (step in 1..20) {
       val moved = mix(opaque, toward, step / 20.0)
-      if (contrast(moved, card) >= ACCENT_MIN) return moved
+      if (contrast(moved, card) >= min) return moved
     }
     return toward
   }

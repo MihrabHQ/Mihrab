@@ -52,40 +52,48 @@ function WidgetTextColorImpl() {
   const { palette } = useAppPalette();
   const current = settings.androidWidgetTextColor.toUpperCase();
   const isAuto = current === WIDGET_TEXT_AUTO;
-  const [customOpen, setCustomOpen] = useState(!isAuto);
+  const inAccent = settings.androidWidgetTextAccent;
+  const [customOpen, setCustomOpen] = useState(!isAuto && !inAccent);
   const [draft, setDraft] = useState(isAuto ? '' : current);
   const draftHex = normaliseHex(draft);
 
   // A colour changed from the widget's own screen arrives here too.
   useEffect(() => {
-    if (!isAuto) {
+    if (inAccent) setCustomOpen(false);
+    else if (!isAuto) {
       setCustomOpen(true);
       setDraft(d => (normaliseHex(d) === current ? d : current));
     }
-  }, [current, isAuto]);
+  }, [current, isAuto, inAccent]);
 
   return (
     <SettingsBlock>
       <Text style={[styles.label, { color: palette.muted }]}>
         {t('settings.widgetTextColor', 'Text color')}
       </Text>
-      <SegmentedControl<'auto' | 'custom'>
+      <SegmentedControl<'auto' | 'accent' | 'custom'>
         accessibilityLabel={t('settings.widgetTextColor', 'Text color')}
         testID="widget-text-mode"
         segments={[
           { key: 'auto', label: t('settings.widgetTextAuto', 'Automatic') },
+          // The highlight's colour — the app's accent, unless the widgets
+          // have their own — kept readable on the card (CardInk.accentText).
+          { key: 'accent', label: t('settings.widgetTextAccent', 'Accent') },
           // "#", as the background writes a colour of one's own.
           { key: 'custom', label: '#', accessibilityLabel: t('settings.widgetTextCustom', 'Custom color') },
         ]}
-        value={customOpen ? 'custom' : 'auto'}
+        value={inAccent ? 'accent' : customOpen ? 'custom' : 'auto'}
         onChange={next => {
           if (next === 'auto') {
             setCustomOpen(false);
-            update({ androidWidgetTextColor: WIDGET_TEXT_AUTO });
+            update({ androidWidgetTextColor: WIDGET_TEXT_AUTO, androidWidgetTextAccent: false });
+          } else if (next === 'accent') {
+            setCustomOpen(false);
+            update({ androidWidgetTextAccent: true });
           } else {
             // Automatic stays in force until the field holds a colour.
             setCustomOpen(true);
-            if (draftHex) update({ androidWidgetTextColor: draftHex });
+            update({ androidWidgetTextAccent: false, ...(draftHex ? { androidWidgetTextColor: draftHex } : {}) });
           }
         }}
       />
@@ -125,7 +133,7 @@ function WidgetTextColorImpl() {
       <Text style={[styles.help, { color: palette.muted }]}>
         {t(
           'settings.widgetTextAutoHelp',
-          'Automatic is light on a dark card and dark on a light one. # is a color of your own, used where it can be read.',
+          'Automatic is light on a dark card and dark on a light one. Accent is the highlight’s color. # is a color of your own. Each is kept readable on the card.',
         )}
       </Text>
     </SettingsBlock>

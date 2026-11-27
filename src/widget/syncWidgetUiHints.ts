@@ -5,7 +5,7 @@ import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import type { PrayerAppSettings, WidgetBackgroundMode, WidgetHighlightId } from '../settings/types';
 import { WIDGET_BACKGROUND_MODES, WIDGET_SINCE_ADHAN_CHOICES } from '../settings/types';
 import { getPrayerWidgetModule } from '../native/PrayerWidget';
-import { widgetPatchForAccent } from '../settings/widgetAccent';
+import { appAccentHexForWidget, widgetPatchForAccent } from '../settings/widgetAccent';
 import { coerceWidgetTimeScale } from '../settings/storage';
 import { getSkyThemeDay, useSkyTheme } from '../theme/skyTheme';
 import { PALETTE_STEPS, skyMoodFor, widgetSkyColors } from '../theme/skyMoods';
@@ -62,6 +62,15 @@ function syncNativeWidgetAppearance(
     void mod.setAndroidWidgetBackground?.(
       settings.androidWidgetBackgroundMode,
       settings.androidWidgetBackgroundMode === 'custom' ? settings.androidWidgetBackgroundCustomHex : null,
+    );
+    // The app's own look, for a card that follows it and for the "App
+    // accent" choices on any card. Under Material You the app has no accent
+    // of its own to give: the widgets keep their stored highlight.
+    void mod.setAndroidWidgetAppLook?.(
+      settings.appearance,
+      settings.useSystemDynamicTheme ? null : appAccentHexForWidget(settings.appAccentId, settings.appAccentCustomHex),
+      settings.androidWidgetHighlightOwn,
+      settings.androidWidgetTextAccent,
     );
     void mod.setAndroidPrayerWidgetDisplay?.(
       settings.androidWidgetTextColor,
@@ -141,7 +150,7 @@ export function prayerWidgetDisplayUpdates(
  * app knows, and a custom colour only where it is one.
  */
 export function widgetBackgroundUpdates(
-  native: { bgMode?: string; bgHex?: string },
+  native: { bgMode?: string; bgHex?: string; highlightOwn?: boolean; textAccent?: boolean },
   current: PrayerAppSettings,
 ): Partial<PrayerAppSettings> {
   const updates: Partial<PrayerAppSettings> = {};
@@ -152,6 +161,14 @@ export function widgetBackgroundUpdates(
   const hex = typeof native.bgHex === 'string' ? native.bgHex.trim().toUpperCase() : '';
   if (/^#[0-9A-F]{6}$/.test(hex) && hex !== current.androidWidgetBackgroundCustomHex.toUpperCase()) {
     updates.androidWidgetBackgroundCustomHex = hex;
+  }
+  // Whose the highlight is, and the text in the accent: both can be set on
+  // the widget's own screen.
+  if (typeof native.highlightOwn === 'boolean' && native.highlightOwn !== current.androidWidgetHighlightOwn) {
+    updates.androidWidgetHighlightOwn = native.highlightOwn;
+  }
+  if (typeof native.textAccent === 'boolean' && native.textAccent !== current.androidWidgetTextAccent) {
+    updates.androidWidgetTextAccent = native.textAccent;
   }
   return updates;
 }

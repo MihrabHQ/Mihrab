@@ -69,10 +69,12 @@ describe('the widget under the Sky theme, natively', () => {
   });
 
   it('does not leave a dark text on the Sky\'s dark card', () => {
-    expect(display).toContain('text = legibleOnSky(context, text),');
-    expect(display).toContain('if (card.second < SKY_CARD_MIN_OPACITY) return text');
+    expect(display).toContain('else -> legible(text, card)');
+    // A see-through card is the wallpaper's to judge: no card, the text as chosen.
+    expect(display).toContain('.takeIf { ((it ushr 24) and 0xFF) >= 255 * CardInk.MIN_OPACITY / 100 }');
+    expect(display).toContain('card ?: return text');
     // On the Sky's dark card that is the light text (the better of the two there).
-    expect(display).toContain('return if (text == DEFAULT_TEXT) CardInk.fallbackText(card.first) else CardInk.text(text, card.first)');
+    expect(display).toContain('return if (text == DEFAULT_TEXT) CardInk.fallbackText(card) else CardInk.text(text, card)');
     const ink = read('android/app/src/main/java/com/prayer_times/cardfit/CardInk.kt');
     expect(ink).toContain('if (contrast(text, card) >= TEXT_MIN) text or 0xFF000000.toInt() else fallbackText(card)');
     // The rule, in numbers: the Dark preset fails on any hour's card, the light ones never do.

@@ -100,13 +100,14 @@ export function AccentShelf({
   const { slice: settings, update: updateSettings } = useAppearanceSettings();
   const { slice: widget, update: writeWidget } = useWidgetSettings();
   /**
-   * The widgets take the app's accent while their card is the app's
-   * (background "App"). With a background of their own — Dark, Light, a
-   * colour — their highlight is their own too, chosen on the Widgets page,
-   * and the app's accent changing must not write over it.
+   * The widgets take the app's accent — on any background — unless they
+   * have been given a highlight of their own (Settings → Widgets, or the
+   * widget's own screen: `androidWidgetHighlightOwn`), which the app's
+   * accent changing must not write over. Under the "App" background the
+   * highlight is always the app's.
    */
   const updateWidget = (patch: Parameters<typeof writeWidget>[0]) => {
-    if (widget.androidWidgetBackgroundMode === 'app') writeWidget(patch);
+    if (widget.androidWidgetBackgroundMode === 'app' || !widget.androidWidgetHighlightOwn) writeWidget(patch);
   };
   const [pickerOpen, setPickerOpen] = useState(false);
   // Two taps to remove a saved colour, the same contract the reciter

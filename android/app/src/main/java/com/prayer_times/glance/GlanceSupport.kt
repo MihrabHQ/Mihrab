@@ -214,7 +214,7 @@ internal object Palette {
    * already follows the card (PrayerWidgetDisplay `legibleOnSky`): a dark
    * text is a light card.
    */
-  val onLight: Boolean get() = com.prayer_times.cardfit.CardInk.onLight(style.text)
+  val onLight: Boolean get() = style.onLight
   /** A missed prayer, a count owed: never ordinary text. */
   val DANGER: Int get() = if (onLight) 0xFFC62828.toInt() else 0xFFF87171.toInt()
   /** What cannot be pressed, or has passed. */

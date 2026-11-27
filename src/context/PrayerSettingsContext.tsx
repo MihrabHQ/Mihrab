@@ -163,6 +163,8 @@ export type WidgetSlice = Pick<
   | 'androidWidgetBackgroundOpacity'
   | 'androidWidgetBackgroundMode'
   | 'androidWidgetBackgroundCustomHex'
+  | 'androidWidgetHighlightOwn'
+  | 'androidWidgetTextAccent'
   | 'widgetHighlightId'
   | 'widgetHighlightCustomHex'
   | 'androidWidgetTextColor'
@@ -505,6 +507,8 @@ export function PrayerSettingsProvider({
       androidWidgetBackgroundOpacity: settings.androidWidgetBackgroundOpacity,
       androidWidgetBackgroundMode: settings.androidWidgetBackgroundMode,
       androidWidgetBackgroundCustomHex: settings.androidWidgetBackgroundCustomHex,
+      androidWidgetHighlightOwn: settings.androidWidgetHighlightOwn,
+      androidWidgetTextAccent: settings.androidWidgetTextAccent,
       widgetHighlightId: settings.widgetHighlightId,
       widgetHighlightCustomHex: settings.widgetHighlightCustomHex,
       androidWidgetTextColor: settings.androidWidgetTextColor,
@@ -518,6 +522,8 @@ export function PrayerSettingsProvider({
       settings.androidWidgetBackgroundOpacity,
       settings.androidWidgetBackgroundMode,
       settings.androidWidgetBackgroundCustomHex,
+      settings.androidWidgetHighlightOwn,
+      settings.androidWidgetTextAccent,
       settings.widgetHighlightId,
       settings.widgetHighlightCustomHex,
       settings.androidWidgetTextColor,

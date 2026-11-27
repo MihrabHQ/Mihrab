@@ -2,12 +2,11 @@
 /**
  * Whose colour the widgets' card is — every Android widget follows it.
  *
- * "App" is the card as it always was: the app's own colouring — its Sky
- * theme's hour, its tinted surfaces, else the neutral dark. Someone who
- * likes the app under Sky but wants the home screen to hold still had no
- * way to say so. Dark, Light and a colour of one's own are a card that
- * stays whatever the app looks like (PrayerWidgetProvider
- * `PREFS_WIDGET_BG_MODE`). The strength below still applies to all four,
+ * "App" is the app's own colouring — its Sky theme's hour, its tinted
+ * surfaces, and its light or dark (a light app has a light card; it was
+ * dark whatever the app was). "System" is light or dark with the phone's
+ * dark mode, whatever the app is set to. Dark, Light and a colour of one's
+ * own are a card that stays (PrayerWidgetProvider `PREFS_WIDGET_BG_MODE`). The strength below still applies to all four,
  * and the widgets' text stays readable on whichever is chosen
  * (PrayerWidgetDisplay `legibleOnSky`).
  *
@@ -53,6 +52,8 @@ function WidgetBackgroundImpl() {
         testID="widget-background-mode"
         segments={[
           { key: 'app', label: t('settings.widgetBackground_app', 'App') },
+          // Light or dark with the phone's own dark mode.
+          { key: 'system', label: t('settings.widgetBackground_system', 'System') },
           { key: 'dark', label: t('settings.widgetText_dark', 'Dark') },
           { key: 'light', label: t('settings.widgetText_light', 'Light') },
           // "#", as the colour swatches write a colour of one's own.
@@ -103,7 +104,7 @@ function WidgetBackgroundImpl() {
       <Text style={[styles.help, { color: palette.muted }]}>
         {t(
           'settings.widgetBackgroundHelp',
-          'App follows the app’s colors: its Sky theme and its tinted surfaces. Dark, Light or a color of your own stays the same whatever the app looks like.',
+          'App follows the app: its Sky theme, its tint, its light or dark. System is light or dark with your phone. Dark, Light or a color of your own stays the same.',
         )}
       </Text>
     </SettingsBlock>

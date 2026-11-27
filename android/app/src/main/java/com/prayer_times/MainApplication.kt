@@ -65,6 +65,8 @@ class MainApplication : Application(), ReactApplication, androidx.work.Configura
     LaunchSnapshot.preload(this)
     // Before any receiver of this process can post a notification's event.
     AlertEventGate.install(this)
+    // The widgets follow the phone into and out of dark mode (WidgetNightWatch).
+    WidgetNightWatch.install(this)
     // ── NO WEBVIEW IN THIS PROCESS ─────────────────────────────────────
     // React Native's HTTP client keeps cookies through android.webkit's
     // CookieManager, and the first fetch of the day (the times, an update
