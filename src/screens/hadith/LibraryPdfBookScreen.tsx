@@ -17,15 +17,17 @@
  * A page that will not draw says so in its own place and the rest go on.
  * A file that will not open at all is offered to be fetched again.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Image, Linking, PixelRatio, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentRef } from 'react';
+import { FlatList, Image, Linking, PixelRatio, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Button, Group, Row } from '../../components/ui';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { isRtlLanguage } from '../../i18n/layoutDirection';
+import { useLayoutRtl } from '../../i18n/useLayoutRtl';
 import {
   findLibraryBook,
   libraryBookmarks,
@@ -100,7 +102,7 @@ function PdfPageView({ path, index, shown, ratio, zoom, marked, onLongPress }: {
   );
 }
 
-function PdfReader({ id, title, path, pages, ratio, toPage }: { id: string; title: string; path: string; pages: number; ratio: number; toPage?: number }) {
+function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string; title: string; path: string; pages: number; ratio: number; toPage?: number; rtl: boolean }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const { width: windowWidth } = useWindowDimensions();
@@ -110,6 +112,35 @@ function PdfReader({ id, title, path, pages, ratio, toPage }: { id: string; titl
   const [zoomAt, setZoomAt] = useState(0);
   const zoom = ZOOMS[zoomAt];
   const list = useRef<FlatList<number>>(null);
+  // Two fingers step the zoom, as the button does: apart for closer, together for further. A step and not a
+  // free size, because a page is drawn again at each size and three sizes are what is kept.
+  const pinch = useMemo(
+    () =>
+      Gesture.Pinch()
+        .runOnJS(true)
+        .onEnd(e => {
+          if (e.scale > 1.2) setZoomAt(z => Math.min(ZOOMS.length - 1, z + 1));
+          else if (e.scale < 0.83) setZoomAt(z => Math.max(0, z - 1));
+        }),
+    [],
+  );
+  // A page wider than the screen opens at the edge its own lines begin at: the left of an Indonesian page
+  // in an Arabic app, where a sideways scroller would otherwise begin at the right.
+  const side = useRef<ComponentRef<typeof ScrollView>>(null);
+  const layoutRtl = useLayoutRtl();
+  useEffect(() => {
+    if (ZOOMS[zoomAt] <= 1 || layoutRtl === rtl) return undefined;
+    // Once the wider page is laid out, and again when it has settled: the first is too early on a slow phone.
+    // The edge is asked for by where it is on the glass. On Android a sideways scroller's 0 is the left edge
+    // whatever the layout's direction (seen on a Pixel: `scrollToEnd` in an Arabic layout goes right, where it
+    // already was); on iOS a mirrored scroller counts from its own start, so the far edge is its end.
+    const toFarEdge = () => {
+      if (Platform.OS === 'android') side.current?.scrollTo({ x: rtl ? 100000 : 0, animated: false });
+      else side.current?.scrollToEnd({ animated: false });
+    };
+    const timers = [80, 400].map(ms => setTimeout(toFarEdge, ms));
+    return () => timers.forEach(clearTimeout);
+  }, [zoomAt, layoutRtl, rtl]);
   const data = useMemo(() => Array.from({ length: pages }, (_, i) => i), [pages]);
   const rowHeight = shown * zoom * ratio + SPACING.sm;
 
@@ -228,9 +259,14 @@ function PdfReader({ id, title, path, pages, ratio, toPage }: { id: string; titl
           ) : null}
           {/* The pages' own room, measured: a list inside a sideways scroller has no height of its own, and one
               without a height draws every page of the book at once. */}
+          <GestureHandlerRootView style={styles.flex}>
+            <GestureDetector gesture={pinch}>
           <View style={styles.flex} onLayout={e => setRoom(e.nativeEvent.layout.height)}>
             {target != null && room > 0 ? (
-              <ScrollView horizontal scrollEnabled={zoom > 1} showsHorizontalScrollIndicator={zoom > 1} bounces={false} contentContainerStyle={{ width: Math.max(windowWidth, shown * zoom) }}>
+              <ScrollView
+                ref={side}
+                key={`s${zoomAt}`}
+                horizontal scrollEnabled={zoom > 1} showsHorizontalScrollIndicator={zoom > 1} bounces={false} contentContainerStyle={{ width: Math.max(windowWidth, shown * zoom) }}>
                 <FlatList
                   ref={list}
                   key={`z${zoomAt}`}
@@ -255,6 +291,8 @@ function PdfReader({ id, title, path, pages, ratio, toPage }: { id: string; titl
               </ScrollView>
             ) : null}
           </View>
+            </GestureDetector>
+          </GestureHandlerRootView>
         </View>
       )}
     </HadithPage>
@@ -345,7 +383,7 @@ export function LibraryPdfBookScreenPage() {
   }, [id, pdf, status.state]);
 
   if (chapter != null && info && status.state === 'ready') {
-    return <PdfReader id={id} title={title} path={libraryPdfPath(id)} pages={info.pages} ratio={info.ratio} toPage={toPage} />;
+    return <PdfReader id={id} title={title} path={libraryPdfPath(id)} pages={info.pages} ratio={info.ratio} toPage={toPage} rtl={isRtlLanguage(known?.lang ?? 'ar')} />;
   }
 
   return (

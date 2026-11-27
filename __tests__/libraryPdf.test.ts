@@ -129,6 +129,16 @@ describe('the reader', () => {
     expect(page).toContain('getItemLayout={(_, index) => ({ length: rowHeight, offset: rowHeight * index, index })}');
   });
 
+  it('steps the zoom with two fingers as with the button, and opens a wider page where its lines begin', () => {
+    expect(page).toContain('Gesture.Pinch()');
+    expect(page).toContain('if (e.scale > 1.2) setZoomAt(z => Math.min(ZOOMS.length - 1, z + 1));');
+    expect(page).toContain('else if (e.scale < 0.83) setZoomAt(z => Math.max(0, z - 1));');
+    // Only where the book's direction is not the layout's; and by the edge on the glass on Android (seen on a
+    // Pixel in an Arabic layout: `scrollToEnd` goes to the right, where an Indonesian page does not begin).
+    expect(page).toContain('if (ZOOMS[zoomAt] <= 1 || layoutRtl === rtl) return undefined;');
+    expect(page).toContain("if (Platform.OS === 'android') side.current?.scrollTo({ x: rtl ? 100000 : 0, animated: false });");
+  });
+
   it('has a sentence for each way the file can fail, in every language', () => {
     for (const k of ['note', 'read', 'zoom', 'noSpace', 'badFile', 'unreadable', 'pageFailed']) expect(page + read('src/screens/hadith/LibraryShelf.tsx')).toContain(`hadith.library.pdf.${k}`);
     for (const f of fs.readdirSync(path.join(REPO, 'src/i18n/locales'))) {
