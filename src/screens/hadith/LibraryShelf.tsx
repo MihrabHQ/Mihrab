@@ -49,7 +49,8 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
   const { palette } = useAppPalette();
   const manifest = useManifest();
   const statuses = usePackStatuses();
-  const books = offeredLibraryBooks(manifest, key => statuses[key]?.state === 'ready');
+  // i18n here is the Hadith tab's: the reader's hadith language where one is set, else the app's.
+  const books = offeredLibraryBooks(manifest, key => statuses[key]?.state === 'ready', [i18n.language]);
   // Read again on coming back from a book: the place has moved.
   const [readings, setReadings] = useState<Record<string, LibraryReading>>({});
   useFocusEffect(
@@ -96,7 +97,8 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
                   // A book only just opened says nothing: "0%" reads as a fault.
                   const percent = at ? Math.round(libraryProgress(at) * 100) : 0;
                   const tags = libraryBookTags(b).map(k => t(k));
-                  const by = arabicReader ? b.author : `${b.latin} · ${b.authorLatin}`;
+                  // A book in the reader's own language is named as it names itself.
+                  const by = arabicReader || b.lang !== 'ar' ? b.author : `${b.latin} · ${b.authorLatin}`;
                   return (
                     <Row
                       key={b.id}

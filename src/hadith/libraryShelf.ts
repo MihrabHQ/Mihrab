@@ -68,10 +68,20 @@ export function findLibraryBook(id: string): LibraryBook | undefined {
   return LIBRARY_BOOKS.find(b => b.id === id);
 }
 
-/** The books to offer: named by the manifest, or here already. */
-export function offeredLibraryBooks(manifest: Manifest | null, here: (key: PackKey) => boolean): LibraryBook[] {
-  return LIBRARY_BOOKS.filter(b => here(libraryKey(b.id)) || manifestEntry(manifest, libraryKey(b.id)) != null);
+/**
+ * The books to offer: named by the manifest, or here already — and, given
+ * the reader's language, the ones that reader can read: the Arabic books
+ * are everyone's (the shelf began with them, and a learner opens them
+ * too), and a book in another language is offered to those whose app, or
+ * whose hadith, is in it. One already downloaded is never hidden.
+ */
+export function offeredLibraryBooks(manifest: Manifest | null, here: (key: PackKey) => boolean, reads?: readonly string[]): LibraryBook[] {
+  const read = (b: LibraryBook) => !reads || b.lang === 'ar' || reads.some(l => sameLanguage(l, b.lang));
+  return LIBRARY_BOOKS.filter(b => here(libraryKey(b.id)) || (manifestEntry(manifest, libraryKey(b.id)) != null && read(b)));
 }
+
+/** "id" and "id-ID" are one language. */
+const sameLanguage = (a: string, b: string) => a.toLowerCase().split('-')[0] === b.toLowerCase().split('-')[0];
 
 /**
  * Where a reader is in each book: the chapter last opened, by its place.

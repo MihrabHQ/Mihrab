@@ -161,7 +161,8 @@ changes. No count is typed here.
 
 ## 6. The Library: a book is its author's text
 
-*The maintainer's decision of 2026-11-26.*
+*The maintainer's decision of 2026-11-26, widened on 2026-11-27 (mended
+words, books in other languages, works a publisher gives leave to pass on).*
 
 The Hadith tab's Library holds whole books to read — Ibn al-Qayyim's
 *Ighāthat al-Lahfān*, *Kalīla wa-Dimna*, al-Hamadhānī's *Maqāmāt*. A book
@@ -170,15 +171,39 @@ there is **not hadith served by this rule**:
 - It is its author's text, **whole and unmodified**, in his order. What
   he quotes he quotes on his own authority, and a classical book quotes
   hadith of every grade. Mihrab grades none of it and removes none of it.
+- **What is published is a transcription, and one kind of slip in it is
+  mended:** a word the conversion cut in two with a space, and an آ it
+  wrote as an alif and a space. Each place is read and listed with how
+  often it must be found (`scripts/library/mends.js`) — a list, never a
+  rule, because a lone letter is often the author's. What is not the
+  author's at all (a printer's title page, a footnote's mark, the
+  conversion's own marks) is left out by name. Nothing else is touched: a
+  slip that would need a letter added, or a reading chosen, stays as the
+  source has it.
 - The book's page says so, in the reader's language, before its chapters:
   the hadith in it are not graded by Mihrab and may include weak reports,
   and graded hadith are in Learn and Look up.
 - **Nothing of a book leaves the book.** Its text is not searched with the
   hadith, is not a topic, a set, a compilation or the hadith of the day,
   and is never shown with a grade or beside one.
-- A book is included only where its author's work is in the public domain
+- A book is included where its author's work is in the public domain
   everywhere the app ships and the edition read may be republished; its
   page names the source and the licence (`scripts/library/build-library.js`).
+- **Or where its publisher gives leave to pass it on.** A modern work, or a
+  translation, may be included when the publisher states in public that it
+  may be republished, and then only on the publisher's terms: unaltered,
+  with its author, its translator and the source named, and in the
+  version the source publishes. Its page says whose it is and where it is
+  from. None is included yet.
+- **A book may be in any language the app has readers of**, and stands on
+  the shelf for those who read that language; the Arabic books stand for
+  everyone.
+- **We pass books on; we do not vouch for them.** Mihrab has no reader of
+  every language, and none to proof a whole book in any. What is checked
+  is what can be: that the text is whole, is the author's alone, is
+  unaltered but for the mends above, and is named with its source. The
+  correctness of the words is the source's, and the book's page says where
+  that is.
 
 So the rule above is unchanged: what the app *serves as hadith* is still
 only what §1 accepts. The Library is a shelf beside it.

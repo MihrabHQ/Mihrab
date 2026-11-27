@@ -593,6 +593,19 @@ describe('a matn with no chapter headings, bound with another work', () => {
       expect(libraryShelves([])).toEqual([]);
     });
 
+    it('offers a book to those who read its language, the Arabic ones to everyone, and never hides one that is here', () => {
+      const all = { v: 1, henc: {}, books: {}, nawawi: null, categories: {}, library: Object.fromEntries(LIBRARY_BOOKS.map(b => [b.id, { bytes: 1, sha256: 'x', count: 1, retrieved: '2026-11-27' }])) } as unknown as Manifest;
+      const none = () => false;
+      // Every book is Arabic today, so every reader is offered every one.
+      for (const reads of [undefined, ['en'], ['id-ID'], ['ar']]) expect(offeredLibraryBooks(all, none, reads).length).toBe(LIBRARY_BOOKS.length);
+      const policy = read('docs/hadith-policy.md');
+      expect(policy).toContain('**Or where its publisher gives leave to pass it on.**');
+      expect(policy).toContain('**We pass books on; we do not vouch for them.**');
+      expect(policy).toContain('`scripts/library/mends.js`');
+      expect(read('src/hadith/libraryShelf.ts')).toContain("b.lang === 'ar' || reads.some(l => sameLanguage(l, b.lang))");
+      expect(read('src/screens/hadith/LibraryShelf.tsx')).toContain("offeredLibraryBooks(manifest, key => statuses[key]?.state === 'ready', [i18n.language])");
+    });
+
     it('says a book\'s school, that it is a commentary, and that it is for later', () => {
       const of = (id: string) => libraryBookTags(LIBRARY_BOOKS.find(b => b.id === id)!);
       expect(of('safina')).toEqual(['settings.madhab_shafii']);
