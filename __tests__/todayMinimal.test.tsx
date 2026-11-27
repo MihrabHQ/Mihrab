@@ -169,7 +169,8 @@ describe('Minimal’s Today', () => {
     expect(texts(min).some(s => s.startsWith('home.nextPrayerIn'))).toBe(false);
     // The caption under the figures names the prayer and its time; the
     // footer is the page's last line.
-    expect(texts(min)).toContain('prayer.Asr · 15:00');
+    // The time is isolated (FSI…PDI) so a Latin marker stays after it in Urdu.
+    expect(texts(min)).toContain('prayer.Asr · \u206815:00\u2069');
     expect(texts(min).at(-1)).toBe('Stockholm · 9 Safar');
   });
 

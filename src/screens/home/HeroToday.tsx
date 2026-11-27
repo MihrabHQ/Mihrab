@@ -1230,7 +1230,12 @@ export const HeroToday = memo(function HeroToday({
             styles.heroCountdownLine,
             minimal && styles.heroCountdownLineMinimal,
             tabularNumeralStyle,
-            { writingDirection: rtl ? 'rtl' : 'ltr' },
+            // Right to left only when the units are the language's own
+            // letters. Urdu's are Latin ("h", "m"), and a right-to-left
+            // paragraph of separate spans set "2h 52m" as "h 52m 2" on
+            // iOS — the hours' unit on the minutes. A Latin clock run
+            // reads left to right (`unitLang`).
+            { writingDirection: rtl && !unitLang ? 'rtl' : 'ltr' },
           ]}
           numberOfLines={1}
           maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
@@ -1323,7 +1328,10 @@ export const HeroToday = memo(function HeroToday({
                 }
               : undefined
           }>
-          {`${targetLabel} · ${targetClock}`}
+          {/* The time isolated (FSI…PDI): in Urdu the marker is Latin, and
+              "آخری تہائی · 12:48 AM" was set as "AM 12:48 · آخری تہائی" — the
+              marker before the time. Arabic's "ص" never showed it. */}
+          {`${targetLabel} · \u2068${targetClock}\u2069`}
         </Text>
       ) : null}
       {(rail || dayRail) && !railHidden ? (

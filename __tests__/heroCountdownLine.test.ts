@@ -37,7 +37,14 @@ describe('the hero countdown', () => {
   });
 
   it('reads in the language’s direction, hours first (#71)', () => {
-    expect(row).toContain("writingDirection: rtl ? 'rtl' : 'ltr'");
+    expect(row).toContain("writingDirection: rtl && !unitLang ? 'rtl' : 'ltr'");
+  });
+
+  it('keeps Latin units left to right in a right-to-left language (Urdu)', () => {
+    // "2h 52m" was set as "h 52m 2" on iOS: the hours' unit on the minutes.
+    expect(src).toContain("const unitLang = /^[a-z]*$/i.test(units.hour) ? 'en-US' : undefined;");
+    const ur = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'src/i18n/locales/ur.json'), 'utf-8'));
+    expect(/^[a-z]*$/i.test(ur.home.countdownUnitHour)).toBe(true);
   });
 
   it('puts the time at the far end, brought down onto the countdown’s baseline', () => {

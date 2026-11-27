@@ -23,9 +23,14 @@ import { useVerticalBarActions, type VerticalBar } from '../native/VerticalBar';
 import { useTabBarHidden } from './tabBarVisibility';
 
 const BUTTON = 44;
-/** A page's own buttons' share of the column, under the clock (Today: location, Qibla). */
-// Room for the location chip over the Qibla chip (compass and degrees).
-const COLUMN_ACTIONS = 112;
+/**
+ * A page's own buttons' share of the column, under the clock: Today's
+ * location (44), the Qibla chip (compass over degrees, 53) and the Settings
+ * cog (44), with SPACING.md between them — 165, rounded up. It was 112,
+ * sized for the first two; when the cog joined them it hung 53pt into the
+ * tabs and sat on top of the Today icon.
+ */
+export const COLUMN_ACTIONS = 168;
 
 export function VerticalTabBar({
   bar,
@@ -52,7 +57,7 @@ export function VerticalTabBar({
           bottom: Math.max(insets.bottom, SPACING.md),
         },
       ]}>
-      {/* The page's own buttons (Today's location and Qibla), in a band
+      {/* The page's own buttons (Today's location, Qibla and Settings), in a band
           kept on every tab so the tabs below do not move between pages. */}
       <VerticalBarActionsBand actions={actions} />
       <View style={styles.tabs}>
