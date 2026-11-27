@@ -247,9 +247,11 @@ internal fun practiceGrid(
   // Everything the picture is drawn from, the day included: today is its
   // last column.
   val today = java.util.Calendar.getInstance().let { it.get(java.util.Calendar.YEAR) * 1000 + it.get(java.util.Calendar.DAY_OF_YEAR) }
-  val key = "$today|$rows|$columns|$cellWPx|$cellHPx|$gapPx|$accent|$mirror|$since|$days"
+  // The card's ink: light on a dark card, dark on a light one (Palette).
+  val ink = Palette.TEXT or 0xFF000000.toInt()
+  val key = "$today|$rows|$columns|$cellWPx|$cellHPx|$gapPx|$accent|$ink|$mirror|$since|$days"
   return GridCache.get(key) {
-    val grid = PracticeGridBitmap.render(days, rows, columns, cellWPx, cellHPx, gapPx, accent, since)
+    val grid = PracticeGridBitmap.render(days, rows, columns, cellWPx, cellHPx, gapPx, accent, since, ink = ink)
     if (!mirror) {
       grid
     } else {

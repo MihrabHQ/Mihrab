@@ -50,11 +50,20 @@ import kotlinx.coroutines.launch
  * up another card was shown one that was not theirs. Should composing
  * fail, a drawing of the prayer-times card stands in (`WidgetPreviewCard`).
  *
- * THE SETTINGS ARE NOT THIS WIDGET'S ALONE. The first section is followed
- * by every Mihrab widget, and says so; the second by the prayer-times
- * widgets only, shown only from one of them, and in it only what the
- * widget it was opened from draws (the Next prayer card has no table and
- * no time size).
+ * THREE SECTIONS, IN THE ORDER SOMEONE CAME FOR THEM. *This widget* first:
+ * what the card it was opened from shows — its own, kept under its id
+ * (issue #144), and only what that card draws (the Next prayer card has no
+ * table and no time size); shown only from a prayer-times widget. Then
+ * *All widgets*: the look every Mihrab card shares — whose colour the card
+ * is, how strongly it is drawn, the text, and the highlight where the card
+ * is not the app's. Last, from a prayer-times widget, what all of those
+ * share: the time since the adhan.
+ *
+ * FEWER CHOICES THAT DO SOMETHING. The text was six swatches, five of them
+ * replaced without a word on a card they could not be read on; it is
+ * Automatic (light on a dark card, dark on a light one) or one colour of
+ * the reader's own. The highlight's swatches are offered where they are
+ * the card's: with the background on App the highlight is the app's too.
  */
 class PrayerWidgetConfigureActivity : AppCompatActivity() {
 
@@ -66,7 +75,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   private var refreshHighlight: () -> Unit = {}
   private var highlightId = "green"
   private var highlightCustomHex = DEFAULT_HIGHLIGHT
-  private var textHex = TEXT_PRESETS[0].second
+  private var textHex = AUTO_TEXT
   private var textCustom = false
   private var showLocation = true
   private var showCountdown = true
@@ -182,9 +191,12 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     highlightId = if (storedId == "custom" || HIGHLIGHTS.any { it.first == storedId }) storedId else "green"
     highlightCustomHex = normaliseHex(prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_HEX, "")) ?: DEFAULT_HIGHLIGHT
 
-    val storedText = normaliseHex(prefs.getString(PrayerWidgetDisplay.KEY_TEXT_HEX, "")) ?: TEXT_PRESETS[0].second
+    // Automatic is the light text the card always had: the card turns it
+    // dark where it must (cardfit/CardInk). Any other stored colour — one
+    // of the old swatches among them — is the reader's own.
+    val storedText = normaliseHex(prefs.getString(PrayerWidgetDisplay.KEY_TEXT_HEX, "")) ?: AUTO_TEXT
     textHex = storedText
-    textCustom = TEXT_PRESETS.none { it.second == storedText }
+    textCustom = storedText != AUTO_TEXT
 
     // This widget's own, where it has them (PrayerWidgetDisplay, "per widget").
     val display = PrayerWidgetDisplay.read(this, widgetId)
@@ -306,11 +318,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     )
     val modes = HashMap<Int, String>()
     for ((mode, name) in names) {
-      val b = MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle)
-      b.id = View.generateViewId()
-      b.text = name
-      b.isAllCaps = false
-      b.maxLines = 1
+      val b = choice(name)
       if (mode == PrayerWidgetProvider.BG_CUSTOM) b.contentDescription = getString(R.string.widget_configure_highlight_custom)
       group.addView(b, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
       modes[b.id] = mode
@@ -351,28 +359,30 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   }
 
   private fun bindTextColour() {
-    val row = findViewById<LinearLayout>(R.id.widget_configure_text_swatches)
+    val group = findViewById<MaterialButtonToggleGroup>(R.id.widget_configure_text_group)
     val layout = findViewById<TextInputLayout>(R.id.widget_configure_text_hex_layout)
     val input = findViewById<TextInputEditText>(R.id.widget_configure_text_hex_input)
-    input.setText(if (textCustom) textHex else "#FFFFFF")
+    input.setText(if (textCustom) textHex else "")
 
-    fun redraw() {
-      row.removeAllViews()
-      for ((nameRes, hex) in TEXT_PRESETS) {
-        row.addView(swatch(Color.parseColor(hex), getString(nameRes), !textCustom && textHex == hex) {
-          textCustom = false
-          textHex = hex
-          redraw()
-        })
-      }
-      row.addView(swatch(null, getString(R.string.widget_configure_highlight_custom), textCustom) {
-        textCustom = true
-        normaliseHex(input.text?.toString())?.let { textHex = it }
-        redraw()
-      })
+    val auto = choice(getString(R.string.widget_configure_text_auto))
+    // "#", as the background writes a colour of one's own.
+    val own = choice("#").apply { contentDescription = getString(R.string.widget_configure_highlight_custom) }
+    group.addView(auto, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+    group.addView(own, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+    group.check(if (textCustom) own.id else auto.id)
+
+    fun applied() {
       layout.visibility = if (textCustom) View.VISIBLE else View.GONE
       layout.error = null
       renderPreview()
+    }
+    group.addOnButtonCheckedListener { _, checkedId, isChecked ->
+      if (!isChecked) return@addOnButtonCheckedListener
+      textCustom = checkedId == own.id
+      // Automatic is stored as the card's light text; a colour of one's own
+      // only once it is one (Save refuses a field that is not).
+      textHex = if (textCustom) normaliseHex(input.text?.toString()) ?: textHex else AUTO_TEXT
+      applied()
     }
     input.addTextChangedListener(afterText {
       layout.error = null
@@ -381,8 +391,24 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
         renderPreview()
       }
     })
-    redraw()
+    layout.visibility = if (textCustom) View.VISIBLE else View.GONE
   }
+
+  /** One segment of a choice: an outlined button that shrinks its word before it cuts it. */
+  private fun choice(label: String): MaterialButton =
+    MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
+      id = View.generateViewId()
+      text = label
+      isAllCaps = false
+      maxLines = 1
+      // "Приложение" and "30 min" are a quarter of the row wide in some
+      // languages: the word is made smaller, down to 10sp, not ended in "…".
+      val pad = dp(6f).toInt()
+      setPaddingRelative(pad, paddingTop, pad, paddingBottom)
+      minimumWidth = 0
+      minWidth = 0
+      androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(this, 10, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+    }
 
   private fun bindHighlight() {
     val row = findViewById<LinearLayout>(R.id.widget_configure_highlight_swatches)
@@ -390,26 +416,20 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     val input = findViewById<TextInputEditText>(R.id.widget_configure_hex_input)
     input.setText(highlightCustomHex)
 
-    // UNDER THE APP'S SKY THEME THE HIGHLIGHT IS THE HOUR'S, on every widget
-    // (PrayerWidgetProvider.WidgetStyle.skyAccent). The swatches would be
-    // five colours none of which the card takes — the sample above them not
-    // moving when one is tapped — so in their place a line says whose the
-    // colour is. The stored choice is kept, and is the card's again when
-    // the theme is turned off.
-    //
-    // Only while the card follows the app: with a background of its own
-    // the highlight is the one chosen here (`readWidgetStyle`).
-    val skyStored = try {
-      PrayerWidgetProvider.skyStored(this)
-    } catch (_: Exception) {
-      false
-    }
+    // WITH THE BACKGROUND ON "APP" THE HIGHLIGHT IS THE APP'S TOO: its
+    // accent, which the app keeps the widgets on (settings/widgetAccent.ts),
+    // or under its Sky theme the hour's (WidgetStyle.skyAccent). Swatches
+    // there would be a second answer to a question the app has answered —
+    // under Sky, five colours none of which the card takes. So a line says
+    // whose the colour is, and the swatches are offered where the card is
+    // the reader's own: Dark, Light or a colour. The stored choice is kept
+    // either way.
 
     fun redraw() {
-      val skyOn = skyStored && bgMode == PrayerWidgetProvider.BG_APP
-      findViewById<View>(R.id.widget_configure_highlight_sky).visibility = if (skyOn) View.VISIBLE else View.GONE
-      findViewById<View>(R.id.widget_configure_highlight_scroll).visibility = if (skyOn) View.GONE else View.VISIBLE
-      if (skyOn) {
+      val appsOwn = bgMode == PrayerWidgetProvider.BG_APP
+      findViewById<View>(R.id.widget_configure_highlight_sky).visibility = if (appsOwn) View.VISIBLE else View.GONE
+      findViewById<View>(R.id.widget_configure_highlight_scroll).visibility = if (appsOwn) View.GONE else View.VISIBLE
+      if (appsOwn) {
         layout.visibility = View.GONE
         return
       }
@@ -442,6 +462,8 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   private fun bindPrayerSection() {
     val section = findViewById<LinearLayout>(R.id.widget_configure_prayer_section)
     section.visibility = if (isPrayerWidget) View.VISIBLE else View.GONE
+    // …and what every prayer-times widget shares, at the foot.
+    findViewById<View>(R.id.widget_configure_prayer_all_section).visibility = if (isPrayerWidget) View.VISIBLE else View.GONE
     if (!isPrayerWidget) return
 
     fun switch(id: Int, on: Boolean, set: (Boolean) -> Unit) {
@@ -477,12 +499,10 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     val group = findViewById<MaterialButtonToggleGroup>(R.id.widget_configure_since_adhan_group)
     val ids = HashMap<Int, Int>()
     for (minutes in PrayerWidgetDisplay.SINCE_ADHAN_CHOICES) {
-      val b = MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle)
-      b.id = View.generateViewId()
-      b.text = if (minutes == 0) getString(R.string.widget_configure_since_adhan_off)
-      else getString(R.string.widget_configure_since_adhan_minutes, minutes)
-      b.isAllCaps = false
-      b.maxLines = 1
+      val b = choice(
+        if (minutes == 0) getString(R.string.widget_configure_since_adhan_off)
+        else getString(R.string.widget_configure_since_adhan_minutes, minutes),
+      )
       group.addView(b, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
       ids[b.id] = minutes
       if (minutes == sinceAdhan) group.check(b.id)
@@ -612,15 +632,12 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
       Triple("amber", "#E5C07B", R.string.widget_configure_highlight_amber),
     )
 
-    /** The app's swatches (settings/WidgetTextColor.tsx), in its order. */
-    private val TEXT_PRESETS = listOf(
-      R.string.widget_configure_text_light to "#E8EAED",
-      R.string.widget_configure_text_white to "#FFFFFF",
-      R.string.widget_configure_text_cream to "#F3E9D2",
-      R.string.widget_configure_text_gold to "#E5C07B",
-      R.string.widget_configure_text_sky to "#A8C7FA",
-      R.string.widget_configure_text_dark to "#1C1C1E",
-    )
+    /**
+     * Automatic: the card's light text, which every card had — turned dark
+     * by the card where it must be (PrayerWidgetDisplay `legibleOnSky`).
+     * `DEFAULT_SETTINGS.androidWidgetTextColor` in the app.
+     */
+    private const val AUTO_TEXT = "#E8EAED"
 
     /** "#abc123", "abc123" → "#ABC123"; anything else → null. */
     fun normaliseHex(input: String?): String? {

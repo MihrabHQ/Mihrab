@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceId
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.ImageProvider
 import androidx.glance.action.ActionParameters
@@ -149,6 +150,8 @@ internal class TasbihGlanceWidget : MihrabGlanceWidget("tasbih") {
                     ImageProvider(
                       if (i == m.index) R.drawable.widget_tasbih_dot_on else R.drawable.widget_tasbih_dot_off,
                     ),
+                    // The dot that is not this round's, in the card's ink (Palette, "the card can be light").
+                    colorFilter = if (i == m.index) null else ColorFilter.tint(provider(Palette.INK_MUTED)),
                   ),
               ) {}
             }
@@ -161,6 +164,7 @@ internal class TasbihGlanceWidget : MihrabGlanceWidget("tasbih") {
           .fillMaxWidth()
           .background(
             ImageProvider(if (m.incEnabled) R.drawable.widget_tasbih_primary else R.drawable.widget_tasbih_disabled),
+            colorFilter = if (m.incEnabled) null else ColorFilter.tint(provider(Palette.INK)),
           )
         DirBox(
           modifier = if (m.incEnabled) inc.clickable(tap(WidgetTasbihQueue.ACTION_INC)) else inc,
@@ -200,7 +204,7 @@ internal class TasbihGlanceWidget : MihrabGlanceWidget("tasbih") {
     DirBox(
       modifier = modifier
         .fillMaxHeight()
-        .background(ImageProvider(R.drawable.widget_tasbih_secondary))
+        .background(ImageProvider(R.drawable.widget_tasbih_secondary), colorFilter = ColorFilter.tint(provider(Palette.INK_MUTED)))
         .clickable(tap(action)),
       contentAlignment = Alignment.Center,
     ) {

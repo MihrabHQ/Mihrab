@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.GlanceId
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
@@ -692,7 +693,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
               val color = rowColor(m, r)
               val box = GlanceModifier.fillMaxWidth().padding(vertical = 4.dp)
               DirColumn(
-                modifier = if (highlight) box.background(ImageProvider(R.drawable.widget_row_highlight)) else box,
+                modifier = if (highlight) box.background(ImageProvider(R.drawable.widget_row_highlight), colorFilter = ColorFilter.tint(provider(Palette.INK))) else box,
                 horizontalAlignment = Alignment.CenterHorizontally,
               ) {
                 Label(rowLabel(r), 9f, color, medium = true, align = TextAlign.Center)
@@ -894,7 +895,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
               verticalAlignment = Alignment.CenterVertically,
             ) {
               DirRow(
-                modifier = if (highlight) box.background(ImageProvider(R.drawable.widget_row_highlight)) else box,
+                modifier = if (highlight) box.background(ImageProvider(R.drawable.widget_row_highlight), colorFilter = ColorFilter.tint(provider(Palette.INK))) else box,
                 verticalAlignment = Alignment.CenterVertically,
               ) {
                 cell { Label(rowLabel(r), if (night) 12f else 13f, color, modifier = GlanceModifier.defaultWeight()) }

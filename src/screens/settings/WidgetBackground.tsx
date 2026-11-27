@@ -18,7 +18,8 @@ import { memo, useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SegmentedControl } from '../../components/ui';
-import { useWidgetSettings } from '../../context/PrayerSettingsContext';
+import { useAppearanceSettings, useWidgetSettings } from '../../context/PrayerSettingsContext';
+import { widgetPatchForAccent } from '../../settings/widgetAccent';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import type { WidgetBackgroundMode } from '../../settings/types';
 import { tabularNumeralStyle } from '../../theme/textScale';
@@ -30,6 +31,7 @@ import { normaliseHex } from './WidgetTextColor';
 function WidgetBackgroundImpl() {
   const { t } = useTranslation();
   const { slice: settings, update } = useWidgetSettings();
+  const { slice: appearance } = useAppearanceSettings();
   const { palette } = useAppPalette();
   const mode = settings.androidWidgetBackgroundMode;
   const stored = settings.androidWidgetBackgroundCustomHex.toUpperCase();
@@ -57,7 +59,17 @@ function WidgetBackgroundImpl() {
           { key: 'custom', label: '#', accessibilityLabel: t('settings.widgetTextCustom', 'Custom color') },
         ]}
         value={mode}
-        onChange={next => update({ androidWidgetBackgroundMode: next })}
+        onChange={next =>
+          update({
+            androidWidgetBackgroundMode: next,
+            // Back to the app's card is back to the app's highlight: with a
+            // background of their own the widgets had one of their own
+            // (WidgetCard), and "App" is the app's colours whole.
+            ...(next === 'app' && !appearance.useSystemDynamicTheme
+              ? widgetPatchForAccent(appearance.appAccentId, appearance.appAccentCustomHex)
+              : {}),
+          })
+        }
       />
       {mode === 'custom' ? (
         <View style={styles.customRow}>

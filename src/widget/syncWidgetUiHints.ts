@@ -5,6 +5,7 @@ import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import type { PrayerAppSettings, WidgetBackgroundMode, WidgetHighlightId } from '../settings/types';
 import { WIDGET_BACKGROUND_MODES, WIDGET_SINCE_ADHAN_CHOICES } from '../settings/types';
 import { getPrayerWidgetModule } from '../native/PrayerWidget';
+import { widgetPatchForAccent } from '../settings/widgetAccent';
 import { coerceWidgetTimeScale } from '../settings/storage';
 import { getSkyThemeDay, useSkyTheme } from '../theme/skyTheme';
 import { PALETTE_STEPS, skyMoodFor, widgetSkyColors } from '../theme/skyMoods';
@@ -199,7 +200,14 @@ export function useSyncWidgetUiHints(): void {
             if (nativeSettings.highlightHex && nativeSettings.highlightHex !== currentSettings.widgetHighlightCustomHex) {
               updates.widgetHighlightCustomHex = nativeSettings.highlightHex;
             }
-            Object.assign(updates, widgetBackgroundUpdates(nativeSettings, currentSettings));
+            const background = widgetBackgroundUpdates(nativeSettings, currentSettings);
+            Object.assign(updates, background);
+            // Back to "App" from the widget's own screen: the app's accent
+            // is the widgets' highlight again (WidgetBackground does the
+            // same when it is chosen in the app).
+            if (background.androidWidgetBackgroundMode === 'app' && !currentSettings.useSystemDynamicTheme) {
+              Object.assign(updates, widgetPatchForAccent(currentSettings.appAccentId, currentSettings.appAccentCustomHex));
+            }
             if (Object.keys(updates).length > 0) {
               updateSettings(updates);
             }

@@ -204,8 +204,28 @@ internal object Palette {
 
   val TEXT: Int get() = style.text
   val MUTED: Int get() = style.muted
-  const val DANGER = 0xFFF87171.toInt()
-  const val DISABLED = 0xFF6B7076.toInt()
+  /**
+   * THE CARD CAN BE LIGHT. Every card was dark, and these were chosen for
+   * it: a soft red, a mid grey, and marks drawn in white at a few percent
+   * (the next prayer's highlight, an idle chip, a button's face). On a
+   * light card — the widgets' background set to Light or a pale colour, or
+   * the app's Sky page by day — the red and the grey thin out and the white
+   * marks are not there. Which card it is is read off the text, which
+   * already follows the card (PrayerWidgetDisplay `legibleOnSky`): a dark
+   * text is a light card.
+   */
+  val onLight: Boolean get() = com.prayer_times.cardfit.CardInk.onLight(style.text)
+  /** A missed prayer, a count owed: never ordinary text. */
+  val DANGER: Int get() = if (onLight) 0xFFC62828.toInt() else 0xFFF87171.toInt()
+  /** What cannot be pressed, or has passed. */
+  val DISABLED: Int get() = style.disabled
+  /** The text colour, opaque: what a white-at-a-few-percent mark is tinted to. */
+  val INK: Int get() = style.text or 0xFF000000.toInt()
+  /** The secondary text's colour, opaque: for the marks that were drawn in its grey. */
+  val INK_MUTED: Int get() = style.muted or 0xFF000000.toInt()
+  /** Black or white, whichever reads on `fill` — a tick on a chip of the accent. */
+  fun on(fill: Int): Int =
+    if (PrayerWidgetDisplay.luminance(fill) > 0.45) 0xFF16181B.toInt() else 0xFFFFFFFF.toInt()
   val REFRESH: Int get() = style.refresh
   val RULE: Int get() = style.rule
   val RULE_STRONG: Int get() = style.ruleStrong

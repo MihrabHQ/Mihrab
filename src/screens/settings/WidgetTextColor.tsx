@@ -1,44 +1,44 @@
 // hover-ok: settings-row pressables — pressed feedback is the right affordance.
 /**
- * The widgets' text colour — the one display option EVERY widget follows.
+ * The widgets' text colour — a display option EVERY widget follows.
  *
  * It lives on Settings → Widgets in the "All widgets" card, and on the
  * settings screen of every widget (touch and hold → Settings). The
  * prayer-times widget's own options (city, countdown, table, time size) are
  * in PrayerWidgetCard.
+ *
+ * AUTOMATIC, OR ONE COLOUR OF YOUR OWN. This was six swatches — Light,
+ * White, Cream, Gold, Sky, Dark — from when every card was dark and the
+ * text was the one thing to choose. A card can be light now (the widgets'
+ * background; the app's Sky page by day), and the widget does not leave a
+ * text on a card it cannot be read on: five of the six were replaced there
+ * without a word, and the sixth existed only for a see-through card on a
+ * pale wallpaper. So the choice is the one that does something: Automatic —
+ * light on a dark card, dark on a light one — or a colour of the reader's
+ * own, used wherever it can be read (cardfit/CardInk.kt).
+ *
+ * Automatic is stored as the light text every card had
+ * (`WIDGET_TEXT_AUTO`), so nothing stored needs changing: whoever never
+ * touched the setting is on Automatic, and a swatch someone picked is now
+ * their own colour.
  */
 import { memo, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { SegmentedControl } from '../../components/ui';
 import { useWidgetSettings } from '../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../hooks/useAppPalette';
+import { DEFAULT_SETTINGS } from '../../settings/types';
 import { SettingsBlock } from './SettingsGroup';
 import { tabularNumeralStyle } from '../../theme/textScale';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 
 /**
- * The preset text colours — Light is the card as it always was; Dark is for
- * a see-through card on a light wallpaper. The widget's own settings screen
- * (PrayerWidgetConfigureActivity.TEXT_PRESETS) lists the same ones.
+ * Automatic, as it is stored: the widgets' light text
+ * (PrayerWidgetConfigureActivity.AUTO_TEXT, PrayerWidgetDisplay.DEFAULT_TEXT).
  */
-export const WIDGET_TEXT_SWATCHES = [
-  { id: 'light', hex: '#E8EAED' },
-  { id: 'white', hex: '#FFFFFF' },
-  { id: 'cream', hex: '#F3E9D2' },
-  { id: 'gold', hex: '#E5C07B' },
-  { id: 'sky', hex: '#A8C7FA' },
-  { id: 'dark', hex: '#1C1C1E' },
-] as const;
-
-const NAME_DEFAULTS: Record<string, string> = {
-  light: 'Light',
-  white: 'White',
-  cream: 'Cream',
-  gold: 'Gold',
-  sky: 'Sky',
-  dark: 'Dark',
-};
+export const WIDGET_TEXT_AUTO = DEFAULT_SETTINGS.androidWidgetTextColor.toUpperCase();
 
 /** "#abc123", "abc123", " #ABC123 " → "#ABC123"; anything else → null. */
 export function normaliseHex(input: string): string | null {
@@ -51,102 +51,84 @@ function WidgetTextColorImpl() {
   const { slice: settings, update } = useWidgetSettings();
   const { palette } = useAppPalette();
   const current = settings.androidWidgetTextColor.toUpperCase();
-  const isPreset = WIDGET_TEXT_SWATCHES.some(sw => sw.hex === current);
-  const [customOpen, setCustomOpen] = useState(!isPreset);
-  const [draft, setDraft] = useState(isPreset ? '' : current);
+  const isAuto = current === WIDGET_TEXT_AUTO;
+  const [customOpen, setCustomOpen] = useState(!isAuto);
+  const [draft, setDraft] = useState(isAuto ? '' : current);
   const draftHex = normaliseHex(draft);
 
   // A colour changed from the widget's own screen arrives here too.
   useEffect(() => {
-    if (!isPreset) {
+    if (!isAuto) {
       setCustomOpen(true);
-      setDraft(current);
+      setDraft(d => (normaliseHex(d) === current ? d : current));
     }
-  }, [current, isPreset]);
+  }, [current, isAuto]);
 
   return (
     <SettingsBlock>
-        <Text style={[styles.label, { color: palette.muted }]}>
-          {t('settings.widgetTextColor', 'Text color')}
-        </Text>
-        <View style={styles.swatchRow}>
-          {WIDGET_TEXT_SWATCHES.map(sw => {
-            const selected = !customOpen && current === sw.hex;
-            return (
-              <Pressable
-                key={sw.id}
-                accessibilityRole="radio"
-                accessibilityLabel={t(`settings.widgetText_${sw.id}`, NAME_DEFAULTS[sw.id])}
-                accessibilityState={{ selected }}
-                onPress={() => {
-                  setCustomOpen(false);
-                  update({ androidWidgetTextColor: sw.hex });
-                }}
-                style={[
-                  styles.swatch,
-                  {
-                    backgroundColor: sw.hex, // tokens-ok-line: the swatch IS the colour it picks
-                    borderColor: selected ? palette.accent : palette.border,
-                    borderWidth: selected ? 3 : 2,
-                  },
-                ]}
-              />
-            );
-          })}
-          <Pressable
-            accessibilityRole="radio"
-            accessibilityLabel={t('settings.widgetTextCustom', 'Custom color')}
-            accessibilityState={{ selected: customOpen }}
-            onPress={() => {
-              setCustomOpen(true);
-              if (!draft) setDraft(current);
+      <Text style={[styles.label, { color: palette.muted }]}>
+        {t('settings.widgetTextColor', 'Text color')}
+      </Text>
+      <SegmentedControl<'auto' | 'custom'>
+        accessibilityLabel={t('settings.widgetTextColor', 'Text color')}
+        testID="widget-text-mode"
+        segments={[
+          { key: 'auto', label: t('settings.widgetTextAuto', 'Automatic') },
+          // "#", as the background writes a colour of one's own.
+          { key: 'custom', label: '#', accessibilityLabel: t('settings.widgetTextCustom', 'Custom color') },
+        ]}
+        value={customOpen ? 'custom' : 'auto'}
+        onChange={next => {
+          if (next === 'auto') {
+            setCustomOpen(false);
+            update({ androidWidgetTextColor: WIDGET_TEXT_AUTO });
+          } else {
+            // Automatic stays in force until the field holds a colour.
+            setCustomOpen(true);
+            if (draftHex) update({ androidWidgetTextColor: draftHex });
+          }
+        }}
+      />
+
+      {customOpen ? (
+        <View style={styles.customRow}>
+          <TextInput
+            value={draft}
+            onChangeText={text => {
+              setDraft(text);
+              const hex = normaliseHex(text);
+              if (hex) update({ androidWidgetTextColor: hex });
             }}
+            placeholder="#RRGGBB"
+            placeholderTextColor={palette.muted}
+            autoCapitalize="characters"
+            autoCorrect={false}
+            maxLength={7}
+            accessibilityLabel={t('settings.widgetTextCustom', 'Custom color')}
+            testID="widget-text-hex"
             style={[
-              styles.swatch,
-              styles.customSwatch,
+              styles.hexInput,
+              tabularNumeralStyle,
               {
-                backgroundColor: customOpen ? current : palette.card, // tokens-ok-line: shows the custom colour itself
-                borderColor: customOpen ? palette.accent : palette.border,
-                borderWidth: customOpen ? 3 : 2,
+                color: palette.text,
+                borderColor: draft && !draftHex ? palette.danger : palette.border,
               },
-            ]}>
-            {customOpen ? null : <Text style={[styles.customGlyph, { color: palette.text }]}>#</Text>}
-          </Pressable>
-        </View>
-
-        {customOpen ? (
-          <View style={styles.customRow}>
-            <TextInput
-              value={draft}
-              onChangeText={text => {
-                setDraft(text);
-                const hex = normaliseHex(text);
-                if (hex) update({ androidWidgetTextColor: hex });
-              }}
-              placeholder="#RRGGBB"
-              placeholderTextColor={palette.muted}
-              autoCapitalize="characters"
-              autoCorrect={false}
-              maxLength={7}
-              accessibilityLabel={t('settings.widgetTextCustom', 'Custom color')}
-              style={[
-                styles.hexInput,
-                tabularNumeralStyle,
-                {
-                  color: palette.text,
-                  borderColor: draft && !draftHex ? palette.danger : palette.border,
-                },
-              ]}
-            />
-            <Text style={[styles.hexHelp, { color: draft && !draftHex ? palette.danger : palette.muted }]}>
-              {draft && !draftHex
-                ? t('settings.widgetTextHexInvalid', 'Six hex digits, like #FFD27F')
-                : t('settings.widgetTextHexHelp', 'Any color, as #RRGGBB')}
+            ]}
+          />
+          {draft && !draftHex ? (
+            <Text style={[styles.help, { color: palette.danger }]}>
+              {t('settings.widgetTextHexInvalid', 'Six hex digits, like #FFD27F')}
             </Text>
-          </View>
-        ) : null}
-      </SettingsBlock>
-
+          ) : null}
+        </View>
+      ) : null}
+      <Text style={[styles.help, { color: palette.muted }]}>
+        {t(
+          'settings.widgetTextAutoHelp',
+          'Automatic is light on a dark card and dark on a light one. # is a color of your own, used where it can be read.',
+        )}
+      </Text>
+    </SettingsBlock>
   );
 }
 
@@ -154,10 +136,6 @@ export const WidgetTextColor = memo(WidgetTextColorImpl);
 
 const styles = StyleSheet.create({
   label: { fontSize: TYPE.footnote.fontSize, marginBottom: SPACING.xs },
-  swatchRow: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.md, marginTop: SPACING.md },
-  swatch: { width: 40, height: 40, borderRadius: RADIUS.xl },
-  customSwatch: { alignItems: 'center', justifyContent: 'center' },
-  customGlyph: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
   customRow: { marginTop: SPACING.md },
   hexInput: {
     borderWidth: 1,
@@ -166,5 +144,5 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
     fontSize: TYPE.body.fontSize,
   },
-  hexHelp: { fontSize: TYPE.footnote.fontSize, marginTop: SPACING.xs },
+  help: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginTop: SPACING.sm },
 });

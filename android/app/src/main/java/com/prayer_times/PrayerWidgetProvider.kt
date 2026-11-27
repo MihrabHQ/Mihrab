@@ -14,6 +14,7 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
+import com.prayer_times.cardfit.CardInk
 import com.prayer_times.contract.NightMarks
 import com.prayer_times.contract.WallClock
 import com.prayer_times.contract.WidgetInstants
@@ -373,7 +374,14 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
     fun resolvedColors(context: Context): Pair<Int, Int> {
       val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
       val style = readWidgetStyle(prefs)
-      return Pair(style.backgroundArgb(), style.highlightColorInt(context))
+      val bg = style.backgroundArgb()
+      // The highlight is what the next prayer's time is drawn in. Where the
+      // card is what it stands on, it is kept readable on it — a pastel
+      // chosen for the dark card, on a card set to Light, is moved toward
+      // black only as far as it needs (cardfit/CardInk). One that already
+      // reads is returned as it is, which is every one on the dark card.
+      val accent = style.highlightColorInt(context)
+      return Pair(bg, if (style.bgOpacityPercent >= CardInk.MIN_OPACITY) CardInk.accent(accent, bg) else accent)
     }
 
     /** Where the "which device wrote these" marker lives. */

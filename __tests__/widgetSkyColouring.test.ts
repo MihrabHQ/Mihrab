@@ -72,8 +72,9 @@ describe('the widget under the Sky theme, natively', () => {
     expect(display).toContain('text = legibleOnSky(context, text),');
     expect(display).toContain('if (card.second < SKY_CARD_MIN_OPACITY) return text');
     // On the Sky's dark card that is the light text (the better of the two there).
-    expect(display).toContain('if (contrast(text, card.first) >= SKY_TEXT_MIN_CONTRAST) return text');
-    expect(display).toContain('return if (contrast(DEFAULT_TEXT, card.first) >= contrast(DARK_TEXT, card.first)) DEFAULT_TEXT else DARK_TEXT');
+    expect(display).toContain('return if (text == DEFAULT_TEXT) CardInk.fallbackText(card.first) else CardInk.text(text, card.first)');
+    const ink = read('android/app/src/main/java/com/prayer_times/cardfit/CardInk.kt');
+    expect(ink).toContain('if (contrast(text, card) >= TEXT_MIN) text or 0xFF000000.toInt() else fallbackText(card)');
     // The rule, in numbers: the Dark preset fails on any hour's card, the light ones never do.
     for (const day of DAYS) {
       for (const [, bg] of widgetSkySchedule(day)) {
@@ -87,16 +88,16 @@ describe('the widget under the Sky theme, natively', () => {
 
   it('says whose the highlight is on the widget\'s settings screen, in the swatches\' place', () => {
     // …while the card follows the app: with a background of its own the highlight is the chosen one.
-    expect(activity).toMatch(/val skyStored = try \{\s*PrayerWidgetProvider\.skyStored\(this\)/);
-    expect(activity).toContain('val skyOn = skyStored && bgMode == PrayerWidgetProvider.BG_APP');
-    expect(activity).toContain('findViewById<View>(R.id.widget_configure_highlight_scroll).visibility = if (skyOn) View.GONE else View.VISIBLE');
+    // With the background on App the highlight is the app's — its accent, or under Sky the hour's.
+    expect(activity).toContain('val appsOwn = bgMode == PrayerWidgetProvider.BG_APP');
+    expect(activity).toContain('findViewById<View>(R.id.widget_configure_highlight_scroll).visibility = if (appsOwn) View.GONE else View.VISIBLE');
     expect(layout).toContain('android:id="@+id/widget_configure_highlight_sky"');
     const res = path.join(root, 'android/app/src/main/res');
     const dirs = fs.readdirSync(res).filter(d => /^values(-[a-z]{2})?$/.test(d) && fs.existsSync(path.join(res, d, 'strings.xml')));
     const withTitle = dirs.filter(d => read(`android/app/src/main/res/${d}/strings.xml`).includes('name="widget_configure_highlight"'));
     expect(withTitle.length).toBe(13);
     for (const d of withTitle) {
-      expect([d, read(`android/app/src/main/res/${d}/strings.xml`).includes('name="widget_configure_highlight_sky"')]).toEqual([d, true]);
+      expect([d, read(`android/app/src/main/res/${d}/strings.xml`).includes('name="widget_configure_highlight_app"')]).toEqual([d, true]);
     }
   });
 });

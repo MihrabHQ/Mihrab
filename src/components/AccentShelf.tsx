@@ -98,7 +98,16 @@ export function AccentShelf({
   const { t } = useTranslation();
   const { palette, isDark } = useAppPalette();
   const { slice: settings, update: updateSettings } = useAppearanceSettings();
-  const { update: updateWidget } = useWidgetSettings();
+  const { slice: widget, update: writeWidget } = useWidgetSettings();
+  /**
+   * The widgets take the app's accent while their card is the app's
+   * (background "App"). With a background of their own — Dark, Light, a
+   * colour — their highlight is their own too, chosen on the Widgets page,
+   * and the app's accent changing must not write over it.
+   */
+  const updateWidget = (patch: Parameters<typeof writeWidget>[0]) => {
+    if (widget.androidWidgetBackgroundMode === 'app') writeWidget(patch);
+  };
   const [pickerOpen, setPickerOpen] = useState(false);
   // Two taps to remove a saved colour, the same contract the reciter
   // sheet uses — a swatch is small, and a long-press menu for one verb is

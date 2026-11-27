@@ -2,6 +2,7 @@ package com.prayer_times
 
 import android.content.Context
 import android.graphics.Color
+import com.prayer_times.cardfit.CardInk
 
 /**
  * How the widgets' text looks and what the prayer-times card shows, as chosen
@@ -20,10 +21,26 @@ data class PrayerWidgetDisplay(
   val showTable: Boolean,
   /** The prayer times' size as a multiple of the measured one. */
   val timeScale: Float,
+  /**
+   * The card the text stands on (opaque), where it is one: drawn at
+   * CardInk.MIN_OPACITY or more. Null for a see-through card, which is the
+   * wallpaper's to judge.
+   */
+  val card: Int? = null,
 ) {
   /** Secondary text: the same colour, faded, as the grey was to the white. */
   // The default text keeps the exact colours the card always had.
-  val muted: Int get() = if (text == DEFAULT_TEXT) 0xFF9AA0A6.toInt() else withAlpha(text, 0xA6)
+  // …and on a card that grey does not show on (a colour of the reader's
+  // own, mid in tone), the text's own colour, quieter (CardInk.quiet).
+  val muted: Int get() {
+    val base = if (text == DEFAULT_TEXT) 0xFF9AA0A6.toInt() else withAlpha(text, 0xA6)
+    return card?.let { CardInk.quiet(base, text, it, 0xCC) } ?: base
+  }
+  /** What has passed or cannot be pressed: the dark card's grey, or the text at half. */
+  val disabled: Int get() {
+    val base = if (CardInk.onLight(text)) 0xFF7A8087.toInt() else 0xFF6B7076.toInt()
+    return card?.let { CardInk.quiet(base, text, it, 0x8C) } ?: base
+  }
   /** The refresh glyph. */
   val refresh: Int get() = if (text == DEFAULT_TEXT) 0x80FFFFFF.toInt() else withAlpha(text, 0x80)
   val rule: Int get() = if (text == DEFAULT_TEXT) 0x1FFFFFFF else withAlpha(text, 0x1F)
@@ -108,7 +125,15 @@ data class PrayerWidgetDisplay(
       val text = if (hex.matches(Regex("^#[0-9A-Fa-f]{6}$"))) {
         try { Color.parseColor(hex) } catch (_: Exception) { DEFAULT_TEXT }
       } else DEFAULT_TEXT
+      val card = try {
+        PrayerWidgetProvider.resolvedColors(context).first
+          .takeIf { ((it ushr 24) and 0xFF) >= 255 * CardInk.MIN_OPACITY / 100 }
+          ?.let { it or 0xFF000000.toInt() }
+      } catch (_: Exception) {
+        null
+      }
       return PrayerWidgetDisplay(
+        card = card,
         text = legibleOnSky(context, text),
         showLocation = bool(KEY_SHOW_LOCATION),
         showCountdown = bool(KEY_SHOW_COUNTDOWN),
@@ -146,28 +171,21 @@ data class PrayerWidgetDisplay(
         null
       } ?: return text
       if (card.second < SKY_CARD_MIN_OPACITY) return text
-      if (contrast(text, card.first) >= SKY_TEXT_MIN_CONTRAST) return text
-      return if (contrast(DEFAULT_TEXT, card.first) >= contrast(DARK_TEXT, card.first)) DEFAULT_TEXT else DARK_TEXT
+      // The rules themselves, swept off a device over every card colour:
+      // cardfit/CardInk. Automatic (the light text every card had, which is
+      // what is stored for it) is whichever of the light and the dark the
+      // card holds better — so on a mid-toned card the text and the
+      // highlight, which is moved the same way, land on the same side. A
+      // colour of the reader's own is kept wherever it can be read.
+      return if (text == DEFAULT_TEXT) CardInk.fallbackText(card.first) else CardInk.text(text, card.first)
     }
 
-    /** The Dark preset (settings/WidgetTextColor.tsx). */
-    private const val DARK_TEXT = 0xFF1C1C1E.toInt()
-
-    const val SKY_CARD_MIN_OPACITY = 60
+    const val SKY_CARD_MIN_OPACITY = CardInk.MIN_OPACITY
     const val SKY_TEXT_MIN_CONTRAST = 3.0
 
-    /** WCAG contrast ratio of two opaque colours, 1 … 21. */
-    internal fun contrast(a: Int, b: Int): Double {
-      fun channel(v: Int): Double {
-        val c = v / 255.0
-        return if (c <= 0.03928) c / 12.92 else Math.pow((c + 0.055) / 1.055, 2.4)
-      }
-      fun luminance(c: Int) =
-        0.2126 * channel(Color.red(c)) + 0.7152 * channel(Color.green(c)) + 0.0722 * channel(Color.blue(c))
-      val la = luminance(a)
-      val lb = luminance(b)
-      return (maxOf(la, lb) + 0.05) / (minOf(la, lb) + 0.05)
-    }
+    /** WCAG contrast and luminance: cardfit/CardInk's. */
+    internal fun contrast(a: Int, b: Int): Double = CardInk.contrast(a, b)
+    internal fun luminance(c: Int): Double = CardInk.luminance(c)
 
     /** The count-up window in force: the stored one, else what the app published. */
     fun sinceAdhanMinutes(context: Context, published: Int): Int {

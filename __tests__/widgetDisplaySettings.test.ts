@@ -11,7 +11,7 @@ import {
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { prayerWidgetDisplayUpdates } from '../src/widget/syncWidgetUiHints';
-import { normaliseHex, WIDGET_TEXT_SWATCHES } from '../src/screens/settings/PrayerWidgetCard';
+import { normaliseHex, WIDGET_TEXT_AUTO } from '../src/screens/settings/PrayerWidgetCard';
 
 describe('widget display defaults', () => {
   it('draws the card as it always was until something is changed', () => {
@@ -90,17 +90,40 @@ describe('options changed on the widget itself', () => {
   });
 });
 
-describe('the widget screen and the app offer the same colours', () => {
-  it('lists the same presets, in the same order', () => {
-    const kt = readFileSync(
-      join(__dirname, '../android/app/src/main/java/com/prayer_times/PrayerWidgetConfigureActivity.kt'),
-      'utf8',
-    );
-    const native = [...kt.matchAll(/R\.string\.widget_configure_text_(\w+) to "(#[0-9A-F]{6})"/g)].map(m => ({
-      id: m[1],
-      hex: m[2],
-    }));
-    expect(native).toEqual(WIDGET_TEXT_SWATCHES.map(s => ({ id: s.id, hex: s.hex })));
+describe('the text colour is Automatic, or one colour of your own', () => {
+  const kt = readFileSync(
+    join(__dirname, '../android/app/src/main/java/com/prayer_times/PrayerWidgetConfigureActivity.kt'),
+    'utf8',
+  );
+  const app = readFileSync(join(__dirname, '../src/screens/settings/WidgetTextColor.tsx'), 'utf8');
+
+  it('Automatic is the light text every card had, in the app and on the widget’s screen', () => {
+    // Nothing stored changes: whoever never touched the setting is on Automatic.
+    expect(WIDGET_TEXT_AUTO).toBe(DEFAULT_SETTINGS.androidWidgetTextColor);
+    expect(kt).toContain(`private const val AUTO_TEXT = "${WIDGET_TEXT_AUTO}"`);
+  });
+
+  it('offers the two choices, not six swatches the card overrode', () => {
+    expect(kt).not.toMatch(/TEXT_PRESETS/);
+    expect(kt).toContain('val auto = choice(getString(R.string.widget_configure_text_auto))');
+    expect(kt).toContain('textCustom = storedText != AUTO_TEXT');
+    expect(app).not.toMatch(/WIDGET_TEXT_SWATCHES/);
+    expect(app).toMatch(/\{ key: 'auto', label: t\('settings\.widgetTextAuto', 'Automatic'\) \}/);
+    // A colour someone had picked from the old swatches is now their own.
+    expect(app).toContain('const isAuto = current === WIDGET_TEXT_AUTO;');
+  });
+
+  it('says what Automatic does, in every language, in the app and on the widget’s screen', () => {
+    for (const l of ['en', 'sv', 'ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh']) {
+      const settings = JSON.parse(readFileSync(join(__dirname, `../src/i18n/locales/${l}.json`), 'utf8')).settings;
+      expect(settings.widgetTextAuto.length).toBeGreaterThan(1);
+      expect(settings.widgetTextAutoHelp).toContain('#');
+      const dir = l === 'en' ? 'values' : l === 'id' ? 'values-in' : `values-${l}`;
+      const xml = readFileSync(join(__dirname, '../android/app/src/main/res', dir, 'strings.xml'), 'utf8');
+      for (const k of ['widget_configure_text_auto', 'widget_configure_text_note']) expect(xml).toContain(`name="${k}"`);
+      // The swatches' names went with them.
+      expect(xml).not.toContain('widget_configure_text_gold');
+    }
   });
 });
 

@@ -428,7 +428,9 @@ internal class LogGlanceWidget(
       verticalAlignment = Alignment.CenterVertically,
     ) {
       val (drawable, glyph, color) = when {
-        chip.done -> Triple(R.drawable.widget_log_chip_done, "✓", android.graphics.Color.WHITE)
+        // The tick reads on the accent whichever it is: a pale one (the Sky
+        // theme's by night) took a white tick with it.
+        chip.done -> Triple(R.drawable.widget_log_chip_done, "✓", Palette.on(m.colors.accent))
         chip.missed -> Triple(R.drawable.widget_log_chip_missed, "!", Palette.DANGER)
         // A hollow tick: what tapping produces, in outline until it is done.
         chip.due -> Triple(R.drawable.widget_log_chip_due, "✓", m.colors.accent)
@@ -441,7 +443,13 @@ internal class LogGlanceWidget(
             ImageProvider(drawable),
             // The done chip in the accent the user picked, as the RemoteViews
             // card tints it on API 31+ (there, below 31 it keeps its emerald).
-            colorFilter = if (chip.done) ColorFilter.tint(provider(m.colors.accent)) else null,
+            // …and the idle chip in the card's ink: it was white at a few
+            // percent, which a light card does not show.
+            colorFilter = when {
+              chip.done -> ColorFilter.tint(provider(m.colors.accent))
+              drawable == R.drawable.widget_log_chip_idle -> ColorFilter.tint(provider(Palette.INK))
+              else -> null
+            },
           ),
         contentAlignment = Alignment.Center,
       ) {

@@ -273,10 +273,12 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
   @Composable
   private fun ProgressBar(fraction: Float, accent: Int, rtl: Boolean) {
     val bitmap = android.graphics.Bitmap.createBitmap(PROGRESS_BITMAP_W, 1, android.graphics.Bitmap.Config.ARGB_8888)
+    // The track in the card's ink at a fifth: it was white, which a light card does not show.
+    val track = (Palette.INK and 0x00FFFFFF) or PROGRESS_TRACK_ALPHA
     val filled = Math.round(fraction.coerceIn(0f, 1f) * PROGRESS_BITMAP_W)
     for (x in 0 until PROGRESS_BITMAP_W) {
       val inFill = if (rtl) x >= PROGRESS_BITMAP_W - filled else x < filled
-      bitmap.setPixel(x, 0, if (inFill) accent else PROGRESS_TRACK)
+      bitmap.setPixel(x, 0, if (inFill) accent else track)
     }
     Image(
       provider = ImageProvider(bitmap),
@@ -348,7 +350,7 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
     private const val GENEROUS_MIN_HEIGHT_DP = 240
 
     /** The bar's track: the rule colour the cards already use. */
-    private const val PROGRESS_TRACK = 0x33FFFFFF
+    private const val PROGRESS_TRACK_ALPHA = 0x33000000
     /** The bar's resolution: a thousandth of the muṣḥaf is under a pixel at any card width. */
     private const val PROGRESS_BITMAP_W = 1000
   }

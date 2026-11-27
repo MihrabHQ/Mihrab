@@ -79,8 +79,10 @@ describe('the widgets’ background', () => {
   it('keeps the text readable on it: the light or the dark, whichever it holds better', () => {
     const display = kt('PrayerWidgetDisplay.kt');
     expect(display).toContain('PrayerWidgetProvider.skyCard(context) ?: PrayerWidgetProvider.fixedCard(context)');
-    expect(display).toContain(
-      'return if (contrast(DEFAULT_TEXT, card.first) >= contrast(DARK_TEXT, card.first)) DEFAULT_TEXT else DARK_TEXT',
+    expect(display).toContain('return if (text == DEFAULT_TEXT) CardInk.fallbackText(card.first) else CardInk.text(text, card.first)');
+    // The rule itself is swept over every card colour off a device (CardInkTest).
+    expect(kt('cardfit/CardInk.kt')).toContain(
+      'val soft = if (contrast(LIGHT_TEXT, card) >= contrast(DARK_TEXT, card)) LIGHT_TEXT else DARK_TEXT',
     );
   });
 
@@ -135,5 +137,62 @@ describe('the strip in a cell taller than the layout it was given', () => {
     // No height of any launcher's is written into the fix.
     const at = widget.indexOf('val shareSpare');
     expect(widget.slice(at, at + 80)).not.toMatch(/\d/);
+  });
+});
+
+describe('the widget’s settings screen is laid out for what someone came to do', () => {
+  const layout = readFileSync(
+    join(__dirname, '..', 'android/app/src/main/res/layout/activity_prayer_widget_configure.xml'),
+    'utf8',
+  );
+  const screen = kt('PrayerWidgetConfigureActivity.kt');
+
+  it('this widget first, then the look every widget shares, then what the prayer-times widgets share', () => {
+    const at = (needle: string) => {
+      const i = layout.indexOf(needle);
+      expect(i).toBeGreaterThan(-1);
+      return i;
+    };
+    const own = at('@string/widget_configure_this_title');
+    const all = at('@string/widget_configure_all_title');
+    const shared = at('@string/widget_configure_prayer_all_title');
+    expect(own).toBeLessThan(all);
+    expect(all).toBeLessThan(shared);
+    // What is shown is this widget's; the time since the adhan is everyone's.
+    expect(at('@+id/widget_configure_show_table')).toBeLessThan(all);
+    expect(at('@+id/widget_configure_time_size_seek')).toBeLessThan(all);
+    expect(at('@+id/widget_configure_since_adhan_group')).toBeGreaterThan(shared);
+  });
+
+  it('offers the highlight where it is the card’s: not with the background on App', () => {
+    expect(screen).toContain('val appsOwn = bgMode == PrayerWidgetProvider.BG_APP');
+    expect(screen).toMatch(/widget_configure_highlight_scroll\)\.visibility = if \(appsOwn\) View\.GONE else View\.VISIBLE/);
+    expect(layout).toContain('@string/widget_configure_highlight_app');
+    // …and the app's accent picker leaves a widget highlight of its own alone.
+    const shelf = readFileSync(join(__dirname, '..', 'src/components/AccentShelf.tsx'), 'utf8');
+    expect(shelf).toContain("if (widget.androidWidgetBackgroundMode === 'app') writeWidget(patch);");
+    const card = readFileSync(join(__dirname, '..', 'src/screens/settings/WidgetCard.tsx'), 'utf8');
+    expect(card).toContain('const needsOwnPicker = appearance.useSystemDynamicTheme || ownBackground;');
+  });
+
+  it('back to App is back to the app’s highlight, from either screen', () => {
+    const bg = readFileSync(join(__dirname, '..', 'src/screens/settings/WidgetBackground.tsx'), 'utf8');
+    expect(bg).toMatch(/next === 'app' && !appearance\.useSystemDynamicTheme\s*\? widgetPatchForAccent\(appearance\.appAccentId, appearance\.appAccentCustomHex\)/);
+    const sync = readFileSync(join(__dirname, '..', 'src/widget/syncWidgetUiHints.ts'), 'utf8');
+    expect(sync).toMatch(/background\.androidWidgetBackgroundMode === 'app' && !currentSettings\.useSystemDynamicTheme/);
+  });
+
+  it('shrinks a choice’s word before cutting it ("10 …" was "10 min")', () => {
+    expect(screen).toContain('setAutoSizeTextTypeUniformWithConfiguration(this, 10, 14, 1, TypedValue.COMPLEX_UNIT_SP)');
+  });
+
+  it('names its sections in every language', () => {
+    for (const l of LOCALES) {
+      const dir = l === 'en' ? 'values' : l === 'id' ? 'values-in' : `values-${l}`;
+      const xml = readFileSync(join(__dirname, '..', 'android/app/src/main/res', dir, 'strings.xml'), 'utf8');
+      for (const k of ['widget_configure_this_title', 'widget_configure_prayer_all_title', 'widget_configure_highlight_app', 'widget_configure_prayer_note']) {
+        expect(xml).toContain(`name="${k}"`);
+      }
+    }
   });
 });

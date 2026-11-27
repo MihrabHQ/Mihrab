@@ -389,7 +389,7 @@ describe('the widgets’ practice graph is drawn once for the same question', ()
   const src = repo('android', 'app', 'src', 'main', 'java', 'com', 'prayer_times', 'glance', 'StreakGlanceWidget.kt');
 
   it('is kept by everything it is drawn from, the day included', () => {
-    expect(src).toContain('val key = "$today|$rows|$columns|$cellWPx|$cellHPx|$gapPx|$accent|$mirror|$since|$days"');
+    expect(src).toContain('val key = "$today|$rows|$columns|$cellWPx|$cellHPx|$gapPx|$accent|$ink|$mirror|$since|$days"');
     expect(src).toMatch(/return GridCache\.get\(key\) \{/);
     // Every card draws through it.
     for (const card of ['LogGlanceWidget', 'PrayerGlanceWidget', 'StreakGlanceWidget']) {

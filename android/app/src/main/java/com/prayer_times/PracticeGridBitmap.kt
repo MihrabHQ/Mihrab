@@ -83,7 +83,14 @@ object PracticeGridBitmap {
   const val STRIP_ROWS = 6
 
   /** The cells' ink. Every widget card is dark. */
-  private const val INK = 0xFFFFFFFF.toInt()
+  /**
+   * White: the ink on the dark card every widget had. A card can be light
+   * now (the widgets' background: Light, a pale colour, the app's Sky page
+   * by day), and white rings on it are not there at all — so the caller
+   * hands `render` the card's own ink (`Palette.TEXT`), and this is what
+   * a caller that has none gets.
+   */
+  const val DEFAULT_INK = 0xFFFFFFFF.toInt()
 
   /** Everything the grid needs to be drawn into a particular box. */
   data class Layout(
@@ -184,7 +191,10 @@ object PracticeGridBitmap {
     accent: Int,
     since: String? = null,
     now: Calendar = Calendar.getInstance(),
+    /** What the marks are drawn in: the card's text colour (opaque). */
+    ink: Int = DEFAULT_INK,
   ): Bitmap {
+    @Suppress("LocalVariableName") val INK = ink or 0xFF000000.toInt()
     @Suppress("NAME_SHADOWING") val cellWPx = cellWPx.coerceIn(3, MAX_CELL_PX)
     @Suppress("NAME_SHADOWING") val cellHPx = cellHPx.coerceIn(3, MAX_CELL_PX)
     @Suppress("NAME_SHADOWING") val gapPx = gapPx.coerceIn(1, 24)

@@ -98,7 +98,7 @@ function PrayerWidgetCardImpl() {
   );
 }
 
-export { WIDGET_TEXT_SWATCHES, normaliseHex } from './WidgetTextColor';
+export { WIDGET_TEXT_AUTO, normaliseHex } from './WidgetTextColor';
 export const PrayerWidgetCard = memo(PrayerWidgetCardImpl);
 
 const styles = StyleSheet.create({

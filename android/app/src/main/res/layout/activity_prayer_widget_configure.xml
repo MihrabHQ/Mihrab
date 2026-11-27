@@ -53,6 +53,85 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- ── This widget alone: what it shows. First, because it is what
+                 the screen was opened for. ── -->
+            <LinearLayout
+                android:id="@+id/widget_configure_prayer_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="28dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_this_title"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/widget_configure_prayer_note"
+                    android:textAppearance="?attr/textAppearanceBodySmall" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/widget_configure_show_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/widget_configure_show_location" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/widget_configure_show_countdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_show_countdown" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/widget_configure_show_table"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_show_table" />
+
+                <LinearLayout
+                    android:id="@+id/widget_configure_time_size_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:labelFor="@+id/widget_configure_time_size_seek"
+                            android:text="@string/widget_configure_time_size"
+                            android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+                        <TextView
+                            android:id="@+id/widget_configure_time_size_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?attr/textAppearanceBodyMedium" />
+                    </LinearLayout>
+
+                    <SeekBar
+                        android:id="@+id/widget_configure_time_size_seek"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:max="7" />
+                </LinearLayout>
+            </LinearLayout>
+
             <!-- ── Every Mihrab widget follows these ── -->
             <TextView
                 android:layout_width="match_parent"
@@ -137,18 +216,13 @@
                 android:text="@string/widget_configure_text_color"
                 android:textAppearance="?attr/textAppearanceTitleSmall" />
 
-            <HorizontalScrollView
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/widget_configure_text_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:id="@+id/widget_configure_text_swatches"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal" />
-            </HorizontalScrollView>
+                app:selectionRequired="true"
+                app:singleSelection="true" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/widget_configure_text_hex_layout"
@@ -171,6 +245,13 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/widget_configure_text_note"
+                android:textAppearance="?attr/textAppearanceBodySmall" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
                 android:text="@string/widget_configure_highlight"
                 android:textAppearance="?attr/textAppearanceTitleSmall" />
@@ -181,7 +262,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="@string/widget_configure_highlight_sky"
+                android:text="@string/widget_configure_highlight_app"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:visibility="gone" />
@@ -222,8 +303,10 @@
                  Prayer times tall) read these; the activity shows the
                  section only when it was opened from one of them, and in it
                  only what that widget draws. ── -->
+
+            <!-- ── Every prayer-times widget follows this ── -->
             <LinearLayout
-                android:id="@+id/widget_configure_prayer_section"
+                android:id="@+id/widget_configure_prayer_all_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
@@ -233,75 +316,13 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/widget_configure_prayer_title"
+                    android:text="@string/widget_configure_prayer_all_title"
                     android:textAppearance="?attr/textAppearanceTitleMedium" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/widget_configure_prayer_note"
-                    android:textAppearance="?attr/textAppearanceBodySmall" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/widget_configure_show_location"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@string/widget_configure_show_location" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/widget_configure_show_countdown"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/widget_configure_show_countdown" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/widget_configure_show_table"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/widget_configure_show_table" />
-
-                <LinearLayout
-                    android:id="@+id/widget_configure_time_size_group"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:labelFor="@+id/widget_configure_time_size_seek"
-                            android:text="@string/widget_configure_time_size"
-                            android:textAppearance="?attr/textAppearanceTitleSmall" />
-
-                        <TextView
-                            android:id="@+id/widget_configure_time_size_value"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?attr/textAppearanceBodyMedium" />
-                    </LinearLayout>
-
-                    <SeekBar
-                        android:id="@+id/widget_configure_time_size_seek"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:max="7" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
                     android:text="@string/widget_configure_since_adhan"
                     android:textAppearance="?attr/textAppearanceTitleSmall" />
 

@@ -110,9 +110,12 @@ describe('the Widget card carries the picker in the one case it must', () => {
   it('shows it exactly when Appearance hides its own', () => {
     // The two conditions must stay each other's mirror image: one picker
     // on screen, always, never two and never none.
+    // …and with a background of the widgets' own, where the app's accent
+    // is no longer theirs (AccentShelf leaves it alone then).
     expect(src).toMatch(
-      /const needsOwnPicker = appearance\.useSystemDynamicTheme;/,
+      /const needsOwnPicker = appearance\.useSystemDynamicTheme \|\| ownBackground;/,
     );
+    expect(src).toContain("const ownBackground = settings.androidWidgetBackgroundMode !== 'app';");
     expect(src).toContain('needsOwnPicker ?');
   });
 

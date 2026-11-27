@@ -67,7 +67,14 @@ function WidgetCardImpl() {
   // The same condition AppearanceCard uses to hide its accent picker —
   // no longer tied to the System appearance, since system colours can now
   // be chosen under Light and Dark too.
-  const needsOwnPicker = appearance.useSystemDynamicTheme;
+  //
+  // …and with a background of the widgets' own (Dark, Light, a colour):
+  // "App" means the card takes the app's colours whole, highlight
+  // included; a card that is not the app's has a highlight that is not
+  // the app's either, and this is where it is chosen. The app's accent
+  // picker leaves it alone then (AccentShelf, `mirrorToWidget`).
+  const ownBackground = settings.androidWidgetBackgroundMode !== 'app';
+  const needsOwnPicker = appearance.useSystemDynamicTheme || ownBackground;
   const opacity = settings.androidWidgetBackgroundOpacity;
 
   return (
@@ -144,10 +151,15 @@ function WidgetCardImpl() {
             })}
           </View>
           <Text style={[styles.help, { color: palette.muted }]}>
-            {t(
-              'settings.widgetColorOwnHelp',
-              'The app is following your system colors, which the widget does not. Pick the widget\u2019s highlight here.',
-            )}
+            {ownBackground
+              ? t(
+                  'settings.widgetHighlightOwnHelp',
+                  'With a background of their own, the widgets\u2019 highlight is chosen here.',
+                )
+              : t(
+                  'settings.widgetColorOwnHelp',
+                  'The app is following your system colors, which the widget does not. Pick the widget\u2019s highlight here.',
+                )}
           </Text>
         </SettingsBlock>
       ) : null}
