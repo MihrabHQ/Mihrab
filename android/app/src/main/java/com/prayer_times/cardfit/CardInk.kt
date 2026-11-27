@@ -80,6 +80,29 @@ object CardInk {
   /** Is this text one for a light card? (A dark text is; the state colours follow it.) */
   fun onLight(text: Int): Boolean = luminance(text) < 0.4
 
+  /**
+   * A SEE-THROUGH CARD THAT IS PALE WHATEVER IS BEHIND IT.
+   *
+   * Under `MIN_OPACITY` the wallpaper shows through and is the judge of the
+   * text, which nothing here can see. But a white card at half strength is
+   * a mid grey over the blackest wallpaper there is and paler over any
+   * other, and the dark text already reads better than the light on that
+   * grey: no wallpaper makes the light text the right one. That is the card
+   * a widget set to follow the phone gets every morning, with the light
+   * text it had on the night's card.
+   *
+   * So: the card as it shows over black, where even there the dark text
+   * holds better than the light; else null, and the wallpaper is the judge
+   * as before. A dark card is never one of these.
+   */
+  fun paleSeeThrough(card: Int): Int? {
+    val a = ((card ushr 24) and 0xFF) / 255.0
+    if (a <= 0.0) return null
+    fun ch(shift: Int): Int = Math.round(((card shr shift) and 0xFF) * a).toInt().coerceIn(0, 255)
+    val overBlack = 0xFF000000.toInt() or (ch(16) shl 16) or (ch(8) shl 8) or ch(0)
+    return if (lightTextCard(overBlack)) null else overBlack
+  }
+
   private fun mix(from: Int, to: Int, t: Double): Int {
     fun ch(shift: Int): Int {
       val a = (from shr shift) and 0xFF

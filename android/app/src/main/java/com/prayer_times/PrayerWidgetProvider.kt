@@ -446,7 +446,10 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
       // black only as far as it needs (cardfit/CardInk). One that already
       // reads is returned as it is, which is every one on the dark card.
       val accent = style.highlightColorInt(context)
-      return Pair(bg, if (style.bgOpacityPercent >= CardInk.MIN_OPACITY) CardInk.accent(accent, bg) else accent)
+      // …and on a see-through card that is pale over any wallpaper, on the
+      // card as it shows at its darkest (CardInk.paleSeeThrough).
+      val stands = if (style.bgOpacityPercent >= CardInk.MIN_OPACITY) bg else CardInk.paleSeeThrough(bg)
+      return Pair(bg, if (stands != null) CardInk.accent(accent, stands) else accent)
     }
 
     /** Where the "which device wrote these" marker lives. */

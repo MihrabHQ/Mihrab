@@ -189,4 +189,46 @@ class CardInkTest {
       }
     }
   }
+
+  /** `argb` at `percent` strength, as the widgets store a see-through card. */
+  private fun at(rgb: Int, percent: Int): Int = ((255 * percent / 100) shl 24) or (rgb and 0xFFFFFF)
+
+  /** `card` over `ground`, as the launcher draws it. */
+  private fun over(card: Int, ground: Int): Int {
+    val a = ((card ushr 24) and 0xFF) / 255.0
+    fun ch(shift: Int): Int = Math.round(((card shr shift) and 0xFF) * a + ((ground shr shift) and 0xFF) * (1 - a)).toInt()
+    return 0xFF000000.toInt() or (ch(16) shl 16) or (ch(8) shl 8) or ch(0)
+  }
+
+  @Test
+  fun `a see-through card that is pale over any wallpaper takes the dark text`() {
+    // The card a widget following the phone gets by day, at the strength
+    // it was found unreadable at on a phone (50%).
+    val day = at(0xFFFFFF, 50)
+    val stands = CardInk.paleSeeThrough(day)
+    assertTrue("half-strength white is pale whatever is behind it", stands != null)
+    assertEquals(false, CardInk.lightTextCard(stands!!))
+    // Where it is called pale, the dark text is the better one over every wallpaper there is.
+    for (percent in 0..59) for (rgb in listOf(0xFFFFFF, 0xF2F2F7, 0xF3E9D2, 0xDDE6F0, 0x808080, 0x1C1C1E, 0x000000)) {
+      val card = at(rgb, percent)
+      CardInk.paleSeeThrough(card) ?: continue
+      for (ground in cards()) {
+        val shown = over(card, ground)
+        assertTrue(
+          "dark text on ${rgb.toString(16)} at $percent% over ${ground.toUInt().toString(16)}",
+          CardInk.contrast(CardInk.DARK_TEXT, shown) >= CardInk.contrast(CardInk.LIGHT_TEXT, shown),
+        )
+      }
+    }
+  }
+
+  @Test
+  fun `a dark see-through card, or a faint one, is still the wallpaper's to judge`() {
+    for (percent in 0..59) {
+      assertEquals(null, CardInk.paleSeeThrough(at(0x000000, percent)))
+      assertEquals(null, CardInk.paleSeeThrough(at(0x1C1C1E, percent)))
+    }
+    for (percent in 0..40) assertEquals(null, CardInk.paleSeeThrough(at(0xFFFFFF, percent)))
+    assertEquals(null, CardInk.paleSeeThrough(0))
+  }
 }

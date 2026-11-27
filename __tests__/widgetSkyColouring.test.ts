@@ -69,7 +69,8 @@ describe('the widget under the Sky theme, natively', () => {
   });
 
   it('does not leave a dark text on the Sky\'s dark card', () => {
-    expect(display).toContain('else -> legible(text, card)');
+    // Automatic on a see-through card that is pale over any wallpaper is the dark text.
+    expect(display).toContain('else -> legible(text, card ?: if (text == DEFAULT_TEXT) CardInk.paleSeeThrough(cardArgb) else null)');
     // A see-through card is the wallpaper's to judge: no card, the text as chosen.
     expect(display).toContain('.takeIf { ((it ushr 24) and 0xFF) >= 255 * CardInk.MIN_OPACITY / 100 }');
     expect(display).toContain('card ?: return text');

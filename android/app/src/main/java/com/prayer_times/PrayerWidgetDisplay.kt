@@ -157,7 +157,10 @@ data class PrayerWidgetDisplay(
       val inAccent = p.getBoolean(KEY_TEXT_ACCENT, false) && accent != 0
       val resolved = when {
         inAccent -> card?.let { CardInk.accentText(accent, it) } ?: (accent or 0xFF000000.toInt())
-        else -> legible(text, card)
+        // Automatic on a see-through card that is pale over any wallpaper
+        // (CardInk.paleSeeThrough) is the dark text: the light one cannot
+        // be read on it. A colour of the reader's own stands, as it did.
+        else -> legible(text, card ?: if (text == DEFAULT_TEXT) CardInk.paleSeeThrough(cardArgb) else null)
       }
       return PrayerWidgetDisplay(
         card = card,
