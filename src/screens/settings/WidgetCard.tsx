@@ -69,11 +69,11 @@ function WidgetCardImpl() {
   // no longer tied to the System appearance, since system colours can now
   // be chosen under Light and Dark too.
   //
-  // …and with a background of the widgets' own (Dark, Light, a colour):
-  // "App" means the card takes the app's colours whole, highlight
-  // included; a card that is not the app's has a highlight that is not
-  // the app's either, and this is where it is chosen. The app's accent
-  // picker leaves it alone then (AccentShelf, `mirrorToWidget`).
+  // …and with a background that is not the app's (System, Dark, Light, a
+  // colour): "App" means the card takes the app's colours whole, highlight
+  // included. On any other card the highlight is still the app's accent
+  // until one is chosen here, and the app's accent picker leaves a chosen
+  // one alone (AccentShelf, `updateWidget`).
   const ownBackground = settings.androidWidgetBackgroundMode !== 'app';
   const needsOwnPicker = appearance.useSystemDynamicTheme || ownBackground;
   // The app's accent is the widgets' highlight on any background unless
@@ -182,7 +182,7 @@ function WidgetCardImpl() {
             })}
           </View>
           <Text style={[styles.help, { color: palette.muted }]}>
-            {ownBackground
+            {appAccentHex
               ? t(
                   'settings.widgetHighlightOwnHelp',
                   'The first is the app\u2019s accent, and follows it. The others are a highlight of the widgets\u2019 own.',

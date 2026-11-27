@@ -101,8 +101,15 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       map.putString("bgMode", prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_MODE, PrayerWidgetProvider.BG_APP))
       map.putString("bgHex", prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_BG_HEX, ""))
       // …and whose the highlight is, and whether the text is in the accent.
-      map.putBoolean("highlightOwn", prefs.getBoolean(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_OWN, false))
-      map.putBoolean("textAccent", prefs.getBoolean(PrayerWidgetDisplay.KEY_TEXT_ACCENT, false))
+      // Only where they were ever written: an answer that is not there must
+      // not be read back as "no" over the app's own (storage.ts keeps a
+      // highlight chosen before this was a setting).
+      if (prefs.contains(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_OWN)) {
+        map.putBoolean("highlightOwn", prefs.getBoolean(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_OWN, false))
+      }
+      if (prefs.contains(PrayerWidgetDisplay.KEY_TEXT_ACCENT)) {
+        map.putBoolean("textAccent", prefs.getBoolean(PrayerWidgetDisplay.KEY_TEXT_ACCENT, false))
+      }
       promise.resolve(map)
     } catch (e: Exception) {
       promise.reject("E_WIDGET_APPEARANCE_GET", e.message, e)

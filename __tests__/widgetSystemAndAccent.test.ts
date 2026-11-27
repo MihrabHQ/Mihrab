@@ -91,7 +91,7 @@ describe('the app’s accent on any background', () => {
 
   it('is the first swatch on both screens, and choosing another makes the highlight the widgets’ own', () => {
     const screen = kt('PrayerWidgetConfigureActivity.kt');
-    expect(screen).toContain('getString(R.string.widget_configure_highlight_app_accent), !highlightOwn)');
+    expect(screen).toContain('getString(R.string.widget_configure_highlight_app_accent), !highlightOwn, glyph = "A")');
     expect(screen).toMatch(/highlightOwn = true\s+highlightId = id/);
     const card = root('src/screens/settings/WidgetCard.tsx');
     expect(card).toContain('testID="widget-highlight-app"');
@@ -140,5 +140,54 @@ describe('the app’s accent on any background', () => {
       expect(xml).toContain(`<string name="widget_configure_bg_note">${s.widgetBackgroundHelp}</string>`);
       expect(xml).toContain(`<string name="widget_configure_text_note">${s.widgetTextAutoHelp}</string>`);
     }
+  });
+
+  it('keeps a highlight chosen before this was a setting: a card of its own colour had a highlight of its own', () => {
+    const storage = root('src/settings/storage.ts');
+    expect(storage).toContain(": ['dark', 'light', 'custom'].includes(String(parsed.androidWidgetBackgroundMode));");
+    expect(storage).toContain("typeof parsed.androidWidgetHighlightOwn === 'boolean'");
+    // …and the widgets' store does not answer "no" for an answer it never held.
+    const module_ = kt('PrayerWidgetModule.kt');
+    expect(module_).toContain('if (prefs.contains(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_OWN)) {');
+    expect(module_).toContain('if (prefs.contains(PrayerWidgetDisplay.KEY_TEXT_ACCENT)) {');
+  });
+
+  it('under Material You shows the widgets’ own highlight without storing that as a choice', () => {
+    const screen = kt('PrayerWidgetConfigureActivity.kt');
+    expect(screen).toContain('highlightOwnStored = highlightOwn');
+    expect(screen).toContain('= if (appAccent == null) highlightOwnStored else highlightOwn');
+    // …and the app's page does not call the first swatch the app's where there is none.
+    expect(root('src/screens/settings/WidgetCard.tsx')).toMatch(/\{appAccentHex\s*\? t\(\s*'settings\.widgetHighlightOwnHelp'/);
+  });
+
+  it('back to the App background is back to the app’s highlight, whose it is included', () => {
+    expect(root('src/screens/settings/WidgetBackground.tsx')).toMatch(/next === 'app' && !appearance\.useSystemDynamicTheme\s*\? \{\s*androidWidgetHighlightOwn: false,/);
+    expect(kt('PrayerWidgetConfigureActivity.kt')).toContain(
+      'if (bgMode == PrayerWidgetProvider.BG_APP && appAccent != null) highlightOwn = false',
+    );
+  });
+
+  it('marks the app’s swatch on the widget’s screen, as the app’s page does', () => {
+    expect(kt('PrayerWidgetConfigureActivity.kt')).toContain('!highlightOwn, glyph = "A") {');
+  });
+});
+
+describe('the sample is the layout the home screen draws', () => {
+  it('is composed for the size the launcher would pick, and shown at the cell’s', () => {
+    const live = kt('WidgetLivePreview.kt');
+    expect(live).toContain('size = layoutSize(widget, size),');
+    expect(live).toContain('widget.sizeMode as? androidx.glance.appwidget.SizeMode.Responsive ?: return size');
+    // The launcher's own rule (RungFitTest sweeps it): what fits, a dp over allowed; else the smallest.
+    const fit = kt('cardfit/RungFit.kt');
+    expect(fit).toContain('w <= ceil(width) + 1 && h <= ceil(height) + 1');
+    expect(fit).toContain('if (fitting.isEmpty()) return sizes.minByOrNull { (w, h) -> w * h }');
+  });
+});
+
+describe('the Log card’s chips are in the card’s colours', () => {
+  it('draws the box waiting for a tick in the highlight, and a missed one in the card’s red', () => {
+    const log = kt('glance/LogGlanceWidget.kt');
+    expect(log).toContain('drawable == R.drawable.widget_log_chip_due -> ColorFilter.tint(provider(m.colors.accent))');
+    expect(log).toContain('drawable == R.drawable.widget_log_chip_missed -> ColorFilter.tint(provider(Palette.DANGER))');
   });
 });

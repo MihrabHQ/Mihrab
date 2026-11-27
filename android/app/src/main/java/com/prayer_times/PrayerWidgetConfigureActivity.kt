@@ -81,6 +81,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   private var textAccent = false
   /** The widgets' highlight is their own (a swatch here), not the app's accent. */
   private var highlightOwn = false
+  private var highlightOwnStored = false
   /** The app's accent as it wrote it, or null: the "App accent" choices are offered where there is one. */
   private var appAccent: Int? = null
   private var showLocation = true
@@ -206,8 +207,15 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     textCustom = !textAccent && storedText != AUTO_TEXT
     highlightOwn = prefs.getBoolean(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_OWN, false)
     appAccent = PrayerWidgetProvider.appAccent(this)
-    // With no accent of the app's to take, the highlight is the widgets' own.
+    // With no accent of the app's to take (it follows the phone's Material
+    // You colours), the highlight drawn is the widgets' own — shown so, and
+    // not stored as a choice: turning those colours off again is back to
+    // the app's accent unless one was chosen.
+    highlightOwnStored = highlightOwn
     if (appAccent == null) highlightOwn = true
+    // On the app's card the highlight is the app's: leaving App from here
+    // starts from its accent, as coming back to App does (bindBackground).
+    else if (PrayerWidgetProvider.followsApp(bgMode)) highlightOwn = false
 
     // This widget's own, where it has them (PrayerWidgetDisplay, "per widget").
     val display = PrayerWidgetDisplay.read(this, widgetId)
@@ -291,7 +299,7 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     out[PrayerWidgetProvider.PREFS_WIDGET_BG_OPACITY] = opacity
     out[PrayerWidgetProvider.PREFS_WIDGET_BG_MODE] = bgMode
     out[PrayerWidgetProvider.PREFS_WIDGET_BG_HEX] = if (bgMode == PrayerWidgetProvider.BG_CUSTOM) bgCustomHex else ""
-    out[PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_OWN] = highlightOwn
+    out[PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_OWN] = if (appAccent == null) highlightOwnStored else highlightOwn
     out[PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_ID] = highlightId
     out[PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_HEX] = if (highlightId == "custom") highlightCustomHex else ""
     // Written as false rather than left alone: saving here is the one
@@ -349,6 +357,10 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     group.addOnButtonCheckedListener { _, checkedId, isChecked ->
       if (isChecked) {
         bgMode = modes[checkedId] ?: PrayerWidgetProvider.BG_APP
+        // Back to the app's card is back to the app's highlight: leaving
+        // App again starts from the app's accent, not from a swatch
+        // chosen for some earlier card.
+        if (bgMode == PrayerWidgetProvider.BG_APP && appAccent != null) highlightOwn = false
         applied()
       }
     }
@@ -460,7 +472,9 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
       // accent when that changes. The swatches after it are a highlight of
       // the widgets' own.
       appAccent?.let { accent ->
-        row.addView(swatch(accent or 0xFF000000.toInt(), getString(R.string.widget_configure_highlight_app_accent), !highlightOwn) {
+        // "A", as the app's page marks it: where the app's accent is one of
+        // the presets the two dots were the same dot.
+        row.addView(swatch(accent or 0xFF000000.toInt(), getString(R.string.widget_configure_highlight_app_accent), !highlightOwn, glyph = "A") {
           highlightOwn = false
           redraw()
         })
@@ -602,15 +616,23 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
   // ── Small pieces ───────────────────────────────────────────────────────
 
   /** One round swatch: a colour, or "#" for a colour of one's own. */
-  private fun swatch(colour: Int?, name: String, selected: Boolean, onPick: () -> Unit): View {
+  private fun swatch(colour: Int?, name: String, selected: Boolean, glyph: String? = null, onPick: () -> Unit): View {
     val size = dp(40f).toInt()
     val ring = MaterialColors.getColor(this, androidx.appcompat.R.attr.colorPrimary, Color.WHITE)
     val edge = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutline, Color.GRAY)
     val dot = TextView(this).apply {
       gravity = Gravity.CENTER
-      text = if (colour == null) "#" else ""
+      text = glyph ?: if (colour == null) "#" else ""
       setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-      setTextColor(MaterialColors.getColor(this@PrayerWidgetConfigureActivity, com.google.android.material.R.attr.colorOnSurface, Color.WHITE))
+      if (glyph != null) setTypeface(typeface, android.graphics.Typeface.BOLD)
+      // A letter on a colour is read against that colour, not the page.
+      setTextColor(
+        if (colour != null && glyph != null) {
+          if (com.prayer_times.cardfit.CardInk.lightTextCard(colour)) Color.WHITE else Color.BLACK
+        } else {
+          MaterialColors.getColor(this@PrayerWidgetConfigureActivity, com.google.android.material.R.attr.colorOnSurface, Color.WHITE)
+        },
+      )
       background = GradientDrawable().apply {
         shape = GradientDrawable.OVAL
         setColor(colour ?: Color.TRANSPARENT)

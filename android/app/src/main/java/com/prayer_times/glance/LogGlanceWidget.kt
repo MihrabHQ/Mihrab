@@ -448,6 +448,14 @@ internal class LogGlanceWidget(
             colorFilter = when {
               chip.done -> ColorFilter.tint(provider(m.colors.accent))
               drawable == R.drawable.widget_log_chip_idle -> ColorFilter.tint(provider(Palette.INK))
+              // The outline waiting for its tick, in the highlight the tick
+              // is in: it kept its emerald whatever was chosen — a blue tick
+              // in a green box — and a pale emerald on a light card.
+              drawable == R.drawable.widget_log_chip_due -> ColorFilter.tint(provider(m.colors.accent))
+              // …and a missed one in the red its "!" is in, which is the
+              // deeper red on a light card (Palette.DANGER). The shape keeps
+              // its own faintness: the tint replaces the colour, not the alpha.
+              drawable == R.drawable.widget_log_chip_missed -> ColorFilter.tint(provider(Palette.DANGER))
               else -> null
             },
           ),

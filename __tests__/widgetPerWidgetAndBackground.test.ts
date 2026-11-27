@@ -177,7 +177,7 @@ describe('the widget’s settings screen is laid out for what someone came to do
 
   it('back to App is back to the app’s highlight, from either screen', () => {
     const bg = readFileSync(join(__dirname, '..', 'src/screens/settings/WidgetBackground.tsx'), 'utf8');
-    expect(bg).toMatch(/next === 'app' && !appearance\.useSystemDynamicTheme\s*\? widgetPatchForAccent\(appearance\.appAccentId, appearance\.appAccentCustomHex\)/);
+    expect(bg).toMatch(/next === 'app' && !appearance\.useSystemDynamicTheme\s*\? \{\s*androidWidgetHighlightOwn: false,\s*\.\.\.widgetPatchForAccent\(appearance\.appAccentId, appearance\.appAccentCustomHex\),/);
     const sync = readFileSync(join(__dirname, '..', 'src/widget/syncWidgetUiHints.ts'), 'utf8');
     expect(sync).toMatch(/background\.androidWidgetBackgroundMode === 'app' && !currentSettings\.useSystemDynamicTheme/);
   });

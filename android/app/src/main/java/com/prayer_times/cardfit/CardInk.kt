@@ -104,8 +104,7 @@ object CardInk {
 
   /** `color` where it reaches `min` on `card`; else its hue moved toward the text's end until it does. */
   fun tint(color: Int, card: Int, min: Double): Int {
-    val accent = color
-    val opaque = accent or 0xFF000000.toInt()
+    val opaque = color or 0xFF000000.toInt()
     if (contrast(opaque, card) >= min) return opaque
     // Toward the end the text is at: a light text's card takes a lighter
     // highlight, a dark text's a darker one. (Toward whichever end is

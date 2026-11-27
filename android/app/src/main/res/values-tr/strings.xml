@@ -33,7 +33,7 @@
     <string name="widget_configure_save">Kaydet</string>
     <string name="widget_configure_prayer_note">Yalnızca bu widget. Diğer widget’larınız kendi ayarlarını korur.</string>
     <string name="widget_configure_text_auto">Otomatik</string>
-    <string name="widget_configure_text_note">Otomatik: koyu kartta açık, açık kartta koyu. Vurgu, vurgu rengidir. # kendi renginizdir. Hepsi kartta okunabilir tutulur.</string>
+    <string name="widget_configure_text_note">Otomatik: koyu kartta açık, açık kartta koyu. Vurgu, metni sonraki namazın vurgu rengiyle yazar. # kendi renginizdir. Hepsi kartta okunabilir tutulur.</string>
     <string name="widget_configure_highlight_app">“Uygulama” seçiliyken vurgu da uygulamanındır: vurgu rengi ya da o saat için Gökyüzü temasının rengi. Burada seçmek için başka bir arka plan seçin.</string>
     <string name="widget_configure_highlight_app_accent">Uygulama vurgusu</string>
     <string name="widget_configure_text_accent">Vurgu</string>

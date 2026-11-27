@@ -18,6 +18,7 @@
  */
 import { memo, useEffect, useRef, useState } from 'react';
 import { Image, Platform, ScrollView, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { useSystemColorScheme } from '../../hooks/useSystemColorScheme';
 import { useTranslation } from 'react-i18next';
 import { useAppearanceSettings, useWidgetSettings } from '../../context/PrayerSettingsContext';
 import { getPrayerWidgetModule, type WidgetPicture } from '../../native/PrayerWidget';
@@ -32,6 +33,10 @@ function WidgetPreviewsImpl() {
   const { t } = useTranslation();
   const { slice: widget } = useWidgetSettings();
   const { slice: appearance } = useAppearanceSettings();
+  // The phone's own light or dark: a card on System, or on App under an app
+  // that follows the system, is drawn by it — so the samples are drawn again
+  // when it turns, as the widgets themselves are (WidgetNightWatch).
+  const phoneScheme = useSystemColorScheme();
   const [width, setWidth] = useState(0);
   const [pictures, setPictures] = useState<WidgetPicture[]>([]);
   // The latest request wins: a slow picture never lands over a newer one.
@@ -59,7 +64,7 @@ function WidgetPreviewsImpl() {
     return () => clearTimeout(timer);
     // Every widget setting, and the app's colours the widgets follow.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cardWidth, widget, appearance]);
+  }, [cardWidth, widget, appearance, phoneScheme]);
 
   if (Platform.OS !== 'android' || !getPrayerWidgetModule()?.renderPreviews) return null;
 

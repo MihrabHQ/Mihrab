@@ -67,7 +67,10 @@ function WidgetBackgroundImpl() {
             // background of their own the widgets had one of their own
             // (WidgetCard), and "App" is the app's colours whole.
             ...(next === 'app' && !appearance.useSystemDynamicTheme
-              ? widgetPatchForAccent(appearance.appAccentId, appearance.appAccentCustomHex)
+              ? {
+                  androidWidgetHighlightOwn: false,
+                  ...widgetPatchForAccent(appearance.appAccentId, appearance.appAccentCustomHex),
+                }
               : {}),
           })
         }

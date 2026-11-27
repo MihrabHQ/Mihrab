@@ -268,7 +268,7 @@
     "widgetBackground_app": "Uygulama",
     "widgetBackgroundHelp": "“Uygulama”, uygulamayı izler: Gökyüzü teması, ton ve açık ya da koyu görünüm. “Sistem”, telefonunuza göre açık ya da koyu olur. Koyu, Açık veya kendi seçtiğiniz renk aynı kalır.",
     "widgetTextAuto": "Otomatik",
-    "widgetTextAutoHelp": "Otomatik: koyu kartta açık, açık kartta koyu. Vurgu, vurgu rengidir. # kendi renginizdir. Hepsi kartta okunabilir tutulur.",
+    "widgetTextAutoHelp": "Otomatik: koyu kartta açık, açık kartta koyu. Vurgu, metni sonraki namazın vurgu rengiyle yazar. # kendi renginizdir. Hepsi kartta okunabilir tutulur.",
     "widgetHighlightOwnHelp": "İlki uygulamanın vurgu rengidir ve onu izler. Diğerleri widget’ların kendi vurgusudur.",
     "widgetHighlightAppAccent": "Uygulama vurgusu",
     "widgetTextAccent": "Vurgu",

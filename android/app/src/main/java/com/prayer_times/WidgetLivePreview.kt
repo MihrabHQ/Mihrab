@@ -138,8 +138,27 @@ internal object WidgetLivePreview {
   suspend fun compose(context: Context, widget: GlanceAppWidget, size: DpSize, overrides: Map<String, Any>): RemoteViews =
     widget.compose(
       context = if (overrides.isEmpty()) context else Overlay(context, overrides),
-      size = size,
+      size = layoutSize(widget, size),
     )
+
+  /**
+   * The size the card is COMPOSED for, which is not always the size it is
+   * shown at. A widget on `SizeMode.Responsive` is composed for a fixed set
+   * of sizes and the launcher draws the one that fits the cell
+   * (cardfit/RungFit) — in a 277×93dp cell, the 280×66 layout. Composed
+   * for the cell's exact size the sample showed a layout the home screen
+   * never does, with its last line off the card. Shown, still, at the
+   * cell's size: `show` and `bitmap` are given that one.
+   */
+  internal fun layoutSize(widget: GlanceAppWidget, size: DpSize): DpSize {
+    val responsive = widget.sizeMode as? androidx.glance.appwidget.SizeMode.Responsive ?: return size
+    val fit = com.prayer_times.cardfit.RungFit.bestFit(
+      responsive.sizes.map { it.width.value to it.height.value },
+      size.width.value,
+      size.height.value,
+    ) ?: return size
+    return DpSize(fit.first.dp, fit.second.dp)
+  }
 
   /** The wallpaper with the composed card on it, behind its shield. */
   fun show(wall: LinearLayout, views: RemoteViews, size: DpSize) {

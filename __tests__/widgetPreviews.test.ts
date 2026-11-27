@@ -19,7 +19,7 @@ const manifest = read('android/app/src/main/AndroidManifest.xml');
 
 describe('the sample is the widget itself', () => {
   it('composes the card with the widget\'s own code, for every widget the app has', () => {
-    expect(live).toMatch(/widget\.compose\(\s*context = if \(overrides\.isEmpty\(\)\) context else Overlay\(context, overrides\),\s*size = size,/);
+    expect(live).toMatch(/widget\.compose\(\s*context = if \(overrides\.isEmpty\(\)\) context else Overlay\(context, overrides\),\s*size = layoutSize\(widget, size\),/);
     // Every receiver the manifest offers a settings screen for is one it can draw.
     const offered = fs
       .readdirSync(path.join(root, 'android/app/src/main/res/xml'))
@@ -84,7 +84,9 @@ describe('Settings → Widgets in the app', () => {
     expect(page.indexOf('<WidgetPreviews />')).toBeGreaterThan(-1);
     expect(page.indexOf('<WidgetPreviews />')).toBeLessThan(page.indexOf('<WidgetCard />'));
     expect(previews).toContain('snapToInterval={cardWidth + SPACING.sm}');
-    expect(previews).toContain('}, [cardWidth, widget, appearance]);');
+    // …and when the phone goes into or out of dark mode: a card on System is drawn by it.
+    expect(previews).toContain('const phoneScheme = useSystemColorScheme();');
+    expect(previews).toContain('}, [cardWidth, widget, appearance, phoneScheme]);');
     expect(previews).toContain('drawn ? PREVIEW_AFTER_CHANGE_MS : 0,');
     // The latest request wins.
     expect(previews).toContain('if (mine === asked.current && Array.isArray(list)) setPictures(list.filter(p => p?.uri));');

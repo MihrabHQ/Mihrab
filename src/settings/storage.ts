@@ -590,7 +590,14 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
     parsed.androidWidgetBackgroundCustomHex,
     DEFAULT_SETTINGS.androidWidgetBackgroundCustomHex,
   );
-  merged.androidWidgetHighlightOwn = parsed.androidWidgetHighlightOwn === true;
+  // Before this was a setting, a background that was not the app's had a
+  // highlight that was not the app's either. Someone who chose one then
+  // keeps it: with no answer stored, a card of its own colour means a
+  // highlight of its own.
+  merged.androidWidgetHighlightOwn =
+    typeof parsed.androidWidgetHighlightOwn === 'boolean'
+      ? parsed.androidWidgetHighlightOwn
+      : ['dark', 'light', 'custom'].includes(String(parsed.androidWidgetBackgroundMode));
   merged.androidWidgetTextAccent = parsed.androidWidgetTextAccent === true;
   merged.hijriCalendar = coerceHijriCalendarId(parsed.hijriCalendar);
   merged.hijriAdjustDays = coerceHijriAdjust(parsed.hijriAdjustDays);
