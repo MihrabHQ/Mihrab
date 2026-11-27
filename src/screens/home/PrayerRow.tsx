@@ -139,6 +139,13 @@ type PrayerRowProps = {
    */
   timePeers?: readonly string[];
   /**
+   * The Mālikī tag under the name instead of beside it — the card's
+   * answer for all its rows, once one of them has reported
+   * (`onDaruriWrap`) that the tag does not fit on the name's line.
+   */
+  daruriBelow?: boolean;
+  onDaruriWrap?: () => void;
+  /**
    * The check at the leading edge — today's five salāh only. `log` says
    * what today's journal holds for this prayer and where the clock is in
    * its window; `onToggleLog` records or un-records it (quickLog.ts).
@@ -187,6 +194,8 @@ function PrayerRowImpl({
   onResetAlertMode,
   timeSample,
   timePeers,
+  daruriBelow = false,
+  onDaruriWrap,
   log,
   onToggleLog,
   hasCheckColumn = false,
@@ -275,11 +284,16 @@ function PrayerRowImpl({
               },
             ]}
             maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
-            {t(`prayer.${prayerKey}`)}
+            {isSecondary ? `\u2009${t(`prayer.${prayerKey}`)}\u2009` : t(`prayer.${prayerKey}`)}
           </Text>
-          {daruriAt ? (
+          {daruriAt && !daruriBelow ? (
             <Text
               style={[styles.daruri, { color: palette.muted }]}
+              // Wrapped onto a line of its own: it does not fit here. The
+              // card moves every row's tag under its name.
+              onLayout={e => {
+                if (e.nativeEvent.layout.y > 4) onDaruriWrap?.();
+              }}
               numberOfLines={1}
               accessibilityLabel={t(
                 daruriPhase === 'second' ? 'prayer.secondTimeUntil' : 'prayer.firstTimeUntil',
@@ -295,12 +309,41 @@ function PrayerRowImpl({
                 // The clock keeps its own direction inside the sentence
                 // (first-strong isolate): "5:31 م" stays as the time
                 // column writes it, in an Arabic line or a Latin one.
-                time: `${daruriApprox ? '~' : ''}\u2068${clock(daruriAt)}\u2069`,
+                // The "~" rides inside with it: outside, an Urdu line put
+                // it after "7:18 AM" instead of before.
+                time: `\u2068${daruriApprox ? '~' : ''}${clock(daruriAt)}\u2069`,
                 interpolation: { escapeValue: false },
               })}
             </Text>
           ) : null}
         </View>
+        {/* Under the name, where the card has found the tags do not fit
+            beside it. Compact keeps this line on the current row alone. */}
+        {daruriAt && daruriBelow && (tier !== 'compact' || isNext) ? (
+        <Text
+            style={[styles.daruri, styles.daruriBelow, { color: palette.muted }]}
+            numberOfLines={1}
+            accessibilityLabel={t(
+              daruriPhase === 'second' ? 'prayer.secondTimeUntil' : 'prayer.firstTimeUntil',
+              {
+                time: daruriApprox
+                  ? `${t('prayer.approx', { defaultValue: 'approx.' })} ${clock(daruriAt)}`
+                  : clock(daruriAt),
+              },
+            )}
+            maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+            testID={`daruri-${prayerKey}`}>
+            {t(daruriPhase === 'second' ? 'prayer.secondTimeShort' : 'prayer.firstTimeShort', {
+              // The clock keeps its own direction inside the sentence
+              // (first-strong isolate): "5:31 م" stays as the time
+              // column writes it, in an Arabic line or a Latin one.
+              // The "~" rides inside with it: outside, an Urdu line put
+              // it after "7:18 AM" instead of before.
+              time: `\u2068${daruriApprox ? '~' : ''}${clock(daruriAt)}\u2069`,
+              interpolation: { escapeValue: false },
+            })}
+          </Text>
+        ) : null}
         {/* Under the name for the same reason the line above is, and for
             one more: the trailing edge is a COLUMN, aligned across every
             row of the card. A control that appeared on one row would push
@@ -467,19 +510,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  // One line: the name keeps its width, the tag gives way first.
+  // One line: the name and, at its far end, the tag…
+  // …and where the two do not fit on one line — a narrow phone, a large
+  // text size, a long name — the tag goes under the name whole, as it
+  // used to sit, instead of being cut mid-time on the line it was moved
+  // to. `maxWidth` is for the size at which it does not fit there either.
   nameLine: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   daruri: {
     fontSize: TYPE.caption.fontSize,
     lineHeight: labelLineHeight(TYPE.caption.fontSize),
-    flexShrink: 1,
+    flexShrink: 0,
+    maxWidth: '100%',
     marginStart: SPACING.sm,
     // And the tag keeps its distance from the bell, for the same reason.
     marginEnd: SPACING.lg,
+  },
+  daruriBelow: {
+    marginTop: 2,
+    marginStart: 0,
+    marginEnd: 0,
   },
   // Inset, rounded indicator pill instead of a full-bleed block — reads
   // as a quieter, more refined "current" marker against the tinted row.
@@ -497,11 +551,13 @@ const styles = StyleSheet.create({
   // points taller than the same row in English, and six rows of that came
   // out of the hero above.
   name: { fontSize: TYPE.title3.fontSize, lineHeight: labelLineHeight(TYPE.title3.fontSize) },
-  // A slanted name leans out of its own box, and Android cuts a text at
-  // its box: "الشروق" lost the top of its first letter at the right edge.
-  // Room for the lean on both sides, taken back so the name still starts
-  // on the column's line.
-  nameSlanted: { paddingHorizontal: 4, marginHorizontal: -4 },
+  // A slanted name leans out past the width its letters measure to, and
+  // Android cuts a text there: "الشروق" lost the top of its first letter
+  // at the right edge. Padding does not help — the cut is at the text's
+  // own measure, not the view's — so the name is written between two
+  // thin spaces (a fifth of an em, the room the lean needs), and this
+  // takes that width back so the name still starts on the column's line.
+  nameSlanted: { marginHorizontal: -4 },
   chosenDot: {
     width: 6,
     height: 6,

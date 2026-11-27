@@ -450,10 +450,12 @@ describe('the rows adapt to the phone and to the table', () => {
     expect(row).toMatch(/tier === 'compact' && styles\.rowCompact/);
     expect(row).toMatch(/tier === 'roomy' && styles\.rowRoomy/);
     expect(row).toMatch(/rowCompact: \{ paddingVertical: ROW_PAD\.compact \}/);
-    // The Mālikī boundary is a tag on the name's line in every tier: it
-    // costs no height, so compact no longer hides it.
-    expect(row).not.toMatch(/tier !== 'compact' \|\| isNext/);
+    // The Mālikī boundary is a tag on the name's own line, at no cost in
+    // height. Where the card has found it does not fit there it goes
+    // under the name, and compact keeps that line on the current row.
     expect(row).toMatch(/<View style=\{styles\.nameLine\}>/);
+    expect(row).toMatch(/daruriAt && !daruriBelow \?/);
+    expect(row).toMatch(/daruriAt && daruriBelow && \(tier !== 'compact' \|\| isNext\)/);
   });
 });
 

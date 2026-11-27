@@ -37,6 +37,12 @@ export type HomeBudgetInput = {
   fontScale: number;
   /** Rows on today's table — six with Sunrise; more with the extra times. */
   rows: number;
+  /**
+   * Rows carrying a second line: the Mālikī tag, where it does not fit
+   * beside the name and sits under it (a narrow phone, a large text
+   * size). Zero while the tags are on the rows' own lines.
+   */
+  sublineRows: number;
   /** Whatever else is on the page at its own height: a banner, Ramadan. */
   extra: number;
 };
@@ -66,6 +72,8 @@ export const ROW_PAD: Record<HomeTier, number> = {
   comfortable: HOME_ROW_PADDING_V,
   compact: SPACING.sm,
 };
+/** The Mālikī tag under a name (PrayerRow.daruriBelow: caption + 2). */
+const ROW_SUBLINE = TYPE.caption.lineHeight + 2;
 /** A row's name line (TYPE.title3). */
 const ROW_LINE = TYPE.title3.lineHeight;
 
@@ -145,9 +153,9 @@ export function homeSegmentHeights(tier: HomeTier, input: HomeBudgetInput): Home
     HERO_TEXT * tabular +
     Math.round(HERO_COUNTDOWN_SIZE[tier] * COUNTDOWN_LINE) * tabular;
   const dayBar = DAY_BAR_PAD[tier] + DAY_BAR_TEXT[tier] * band;
-  // A row is one line whatever is on it: the Mālikī boundary is a tag on
-  // the name's own line now, not a second line under it.
-  const table = input.rows * (ROW_PAD[tier] * 2 + ROW_LINE * tabular);
+  // Compact keeps the second line on the current row alone.
+  const sublines = tier === 'compact' ? Math.min(input.sublineRows, 1) : input.sublineRows;
+  const table = input.rows * (ROW_PAD[tier] * 2 + ROW_LINE * tabular) + sublines * ROW_SUBLINE * tabular;
   const below =
     BELOW_GAP[tier] +
     QURAN_PAD[tier] * 2 +

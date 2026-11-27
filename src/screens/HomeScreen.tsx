@@ -255,6 +255,23 @@ export function HomeScreen() {
   // "5:31 PM" is the split this dependency exists to prevent.
   const clockHour12 = useClockFormatter().hour12;
   /**
+   * Whether the Mālikī tags sit under the names instead of beside them.
+   *
+   * A row finds out by being laid out: its tag did not fit on the name's
+   * line and wrapped. One row wrapping is the whole card's answer — a
+   * table with the tag beside some names and under others is two layouts
+   * in one — so it is held here and handed to every row, and the page's
+   * budget counts the taller rows. It is asked again whenever what
+   * decided it changes: the width, the text size, the language, the
+   * clock.
+   */
+  const fontScaleForWrap = useFontScale();
+  const { width: widthForWrap } = useWindowSize();
+  const wrapSig = `${widthForWrap}|${fontScaleForWrap}|${i18n.language}|${clockHour12}`;
+  const [wrapped, setWrapped] = useState<string | null>(null);
+  const daruriBelow = wrapped === wrapSig;
+  const onDaruriWrap = useCallback(() => setWrapped(wrapSig), [wrapSig]);
+  /**
    * The Live Activity's one-occurrence override.
    *
    * Read here only so the notification resync can see it move. It is not
@@ -1819,6 +1836,9 @@ export function HomeScreen() {
     topInset: bannerInFlow ? 0 : insets.top,
     fontScale,
     rows: DISPLAY_ORDER.filter(key => todayMap[key]).length,
+    sublineRows: daruriBelow
+      ? DISPLAY_ORDER.filter(key => todayMap[`${key}Daruri` as keyof TimingsMap]).length
+      : 0,
     // A banner's height is its own; this is a notice's usual size.
     extra: bannerInFlow ? 72 : 0,
   };
@@ -2028,6 +2048,8 @@ export function HomeScreen() {
             fullBleed={fullBleed}
             roomy={isRoomy}
             tier={tier}
+            daruriBelow={daruriBelow}
+            onDaruriWrap={onDaruriWrap}
             heroHeight={tabletopHeroHeight}
             sideInset={wideInset}
             // The hero is under the status bar only when nothing is above

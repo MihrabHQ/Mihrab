@@ -27,6 +27,7 @@ const pixel: HomeBudgetInput = {
   topInset: 24,
   fontScale: 1,
   rows: 6,
+  sublineRows: 0,
   extra: 0,
 };
 
@@ -71,12 +72,15 @@ describe('the pick', () => {
     expect(pickHomeTier({ ...pixel, viewport: 1006 - 62 })).toBe('roomy');
   });
 
-  it('counts the extra rows, and nothing for the Mālikī boundaries: they are on the row’s own line', () => {
-    expect(homeSegmentHeights('comfortable', { ...pixel, rows: 8 }).table).toBeGreaterThan(
-      homeSegmentHeights('comfortable', pixel).table,
+  it('counts the extra rows, and the Mālikī tags only where they sit under the names', () => {
+    const below = { ...pixel, sublineRows: 5 };
+    expect(homeSegmentHeights('comfortable', below).table).toBeGreaterThan(homeSegmentHeights('comfortable', pixel).table);
+    // Compact keeps one line, so five cost what one costs.
+    expect(homeSegmentHeights('compact', below).table - homeSegmentHeights('compact', pixel).table).toBe(
+      homeSegmentHeights('compact', { ...pixel, sublineRows: 1 }).table - homeSegmentHeights('compact', pixel).table,
     );
     expect(pickHomeTier({ ...pixel, rows: 8 })).toBe('comfortable');
-    expect('sublineRows' in pixel).toBe(false);
+    expect(pickHomeTier({ ...pixel, rows: 8, sublineRows: 5 })).toBe('compact');
   });
 
   it('caps the text size the way the texts do', () => {

@@ -271,6 +271,10 @@ export type TodayCardProps = {
    * nobody budgets (the dashboard, the book, a roomy tablet).
    */
   tier?: HomeTier;
+  /** The Mālikī tags under the names, not beside them: see HomeScreen. */
+  daruriBelow?: boolean;
+  /** A row's tag did not fit beside its name. */
+  onDaruriWrap?: () => void;
   /**
    * The hero's height, given — a foldable standing in tabletop posture,
    * where the hero fills the upright half down to the hinge and the table
@@ -338,6 +342,8 @@ function TodayCardImpl({
   bannerAbove = false,
   roomy = false,
   tier = 'comfortable',
+  daruriBelow = false,
+  onDaruriWrap,
   heroHeight,
   sideInset = 0,
   renderLocation,
@@ -1357,6 +1363,8 @@ function TodayCardImpl({
         onResetAlertMode={overrideKey === key ? resetOverride : undefined}
         timeSample={timeSample}
         timePeers={timePeers}
+        daruriBelow={daruriBelow}
+        onDaruriWrap={onDaruriWrap}
         log={
           loggable && isSalah(key)
             ? {
