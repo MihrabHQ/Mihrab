@@ -2,6 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!--
+        The Jetpack PDF view (androidx.pdf) asks for Android 9; the app runs
+        from Android 7. The library is used only where it runs: its view is
+        offered to JavaScript on Android 9 and later (MushafLinePackage),
+        and below that the Library draws a PDF's pages itself.
+    -->
+    <uses-sdk tools:overrideLibrary="androidx.pdf, androidx.pdf.core, androidx.pdf.document.service" />
+
+    <!--
         Package visibility for the Qibla screen's "open your compass app"
         button, and nothing else.
 

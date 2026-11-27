@@ -19,12 +19,21 @@ class MushafLinePackage : ReactPackage, ViewManagerOnDemandReactPackage {
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> =
       emptyList()
 
+  // The PDF view is named only where its library runs (Android 9 and later): JavaScript asks whether the
+  // view is there, and below that draws the pages itself.
   override fun getViewManagerNames(reactContext: ReactApplicationContext): Collection<String> =
-      listOf(MushafLineViewManager.NAME)
+      if (android.os.Build.VERSION.SDK_INT >= MihrabPdfViewManager.MIN_SDK)
+          listOf(MushafLineViewManager.NAME, MihrabPdfViewManager.NAME)
+      else listOf(MushafLineViewManager.NAME)
 
   override fun createViewManager(
       reactContext: ReactApplicationContext,
       viewManagerName: String,
   ): ViewManager<*, *>? =
-      if (viewManagerName == MushafLineViewManager.NAME) MushafLineViewManager() else null
+      when {
+        viewManagerName == MushafLineViewManager.NAME -> MushafLineViewManager()
+        viewManagerName == MihrabPdfViewManager.NAME &&
+            android.os.Build.VERSION.SDK_INT >= MihrabPdfViewManager.MIN_SDK -> MihrabPdfViewManager()
+        else -> null
+      }
 }

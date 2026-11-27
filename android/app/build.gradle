@@ -416,6 +416,11 @@ dependencies {
      * Material call sites Play named (`BottomSheetDialog`, `SheetDialog`)
      * are gone anyway now that R8 runs again: nothing in the app uses them,
      * so R8 strips them.
+     *
+     * Since 2026-11-28 what is built is 1.13.0 all the same: androidx.pdf
+     * (below) asks for it, and Gradle takes the higher. The line stays as
+     * the version this app itself was written against; nothing above is a
+     * reason 1.13.0 is unsafe, only that it does not help.
      */
     implementation("com.google.android.material:material:1.12.0")
     /**
@@ -473,6 +478,17 @@ dependencies {
     // The hinge of a foldable and how far it is folded (FoldPostureModule).
     implementation("androidx.window:window:1.3.0")
     implementation("androidx.window:window-java:1.3.0")
+    /**
+     * Reading a Library book that is a PDF (MihrabPdfReaderView): Android's
+     * own PDF view, with the system's scrolling and zoom. Apache 2.0 and
+     * built from AOSP like every androidx library here; it draws with the
+     * platform's PdfRenderer in an isolated process of its own and brings
+     * no Play Services (`pdf-ocr-play-services` is a separate artifact and
+     * is not taken). It asks for Android 9: see the override in the
+     * manifest. A beta: take the stable when there is one.
+     */
+    implementation("androidx.pdf:pdf-viewer:1.0.0-beta01")
+    implementation("androidx.pdf:pdf-document-service:1.0.0-beta01")
 }
 
 /*

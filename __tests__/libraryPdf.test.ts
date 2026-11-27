@@ -125,18 +125,68 @@ describe('the reader', () => {
   });
 
   it('gives the list of pages a height of its own, so a long book is not drawn all at once', () => {
-    expect(page).toContain('onLayout={e => setRoom(e.nativeEvent.layout.height)}');
+    expect(page).toContain('setRoom(e.nativeEvent.layout.height);');
     expect(page).toContain('getItemLayout={(_, index) => ({ length: rowHeight, offset: rowHeight * index, index })}');
   });
 
-  it('steps the zoom with two fingers as with the button, and opens a wider page where its lines begin', () => {
-    expect(page).toContain('Gesture.Pinch()');
-    expect(page).toContain('if (e.scale > 1.2) setZoomAt(z => Math.min(ZOOMS.length - 1, z + 1));');
-    expect(page).toContain('else if (e.scale < 0.83) setZoomAt(z => Math.max(0, z - 1));');
-    // Only where the book's direction is not the layout's; and by the edge on the glass on Android (seen on a
-    // Pixel in an Arabic layout: `scrollToEnd` goes to the right, where an Indonesian page does not begin).
-    expect(page).toContain('if (ZOOMS[zoomAt] <= 1 || layoutRtl === rtl) return undefined;');
+  it('zooms to any size with two fingers, as a picture does, and keeps what is under them there', () => {
+    expect(page).toContain('const scale = Math.min(ZOOM_MAX / zoomRef.current, Math.max(1 / zoomRef.current, e.scale));');
+    expect(page).toContain('.onEnd(e => zoomTo(zoomRef.current * e.scale, focal.current))');
+    expect(page).toContain('tx.setValue((1 - scale) * (f.x - box.current.w / 2));');
+    expect(page).toContain('y: Math.max(0, (at2.current.y + f.y) * k - f.y),');
+    // Lifting the fingers does not twitch: the pages stay as they were left until the new size is laid out,
+    // and are put in place and let go together (found by hand on a Pixel).
+    expect(page).toContain('if (!committing.current) settle();');
+    expect(page).toMatch(/useLayoutEffect\(\(\) => \{[\s\S]*?put\(\);\s*settle\(\);\s*committing\.current = false;/);
+    // The place is known before any scrolling has reported it: a zoom straight after opening at page 7 stays
+    // at page 7 (it went to page 1, seen on a Pixel).
+    expect(page).toContain('at2.current.y = target * rowHeightRef.current;');
+    // Two fingers zoom every time: the scrollers are in the gesture system with the pinch, and stand still
+    // while two fingers are down (it zoomed on some tries and scrolled on others, found by hand on a Pixel).
+    expect(page).toContain('.simultaneousWithExternalGesture(sideGesture, listGesture)');
+    expect(page).toContain('if (e.numberOfTouches >= 2) setPinching(true);');
+    expect(page).toContain('scrollEnabled={!pinching}');
+    // The pages are not thrown away to be zoomed: the list is the same list at another size.
+    expect(page).not.toMatch(/key=\{`[sz]\$\{zoom/);
+    // The button still steps, for a hand that cannot pinch.
+    expect(page).toContain('else zoomTo(ZOOMS.find(z => z > zoomRef.current + 0.01) ?? 1, null);');
+  });
+
+  it('opens a page made wider at the edge its lines begin at, by where that is on the glass', () => {
     expect(page).toContain("if (Platform.OS === 'android') side.current?.scrollTo({ x: rtl ? 100000 : 0, animated: false });");
+  });
+
+  it('is the system\'s own PDF view on Android 9 and later, and keeps what the reader kept', () => {
+    const view = read('android/app/src/main/java/com/prayer_times/MihrabPdfReaderView.kt');
+    const pkg = read('android/app/src/main/java/com/prayer_times/MushafLinePackage.kt');
+    const gradle = read('android/app/build.gradle');
+    // The library, and nothing of Google Play's with it.
+    expect(gradle).toContain('implementation("androidx.pdf:pdf-viewer:1.0.0-beta01")');
+    expect(gradle).toContain('implementation("androidx.pdf:pdf-document-service:1.0.0-beta01")');
+    expect(gradle).not.toMatch(/implementation\("androidx\.pdf:pdf-ocr-play-services/);
+    // It asks for Android 9 and the app runs from 7: offered only where it runs, and said so in the manifest.
+    expect(read('android/app/src/main/AndroidManifest.xml')).toContain('tools:overrideLibrary="androidx.pdf, androidx.pdf.core, androidx.pdf.document.service"');
+    expect(pkg).toContain('if (android.os.Build.VERSION.SDK_INT >= MihrabPdfViewManager.MIN_SDK)');
+    expect(read('android/app/src/main/java/com/prayer_times/MihrabPdfViewManager.kt')).toContain('const val MIN_SDK = 28');
+    // The file is opened in the library's isolated process, where the app's own start-up must not run: it
+    // threw there and no page was drawn (seen on an emulator).
+    expect(read('android/app/src/main/java/com/prayer_times/MainApplication.kt')).toMatch(/super\.onCreate\(\)[\s\S]{0,700}if \(android\.os\.Process\.isIsolated\(\)\) return/);
+    // A file on the device, and no network.
+    expect(view).toContain('openDocument(Uri.fromFile(File(file)), null)');
+    expect(/https?:\/\/|URLSession|HttpURLConnection|okhttp/i.test(view)).toBe(false);
+    // The place is not said until the view is at the page it was opened at, nor before the zoom that fits a
+    // page is known; a zoom it is told to take keeps what was in the middle, and is drawn.
+    expect(view).toContain('if (first >= page || System.currentTimeMillis() > arriveBy) arriving = false else return');
+    expect(view).toContain('if (zoom <= 0f || baseZoom <= 0f) return');
+    expect(view).toContain('if (middle != null) pdf.scrollToPosition(middle) else if (page >= 0) pdf.scrollToPage(page)');
+    expect(view).toContain('pdf.postDelayed({ pdf.scrollBy(0, 1); pdf.scrollBy(0, -1) }, REDRAW_MS)');
+    // The screen: the same place, bookmarks and go-to-page, through the view; and the list of pages when
+    // the view is not there or cannot open the file.
+    expect(page).toContain('const system = !systemFailed && nativePdfViewAvailable();');
+    expect(page).toContain('onPdfError={() => setSystemFailed(true)}');
+    expect(page).toContain('setGoTo(was => ({ page: Math.min(pages, n) - 1, key: (was?.key ?? 0) + 1 }));');
+    expect(page).toMatch(/onSystemViewport[\s\S]{0,400}seen\.current = page;\s*setAt\(page\);/);
+    expect(read('src/native/MihrabPdfView.ts')).toContain("rn.Platform.OS === 'android'");
   });
 
   it('has a sentence for each way the file can fail, in every language', () => {

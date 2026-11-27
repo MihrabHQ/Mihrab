@@ -58,8 +58,13 @@ class MainApplication : Application(), ReactApplication, androidx.work.Configura
   fun reactIsRunning(): Boolean =
     reactHostHolder.isInitialized() && reactHostHolder.value.currentReactContext != null
 
+  // The first line after `super`: the PDF library opens a book's file in an isolated process of its own
+  // (androidx.pdf's PdfDocumentServiceImpl), and Android builds this class in that process too. Nothing
+  // here belongs there, and an isolated process may not do most of it: reading a preference threw and took
+  // the process down, so no page was ever drawn (seen on an API 31 emulator, 2026-11-27).
   override fun onCreate() {
     super.onCreate()
+    if (android.os.Process.isIsolated()) return
     val appStart = SystemClock.uptimeMillis()
     // First: the kept screen decodes while everything below runs.
     LaunchSnapshot.preload(this)
