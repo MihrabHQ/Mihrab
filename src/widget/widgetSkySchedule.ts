@@ -43,7 +43,7 @@ export const WIDGET_SKY_STEP_MINUTES = 5;
  * times cannot place the sky. A widget takes the last segment that
  * starts at or before its minute.
  */
-export function widgetSkySchedule(day: SkyThemeDay, variant?: SkyVariant): WidgetSkySegment[] {
+export function widgetSkySchedule(day: SkyThemeDay, variant?: SkyVariant, appsOwn = false): WidgetSkySegment[] {
   const [y, m, d] = day.day.split('-').map(Number);
   if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) return [];
   const out: WidgetSkySegment[] = [];
@@ -53,7 +53,7 @@ export function widgetSkySchedule(day: SkyThemeDay, variant?: SkyVariant): Widge
       const at = new Date(y, m - 1, d, 0, minute, 0, 0);
       const moment = skyMoment(day.times as Record<string, string>, at, day.tomorrowFajr);
       const light = day.where ? skyFrame(moment, at, day.where).light : nominalSkyLight(moment.passage, moment.t);
-      const c = widgetSkyColors(skyMoodFor(moment.passage, moment.t, PALETTE_STEPS, variant, light));
+      const c = widgetSkyColors(skyMoodFor(moment.passage, moment.t, PALETTE_STEPS, variant, light), appsOwn);
       const key = `${c.bg}${c.accent}`;
       if (key !== last) {
         out.push([minute, c.bg, c.accent]);

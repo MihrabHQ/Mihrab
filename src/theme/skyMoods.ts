@@ -1215,9 +1215,18 @@ export function skyMoodFor(
  * card in the hour's hue — the midday's blue, the afternoon's, the
  * golden hour's amber — with the accent lifted to read on it; by night,
  * the mood's own page and accent.
+ *
+ * THAT WAS A CARD THAT COULD ONLY HOLD LIGHT TEXT, and it made the widget
+ * blue all day: the hue is the sky's top, which by day is blue at every
+ * hour — under a golden-hour app in cream and amber the widget beside it
+ * was navy. `appsOwn` is the app's colours as they are: the mood's own
+ * page and its accent at every hour, light by day. For a widget whose
+ * text follows its card (Android: PrayerWidgetDisplay `legibleOnSky`
+ * turns a light text dark on a light card). The iOS widgets still draw
+ * light text only, and keep the dark card.
  */
-export function widgetSkyColors(mood: SkyMood): { bg: string; accent: string } {
-  if (mood.isDark) return { bg: mood.bg, accent: mood.accent };
+export function widgetSkyColors(mood: SkyMood, appsOwn = false): { bg: string; accent: string } {
+  if (mood.isDark || appsOwn) return { bg: mood.bg, accent: mood.accent };
   const hue = hexToOklch(mood.heroTop).h;
   return {
     bg: oklchToHex({ L: 0.24, C: 0.06, h: hue }),

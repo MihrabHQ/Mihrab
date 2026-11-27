@@ -118,15 +118,17 @@ data class PrayerWidgetDisplay(
     }
 
     /**
-     * UNDER THE APP'S SKY THEME THE CARD IS THE HOUR'S, AND IT IS DARK
-     * (theme/skyMoods.ts, `widgetSkyColors`): a dark card in the hour's hue
-     * by day, the night's own page by night. A text colour chosen for
-     * another card — the Dark preset, picked for a see-through card over a
-     * pale wallpaper — is then dark on dark, and the times cannot be read.
+     * UNDER THE APP'S SKY THEME THE CARD IS THE APP'S OWN PAGE AT THAT HOUR
+     * (theme/skyMoods.ts, `widgetSkyColors` with `appsOwn`): pale by day —
+     * the midday's blue-white, the golden hour's cream — and the night's
+     * ink by night. No one text colour reads on both. A light text on the
+     * day's card, or the Dark preset (picked for a see-through card over a
+     * pale wallpaper) on the night's, cannot be read.
      *
      * So where the Sky card is what the text stands on (drawn at
      * SKY_CARD_MIN_OPACITY or more) and the chosen colour does not reach
-     * SKY_TEXT_MIN_CONTRAST against it, the card's own light text is used.
+     * SKY_TEXT_MIN_CONTRAST against it, the light text or the dark is used,
+     * whichever the card holds better.
      * A see-through card is the wallpaper's to judge, and the choice
      * stands. Nothing is stored: with the theme off the choice is back.
      *

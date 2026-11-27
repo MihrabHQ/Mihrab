@@ -155,6 +155,13 @@ export function widgetBackgroundUpdates(
   return updates;
 }
 
+/**
+ * Android's widgets take the app's own Sky colours — its page and accent,
+ * light by day — because their text follows the card. iOS's draw light
+ * text only and keep the dark card in the hour's hue (`widgetSkyColors`).
+ */
+const WIDGET_TAKES_APPS_OWN_SKY = Platform.OS === 'android';
+
 /** Syncs widget highlight / Android opacity with app settings (and Theme → System colors for dynamic accent). */
 export function useSyncWidgetUiHints(): void {
   const { hydrated, settings, updateSettings } = usePrayerSettings();
@@ -246,7 +253,7 @@ export function useSyncWidgetUiHints(): void {
   // own settings again — when the theme is off.
   const skyOn = settings.appearance === 'sky';
   const sky = useSkyTheme(skyOn);
-  const skyColors = skyOn ? widgetSkyColors(skyMoodFor(sky.passage, sky.t, PALETTE_STEPS, undefined, sky.light)) : null;
+  const skyColors = skyOn ? widgetSkyColors(skyMoodFor(sky.passage, sky.t, PALETTE_STEPS, undefined, sky.light), WIDGET_TAKES_APPS_OWN_SKY) : null;
   const skyBg = skyColors?.bg ?? null;
   const skyAccent = skyColors?.accent ?? null;
   useEffect(() => {
@@ -279,7 +286,7 @@ export function useSyncWidgetUiHints(): void {
     let cancelled = false;
     void afterFirstPaint().then(() => {
       if (cancelled) return;
-      const schedule = widgetSkySchedule(day, settings.skyVariant);
+      const schedule = widgetSkySchedule(day, settings.skyVariant, WIDGET_TAKES_APPS_OWN_SKY);
       void mod.setWidgetSkySchedule?.(schedule.length ? JSON.stringify(schedule) : null).catch(() => {});
     });
     return () => {

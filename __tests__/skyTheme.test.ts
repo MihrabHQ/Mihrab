@@ -427,6 +427,17 @@ describe('the widgets', () => {
       }
     }
     expect(widgetSkyColors(SKY_MOODS.night)).toEqual({ bg: SKY_MOODS.night.bg, accent: SKY_MOODS.night.accent });
+    // Android: the app's own page and accent at every hour — light by day,
+    // not a navy card under a cream app. Its text follows the card.
+    for (const moods of [SKY_MOODS, REALISTIC_SKY_MOODS]) {
+      for (const mood of Object.values(moods) as SkyMood[]) {
+        expect(widgetSkyColors(mood, true)).toEqual({ bg: mood.bg, accent: mood.accent });
+        expect(contrastRatio(mood.accent, mood.bg)).toBeGreaterThanOrEqual(3);
+        // One of the two texts the widget can fall back to always reads on it.
+        expect(Math.max(contrastRatio('#E8EAED', mood.bg), contrastRatio('#1C1C1E', mood.bg))).toBeGreaterThanOrEqual(7);
+      }
+    }
+    expect(read('src/widget/syncWidgetUiHints.ts')).toContain("const WIDGET_TAKES_APPS_OWN_SKY = Platform.OS === 'android';");
     const hook = read('src/widget/syncWidgetUiHints.ts');
     expect(hook).toMatch(/setAndroidWidgetSky\?\.\(skyBg, skyAccent\)/);
     expect(hook).toMatch(/const skyColors = skyOn \? widgetSkyColors\(/);
