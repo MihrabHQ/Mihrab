@@ -19,7 +19,15 @@ export interface NativeProps extends ViewProps {
   goTo?: Readonly<{ page: Int32; key: Int32 }>;
   /** A zoom to take, 1 being a page as wide as the view; `key` changes each time it is asked for. */
   zoomTo?: Readonly<{ step: Double; key: Int32 }>;
-  /** The page at the top (from 0) and the zoom, as they change. */
+  /** Words to look for in the file ('' takes the marks off); `key` changes each time it is asked. */
+  find?: Readonly<{ query: string; key: Int32 }>;
+  /** To the next place the words are (1) or the one before (-1); `key` changes each time. */
+  findStep?: Readonly<{ by: Int32; key: Int32 }>;
+  /** The file is open; `search`: whether this device can look for words in it. */
+  onPdfReady?: CodegenTypes.DirectEventHandler<Readonly<{ search: boolean }>>;
+  /** How many places the words are in, and which is shown (from 1; 0 when there is none). */
+  onPdfFind?: CodegenTypes.DirectEventHandler<Readonly<{ count: Int32; index: Int32 }>>;
+  /** The page being read (from 0) and the zoom, as they change. */
   onPdfViewport?: CodegenTypes.DirectEventHandler<Readonly<{ page: Int32; zoom: Double }>>;
   /** The file would not open. */
   onPdfError?: CodegenTypes.DirectEventHandler<Readonly<{ message: string }>>;

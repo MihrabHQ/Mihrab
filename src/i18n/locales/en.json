@@ -3182,7 +3182,10 @@
         "noSpace": "There is not enough room on this device for this book ({{size}}).",
         "badFile": "What was downloaded is not the book. Try again.",
         "unreadable": "This book could not be opened. Download it again.",
-        "pageFailed": "This page could not be shown."
+        "pageFailed": "This page could not be shown.",
+        "find": "Search",
+        "findPrevious": "Previous",
+        "findNext": "Next"
       },
       "subject": {
         "quran": "Qur'an",

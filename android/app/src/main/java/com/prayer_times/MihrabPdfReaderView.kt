@@ -5,7 +5,11 @@ import android.util.SparseArray
 import android.graphics.RectF
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
+import androidx.pdf.Highlight
 import androidx.pdf.PdfDocument
+import androidx.pdf.PdfFeature
+import androidx.pdf.PdfPoint
+import androidx.pdf.PdfRect
 import androidx.pdf.SandboxedPdfLoader
 import androidx.pdf.view.PdfView
 import com.facebook.react.bridge.Arguments
@@ -14,6 +18,7 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import java.io.File
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -41,6 +46,12 @@ import kotlinx.coroutines.launch
  * (`onPdfError`). What it is told: the file, the page to open at, a page
  * to go to and a zoom to take, each with a key that changes when it is
  * asked for again.
+ *
+ * Words are looked for in the file by the library itself (`find`), on the
+ * device: where they are is marked on the pages, the view goes to one
+ * place after another (`findStep`), and JavaScript is told how many there
+ * are and which is shown (`onPdfFind`). A file that is pictures of pages
+ * has no words to find, and the answer is none.
  */
 @RequiresApi(28)
 class MihrabPdfReaderView(private val reactContext: ThemedReactContext) : FrameLayout(reactContext) {
@@ -106,6 +117,11 @@ class MihrabPdfReaderView(private val reactContext: ThemedReactContext) : FrameL
             baseZoom = 0f
             saidPage = -1
             pdf.pdfDocument = doc
+            // Whether words can be looked for in a file is the system's to say: on Android 12 and older
+            // without the newer PDF parts it draws pages and reads no text (a search found nothing on an
+            // API 31 emulator, in a page that had the word). JavaScript offers the search only where it is.
+            val search = try { doc.isFeatureSupported(PdfFeature.SEARCH) } catch (_: Throwable) { false }
+            emit("topPdfReady", Arguments.createMap().apply { putBoolean("search", search) })
             val at = page.coerceIn(0, maxOf(0, doc.pageCount - 1))
             if (at > 0) {
               arriving = true
@@ -188,6 +204,84 @@ class MihrabPdfReaderView(private val reactContext: ThemedReactContext) : FrameL
     dispatcher.dispatchEvent(PdfEvent(UIManagerHelper.getSurfaceId(this), id, name, data))
   }
 
+  // ── Looking for words ──
+  private class Match(val page: Int, val rects: List<RectF>)
+
+  private var findKey = 0
+  private var stepKey = 0
+  private var findJob: Job? = null
+  private var matches: List<Match> = emptyList()
+  private var shown = -1
+
+  fun find(query: String, key: Int) {
+    if (key == findKey) return
+    findKey = key
+    findJob?.cancel()
+    matches = emptyList()
+    shown = -1
+    val doc = document ?: return
+    val words = query.trim()
+    if (words.isEmpty()) {
+      // The search was closed: the marks come off, and there is nothing to say.
+      pdf.setHighlights(emptyList())
+      return
+    }
+    findJob =
+        scope.launch {
+          val list = ArrayList<Match>()
+          try {
+            val found = doc.searchDocument(words, 0 until doc.pageCount)
+            for (i in 0 until found.size()) {
+              val page = found.keyAt(i)
+              for (m in found.valueAt(i)) list.add(Match(page, m.bounds))
+            }
+          } catch (e: CancellationException) {
+            throw e
+          } catch (_: Exception) {
+            list.clear()
+          }
+          matches = list
+          // The first place at or after the page being read; none there, the first in the book.
+          shown = list.indexOfFirst { it.page >= saidPage }.let { if (it < 0 && list.isNotEmpty()) 0 else it }
+          showMatch()
+        }
+  }
+
+  fun findStep(by: Int, key: Int) {
+    if (key == stepKey) return
+    stepKey = key
+    val n = matches.size
+    if (n == 0) return
+    shown = ((shown + by) % n + n) % n
+    showMatch()
+  }
+
+  private fun showMatch() {
+    // Marked: the place shown, and the others on its page and the pages beside it. A common word is in a
+    // book thousands of times, and the view is not handed thousands of marks it will not draw.
+    val here = matches.getOrNull(shown)
+    val marks = ArrayList<Highlight>()
+    if (here != null) {
+      matches.forEachIndexed { i, m ->
+        if (m.page >= here.page - 1 && m.page <= here.page + 1) {
+          for (r in m.rects) marks.add(Highlight(PdfRect(m.page, r), if (i == shown) MARK_SHOWN else MARK_OTHER))
+        }
+      }
+    }
+    pdf.setHighlights(marks)
+    if (here != null) {
+      arriving = false
+      val r = here.rects.firstOrNull()
+      if (r != null) pdf.scrollToPosition(PdfPoint(here.page, r.centerX(), r.centerY())) else pdf.scrollToPage(here.page)
+    }
+    emit(
+        "topPdfFind",
+        Arguments.createMap().apply {
+          putInt("count", matches.size)
+          putInt("index", shown + 1)
+        })
+  }
+
   /** The view is gone for good: the file is let go of. */
   fun close() {
     scope.cancel()
@@ -219,5 +313,8 @@ class MihrabPdfReaderView(private val reactContext: ThemedReactContext) : FrameL
   companion object {
     private const val ARRIVE_MS = 2500L
     private const val REDRAW_MS = 120L
+    // On white paper, whatever the app's theme: amber for the place shown, a paler yellow for the others.
+    private const val MARK_SHOWN = 0x99FF9800.toInt()
+    private const val MARK_OTHER = 0x66FFE082
   }
 }

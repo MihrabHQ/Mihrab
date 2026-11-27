@@ -34,6 +34,16 @@ class MihrabPdfViewManager : SimpleViewManager<MihrabPdfReaderView>() {
     if (value != null) view.zoomTo(value.getDouble("step"), value.getInt("key"))
   }
 
+  @ReactProp(name = "find")
+  fun setFind(view: MihrabPdfReaderView, value: com.facebook.react.bridge.ReadableMap?) {
+    if (value != null) view.find(value.getString("query") ?: "", value.getInt("key"))
+  }
+
+  @ReactProp(name = "findStep")
+  fun setFindStep(view: MihrabPdfReaderView, value: com.facebook.react.bridge.ReadableMap?) {
+    if (value != null) view.findStep(value.getInt("by"), value.getInt("key"))
+  }
+
   override fun onAfterUpdateTransaction(view: MihrabPdfReaderView) {
     super.onAfterUpdateTransaction(view)
     view.commit()
@@ -48,6 +58,8 @@ class MihrabPdfViewManager : SimpleViewManager<MihrabPdfReaderView>() {
       mapOf(
           "topPdfViewport" to mapOf("registrationName" to "onPdfViewport"),
           "topPdfError" to mapOf("registrationName" to "onPdfError"),
+          "topPdfFind" to mapOf("registrationName" to "onPdfFind"),
+          "topPdfReady" to mapOf("registrationName" to "onPdfReady"),
       )
 
   companion object {

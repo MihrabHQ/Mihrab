@@ -3182,7 +3182,10 @@
         "noSpace": "Ruang di perangkat ini tidak cukup untuk buku ini ({{size}}).",
         "badFile": "Yang terunduh bukan buku ini. Coba lagi.",
         "unreadable": "Buku ini tidak dapat dibuka. Unduh lagi.",
-        "pageFailed": "Halaman ini tidak dapat ditampilkan."
+        "pageFailed": "Halaman ini tidak dapat ditampilkan.",
+        "find": "Cari",
+        "findPrevious": "Sebelumnya",
+        "findNext": "Berikutnya"
       },
       "subject": {
         "quran": "Al-Qur’an",

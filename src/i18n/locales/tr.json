@@ -3182,7 +3182,10 @@
         "noSpace": "Bu cihazda bu kitap için yeterli yer yok ({{size}}).",
         "badFile": "İndirilen dosya kitap değil. Yeniden deneyin.",
         "unreadable": "Bu kitap açılamadı. Yeniden indirin.",
-        "pageFailed": "Bu sayfa gösterilemedi."
+        "pageFailed": "Bu sayfa gösterilemedi.",
+        "find": "Ara",
+        "findPrevious": "Önceki",
+        "findNext": "Sonraki"
       },
       "subject": {
         "quran": "Kur’an",

@@ -3183,7 +3183,10 @@
         "noSpace": "No hay espacio suficiente en este dispositivo para este libro ({{size}}).",
         "badFile": "Lo descargado no es el libro. Inténtalo de nuevo.",
         "unreadable": "No se pudo abrir este libro. Descárgalo de nuevo.",
-        "pageFailed": "No se pudo mostrar esta página."
+        "pageFailed": "No se pudo mostrar esta página.",
+        "find": "Buscar",
+        "findPrevious": "Anterior",
+        "findNext": "Siguiente"
       },
       "subject": {
         "quran": "Corán",

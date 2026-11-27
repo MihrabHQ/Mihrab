@@ -301,6 +301,26 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
     if (!pending.current) pending.current = setTimeout(() => writeRef.current(), PLACE_DELAY_MS);
   }, []);
 
+  // Looking for words in the book: the system's view does the looking, in the file, on the device.
+  // Offered only where the system says it can read the file's words (`onPdfReady`).
+  const [canFind, setCanFind] = useState(false);
+  const [finding, setFinding] = useState(false);
+  const [words, setWords] = useState('');
+  const [find, setFind] = useState<{ query: string; key: number } | undefined>(undefined);
+  const [findStep, setFindStep] = useState<{ by: number; key: number } | undefined>(undefined);
+  /** null: not asked, or still looking. */
+  const [found, setFound] = useState<{ count: number; index: number } | null>(null);
+  const look = (query: string) => {
+    setFound(null);
+    setFind(was => ({ query, key: (was?.key ?? 0) + 1 }));
+  };
+  const step = (by: number) => setFindStep(was => ({ by, key: (was?.key ?? 0) + 1 }));
+  const stopFinding = () => {
+    setFinding(false);
+    setWords('');
+    look('');
+  };
+
   // Going to a page by its number.
   const [asking, setAsking] = useState(false);
   const [typed, setTyped] = useState('');
@@ -343,8 +363,43 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
             <Pressable onPress={() => setAsking(true)} accessibilityRole="button" accessibilityLabel={t('quran.jumpToPage')} hitSlop={8} testID="library-pdf-where">
               <Text style={[styles.where, { color: palette.text }]}>{t('hadith.library.chapterOf', { n: at + 1, count: pages })}</Text>
             </Pressable>
-            <TextAction label={marked ? t('hadith.library.unmark') : t('hadith.library.mark')} color={palette.accentSolid} onPress={() => toggle(at)} />
+            <View style={styles.barEnd}>
+              {system && canFind ? <TextAction label={t('hadith.library.pdf.find')} color={palette.accentSolid} onPress={() => (finding ? stopFinding() : setFinding(true))} /> : null}
+              <TextAction label={marked ? t('hadith.library.unmark') : t('hadith.library.mark')} color={palette.accentSolid} onPress={() => toggle(at)} />
+            </View>
           </View>
+          {finding && system ? (
+            <View style={[styles.goRow, { backgroundColor: palette.card }]}>
+              <TextInput
+                value={words}
+                onChangeText={setWords}
+                autoFocus
+                placeholder={t('hadith.library.pdf.find')}
+                placeholderTextColor={palette.muted}
+                onSubmitEditing={() => look(words)}
+                returnKeyType="search"
+                autoCorrect={false}
+                style={[styles.goInput, { color: palette.text }]}
+                testID="library-pdf-find"
+              />
+              {found ? (
+                <Text style={[styles.found, { color: palette.muted }]} testID="library-pdf-found">
+                  {found.count > 0 ? t('hadith.library.chapterOf', { n: found.index, count: found.count }) : t('hadith.noResults')}
+                </Text>
+              ) : null}
+              {found && found.count > 1 ? (
+                <>
+                  <Pressable onPress={() => step(-1)} accessibilityRole="button" accessibilityLabel={t('hadith.library.pdf.findPrevious')} hitSlop={10} testID="library-pdf-find-previous">
+                    <Text style={[styles.findStep, { color: palette.accentSolid }]}>↑</Text>
+                  </Pressable>
+                  <Pressable onPress={() => step(1)} accessibilityRole="button" accessibilityLabel={t('hadith.library.pdf.findNext')} hitSlop={10} testID="library-pdf-find-next">
+                    <Text style={[styles.findStep, { color: palette.accentSolid }]}>↓</Text>
+                  </Pressable>
+                </>
+              ) : null}
+              <TextAction label={t('common.cancel')} color={palette.mutedSolid} onPress={stopFinding} />
+            </View>
+          ) : null}
           {asking ? (
             <View style={[styles.goRow, { backgroundColor: palette.card }]}>
               <TextInput
@@ -374,6 +429,10 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
                 goTo={goTo}
                 zoomTo={zoomAsk}
                 onPdfViewport={onSystemViewport}
+                find={find}
+                findStep={findStep}
+                onPdfReady={e => setCanFind(e.nativeEvent.search)}
+                onPdfFind={e => setFound({ count: e.nativeEvent.count, index: e.nativeEvent.index })}
                 onPdfError={() => setSystemFailed(true)}
                 testID="library-pdf-system"
               />
@@ -646,6 +705,9 @@ const styles = StyleSheet.create({
   bar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm, borderBottomWidth: StyleSheet.hairlineWidth },
   where: { fontSize: TYPE.footnote.fontSize, fontVariant: ['tabular-nums'] },
   goRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.lg, paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm },
+  barEnd: { flexDirection: 'row', alignItems: 'center', gap: SPACING.lg },
+  found: { fontSize: TYPE.caption.fontSize },
+  findStep: { fontSize: TYPE.body.fontSize, fontWeight: '600', paddingHorizontal: SPACING.xs },
   goInput: { flex: 1, fontSize: TYPE.body.fontSize, paddingVertical: SPACING.sm },
   page: { alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   pageNote: { fontSize: TYPE.footnote.fontSize, padding: SPACING.lg, textAlign: 'center' },

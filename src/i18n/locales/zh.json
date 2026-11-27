@@ -3182,7 +3182,10 @@
         "noSpace": "此设备空间不足，无法存放本书（{{size}}）。",
         "badFile": "下载的内容不是这本书。请重试。",
         "unreadable": "无法打开本书。请重新下载。",
-        "pageFailed": "无法显示此页。"
+        "pageFailed": "无法显示此页。",
+        "find": "搜索",
+        "findPrevious": "上一个",
+        "findNext": "下一个"
       },
       "subject": {
         "quran": "《古兰经》",

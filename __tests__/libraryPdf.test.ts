@@ -189,11 +189,28 @@ describe('the reader', () => {
     expect(read('src/native/MihrabPdfView.ts')).toContain("rn.Platform.OS === 'android'");
   });
 
+  it('looks for words in the file where the system can read them, and offers it nowhere else', () => {
+    const view = read('android/app/src/main/java/com/prayer_times/MihrabPdfReaderView.kt');
+    // The system says whether it can; on Android 12 and older without the newer PDF parts it cannot, and a
+    // search there found nothing in a page that had the word (seen on an API 31 emulator).
+    expect(view).toContain('doc.isFeatureSupported(PdfFeature.SEARCH)');
+    expect(page).toContain('onPdfReady={e => setCanFind(e.nativeEvent.search)}');
+    expect(page).toContain("{system && canFind ? <TextAction label={t('hadith.library.pdf.find')}");
+    // In the file, on the device; from the page being read; and the view is not handed every mark in the book.
+    expect(view).toContain('doc.searchDocument(words, 0 until doc.pageCount)');
+    expect(view).toContain('shown = list.indexOfFirst { it.page >= saidPage }');
+    expect(view).toContain('if (m.page >= here.page - 1 && m.page <= here.page + 1) {');
+    // Closing the search takes the marks off.
+    expect(page).toMatch(/const stopFinding = \(\) => \{[\s\S]*?look\(''\);/);
+    expect(view).toMatch(/if \(words\.isEmpty\(\)\) \{[\s\S]*?pdf\.setHighlights\(emptyList\(\)\)/);
+    for (const k of ['find', 'findNext', 'findPrevious']) expect(page).toContain(`hadith.library.pdf.${k}`);
+  });
+
   it('has a sentence for each way the file can fail, in every language', () => {
     for (const k of ['note', 'read', 'zoom', 'noSpace', 'badFile', 'unreadable', 'pageFailed']) expect(page + read('src/screens/hadith/LibraryShelf.tsx')).toContain(`hadith.library.pdf.${k}`);
     for (const f of fs.readdirSync(path.join(REPO, 'src/i18n/locales'))) {
       const pdf = JSON.parse(read(`src/i18n/locales/${f}`)).hadith.library.pdf;
-      expect([f, Object.keys(pdf).sort()]).toEqual([f, ['badFile', 'noSpace', 'note', 'pageFailed', 'read', 'unreadable', 'zoom']]);
+      expect([f, Object.keys(pdf).sort()]).toEqual([f, ['badFile', 'find', 'findNext', 'findPrevious', 'noSpace', 'note', 'pageFailed', 'read', 'unreadable', 'zoom']]);
       expect([f, pdf.noSpace.includes('{{size}}')]).toEqual([f, true]);
     }
   });

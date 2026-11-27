@@ -3182,7 +3182,10 @@
         "noSpace": "Det finns inte tillräckligt med utrymme på enheten för den här boken ({{size}}).",
         "badFile": "Det som laddades ner är inte boken. Försök igen.",
         "unreadable": "Boken kunde inte öppnas. Ladda ner den igen.",
-        "pageFailed": "Den här sidan kunde inte visas."
+        "pageFailed": "Den här sidan kunde inte visas.",
+        "find": "Sök",
+        "findPrevious": "Föregående",
+        "findNext": "Nästa"
       },
       "subject": {
         "quran": "Koranen",
