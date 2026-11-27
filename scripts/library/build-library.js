@@ -180,6 +180,9 @@ const BOOKS = {
     openiti: '0525AH/data/0505Ghazali/0505Ghazali.BidayatHidaya/0505Ghazali.BidayatHidaya.Shamela0012718-ara1',
     cache: 'openiti-bidaya.txt',
     read: '2026-11-27',
+    // A lone "ن" after a mark of punctuation, sixteen times: what the
+    // conversion left of a line's end, and no word of al-Ghazālī's.
+    debris: /(?<=[،؛.:)]) ن(?=\s)/g,
   },
   tibyan: {
     title: 'التبيان في آداب حملة القرآن',

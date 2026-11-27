@@ -492,6 +492,14 @@ describe('a matn with no chapter headings, bound with another work', () => {
     expect(builder.openitiChapters(file, 'test')[0].b).toHaveLength(1);
   });
 
+  it('takes the conversion\'s stray letter out of Bidayat al-Hidaya, and no letter of a word', () => {
+    const debris: RegExp = builder.BOOKS.bidaya.debris;
+    const line = 'فلا تترك السواك؛ ن فإنه مطهرة للفم، ن ومرضاة للرب. ن فإذا سمعت';
+    expect(line.replace(debris, ' ').replace(/\s+/g, ' ')).toBe('فلا تترك السواك؛ فإنه مطهرة للفم، ومرضاة للرب. فإذا سمعت');
+    // A word that ends or begins with the letter, or stands by itself in a sentence, is left.
+    for (const kept of ['من الدين نور', 'كان ن والقلم', 'المؤمنين، نور']) expect(kept.replace(debris, ' ')).toBe(kept);
+  });
+
   it('builds at-Tibyan from the transcription that is an-Nawawi\'s text alone', () => {
     expect(builder.BOOKS.tibyan.openiti).toContain('ShamAY0034087');
     expect(builder.BOOKS.tibyan.openiti).not.toMatch(/Shamela0001969|Shia002636/);
