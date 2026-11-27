@@ -118,7 +118,7 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
                       key={b.id}
                       title={b.title}
                       // On the author's line, not one of their own: a row shows three lines, and what the book is must keep two.
-                      subtitle={`${[by, ...tags].join(' · ')}\n${t(`hadith.library.about.${b.id}`)}`}
+                      subtitle={`${[by, ...tags].join(' · ')}\n${b.about ?? t(`hadith.library.about.${b.id}`)}`}
                       value={bytes != null ? formatBytes(bytes) : percent >= 1 ? t('hadith.library.percent', { percent }) : undefined}
                       onPress={() => navigation.push('LibraryBook', { id: b.id })}
                       testID={`hadith-library-${b.id}`}

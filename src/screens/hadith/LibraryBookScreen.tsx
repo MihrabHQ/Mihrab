@@ -493,7 +493,7 @@ function LibraryTextBookPage() {
                     )}
                     {known ? (
                       <Text style={[styles.about, { color: palette.text }]} testID="library-about">
-                        {t(`hadith.library.about.${known.id}`)}
+                        {known.about ?? t(`hadith.library.about.${known.id}`)}
                       </Text>
                     ) : null}
                     <Text style={[styles.note, { color: palette.muted }]} testID="library-note">

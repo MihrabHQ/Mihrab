@@ -40,9 +40,14 @@ export type LibraryBook = {
   madhhab?: 'hanafi' | 'maliki' | 'shafii' | 'hanbali';
   /** A book that is a typeset file, read page by page (`libraryPdf.ts`); absent for a book that is text. */
   format?: 'pdf';
+  /**
+   * What the book is, in the book's own language: for a book offered only to those who read that language,
+   * in place of `hadith.library.about.<id>` in thirteen. An Arabic book, which everyone is offered, has none.
+   */
+  about?: string;
 };
 /** The shelves, in the order they stand. */
-export const LIBRARY_SUBJECTS = ['quran', 'hadith', 'fiqh', 'heart', 'letters'] as const;
+export const LIBRARY_SUBJECTS = ['quran', 'hadith', 'sira', 'creed', 'fiqh', 'heart', 'letters'] as const;
 export type LibrarySubject = (typeof LIBRARY_SUBJECTS)[number];
 export const LIBRARY_BOOKS: readonly LibraryBook[] = BOOKS as LibraryBook[];
 

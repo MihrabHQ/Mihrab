@@ -3135,7 +3135,7 @@
     },
     "library": {
       "tab": "Perpustakaan",
-      "intro": "Buku-buku utuh untuk dibaca, dalam bahasa Arab. Masing-masing adalah teks penulisnya; Mihrab tidak menilai apa yang dikutip sebuah buku.",
+      "intro": "Buku-buku utuh untuk dibaca, dalam bahasa Arab dan Indonesia. Masing-masing adalah teks penulisnya; Mihrab tidak menilai apa yang dikutip sebuah buku.",
       "empty": "Buku belum dapat ditampilkan saat ini. Sambungkan ke internet untuk melihatnya.",
       "needsDownload": "Buku ini belum ada di perangkat Anda.",
       "by": "{{author}} (w. {{died}})",
@@ -3185,6 +3185,8 @@
       "subject": {
         "quran": "Al-Qur’an",
         "hadith": "Hadis",
+        "sira": "Sirah Nabi",
+        "creed": "Akidah",
         "fiqh": "Fikih",
         "heart": "Penyucian jiwa",
         "letters": "Sastra"

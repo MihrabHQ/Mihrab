@@ -194,7 +194,9 @@ there is **not hadith served by this rule**:
   may be republished, and then only on the publisher's terms: unaltered,
   with its author, its translator and the source named, and in the
   version the source publishes. Its page says whose it is and where it is
-  from. None is included yet.
+  from. The first are nine Indonesian books from IslamHouse.com, each its
+  own PDF file passed on byte for byte and read in the app
+  (`scripts/library/build-pdf-books.js`).
 - **A book may be in any language the app has readers of**, and stands on
   the shelf for those who read that language; the Arabic books stand for
   everyone.

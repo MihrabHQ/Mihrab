@@ -122,6 +122,36 @@ export async function checkLibraryPdf(id: string, want: LibraryPdfEntry): Promis
   return false;
 }
 
+/** Our copy by an ordinary request, written to `tmp`. False when it could not be had. */
+async function byRequest(url: string, tmp: string, job: { cancelled: boolean; abort?: () => void }): Promise<boolean> {
+  const controller = new AbortController();
+  const deadline = setTimeout(() => controller.abort(), 300_000);
+  job.abort = () => controller.abort();
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    if (!response.ok) return false;
+    const blob = await response.blob();
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('pdf: read failed'));
+      reader.onloadend = () => {
+        const result = String(reader.result ?? '');
+        resolve(result.slice(result.indexOf(',') + 1));
+      };
+      reader.readAsDataURL(blob);
+    });
+    if (job.cancelled) return false;
+    await ReactNativeBlobUtil.fs.writeFile(tmp, base64, 'base64');
+    return true;
+  } catch (e) {
+    quiet('hadith/libraryPdf', e);
+    return false;
+  } finally {
+    clearTimeout(deadline);
+    job.abort = undefined;
+  }
+}
+
 /** Fetch the book's file. True when it is here, whole, at the end. */
 export async function downloadLibraryPdf(id: string, want: LibraryPdfEntry): Promise<boolean> {
   if (IS_WEB_APP) return false;
@@ -152,6 +182,17 @@ export async function downloadLibraryPdf(id: string, want: LibraryPdfEntry): Pro
       status = (await task).info().status;
     } catch (e) {
       quiet('hadith/libraryPdf', e);
+    }
+    if (job.cancelled) {
+      set(id, ABSENT);
+      return false;
+    }
+    // The streaming transfer is the one to want, and on some networks every request through it dies (the
+    // Android emulator's, some proxies: the audio and the fonts learned this first). There the file comes by
+    // an ordinary request instead, held in memory for the length of one write.
+    if (status !== 200) {
+      await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
+      status = (await byRequest(hadithMirrorUrl(libraryPdfAsset(id)), tmp, job)) ? 200 : 0;
     }
     if (job.cancelled) {
       set(id, ABSENT);

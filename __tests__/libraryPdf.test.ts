@@ -165,3 +165,28 @@ describe('the page drawn on each platform', () => {
     expect(mm).toContain('NSCachesDirectory');
   });
 });
+
+describe('the books that are files, as they are built', () => {
+  const { pdfPack, BOOKS, MAX_BYTES, SOURCE } = require('../scripts/library/build-pdf-books.js');
+  const script = read('scripts/library/build-pdf-books.js');
+
+  it('copies the publisher\'s file byte for byte, and reads none of its words', () => {
+    expect(script).toContain("fs.copyFileSync(cache, path.join(OUT, 'library', `${book.id}.pdf`));");
+    expect(script).not.toMatch(/replace\(|mend\(|debris/);
+    expect(MAX_BYTES).toBe(LIBRARY_PDF_MAX_BYTES);
+  });
+
+  it('writes a pack the app accepts, naming the file, whose it is and where from', () => {
+    const pack = pdfPack(BOOKS[0], { bytes: 10, sha256: SHA, pages: 3 });
+    expect(validPack(`library/${BOOKS[0].id}`, pack)).toBe(true);
+    expect(pack.chapters).toEqual([]);
+    expect(pack.source.name).toBe(SOURCE.name);
+    expect(pack.source.url).toMatch(/^https:\/\/islamhouse\.com\/id\/books\/\d+$/);
+    for (const b of BOOKS) expect([b.id, /^https:\/\/d1\.islamhouse\.com\/.+\.pdf$/.test(b.url), b.author.length > 2]).toEqual([b.id, true, true]);
+  });
+
+  it('is uploaded beside the packs', () => {
+    expect(read('scripts/hadith/upload-packs.sh')).toContain("\\( -name '*.json' -o -name '*.pdf' \\)");
+  });
+});
+

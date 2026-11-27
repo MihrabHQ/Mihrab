@@ -3185,6 +3185,8 @@
       "subject": {
         "quran": "Koran",
         "hadith": "Hadith",
+        "sira": "Leben des Propheten",
+        "creed": "Glaubenslehre",
         "fiqh": "Fiqh",
         "heart": "Läuterung des Herzens",
         "letters": "Literatur"

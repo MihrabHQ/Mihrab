@@ -44,7 +44,7 @@ import {
   useLibraryPdfStatus,
   validLibraryPdf,
 } from '../../hadith/libraryPdf';
-import { deletePack, loadPack, usePackStatuses } from '../../hadith/packs';
+import { cancelPack, deletePack, downloadPack, loadPack, manifestEntry, usePackStatuses } from '../../hadith/packs';
 import type { LibraryFile } from '../../hadith/packTypes';
 import { summarisePacks } from '../../hadith/useHadith';
 import { pdfInfo, pdfPage, pdfRenderWidth, type PdfPage } from '../../native/MihrabPdf';
@@ -56,7 +56,7 @@ import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 import { Column } from './Column';
 import { HadithPage } from './HadithPage';
-import { PackGate } from './PackGate';
+import { PackGate, useManifest } from './PackGate';
 
 /** How long a place waits before it is written: scrolling passes pages quickly. */
 const PLACE_DELAY_MS = 1000;
@@ -332,6 +332,17 @@ export function LibraryPdfBookScreenPage() {
   const fetchIt = () => {
     if (pdf) void downloadLibraryPdf(id, pdf);
   };
+  // One button fetches the book: its few lines of pack, then the file. What the manifest says of the file is
+  // what the button weighs it at, before either is here.
+  const manifest = useManifest();
+  const offered = manifestEntry(manifest, key)?.pdf;
+  const wanted = useRef(false);
+  useEffect(() => {
+    if (wanted.current && pdf && status.state === 'absent') {
+      wanted.current = false;
+      void downloadLibraryPdf(id, pdf);
+    }
+  }, [id, pdf, status.state]);
 
   if (chapter != null && info && status.state === 'ready') {
     return <PdfReader id={id} title={title} path={libraryPdfPath(id)} pages={info.pages} ratio={info.ratio} toPage={toPage} />;
@@ -340,7 +351,31 @@ export function LibraryPdfBookScreenPage() {
   return (
     <HadithPage title={title}>
       {(bottom, onScroll) =>
-        !ready ? (
+        !ready && validLibraryPdf(offered) ? (
+          <Column>
+            <View style={[styles.book, styles.gate]} testID="library-pdf-gate">
+              <Text style={[styles.about, { color: palette.text }]}>{t('hadith.library.needsDownload')}</Text>
+              {known?.about ? <Text style={[styles.note, { color: palette.muted }]}>{known.about}</Text> : null}
+              {packs.downloading ? (
+                <>
+                  <Text style={[styles.note, { color: palette.muted }]}>{t('hadith.downloading')}</Text>
+                  <TextAction label={t('common.cancel')} color={palette.accentSolid} onPress={() => { wanted.current = false; cancelPack(key); }} />
+                </>
+              ) : (
+                <>
+                  {packs.failed ? <Text style={[styles.note, { color: palette.danger }]}>{t('hadith.downloadFailed')}</Text> : null}
+                  <Button
+                    label={t('hadith.downloadSize', { size: formatBytes(offered.bytes) })}
+                    onPress={() => {
+                      wanted.current = true;
+                      void downloadPack(key);
+                    }}
+                  />
+                </>
+              )}
+            </View>
+          </Column>
+        ) : !ready ? (
           <Column>
             <PackGate packs={packs} body={t('hadith.library.needsDownload')} />
           </Column>
@@ -361,7 +396,7 @@ export function LibraryPdfBookScreenPage() {
                     </Text>
                     {known ? (
                       <Text style={[styles.about, { color: palette.text }]} testID="library-about">
-                        {t(`hadith.library.about.${known.id}`)}
+                        {known.about ?? t(`hadith.library.about.${known.id}`)}
                       </Text>
                     ) : null}
                     <Text style={[styles.note, { color: palette.muted }]}>{t('hadith.library.pdf.note')}</Text>

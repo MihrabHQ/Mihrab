@@ -18,6 +18,7 @@ import { blockKind } from '../src/screens/hadith/LibraryBookScreen';
 const REPO = path.join(__dirname, '..');
 const read = (p: string) => fs.readFileSync(path.join(REPO, p), 'utf8');
 const builder = require('../scripts/library/build-library.js');
+const pdfBuilder = require('../scripts/library/build-pdf-books.js');
 
 describe('the builder', () => {
   const { blocksOf, linksOf, packOf, MAQAMAT, HALVES } = builder;
@@ -141,13 +142,16 @@ describe('the shelf', () => {
     expect(LIBRARY_BOOKS).toHaveLength(BOOKS.length);
     expect(new Set(LIBRARY_BOOKS.map(b => b.id)).size).toBe(LIBRARY_BOOKS.length);
     for (const b of LIBRARY_BOOKS) {
-      expect(b.title).toMatch(/[ء-ي]/);
-      expect(b.author).toMatch(/[ء-ي]/);
+      // An Arabic book is named in Arabic; a book in another language as it names itself.
+      if (b.lang === 'ar') {
+        expect(b.title).toMatch(/[ء-ي]/);
+        expect(b.author).toMatch(/[ء-ي]/);
+      }
       expect(b.latin).toMatch(/^[A-Z]/);
       expect(b.authorLatin).toMatch(/^[A-Z]/);
       // Every book listed is one the builder builds.
-      expect(Object.keys(builder.BOOKS)).toContain(b.id);
-      expect(builder.BOOKS[b.id].title).toBe(b.title);
+      expect(b.format === 'pdf' ? pdfBuilder.BOOKS.map((x: { id: string }) => x.id) : Object.keys(builder.BOOKS)).toContain(b.id);
+      expect((b.format === 'pdf' ? pdfBuilder.BOOKS.find((x: { id: string }) => x.id === b.id) : builder.BOOKS[b.id]).title).toBe(b.title);
     }
     expect(findLibraryBook('kalila')?.latin).toBe('Kalila wa Dimna');
     expect(findLibraryBook('nothing')).toBeUndefined();
@@ -186,7 +190,9 @@ describe('the shelf', () => {
       expect([f, Object.keys(k.subject).sort()]).toEqual([f, [...LIBRARY_SUBJECTS].sort()]);
       for (const m of ['hanafi', 'maliki', 'shafii', 'hanbali']) expect([f, m, typeof JSON.parse(read(`src/i18n/locales/${f}`)).settings[`madhab_${m}`]]).toEqual([f, m, 'string']);
       // Every book the app can name is described, and one with coarse passages says so.
-      expect([f, Object.keys(k.about).sort()]).toEqual([f, LIBRARY_BOOKS.map(b => b.id).sort()]);
+      // …in the reader's language where everyone is offered it; a book offered only to those who read its
+      // language says what it is in that language, itself.
+      expect([f, Object.keys(k.about).sort()]).toEqual([f, LIBRARY_BOOKS.filter(b => !b.about).map(b => b.id).sort()]);
       for (const about of Object.values(k.about)) expect(String(about).length).toBeGreaterThan(10);
       expect(k.about.maqamat.split(/[.。।۔]/).filter((x: string) => x.trim()).length).toBeGreaterThanOrEqual(2);
       expect(k.about.iqd.split(/[.。।۔]/).filter((x: string) => x.trim()).length).toBeGreaterThanOrEqual(2);
@@ -573,7 +579,9 @@ describe('a matn with no chapter headings, bound with another work', () => {
   describe('what the shelf knows of a book', () => {
     it('knows each book\'s language, subject and kind, and a book of fiqh its school', () => {
       for (const b of LIBRARY_BOOKS) {
-        expect([b.id, b.lang]).toEqual([b.id, 'ar']);
+        expect([b.id, ['ar', 'id'].includes(b.lang)]).toEqual([b.id, true]);
+        // Described in thirteen languages, or in its own: one or the other.
+        expect([b.id, typeof b.about === 'string' && b.about.length > 10]).toEqual([b.id, b.lang !== 'ar']);
         expect([b.id, (LIBRARY_SUBJECTS as readonly string[]).includes(b.subject)]).toEqual([b.id, true]);
         expect([b.id, ['book', 'matn', 'sharh'].includes(b.kind)]).toEqual([b.id, true]);
         // A school is said of fiqh and of nothing else, and never left unsaid of fiqh.
@@ -596,10 +604,17 @@ describe('a matn with no chapter headings, bound with another work', () => {
     it('offers a book to those who read its language, the Arabic ones to everyone, and never hides one that is here', () => {
       const all = { v: 1, henc: {}, books: {}, nawawi: null, categories: {}, library: Object.fromEntries(LIBRARY_BOOKS.map(b => [b.id, { bytes: 1, sha256: 'x', count: 1, retrieved: '2026-11-27' }])) } as unknown as Manifest;
       const none = () => false;
-      // Every book is Arabic today, so every reader is offered every one.
-      for (const reads of [undefined, ['en'], ['id-ID'], ['ar']]) expect(offeredLibraryBooks(all, none, reads).length).toBe(LIBRARY_BOOKS.length);
+      const arabic = LIBRARY_BOOKS.filter(b => b.lang === 'ar').map(b => b.id);
+      // The Arabic books are everyone's. (A book that is a file is offered only where the build can draw
+      // one, which a test cannot: `pdfSupported`.)
+      for (const reads of [['en'], ['id-ID'], ['ar']]) expect(offeredLibraryBooks(all, none, reads).map(b => b.id)).toEqual(arabic);
+      // The books in Indonesian are files, each named by the builder that passes it on.
+      const indonesian = LIBRARY_BOOKS.filter(b => b.lang === 'id');
+      expect(indonesian.length).toBeGreaterThan(5);
+      for (const b of indonesian) expect([b.id, b.format]).toEqual([b.id, 'pdf']);
       const policy = read('docs/hadith-policy.md');
       expect(policy).toContain('**Or where its publisher gives leave to pass it on.**');
+      expect(policy).not.toContain('None is included yet.');
       expect(policy).toContain('**We pass books on; we do not vouch for them.**');
       expect(policy).toContain('`scripts/library/mends.js`');
       expect(read('src/hadith/libraryShelf.ts')).toContain("b.lang === 'ar' || reads.some(l => sameLanguage(l, b.lang))");

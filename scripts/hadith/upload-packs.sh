@@ -41,6 +41,8 @@ Sources and terms:
 
 What is served: only sound hadith. A HadeethEnc entry whose Arabic grade does not call it sound is left out. Sahih al-Bukhari and Sahih Muslim are whole, on the standing of the collections. Of the four Sunan and the Muwatta, a pack holds only the hadith that every grader who ruled on it calls sahih or hasan; manifest.json says how many of each book that is and how many were left out. Musnad Ahmad and Sunan ad-Darimi are not published: no open dataset grades them. The grades are as hadith-api records them and have not been checked against the printed works.
 
+The Library (library.*.json, library.*.pdf): whole books to read, not hadith served by the rule above. Classical Arabic texts are from OpenITI (CC BY-NC-SA 4.0) and Arabic Wikisource (CC BY-SA 4.0), as each pack's source line says. Indonesian books are IslamHouse.com's own PDF files (https://islamhouse.com), republished unaltered with their authors and the source named, on IslamHouse's stated terms.
+
 Mihrab is independent and not affiliated with any of these projects."
 
 STAGE=$(mktemp -d)
@@ -48,7 +50,8 @@ EXISTING=$(mktemp)
 trap 'rm -rf "$STAGE" "$EXISTING"' EXIT
 
 # Flatten: a/b/c.json → a.b.c.json. Copies, so the build tree stays as is.
-(cd "$DIR" && find . -type f -name '*.json' ! -name manifest.json) | sed 's|^\./||' | while read -r rel; do
+# The packs, and the Library's books that are files (library/<id>.pdf: a publisher's PDF, byte for byte).
+(cd "$DIR" && find . -type f \( -name '*.json' -o -name '*.pdf' \) ! -name manifest.json) | sed 's|^\./||' | while read -r rel; do
   cp "$DIR/$rel" "$STAGE/$(echo "$rel" | tr '/' '.')"
 done
 cp "$DIR/manifest.json" "$STAGE/manifest.json"
