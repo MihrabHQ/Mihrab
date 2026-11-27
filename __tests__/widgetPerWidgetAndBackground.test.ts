@@ -114,3 +114,26 @@ describe('the widgets’ background', () => {
     }
   });
 });
+
+describe('the strip in a cell taller than the layout it was given', () => {
+  // The launcher shows the tallest rung of STRETCHABLE_SIZES that fits its
+  // cell; a 90dp one-row cell takes the 66dp layout, and the 24dp between
+  // them stood empty under the times.
+  const widget = kt('glance/PrayerGlanceWidget.kt');
+
+  it('shares the spare height above and below, where nothing else takes it', () => {
+    expect(widget).toContain('val shareSpare = practice == null && !centreTimes');
+    expect(widget).toMatch(
+      /DirColumn\(modifier = GlanceModifier\.fillMaxSize\(\)\) \{\s*if \(shareSpare\) Spacer\(GlanceModifier\.defaultWeight\(\)\)\s*if \(!oneRow \|\| topNext\) Header\(/,
+    );
+    expect(widget).toMatch(
+      /if \(showFoot\) Foot\(pr, top = 7, d\)\s*\}\s*if \(shareSpare\) Spacer\(GlanceModifier\.defaultWeight\(\)\)\s*\}\s*\}/,
+    );
+  });
+
+  it('by weight, not by a number: the launcher measures it against the cell it has', () => {
+    // No height of any launcher's is written into the fix.
+    const at = widget.indexOf('val shareSpare');
+    expect(widget.slice(at, at + 80)).not.toMatch(/\d/);
+  });
+});

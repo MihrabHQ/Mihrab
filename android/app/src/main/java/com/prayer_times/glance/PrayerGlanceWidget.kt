@@ -647,6 +647,20 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val showFoot = plan.showFoot
     val columns = m.rows.take(STRIP_COLUMNS)
     val timeSp = plan.timeSp
+    // THE HEIGHT A LAYOUT IS DRAWN FOR IS NOT THE HEIGHT IT IS SHOWN AT.
+    // The strip is composed for a ladder of heights (STRETCHABLE_SIZES) and
+    // the launcher shows the tallest that fits, in a cell that is usually a
+    // little taller: a one-row cell of 90dp (AOSP's launcher on a 1080×2340
+    // phone) takes the 66dp layout — the six times alone — and the 24dp
+    // between the two stood empty under them, the times against the card's
+    // top. Every launcher's grid lands somewhere between two rungs.
+    //
+    // So where nothing on the card takes the spare height — no graph, and
+    // the times not already centred under a header — it is shared above and
+    // below, by weight: measured by the launcher against the cell it really
+    // has, whatever its grid. A layout that fits its cell exactly has no
+    // spare, and is drawn as it was.
+    val shareSpare = practice == null && !centreTimes
 
     // THE NEXT PRAYER ON TOP: the 4×1 card always, and the tall card when it
     // is compact, centre the next prayer in the header between the dates,
@@ -654,6 +668,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val topNext = topNext(d, h, compact)
 
     DirColumn(modifier = GlanceModifier.fillMaxSize()) {
+      if (shareSpare) Spacer(GlanceModifier.defaultWeight())
       if (!oneRow || topNext) Header(m.header, m.hijri, d, center = if (!topNext) null else ({
         DirRow(verticalAlignment = Alignment.CenterVertically, modifier = GlanceModifier.padding(horizontal = 6.dp)) {
           val named = size.widthDp - insetDp(context, size) >= COMPACT_NAMED_MIN_WIDTH_DP
@@ -751,6 +766,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           GlanceModifier.fillMaxWidth().defaultWeight(), spread = tall && size.heightDp < GRAPH_SPREAD_MAX_DP)
         if (showFoot) Foot(pr, top = 7, d)
       }
+      if (shareSpare) Spacer(GlanceModifier.defaultWeight())
     }
   }
 
