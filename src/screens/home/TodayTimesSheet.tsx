@@ -311,12 +311,48 @@ function DayRows({ rows, onBackToToday }: { rows: TimesSheetRow[]; onBackToToday
   const [rowW, setRowW] = useState(0);
   const [nameW, setNameW] = useState(0);
   const [timeW, setTimeW] = useState(0);
-  const firstName = rows[0]?.name ?? '';
+  // The prayers are the sheet's rows. The times that are not prayers —
+  // Sunrise, Islamic Midnight, the thirds of the night — were rows as
+  // tall, with an empty place where a check would be: on a sheet whose
+  // whole point is five lines, up to four more. Each run of them is now
+  // one quiet line where it falls in the day, in the small type the
+  // sheet's foot uses: no check, no column, just the name and its time.
+  const groups: ({ kind: 'row'; row: TimesSheetRow } | { kind: 'aside'; rows: TimesSheetRow[] })[] = [];
+  for (const row of rows) {
+    const last = groups[groups.length - 1];
+    if (!row.secondary) groups.push({ kind: 'row', row });
+    else if (last?.kind === 'aside') last.rows.push(row);
+    else groups.push({ kind: 'aside', rows: [row] });
+  }
+  const firstRow = rows.find(row => !row.secondary) ?? rows[0];
+  const firstName = firstRow?.name ?? '';
   return (
     <View style={styles.rows}>
-      {rows.map((row, index) => {
-        const ink = row.secondary && !row.lit ? palette.muted : palette.text;
-        const first = index === 0 && !!onBackToToday;
+      {groups.map(group => {
+        if (group.kind === 'aside') {
+          return (
+            <Text
+              key={group.rows.map(r => r.key).join('+')}
+              style={[styles.aside, { color: palette.muted }]}
+              maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+              testID="sheet-extra-times">
+              {group.rows.map((r, i) => (
+                <Text key={r.key} style={r.lit ? [styles.lit, { color: palette.text }] : undefined}>
+                  {/* A thin space before the slanted name: it leans past
+                      its own measure, and Android cuts it at the line's
+                      start (the first letter of "الثلث الأخير"). */}
+                  {i > 0 ? '   ·   ' : '\u2009'}
+                  <Text style={styles.secondary}>{r.name}</Text>
+                  {'  '}
+                  <Text style={[tabularNumeralStyle, !r.lit && { color: palette.text }]}>{r.time}</Text>
+                </Text>
+              ))}
+            </Text>
+          );
+        }
+        const row = group.row;
+        const ink = palette.text;
+        const first = row === firstRow && !!onBackToToday;
         return (
           <View
             key={row.key}
@@ -644,6 +680,13 @@ const styles = StyleSheet.create({
   check: { width: LOG_CHECK_SIZE, height: LOG_CHECK_SIZE, alignItems: 'center', justifyContent: 'center' },
   name: { flex: 1, fontSize: TYPE.body.fontSize, fontWeight: '400' },
   secondary: { fontStyle: 'italic' },
+  // A run of the optional times: one line, indented to the names' column
+  // (the check's width and the row's gap), wrapping if it must.
+  aside: {
+    fontSize: TYPE.footnote.fontSize,
+    lineHeight: Math.round(TYPE.footnote.fontSize * 1.5),
+    marginStart: LOG_CHECK_SIZE + SPACING.sm - 3,
+  },
   time: { fontSize: TYPE.body.fontSize, fontWeight: '400' },
   // The next prayer: the same face, a step heavier — the row's emphasis.
   lit: { fontWeight: '500' },

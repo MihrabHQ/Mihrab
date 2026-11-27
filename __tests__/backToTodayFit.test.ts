@@ -51,7 +51,7 @@ describe('the sheet', () => {
   it('draws it in the first row of every day but today, so it turns with its page', () => {
     expect(sheet).toContain('<DayRows rows={item.rows} onBackToToday={item.offset === 0 ? undefined : onBackToToday} />');
     expect(sheet).toContain('<DayRows rows={rows} onBackToToday={isToday ? undefined : onBackToToday} />');
-    expect(sheet).toContain('const first = index === 0 && !!onBackToToday;');
+    expect(sheet).toContain('const first = row === firstRow && !!onBackToToday;');
   });
 
   it('lays it over the row without taking the row\'s touches or its height', () => {
