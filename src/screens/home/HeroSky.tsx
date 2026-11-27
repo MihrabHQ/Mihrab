@@ -450,7 +450,15 @@ function HeroSkyImpl({
           depth={trackDepth}
           // Through a launch run the chart stands and the body rides the
           // run's progress along it; the rest is drawn as it will be.
-          run={running && run?.tracks ? { tracks: run.tracks, progress: run.progress } : undefined}
+          run={
+            running && run?.tracks
+              ? {
+                  tracks: run.tracks,
+                  progress: run.progress,
+                  moonShown: run.frames.map(f => (f.body.kind === 'moon' ? f.body.alpha : 0)),
+                }
+              : undefined
+          }
         />
       ) : null}
     </View>

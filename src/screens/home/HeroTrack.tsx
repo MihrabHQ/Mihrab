@@ -82,7 +82,17 @@ function HeroTrackImpl({
    * it is the end's. When the run ends the live drawing takes over at
    * the same place.
    */
-  run?: { tracks: Array<TrackFrame | null>; progress: Animated.Value };
+  run?: {
+    tracks: Array<TrackFrame | null>;
+    progress: Animated.Value;
+    /**
+     * How far the sky shows the moon at each keyframe (its body's alpha
+     * there, 0 where the body is the sun or nothing): the moon is up for
+     * hours of an afternoon the sky does not draw it in, and a run from
+     * Asr into the evening must bring it in as the evening does.
+     */
+    moonShown?: number[];
+  };
   width: number;
   /** The band's top, dp from the sky's top: the foot of the chrome row. */
   bandTop: number;
@@ -264,7 +274,11 @@ function HeroTrackImpl({
       ty: through(ys),
       up: through(ups),
       moon: firstMoon
-        ? { tx: through(mxs), ty: through(mys), up: through(moons.map(p => (p ? 1 : 0))) }
+        ? {
+            tx: through(mxs),
+            ty: through(mys),
+            up: through(moons.map((p, i) => (p ? (run.moonShown ? (run.moonShown[i] ?? 0) : 1) : 0))),
+          }
         : null,
       light: runSunLight(run.tracks),
       // The end's stretch and its under-the-line outline come in over the last third.
