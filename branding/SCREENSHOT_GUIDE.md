@@ -61,8 +61,15 @@ How each was taken:
   weeks overdue.
 - **Desktop** by `desktop/scripts/steps-store-home.js` through `drive.js`:
   Playwright's clock holds the hour, `TZ=Africa/Abidjan`, 1440×900 at 2×.
-- **iPad:** not retaken — rotating the simulator needs the Mac unlocked
-  (Device → Rotate Left); `ipad/home` and `ipad/log` still show six tabs.
+- **iPad** on the iPad Pro 13″ simulator, the same build and helpers. The
+  simulator is turned without its window (so with the Mac locked) by
+  `python3 branding/tools/sim_orient.py <companion port> 2`: idb_companion
+  1.7 has `set_orientation`, the Python client here does not, so the
+  request is sent raw. With the clock moved by `simtime` a location fix
+  reads as old and Today says "You seem to have travelled": launch once at
+  the real time first, let "My location" find Casablanca, then launch at
+  the scene's time. The status bar's date is the Mac's, so the scene is
+  the day it was shot.
 
 ## Before you shoot
 
