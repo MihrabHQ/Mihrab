@@ -18,6 +18,19 @@ describe('the Microsoft Store notes', () => {
     expect(ms.storeNotes(text)).toBe('• Hifz: by heart.\n• Morocco: the printed minute.');
   });
 
+  it('leave out a line that names another platform anywhere, and what the desktop app does not have', () => {
+    const text = [
+      '• New: a Hadith tab.',
+      '• Android widgets: a background that follows the phone.',
+      '• Every download: one at a time, in the notification on Android.',
+      '• أدوات أندرويد: خلفية.',
+      '• Minimal: "Back to today" is an icon.',
+      '• Books, some as the publisher\'s PDF.',
+      '• Windows: install with Scoop or winget.',
+    ].join('\n');
+    expect(ms.storeNotes(text)).toBe('• New: a Hadith tab.\n• Windows: install with Scoop or winget.');
+  });
+
   it('fit the limit by shortening the longest bullets first, then dropping the last', () => {
     const long = '• A: one. ' + 'two '.repeat(100).trim() + '.';
     const out = ms.storeNotes(`${long}\n• B: short.`, 60);

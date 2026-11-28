@@ -55,14 +55,13 @@ say "Desktop run $run for $TAG"
 
 gh run watch -R "$REPO" "$run" --interval 60 --exit-status >/dev/null 2>&1
 conclusion="$(gh run view -R "$REPO" "$run" --json conclusion --jq .conclusion 2>/dev/null)"
-if [ "$conclusion" != "success" ]; then
-  say "the Desktop run ended $conclusion — https://github.com/$REPO/actions/runs/$run"
-  tell "Desktop run $conclusion — no Store packages"
-  exit 1
-fi
+# A failed run is not a missing package: 2.40.0's failed in the winget job
+# alone, after the packages were built and uploaded, and this gave up on a
+# release whose .appx files were there. The artifact decides.
+[ "$conclusion" = "success" ] || say "the Desktop run ended $conclusion — https://github.com/$REPO/actions/runs/$run — fetching the packages anyway"
 
 if ! gh run download -R "$REPO" "$run" -n mihrab-microsoft-store -D "$DEST"; then
-  say "download failed"; tell "Store package download failed"; exit 1
+  say "no Store packages in that run"; tell "Desktop run $conclusion — no Store packages"; exit 1
 fi
 ls "$DEST"/*.appx >/dev/null 2>&1 || { say "the artifact held no .appx"; exit 1; }
 notes

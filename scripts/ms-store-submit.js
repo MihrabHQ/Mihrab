@@ -33,15 +33,22 @@ const API = 'https://manage.devcenter.microsoft.com/v1.0/my';
 const NOTES_LIMIT = 1500;
 const ROOT = path.resolve(__dirname, '..');
 
-// Lines about another platform, in the languages the notes are kept in.
-const OTHER_PLATFORM = /^•\s*(Android|iPhone|iPad|iOS|Mac|macOS|Live Activity|أندرويد|آيفون|آيباد|ماك)\s*:/;
+// Lines about another platform, in the languages the notes are kept in —
+// anywhere in the line, not only as its lead: "• Android widgets: …" and
+// "… in the notification on Android" were left in 2.40.0's notes.
+const OTHER_PLATFORM =
+  /\b(Android|iPhone|iPad|iOS|macOS|Mac|Live Activity|F-Droid|Google Play|App Store)\b|أندرويد|آيفون|آيباد|ماك/;
+// And what the desktop app does not have: the minimal layout is the phone's
+// and the iPad's, a Library book that is a PDF is read in the phone's own
+// PDF view.
+const NOT_ON_DESKTOP = /\bMinimal\b|المبسّط|\bPDF\b/;
 
 /** The notes of one language for the Windows app, at most `limit` chars. */
 function storeNotes(text, limit = NOTES_LIMIT) {
   let bullets = text
     .split('\n')
     .map(l => l.trim())
-    .filter(l => l && !OTHER_PLATFORM.test(l))
+    .filter(l => l && !OTHER_PLATFORM.test(l) && !NOT_ON_DESKTOP.test(l))
     .map(l => l.replace(/\s*\(#\d+(?:,\s*#\d+)*\)/g, ''));
   const joined = () => bullets.join('\n');
   // Too long: the longest bullets keep their first sentence, one at a time.
