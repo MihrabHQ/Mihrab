@@ -80,11 +80,25 @@ describe('fetching the file', () => {
     expect(move).toBeGreaterThan(check);
     // The transfer is to a file of its own, and that file never outlives the attempt.
     expect(src).toContain('const tmp = `${path}.dl`;');
-    expect(src).toMatch(/finally \{\s*running\.delete\(id\);\s*await ReactNativeBlobUtil\.fs\.unlink\(tmp\)/);
+    expect(src).toMatch(/finally \{\s*running\.delete\(id\);\s*if \(!keep \|\| job\.cancelled\) await ReactNativeBlobUtil\.fs\.unlink\(tmp\)/);
+  });
+
+  it('goes on from the part an earlier try brought, and still trusts only the whole', () => {
+    // Asked for from where it stopped; answered with the rest (206) or not trusted at all.
+    expect(src).toContain('const from = had > 0 && had < want.bytes ? had : 0;');
+    expect(src).toContain('from ? { Range: `bytes=${from}-` } : {});');
+    expect(src).toContain('overwrite: from === 0');
+    expect(src).toMatch(/if \(from\) \{\s*if \(status === 206\) status = 200;\s*else \{\s*await ReactNativeBlobUtil\.fs\.unlink\(tmp\)/);
+    // A part is kept only when it is short of the whole and the reader did not stop the transfer; the size
+    // and SHA-256 check is unchanged, so a part that does not make the book is thrown away at the end.
+    expect(src).toContain('if (!keep || job.cancelled) await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);');
+    expect(src).toContain("const sha = size === want.bytes ? String(await ReactNativeBlobUtil.fs.hash(tmp, 'sha256')).toLowerCase() : '';");
+    // Removing a book removes a part of it too.
+    expect(src).toContain('await ReactNativeBlobUtil.fs.unlink(`${libraryPdfPath(id)}.dl`).catch(() => undefined);');
   });
 
   it('asks about room first, and says why when it fails', () => {
-    expect(src.indexOf("set(id, { state: 'failed', why: 'space' });")).toBeLessThan(src.indexOf(".fetch('GET', hadithMirrorUrl(libraryPdfAsset(id)))"));
+    expect(src.indexOf("set(id, { state: 'failed', why: 'space' });")).toBeLessThan(src.indexOf(".fetch('GET', hadithMirrorUrl(libraryPdfAsset(id))"));
     for (const why of ['space', 'network', 'file']) expect(src.split(`'${why}'`).length).toBeGreaterThan(2);
   });
 

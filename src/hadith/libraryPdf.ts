@@ -161,6 +161,8 @@ export async function downloadLibraryPdf(id: string, want: LibraryPdfEntry): Pro
   running.set(id, job);
   const path = libraryPdfPath(id);
   const tmp = `${path}.dl`;
+  // Whether what is in `tmp` at the end is a part worth going on from.
+  let keep = false;
   try {
     if (!libraryPdfFits(want.bytes, await freeBytes())) {
       set(id, { state: 'failed', why: 'space' });
@@ -168,14 +170,19 @@ export async function downloadLibraryPdf(id: string, want: LibraryPdfEntry): Pro
     }
     set(id, { state: 'downloading', progress: 0 });
     await mkdirDeep(path.slice(0, path.lastIndexOf('/')));
-    await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
-    const task = ReactNativeBlobUtil.config({ path: tmp, timeout: 300_000 }).fetch('GET', hadithMirrorUrl(libraryPdfAsset(id)));
+    // What an earlier try brought is gone on from, not fetched again: a book is megabytes, and the
+    // connections it is fetched over drop. The part is asked for from where it stopped (`Range`), and what
+    // comes is still the book only if the whole is the size and SHA-256 the manifest names.
+    const had = (await sizeOf(tmp)) ?? 0;
+    const from = had > 0 && had < want.bytes ? had : 0;
+    if (!from) await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
+    const task = ReactNativeBlobUtil.config({ path: tmp, overwrite: from === 0, timeout: 300_000 }).fetch('GET', hadithMirrorUrl(libraryPdfAsset(id)), from ? { Range: `bytes=${from}-` } : {});
     job.abort = () => {
       void task.cancel?.();
     };
     task.progress?.({ interval: 250 }, (received, total) => {
-      const all = Number(total) > 0 ? Number(total) : want.bytes;
-      if (!job.cancelled) set(id, { state: 'downloading', progress: Math.min(1, Number(received) / all) });
+      const all = from ? want.bytes : Number(total) > 0 ? Number(total) : want.bytes;
+      if (!job.cancelled) set(id, { state: 'downloading', progress: Math.min(1, (from + Number(received)) / all) });
     });
     let status = 0;
     try {
@@ -187,18 +194,39 @@ export async function downloadLibraryPdf(id: string, want: LibraryPdfEntry): Pro
       set(id, ABSENT);
       return false;
     }
+    // Asked for the rest and answered with it (206), the file is whole now if all went well. Answered any
+    // other way — the whole file again, an error — what is here is not a part to trust: it is thrown away
+    // and the book fetched from its beginning.
+    if (from) {
+      if (status === 206) status = 200;
+      else {
+        await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
+        status = 0;
+      }
+    }
     // The streaming transfer is the one to want, and on some networks every request through it dies (the
     // Android emulator's, some proxies: the audio and the fonts learned this first). There the file comes by
     // an ordinary request instead, held in memory for the length of one write.
     if (status !== 200) {
-      await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
-      status = (await byRequest(hadithMirrorUrl(libraryPdfAsset(id)), tmp, job)) ? 200 : 0;
+      // To a file of its own: a part the streaming transfer brought is kept beside it, to go on from if this
+      // fails too.
+      const whole = `${tmp}.r`;
+      await ReactNativeBlobUtil.fs.unlink(whole).catch(() => undefined);
+      if (await byRequest(hadithMirrorUrl(libraryPdfAsset(id)), whole, job)) {
+        await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
+        await ReactNativeBlobUtil.fs.mv(whole, tmp);
+        status = 200;
+      } else {
+        await ReactNativeBlobUtil.fs.unlink(whole).catch(() => undefined);
+      }
     }
     if (job.cancelled) {
       set(id, ABSENT);
       return false;
     }
     if (status !== 200) {
+      // A part came and the connection went: it is kept, and the next try goes on from it.
+      keep = ((await sizeOf(tmp)) ?? 0) > 0;
       set(id, { state: 'failed', why: 'network' });
       return false;
     }
@@ -206,7 +234,10 @@ export async function downloadLibraryPdf(id: string, want: LibraryPdfEntry): Pro
     const size = await sizeOf(tmp);
     const sha = size === want.bytes ? String(await ReactNativeBlobUtil.fs.hash(tmp, 'sha256')).toLowerCase() : '';
     if (sha !== want.sha256) {
-      set(id, { state: 'failed', why: size != null && size < want.bytes ? 'network' : 'file' });
+      // Short of the whole, it is a part, kept to go on from. The right size and not the book, it is not kept.
+      const short = size != null && size > 0 && size < want.bytes;
+      keep = short;
+      set(id, { state: 'failed', why: short ? 'network' : 'file' });
       return false;
     }
     if (await ReactNativeBlobUtil.fs.exists(path)) await ReactNativeBlobUtil.fs.unlink(path);
@@ -221,7 +252,7 @@ export async function downloadLibraryPdf(id: string, want: LibraryPdfEntry): Pro
     return false;
   } finally {
     running.delete(id);
-    await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
+    if (!keep || job.cancelled) await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
   }
 }
 
@@ -237,6 +268,8 @@ export function cancelLibraryPdf(id: string): void {
 export async function deleteLibraryPdf(id: string): Promise<void> {
   cancelLibraryPdf(id);
   await ReactNativeBlobUtil.fs.unlink(libraryPdfPath(id)).catch(() => undefined);
+  // …and a part of it kept from a try that did not finish.
+  await ReactNativeBlobUtil.fs.unlink(`${libraryPdfPath(id)}.dl`).catch(() => undefined);
   set(id, ABSENT);
 }
 
