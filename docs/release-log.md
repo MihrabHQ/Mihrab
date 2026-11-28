@@ -1461,4 +1461,4 @@ Changed the release cycle itself:
   - `scripts/release.sh`
   - `scripts/release/preflight.ts`
 
-**Lesson:** _(unfilled)_
+**Lesson:** the versionCode raised by hand (302, for Play's second 2.39.0 build) has to go through `node scripts/sync-version.js`, and the full jest run after it: the F-Droid recipe mirror follows `build.gradle`, and the run stopped at its test because the mirror had been put back to 301 by hand. The second stop was the daily namazvakti data job pushing to `main` while the release was building — the run refused to push, said how to undo, and went through after a rebase; nothing was lost, but a release started near that job's hour can expect it. Xcode Cloud's Default workflow was paused, so the App Store build came from this Mac by the local route (build 301 in App Store Connect, Apple's own count); resume it with `./scripts/xcode-cloud.py resume` if Cloud should build the next one. The cycle changes listed above were made between releases (the F-Droid build check and the native-builds gate), not during this run.
