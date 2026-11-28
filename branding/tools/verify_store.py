@@ -90,6 +90,7 @@ folder("fastlane/screenshots/ios/6.9", (1320, 2868), count=(3, 10), exts=(".jpg"
 # The iPad panels are landscape: App Store Connect takes 2752x2064 as well
 # as 2064x2752 for the 13-inch slot.
 folder(SP + "appstore-ipad/en", (2752, 2064), count=(3, 10), exts=(".png",))
+folder(SP + "appstore-duo/en", (2007, 2853), count=(3, 10), exts=(".png",))
 folder("fastlane/screenshots/ipad/13", (2752, 2064), count=(3, 10), exts=(".jpg",))
 folder(SP + "appstore-mac/en", (2880, 1800), count=(1, 10), exts=(".png",))
 folder("fastlane/screenshots/mac", (2880, 1800), count=(1, 10), exts=(".jpg",))

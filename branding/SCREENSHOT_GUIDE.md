@@ -70,8 +70,10 @@ How each was taken:
   weeks overdue.
 - **iPhone Duo** (the App Store's `APP_IPHONE_DUO` slot, English only) on
   the "Mihrab iPhone Duo iOS27.1" simulator: raw captures in
-  `branding/store/duo/` by `idb screenshot` (the cover display), panels by
-  `branding/tools/build_duo.py`. The app was installed fresh so that
+  `branding/store/duo/` by `idb screenshot` (the cover display), copied to
+  `store-raw/ios-duo` and built by `build.mjs appstore-duo` (six panels in
+  the panels' design; `build_duo.py` and `store-duo/` are the old green
+  ones and are no longer what the store shows). The app was installed fresh so that
   onboarding could ask for notifications (a simulator that was never asked
   has no Notifications page for the app, and every bell shows crossed out),
   and the muṣḥaf folder (`Documents/quran`) was copied from the iPhone
