@@ -1,1 +1,1 @@
-quran,kiblat,salat,shalat,adzan,azan,doa,dzikir,tasbih,islam,masjid,ramadhan,indopak,tajwid
+quran,kiblat,salat,shalat,adzan,azan,doa,dzikir,tasbih,islam,masjid,ramadhan,indopak,tajwid,hadis

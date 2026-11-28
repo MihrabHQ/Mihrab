@@ -3,7 +3,7 @@ Mihrab est un compagnon serein pour la journée d'un musulman : les prières, le
 PRIER
 - Les heures du jour, de la semaine et du mois à venir — conformes à la minute imprimée aux horaires publiés par Diyanet, Islamiska Förbundet, les ministères du Maroc et de l’Algérie et Kemenag, calculées sur le téléphone ; MUIS, JAKIM et Türkiye Takvimi tels que publiés ; AlAdhan ailleurs — à partager en image ou en PDF
 - Mode Minimal : sur « Aujourd’hui », seulement le ciel et le compte à rebours, les horaires du jour à un balayage
-- L'adhan de chaque prière, avec dix-sept enregistrements ou le vôtre, un rappel avant et un report qui ne propose que ce que le temps de la prière permet encore, jusqu'à une dernière chance avant sa fin
+- L'adhan de chaque prière, avec dix-sept enregistrements ou le vôtre, un rappel avant et un report qui ne propose que ce que le temps de la prière permet encore
 - Une alerte de prière qui sonne comme un réveil, même en mode silencieux et avec Concentration (iOS 26 et ultérieur)
 - Une Activité en direct qui décompte jusqu'à la prochaine prière, sur l'écran verrouillé et dans la Dynamic Island
 - Une boussole de qibla avec la force du signal et une vérification par le soleil
@@ -11,7 +11,7 @@ PRIER
 - Des widgets pour l'écran d'accueil : heures de prière en trois tailles, le journal du jour, la date hégirienne, la série, le tasbih et la lecture
 
 LIRE ET ÉCOUTER
-- Le mushaf de Médine, composé en texte à partir des polices de page du Complexe du Roi Fahd et net à toute taille — avec Warsh, Qalun et Shu'bah
+- Le mushaf de Médine, net à toute taille — avec Warsh, Qalun et Shu'bah
 - L’impression IndoPak de 15 lignes, une seconde façon de lire Hafs
 - Les couleurs du tajwid, chaque règle expliquée — en Hafs et en Warsh
 - Le lecteur de mots : maintenez un mot pour l'entendre seul
@@ -21,11 +21,13 @@ LIRE ET ÉCOUTER
 - Hifz : marquez ce que vous savez par cœur ; chaque portion revient à réciter — après un jour, puis 3, 7, 14 et 30, jamais au-delà de votre limite
 - Exercices de mémorisation, signets et plans de khatma
 
+HADITHS
+- Des hadiths authentiques dans votre langue avec leur explication, Sahih al-Bukhari et Muslim, et une bibliothèque de livres entiers à lire hors ligne
+
 SE SOUVENIR
 - Plus de 100 douas du Hisn al-Muslim, avec translittération et traduction
 - Un compteur de tasbih pour le dhikr après la prière et au-delà
 - Un suivi du jeûne pour le Ramadan et les jeûnes de la Sunna, avec rappels
-- Le calendrier hégirien avec le Ramadan, l'Aïd et le Joumou'a, et un verset du jour
 
 À VOUS
 - Pas de publicité, pas d'analyse, pas de traceurs, pas de compte

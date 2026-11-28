@@ -1,1 +1,1 @@
-quran,qibla,আজান,দোয়া,মসজিদ,namaz,azan,salah,indopak
+quran,qibla,আজান,দোয়া,মসজিদ,namaz,azan,salah,indopak,হাদিস

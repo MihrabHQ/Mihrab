@@ -3,7 +3,7 @@
 Each authority’s own method is calculated on your phone and checked, day by day, against its published timetables: 0 of 78 million times off the printed minute, last checked 23 November 2026.
 Singapore (MUIS), Malaysia (JAKIM) and Türkiye Takvimi are their published tables, used as printed. Everywhere else, times come from AlAdhan or a calculation method you choose, with per-prayer offsets to match your mosque.
 
-Around the prayers, Mihrab is a calm companion for a Muslim’s day: the Quran, and the remembrance in between, with no ads and no account.
+Around the prayers, Mihrab is a calm companion for a Muslim’s day: the Quran, hadith, and the remembrance in between, with no ads and no account.
 
 PRAY
 - Today, the week and the month ahead — shareable as an image or a PDF
@@ -12,13 +12,12 @@ PRAY
 - Silence the phone for the prayer itself and let it come back on its own, with its own length for Jumu'ah
 - A pinned countdown to the next prayer on the lock screen and in the notification shade
 - Minimal: only the sky and the countdown on Today, and the day's times a swipe away
-- Hanafi or standard Asr, and a minute offset for each prayer
 - Qibla compass with signal strength and a cross-check against the sun
 - Log each prayer with one tap; the journal keeps the record, the streak and the graph
 - Home-screen widgets for the prayer times, today's log, the Hijri date, tasbih and reading
 
 READ AND LISTEN
-- The Madinah mushaf, drawn as text from the King Fahd Complex's page fonts and sharp at any size — Warsh, Qalun, Shu'bah and the 15-line IndoPak print beside it
+- The Madinah mushaf, sharp at any size — Warsh, Qalun, Shu'bah and the 15-line IndoPak print beside it
 - Tajweed colours, every rule explained — on Hafs and on Warsh
 - The word reader: hold a word to hear it read on its own
 - A choice of reciters, and for those with word timings, the recited word lit on the page
@@ -26,11 +25,13 @@ READ AND LISTEN
 - Translations and classical tafsir, kept for offline reading
 - Hifz: what you know by heart, revised on its own cycle; drills, bookmarks, khatmah plans
 
+HADITH
+- Sound hadith in your language with their explanation, Sahih al-Bukhari and Muslim, and a Library of whole books to read offline
+
 REMEMBER
 - Duas from Hisn al-Muslim, with transliteration and translation
 - A tasbih counter for the dhikr after prayer and beyond
 - A fasting log for Ramadan and the Sunnah fasts, with reminders
-- The Hijri calendar with Ramadan, Eid and Jumu'ah
 
 YOURS
 - No ads, no analytics, no trackers, no account
@@ -39,7 +40,7 @@ YOURS
 - Android, iPhone, iPad and Mac, with Arabic and Urdu fully right-to-left
 
 WHAT GOES OVER THE NETWORK
-Where your times come from decides what is sent. For Sweden, Diyanet’s places, Morocco, Algeria and Indonesia the times are calculated on the phone and no prayer-time request is made. Elsewhere, AlAdhan (api.aladhan.com) receives your coordinates and the date. Malaysia’s and Singapore’s tables come from Mihrab’s GitHub repository by city, with the authority’s service as backup; Türkiye Takvimi by a map tile around you, and namazvakti.com only a city’s number. With automatic location, your city’s name is looked up from your coordinates through OpenStreetMap Nominatim; place search sends what you type. The app checks Mihrab’s GitHub repositories for calculation, Hijri and hadith updates, and downloads Quran pages, translations, tafsir, recitation and hadith when you ask. Nothing is sent to the developer.
+Where your times come from decides what is sent. For Sweden, Diyanet’s places, Morocco, Algeria and Indonesia the times are calculated on the phone and no prayer-time request is made. Elsewhere, AlAdhan (api.aladhan.com) receives your coordinates and the date. Malaysia’s and Singapore’s tables come from Mihrab’s GitHub repository by city, with the authority’s service as backup; Türkiye Takvimi by a map tile around you, and namazvakti.com only a city’s number. With automatic location, your city’s name is looked up from your coordinates through OpenStreetMap Nominatim; place search sends what you type. The app checks Mihrab’s GitHub repositories for calculation, Hijri and hadith updates, and downloads Quran pages, translations, tafsir, recitation, hadith and books when you ask. Nothing is sent to the developer.
 
 Mihrab is independent. It is not affiliated with or endorsed by Diyanet, Islamiska Förbundet, the Moroccan or Algerian ministries, Kemenag, MUIS, JAKIM or Türkiye Takvimi: it matches their published timetables and does not speak for them. Open source under AGPL-3.0-or-later."
 "ar","Arabic","محراب: رفيق المسلم","مواقيت الصلاة والأذان والقرآن والأدعية والقبلة في تطبيق هادئ يحفظ خصوصيتك.","محراب رفيقٌ هادئ في يوم المسلم: الصلوات، والقرآن الكريم، والذكر فيما بينها، في تطبيق واحد يحفظ خصوصيتك.
@@ -65,6 +66,9 @@ Mihrab is independent. It is not affiliated with or endorsed by Diyanet, Islamis
 - 14 ترجمة وتفاسير كلاسيكية، محفوظة للقراءة دون اتصال
 - الحفظ: علِّم ما تحفظه، فيعود كل مقطع للتسميع — بعد يوم، ثم بعد 3 و7 و14 و30، ولا يتجاوز الحدّ الذي تختاره
 - تمارين للحفظ، وعلامات، وخطط ختمة
+
+الحديث
+- أحاديث صحيحة بلغتك مع شرحها، وصحيحا البخاري ومسلم، ومكتبة كتب كاملة تُقرأ دون اتصال
 
 اذكر
 - أكثر من 100 دعاء من حصن المسلم، مع النطق بالحروف اللاتينية والترجمة
@@ -109,6 +113,9 @@ Mihrab is independent. It is not affiliated with or endorsed by Diyanet, Islamis
 - হিফজ: যা মুখস্থ আছে তা চিহ্নিত করুন, প্রতিটি অংশ শোনানোর জন্য ফিরে আসে — একদিন পর, এরপর ৩, ৭, ১৪ ও ৩০ দিন, আপনার বেঁধে দেওয়া সীমার বেশি কখনও নয়
 - মুখস্থের অনুশীলন, বুকমার্ক ও খতমের পরিকল্পনা
 
+হাদিস
+- আপনার ভাষায় ব্যাখ্যাসহ সহিহ হাদিস, সহিহ বুখারি ও মুসলিম, আর অফলাইনে পড়ার জন্য পূর্ণাঙ্গ কিতাবের লাইব্রেরি
+
 জিকির
 - হিসনুল মুসলিম থেকে ১০০টিরও বেশি দোয়া, উচ্চারণ ও অনুবাদসহ
 - নামাজের পরের ও সবসময়ের জিকিরের জন্য তাসবিহ কাউন্টার
@@ -142,7 +149,7 @@ BETEN
 - Widgets für den Startbildschirm: Gebetszeiten in drei Größen, der heutige Eintrag, Hidschri-Datum, Serie, Tasbih und Lesen
 
 LESEN UND HÖREN
-- Der Madinah-Mushaf, als Text aus den Seitenschriften des König-Fahd-Komplexes gesetzt und in jeder Größe scharf – dazu Warsch, Qalun und Schu'ba
+- Der Madinah-Mushaf, in jeder Größe scharf – dazu Warsch, Qalun und Schu'ba
 - Der 15-zeilige IndoPak-Druck als zweite Art, Hafs zu lesen
 - Tadschwid-Farben, jede Regel erklärt – in Hafs und in Warsch
 - Der Wortleser: ein Wort gedrückt halten und es allein vorgelesen hören
@@ -151,11 +158,13 @@ LESEN UND HÖREN
 - 14 Übersetzungen und klassischer Tafsir, auch offline lesbar
 - Hifz: was Sie auswendig können, in eigenem Rhythmus
 
+HADITHE
+- Authentische Hadithe in deiner Sprache mit Erklärung, Sahih al-Buchari und Muslim, und eine Bibliothek ganzer Bücher zum Offline-Lesen
+
 GEDENKEN
 - Mehr als 100 Duas aus Hisn al-Muslim, mit Umschrift und Übersetzung
 - Ein Tasbih-Zähler für den Dhikr nach dem Gebet und darüber hinaus
 - Ein Fastenprotokoll für Ramadan und die Sunnah-Fasten, mit Erinnerungen
-- Der Hidschri-Kalender mit Ramadan, Eid und Dschumu'a, und ein Vers des Tages
 
 DEINS
 - Keine Werbung, keine Analyse, keine Tracker, kein Konto
@@ -175,7 +184,7 @@ Mihrab ist Open Source unter AGPL-3.0-or-later."
 REZAR
 - Horarios de hoy, la semana y el mes siguiente: coinciden al minuto impreso con los calendarios publicados por Diyanet, Islamiska Förbundet, los ministerios de Marruecos y Argelia y Kemenag, calculados en el teléfono; MUIS, JAKIM y Türkiye Takvimi tal como se publican; AlAdhan en el resto. Se comparten como imagen o PDF
 - Modo Mínimo: solo el cielo y la cuenta atrás, y los horarios del día a un deslizamiento
-- El adhan de cada oración, con diecisiete grabaciones o la tuya propia, un aviso previo y una posposición que solo ofrece lo que permite el tiempo de la oración, hasta una última oportunidad antes de que termine
+- El adhan de cada oración, con diecisiete grabaciones o la tuya propia, un aviso previo y una posposición que solo ofrece lo que permite el tiempo de la oración
 - Una alerta de oración a pantalla completa sobre la pantalla de bloqueo, como un despertador, con Detener, Posponer y Registrar oración
 - Silencia el teléfono durante la oración y deja que el sonido vuelva solo — No molestar desde el adhan o unos minutos antes, con su propia duración para el yumu'a
 - Una cuenta atrás fija hasta la próxima oración en la pantalla de bloqueo y en el panel de notificaciones, con tres diseños
@@ -184,7 +193,7 @@ REZAR
 - Widgets de la pantalla de inicio: horarios en tres tamaños, el registro de hoy, fecha de la Hégira, racha, tasbih y lectura
 
 LEER Y ESCUCHAR
-- El mushaf de Medina, trazado como texto con las fuentes de página del Complejo Rey Fahd, junto con Warsh, Qalun y Shu'bah
+- El mushaf de Medina, nítido a cualquier tamaño, junto con Warsh, Qalun y Shu'bah
 - La impresión IndoPak de 15 líneas, una segunda forma de leer Hafs
 - Colores de tajwid, con cada regla explicada, en Hafs y en Warsh
 - El lector de palabras: mantén pulsada una palabra para oírla sola
@@ -193,11 +202,13 @@ LEER Y ESCUCHAR
 - 14 traducciones y tafsir clásico, disponibles sin conexión
 - Hifz: lo que sabes de memoria, cada porción a su propio ritmo
 
+HADICES
+- Hadices auténticos en tu idioma con su explicación, Sahih al-Bujari y Muslim, y una biblioteca de libros completos para leer sin conexión
+
 RECORDAR
 - Más de 100 duas del Hisn al-Muslim, con transliteración y traducción
 - Un contador de tasbih para el dhikr después de la oración y más allá
 - Un registro de ayunos para Ramadán y los ayunos de la Sunna, con recordatorios
-- El calendario de la Hégira con Ramadán, Eid y Yumu'a, y una aleya del día
 
 TUYO
 - Sin anuncios, sin analíticas, sin rastreadores, sin cuenta
@@ -217,7 +228,7 @@ Mihrab es de código abierto con licencia AGPL-3.0-or-later."
 PRIER
 - Les heures du jour, de la semaine et du mois à venir — conformes à la minute imprimée aux horaires publiés par Diyanet, Islamiska Förbundet, les ministères du Maroc et de l’Algérie et Kemenag, calculées sur le téléphone ; MUIS, JAKIM et Türkiye Takvimi tels que publiés ; AlAdhan ailleurs — à partager en image ou en PDF
 - Mode Minimal : seulement le ciel et le compte à rebours, les horaires du jour à un balayage
-- L'adhan de chaque prière, avec dix-sept enregistrements ou le vôtre, un rappel avant et un report qui ne propose que ce que le temps de la prière permet encore, jusqu'à une dernière chance avant sa fin
+- L'adhan de chaque prière, avec dix-sept enregistrements ou le vôtre, un rappel avant et un report qui ne propose que ce que le temps de la prière permet encore
 - Une alerte de prière plein écran par-dessus l'écran verrouillé, comme un réveil, avec Arrêter, Répéter et Consigner la prière
 - Le téléphone en silence pour la prière elle-même, et le son qui revient tout seul — Ne pas déranger dès l'adhan ou quelques minutes avant, avec sa propre durée pour le joumou'a
 - Un compte à rebours épinglé jusqu'à la prochaine prière, sur l'écran de verrouillage et dans le volet des notifications, en trois designs
@@ -226,7 +237,7 @@ PRIER
 - Des widgets pour l'écran d'accueil : heures de prière en trois tailles, le journal du jour, la date hégirienne, la série, le tasbih et la lecture
 
 LIRE ET ÉCOUTER
-- Le mushaf de Médine, composé en texte à partir des polices de page du Complexe du Roi Fahd — avec Warsh, Qalun et Shu'bah
+- Le mushaf de Médine, net à toute taille — avec Warsh, Qalun et Shu'bah
 - L’impression IndoPak de 15 lignes, une seconde façon de lire Hafs
 - Les couleurs du tajwid, chaque règle expliquée — en Hafs et en Warsh
 - Le lecteur de mots : maintenez un mot pour l'entendre seul
@@ -235,11 +246,13 @@ LIRE ET ÉCOUTER
 - 14 traductions et des tafsirs classiques, lisibles hors ligne
 - Hifz : ce que vous savez par cœur, chaque portion à son rythme
 
+HADITHS
+- Des hadiths authentiques dans votre langue avec leur explication, Sahih al-Bukhari et Muslim, et une bibliothèque de livres entiers à lire hors ligne
+
 SE SOUVENIR
 - Plus de 100 douas du Hisn al-Muslim, avec translittération et traduction
 - Un compteur de tasbih pour le dhikr
 - Un suivi du jeûne pour le Ramadan et les jeûnes de la Sunna, avec rappels
-- Le calendrier hégirien avec le Ramadan, l'Aïd et le Joumou'a, et un verset du jour
 
 À VOUS
 - Pas de publicité, pas d'analyse, pas de traceurs, pas de compte
@@ -278,6 +291,9 @@ Mihrab est open source sous licence AGPL-3.0-or-later."
 - 14 अनुवाद और क्लासिकल तफ़सीर, ऑफ़लाइन भी
 - हिफ़्ज़ के औज़ार, बुकमार्क और ख़त्म की योजनाएँ जो आपके खुले पन्ने के साथ चलती हैं
 
+हदीस
+- आपकी भाषा में व्याख्या सहित सहीह हदीसें, सहीह बुख़ारी और मुस्लिम, और ऑफ़लाइन पढ़ने के लिए पूरी किताबों की लाइब्रेरी
+
 याद करें
 - हिस्नुल मुस्लिम से 100 से ज़्यादा दुआएँ, लिप्यंतरण और अनुवाद के साथ
 - नमाज़ के बाद और हर समय ज़िक्र के लिए तस्बीह काउंटर
@@ -311,7 +327,7 @@ SHOLAT
 - Widget layar utama: jadwal sholat dalam tiga ukuran, catatan hari ini, tanggal Hijriah, rangkaian, tasbih, dan bacaan
 
 MEMBACA DAN MENDENGAR
-- Mushaf Madinah, disusun sebagai teks dari fon halaman Kompleks Raja Fahd dan tajam di ukuran apa pun — beserta Warsy, Qalun, dan Syu'bah
+- Mushaf Madinah, tajam di ukuran apa pun — beserta Warsy, Qalun, dan Syu'bah
 - Mushaf IndoPak 15 baris, cara kedua membaca Hafs
 - Warna tajwid, setiap hukum dijelaskan — pada Hafs dan Warsy
 - Pembaca kata: tahan satu kata untuk mendengarnya dibaca sendiri
@@ -320,11 +336,13 @@ MEMBACA DAN MENDENGAR
 - 14 terjemahan dan tafsir klasik, bisa dibaca tanpa internet
 - Hifz: yang sudah Anda hafal, tiap bagian kembali pada siklusnya
 
+HADIS
+- Hadis sahih dalam bahasa Anda beserta penjelasannya, Sahih al-Bukhari dan Muslim, serta perpustakaan kitab utuh untuk dibaca luring
+
 MENGINGAT
 - Lebih dari 100 doa dari Hisnul Muslim, dengan transliterasi dan terjemahan
 - Penghitung tasbih untuk dzikir setelah sholat dan seterusnya
 - Catatan puasa untuk Ramadhan dan puasa sunnah, dengan pengingat
-- Kalender Hijriah dengan Ramadhan, Idul Fitri, Idul Adha, dan Jumat, serta ayat hari ini
 
 MILIK ANDA
 - Tanpa iklan, tanpa analitik, tanpa pelacak, tanpa akun
@@ -363,11 +381,13 @@ Mihrab bersumber terbuka dengan lisensi AGPL-3.0-or-later."
 - Хифз: выученное наизусть, каждая часть в своём цикле
 - Упражнения для заучивания, закладки и планы хатмы
 
+ХАДИСЫ
+- Достоверные хадисы на вашем языке с пояснением, «Сахих» аль-Бухари и Муслима и библиотека целых книг для чтения офлайн
+
 ПОМИНАНИЕ
 - Более 100 дуа из «Хисн аль-Муслим» с транскрипцией и переводом
 - Счётчик тасбиха для зикра после намаза и не только
 - Учёт поста в Рамадан и желательных постов (сунна) с напоминаниями
-- Календарь по хиджре с Рамаданом, праздниками и джумой, а также аят дня
 
 ТОЛЬКО ВАШЕ
 - Без рекламы, аналитики, трекеров и аккаунта
@@ -405,6 +425,9 @@ LÄS OCH LYSSNA
 - 14 översättningar och klassisk tafsir, sparade för läsning offline
 - Hifz: det du kan utantill, där varje del kommer tillbaka i sin egen takt
 - Memoreringsövningar, bokmärken och khatmah-planer
+
+HADITH
+- Autentiska hadither på ditt språk med förklaring, Sahih al-Bukhari och Muslim, och ett bibliotek med hela böcker att läsa offline
 
 MINNS
 - Över 100 duor ur Hisn al-Muslim, med translitterering och översättning
@@ -449,6 +472,9 @@ OKU VE DİNLE
 - Hifz: ezbere bildikleriniz, her bölüm kendi döngüsünde geri gelir
 - Ezber alıştırmaları, yer imleri ve hatim planları
 
+HADİS
+- Kendi dilinizde açıklamalı sahih hadisler, Sahîh-i Buhârî ve Müslim, ve çevrimdışı okunacak eksiksiz kitaplardan bir kütüphane
+
 ZİKİR
 - Hısnü'l-Müslim'den 100'den fazla dua, okunuşu ve mealiyle
 - Namaz sonrası ve her an için tesbih sayacı
@@ -492,6 +518,9 @@ Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır."
 - حفظ: جو یاد ہے اسے نشان زد کریں، ہر حصہ سنانے کے لیے لوٹ آتا ہے — ایک دن بعد، پھر 3، 7، 14 اور 30 دن، آپ کی مقرر کردہ حد سے کبھی زیادہ نہیں
 - حفظ کی مشقیں، بک مارکس اور ختم کے منصوبے
 
+حدیث
+- آپ کی زبان میں شرح کے ساتھ صحیح احادیث، صحیح بخاری و مسلم، اور آف لائن پڑھنے کے لیے مکمل کتابوں کی لائبریری
+
 ذکر
 - حصن المسلم سے 100 سے زیادہ دعائیں، تلفظ اور ترجمے کے ساتھ
 - نماز کے بعد اور ہر وقت کے ذکر کے لیے تسبیح کاؤنٹر
@@ -534,6 +563,9 @@ Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır."
 - 14 种译本与经典经注，可离线阅读
 - 背诵（Hifz）：标记你已背下的内容，每一段都会回来等你再背一次——第一天之后是第 3、7、14、30 天，绝不超过你设定的上限
 - 背诵练习、书签，以及跟随当前页面的通读（Khatmah）计划
+
+圣训
+- 以你的语言呈现并附讲解的可靠圣训，《布哈里圣训实录》与《穆斯林圣训实录》，以及可离线阅读的完整书籍文库
 
 记念
 - 来自《穆斯林堡垒》的 100 多条祈祷词，附音译与译文

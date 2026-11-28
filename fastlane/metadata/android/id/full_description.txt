@@ -12,7 +12,7 @@ SHOLAT
 - Widget layar utama: jadwal sholat dalam tiga ukuran, catatan hari ini, tanggal Hijriah, rangkaian, tasbih, dan bacaan
 
 MEMBACA DAN MENDENGAR
-- Mushaf Madinah, disusun sebagai teks dari fon halaman Kompleks Raja Fahd dan tajam di ukuran apa pun — beserta Warsy, Qalun, dan Syu'bah
+- Mushaf Madinah, tajam di ukuran apa pun — beserta Warsy, Qalun, dan Syu'bah
 - Mushaf IndoPak 15 baris, cara kedua membaca Hafs
 - Warna tajwid, setiap hukum dijelaskan — pada Hafs dan Warsy
 - Pembaca kata: tahan satu kata untuk mendengarnya dibaca sendiri
@@ -21,11 +21,13 @@ MEMBACA DAN MENDENGAR
 - 14 terjemahan dan tafsir klasik, bisa dibaca tanpa internet
 - Hifz: yang sudah Anda hafal, tiap bagian kembali pada siklusnya
 
+HADIS
+- Hadis sahih dalam bahasa Anda beserta penjelasannya, Sahih al-Bukhari dan Muslim, serta perpustakaan kitab utuh untuk dibaca luring
+
 MENGINGAT
 - Lebih dari 100 doa dari Hisnul Muslim, dengan transliterasi dan terjemahan
 - Penghitung tasbih untuk dzikir setelah sholat dan seterusnya
 - Catatan puasa untuk Ramadhan dan puasa sunnah, dengan pengingat
-- Kalender Hijriah dengan Ramadhan, Idul Fitri, Idul Adha, dan Jumat, serta ayat hari ini
 
 MILIK ANDA
 - Tanpa iklan, tanpa analitik, tanpa pelacak, tanpa akun

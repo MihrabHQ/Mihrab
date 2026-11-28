@@ -3,7 +3,7 @@ Mihrab es un compañero sereno para el día de un musulmán: las oraciones, el C
 REZAR
 - Horarios de hoy, la semana y el mes siguiente: coinciden al minuto impreso con los calendarios publicados por Diyanet, Islamiska Förbundet, los ministerios de Marruecos y Argelia y Kemenag, calculados en el teléfono; MUIS, JAKIM y Türkiye Takvimi tal como se publican; AlAdhan en el resto. Se comparten como imagen o PDF
 - Modo Mínimo: en «Hoy», solo el cielo y la cuenta atrás, y los horarios del día a un deslizamiento
-- El adhan de cada oración, con diecisiete grabaciones o la tuya propia, un aviso previo y una posposición que solo ofrece lo que permite el tiempo de la oración, hasta una última oportunidad antes de que termine
+- El adhan de cada oración, con diecisiete grabaciones o la tuya propia, un aviso previo y una posposición que solo ofrece lo que permite el tiempo de la oración
 - Una alerta de oración que suena como un despertador, incluso en silencio y con Concentración (iOS 26 y posteriores)
 - Una Actividad en Vivo con la cuenta atrás hasta la próxima oración, en la pantalla bloqueada y en la Dynamic Island
 - Brújula de la alquibla con intensidad de la señal y una comprobación con el sol
@@ -11,7 +11,7 @@ REZAR
 - Widgets de la pantalla de inicio: horarios en tres tamaños, el registro de hoy, fecha de la Hégira, racha, tasbih y lectura
 
 LEER Y ESCUCHAR
-- El mushaf de Medina, trazado como texto con las fuentes de página del Complejo Rey Fahd y nítido a cualquier tamaño, junto con Warsh, Qalun y Shu'bah
+- El mushaf de Medina, nítido a cualquier tamaño, junto con Warsh, Qalun y Shu'bah
 - La impresión IndoPak de 15 líneas, una segunda forma de leer Hafs
 - Colores de tajwid, con cada regla explicada, en Hafs y en Warsh
 - El lector de palabras: mantén pulsada una palabra para oírla sola
@@ -21,11 +21,13 @@ LEER Y ESCUCHAR
 - Hifz: marca lo que sabes de memoria y cada porción vuelve para recitarla — al día siguiente, luego a los 3, 7, 14 y 30, nunca más allá del límite que pongas
 - Ejercicios de memorización, marcadores y planes de jatma
 
+HADICES
+- Hadices auténticos en tu idioma con su explicación, Sahih al-Bujari y Muslim, y una biblioteca de libros completos para leer sin conexión
+
 RECORDAR
 - Más de 100 duas del Hisn al-Muslim, con transliteración y traducción
 - Un contador de tasbih para el dhikr después de la oración y más allá
 - Un registro de ayunos para Ramadán y los ayunos de la Sunna, con recordatorios
-- El calendario de la Hégira con Ramadán, Eid y Yumu'a, y una aleya del día
 
 TUYO
 - Sin anuncios, sin analíticas, sin rastreadores, sin cuenta

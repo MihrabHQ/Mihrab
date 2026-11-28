@@ -11,7 +11,7 @@ BETEN
 - Widgets für den Home-Bildschirm: Gebetszeiten in drei Größen, der heutige Eintrag, Hidschri-Datum, Serie, Tasbih und Lesen
 
 LESEN UND HÖREN
-- Der Madinah-Mushaf, als Text aus den Seitenschriften des König-Fahd-Komplexes gesetzt und in jeder Größe scharf – dazu Warsch, Qalun und Schu'ba
+- Der Madinah-Mushaf, in jeder Größe scharf – dazu Warsch, Qalun und Schu'ba
 - Der 15-zeilige IndoPak-Druck als zweite Art, Hafs zu lesen
 - Tadschwid-Farben, jede Regel erklärt – in Hafs und in Warsch
 - Der Wortleser: ein Wort gedrückt halten und es allein vorgelesen hören
@@ -21,11 +21,13 @@ LESEN UND HÖREN
 - Hifz: markieren Sie, was Sie auswendig können — jeder Abschnitt kommt wieder zum Aufsagen: nach einem Tag, dann nach 3, 7, 14 und 30, nie länger als die Grenze, die Sie setzen
 - Übungen zum Auswendiglernen, Lesezeichen und Khatma-Pläne
 
+HADITHE
+- Authentische Hadithe in deiner Sprache mit Erklärung, Sahih al-Buchari und Muslim, und eine Bibliothek ganzer Bücher zum Offline-Lesen
+
 GEDENKEN
 - Mehr als 100 Duas aus Hisn al-Muslim, mit Umschrift und Übersetzung
 - Ein Tasbih-Zähler für den Dhikr nach dem Gebet und darüber hinaus
 - Ein Fastenprotokoll für Ramadan und die Sunnah-Fasten, mit Erinnerungen
-- Der Hidschri-Kalender mit Ramadan, Eid und Dschumu'a, und ein Vers des Tages
 
 DEINS
 - Keine Werbung, keine Analyse, keine Tracker, kein Konto

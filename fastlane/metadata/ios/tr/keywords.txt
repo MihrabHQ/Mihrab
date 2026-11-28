@@ -1,1 +1,1 @@
-namaz,kuran,kıble,ezan,dua,zikir,tesbih,cami,ramazan,imsakiye,tecvid,mushaf,indopak,hicri
+namaz,kuran,kıble,ezan,dua,zikir,tesbih,cami,ramazan,imsakiye,tecvid,mushaf,indopak,hicri,hadis
