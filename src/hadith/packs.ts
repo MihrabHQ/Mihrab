@@ -59,6 +59,7 @@ import { fetchWithRetry } from '../utils/fetchWithRetry';
 import { quiet } from '../utils/quiet';
 import { ALL_BOOKS } from './bookGrades';
 import { buildFromOrigin } from './origin';
+import { libraryPdfOrigin, libraryPdfOriginEntry } from './libraryPdfOrigin';
 import { validPack, type Manifest, type ManifestEntry, type PackFile, type PackKey } from './packTypes';
 
 export type PackStatus =
@@ -196,6 +197,26 @@ function subscribe(l: () => void): () => void {
   listeners.add(l);
   void scanPacks();
   return () => listeners.delete(l);
+}
+
+/** Every change of any pack's status, outside React (the download manager's bar). */
+export function subscribePacks(l: () => void): () => void {
+  listeners.add(l);
+  return () => listeners.delete(l);
+}
+
+/**
+ * A pack that has been asked for and is waiting its turn in the download
+ * manager: shown as a download that has not moved yet, with its Cancel.
+ */
+export function markPackWaiting(key: PackKey): void {
+  const now = packStatus(key).state;
+  if (now === 'absent' || now === 'failed') setStatus(key, { state: 'downloading', progress: 0 });
+}
+
+/** …and one whose turn never came (cancelled, or the queue was emptied). */
+export function clearPackWaiting(key: PackKey): void {
+  if (!running.has(key) && packStatus(key).state === 'downloading') setStatus(key, { state: 'absent' });
 }
 const snapshot = () => statuses;
 
@@ -420,7 +441,13 @@ export function downloadPack(key: PackKey): Promise<boolean> {
     setStatus(key, { state: 'downloading', progress: 0 });
     try {
       let got = await fromMirror(key, job);
-      // A Library book is our copy or nothing: it is built from its source's markup, which the app does not read.
+      // A Library book that is text is our copy or nothing: it is built from its source's markup, which the
+      // app does not read. One that is a file has a pack of a few lines, and those are in the app
+      // (`libraryPdfOrigin.ts`): with them the file itself can be had from its publisher.
+      if (!got && !signal.cancelled && key.startsWith('library/')) {
+        const origin = libraryPdfOrigin(key.slice('library/'.length));
+        if (origin && validPack(key, origin.pack)) got = { file: origin.pack };
+      }
       if (!got && !signal.cancelled && !key.startsWith('library/')) {
         const file = await buildFromOrigin(
           key,
@@ -577,12 +604,14 @@ export function fetchManifest(fresh = false): Promise<Manifest | null> {
 
 /** What the manifest says of `key`, or null when it does not name it. */
 export function manifestEntry(m: Manifest | null, key: PackKey): ManifestEntry | null {
-  if (!m) return null;
   const [kind, a, b] = key.split('/');
+  // A Library book that is a file is known to the app itself (`libraryPdfOrigin.ts`): it can be offered,
+  // and weighed, when our copy's manifest cannot be reached.
+  if (kind === 'library') return m?.library?.[a] ?? libraryPdfOriginEntry(a);
+  if (!m) return null;
   if (kind === 'henc') return m.henc?.[a]?.langs?.[b] ?? null;
   if (kind === 'categories') return m.categories?.[a] ?? null;
   if (kind === 'nawawi') return m.nawawi ?? null;
-  if (kind === 'library') return m.library?.[a] ?? null;
   return m.books?.[a] ?? null;
 }
 

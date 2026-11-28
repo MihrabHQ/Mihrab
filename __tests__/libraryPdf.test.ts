@@ -102,9 +102,11 @@ describe('fetching the file', () => {
     for (const why of ['space', 'network', 'file']) expect(src.split(`'${why}'`).length).toBeGreaterThan(2);
   });
 
-  it('comes from our copy and from nowhere else', () => {
-    expect(src.match(/\.fetch\('GET'/g)).toHaveLength(1);
+  it('comes from our copy, and from its publisher only when ours cannot be had (hadithDownloadsThroughManager.test.ts)', () => {
+    // Two transfers onto the disk: ours, and the publisher's own file.
+    expect(src.match(/\.fetch\('GET'/g)).toHaveLength(2);
     expect(src).toContain("hadithMirrorUrl(libraryPdfAsset(id))");
+    expect(src).toContain(".fetch('GET', url);");
   });
 
   it('goes with its pack, from wherever the pack is removed', () => {

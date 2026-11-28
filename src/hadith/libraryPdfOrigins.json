@@ -1,0 +1,715 @@
+{
+ "arbainid": {
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id_forty_hadith_of_nawawi.pdf",
+  "pack": {
+   "id": "arbainid",
+   "title": "Hadis Arba’in Nawawiyah",
+   "author": "Imam an-Nawawi",
+   "died": "",
+   "lang": "id",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/id/books/1617"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 672389,
+    "sha256": "dd8a813240ddd05fa45e78f11c04435a2da4a390cae2bf63d001b11b53486143",
+    "pages": 119
+   }
+  }
+ },
+ "hisnulid": {
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/risala_id_hisnul_muslim.pdf",
+  "pack": {
+   "id": "hisnulid",
+   "title": "Hisnul Muslim",
+   "author": "Sa’id bin Ali al-Qahthani",
+   "died": "",
+   "lang": "id",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/id/books/2846946"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 2690987,
+    "sha256": "53b3762badc0402699927a57af516a6ec3972160ba00a4f27ddb70cb7b995e13",
+    "pages": 177
+   }
+  }
+ },
+ "juzammaid": {
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id_Tarjamah_Al_Fatihah_dan_Juz_Amma.pdf",
+  "pack": {
+   "id": "juzammaid",
+   "title": "Tarjamah Al-Fatihah dan Juz Amma",
+   "author": "Tim Indonesia IslamHouse",
+   "died": "",
+   "lang": "id",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/id/books/387336"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 496583,
+    "sha256": "955532b86b467c912f8c7a20c9f41505ea05216f21d0f2c8dc0b257931bbfc56",
+    "pages": 76
+   }
+  }
+ },
+ "sirahid": {
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/arc_id-2834049-id2-rasul-al-islam-indu-m-a-assuhaaim-p.pdf",
+  "pack": {
+   "id": "sirahid",
+   "title": "Ringkasan Sirah Nabi Muhammad",
+   "author": "Lembaga Layanan Konten Islami",
+   "died": "",
+   "lang": "id",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/id/books/2834049"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 2103390,
+    "sha256": "ecbcaf12a4f35b68619d1d443eb5c8d38f05b117598b4ec81342b163312ba1a4",
+    "pages": 32
+   }
+  }
+ },
+ "rukunimanid": {
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id_the_pillars_of_faith.pdf",
+  "pack": {
+   "id": "rukunimanid",
+   "title": "Rukun Iman",
+   "author": "Universitas Islam Madinah",
+   "died": "",
+   "lang": "id",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/id/books/76540"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 621577,
+    "sha256": "ce3fe599c72fcc79dd3ae08dafa4ca64b4611ceb3287578b08570a2d2a423c4a",
+    "pages": 163
+   }
+  }
+ },
+ "pelajaranid": {
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/risala_id-addurus_almuhimmah-2.pdf",
+  "pack": {
+   "id": "pelajaranid",
+   "title": "Pelajaran Penting bagi Setiap Muslim",
+   "author": "Abdul Aziz bin Baz",
+   "died": "",
+   "lang": "id",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/id/books/2842320"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 1682823,
+    "sha256": "2da0fe39c195f387fec8d909860e385f5a513eee565e5e39d9f810011367bbfc",
+    "pages": 37
+   }
+  }
+ },
+ "mualafid": {
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/arc1_id-indonis-amuf-lilmu-aljad-pp.pdf",
+  "pack": {
+   "id": "mualafid",
+   "title": "Panduan Ringkas untuk Mualaf",
+   "author": "Lembaga Layanan Konten Islami",
+   "died": "",
+   "lang": "id",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/id/books/2834047"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 2201368,
+    "sha256": "d492c9ee3c2ebead0f56a2a25f93ee845bc5a298922de1c1ce2590eb8f51b848",
+    "pages": 51
+   }
+  }
+ },
+ "thaharahid": {
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id_messages_in_purification_and_prayer.pdf",
+  "pack": {
+   "id": "thaharahid",
+   "title": "Tuntunan Thaharah dan Shalat",
+   "author": "Ibnu Utsaimin dan Ibnu Baz",
+   "died": "",
+   "lang": "id",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/id/books/70865"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 230271,
+    "sha256": "8c962020f059d79d2ddd02d830a16edf77abea9de333be603f6fb0bb5bd85791",
+    "pages": 47
+   }
+  }
+ },
+ "fiqihid": {
+  "url": "https://d1.islamhouse.com/data/id/ih_books/chain/Summary_of_the_Islamic_Fiqh_Tuwajre/id_summary_of_the_islamic_fiqh_tuwajre.pdf",
+  "pack": {
+   "id": "fiqihid",
+   "title": "Ringkasan Fiqih Islam",
+   "author": "Muhammad bin Ibrahim at-Tuwaijri",
+   "died": "",
+   "lang": "id",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/id/books/231660"
+   },
+   "asOf": "2026-11-28",
+   "chapters": [],
+   "pdf": {
+    "bytes": 6170298,
+    "sha256": "9cd3c6db212bff5f66dc8bf83b3a4488196f85c80999f6eed25cb80e8cd18d13",
+    "pages": 1176
+   }
+  }
+ },
+ "akhlakid": {
+  "url": "https://d1.islamhouse.com/data/id/ih_books/single/id-akhlaq.pdf",
+  "pack": {
+   "id": "akhlakid",
+   "title": "Akhlak Mulia",
+   "author": "Muhammad bin Shalih al-Utsaimin",
+   "died": "",
+   "lang": "id",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/id/books/2837179"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 161943,
+    "sha256": "2ab502a7922dc9eff1011b1b1f60e546dbeb4882d9853dae253f6fc2f602b672",
+    "pages": 11
+   }
+  }
+ },
+ "hisnulen": {
+  "url": "https://d1.islamhouse.com/data/en/ih_books/single/risala_en_hisnulmuslim.pdf",
+  "pack": {
+   "id": "hisnulen",
+   "title": "Hisn Al-Muslim (Fortress of the Muslim)",
+   "author": "Saeed Bin Ali Bin Wahf Al-Qahtani",
+   "died": "",
+   "lang": "en",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/en/books/2846907"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 2313562,
+    "sha256": "95faa5fb5df9f90b4c73cddc0637b915c50d2ff7581b111c5b6f5f01ae85ef8c",
+    "pages": 159
+   }
+  }
+ },
+ "durusen": {
+  "url": "https://d1.islamhouse.com/data/en/ih_books/single/risala_en-addurus_almuhimmah-2.1.pdf",
+  "pack": {
+   "id": "durusen",
+   "title": "Important Lessons for the General Ummah",
+   "author": "Abdul Aziz bin Abdullah bin Baz",
+   "died": "",
+   "lang": "en",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/en/books/2842316"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 1707051,
+    "sha256": "9dbb68b5f2af0c01d8a37b26471aa4cc0b59e091e6fa5645bf5f11dbdb9750ff",
+    "pages": 33
+   }
+  }
+ },
+ "hisnulsv": {
+  "url": "https://d1.islamhouse.com/data/sv/ih_books/single/sv-hisnul-muslim.pdf",
+  "pack": {
+   "id": "hisnulsv",
+   "title": "Hisnul Muslim",
+   "author": "Sa'id bin Ali al-Qahtani",
+   "died": "",
+   "lang": "sv",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/sv/books/2833377"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 4296066,
+    "sha256": "a73537d7ab43aa0ec574a6584d0b77349d3be52c9ef68c2bd67498d3779ceb66",
+    "pages": 217
+   }
+  }
+ },
+ "durussv": {
+  "url": "https://d1.islamhouse.com/data/sv/ih_books/single/risala_sv_addurusalmuhimmah.pdf",
+  "pack": {
+   "id": "durussv",
+   "title": "Viktiga lektioner för den muslimska gemenskapen",
+   "author": "Abdul Aziz bin Baz",
+   "died": "",
+   "lang": "sv",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/sv/books/2846166"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 1650031,
+    "sha256": "ec2884b0b07334c82303095816074d5778bd605319b6c33e085ce7ab136ee585",
+    "pages": 35
+   }
+  }
+ },
+ "hisnulbn": {
+  "url": "https://d1.islamhouse.com/data/bn/ih_books/single/risala_bn-hisnul_muslim.pdf",
+  "pack": {
+   "id": "hisnulbn",
+   "title": "কুরআন-সুন্নাহ’র যিকির সংবলিত হিসনুল মুসলিম [মুসলিমের দুর্গ]",
+   "author": "সা‘ঈদ ইবন আলী ইবন ওয়াহাফ আল-ক্বাহত্বানী",
+   "died": "",
+   "lang": "bn",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/bn/books/2842275"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 2552459,
+    "sha256": "58815ea2089007c95e0aa4ce87f4a8d0a20d4b4f96b8e51e9d58994f2b354743",
+    "pages": 208
+   }
+  }
+ },
+ "durusbn": {
+  "url": "https://d1.islamhouse.com/data/bn/ih_books/single/risala_bn-addurus_almuhimmah-2.1.pdf",
+  "pack": {
+   "id": "durusbn",
+   "title": "মুসলিম উম্মতের সর্বসাধারণের জন্য গুরুত্বপূর্ণ দার্সসমূহ",
+   "author": "আব্দুল আযীয ইবন আবদুল্লাহ ইবন বায",
+   "died": "",
+   "lang": "bn",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/bn/books/2842276"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 1097756,
+    "sha256": "da81e2829d654e5b51ef78ce488a3f68bfbbf27565e4081e6dba2eb7b2686911",
+    "pages": 42
+   }
+  }
+ },
+ "hisnulde": {
+  "url": "https://d1.islamhouse.com/data/de/ih_books/single/de_Hisnul_ElMuslim.pdf",
+  "pack": {
+   "id": "hisnulde",
+   "title": "Hisnul Muslim – Bittgebete aus dem Qur’an und der Sunnah",
+   "author": "Said ibn Ali ibn Uahf al-Qahtani",
+   "died": "",
+   "lang": "de",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/de/books/247027"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 1740531,
+    "sha256": "219e567119d67cddee64bde1d1f62d10c8268f40206de1a35a25207c3d508b8a",
+    "pages": 155
+   }
+  }
+ },
+ "durusde": {
+  "url": "https://d1.islamhouse.com/data/de/ih_books/single/risala_de-addurus_almuhimmah-2.pdf",
+  "pack": {
+   "id": "durusde",
+   "title": "Wichtige Lektionen für die allgemeine muslimische Gemeinschaft",
+   "author": "Abdulaziz ibn Abdullah ibn Baz",
+   "died": "",
+   "lang": "de",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/de/books/2846142"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 1261554,
+    "sha256": "266786bcd18a445a0ad76d5c069a4eec68e18ae0b0b1af99881ce3ee008f59bd",
+    "pages": 47
+   }
+  }
+ },
+ "hisnules": {
+  "url": "https://d1.islamhouse.com/data/es/ih_books/single/risala_es_hisnul_muslim.pdf",
+  "pack": {
+   "id": "hisnules",
+   "title": "La fortaleza del musulmán: súplicas del Corán y la Sunnah",
+   "author": "Said ibn Ali ibn Wahb Al-Qahtani",
+   "died": "",
+   "lang": "es",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/es/books/2846934"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 2569465,
+    "sha256": "a24562787beebfd34f38e69425771578f4a4d6e25f174b70f3d7f04816287f21",
+    "pages": 159
+   }
+  }
+ },
+ "duruses": {
+  "url": "https://d1.islamhouse.com/data/es/ih_books/single/risala_es_addurus_almuhimmah_v2_1_1.pdf",
+  "pack": {
+   "id": "duruses",
+   "title": "Lecciones importantes para la comunidad en general",
+   "author": "Abdul Aziz ibn Abdullah ibn Baaz",
+   "died": "",
+   "lang": "es",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/es/books/2844258"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 3362928,
+    "sha256": "7b87034bbb9e6374fb314dcacb8e79b35a729941bf933928281a9c23f9383cff",
+    "pages": 33
+   }
+  }
+ },
+ "hisnulfr": {
+  "url": "https://d1.islamhouse.com/data/fr/ih_books/single/risala_fr_hisnul_muslim.pdf",
+  "pack": {
+   "id": "hisnulfr",
+   "title": "La Citadelle du Musulman",
+   "author": "Said Ibn Ali Ibn Wahf Al-Qahtany",
+   "died": "",
+   "lang": "fr",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/fr/books/2846930"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 4944452,
+    "sha256": "91b8f6a26059e32328b9a9dc96d2179242fb6fac40a1409e1f1bef766bbb2d97",
+    "pages": 197
+   }
+  }
+ },
+ "durusfr": {
+  "url": "https://d1.islamhouse.com/data/fr/ih_books/single/risala_fr-addurus_almuhimmah-2.pdf",
+  "pack": {
+   "id": "durusfr",
+   "title": "Les leçons importantes pour toute la communauté",
+   "author": "Abdulaziz Ibn Abdillah Ibn Baz",
+   "died": "",
+   "lang": "fr",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/fr/books/2842292"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 1422723,
+    "sha256": "ad72d379e4eb6c2cb5ab0638e631e1736c388cab5ec44eec166ad3b1f25171d6",
+    "pages": 36
+   }
+  }
+ },
+ "hisnulhi": {
+  "url": "https://d1.islamhouse.com/data/hi/ih_books/single/risala_hi-hisnul_muslim-5.pdf",
+  "pack": {
+   "id": "hisnulhi",
+   "title": "हिस्नुल्-मुस्लिम (कुरान एवं हदीस की दुआएं)",
+   "author": "सईद बिन अली बिन वहफ अल-क़हतानी",
+   "died": "",
+   "lang": "hi",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/hi/books/2842335"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 2596276,
+    "sha256": "2568d4a9976191e3f80ba334dbd55664ab7774b60095fe0f9d1a1d3e385972f0",
+    "pages": 173
+   }
+  }
+ },
+ "durushi": {
+  "url": "https://d1.islamhouse.com/data/hi/ih_books/single/risala_hi-addurus_almuhimmah-2.1.pdf",
+  "pack": {
+   "id": "durushi",
+   "title": "महत्वपूर्ण पाठ उम्मत के सामान्य लोगों के लिए",
+   "author": "अब्दुल अज़ीज़ बिन अब्दुल्लाह बिन बाज़",
+   "died": "",
+   "lang": "hi",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/hi/books/2842264"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 1414727,
+    "sha256": "5f5e5f78587fa28d0a46451b3b0fa734cf810bcc6bc4cf8e363e1328d6e532b3",
+    "pages": 31
+   }
+  }
+ },
+ "hisnulru": {
+  "url": "https://d1.islamhouse.com/data/ru/ih_books/single/risala_ru-hisnul_muslim.pdf",
+  "pack": {
+   "id": "hisnulru",
+   "title": "Крепость мусульманина",
+   "author": "Саид ибн Али ибн Вахб",
+   "died": "",
+   "lang": "ru",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/ru/books/2846938"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 1988105,
+    "sha256": "f828e468d3eeeb2aad84d4030a3aed698b6b95ca11da63076383da8b39e4db86",
+    "pages": 176
+   }
+  }
+ },
+ "durusru": {
+  "url": "https://d1.islamhouse.com/data/ru/ih_books/single/risala_ru-addurus_almuhimmah-2.1.pdf",
+  "pack": {
+   "id": "durusru",
+   "title": "Важные уроки для всей уммы",
+   "author": "Абдульазиз ибн Абдулла ибн Баз",
+   "died": "",
+   "lang": "ru",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/ru/books/2842296"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 4970128,
+    "sha256": "066894628234842e6cefd01703305cee970dd052339cf0237c7bb9556909b3a9",
+    "pages": 45
+   }
+  }
+ },
+ "hisnultr": {
+  "url": "https://d1.islamhouse.com/data/tr/ih_books/single/risala_tr-hisnul_muslim.pdf",
+  "pack": {
+   "id": "hisnultr",
+   "title": "Hisnu'l-Muslim",
+   "author": "Said b. Ali el-Kahtani",
+   "died": "",
+   "lang": "tr",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/tr/books/2846936"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 2115880,
+    "sha256": "fad373baed84c7290176748a06f7263037b1b70f64f9543b3e85835a656264b6",
+    "pages": 159
+   }
+  }
+ },
+ "hisnulur": {
+  "url": "https://d1.islamhouse.com/data/ur/ih_books/single/risala_ur_hisnul_muslim.pdf",
+  "pack": {
+   "id": "hisnulur",
+   "title": "حِصن المسلم کتاب وسنت کے منتخب اذکار",
+   "author": "سعيد بن علي بن وهف قحطاني",
+   "died": "",
+   "lang": "ur",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/ur/books/2846918"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 10671671,
+    "sha256": "f6ca83279623caf07ffe9e7f329e6ca73ff456578229ba260775713e522dccfc",
+    "pages": 155
+   }
+  }
+ },
+ "durusur": {
+  "url": "https://d1.islamhouse.com/data/ur/ih_books/single/risala_ur-addurus_almuhimmah-2.1.pdf",
+  "pack": {
+   "id": "durusur",
+   "title": "اہم اسباق عام مسلمانوں کے لیے",
+   "author": "عبد العزيز بن عبد الله بن باز",
+   "died": "",
+   "lang": "ur",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/ur/books/2842284"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 8356983,
+    "sha256": "e15caefd9e6159d1afe146bc9c13f10483f975811835c4abb400bcb924526963",
+    "pages": 46
+   }
+  }
+ },
+ "hisnulzh": {
+  "url": "https://d1.islamhouse.com/data/zh/ih_books/single/risala_zh-hisnul_muslim.pdf",
+  "pack": {
+   "id": "hisnulzh",
+   "title": "《穆斯林的堡垒》——源自 《古兰经》和圣训的记主词",
+   "author": "塞义德•格哈塔尼 博士",
+   "died": "",
+   "lang": "zh",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/zh/books/2846954"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 6358492,
+    "sha256": "f796b999e392db07405c1edf5c830d51e9140830324a92588ee0fe642c90f026",
+    "pages": 190
+   }
+  }
+ },
+ "duruszh": {
+  "url": "https://d1.islamhouse.com/data/zh/ih_books/single/risala_zh_addurus_muhimah_2.pdf",
+  "pack": {
+   "id": "duruszh",
+   "title": "大众必修课",
+   "author": "阿布杜阿齐兹·本·巴兹",
+   "died": "",
+   "lang": "zh",
+   "source": {
+    "name": "IslamHouse.com",
+    "license": "Republished unaltered, with its author and source named, as IslamHouse permits",
+    "licenseUrl": "https://islamhouse.com",
+    "url": "https://islamhouse.com/zh/books/2846273"
+   },
+   "asOf": "2026-11-27",
+   "chapters": [],
+   "pdf": {
+    "bytes": 1212231,
+    "sha256": "d1668b9a18d90fd60e1d1c9f266ee628d102ba860e20d438278a2403eb1548ec",
+    "pages": 32
+   }
+  }
+ }
+}

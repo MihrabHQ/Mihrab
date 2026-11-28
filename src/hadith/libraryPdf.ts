@@ -23,6 +23,7 @@ import { IS_WEB_APP } from '../config/webApp';
 import { mkdirDeep } from '../quran/mushafDownload';
 import { quiet } from '../utils/quiet';
 import { hadithMirrorUrl, refreshPacks } from './packs';
+import { libraryPdfOrigin } from './libraryPdfOrigin';
 
 /** What the manifest says of a book's file. */
 export type LibraryPdfEntry = { bytes: number; sha256: string; pages: number };
@@ -73,6 +74,38 @@ const subscribe = (l: () => void) => {
   return () => listeners.delete(l);
 };
 const snapshot = () => statuses;
+
+/** Every change of any file's status, outside React (the download manager's bar). */
+export const subscribeLibraryPdf = subscribe;
+
+/** A file asked for and waiting its turn in the download manager: a download that has not moved yet. */
+export function markLibraryPdfWaiting(id: string): void {
+  const now = libraryPdfStatus(id).state;
+  if (now === 'absent' || now === 'failed') set(id, { state: 'downloading', progress: 0 });
+}
+
+/** …and one whose turn never came. */
+export function clearLibraryPdfWaiting(id: string): void {
+  if (!running.has(id) && libraryPdfStatus(id).state === 'downloading') set(id, ABSENT);
+}
+
+/** The publisher's own file, straight onto the disk. The status it answered with; 0 when it did not. */
+async function fromPublisher(url: string, tmp: string, job: { cancelled: boolean; abort?: () => void }, onProgress: (received: number) => void): Promise<number> {
+  await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
+  const task = ReactNativeBlobUtil.config({ path: tmp, overwrite: true, timeout: 300_000 }).fetch('GET', url);
+  job.abort = () => {
+    void task.cancel?.();
+  };
+  task.progress?.({ interval: 250 }, received => onProgress(Number(received)));
+  try {
+    return (await task).info().status;
+  } catch (e) {
+    quiet('hadith/libraryPdf', e);
+    return 0;
+  } finally {
+    job.abort = undefined;
+  }
+}
 
 export function useLibraryPdfStatus(id: string): LibraryPdfStatus {
   return useSyncExternalStore(subscribe, snapshot, snapshot)[id] ?? ABSENT;
@@ -220,6 +253,27 @@ export async function downloadLibraryPdf(id: string, want: LibraryPdfEntry): Pro
         await ReactNativeBlobUtil.fs.unlink(whole).catch(() => undefined);
       }
     }
+    // ── OUR COPY COULD NOT BE HAD: THE PUBLISHER'S OWN ──────────────────
+    //
+    // The same file, from where our copy was read (`libraryPdfOrigin.ts`).
+    // It goes to a file of its own, so a part of our copy stays to go on
+    // from; and it is the book only if it is the size and the SHA-256
+    // below — the publisher replacing its file is "not the book", not a
+    // different book quietly accepted.
+    const origin = status !== 200 && !job.cancelled ? libraryPdfOrigin(id) : null;
+    if (origin) {
+      const other = `${tmp}.o`;
+      const got = await fromPublisher(origin.url, other, job, received => {
+        if (!job.cancelled) set(id, { state: 'downloading', progress: Math.min(1, received / want.bytes) });
+      });
+      if (!job.cancelled && got === 200 && (await sizeOf(other)) === want.bytes) {
+        await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
+        await ReactNativeBlobUtil.fs.mv(other, tmp);
+        status = 200;
+      } else {
+        await ReactNativeBlobUtil.fs.unlink(other).catch(() => undefined);
+      }
+    }
     if (job.cancelled) {
       set(id, ABSENT);
       return false;
@@ -270,6 +324,7 @@ export async function deleteLibraryPdf(id: string): Promise<void> {
   await ReactNativeBlobUtil.fs.unlink(libraryPdfPath(id)).catch(() => undefined);
   // …and a part of it kept from a try that did not finish.
   await ReactNativeBlobUtil.fs.unlink(`${libraryPdfPath(id)}.dl`).catch(() => undefined);
+  await ReactNativeBlobUtil.fs.unlink(`${libraryPdfPath(id)}.dl.o`).catch(() => undefined);
   set(id, ABSENT);
 }
 

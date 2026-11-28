@@ -44,11 +44,12 @@ import {
   offeredLibraryBooks,
   type LibraryReading,
 } from '../../hadith/libraryShelf';
-import { downloadPack, loadPack, manifestBytes, manifestEntry, usePackStatuses } from '../../hadith/packs';
+import { loadPack, manifestBytes, manifestEntry, usePackStatuses } from '../../hadith/packs';
+import { downloadLibraryPdf, downloadPack } from '../../hadith/hadithDownloads';
 import type { LibraryFile } from '../../hadith/packTypes';
 import { hadithReportIssueUrl, hadithReportMailUrl } from '../../hadith/report';
 import { getInstalledAppVersionLabel } from '../../appVersion';
-import { checkLibraryPdf, downloadLibraryPdf, useLibraryPdfStatuses, validLibraryPdf } from '../../hadith/libraryPdf';
+import { checkLibraryPdf, useLibraryPdfStatuses, validLibraryPdf } from '../../hadith/libraryPdf';
 import type { RootStackParamList } from '../../navigation/types';
 import { TextAction, formatBytes } from '../../quran/downloadsUi';
 import { RADIUS, SPACING } from '../../theme/tokens';

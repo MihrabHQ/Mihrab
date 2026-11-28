@@ -133,7 +133,8 @@ describe('a pack', () => {
   it('is our copy or nothing: the app does not read a source’s markup', () => {
     const packs = read('src/hadith/packs.ts');
     expect(packs).toContain("if (!got && !signal.cancelled && !key.startsWith('library/')) {");
-    expect(packs).toContain("if (kind === 'library') return m.library?.[a] ?? null;");
+    // …and a book that is a file is the one exception: its few lines of pack are in the app.
+    expect(packs).toContain("if (kind === 'library') return m?.library?.[a] ?? libraryPdfOriginEntry(a);");
   });
 });
 

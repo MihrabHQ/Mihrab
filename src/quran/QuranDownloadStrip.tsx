@@ -34,6 +34,7 @@ import {
   dismissResumableJob,
   hideQuranDownloadStrip,
   fontSetOf,
+  jobDisplayName,
   jobSurahName,
   riwayahLabel,
   quranDownloadState,
@@ -156,6 +157,12 @@ export function QuranDownloadStripView({
             defaultValue: 'Downloading {{name}}',
             name: riwayahLabel(job.riwayahId),
           })
+      : job.kind === 'hadith'
+        ? t('quran.tafsirDownloadStrip', {
+            defaultValue: 'Downloading {{name}} · {{pct}}%',
+            name: jobDisplayName(job),
+            pct,
+          })
       : job.kind === 'audio'
         ? t('quran.reciterDownloadStrip', {
             defaultValue: 'Downloading {{name}} · {{pct}}%',
@@ -260,6 +267,8 @@ function StoppedStrip({
         ? t('downloads.wordMeanings', 'Arabic word meanings')
       : job.kind === 'riwayah'
         ? riwayahLabel(job.riwayahId)
+      : job.kind === 'hadith'
+        ? jobDisplayName(job)
         : job.kind === 'audio'
           ? findReciter(job.reciterId).name
           : jobSurahName(job.surah);

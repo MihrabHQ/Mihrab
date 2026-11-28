@@ -78,6 +78,14 @@ import {
   TRANSLATION_SURAHS,
 } from './translations';
 import { findSurah } from './quran';
+import {
+  beginHadithJob,
+  hadithJobDone,
+  hadithJobName,
+  sameHadithJob,
+  validHadithJob,
+  type HadithJob,
+} from '../hadith/hadithJob';
 import { surahName } from './surahName';
 import {
   finishDownloadNotification,
@@ -122,6 +130,13 @@ export type QuranDownloadJob =
    * one-button download (this repo's mirror, then the publisher).
    */
   | { kind: 'riwayah'; riwayahId: RiwayahId; url?: string }
+  /**
+   * A Hadith pack, or a Library book's file (`hadith/hadithJob.ts`). Not
+   * the Qur'an's, and here all the same: there is one download manager,
+   * and a download that ran beside it had no notification, no service
+   * keeping the app alive for it, and no turn to wait.
+   */
+  | HadithJob
   | {
       kind: 'surah';
       reciterId: string;
@@ -219,6 +234,9 @@ export function isJobRunning(job: QuranDownloadJob): boolean {
   }
   if (running.kind === 'riwayah' && job.kind === 'riwayah') {
     return running.riwayahId === job.riwayahId;
+  }
+  if (running.kind === 'hadith' && job.kind === 'hadith') {
+    return sameHadithJob(running, job);
   }
   if (running.kind === 'surah' && job.kind === 'surah') {
     // Identity is the voice and the surah. NOT the refs: the caller
@@ -370,6 +388,21 @@ function notificationText(job: QuranDownloadJob) {
         i18n.t('quran.downloadStoppedBodySurahs', { done, total }),
     };
   }
+  if (job.kind === 'hadith') {
+    // One file, counted in hundredths. The words are the riwayah's — a
+    // name, and what happened to it — which say nothing of a muṣḥaf.
+    const name = hadithJobName(job);
+    return {
+      label: i18n.t('quran.riwayahDownloading', { name }),
+      body: (done: number) => `${done}%`,
+      doneTitle: i18n.t('quran.riwayahDoneTitle', { name }),
+      doneBody: name,
+      incompleteTitle: i18n.t('quran.riwayahFailedTitle', { name }),
+      incompleteBody: () => i18n.t('quran.riwayahFailedBody'),
+      stoppedTitle: i18n.t('quran.downloadStoppedTitle'),
+      stoppedBody: () => i18n.t('quran.riwayahStoppedBody'),
+    };
+  }
   if (job.kind === 'riwayah') {
     const name = riwayahLabel(job.riwayahId);
     return {
@@ -436,6 +469,8 @@ export function jobDisplayName(job: QuranDownloadJob): string {
       return i18n.t('downloads.wordMeanings', 'Arabic word meanings');
     case 'riwayah':
       return riwayahLabel(job.riwayahId);
+    case 'hadith':
+      return hadithJobName(job);
     case 'fonts':
       return fontSetOf(job) === 'v2'
         ? i18n.t('downloads.mushaf', 'Mushaf pages')
@@ -492,6 +527,7 @@ function begin(
   if (job.kind === 'audio') {
     return downloadReciterAudio(job.reciterId, onProgress);
   }
+  if (job.kind === 'hadith') return beginHadithJob(job, onProgress);
   if (job.kind === 'wordMeanings') return downloadWordMeanings({ onProgress });
   if (job.kind === 'tafsir') return downloadTafsirEdition(job.editionId, { onProgress });
   if (job.kind === 'translation') {
@@ -556,6 +592,7 @@ function initialProgress(job: QuranDownloadJob): MushafDownloadProgress {
   if (job.kind === 'tafsir') return { done: 0, total: TAFSIR_SURAHS, failed: 0 };
   if (job.kind === 'translation') return { done: 0, total: TRANSLATION_SURAHS, failed: 0 };
   if (job.kind === 'riwayah') return { done: 0, total: 1, failed: 0 };
+  if (job.kind === 'hadith') return { done: 0, total: 100, failed: 0 };
   return EMPTY_PROGRESS;
 }
 
@@ -667,6 +704,7 @@ function sameJob(a: QuranDownloadJob, b: QuranDownloadJob): boolean {
   if (a.kind === 'tafsir' && b.kind === 'tafsir') return a.editionId === b.editionId;
   if (a.kind === 'translation' && b.kind === 'translation') return a.editionId === b.editionId;
   if (a.kind === 'riwayah' && b.kind === 'riwayah') return a.riwayahId === b.riwayahId;
+  if (a.kind === 'hadith' && b.kind === 'hadith') return sameHadithJob(a, b);
   if (a.kind === 'surah' && b.kind === 'surah') {
     return a.reciterId === b.reciterId && a.surah === b.surah;
   }
@@ -866,7 +904,13 @@ function finishRun(run: Run, outcome: DownloadOutcome): void {
   // A stopped download stops the ones behind it too: cancelled by hand,
   // or by the connection going — the next one would only stall the same
   // way, and its "stopped" would bury this one's.
-  if (cancelledByUser || interrupted) queued = [];
+  if (cancelledByUser || interrupted) {
+    const dropped = queued.length > 0;
+    queued = [];
+    // Said, so whoever was waiting on one of them hears that its turn is not coming (a Hadith download's
+    // promise — `hadith/hadithDownloads.ts` — would otherwise wait for ever).
+    if (dropped) publish({ ...state });
+  }
   void finishDownloadNotification({
     complete,
     cancelled: cancelledByUser,
@@ -946,6 +990,7 @@ function validJob(value: unknown): QuranDownloadJob | null {
       : { kind: 'fonts' };
   }
   if (job.kind === 'wordMeanings') return { kind: 'wordMeanings' };
+  if (job.kind === 'hadith') return validHadithJob(job);
   if (job.kind === 'riwayah') {
     const def = RIWAYAT.find(r => r.id === job.riwayahId);
     if (!def || def.id === 'hafs') return null;
@@ -1015,6 +1060,11 @@ export async function hydrateResumableJob(): Promise<QuranDownloadJob | null> {
       return null;
     }
     if (job.kind === 'riwayah' && riwayahProvenance(job.riwayahId)) {
+      await forgetPendingJob();
+      return null;
+    }
+    // Here already: the run ended and the process went before it could say so.
+    if (job.kind === 'hadith' && (await hadithJobDone(job))) {
       await forgetPendingJob();
       return null;
     }

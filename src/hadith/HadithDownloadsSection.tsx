@@ -13,8 +13,10 @@ import { SettingsGroup } from '../screens/settings/SettingsGroup';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { DownloadRow, TextAction } from '../quran/downloadsUi';
 import { WHOLE_PACK, findHadithLanguage } from './catalog';
-import { cancelPack, deletePack, downloadPack, usePackStatuses, type PackStatus } from './packs';
+import { deletePack, usePackStatuses, type PackStatus } from './packs';
+import { cancelPack, downloadPack } from './hadithDownloads';
 import type { PackKey } from './packTypes';
+import LIBRARY_BOOKS from './libraryBooks.json';
 
 /** A pack's language in its own words: the app's name for one of its thirteen, HadeethEnc's for the rest. */
 const packLanguageLabel = (code: string) => (languageLabel(code) !== code ? languageLabel(code) : findHadithLanguage(code)?.native ?? code);
@@ -35,6 +37,8 @@ export function packLabel(key: string, t: TFunction): string {
   }
   if (kind === 'categories') return `${t('hadith.packCategories')} · ${packLanguageLabel(a)}`;
   if (kind === 'nawawi') return t('hadith.packNawawi');
+  // A Library book by its own title: there is no `hadith.book.<id>` for it, and the row read as the key.
+  if (kind === 'library') return (LIBRARY_BOOKS as Array<{ id: string; title: string }>).find(x => x.id === a)?.title ?? t('hadith.library.tab');
   return t(`hadith.book.${a}`);
 }
 
