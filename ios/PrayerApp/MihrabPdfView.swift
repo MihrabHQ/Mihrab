@@ -131,6 +131,7 @@ class MihrabPdfReaderView: UIView {
       limits()
       if fitted { pdf.scaleFactor = pdf.scaleFactorForSizeToFit }
       report()
+      if waitingZoom > 0 { zoom(waitingZoom) }
     }
   }
 
@@ -168,6 +169,7 @@ class MihrabPdfReaderView: UIView {
       if at > 0 { self.go(at) }
       self.arriving = false
       self.report()
+      if self.waitingZoom > 0 { self.zoom(self.waitingZoom) }
     }
   }
 
@@ -178,10 +180,20 @@ class MihrabPdfReaderView: UIView {
     pdf.go(to: PDFDestination(page: p, at: CGPoint(x: box.minX, y: box.maxY)))
   }
 
+  /// A zoom asked for before the pages had a size (the zoom a book was left at, asked for as it opens).
+  private var waitingZoom: CGFloat = 0
+
   private func zoom(_ step: CGFloat) {
     let fit = pdf.scaleFactorForSizeToFit
-    guard fit > 0, pdf.document != nil else { return }
+    guard fit > 0, pdf.document != nil else {
+      waitingZoom = step
+      return
+    }
+    waitingZoom = 0
     limits()
+    // The view fits the page to its width for as long as it is left to; a zoom it is told to take has to
+    // take that from it, or the next layout fits the page again (the button did nothing, seen in a simulator).
+    pdf.autoScales = step <= 1.01
     // What is in the middle of the view stays there.
     let middle = CGPoint(x: pdf.bounds.midX, y: pdf.bounds.midY)
     let page = pdf.page(for: middle, nearest: true)
@@ -227,17 +239,23 @@ class MihrabPdfReaderView: UIView {
   /// The colour of the paper: the view's own picture, blended on its way to the glass. The file is not touched.
   private func applyTone() {
     switch tone as String {
+    // Between the pages too: the blend falls on the whole view, so what is behind the pages is given the
+    // colour that blends to the paper's own ground (white under the difference is black; under the multiply,
+    // the warm paper), not left as the app's.
     case "night":
       tint.backgroundColor = UIColor(white: 0.92, alpha: 1)
       tint.layer.compositingFilter = "differenceBlendMode"
       tint.isHidden = false
+      pdf.backgroundColor = UIColor(white: 0.92, alpha: 1)
     case "sepia":
       tint.backgroundColor = UIColor(red: 1, green: 0.95, blue: 0.82, alpha: 1)
       tint.layer.compositingFilter = "multiplyBlendMode"
       tint.isHidden = false
+      pdf.backgroundColor = UIColor(white: 0.93, alpha: 1)
     default:
       tint.layer.compositingFilter = nil
       tint.isHidden = true
+      pdf.backgroundColor = .clear
     }
   }
 

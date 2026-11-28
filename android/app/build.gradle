@@ -449,6 +449,10 @@ tasks.register('checkFdroidLibraries') {
                 lenient(true)
             }
             view.artifacts.each { a ->
+                // Libraries fetched from a repository only. The modules built with the app (React Native's and
+                // ours) are compiled at whatever SDK the build is given and say that of themselves — 37 here,
+                // 36 at F-Droid — so asking them stopped every ordinary build (the first day of this check).
+                if (!(a.id.componentIdentifier instanceof org.gradle.api.artifacts.component.ModuleComponentIdentifier)) return
                 def props = new Properties()
                 a.file.withInputStream { props.load(it) }
                 int sdk = (props.getProperty('minCompileSdk') ?: '1') as int

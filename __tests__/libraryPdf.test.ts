@@ -250,7 +250,14 @@ describe('the reader', () => {
     // The paper is tinted on its way to the glass: the file is not touched and nothing is drawn again.
     expect(view).toContain('pdf.setLayerType(LAYER_TYPE_HARDWARE, Paint().apply { colorFilter = ColorMatrixColorFilter(matrix) })');
     expect(page).toContain('tone={tone}');
-    expect(page).toContain("if (kept.current > 1.04) setZoomAsk(was => ({ step: kept.current, key: (was?.key ?? 0) + 1 }));");
+    // The kept zoom is taken once the file is open AND what was kept is read, whichever is first; and a zoom
+    // asked for before the first page is drawn waits for it (both lost the zoom: a book reopened at 100%).
+    expect(page).toContain('if (opened && keptZoom != null && keptZoom > 1.04) setZoomAsk(was => ({ step: keptZoom, key: (was?.key ?? 0) + 1 }));');
+    expect(view).toContain('waitingZoom = step');
+    expect(view).toContain('if (asked > 0.0 && baseZoom > 0f) applyZoom(asked)');
+    // Between the pages is the paper's colour, not the app's.
+    expect(page).toContain("tone === 'paper' || Platform.OS !== 'android' ? null : { backgroundColor: TONE_GROUND[tone] }");
+    expect(read('ios/PrayerApp/MihrabPdfView.swift')).toContain('pdf.backgroundColor = UIColor(white: 0.92, alpha: 1)');
     expect(page).toContain("t('hadith.library.pdf.pageColour')");
   });
 
@@ -277,6 +284,9 @@ describe('the reader', () => {
     expect(/https?:\/\/|URLSession/.test(swift)).toBe(false);
     // A page as wide as the view is the least zoom and four times it the most, as on Android.
     expect(swift).toContain('pdf.maxScaleFactor = fit * 4');
+    // A zoom it is told to take is taken from the view's own fitting, and waits for the pages to have a size.
+    expect(swift).toContain('pdf.autoScales = step <= 1.01');
+    expect(swift).toContain('if waitingZoom > 0 { zoom(waitingZoom) }');
     // A file it cannot open is said, and the list of pages reads it instead.
     expect(swift).toContain('onPdfError?(["message": "the file would not open"])');
   });

@@ -100,6 +100,9 @@ class MihrabPdfReaderView(private val reactContext: ThemedReactContext) : FrameL
             if (pdf.zoom > 0f) baseZoom = pdf.zoom
             saidZoom = -1
             report(pdf.firstVisiblePage, pdf.zoom)
+            val asked = waitingZoom
+            waitingZoom = 0.0
+            if (asked > 0.0 && baseZoom > 0f) applyZoom(asked)
           }
         })
     built = true
@@ -181,7 +184,19 @@ class MihrabPdfReaderView(private val reactContext: ThemedReactContext) : FrameL
   fun zoomTo(step: Double, key: Int) {
     if (key == zoomKey) return
     zoomKey = key
-    if (baseZoom <= 0f || document == null) return
+    if (baseZoom <= 0f || document == null) {
+      // Asked before the first page is drawn (the zoom a book was left at, asked for as it opens): there is
+      // no page width to zoom against yet. Kept, and taken when there is — it was dropped, and a book
+      // reopened at 100% (seen on an emulator).
+      waitingZoom = step
+      return
+    }
+    applyZoom(step)
+  }
+
+  private var waitingZoom = 0.0
+
+  private fun applyZoom(step: Double) {
     // The view keeps its scroll, not its place, through a zoom it is told to take: from page 40 the button
     // landed on page 18 (seen on an emulator). So what is in the middle of the view is noted, and gone back to.
     val middle = pdf.viewToPdfPoint(pdf.width / 2f, pdf.height / 2f)

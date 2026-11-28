@@ -73,8 +73,12 @@ const ON_PAPER = '#555555';
 /** The zooms the button steps through; two fingers give any size up to `ZOOM_MAX`. */
 const ZOOMS = [1, 1.5, 2.25] as const;
 const ZOOM_MAX = 4;
+/** How long a book is given to open and take up the zoom it was left at, before a zoom is one the reader made. */
+const ZOOM_SETTLE_MS = 2500;
 /** The button for the colour of the paper shows the colour it is. */
 const TONE_DOT = { paper: '#FFFFFF', sepia: '#F1E3C4', night: '#1C1C1C' } as const;
+/** What shows between the pages while the paper is not white. */
+const TONE_GROUND = { sepia: '#E4D5B3', night: '#000000' } as const;
 
 /** One page: drawn when it comes near the screen, a paper-coloured space of its shape until then. */
 function PdfPageView({ path, index, shown, ratio, zoom, marked, onLongPress }: { path: string; index: number; shown: number; ratio: number; zoom: number; marked: boolean; onLongPress: () => void }) {
@@ -315,15 +319,29 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
   // The colour of the paper, the reader's for every book; and the zoom this book was left at, taken up again
   // once the file is open. (`libraryPdfView.ts`)
   const [tone, setTone] = useState<PdfTone>('paper');
-  const kept = useRef(1);
+  // Taken up once both are known — the file open, and what was kept read — whichever comes first: asked for
+  // only as the file opened, a zoom still being read was not asked for at all.
+  const [keptZoom, setKeptZoom] = useState<number | null>(null);
+  const [opened, setOpened] = useState(false);
   useEffect(() => {
     void pdfTone().then(setTone);
-    void pdfZoomOf(id).then(z => {
-      kept.current = z;
-    });
+    void pdfZoomOf(id).then(setKeptZoom);
   }, [id]);
   useEffect(() => {
-    if (!system) return undefined;
+    if (opened && keptZoom != null && keptZoom > 1.04) setZoomAsk(was => ({ step: keptZoom, key: (was?.key ?? 0) + 1 }));
+  }, [opened, keptZoom]);
+  // Kept as it changes — once the book has opened and settled at the zoom it was left at: the 100% it opens
+  // at is not a zoom the reader chose, and writing it would forget the one they did.
+  const armed = useRef(false);
+  useEffect(() => {
+    if (!opened || keptZoom == null) return undefined;
+    const timer = setTimeout(() => {
+      armed.current = true;
+    }, ZOOM_SETTLE_MS);
+    return () => clearTimeout(timer);
+  }, [opened, keptZoom]);
+  useEffect(() => {
+    if (!system || !armed.current) return undefined;
     const timer = setTimeout(() => void setPdfZoom(id, systemZoom), PLACE_DELAY_MS);
     return () => clearTimeout(timer);
   }, [id, system, systemZoom]);
@@ -531,7 +549,10 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
           {SystemPdfView ? (
             target != null ? (
               <SystemPdfView
-                style={styles.flex}
+                // Behind the pages, between them: the colour of the paper, not the app's (a dark page on a
+                // cream ground, seen on an emulator). On Apple's view the tint falls on the ground too, and
+                // the view sets its own (`MihrabPdfView.swift`).
+                style={[styles.flex, tone === 'paper' || Platform.OS !== 'android' ? null : { backgroundColor: TONE_GROUND[tone] }]}
                 path={path}
                 page={target}
                 goTo={goTo}
@@ -543,8 +564,7 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
                 pageBy={pageBy}
                 onPdfReady={e => {
                   setCanFind(e.nativeEvent.search);
-                  // The zoom the book was left at, once there are pages to zoom.
-                  if (kept.current > 1.04) setZoomAsk(was => ({ step: kept.current, key: (was?.key ?? 0) + 1 }));
+                  setOpened(true);
                 }}
                 onPdfFind={e => setFound({ count: e.nativeEvent.count, index: e.nativeEvent.index })}
                 onPdfError={() => setSystemFailed(true)}

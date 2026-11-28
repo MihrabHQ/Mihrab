@@ -41,6 +41,9 @@ describe('the F-Droid build is guarded', () => {
     expect(gradle).toContain("tasks.matching { it.name == 'preBuild' }.configureEach { dependsOn 'checkFdroidLibraries' }");
     expect(gradle).toContain("rootProject.file('../contrib/fdroid/com.prayer_times.yml')");
     expect(gradle).toContain('if ((sdk > floor || ext > 0) && !FDROID_SDK_EXEMPT.any');
+    // Fetched libraries only: a module built with the app says the SDK the build was given, and asking it
+    // stopped every ordinary build.
+    expect(gradle).toContain('if (!(a.id.componentIdentifier instanceof org.gradle.api.artifacts.component.ModuleComponentIdentifier)) return');
     // One library is known to ask for more and shown to build F-Droid's way; the list is not a place to add to quietly.
     expect(gradle).toContain("def FDROID_SDK_EXEMPT = ['androidx.pdf']");
   });
