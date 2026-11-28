@@ -86,6 +86,8 @@ const DELEGATES_TO_HOST: Record<string, string> = {
     'a settings card (the watch\'s Bluetooth address) — SettingsPage owns the ScrollView',
   'quran/RiwayahDownloadSection.tsx':
     'a section of the Downloads settings page — SettingsPage owns the ScrollView',
+  'screens/hadith/LibraryShelf.tsx':
+    'the shelf\'s search box, at the head of the Library — HadithScreen owns the ScrollView, and the box is above everything it narrows',
   'quran/audio/RecitationControls.tsx':
     'mounted inside AyahActionSheet, which lifts for the keyboard',
 };

@@ -10,7 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 import BOOKS from '../src/hadith/libraryBooks.json';
-import { LIBRARY_BOOKS, findLibraryBook, libraryKey, libraryParts, offeredLibraryBooks, LIBRARY_SUBJECTS, libraryBookLang, libraryBookLanguageChip, libraryBookTags, libraryShelves, LIBRARY_LANGUAGE_NAMES, libraryOtherLanguages, libraryOwnLanguages } from '../src/hadith/libraryShelf';
+import { LIBRARY_BOOKS, findLibraryBook, libraryKey, libraryParts, offeredLibraryBooks, LIBRARY_SUBJECTS, libraryBookLang, libraryBookLanguageChip, libraryBookTags, libraryFold, libraryMatches, libraryReport, recentlyRead, libraryShelves, LIBRARY_LANGUAGE_NAMES, libraryOtherLanguages, libraryOwnLanguages } from '../src/hadith/libraryShelf';
 import { LONG_PASSAGE, PARAGRAPH_MIN, readingParagraphs } from '../src/hadith/libraryParagraphs';
 import { validPack, type Manifest } from '../src/hadith/packTypes';
 import { blockKind } from '../src/screens/hadith/LibraryBookScreen';
@@ -185,7 +185,7 @@ describe('the shelf', () => {
     expect(read('src/screens/hadith/LibraryBookScreen.tsx')).toContain("{t('hadith.library.bookNote')}");
     for (const f of fs.readdirSync(path.join(REPO, 'src/i18n/locales'))) {
       const k = JSON.parse(read(`src/i18n/locales/${f}`)).hadith.library;
-      expect([f, Object.keys(k).sort()]).toEqual([f, ['about', 'acrossSchools', 'bookNote', 'by', 'chapterOf', 'chapters', 'commentary', 'continue', 'empty', 'firstOnly', 'intro', 'levelLater', 'mark', 'marks', 'needsDownload', 'next', 'otherLanguages', 'otherLanguagesHelp', 'pdf', 'percent', 'previous', 'remove', 'searchHint', 'sections', 'source', 'subject', 'tab', 'unmark']]);
+      expect([f, Object.keys(k).sort()]).toEqual([f, ['about', 'acrossSchools', 'ask', 'bookNote', 'by', 'chapterOf', 'chapters', 'commentary', 'continue', 'empty', 'firstOnly', 'intro', 'levelLater', 'mark', 'marks', 'needsDownload', 'next', 'otherLanguages', 'otherLanguagesHelp', 'pdf', 'percent', 'previous', 'remove', 'report', 'searchHint', 'searchShelf', 'sections', 'source', 'startHere', 'subject', 'tab', 'unmark']]);
       // Every shelf has its name, and a school a book can name has one too.
       expect([f, Object.keys(k.subject).sort()]).toEqual([f, [...LIBRARY_SUBJECTS].sort()]);
       for (const m of ['hanafi', 'maliki', 'shafii', 'hanbali']) expect([f, m, typeof JSON.parse(read(`src/i18n/locales/${f}`)).settings[`madhab_${m}`]]).toEqual([f, m, 'string']);
@@ -657,7 +657,7 @@ describe('a matn with no chapter headings, bound with another work', () => {
       expect(of('nihayatzayn')).toEqual(['settings.madhab_shafii', 'hadith.library.commentary', 'hadith.library.levelLater']);
       expect(of('kalila')).toEqual([]);
       const shelf = read('src/screens/hadith/LibraryShelf.tsx');
-      expect(shelf).toContain('libraryShelves(books).map(');
+      expect(shelf).toContain('libraryShelves(shown).map(');
       expect(shelf).toContain("{t(`hadith.library.subject.${subject}`)}");
     });
 
@@ -740,5 +740,38 @@ describe('a book of fiqh that is of no one school', () => {
     const path = require('path') as typeof import('path');
     const dir = path.join(__dirname, '..', 'src', 'i18n', 'locales');
     for (const f of fs.readdirSync(dir)) expect([f, typeof JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')).hadith.library.acrossSchools]).toEqual([f, 'string']);
+  });
+});
+
+describe('finding a book on the shelf', () => {
+  it('compares letters as they are typed: no marks, no case, one alif', () => {
+    expect(libraryFold('التِّبْيَان')).toBe(libraryFold('التبيان'));
+    expect(libraryFold('إحياء')).toBe(libraryFold('احياء'));
+    expect(libraryFold("At-Tibyan fi Adab")).toBe('attibyan fi adab');
+    expect(libraryFold('al-ʿIqd')).toBe('aliqd');
+  });
+
+  it('finds a book by its title in either script, its author, or a word said of it; every word typed must be there', () => {
+    const b = findLibraryBook('tibyan')!;
+    expect(libraryMatches(b, 'التبيان')).toBe(true);
+    expect(libraryMatches(b, 'tibyan nawawi')).toBe(true);
+    expect(libraryMatches(b, 'tibyan zzz')).toBe(false);
+    expect(libraryMatches(b, '   ')).toBe(true);
+    // …and by what the shelf says of it in the reader's language.
+    expect(libraryMatches(b, 'koran', ['Koranen'])).toBe(true);
+  });
+
+  it('offers the last few books read, the latest first', () => {
+    const at = (n: number) => ({ c: 0, b: 0, f: 0, n: 1, t: '', at: n });
+    expect(recentlyRead({ a: at(1), b: at(5), c: at(3), d: at(4) }, ['a', 'b', 'c', 'd', 'e'])).toEqual(['b', 'd', 'c']);
+    expect(recentlyRead({}, ['a'])).toEqual([]);
+  });
+
+  it('writes to the project in the reader\'s own mail, with nothing of theirs but what they write', () => {
+    const r = libraryReport('mistake', 'Say what is wrong.', '2.30.0, android');
+    expect(r.subject).toBe('Library: a mistake in a book');
+    expect(r.body.split('\n')[0]).toBe('Say what is wrong.');
+    expect(r.body).toContain('App: 2.30.0, android');
+    expect(libraryReport('ask', 'x', 'y').subject).toBe('Library: a book or a language');
   });
 });

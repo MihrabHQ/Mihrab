@@ -79,6 +79,10 @@ const STAYS: Record<string, string> = {
     'the paragraph a reader is at in each Library book, on this device — a place in a text, like the chapter place before it (hadith/libraryShelf.ts)',
   'mihrab.library.bookmarks.v1':
     'where Library bookmarks were kept for a day before they moved into the hadith record, which travels; read once to move them, then removed (hadith/libraryShelf.ts)',
+  'mihrab.library.pdfTone.v1':
+    'the colour a reader has a PDF\'s paper on this device — about this screen and the room it is read in (hadith/libraryPdfView.ts)',
+  'mihrab.library.pdfZoom.v1':
+    'the zoom each PDF book was left at on this device — it depends on this screen\'s width, and is lost with nothing else (hadith/libraryPdfView.ts)',
   'mihrab.library.place.v1':
     'the chapter last opened in each Library book, on this device — a place in a text, kept like the Hadith tab\'s page and not a record of reading (hadith/libraryShelf.ts)',
   'mihrab.hadith.recentSearches.v1':

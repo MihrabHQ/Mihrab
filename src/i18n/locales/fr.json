@@ -3188,7 +3188,8 @@
         "findPrevious": "Précédent",
         "findNext": "Suivant",
         "fullScreen": "Plein écran",
-        "exitFullScreen": "Quitter le plein écran"
+        "exitFullScreen": "Quitter le plein écran",
+        "pageColour": "Couleur de la page"
       },
       "subject": {
         "quran": "Coran",
@@ -3200,7 +3201,11 @@
         "letters": "Littérature"
       },
       "levelLater": "Pour une étape ultérieure",
-      "acrossSchools": "Selon les preuves, toutes écoles"
+      "acrossSchools": "Selon les preuves, toutes écoles",
+      "searchShelf": "Rechercher parmi les livres",
+      "startHere": "Commencez ici",
+      "report": "Signaler une erreur dans un livre",
+      "ask": "Demander un livre ou une langue"
     },
     "recentSearches": "Recherches récentes",
     "clearRecent": "Effacer",

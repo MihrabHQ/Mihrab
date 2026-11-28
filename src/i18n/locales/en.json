@@ -3187,7 +3187,8 @@
         "findPrevious": "Previous",
         "findNext": "Next",
         "fullScreen": "Full screen",
-        "exitFullScreen": "Exit full screen"
+        "exitFullScreen": "Exit full screen",
+        "pageColour": "Page colour"
       },
       "subject": {
         "quran": "Qur'an",
@@ -3199,7 +3200,11 @@
         "letters": "Literature"
       },
       "levelLater": "For a later stage",
-      "acrossSchools": "By evidence, across the schools"
+      "acrossSchools": "By evidence, across the schools",
+      "searchShelf": "Search the books",
+      "startHere": "Start here",
+      "report": "Report a mistake in a book",
+      "ask": "Ask for a book or a language"
     },
     "recentSearches": "Recent searches",
     "clearRecent": "Clear",

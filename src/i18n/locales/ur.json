@@ -3187,7 +3187,8 @@
         "findPrevious": "پچھلا",
         "findNext": "اگلا",
         "fullScreen": "پوری اسکرین",
-        "exitFullScreen": "پوری اسکرین سے باہر نکلیں"
+        "exitFullScreen": "پوری اسکرین سے باہر نکلیں",
+        "pageColour": "صفحے کا رنگ"
       },
       "subject": {
         "quran": "قرآن",
@@ -3199,7 +3200,11 @@
         "letters": "ادب"
       },
       "levelLater": "اگلے مرحلے کے لیے",
-      "acrossSchools": "دلیل کی بنیاد پر، مذاہب کے مابین"
+      "acrossSchools": "دلیل کی بنیاد پر، مذاہب کے مابین",
+      "searchShelf": "کتابوں میں تلاش کریں",
+      "startHere": "یہاں سے شروع کریں",
+      "report": "کسی کتاب کی غلطی کی اطلاع دیں",
+      "ask": "کسی کتاب یا زبان کی درخواست کریں"
     },
     "recentSearches": "حالیہ تلاشیں",
     "clearRecent": "صاف کریں",

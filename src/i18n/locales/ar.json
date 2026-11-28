@@ -3237,7 +3237,8 @@
         "findPrevious": "السابق",
         "findNext": "التالي",
         "fullScreen": "ملء الشاشة",
-        "exitFullScreen": "الخروج من ملء الشاشة"
+        "exitFullScreen": "الخروج من ملء الشاشة",
+        "pageColour": "لون الصفحة"
       },
       "subject": {
         "quran": "القرآن",
@@ -3249,7 +3250,11 @@
         "letters": "الأدب"
       },
       "levelLater": "لمرحلة أعلى",
-      "acrossSchools": "بالدليل، عبر المذاهب"
+      "acrossSchools": "بالدليل، عبر المذاهب",
+      "searchShelf": "ابحث في الكتب",
+      "startHere": "ابدأ من هنا",
+      "report": "أبلغ عن خطأ في كتاب",
+      "ask": "اطلب كتابًا أو لغة"
     },
     "recentSearches": "عمليات البحث الأخيرة",
     "clearRecent": "مسح",

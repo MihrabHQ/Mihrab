@@ -19,6 +19,10 @@ export interface NativeProps extends ViewProps {
   goTo?: Readonly<{ page: Int32; key: Int32 }>;
   /** A zoom to take, 1 being a page as wide as the view; `key` changes each time it is asked for. */
   zoomTo?: Readonly<{ step: Double; key: Int32 }>;
+  /** The colour of the paper: 'paper' (as printed), 'sepia' or 'night'. */
+  tone?: string;
+  /** A screen on (1) or back (-1); `key` changes each time it is asked. */
+  pageBy?: Readonly<{ by: Int32; key: Int32 }>;
   /** Words to look for in the file ('' takes the marks off); `key` changes each time it is asked. */
   find?: Readonly<{ query: string; key: Int32 }>;
   /** To the next place the words are (1) or the one before (-1); `key` changes each time. */

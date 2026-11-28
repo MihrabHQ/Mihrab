@@ -196,7 +196,7 @@ describe('the reader', () => {
     // The system says whether it can; on Android 12 and older without the newer PDF parts it cannot, and a
     // search there found nothing in a page that had the word (seen on an API 31 emulator).
     expect(view).toContain('doc.isFeatureSupported(PdfFeature.SEARCH)');
-    expect(page).toContain('onPdfReady={e => setCanFind(e.nativeEvent.search)}');
+    expect(page).toContain('setCanFind(e.nativeEvent.search);');
     expect(page).toContain("{system && canFind ? <TextAction label={t('hadith.library.pdf.find')}");
     // In the file, on the device; from the page being read; and the view is not handed every mark in the book.
     expect(view).toContain('doc.searchDocument(words, 0 until doc.pageCount)');
@@ -221,11 +221,32 @@ describe('the reader', () => {
     expect(page).toMatch(/BackHandler\.addEventListener\('hardwareBackPress', \(\) => \{\s*setFull\(false\);\s*return true;/);
   });
 
+  it('keeps how a reader likes the pages: the colour of the paper for every book, the zoom of each', () => {
+    const kept = require('../src/hadith/libraryPdfView') as typeof import('../src/hadith/libraryPdfView');
+    expect(kept.PDF_TONES).toEqual(['paper', 'sepia', 'night']);
+    expect(kept.nextPdfTone('paper')).toBe('sepia');
+    expect(kept.nextPdfTone('night')).toBe('paper');
+    for (const z of [1, 1.5, 4]) expect(kept.validPdfZoom(z)).toBe(true);
+    for (const z of [0.5, 4.1, NaN, '2', null]) expect(kept.validPdfZoom(z)).toBe(false);
+    const view = read('android/app/src/main/java/com/prayer_times/MihrabPdfReaderView.kt');
+    // The paper is tinted on its way to the glass: the file is not touched and nothing is drawn again.
+    expect(view).toContain('pdf.setLayerType(LAYER_TYPE_HARDWARE, Paint().apply { colorFilter = ColorMatrixColorFilter(matrix) })');
+    expect(page).toContain('tone={tone}');
+    expect(page).toContain("if (kept.current > 1.04) setZoomAsk(was => ({ step: kept.current, key: (was?.key ?? 0) + 1 }));");
+    expect(page).toContain("t('hadith.library.pdf.pageColour')");
+  });
+
+  it('turns a screen with the volume buttons where the reader has them turn the muṣḥaf\'s pages', () => {
+    const view = read('android/app/src/main/java/com/prayer_times/MihrabPdfReaderView.kt');
+    expect(page).toContain('useVolumeKeyPaging(system && readerPrefs.volumeKeyPaging, finding, asking, turn, readerPrefs.volumeKeyUpForward);');
+    expect(view).toContain('pdf.scrollBy(0, (by * pdf.height * SCREEN_PART).toInt())');
+  });
+
   it('has a sentence for each way the file can fail, in every language', () => {
     for (const k of ['note', 'read', 'zoom', 'noSpace', 'badFile', 'unreadable', 'pageFailed']) expect(page + read('src/screens/hadith/LibraryShelf.tsx')).toContain(`hadith.library.pdf.${k}`);
     for (const f of fs.readdirSync(path.join(REPO, 'src/i18n/locales'))) {
       const pdf = JSON.parse(read(`src/i18n/locales/${f}`)).hadith.library.pdf;
-      expect([f, Object.keys(pdf).sort()]).toEqual([f, ['badFile', 'exitFullScreen', 'find', 'findNext', 'findPrevious', 'fullScreen', 'noSpace', 'note', 'pageFailed', 'read', 'unreadable', 'zoom']]);
+      expect([f, Object.keys(pdf).sort()]).toEqual([f, ['badFile', 'exitFullScreen', 'find', 'findNext', 'findPrevious', 'fullScreen', 'noSpace', 'note', 'pageColour', 'pageFailed', 'read', 'unreadable', 'zoom']]);
       expect([f, pdf.noSpace.includes('{{size}}')]).toEqual([f, true]);
     }
   });

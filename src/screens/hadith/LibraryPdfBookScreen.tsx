@@ -52,6 +52,8 @@ import type { LibraryFile } from '../../hadith/packTypes';
 import { summarisePacks } from '../../hadith/useHadith';
 import { pdfInfo, pdfPage, pdfRenderWidth, type PdfPage } from '../../native/MihrabPdf';
 import { MihrabPdfViewNative, nativePdfViewAvailable } from '../../native/MihrabPdfView';
+import { nextPdfTone, pdfTone, pdfZoomOf, setPdfTone, setPdfZoom, type PdfTone } from '../../hadith/libraryPdfView';
+import { useVolumeKeyPaging } from '../../quran/useVolumeKeyPaging';
 import { useKeepAwake } from '../../quran/keepAwakeLock';
 import { useQuranState } from '../../quran/quranState';
 import type { RootStackParamList } from '../../navigation/types';
@@ -70,6 +72,8 @@ const ON_PAPER = '#555555';
 /** The zooms the button steps through; two fingers give any size up to `ZOOM_MAX`. */
 const ZOOMS = [1, 1.5, 2.25] as const;
 const ZOOM_MAX = 4;
+/** The button for the colour of the paper shows the colour it is. */
+const TONE_DOT = { paper: '#FFFFFF', sepia: '#F1E3C4', night: '#1C1C1C' } as const;
 
 /** One page: drawn when it comes near the screen, a paper-coloured space of its shape until then. */
 function PdfPageView({ path, index, shown, ratio, zoom, marked, onLongPress }: { path: string; index: number; shown: number; ratio: number; zoom: number; marked: boolean; onLongPress: () => void }) {
@@ -109,7 +113,8 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const { width: windowWidth } = useWindowDimensions();
-  const keepLit = useQuranState().prefs.readerKeepAwake;
+  const readerPrefs = useQuranState().prefs;
+  const keepLit = readerPrefs.readerKeepAwake;
   useKeepAwake(keepLit);
   const shown = Math.min(windowWidth, 900);
   // ── Zoom: any size between the page's width and four times it, as a picture is zoomed ──
@@ -302,6 +307,25 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
     if (!pending.current) pending.current = setTimeout(() => writeRef.current(), PLACE_DELAY_MS);
   }, []);
 
+  // The colour of the paper, the reader's for every book; and the zoom this book was left at, taken up again
+  // once the file is open. (`libraryPdfView.ts`)
+  const [tone, setTone] = useState<PdfTone>('paper');
+  const kept = useRef(1);
+  useEffect(() => {
+    void pdfTone().then(setTone);
+    void pdfZoomOf(id).then(z => {
+      kept.current = z;
+    });
+  }, [id]);
+  useEffect(() => {
+    if (!system) return undefined;
+    const timer = setTimeout(() => void setPdfZoom(id, systemZoom), PLACE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [id, system, systemZoom]);
+  // The volume buttons, where the reader has them turn the muṣḥaf's pages: a screen on, or back.
+  const [pageBy, setPageBy] = useState<{ by: number; key: number } | undefined>(undefined);
+  const turn = useCallback((by: 1 | -1) => setPageBy(was => ({ by, key: (was?.key ?? 0) + 1 })), []);
+
   // Looking for words in the book: the system's view does the looking, in the file, on the device.
   // Offered only where the system says it can read the file's words (`onPdfReady`).
   const [canFind, setCanFind] = useState(false);
@@ -340,6 +364,7 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
   // Going to a page by its number.
   const [asking, setAsking] = useState(false);
   const [typed, setTyped] = useState('');
+  useVolumeKeyPaging(system && readerPrefs.volumeKeyPaging, finding, asking, turn, readerPrefs.volumeKeyUpForward);
   const go = () => {
     const n = Math.floor(Number(typed));
     setAsking(false);
@@ -358,6 +383,23 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
       title={title}
       bare={full}
       end={
+        <View style={styles.headEnd}>
+        {system ? (
+          <Pressable
+            onPress={() => {
+              const next = nextPdfTone(tone);
+              setTone(next);
+              void setPdfTone(next);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={t('hadith.library.pdf.pageColour')}
+            hitSlop={10}
+            style={({ pressed }) => [styles.zoom, { borderColor: palette.border }, pressed && styles.pressed]}
+            testID="library-pdf-tone"
+          >
+            <View style={[styles.toneDot, { backgroundColor: TONE_DOT[tone], borderColor: palette.border }]} />
+          </Pressable>
+        ) : null}
         <Pressable
           onPress={() => {
             // The button steps, for a hand that cannot pinch.
@@ -372,6 +414,7 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
         >
           <Text style={[styles.zoomText, { color: palette.text }]}>{`${Math.round((system ? systemZoom : zoom) * 100)}%`}</Text>
         </Pressable>
+        </View>
       }
     >
       {bottom => (
@@ -451,7 +494,13 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
                 onPdfViewport={onSystemViewport}
                 find={find}
                 findStep={findStep}
-                onPdfReady={e => setCanFind(e.nativeEvent.search)}
+                tone={tone}
+                pageBy={pageBy}
+                onPdfReady={e => {
+                  setCanFind(e.nativeEvent.search);
+                  // The zoom the book was left at, once there are pages to zoom.
+                  if (kept.current > 1.04) setZoomAsk(was => ({ step: kept.current, key: (was?.key ?? 0) + 1 }));
+                }}
                 onPdfFind={e => setFound({ count: e.nativeEvent.count, index: e.nativeEvent.index })}
                 onPdfError={() => setSystemFailed(true)}
                 testID="library-pdf-system"
@@ -747,6 +796,8 @@ const styles = StyleSheet.create({
   page: { alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   pageNote: { fontSize: TYPE.footnote.fontSize, padding: SPACING.lg, textAlign: 'center' },
   zoom: { paddingHorizontal: SPACING.sm, paddingVertical: SPACING.xs, borderRadius: RADIUS.sm, borderWidth: StyleSheet.hairlineWidth },
+  headEnd: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
+  toneDot: { width: 16, height: 16, borderRadius: RADIUS.full, borderWidth: StyleSheet.hairlineWidth },
   zoomText: { fontSize: TYPE.footnote.fontSize, fontVariant: ['tabular-nums'] },
   pressed: { opacity: 0.6 },
 });

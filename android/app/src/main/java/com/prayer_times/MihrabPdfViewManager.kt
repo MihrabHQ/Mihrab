@@ -34,6 +34,16 @@ class MihrabPdfViewManager : SimpleViewManager<MihrabPdfReaderView>() {
     if (value != null) view.zoomTo(value.getDouble("step"), value.getInt("key"))
   }
 
+  @ReactProp(name = "tone")
+  fun setTone(view: MihrabPdfReaderView, value: String?) {
+    view.tone = value ?: "paper"
+  }
+
+  @ReactProp(name = "pageBy")
+  fun setPageBy(view: MihrabPdfReaderView, value: com.facebook.react.bridge.ReadableMap?) {
+    if (value != null) view.pageBy(value.getInt("by"), value.getInt("key"))
+  }
+
   @ReactProp(name = "find")
   fun setFind(view: MihrabPdfReaderView, value: com.facebook.react.bridge.ReadableMap?) {
     if (value != null) view.find(value.getString("query") ?: "", value.getInt("key"))

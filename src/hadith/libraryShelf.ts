@@ -251,6 +251,65 @@ export function libraryProgress(r: Pick<LibraryReading, 'c' | 'f' | 'n'>): numbe
   return Math.min(1, Math.max(0, (r.c + r.f) / r.n));
 }
 
+/** The books last read, of those given, the latest first: the shelf offers a few to go on with, not one. */
+export function recentlyRead(readings: Record<string, LibraryReading>, ids: readonly string[], n = 3): string[] {
+  return ids
+    .filter(id => readings[id])
+    .sort((a, b) => readings[b].at - readings[a].at)
+    .slice(0, n);
+}
+
+/**
+ * Letters as a search of the shelf compares them: no vowel marks or accents, no case, the alifs one alif,
+ * the final yāʾ and the tāʾ marbūṭa as they are typed without their dots, and none of the marks a Latin
+ * spelling of an Arabic name is written with ("at-Tibyan", "al-ʿIqd").
+ */
+export function libraryFold(s: string): string {
+  return s
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f\u064B-\u065F\u0670\u0640]/g, '')
+    .replace(/[\u0623\u0625\u0622\u0671]/g, '\u0627')
+    .replace(/\u0649/g, '\u064A')
+    .replace(/\u0629/g, '\u0647')
+    .toLowerCase()
+    .replace(/[’'`ʿʾ\-]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Is this book what was typed? Every word typed is somewhere in its names, its author's, or what is said of it. */
+export function libraryMatches(book: Pick<LibraryBook, 'title' | 'latin' | 'author' | 'authorLatin' | 'about'>, query: string, also: readonly string[] = []): boolean {
+  const words = libraryFold(query).split(' ').filter(Boolean);
+  if (!words.length) return true;
+  const hay = libraryFold([book.title, book.latin, book.author, book.authorLatin, book.about ?? '', ...also].join(' '));
+  return words.every(w => hay.includes(w));
+}
+
+/** Every marked place in every book, newest first: the shelf's own list of bookmarks. */
+export async function libraryAllBookmarks(): Promise<(LibraryBookmark & { book: string })[]> {
+  await moveOldBookmarks();
+  await hydrateHadithRecord();
+  const out: (LibraryBookmark & { book: string })[] = [];
+  for (const [key, m] of Object.entries(getHadithRecord().library ?? {})) {
+    if (m[0] !== 1) continue;
+    const [book, c, b] = key.split(':');
+    out.push({ book, c: Number(c), b: Number(b), at: m[1] });
+  }
+  return out.sort((x, y) => y.at - x.at);
+}
+
+/**
+ * A word to the project about the Library — a mistake seen in a book, or a book or a language wanted — as
+ * the hadith report is made (`report.ts`): a message in the reader's own mail app, sent by them or not at
+ * all, with nothing in it of theirs but what they write.
+ */
+export function libraryReport(kind: 'mistake' | 'ask', prompt: string, app: string): { subject: string; body: string } {
+  return {
+    subject: kind === 'mistake' ? 'Library: a mistake in a book' : 'Library: a book or a language',
+    body: [prompt, '', '', '—', kind === 'mistake' ? 'Which book, and where in it (chapter or page):' : 'Which book or language:', `App: ${app}`, ''].join('\n'),
+  };
+}
+
 /** The book last read, of those given. */
 export function lastReadBook(readings: Record<string, LibraryReading>, ids: readonly string[]): string | null {
   let best: string | null = null;

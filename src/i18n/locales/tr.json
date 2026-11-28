@@ -3187,7 +3187,8 @@
         "findPrevious": "Önceki",
         "findNext": "Sonraki",
         "fullScreen": "Tam ekran",
-        "exitFullScreen": "Tam ekrandan çık"
+        "exitFullScreen": "Tam ekrandan çık",
+        "pageColour": "Sayfa rengi"
       },
       "subject": {
         "quran": "Kur’an",
@@ -3199,7 +3200,11 @@
         "letters": "Edebiyat"
       },
       "levelLater": "İleri aşama için",
-      "acrossSchools": "Delile göre, mezhepler arası"
+      "acrossSchools": "Delile göre, mezhepler arası",
+      "searchShelf": "Kitaplarda ara",
+      "startHere": "Buradan başlayın",
+      "report": "Bir kitaptaki hatayı bildir",
+      "ask": "Bir kitap veya dil iste"
     },
     "recentSearches": "Son aramalar",
     "clearRecent": "Temizle",

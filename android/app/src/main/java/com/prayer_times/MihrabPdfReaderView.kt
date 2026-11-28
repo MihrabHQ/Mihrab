@@ -2,6 +2,9 @@ package com.prayer_times
 
 import android.net.Uri
 import android.util.SparseArray
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.Paint
 import android.graphics.RectF
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
@@ -144,6 +147,35 @@ class MihrabPdfReaderView(private val reactContext: ThemedReactContext) : FrameL
     arriving = false
     pdf.scrollToPage(target.coerceIn(0, maxOf(0, doc.pageCount - 1)))
   }
+
+  /** A screen on, or back (the volume buttons): most of a screen, so the line read last is still in sight. */
+  private var pageKey = 0
+
+  fun pageBy(by: Int, key: Int) {
+    if (key == pageKey) return
+    pageKey = key
+    if (document == null) return
+    arriving = false
+    pdf.scrollBy(0, (by * pdf.height * SCREEN_PART).toInt())
+  }
+
+  /**
+   * The colour of the paper: as printed, a warm paper, or the page turned dark for a dark room. The file is
+   * not touched and nothing is drawn again: the view's own picture is tinted on its way to the glass.
+   */
+  var tone = "paper"
+    set(value) {
+      if (field == value) return
+      field = value
+      val matrix =
+          when (value) {
+            "night" -> ColorMatrix(floatArrayOf(-0.9f, 0f, 0f, 0f, 235f, 0f, -0.9f, 0f, 0f, 235f, 0f, 0f, -0.9f, 0f, 235f, 0f, 0f, 0f, 1f, 0f))
+            "sepia" -> ColorMatrix(floatArrayOf(1f, 0f, 0f, 0f, 0f, 0f, 0.95f, 0f, 0f, 0f, 0f, 0f, 0.82f, 0f, 0f, 0f, 0f, 0f, 1f, 0f))
+            else -> null
+          }
+      if (matrix == null) pdf.setLayerType(LAYER_TYPE_NONE, null)
+      else pdf.setLayerType(LAYER_TYPE_HARDWARE, Paint().apply { colorFilter = ColorMatrixColorFilter(matrix) })
+    }
 
   /** `step` is against the page's own width: 1 is a page as wide as the view. */
   fun zoomTo(step: Double, key: Int) {
@@ -324,6 +356,7 @@ class MihrabPdfReaderView(private val reactContext: ThemedReactContext) : FrameL
   companion object {
     private const val ARRIVE_MS = 2500L
     private const val REDRAW_MS = 120L
+    private const val SCREEN_PART = 0.85f
     // On white paper, whatever the app's theme: amber for the place shown, a paler yellow for the others.
     private const val MARK_SHOWN = 0x99FF9800.toInt()
     private const val MARK_OTHER = 0x66FFE082

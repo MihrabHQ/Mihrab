@@ -3187,7 +3187,8 @@
         "findPrevious": "पिछला",
         "findNext": "अगला",
         "fullScreen": "पूर्ण स्क्रीन",
-        "exitFullScreen": "पूर्ण स्क्रीन से बाहर निकलें"
+        "exitFullScreen": "पूर्ण स्क्रीन से बाहर निकलें",
+        "pageColour": "पृष्ठ का रंग"
       },
       "subject": {
         "quran": "क़ुरआन",
@@ -3199,7 +3200,11 @@
         "letters": "अदब"
       },
       "levelLater": "आगे के चरण के लिए",
-      "acrossSchools": "प्रमाण के आधार पर, सभी मज़हबों से"
+      "acrossSchools": "प्रमाण के आधार पर, सभी मज़हबों से",
+      "searchShelf": "किताबों में खोजें",
+      "startHere": "यहाँ से शुरू करें",
+      "report": "किसी किताब की ग़लती बताएँ",
+      "ask": "किसी किताब या भाषा का अनुरोध करें"
     },
     "recentSearches": "हाल की खोजें",
     "clearRecent": "साफ़ करें",

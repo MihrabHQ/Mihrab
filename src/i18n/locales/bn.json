@@ -3187,7 +3187,8 @@
         "findPrevious": "পূর্ববর্তী",
         "findNext": "পরবর্তী",
         "fullScreen": "পূর্ণ পর্দা",
-        "exitFullScreen": "পূর্ণ পর্দা থেকে বের হোন"
+        "exitFullScreen": "পূর্ণ পর্দা থেকে বের হোন",
+        "pageColour": "পৃষ্ঠার রং"
       },
       "subject": {
         "quran": "কুরআন",
@@ -3199,7 +3200,11 @@
         "letters": "সাহিত্য"
       },
       "levelLater": "পরবর্তী ধাপের জন্য",
-      "acrossSchools": "দলিলভিত্তিক, মাযহাবসমূহ জুড়ে"
+      "acrossSchools": "দলিলভিত্তিক, মাযহাবসমূহ জুড়ে",
+      "searchShelf": "বইগুলোতে খুঁজুন",
+      "startHere": "এখান থেকে শুরু করুন",
+      "report": "কোনো বইয়ের ভুল জানান",
+      "ask": "একটি বই বা ভাষার অনুরোধ করুন"
     },
     "recentSearches": "সাম্প্রতিক অনুসন্ধান",
     "clearRecent": "মুছুন",

@@ -3187,7 +3187,8 @@
         "findPrevious": "上一个",
         "findNext": "下一个",
         "fullScreen": "全屏",
-        "exitFullScreen": "退出全屏"
+        "exitFullScreen": "退出全屏",
+        "pageColour": "页面颜色"
       },
       "subject": {
         "quran": "《古兰经》",
@@ -3199,7 +3200,11 @@
         "letters": "文学"
       },
       "levelLater": "进阶",
-      "acrossSchools": "依据证据，跨学派"
+      "acrossSchools": "依据证据，跨学派",
+      "searchShelf": "搜索书籍",
+      "startHere": "从这里开始",
+      "report": "报告书中的错误",
+      "ask": "请求添加书籍或语言"
     },
     "recentSearches": "最近搜索",
     "clearRecent": "清除",

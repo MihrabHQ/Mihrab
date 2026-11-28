@@ -3187,7 +3187,8 @@
         "findPrevious": "Föregående",
         "findNext": "Nästa",
         "fullScreen": "Helskärm",
-        "exitFullScreen": "Lämna helskärm"
+        "exitFullScreen": "Lämna helskärm",
+        "pageColour": "Sidfärg"
       },
       "subject": {
         "quran": "Koranen",
@@ -3199,7 +3200,11 @@
         "letters": "Litteratur"
       },
       "levelLater": "För ett senare skede",
-      "acrossSchools": "Efter belägg, över rättsskolorna"
+      "acrossSchools": "Efter belägg, över rättsskolorna",
+      "searchShelf": "Sök bland böckerna",
+      "startHere": "Börja här",
+      "report": "Rapportera ett fel i en bok",
+      "ask": "Önska en bok eller ett språk"
     },
     "recentSearches": "Senaste sökningar",
     "clearRecent": "Rensa",

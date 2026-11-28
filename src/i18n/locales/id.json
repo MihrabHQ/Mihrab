@@ -3187,7 +3187,8 @@
         "findPrevious": "Sebelumnya",
         "findNext": "Berikutnya",
         "fullScreen": "Layar penuh",
-        "exitFullScreen": "Keluar dari layar penuh"
+        "exitFullScreen": "Keluar dari layar penuh",
+        "pageColour": "Warna halaman"
       },
       "subject": {
         "quran": "Al-Qur’an",
@@ -3199,7 +3200,11 @@
         "letters": "Sastra"
       },
       "levelLater": "Untuk tahap lanjut",
-      "acrossSchools": "Berdasarkan dalil, lintas mazhab"
+      "acrossSchools": "Berdasarkan dalil, lintas mazhab",
+      "searchShelf": "Cari di antara buku",
+      "startHere": "Mulai dari sini",
+      "report": "Laporkan kesalahan dalam buku",
+      "ask": "Minta buku atau bahasa"
     },
     "recentSearches": "Pencarian terakhir",
     "clearRecent": "Hapus",
