@@ -219,7 +219,10 @@ describe('with the screen off, hours and minutes that keep moving', () => {
     expect(kotlin).toContain('make.invoke(null, ambientLeft(nextEpochMs - System.currentTimeMillis()), api.fmtAdaptive)');
     // Whole hours while an hour or more is left, the minutes after: what the re-posts keep true
     // (once an hour, then once a minute — the test below).
-    expect(kotlin).toContain('return if (totalMin >= 60) java.time.Duration.ofHours(totalMin / 60) else java.time.Duration.ofMinutes(totalMin)');
+    expect(kotlin).toContain('if (deltaMs >= 3_600_000L) return java.time.Duration.ofHours(deltaMs / 3_600_000L)');
+    // The minutes rounded UP: with no dashes for the seconds, "0m" through the last minute read as arrived.
+    expect(kotlin).toContain('return java.time.Duration.ofMinutes(((deltaMs + 59_999L) / 60_000L).coerceAtMost(59L))');
+    expect(kotlin).toContain('if (deltaMs <= 0L) return java.time.Duration.ZERO');
   });
 
   it('wakes the phone only when the ambient text changes, and stops when it wakes', () => {

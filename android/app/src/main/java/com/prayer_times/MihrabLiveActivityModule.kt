@@ -1290,11 +1290,21 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
       }.getOrNull()
     }
 
-    /** `formatAmbient`'s rule, as a duration. */
+    /**
+     * `formatAmbient`'s rule, as a duration — with the minutes ROUNDED UP.
+     *
+     * The text said "2:--" with 2:59 left: the dashes were the seconds it
+     * was not showing. "2m" has no dashes, and rounded down it said "0m"
+     * for the whole last minute, which reads as the prayer having come. So
+     * a started minute counts: "3m" until two are left, "1m" through the
+     * last one, and never zero while there is time. The hours stay whole
+     * and rounded down ("1h" from 1:59 to 1:00), as "1h+" was.
+     */
     @JvmStatic
     fun ambientLeft(deltaMs: Long): java.time.Duration {
-      val totalMin = (deltaMs / 60_000L).coerceAtLeast(0)
-      return if (totalMin >= 60) java.time.Duration.ofHours(totalMin / 60) else java.time.Duration.ofMinutes(totalMin)
+      if (deltaMs <= 0L) return java.time.Duration.ZERO
+      if (deltaMs >= 3_600_000L) return java.time.Duration.ofHours(deltaMs / 3_600_000L)
+      return java.time.Duration.ofMinutes(((deltaMs + 59_999L) / 60_000L).coerceAtMost(59L))
     }
 
     /**
