@@ -379,7 +379,21 @@ For known build pitfalls — Kotlin 2.2 SAM regressions, RemoteViews allowed-vie
 
 ## 3. Google Play
 
-Manual upload to the Play Console after a local AAB build. No automation yet.
+Manual upload to the Play Console after a local AAB build. The release tool has no Play step yet.
+
+**API access is set up (2026-11-28).** Google Play Developer API (Android
+Publisher v3), with a service account's JSON key in `~/.config/mihrab/`
+beside `asc.json` (never in the repo); which account and what it may do is
+in the maintainer's local notes. Package: `com.prayer_times`.
+
+An upload is an *edit*: `POST /applications/com.prayer_times/edits`, upload
+the AAB to it (`edits.bundles.upload`), set the `production` track's release
+with its `releaseNotes` per language (from
+`fastlane/metadata/android/{en-US,sv-SE,ar}/changelogs/<versionCode>.txt`),
+then `edits.commit`. An edit that is not committed changes nothing, so a
+check can open one, read it and delete it. The token is a JWT signed with
+the key's `private_key` (scope `https://www.googleapis.com/auth/androidpublisher`),
+exchanged at the key's `token_uri`.
 
 ### Build
 
