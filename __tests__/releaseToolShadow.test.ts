@@ -148,6 +148,7 @@ const SHELL_PREFLIGHT = [
   'ok\tcask re-registers the widget extension',
   "ok\tthe last release's lesson is written down",
   'ok\tCI on main is success',
+  'ok\tthe native builds on main are success',
   'ok\tjest',
   'ok\ttsc',
   'ok\tno Xcode Cloud run in flight',
@@ -157,15 +158,15 @@ describe('the preflight shadow', () => {
   it('agrees with a shell that passed the same gates, without re-running jest', async () => {
     const w = preflightWorld();
     const res = await shadowPreflight(shadowCtx(w.io(), ROOT, HOME, 'release'), rel, SHELL_PREFLIGHT);
-    expect(res.comparison).toEqual({ compared: 15, onlyShell: [], onlyTs: [] });
+    expect(res.comparison).toEqual({ compared: 16, onlyShell: [], onlyTs: [] });
     expect(w.ran('npx')).toEqual([]);
     expect(w.out).toEqual([]);
   });
 
   it('stops where the shell stopped on jest or tsc, which it does not re-run', async () => {
     for (const [at, words] of [
-      [14, "jest failed — run 'NODE_ENV=test npx jest'"],
-      [15, "tsc failed — run 'npx tsc --noEmit'"],
+      [15, "jest failed — run 'NODE_ENV=test npx jest'"],
+      [16, "tsc failed — run 'npx tsc --noEmit'"],
     ] as const) {
       const w = preflightWorld();
       const shell = `${SHELL_PREFLIGHT.split('\n').slice(0, at).join('\n')}\ndie\t${words}`;

@@ -12,6 +12,7 @@ import {
   caskGate,
   catalystToolchain,
   ciOnMain,
+  nativeBuildsOnMain,
   cycleTouched,
   lessonGate,
   notBehindOrigin,
@@ -341,6 +342,43 @@ describe('P10 CI on main is not already red', () => {
     expect(await stopOf(() => ciOnMain(w.ctx()))).toBe(
       `CI on main last concluded '${c}' on "Fix " — fix it before releasing on top of it: https://x/2`,
     );
+  });
+});
+
+describe('P10 the native builds on main are not red: F-Droid builds what is tagged', () => {
+  const gh = (w: World, row: string) => w.on('gh run list', { stdout: `${row}\n` });
+
+  it('asks the workflow that builds the F-Droid APK, for the last run that reached a verdict', async () => {
+    const w = gh(world(), 'success|Library: a PDF|https://x/1');
+    const ctx = w.ctx();
+    await nativeBuildsOnMain(ctx);
+    const args = w.ran('gh run list')[0].args;
+    expect(args).toEqual(expect.arrayContaining(['--workflow=native.yml', '--branch', 'main', '--status', 'completed']));
+    // A run cancelled by the push after it is not a verdict.
+    expect(args.join(' ')).toContain('select(.conclusion != "cancelled")');
+    expect(lines(ctx)).toEqual(['ok P10 the native builds on main are success']);
+  });
+
+  it('treats no completed runs as a fresh clone', async () => {
+    const w = gh(world(), '');
+    const ctx = w.ctx();
+    await nativeBuildsOnMain(ctx);
+    expect(lines(ctx)).toEqual(['ok P10 the native builds on main are not reporting (no completed runs)']);
+  });
+
+  it.each(['failure', 'timed_out'])('stops on %s, and says why it matters', async c => {
+    const w = gh(world(), `${c}|Library: a PDF|https://x/2`);
+    expect(await stopOf(() => nativeBuildsOnMain(w.ctx()))).toBe(
+      `the native builds on main (F-Droid, iOS, Mac) last concluded '${c}' on "Library: a PDF" — F-Droid builds what is tagged; fix it first: https://x/2`,
+    );
+  });
+
+  it('is the same gate in the shell', () => {
+    const fs = require('fs') as typeof import('fs');
+    const path = require('path') as typeof import('path');
+    const sh = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'release.sh'), 'utf8');
+    expect(sh).toContain('gh run list --workflow=native.yml --branch main --status completed --limit 6');
+    expect(sh).toContain('ok "the native builds on main are ${NB_CONCLUSION:-not reporting (no completed runs)}"');
   });
 });
 

@@ -101,7 +101,8 @@ describe('the React Compiler is on, and what it rests on', () => {
   it('compiled and as written are compared wherever the tests are run', () => {
     // tools/compiler-differential.js: in preflight, and in CI beside Jest.
     const pkg = JSON.parse(readFileSync(path.join(ROOT, 'package.json'), 'utf-8'));
-    expect(pkg.scripts.preflight).toMatch(/jest --ci --silent && node tools\/compiler-differential\.js$/);
+    // …straight after Jest; the F-Droid build, when Android has changed, is the one thing after it.
+    expect(pkg.scripts.preflight).toMatch(/jest --ci --silent && node tools\/compiler-differential\.js( && sh scripts\/fdroid-check\.sh --if-android-changed)?$/);
     expect(readFileSync(path.join(ROOT, '.github/workflows/ci.yml'), 'utf-8')).toContain('run: node tools/compiler-differential.js');
     // …and its recorder is the first thing Jest sets up, and nothing at all
     // without the variable the tool sets.

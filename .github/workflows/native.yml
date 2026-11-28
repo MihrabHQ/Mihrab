@@ -58,10 +58,13 @@ jobs:
           sh /tmp/fdroid-sdk.sh
           grep -n "compileSdkVersion" ../build.gradle
 
-      - name: Assemble the F-Droid debug APK
+      # The RELEASE APK: the build type F-Droid builds, with R8 on. The debug
+      # build this step used to make compiles the same sources but shrinks
+      # nothing, and what R8 will not take is F-Droid's to find otherwise.
+      - name: Assemble the F-Droid release APK
         working-directory: android
         run: >-
-          ./gradlew assembleFdroidDebug
+          ./gradlew assembleFdroidRelease
           -PreactNativeArchitectures=arm64-v8a
           --no-daemon --stacktrace
 

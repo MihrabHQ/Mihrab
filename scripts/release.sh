@@ -586,6 +586,27 @@ case "$CI_CONCLUSION" in
     die "CI on main last concluded '$CI_CONCLUSION' on \"$CI_TITLE\" — fix it before releasing on top of it: $CI_URL" ;;
 esac
 
+# …and the native builds, which are the F-Droid build among them
+# (.github/workflows/native.yml: the F-Droid APK at F-Droid's own SDK, the
+# iOS simulator, Mac Catalyst). F-Droid's bot builds whatever is tagged, and
+# three pushes went out on a red F-Droid job before anyone read it
+# (2026-11-28): a tag on top of that would have been a release F-Droid could
+# not build. The last run that reached a verdict — one cancelled by the push
+# after it reached none.
+NB_ROW="$(gh run list --workflow=native.yml --branch main --status completed --limit 6 \
+  --json conclusion,displayTitle,url \
+  --jq '[.[] | select(.conclusion != "cancelled")][0] // empty | "\(.conclusion)|\(.displayTitle)|\(.url)"' 2>/dev/null || true)"
+NB_CONCLUSION="${NB_ROW%%|*}"
+NB_REST="${NB_ROW#*|}"
+NB_TITLE="${NB_REST%%|*}"
+NB_URL="${NB_REST##*|}"
+case "$NB_CONCLUSION" in
+  ""|success)
+    ok "the native builds on main are ${NB_CONCLUSION:-not reporting (no completed runs)}" ;;
+  *)
+    die "the native builds on main (F-Droid, iOS, Mac) last concluded '$NB_CONCLUSION' on \"$NB_TITLE\" — F-Droid builds what is tagged; fix it first: $NB_URL" ;;
+esac
+
 step "Tests"
 NODE_ENV=test npx jest --silent >/dev/null 2>&1 || die "jest failed — run 'NODE_ENV=test npx jest'"
 ok "jest"

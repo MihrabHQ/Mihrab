@@ -367,6 +367,29 @@ export async function ciOnMain(ctx: Ctx): Promise<void> {
   );
 }
 
+// …and the native builds, the F-Droid build among them (native.yml: the
+// F-Droid APK at F-Droid's own SDK, the iOS simulator, Mac Catalyst).
+// F-Droid's bot builds whatever is tagged, and three pushes went out on a
+// red F-Droid job before anyone read it (2026-11-28). The last run that
+// reached a verdict: one cancelled by the push after it reached none.
+export async function nativeBuildsOnMain(ctx: Ctx): Promise<void> {
+  const r = await gh(ctx, [
+    'run', 'list', '--workflow=native.yml', '--branch', 'main', '--status', 'completed', '--limit', '6',
+    '--json', 'conclusion,displayTitle,url',
+    '--jq', '[.[] | select(.conclusion != "cancelled")][0] // empty | "\\(.conclusion)|\\(.displayTitle)|\\(.url)"',
+  ]);
+  const row = r.code === 0 ? r.stdout.trim() : '';
+  const [conclusion, title, url] = row3(row);
+  if (conclusion === '' || conclusion === 'success') {
+    ctx.report.ok('P10', `the native builds on main are ${conclusion || 'not reporting (no completed runs)'}`);
+    return;
+  }
+  ctx.report.stop(
+    'P10',
+    `the native builds on main (F-Droid, iOS, Mac) last concluded '${conclusion}' on "${title}" — F-Droid builds what is tagged; fix it first: ${url}`,
+  );
+}
+
 // ── P11 ───────────────────────────────────────────────────────────────
 export const JEST_FAILED = "jest failed — run 'NODE_ENV=test npx jest'";
 export const TSC_FAILED = "tsc failed — run 'npx tsc --noEmit'";
@@ -499,6 +522,7 @@ export async function preflight(ctx: Ctx, rel: Release): Promise<string> {
     () => caskGate(ctx, rel),
     () => lessonGate(ctx),
     () => ciOnMain(ctx),
+    () => nativeBuildsOnMain(ctx),
     () => xcodeCloudIdle(ctx),
   ]);
   await tests(ctx);

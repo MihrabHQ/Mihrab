@@ -418,6 +418,58 @@ if ((rootProject.ext.compileSdkVersion as int) < 37) {
     }
 }
 
+/*
+ * …and so that the check above is never the first to say it: EVERY Android
+ * build asks every library what SDK it must be compiled against, and stops
+ * for one that asks for more than F-Droid's recipe gives, the day it is
+ * added — at the project's own SDK, on any machine, in seconds.
+ *
+ * The SDK is read from the recipe's own line, so the two cannot drift. A
+ * library asking for an SDK extension is stopped too: the lowered SDK has
+ * none to offer. `FDROID_SDK_EXEMPT` is the list of libraries known to ask
+ * for more and shown to compile, link and run built F-Droid's way; adding to
+ * it is a decision, to be made with `sh scripts/fdroid-check.sh` green.
+ */
+def FDROID_SDK_EXEMPT = ['androidx.pdf']
+tasks.register('checkFdroidLibraries') {
+    def recipe = rootProject.file('../contrib/fdroid/com.prayer_times.yml')
+    def metadata = configurations.matching { it.name == 'fdroidReleaseRuntimeClasspath' }
+    inputs.file(recipe)
+    doLast {
+        def lowered = (recipe.text =~ /SdkVersion = \d+\/SdkVersion = (\d+)/)
+        if (!lowered.find()) {
+            logger.lifecycle("checkFdroidLibraries: the recipe lowers no SDK — nothing to hold libraries to")
+            return
+        }
+        int floor = lowered.group(1) as int
+        def asking = []
+        metadata.each { conf ->
+            def view = conf.incoming.artifactView {
+                attributes { attribute(org.gradle.api.attributes.Attribute.of('artifactType', String), 'android-aar-metadata') }
+                lenient(true)
+            }
+            view.artifacts.each { a ->
+                def props = new Properties()
+                a.file.withInputStream { props.load(it) }
+                int sdk = (props.getProperty('minCompileSdk') ?: '1') as int
+                int ext = (props.getProperty('minCompileSdkExtension') ?: '0') as int
+                def id = a.id.componentIdentifier.displayName
+                if ((sdk > floor || ext > 0) && !FDROID_SDK_EXEMPT.any { id.startsWith(it + ':') || id.startsWith(it + '.') }) {
+                    asking << "${id} (compile SDK ${sdk}${ext > 0 ? ', extension ' + ext : ''})"
+                }
+            }
+        }
+        if (asking) {
+            throw new GradleException(
+                "F-Droid compiles this app against SDK ${floor} (contrib/fdroid/com.prayer_times.yml), and these libraries ask for more:\n  " +
+                asking.join('\n  ') +
+                "\nF-Droid's build would stop on them. Use a version that does not, or — once `sh scripts/fdroid-check.sh` " +
+                "shows the app builds F-Droid's way with it — name the library in FDROID_SDK_EXEMPT (android/app/build.gradle), saying why.")
+        }
+    }
+}
+tasks.matching { it.name == 'preBuild' }.configureEach { dependsOn 'checkFdroidLibraries' }
+
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
