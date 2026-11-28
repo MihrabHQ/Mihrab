@@ -86,6 +86,12 @@ export const OTHER_PLATFORM =
   /android|أندرويد|اندرويد|андроид|एंड्रॉ|অ্যান্ড্রয়েড|اینڈرائیڈ|安卓|f-droid|google play|play store|play butik|material you/i;
 
 /**
+ * The desktop platforms and their installers, by their names — capitalised, so a prayer's "time
+ * window" is not taken for one. Guideline 2.3.10 asks for no platform but Apple's, not Android alone.
+ */
+export const NOT_APPLE = /\bWindows\b|\bLinux\b|\bwinget\b|\bScoop\b|\bFlatpak\b|\bSnap\b|ويندوز|لينكس|Виндовс/;
+
+/**
  * Play's notes as the App Store's: every line that names Android (or Play,
  * F-Droid …) left out, whole — the notes are one change a line. Notes that
  * are nothing else stop the run: Apple wants What's New on an update.
@@ -93,7 +99,7 @@ export const OTHER_PLATFORM =
 export function forAppStore(notes: string, file: string): string {
   const kept = notes
     .split('\n')
-    .filter(line => !OTHER_PLATFORM.test(line))
+    .filter(line => !OTHER_PLATFORM.test(line) && !NOT_APPLE.test(line))
     .join('\n')
     .trim();
   if (!kept) {

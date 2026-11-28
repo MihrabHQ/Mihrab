@@ -159,6 +159,10 @@ describe('the listing writer', () => {
   it('drops a line that names Android anywhere, and stops when nothing is left', () => {
     expect(forAppStore('• Faster on iPhone and on Android.\n• Qatar offline.', 'x.txt')).toBe('• Qatar offline.');
     expect(() => forAppStore('• Android: one.\n• Android: two.', 'x.txt')).toThrow(/nothing left/);
+    // Not Android alone: guideline 2.3.10 is any platform but Apple's.
+    expect(forAppStore('• Windows: install with Scoop or winget.\n• Linux packages.\n• ويندوز: التثبيت.\n• Hadith.', 'x.txt')).toBe('• Hadith.');
+    // A prayer's "time window" is not the platform.
+    expect(forAppStore('• The preferred time window, shown.', 'x.txt')).toBe('• The preferred time window, shown.');
   });
 
   it('sends the App Store the notes without the Android line', async () => {
