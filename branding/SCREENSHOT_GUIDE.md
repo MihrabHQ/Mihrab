@@ -68,6 +68,18 @@ How each was taken:
   the accessibility labels (`idb ui describe-all`). The Quran tab was
   taken on 6 November, when the memorised portions were due and not three
   weeks overdue.
+- **iPhone Duo** (the App Store's `APP_IPHONE_DUO` slot, English only) on
+  the "Mihrab iPhone Duo iOS27.1" simulator: raw captures in
+  `branding/store/duo/` by `idb screenshot` (the cover display), panels by
+  `branding/tools/build_duo.py`. The app was installed fresh so that
+  onboarding could ask for notifications (a simulator that was never asked
+  has no Notifications page for the app, and every bell shows crossed out),
+  and the muṣḥaf folder (`Documents/quran`) was copied from the iPhone
+  simulator's container rather than downloaded again. idb's frames on the
+  cover display can be one button off: open the month by
+  `xcrun simctl openurl <udid> mihrab://month` and the muṣḥaf by
+  `mihrab://read/67?initialPage=562`. The month is shot in the afternoon:
+  after Maghrib the Sky theme draws it dark.
 - **Desktop** by `desktop/scripts/steps-store-home.js` through `drive.js`:
   Playwright's clock holds the hour, `TZ=Africa/Abidjan`, 1440×900 at 2×.
 - **iPad** on the iPad Pro 13″ simulator, the same build and helpers. The
