@@ -1432,7 +1432,7 @@ Changed the release cycle itself:
   - `docs/DISTRIBUTION.md`
   - `scripts/release/appstoreMetadata.ts`
 
-**Lesson:** _(unfilled)_
+**Lesson:** two of the three aborts were the release run finding what CI and jest had already said — main was red on the Sweden test pushed half an hour before, and jest failed on the same — so start only when every CI job on the commit being released is green and the full jest has passed with `NODE_ENV` unset. Why the Catalyst build failed once was not kept (`/tmp/release-catalyst.log` is gone); its second try built. And the store's own checks come after the tag: Play's required-features check made 2.39.0 a second build (302) by hand — read the Play Console's warnings on the bundle before the release is called done.
 
 **Play has 302 too.** Play Console flagged `android.hardware.screen.portrait`
 (the QR scanner, locked to portrait) and `android.hardware.wifi` (from

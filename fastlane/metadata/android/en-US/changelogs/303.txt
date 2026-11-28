@@ -1,0 +1,5 @@
+• New: a Hadith tab — only sound hadith, in your language with their meaning, al-Bukhari and Muslim by their books, Riyad as-Salihin, Bulugh al-Maram, a hadith of the day, plans and bookmarks.
+• A Library of whole books, Arabic and translated, read without a connection.
+• The Qur'an in Latin letters under the Arabic, and the tafsir of at-Tabari and Ibn 'Atiyya.
+• Android widgets follow the phone's dark mode.
+• Mālikī second times: silent alerts that stay.

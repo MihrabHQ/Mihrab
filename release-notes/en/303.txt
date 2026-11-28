@@ -1,0 +1,10 @@
+• New: a Hadith tab. Only sound hadith are served — HadeethEnc's, in your language, each with its meaning and explanation; Sahih al-Bukhari and Sahih Muslim by their books; Riyad as-Salihin, Bulugh al-Maram, `Umdat al-Ahkam, an-Nawawi's Forty with Ibn Rajab's commentary, Hadith Qudsi and more. Downloaded when you ask for it, from Mihrab's copy or from the original source.
+• Hadith of the day: as a notification, and on Today where there is room. Memorising, bookmark folders and reading plans; share a hadith as a picture.
+• A Library of whole books — the first book of fiqh for each school, an-Nawawi's at-Tibyan, Fath al-Mu'in and more in Arabic, and books in Indonesian and other languages, some as the publisher's PDF. Read without a connection, with your place, bookmarks, search and your own notes.
+• Every hadith and Library download goes through the download manager: one at a time, in the notification on Android, and offered again if the app was closed.
+• Qur'an: the ayah in Latin letters under the Arabic, as a reading aid you switch on; the tafsir of at-Tabari and Ibn 'Atiyya; share several ayahs at once; the muṣḥaf opens whole and answers a tap at once.
+• Mālikī second times: silent notifications that stay until the time has passed, and the second times and their bells in the minimal layout.
+• Minimal: "Back to today" is an icon on the day bar.
+• Android widgets: a background that follows the phone or the app, the phone's dark mode at once, and each widget keeps what it shows (#144).
+• Android: prayer alerts keep coming when the app is not opened.
+• Windows: install with Scoop or winget.

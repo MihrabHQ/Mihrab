@@ -1,0 +1,10 @@
+• Nytt: en Hadith-flik. Bara autentiska hadither visas — HadeethEncs, på ditt språk, var och en med betydelse och förklaring; Sahih al-Bukhari och Sahih Muslim bok för bok; Riyad as-Salihin, Bulugh al-Maram, `Umdat al-Ahkam, an-Nawawis fyrtio med Ibn Rajabs kommentar, Hadith Qudsi med mera. Hämtas när du ber om det, från Mihrabs kopia eller från originalkällan.
+• Dagens hadith: som avisering, och på Idag där det finns plats. Memorering, bokmärkesmappar och läsplaner; dela en hadith som bild.
+• Ett bibliotek med hela böcker — en första fiqhbok för varje skola, an-Nawawis at-Tibyan, Fath al-Mu'in med flera på arabiska, och böcker på indonesiska och andra språk, en del som förlagets PDF. Läses utan uppkoppling, med din plats, bokmärken, sökning och egna anteckningar.
+• Alla nedladdningar av hadither och böcker går genom nedladdningshanteraren: en i taget, i aviseringen på Android, och erbjuds igen om appen stängdes.
+• Koranen: versen med latinska bokstäver under arabiskan, som läshjälp du slår på; at-Tabaris och Ibn 'Atiyyas tafsir; dela flera verser på en gång; mushafen öppnas hel och svarar direkt på ett tryck.
+• Malikitiska andratider: tysta aviseringar som ligger kvar tills tiden har gått, och andratiderna med sina klockor i den minimala layouten.
+• Minimal: ”Tillbaka till idag” är en ikon i dagsraden.
+• Android-widgetar: en bakgrund som följer telefonen eller appen, telefonens mörka läge direkt, och varje widget behåller det den visar (#144).
+• Android: böneaviseringarna fortsätter komma även när appen inte öppnas.
+• Windows: installera med Scoop eller winget.
