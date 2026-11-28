@@ -124,9 +124,9 @@ describe('iOS: each module is built against its contract', () => {
     expect(own).not.toMatch(/^- \([^)]*\)[^\n{]*\b(resolver|rejecter):/m);
   });
 
-  it('nothing is exported the untyped way any more — the two native views and the location module apart', () => {
+  it('nothing is exported the untyped way any more — the three native views and the location module apart', () => {
     for (const o of objc) {
-      if (['GlassBlur.m', 'MushafLine.m', 'MihrabGeolocation.mm'].includes(o.file)) continue;
+      if (['GlassBlur.m', 'MushafLine.m', 'MihrabPdfView.m', 'MihrabGeolocation.mm'].includes(o.file)) continue;
       expect(`${o.file}: ${/RCT_EXTERN_MODULE|RCT_EXTERN_METHOD|RCT_EXPORT_METHOD|RCT_REMAP_METHOD/.test(o.text)}`).toBe(`${o.file}: false`);
     }
   });

@@ -202,7 +202,7 @@ describe('the reader', () => {
     expect(page).toContain('onPdfError={() => setSystemFailed(true)}');
     expect(page).toContain('setGoTo(was => ({ page: Math.min(pages, n) - 1, key: (was?.key ?? 0) + 1 }));');
     expect(page).toMatch(/onSystemViewport[\s\S]{0,400}seen\.current = page;\s*setAt\(page\);/);
-    expect(read('src/native/MihrabPdfView.ts')).toContain("rn.Platform.OS === 'android'");
+    expect(read('src/native/MihrabPdfView.ts')).toContain("(rn.Platform.OS === 'android' || rn.Platform.OS === 'ios')");
   });
 
   it('looks for words in the file where the system can read them, and offers it nowhere else', () => {
@@ -254,6 +254,27 @@ describe('the reader', () => {
     const view = read('android/app/src/main/java/com/prayer_times/MihrabPdfReaderView.kt');
     expect(page).toContain('useVolumeKeyPaging(system && readerPrefs.volumeKeyPaging, finding, asking, turn, readerPrefs.volumeKeyUpForward);');
     expect(view).toContain('pdf.scrollBy(0, (by * pdf.height * SCREEN_PART).toInt())');
+  });
+
+  it('is Apple\'s own PDF view on iPhone, iPad and Mac: the same view to JavaScript', () => {
+    const swift = read('ios/PrayerApp/MihrabPdfView.swift');
+    const bridge = read('ios/PrayerApp/MihrabPdfView.m');
+    const project = read('ios/PrayerApp.xcodeproj/project.pbxproj');
+    // In the app's target, both files.
+    for (const f of ['MihrabPdfView.swift in Sources', 'MihrabPdfView.m in Sources']) expect(project.split(f).length).toBe(3);
+    // Every prop and event the spec names is exported, under the name JavaScript asks for.
+    expect(bridge).toContain('RCT_EXTERN_MODULE(MihrabPdfViewManager, RCTViewManager)');
+    const spec = read('src/native/MihrabPdfViewNativeComponent.ts');
+    const props = [...spec.matchAll(/^  (\w+)\??:/gm)].map(m => m[1]);
+    expect(props).toEqual(expect.arrayContaining(['path', 'page', 'goTo', 'zoomTo', 'tone', 'pageBy', 'find', 'findStep', 'onPdfViewport', 'onPdfReady', 'onPdfFind', 'onPdfError']));
+    for (const prop of props) expect([prop, bridge.includes(`RCT_EXPORT_VIEW_PROPERTY(${prop},`)]).toEqual([prop, true]);
+    // A file on the device, and no network.
+    expect(swift).toContain('PDFDocument(url: URL(fileURLWithPath: file))');
+    expect(/https?:\/\/|URLSession/.test(swift)).toBe(false);
+    // A page as wide as the view is the least zoom and four times it the most, as on Android.
+    expect(swift).toContain('pdf.maxScaleFactor = fit * 4');
+    // A file it cannot open is said, and the list of pages reads it instead.
+    expect(swift).toContain('onPdfError?(["message": "the file would not open"])');
   });
 
   it('has a sentence for each way the file can fail, in every language', () => {
