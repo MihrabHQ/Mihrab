@@ -258,8 +258,8 @@ android {
         applicationId "com.prayer_times"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 302
-        versionName "2.39.0"
+        versionCode 303
+        versionName "2.40.0"
         // Hardware memory tagging (ARM MTE) for the app's native heap:
         // see the note on `memtagMode` in AndroidManifest.xml.
         // `-PmemtagMode=sync` makes a build that faults AT the bad access,

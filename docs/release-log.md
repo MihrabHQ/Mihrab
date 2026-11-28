@@ -1443,3 +1443,22 @@ this script. Everything else — GitHub, F-Droid, the App Store, the Mac —
 is 301. **The next release's versionCode must be 303 or higher**: set
 `versionCode 302` in `android/app/build.gradle` before running
 `release.sh`, which adds one.
+
+## 2.40.0 (303) — 2026-11-28
+
+Took 2 aborted attempt(s) before it ran clean:
+
+  - 1 jest failed — run 'NODE_ENV=test npx jest'
+  - 1 push to main failed — nothing tagged, nothing published.
+
+Changed the release cycle itself:
+
+  - `.github/workflows/ci.yml`
+  - `.github/workflows/desktop.yml`
+  - `.github/workflows/native.yml`
+  - `.github/workflows/winget.yml`
+  - `docs/DISTRIBUTION.md`
+  - `scripts/release.sh`
+  - `scripts/release/preflight.ts`
+
+**Lesson:** _(unfilled)_
