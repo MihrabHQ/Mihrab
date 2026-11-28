@@ -49,7 +49,8 @@ describe('the layout shortcut on Today (shown with the data stats)', () => {
   it('never changes the layout in place on Android: both doors ask, as Settings does', () => {
     expect(today).toMatch(/const switchLayout = \(on: boolean\) => \{\s*if \(Platform\.OS === 'android'\) setPendingLayout\(on\);\s*else updateSettings\(\{ minimalUi: on \}\);/);
     expect(today).toContain('onPress={() => switchLayout(!settings.minimalUi)}');
-    expect(today).toContain('onToggleMinimal={settings.showDataStats ? () => switchLayout(false) : undefined}');
+    // The minimal sheet has no switch of its own: Settings is the way between the layouts.
+    expect(today).not.toContain('onToggleMinimal');
     // No other write of the layout is left on the page.
     expect(today.match(/updateSettings\(\{ minimalUi/g)).toHaveLength(1);
   });

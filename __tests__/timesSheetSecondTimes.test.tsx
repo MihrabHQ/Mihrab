@@ -110,3 +110,53 @@ describe('what the sheet is fed', () => {
     expect(src).toMatch(/lead: key === 'Sunrise' \? fajrTime : undefined,/);
   });
 });
+
+describe('the way back to today', () => {
+  const plain = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map(key => row(key));
+  const sheetOn = async (isToday: boolean, back: () => void) => {
+    let root!: ReactTestRenderer;
+    await act(async () => {
+      root = create(
+        <TodayTimesSheet
+          visible
+          progress={new Animated.Value(1)}
+          onClose={() => {}}
+          title="Day"
+          rows={plain}
+          isToday={isToday}
+          onBackToToday={back}
+          onMonth={() => {}}
+        />,
+      );
+    });
+    return root;
+  };
+  const door = (root: ReactTestRenderer) =>
+    root.root.findAll(n => n.props.testID === 'sheet-back-to-today' && typeof n.props.onPress === 'function');
+
+  it('is a door of the day bar on any other day, and not there today', async () => {
+    let went = 0;
+    const other = await sheetOn(false, () => (went += 1));
+    expect(door(other).length).toBeGreaterThan(0);
+    expect(door(other)[0].props.accessibilityLabel).toBe('Back to today');
+    door(other)[0].props.onPress();
+    expect(went).toBe(1);
+    await act(async () => other.unmount());
+    const today = await sheetOn(true, () => {});
+    expect(door(today)).toHaveLength(0);
+    await act(async () => today.unmount());
+  });
+
+  it('stands before the day and the calendar after it, and no longer in the rows', () => {
+    const src = require('fs').readFileSync(
+      require('path').join(__dirname, '../src/screens/home/TodayTimesSheet.tsx'),
+      'utf8',
+    ) as string;
+    const bar = src.slice(src.indexOf('<View style={styles.dayBar}>'), src.indexOf('<DayPager'));
+    expect(bar.indexOf('sheet-back-to-today')).toBeGreaterThan(-1);
+    expect(bar.indexOf('sheet-back-to-today')).toBeLessThan(bar.indexOf('<MonthGlyph'));
+    expect(src).not.toContain('backLayer');
+    // The layout switch that stood here (shown with the data statistics) is gone.
+    expect(src).not.toContain('MinimalGlyph');
+  });
+});

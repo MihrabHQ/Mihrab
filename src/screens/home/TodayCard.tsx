@@ -2029,7 +2029,6 @@ function TodayCardImpl({
           onNext={dayAt(sheetOffset + 1) ? () => setSheetOffset(o => o + 1) : undefined}
           onBackToToday={() => setSheetOffset(0)}
           onMonth={onOpenMonth}
-          onToggleMinimal={settings.showDataStats ? () => switchLayout(false) : undefined}
           qibla={qiblaBearing != null ? { bearing: qiblaBearing, onPress: onOpenQibla } : undefined}
           place={placeLabel ? { label: placeLabel, onPress: onOpenPlace } : undefined}
           source={timesSource}
