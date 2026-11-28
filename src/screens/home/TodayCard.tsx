@@ -1499,12 +1499,52 @@ function TodayCardImpl({
     const loggable = offset <= 0;
     const day = addDays(startOfLocalDay(logNow), offset);
     const nextDay = dayAt(offset + 1);
-    return displayRowsFor(dayTimings).map(key => ({
+    const rows = displayRowsFor(dayTimings);
+    const isToday = offset === 0;
+    // The bells, as the full page's rows have them: what will happen at
+    // each time today — the one-off override where there is one.
+    const overrideKey = overrideKeyFor(offset, dayTimings, rows);
+    // Mālikī second times, where the reader has them on: Fajr's, ʿAṣr's
+    // and Ishāʾ's — the three that are not another row of the sheet
+    // (Ẓuhr's is ʿAṣr, Maghrib's is Ishāʾ). As on the full page, today's
+    // follow the clock (first window, then second, then nothing) and
+    // another day's states the first boundary.
+    const secondTime = (key: 'Fajr' | 'Asr' | 'Isha') => {
+      const daruriKey = `${key}Daruri` as DaruriKey;
+      if (!dayTimings[daruriKey]) return undefined;
+      const state = isToday
+        ? daruriRowState(week, logNow, daruriKey, logNow, quickLog.statusOf(key) != null, dayClock)
+        : { phase: 'first' as const, at: dayTimings[daruriKey] as string, approx: DARURI_CONFIDENCE[daruriKey] === 'modelled' };
+      if (!state) return undefined;
+      return {
+        text: t(state.phase === 'second' ? 'prayer.secondTimeShort' : 'prayer.firstTimeShort', {
+          time: `\u2068${state.approx ? '~' : ''}${clock(state.at)}\u2069`,
+          interpolation: { escapeValue: false },
+        }),
+        label: `${t(`prayer.${key}`)}, ${t(state.phase === 'second' ? 'prayer.secondTimeUntil' : 'prayer.firstTimeUntil', {
+          time: state.approx ? `${t('prayer.approx', { defaultValue: 'approx.' })} ${clock(state.at)}` : clock(state.at),
+        })}`,
+      };
+    };
+    const fajrTime = secondTime('Fajr');
+    // Fajr's rides on Sunrise's line, first on it; on Fajr's own row only
+    // where Sunrise is not shown.
+    const sunriseShown = rows.includes('Sunrise');
+    return rows.map(key => ({
       key,
       name: t(`prayer.${key}`),
       time: clock(dayTimings[key] as string),
       secondary: (OPTIONAL_TIME_KEYS as readonly string[]).includes(key),
       lit: offset === 0 && target?.name === key,
+      tag: key === 'Asr' || key === 'Isha' ? secondTime(key) : key === 'Fajr' && !sunriseShown ? fajrTime : undefined,
+      lead: key === 'Sunrise' ? fajrTime : undefined,
+      alert: isToday
+        ? {
+            mode: overrideKey === key && override ? override.mode : alertModeOf(key),
+            onCycle: () => cycleAlertMode(key),
+            emphasised: overrideKey === key && !!override,
+          }
+        : undefined,
       log:
         loggable && isSalah(key)
           ? {

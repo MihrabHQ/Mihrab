@@ -27,6 +27,8 @@ import { SPACING } from '../../theme/tokens';
 import { TABULAR_MAX_FONT_SCALE, tabularNumeralStyle } from '../../theme/textScale';
 import { TYPE, typeStyle } from '../../theme/typography';
 import { LogCheck, LOG_CHECK_SIZE } from './LogCheck';
+import { AlertModeButton } from './AlertModeButton';
+import type { PrayerAlertMode } from '../../settings/alertModes';
 import { MinimalGlyph } from './MinimalGlyph';
 import { MapPinIcon } from '../../theme/icons';
 import { CompassIcon } from '../../components/HeaderToolbarIcons';
@@ -44,6 +46,26 @@ export type TimesSheetRow = {
   secondary: boolean;
   /** The next prayer, lit. */
   lit: boolean;
+  /**
+   * A Mālikī second time beside the prayer's own (settings: Mālikī second
+   * times): "1st to ~17:10". On ʿAṣr and Ishāʾ only — Ẓuhr's boundary is
+   * ʿAṣr's row and Maghrib's is Ishāʾ's, and saying them again would be the
+   * same number twice on a sheet of five lines. `label` is how it is read
+   * aloud.
+   */
+  tag?: { text: string; label: string };
+  /**
+   * Fajr's second time, said FIRST on the line this time is on — Sunrise's:
+   * it falls before sunrise, and the line is there either way, so Fajr's row
+   * does not grow for it.
+   */
+  lead?: { text: string; label: string };
+  /**
+   * How this time announces itself, and the tap that changes it — the full
+   * page's bell, on today's rows only (a tap on another day's would change
+   * a setting for every day).
+   */
+  alert?: { mode: PrayerAlertMode; onCycle: () => void; emphasised: boolean };
   log?: {
     status: LoggedStatus | null;
     phase: QuickLogPhase;
@@ -330,29 +352,60 @@ function DayRows({ rows, onBackToToday }: { rows: TimesSheetRow[]; onBackToToday
     <View style={styles.rows}>
       {groups.map(group => {
         if (group.kind === 'aside') {
+          // Fajr's second time leads the line it shares with Sunrise.
+          const lead = group.rows.find(r => r.lead)?.lead;
+          // A bell ends its item, so nothing else need part two of them —
+          // and a dot between them opened the second line when the run
+          // wrapped ("· Tengah malam 23:29"). Dots only where there are no
+          // bells: another day's sheet.
+          const dots = !group.rows.some(r => r.alert);
           return (
-            <Text
-              key={group.rows.map(r => r.key).join('+')}
-              style={[styles.aside, { color: palette.muted }]}
-              maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
-              testID="sheet-extra-times">
-              {group.rows.map((r, i) => (
-                <Text key={r.key} style={r.lit ? [styles.lit, { color: palette.text }] : undefined}>
-                  {/* A thin space before the slanted name: it leans past
-                      its own measure, and Android cuts it at the line's
-                      start (the first letter of "الثلث الأخير"). */}
-                  {i > 0 ? '   ·   ' : '\u2009'}
-                  <Text style={styles.secondary}>{r.name.replace(/ /g, '\u00A0')}</Text>
-                  {/* Each item whole — its name, its time, nothing broken
-                      between or inside them; the line breaks only at the
-                      dots between items. In Russian "Исламская полночь
-                      10:23 PM" ran to the line's end and left "PM" alone on
-                      the next, and then "полночь" without "Исламская". */}
-                  {'\u00A0\u00A0'}
-                  <Text style={[tabularNumeralStyle, !r.lit && { color: palette.text }]}>{r.time.replace(/ /g, '\u00A0')}</Text>
+            <View key={group.rows.map(r => r.key).join('+')} style={styles.aside} testID="sheet-extra-times">
+              {lead ? (
+                <Text
+                  style={[styles.asideText, tabularNumeralStyle, { color: palette.muted }]}
+                  maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+                  accessibilityLabel={lead.label}
+                  testID="sheet-lead">
+                  {'\u2009'}
+                  {lead.text.replace(/ /g, '\u00A0')}
+                  {/* Its dot stays with it, so it never opens a line. */}
+                  {'\u00A0\u00A0·'}
                 </Text>
+              ) : null}
+              {group.rows.map((r, i) => (
+                // Each item whole — its name, its time, its bell, nothing
+                // broken between or inside them; the line breaks only
+                // between items. In Russian "Исламская полночь 10:23 PM" ran
+                // to the line's end and left "PM" alone on the next, and
+                // then "полночь" without "Исламская".
+                <View key={r.key} style={styles.asideItem}>
+                  {i > 0 && dots ? <Text style={[styles.asideText, { color: palette.muted }]}>·</Text> : null}
+                  <Text
+                    style={[styles.asideText, { color: palette.muted }, r.lit && [styles.lit, { color: palette.text }]]}
+                    maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
+                    {/* A thin space before the slanted name: it leans past
+                        its own measure, and Android cuts it at the line's
+                        start (the first letter of "الثلث الأخير"). */}
+                    {'\u2009'}
+                    <Text style={styles.secondary}>{r.name.replace(/ /g, '\u00A0')}</Text>
+                    {'\u00A0\u00A0'}
+                    <Text style={[tabularNumeralStyle, !r.lit && { color: palette.text }]}>{r.time.replace(/ /g, '\u00A0')}</Text>
+                  </Text>
+                  {r.alert ? (
+                    <AlertModeButton
+                      mode={r.alert.mode}
+                      palette={palette}
+                      onPress={r.alert.onCycle}
+                      prayerLabel={r.name}
+                      secondary
+                      emphasised={r.alert.emphasised}
+                      compact
+                    />
+                  ) : null}
+                </View>
               ))}
-            </Text>
+            </View>
           );
         }
         const row = group.row;
@@ -377,12 +430,27 @@ function DayRows({ rows, onBackToToday }: { rows: TimesSheetRow[]; onBackToToday
                 />
               ) : null}
             </View>
-            <Text
-              style={[styles.name, { color: ink }, row.lit && styles.lit, row.secondary && styles.secondary]}
-              numberOfLines={1}
-              onTextLayout={first ? e => setNameW(e.nativeEvent.lines[0]?.width ?? 0) : undefined}>
-              {row.name}
-            </Text>
+            {/* The name, and a second time beside it where the row has one:
+                toward the time while there is room on the line, under the
+                name's line when there is not (a wide clock, large type). */}
+            <View style={styles.nameBox}>
+              <Text
+                style={[styles.name, { color: ink }, row.lit && styles.lit, row.secondary && styles.secondary]}
+                numberOfLines={1}
+                onTextLayout={first ? e => setNameW(e.nativeEvent.lines[0]?.width ?? 0) : undefined}>
+                {row.name}
+              </Text>
+              {row.tag ? (
+                <Text
+                  style={[styles.tag, tabularNumeralStyle, { color: palette.muted }]}
+                  numberOfLines={1}
+                  maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+                  accessibilityLabel={row.tag.label}
+                  testID={`sheet-tag-${row.key}`}>
+                  {row.tag.text}
+                </Text>
+              ) : null}
+            </View>
             <Text
               style={[styles.time, tabularNumeralStyle, { color: ink }, row.lit && styles.lit]}
               numberOfLines={1}
@@ -391,6 +459,16 @@ function DayRows({ rows, onBackToToday }: { rows: TimesSheetRow[]; onBackToToday
               onLayout={first ? e => setTimeW(e.nativeEvent.layout.width) : undefined}>
               {row.time}
             </Text>
+            {row.alert ? (
+              <AlertModeButton
+                mode={row.alert.mode}
+                palette={palette}
+                onPress={row.alert.onCycle}
+                prayerLabel={row.name}
+                emphasised={row.alert.emphasised}
+                compact
+              />
+            ) : null}
             {first && onBackToToday ? (
               <BackToToday
                 onPress={onBackToToday}
@@ -683,14 +761,25 @@ const styles = StyleSheet.create({
   pageRtl: { direction: 'rtl' },
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: SPACING.xs, gap: SPACING.sm },
   check: { width: LOG_CHECK_SIZE, height: LOG_CHECK_SIZE, alignItems: 'center', justifyContent: 'center' },
-  name: { flex: 1, fontSize: TYPE.body.fontSize, fontWeight: '400' },
+  // The name and, where there is one, the second time: on one line while
+  // they fit, the second time pushed toward the clock; on two when not.
+  nameBox: { flex: 1, minWidth: 0, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: SPACING.sm },
+  name: { flexShrink: 1, fontSize: TYPE.body.fontSize, fontWeight: '400' },
+  tag: { marginStart: 'auto', fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
   secondary: { fontStyle: 'italic' },
   // A run of the optional times: one line, indented to the names' column
   // (the check's width and the row's gap), wrapping if it must.
   aside: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    columnGap: SPACING.sm,
+    marginStart: LOG_CHECK_SIZE + SPACING.sm - 3,
+  },
+  asideItem: { flexDirection: 'row', alignItems: 'center', columnGap: SPACING.xs },
+  asideText: {
     fontSize: TYPE.footnote.fontSize,
     lineHeight: Math.round(TYPE.footnote.fontSize * 1.5),
-    marginStart: LOG_CHECK_SIZE + SPACING.sm - 3,
   },
   time: { fontSize: TYPE.body.fontSize, fontWeight: '400' },
   // The next prayer: the same face, a step heavier — the row's emphasis.
