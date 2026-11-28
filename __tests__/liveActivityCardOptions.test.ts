@@ -202,7 +202,24 @@ describe('with the screen off, hours and minutes that keep moving', () => {
     expect(kotlin).toMatch(/ambient -> "\$inlineTitle · \$countdown"/);
     expect(kotlin).toMatch(/if \(ambient && arrivedTitle == null\) "\$inlineName · \$countdown"/);
     expect(kotlin).toMatch(/ambientText = if \(ambient\) countdown else null/);
-    expect(kotlin).toMatch(/if \(ambientText != null\) \{\s*api\.fixedText\.newInstance\(ambientText as CharSequence\)/);
+  });
+
+  /**
+   * The countdown card's own value was that text too (a FixedText), and on
+   * a Pixel the always-on card was seen with "In" over nothing: a card
+   * drawn for the ticking timer and then handed a text, another view than
+   * the timer's. It is a timer that stands still now — the same kind of
+   * value as the running one.
+   */
+  it('gives the countdown card a paused timer on the always-on display, not a text', () => {
+    expect(kotlin).toMatch(/val paused = if \(ambientText != null\) pausedTimer\(api, nextEpochMs\) else null/);
+    // The text only where the platform has no paused timer.
+    expect(kotlin).toMatch(/val timer = if \(paused != null\) \{\s*paused\s*\} else if \(ambientText != null\) \{\s*api\.fixedText\.newInstance\(ambientText as CharSequence\)/);
+    expect(kotlin).toContain('tdCls.getMethod("forPausedTimer", java.time.Duration::class.java, Int::class.javaPrimitiveType)');
+    expect(kotlin).toContain('make.invoke(null, ambientLeft(nextEpochMs - System.currentTimeMillis()), api.fmtAdaptive)');
+    // Whole hours while an hour or more is left, the minutes after: what the re-posts keep true
+    // (once an hour, then once a minute — the test below).
+    expect(kotlin).toContain('return if (totalMin >= 60) java.time.Duration.ofHours(totalMin / 60) else java.time.Duration.ofMinutes(totalMin)');
   });
 
   it('wakes the phone only when the ambient text changes, and stops when it wakes', () => {

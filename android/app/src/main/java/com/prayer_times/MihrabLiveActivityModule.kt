@@ -1210,11 +1210,26 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         // there itself), so the full hours and minutes are always visible. The
         // adaptive format collapsed to a coarse "4h" on AOD.
         //
-        // Except on the always-on display, where the system does NOT tick it:
-        // the value froze at whatever second the screen went off. There the
-        // service passes the hours and minutes as text and re-posts it each
-        // minute instead (MihrabLiveActivityService, `screenOn`).
-        val timer = if (ambientText != null) {
+        // Except on the always-on display, where the system did NOT tick it
+        // (Android 17 as first released): the value froze at whatever second
+        // the screen went off. There the service re-posts the card when the
+        // number changes instead (MihrabLiveActivityService, `screenOn`), and
+        // the value is one that does not move.
+        //
+        // A PAUSED TIMER, NOT TEXT. It was a FixedText ("15:--"), and on a
+        // Pixel (Android 17, November 2026) the always-on card was seen with
+        // "In" over nothing at all, and the title cut to "Mih…": a card
+        // drawn for the screen-on content — a title the length of the
+        // prayer's name, a timer — and then handed the always-on content,
+        // which kept the old sizes. A text value is another view than a
+        // timer's, and the one it was put into had never been measured. A
+        // paused timer is the SAME kind of value as the running one, so
+        // nothing is swapped: whole hours ("2h") while an hour or more is
+        // left, then the minutes ("15m"), in the system's own short form.
+        val paused = if (ambientText != null) pausedTimer(api, nextEpochMs) else null
+        val timer = if (paused != null) {
+          paused
+        } else if (ambientText != null) {
           api.fixedText.newInstance(ambientText as CharSequence)
         } else {
           api.forTimer.invoke(
@@ -1263,6 +1278,26 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
     }
 
     /**
+     * What is left, as a timer that is not running: whole hours while there
+     * is an hour or more (the card is re-posted once an hour then), the
+     * minutes after that (once a minute). Null where the platform has no
+     * paused timer; the caller falls back to text.
+     */
+    private fun pausedTimer(api: MetricApi, nextEpochMs: Long): Any? {
+      val make = api.forPausedTimer ?: return null
+      return runCatching {
+        make.invoke(null, ambientLeft(nextEpochMs - System.currentTimeMillis()), api.fmtAdaptive)
+      }.getOrNull()
+    }
+
+    /** `formatAmbient`'s rule, as a duration. */
+    @JvmStatic
+    fun ambientLeft(deltaMs: Long): java.time.Duration {
+      val totalMin = (deltaMs / 60_000L).coerceAtLeast(0)
+      return if (totalMin >= 60) java.time.Duration.ofHours(totalMin / 60) else java.time.Duration.ofMinutes(totalMin)
+    }
+
+    /**
      * The MetricStyle classes, constructors and methods, looked up ONCE.
      * `tryBuildCountdownMetricStyle` used to do these twelve lookups on
      * every post of the card. Null where the platform has no MetricStyle
@@ -1275,6 +1310,9 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
       val fixedTime: java.lang.reflect.Constructor<*>,
       val forTimer: java.lang.reflect.Method,
       val fmtChrono: Int,
+      /** A timer that stands still, for the always-on display; null if the platform has none. */
+      val forPausedTimer: java.lang.reflect.Method?,
+      val fmtAdaptive: Int,
       val addMetric: java.lang.reflect.Method,
       val setMetrics: java.lang.reflect.Method,
       val setCritical: java.lang.reflect.Method,
@@ -1295,6 +1333,10 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
             .getConstructor(java.time.LocalTime::class.java),
           forTimer = tdCls.getMethod("forTimer", Instant::class.java, Int::class.javaPrimitiveType),
           fmtChrono = tdCls.getField("FORMAT_CHRONOMETER").getInt(null),
+          forPausedTimer = runCatching {
+            tdCls.getMethod("forPausedTimer", java.time.Duration::class.java, Int::class.javaPrimitiveType)
+          }.getOrNull(),
+          fmtAdaptive = runCatching { tdCls.getField("FORMAT_ADAPTIVE").getInt(null) }.getOrDefault(1),
           addMetric = msCls.getMethod("addMetric", metricCls),
           setMetrics = msCls.getMethod("setMetrics", java.util.List::class.java),
           setCritical = msCls.getMethod("setCriticalMetric", Int::class.javaPrimitiveType),
