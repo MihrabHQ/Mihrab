@@ -34,6 +34,7 @@ import {
   libraryBookmarks,
   libraryKey,
   libraryReading,
+  setLibraryNote,
   setLibraryReading,
   toggleLibraryBookmark,
   type LibraryBookmark,
@@ -286,6 +287,10 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
     void libraryBookmarks(id).then(setMarks);
   }, [id]);
   const marked = marks.some(m => m.c === 0 && m.b === at);
+  // A word on the page: a name for its bookmark, a thought on it. Writing one marks the page.
+  const pageNote = marks.find(m => m.c === 0 && m.b === at)?.n ?? '';
+  const [noting, setNoting] = useState(false);
+  const [draft, setDraft] = useState('');
   const toggle = useCallback((page: number) => void toggleLibraryBookmark(id, 0, page).then(setMarks), [id]);
 
   // ── Android's own PDF view, where there is one ──
@@ -428,9 +433,49 @@ function PdfReader({ id, title, path, pages, ratio, toPage, rtl }: { id: string;
               {system && canFind ? <TextAction label={t('hadith.library.pdf.find')} color={palette.accentSolid} onPress={() => (finding ? stopFinding() : setFinding(true))} /> : null}
               <TextAction label={t('hadith.library.pdf.fullScreen')} color={palette.accentSolid} onPress={() => { setAsking(false); setFull(true); }} />
               <TextAction label={marked ? t('hadith.library.unmark') : t('hadith.library.mark')} color={palette.accentSolid} onPress={() => toggle(at)} />
+              <TextAction
+                label={pageNote ? t('hadith.editNote') : t('hadith.addNote')}
+                color={palette.accentSolid}
+                onPress={() => {
+                  setDraft(pageNote);
+                  setAsking(false);
+                  setNoting(true);
+                }}
+              />
             </View>
           </View>
           )}
+          {noting && !full ? (
+            <View style={[styles.goRow, { backgroundColor: palette.card }]} testID="library-pdf-note">
+              <TextInput
+                value={draft}
+                onChangeText={setDraft}
+                autoFocus
+                placeholder={t('hadith.notePlaceholder')}
+                placeholderTextColor={palette.muted}
+                onSubmitEditing={() => {
+                  setNoting(false);
+                  void setLibraryNote(id, 0, at, draft).then(setMarks);
+                }}
+                returnKeyType="done"
+                style={[styles.goInput, { color: palette.text }]}
+                testID="library-pdf-note-input"
+              />
+              <TextAction
+                label={t('common.save')}
+                color={palette.accentSolid}
+                onPress={() => {
+                  setNoting(false);
+                  void setLibraryNote(id, 0, at, draft).then(setMarks);
+                }}
+              />
+              <TextAction label={t('common.cancel')} color={palette.mutedSolid} onPress={() => setNoting(false)} />
+            </View>
+          ) : pageNote && !full ? (
+            <Text style={[styles.pageNoteShown, { color: palette.muted, backgroundColor: palette.card }]} numberOfLines={2} testID="library-pdf-note-shown">
+              {pageNote}
+            </Text>
+          ) : null}
           {finding && system && !full ? (
             <View style={[styles.goRow, { backgroundColor: palette.card }]}>
               <TextInput
@@ -746,7 +791,7 @@ export function LibraryPdfBookScreenPage() {
                         <Text style={[styles.sectionTitle, { color: palette.text }]}>{t('hadith.library.marks')}</Text>
                         <Group>
                           {[...marks].sort((a, b) => a.b - b.b).map(m => (
-                            <Row key={m.b} title={t('quran.pageLabel', { page: m.b + 1 })} onPress={() => open(m.b)} testID={`library-pdf-mark-${m.b}`} />
+                            <Row key={m.b} title={t('quran.pageLabel', { page: m.b + 1 })} subtitle={m.n} onPress={() => open(m.b)} testID={`library-pdf-mark-${m.b}`} />
                           ))}
                         </Group>
                       </>
@@ -798,6 +843,7 @@ const styles = StyleSheet.create({
   zoom: { paddingHorizontal: SPACING.sm, paddingVertical: SPACING.xs, borderRadius: RADIUS.sm, borderWidth: StyleSheet.hairlineWidth },
   headEnd: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   toneDot: { width: 16, height: 16, borderRadius: RADIUS.full, borderWidth: StyleSheet.hairlineWidth },
+  pageNoteShown: { fontSize: TYPE.footnote.fontSize, fontStyle: 'italic', paddingHorizontal: SPACING.lg, paddingVertical: SPACING.xs },
   zoomText: { fontSize: TYPE.footnote.fontSize, fontVariant: ['tabular-nums'] },
   pressed: { opacity: 0.6 },
 });

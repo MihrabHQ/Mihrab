@@ -225,7 +225,8 @@ export function LibraryShelf({ navigation }: { navigation: NativeStackNavigation
                 <Row
                   key={`${m.book}:${m.c}:${m.b}`}
                   title={book.title}
-                  subtitle={where || undefined}
+                  // Where it is, and the reader's own words on it, where they wrote some.
+                  subtitle={[where, m.n].filter(Boolean).join(' · ') || undefined}
                   onPress={() => navigation.push('LibraryBook', { id: m.book, chapter: m.c, block: m.b })}
                   testID={`hadith-library-mark-${m.book}-${m.c}-${m.b}`}
                 />

@@ -65,6 +65,12 @@ export type HadithRecord = {
    * not a copy of its words. Absent until one is made.
    */
   library?: Record<string, Stamped<0 | 1>>;
+  /**
+   * The reader's own words on a place in a Library book, by the same key as its mark: a name for a
+   * bookmark, a thought on a passage; '' once cleared. Beside the marks and not in them, so a record written
+   * before there were notes reads as it did. Absent until one is written.
+   */
+  libraryNotes?: Record<string, Stamped<string>>;
 };
 
 export const EMPTY_HADITH_RECORD: HadithRecord = { v: 1, items: {}, sets: {} };
@@ -165,6 +171,14 @@ export function coerceHadithRecord(raw: unknown): HadithRecord {
     }
     if (Object.keys(library).length) out.library = library;
   }
+  if (r.libraryNotes && typeof r.libraryNotes === 'object' && !Array.isArray(r.libraryNotes)) {
+    const notes: Record<string, Stamped<string>> = {};
+    for (const [key, m] of Object.entries(r.libraryNotes as Record<string, unknown>)) {
+      const v = key.length <= MAX_ID && LIBRARY_MARK.test(key) ? stamp(m, note) : undefined;
+      if (v) notes[key] = v;
+    }
+    if (Object.keys(notes).length) out.libraryNotes = notes;
+  }
   return out;
 }
 
@@ -222,6 +236,11 @@ export function mergeHadith(a: HadithRecord, b: HadithRecord): HadithRecord {
     out.library = {};
     for (const k of markKeys) out.library[k] = newer(a.library?.[k], b.library?.[k])!;
   }
+  const noteKeys = [...new Set([...Object.keys(a.libraryNotes ?? {}), ...Object.keys(b.libraryNotes ?? {})])].sort();
+  if (noteKeys.length) {
+    out.libraryNotes = {};
+    for (const k of noteKeys) out.libraryNotes[k] = newer(a.libraryNotes?.[k], b.libraryNotes?.[k])!;
+  }
   return out;
 }
 
@@ -276,12 +295,13 @@ const LIBRARY_MARK = /^[a-z0-9-]+:\d+:\d+$/;
 export const libraryMarkKey = (book: string, c: number, b: number) => `${book}:${c}:${b}`;
 
 /** A book's marked paragraphs, newest first. */
-export function libraryMarksOf(rec: HadithRecord, book: string): { c: number; b: number; at: number }[] {
-  const out: { c: number; b: number; at: number }[] = [];
+export function libraryMarksOf(rec: HadithRecord, book: string): { c: number; b: number; at: number; n?: string }[] {
+  const out: { c: number; b: number; at: number; n?: string }[] = [];
   for (const [key, m] of Object.entries(rec.library ?? {})) {
     if (m[0] !== 1) continue;
     const [id, c, b] = key.split(':');
-    if (id === book) out.push({ c: Number(c), b: Number(b), at: m[1] });
+    const n = rec.libraryNotes?.[key]?.[0];
+    if (id === book) out.push({ c: Number(c), b: Number(b), at: m[1], ...(n ? { n } : {}) });
   }
   return out.sort((x, y) => y.at - x.at || x.c - y.c || x.b - y.b);
 }
@@ -290,6 +310,21 @@ export const setLibraryMark = (rec: HadithRecord, book: string, c: number, b: nu
   ...rec,
   library: { ...rec.library, [libraryMarkKey(book, c, b)]: [on ? 1 : 0, at] },
 });
+
+/**
+ * The reader's words on a place in a book. Writing some marks the place, so it is found again where the
+ * bookmarks are; clearing them leaves the mark as it was.
+ */
+export function setLibraryNote(rec: HadithRecord, book: string, c: number, b: number, text: string, at: number): HadithRecord {
+  const key = libraryMarkKey(book, c, b);
+  const words = text.trim().slice(0, MAX_NOTE);
+  const marked = rec.library?.[key]?.[0] === 1;
+  return {
+    ...rec,
+    ...(words && !marked ? { library: { ...rec.library, [key]: [1, at] } } : {}),
+    libraryNotes: { ...rec.libraryNotes, [key]: [words, at] },
+  };
+}
 
 /** The plan being followed, or null. */
 export const planOf = (rec: HadithRecord): ReadingPlan | null => (rec.plan && rec.plan[0] !== 0 ? rec.plan[0] : null);

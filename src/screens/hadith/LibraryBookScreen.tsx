@@ -55,6 +55,7 @@ import {
   libraryReading,
   libraryShareText,
   setLibraryReading,
+  setLibraryNote,
   toggleLibraryBookmark,
   type LibraryBookmark,
 } from '../../hadith/libraryShelf';
@@ -281,6 +282,9 @@ function LibraryTextBookPage() {
   // The paragraph whose actions are showing, and whether it was just copied.
   const [picked, setPicked] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
+  // The reader's own words on a passage: written under it, kept with its mark, carried where the marks are.
+  const [noting, setNoting] = useState<number | null>(null);
+  const [draft, setDraft] = useState('');
   useEffect(() => {
     setPicked(null);
     setCopied(false);
@@ -326,6 +330,7 @@ function LibraryTextBookPage() {
         setPicked(on ? null : index);
       };
       const words = file ? libraryShareText(file, current?.t ?? '', item) : libraryBlockText(item);
+      const note = marks.find(m => m.c === chapter && m.b === index)?.n ?? '';
       return (
         <View
           style={[styles.block, marked && { borderStartWidth: StyleSheet.hairlineWidth * 4, borderStartColor: palette.accentSolid, borderRadius: 0 }, on && { backgroundColor: palette.card }]}
@@ -366,7 +371,20 @@ function LibraryTextBookPage() {
                 onPress={async () => setCopied((await copyToClipboard(words)) !== 'failed')}
               />
               <TextAction label={t('common.share')} color={palette.accentSolid} onPress={() => void Share.share({ message: words }).catch(() => undefined)} />
+              <TextAction
+                label={note ? t('hadith.editNote') : t('hadith.addNote')}
+                color={palette.accentSolid}
+                onPress={() => {
+                  setDraft(note);
+                  setNoting(index);
+                }}
+              />
             </View>
+          ) : null}
+          {noting === index ? null : note ? (
+            <Text style={[styles.noteShown, { color: palette.muted }]} testID={`library-note-${index}`}>
+              {note}
+            </Text>
           ) : null}
         </View>
       );
@@ -383,12 +401,42 @@ function LibraryTextBookPage() {
               {file && blocks && target != null ? (
                 <ProgressLine ref={line} start={bookF(Math.min(target, blocks.length - 1))} track={palette.border} fill={palette.accentSolid} />
               ) : null}
+              {/* A note is written at the head of the page, not under its paragraph: under it, the words and Save
+                  were behind the keyboard (seen on an emulator). */}
+              {noting != null ? (
+                <View style={[styles.noteEdit, { backgroundColor: palette.card }]} testID="library-note-edit">
+                  <TextInput
+                    value={draft}
+                    onChangeText={setDraft}
+                    multiline
+                    autoFocus
+                    placeholder={t('hadith.notePlaceholder')}
+                    placeholderTextColor={palette.muted}
+                    style={[styles.noteInput, { color: palette.text, borderColor: palette.border }]}
+                    testID="library-note-input"
+                  />
+                  <View style={styles.actions}>
+                    <TextAction
+                      label={t('common.save')}
+                      color={palette.accentSolid}
+                      onPress={() => {
+                        const at = noting;
+                        setNoting(null);
+                        void setLibraryNote(id, chapter, at, draft).then(setMarks);
+                      }}
+                    />
+                    <TextAction label={t('common.cancel')} color={palette.mutedSolid} onPress={() => setNoting(null)} />
+                  </View>
+                </View>
+              ) : null}
               <FlatList
                 ref={list}
                 data={current?.b ?? []}
                 keyExtractor={(_, i) => String(i)}
                 renderItem={block}
-                extraData={`${picked}|${copied}|${marks.length}`}
+                // Save, beside a note being written, is pressed with the keyboard up: the press is the list's to pass on.
+                keyboardShouldPersistTaps="handled"
+                extraData={`${picked}|${copied}|${marks.length}|${noting}|${draft}|${marks.map(m => m.n ?? '').join('¦')}`}
                 onScroll={onScroll}
                 scrollEventThrottle={16}
                 initialNumToRender={12}
@@ -660,6 +708,9 @@ const styles = StyleSheet.create({
   search: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, paddingHorizontal: SPACING.md, borderRadius: RADIUS.lg },
   searchInput: { flex: 1, fontSize: TYPE.body.fontSize, paddingVertical: SPACING.sm },
   searchClear: { padding: SPACING.xs },
+  noteEdit: { gap: SPACING.sm, padding: SPACING.md, borderRadius: RADIUS.sm, marginBottom: SPACING.sm },
+  noteInput: { borderWidth: StyleSheet.hairlineWidth, borderRadius: RADIUS.sm, padding: SPACING.sm, minHeight: 72, fontSize: TYPE.body.fontSize, textAlignVertical: 'top' },
+  noteShown: { fontSize: TYPE.footnote.fontSize, lineHeight: 19, fontStyle: 'italic', marginTop: SPACING.xs },
   progress: { height: StyleSheet.hairlineWidth * 3 },
   progressFill: { height: '100%' },
   para: { ...arabicTextStyle('body') },

@@ -14,7 +14,7 @@
  */
 import AsyncStorage from '../storage/appStorage';
 import BOOKS from './libraryBooks.json';
-import { libraryMarkKey, libraryMarksOf, setLibraryMark } from './hadithRecord';
+import { libraryMarkKey, libraryMarksOf, setLibraryMark, setLibraryNote as noteInRecord } from './hadithRecord';
 import { getHadithRecord, hydrateHadithRecord, updateHadithRecord } from './hadithStore';
 import { manifestEntry } from './packs';
 import type { Manifest, PackKey } from './packTypes';
@@ -293,7 +293,8 @@ export async function libraryAllBookmarks(): Promise<(LibraryBookmark & { book: 
   for (const [key, m] of Object.entries(getHadithRecord().library ?? {})) {
     if (m[0] !== 1) continue;
     const [book, c, b] = key.split(':');
-    out.push({ book, c: Number(c), b: Number(b), at: m[1] });
+    const n = getHadithRecord().libraryNotes?.[key]?.[0];
+    out.push({ book, c: Number(c), b: Number(b), at: m[1], ...(n ? { n } : {}) });
   }
   return out.sort((x, y) => y.at - x.at);
 }
@@ -330,7 +331,8 @@ export function lastReadBook(readings: Record<string, LibraryReading>, ids: read
  * there is moved into the record once, with the time each was made, and
  * the key is removed.
  */
-export type LibraryBookmark = { c: number; b: number; at: number };
+/** `n`: the reader's own words on the place, where they wrote some. */
+export type LibraryBookmark = { c: number; b: number; at: number; n?: string };
 const OLD_BOOKMARKS_KEY = 'mihrab.library.bookmarks.v1';
 let moved: Promise<void> | null = null;
 
@@ -377,6 +379,14 @@ export async function toggleLibraryBookmark(id: string, c: number, b: number, no
   await hydrateHadithRecord();
   const on = getHadithRecord().library?.[libraryMarkKey(id, c, b)]?.[0] === 1;
   await updateHadithRecord(rec => setLibraryMark(rec, id, c, b, !on, now));
+  return libraryMarksOf(getHadithRecord(), id);
+}
+
+/** Writes the reader's words on a place (and marks it), or clears them. Returns the book's marks after. */
+export async function setLibraryNote(id: string, c: number, b: number, text: string, now = Date.now()): Promise<LibraryBookmark[]> {
+  await moveOldBookmarks();
+  await hydrateHadithRecord();
+  await updateHadithRecord(rec => noteInRecord(rec, id, c, b, text, now));
   return libraryMarksOf(getHadithRecord(), id);
 }
 
