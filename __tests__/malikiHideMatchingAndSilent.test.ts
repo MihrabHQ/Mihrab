@@ -110,3 +110,50 @@ describe('the second times\' notifications, silently', () => {
     }
   });
 });
+
+/**
+ * A silent alert is read when the phone is next picked up. It used to take
+ * itself away when its lead was up — Fajr's came at 07:05, left at 07:20 and
+ * was looked for at 07:31 — so with "Silent notifications" on, none was ever
+ * seen.
+ */
+describe('a silent second-time alert stays until it stops being true', () => {
+  const { daruriAlertRelevantUntil } = require('../src/prayer/daruriTimes');
+  const notif = src('src/notifications/prayerNotifications.ts');
+  const day = { Fajr: '05:40', Sunrise: '08:08', Dhuhr: '11:41', Asr: '12:51', Maghrib: '14:53', Isha: '16:58' };
+  const base = new Date(2026, 10, 28);
+  const at = (d: number, h: number, m: number) => new Date(2026, 10, d, h, m).getTime();
+
+  it("Fajr's until sunrise, ʿAṣr's until Maghrib, Ishāʾ's until the next Fajr", () => {
+    const week = [day, day];
+    expect(daruriAlertRelevantUntil(week, base, 'FajrDaruri', at(28, 7, 20))?.getTime()).toBe(at(28, 8, 8));
+    expect(daruriAlertRelevantUntil(week, base, 'AsrDaruri', at(28, 13, 46))?.getTime()).toBe(at(28, 14, 53));
+    expect(daruriAlertRelevantUntil(week, base, 'IshaDaruri', at(28, 21, 10))?.getTime()).toBe(at(29, 5, 40));
+  });
+
+  it('is the end AFTER the boundary: a boundary past midnight belongs to the day before', () => {
+    // Yesterday's Ishāʾ third at 00:30 today: the Fajr it runs to is today's, not tomorrow's.
+    expect(daruriAlertRelevantUntil([day, day, day], new Date(2026, 10, 27), 'IshaDaruri', at(28, 0, 30))?.getTime()).toBe(at(28, 5, 40));
+  });
+
+  it('says nothing where the week cannot (the last day held, for the night prayers)', () => {
+    expect(daruriAlertRelevantUntil([day], base, 'IshaDaruri', at(28, 21, 10))).toBeNull();
+  });
+
+  it('is what the delivered notification is given, for the silent ones and the zero-lead ones only', () => {
+    expect(notif).toContain('const stays = daruriHow.androidChannelId === DARURI_SILENT_CHANNEL_ID || daruriMinutes === 0;');
+    expect(notif).toContain('const until = stays ? daruriAlertRelevantUntil(leadDays, leadBase, e.name, boundaryMs) : null;');
+    expect(notif).toContain('timeoutAfter: lingerMs,');
+    // With a sound and a lead it leaves when the lead is up, as before.
+    expect(notif).toMatch(/const lingerMs = !stays\s*\? Math\.max\(60_000, daruriMinutes \* 60_000\)/);
+    // And it says the clock time alone: "in 15 min" is not true an hour on.
+    expect(notif).toMatch(/stays && daruriMinutes > 0\s*\? i18n\.t\('prayer\.firstTimeUntil'/);
+  });
+
+  it('has the words in every language', () => {
+    for (const l of LOCALES) {
+      const s = JSON.parse(src(`src/i18n/locales/${l}.json`));
+      expect(s.prayer.firstTimeUntil).toContain('{{time}}');
+    }
+  });
+});

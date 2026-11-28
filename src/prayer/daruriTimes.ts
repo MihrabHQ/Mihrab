@@ -847,6 +847,31 @@ export function daruriWindowEnd(
 }
 
 /**
+ * When the window a first-time alert is about closes for good: the first
+ * end of `key`'s second time after the boundary itself, on whichever day of
+ * `week` that falls. Null when the week cannot say (see `daruriWindowEnd`).
+ *
+ * For how long a delivered alert may stay in the shade: an alert that
+ * arrives without a sound is read when the phone is next picked up, and
+ * until the second time has run out too it is still telling the truth.
+ */
+export function daruriAlertRelevantUntil(
+  week: TimingsMap[],
+  baseDay: Date,
+  key: DaruriKey,
+  boundaryMs: number,
+  dayClock?: string | null,
+): Date | null {
+  let first: Date | null = null;
+  for (let offset = 0; offset < week.length; offset += 1) {
+    const end = daruriWindowEnd(week, baseDay, offset, key, dayClock);
+    if (!end || end.getTime() <= boundaryMs) continue;
+    if (!first || end.getTime() < first.getTime()) first = end;
+  }
+  return first;
+}
+
+/**
  * What the row under a prayer's name should say right now — issue #38 (2).
  *
  * Before the preferred window closes the row says when it will:

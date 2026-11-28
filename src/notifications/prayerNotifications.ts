@@ -12,6 +12,7 @@ import { alertModeFor, type AlertModeMap } from '../settings/alertModes';
 import {
   buildDaruriAlertEvents,
   buildDaruriEndEvents,
+  daruriAlertRelevantUntil,
   DARURI_KEYS,
   DARURI_OF,
   localYmd,
@@ -141,6 +142,9 @@ export function parseDaruriStartId(
 /** Safety cap for how long a delivered prayer notification lingers before it
  *  auto-dismisses, when the next prayer is unusually far off (e.g. Isha→Fajr). */
 const MAX_LINGER_MS = 12 * 60 * 60 * 1000;
+/** Where the week cannot say when a second time ends: how long past the
+ *  boundary a silent first-time alert stays. */
+const DARURI_STAYS_FALLBACK_MS = 2 * 60 * 60 * 1000;
 /** A delivered prayer/reminder notification older than this (its scheduled time
  *  is this far in the past) is considered stale and cleared on the next sync. */
 const STALE_DISPLAYED_GRACE_MS = 60 * 60 * 1000;
@@ -1221,8 +1225,34 @@ async function syncPrayerNotificationsNow(params: {
     const closesAt = clock.fromDate(
       new Date(e.at.getTime() + daruriMinutes * 60_000),
     );
+    // ── HOW LONG IT STAYS ───────────────────────────────────────────────
+    //
+    // With a sound, "ends in 15 min" is taken away when the 15 minutes are
+    // up: a banner still saying it an hour later is worse than none.
+    //
+    // Without one that rule made the alert impossible to see. It arrives
+    // with no sound, no vibration and no heads-up, so it is read when the
+    // phone is next picked up — and it had already removed itself (Fajr's
+    // came at 07:05, was gone at 07:20, and the phone was looked at at
+    // 07:31; at zero lead it lasted one minute). So a silent one, and one
+    // that states a boundary already reached, stays until the second time
+    // has run out as well, and says only what stays true: the clock time.
+    const stays = daruriHow.androidChannelId === DARURI_SILENT_CHANNEL_ID || daruriMinutes === 0;
+    const boundaryMs = e.at.getTime() + daruriMinutes * 60_000;
+    const until = stays ? daruriAlertRelevantUntil(leadDays, leadBase, e.name, boundaryMs) : null;
+    const lingerMs = !stays
+      ? Math.max(60_000, daruriMinutes * 60_000)
+      : Math.min(
+          MAX_LINGER_MS,
+          Math.max(60_000, (until ? until.getTime() : boundaryMs + DARURI_STAYS_FALLBACK_MS) - e.at.getTime()),
+        );
     const body =
-      daruriMinutes > 0
+      stays && daruriMinutes > 0
+        ? i18n.t('prayer.firstTimeUntil', {
+            defaultValue: 'First time until {{time}}',
+            time: closesAt,
+          })
+        : daruriMinutes > 0
         ? i18n.t('alertCopy.daruriEndsIn', {
             defaultValue: 'First time ends at {{time}} — in {{count}} min',
             time: closesAt,
@@ -1245,11 +1275,8 @@ async function syncPrayerNotificationsNow(params: {
           color: accent,
           colorized,
           pressAction: { id: 'default' },
-          // Gone by the time the window it is warning about has closed —
-          // a banner still saying "ends in 15 min" an hour later is worse
-          // than no banner. At zero lead it is a statement about a state
-          // that lasts, so it gets the same floor as everything else.
-          timeoutAfter: Math.max(60_000, daruriMinutes * 60_000),
+          // See "how long it stays", above.
+          timeoutAfter: lingerMs,
         },
       },
       buildTimestampTrigger(e.at.getTime(), exactAlarms),
