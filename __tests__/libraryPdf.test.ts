@@ -182,6 +182,10 @@ describe('the reader', () => {
     expect(read('android/app/src/main/AndroidManifest.xml')).toContain('tools:overrideLibrary="androidx.pdf, androidx.pdf.core, androidx.pdf.document.service"');
     expect(pkg).toContain('if (android.os.Build.VERSION.SDK_INT >= MihrabPdfViewManager.MIN_SDK)');
     expect(read('android/app/src/main/java/com/prayer_times/MihrabPdfViewManager.kt')).toContain('const val MIN_SDK = 28');
+    // F-Droid builds against a lowered SDK (its recipe's sed lines), which the library's metadata refuses;
+    // the refusal stopped the F-Droid build (CI's Android job). There, and only there, the check is not run.
+    expect(gradle).toMatch(/if \(\(rootProject\.ext\.compileSdkVersion as int\) < 37\) \{\s*tasks\.configureEach \{ task ->\s*if \(task\.name ==~ \/check\.\*AarMetadata\/\) task\.enabled = false/);
+    expect(read('contrib/fdroid/com.prayer_times.yml')).toContain("sed -i 's/SdkVersion = 37/SdkVersion = 36/' ../build.gradle");
     // The file is opened in the library's isolated process, where the app's own start-up must not run: it
     // threw there and no page was drawn (seen on an emulator).
     expect(read('android/app/src/main/java/com/prayer_times/MainApplication.kt')).toMatch(/super\.onCreate\(\)[\s\S]{0,700}if \(android\.os\.Process\.isIsolated\(\)\) return/);

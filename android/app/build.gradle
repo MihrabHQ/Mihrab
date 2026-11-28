@@ -400,6 +400,24 @@ android {
     }
 }
 
+/*
+ * F-Droid's recipe lowers compileSdk to 36 (contrib/fdroid, prebuild), and
+ * androidx.pdf's metadata asks for an SDK with extension level 19 to compile
+ * against, which that one is not: `checkFdroid…AarMetadata` stopped the
+ * F-Droid build for it (CI's Android job, 2026-11-28). The check is about
+ * what the library might need at compile time; nothing of ours calls an API
+ * that SDK lacks (the build below is the proof: it compiles and links
+ * against 36), and at run time the library asks the device what it can do —
+ * the PDF view is offered from Android 9 and its search only where the
+ * system has it. So where compileSdk has been lowered the check is not run;
+ * at the SDK this file names it runs as ever.
+ */
+if ((rootProject.ext.compileSdkVersion as int) < 37) {
+    tasks.configureEach { task ->
+        if (task.name ==~ /check.*AarMetadata/) task.enabled = false
+    }
+}
+
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
