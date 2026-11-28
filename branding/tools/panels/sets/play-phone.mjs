@@ -11,4 +11,4 @@ export const face = 'roboto';
 export const out = path.join(ROOT, 'branding/store-panels/play-phone');
 
 const P = phonePanels({ kind: 'android', raw: 'android' });
-export const panels = [P.hero, P.accuracy, P.mushaf, P.tilawah, P.understand, P.hifz, P.remember, P.day];
+export const panels = [P.hero, P.accuracy, P.mushaf, P.tilawah, P.understand, P.hadith, P.remember, P.day];

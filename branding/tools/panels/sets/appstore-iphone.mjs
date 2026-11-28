@@ -12,4 +12,4 @@ export const face = 'sf';
 export const out = path.join(ROOT, 'branding/store-panels/appstore-iphone');
 
 const P = phonePanels({ kind: 'iphone', raw: 'ios', tabletKind: 'ipad', tabletRaw: 'ipad' });
-export const panels = [P.hero, P.accuracy, P.mushaf, P.tilawah, P.understand, P.hifz, P.remember, P.dayIos, P.devices];
+export const panels = [P.hero, P.accuracy, P.mushaf, P.tilawah, P.understand, P.hadith, P.hifz, P.remember, P.dayIos, P.devices];

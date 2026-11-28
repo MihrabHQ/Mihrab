@@ -4,6 +4,66 @@ The app store wants 6.9″ (iPhone 16/17 Pro Max) and optionally 6.5″ shots. T
 
 You only need 3 screenshots minimum and can submit up to 10 per device class. I'd ship six — they tell a complete story without being filler.
 
+## The 2.40 retake (2026-11-28) — READ THIS ONE FIRST
+
+**The store images are built by `branding/tools/panels/`, not by
+`build_store.py`.** Everything below this section describes older passes and
+is kept for the device recipes in it; do not run `build_store.py` — it
+overwrites the published images with the old plain panels.
+
+```sh
+python3 branding/tools/panels/prep_raw.py <device> <name> <capture.png>   # a capture into branding/store-raw/<device>/
+node branding/tools/panels/build.mjs <set> --lang=all                     # sets/<set>.mjs -> branding/store-panels/<set>/<lang>/
+SHOWCASE=1 node branding/tools/panels/build.mjs showcase                  # and 2, 3: the every-device pictures
+python3 branding/tools/panels/publish.py                                  # fastlane, store-upload, README, the site
+node scripts/build-site.js
+python3 branding/tools/verify_store.py                                    # must print ALL STORE ASSETS PASS
+```
+
+Only `store-panels/<set>/en` is in git; the other languages are built when
+needed and `publish.py` copies whatever is built. The README and the site
+show the Play phone panels by position (`PHONE_PANELS` in
+`scripts/build-site.js`, the alt text in `README.md`): change both when the
+order changes, and bump `SHOT_V`.
+
+**What 2.40.0 made stale** was every capture showing Today or the tab bar
+(five tabs with Hadith; Settings behind a cog): `home-sunset`, `home-night`,
+`minimal-dawn`, `log`, `tasbih`, `quran-recommended` on the phones, `home`
+and `log` on the tablets, `home` on the fold and the desktop. The muṣḥaf,
+Tilāwah, the ayah sheets, a dua's page, qibla, hifz, month and fasting show
+neither and were left. New captures: `hadith` (a hadith's page, "Islam is
+built on five") and `library` (the shelf with a book begun), and a `hadith`
+panel in `_phone.mjs` — sixth on Play, where `hifz` made room (Play takes
+eight), sixth of ten on the App Store.
+
+How each was taken:
+
+- **Android** on `Mihrab_Shots_37`, the release APK installed over the old
+  one. Plain storage is MMKV since 2.40.0, so state is set through the app,
+  not by patching a database. Boot with the Mac's current resolver
+  (`-dns-server $(scutil --dns | grep -m1 nameserver | awk '{print $3}')`:
+  the address changes). Zone `Africa/Abidjan` by `cmd alarm set-timezone`,
+  the clock by `date MMDDhhmm2026.00`, a test location provider set again
+  after every clock change (a fix older than the clock reads "Not
+  updated"), then a pull to refresh. The Sky theme takes the new hour only
+  after Today has been shown, so visit Today before any other tab.
+  `heads_up_notifications_enabled 0` keeps a prayer alert off the capture;
+  clear the shade before entering demo mode. The Layout and Sky band cards
+  in Settings answer a 120 ms press (`input swipe x y x y 120`), not
+  `input tap`. Tablet: `wm size 2560x1600`, `wm density 320`; fold:
+  `2208x1840`, `420`. Monday 30 November for the tablet and the fold: the
+  dashboard shows the hadith of the day, and the 28th's is about the
+  lavatory.
+- **iPhone** on the iPhone 17 Pro simulator with a signed Release build,
+  the clock by `simtime.dylib` (kept in `~/simtime`), taps by `idb` with
+  the accessibility labels (`idb ui describe-all`). The Quran tab was
+  taken on 6 November, when the memorised portions were due and not three
+  weeks overdue.
+- **Desktop** by `desktop/scripts/steps-store-home.js` through `drive.js`:
+  Playwright's clock holds the hour, `TZ=Africa/Abidjan`, 1440×900 at 2×.
+- **iPad:** not retaken — rotating the simulator needs the Mac unlocked
+  (Device → Rotate Left); `ipad/home` and `ipad/log` still show six tabs.
+
 ## Before you shoot
 
 In the simulator, go to the OS-level **Settings** app first and set:

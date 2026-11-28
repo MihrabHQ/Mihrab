@@ -484,7 +484,7 @@ fastlane/metadata/android/en-US/
 The Play Console reads from these, and F-Droid copies the screenshot folders
 into its own repo at build time — so what is on the F-Droid listing is
 whatever these folders held at the tagged commit. They hold the same
-captioned panels as Play (`branding/tools/build_store.py` writes both).
+captioned panels as Play (`branding/tools/panels/publish.py` writes both).
 
 **F-Droid never deletes a screenshot it has copied.** fdroidserver copies
 every file in `phoneScreenshots/` into `repo/com.prayer_times/en-US/` and

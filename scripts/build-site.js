@@ -112,7 +112,7 @@ function badgeList(names, imgBase, indent = '      ', flags = {}) {
  * bytes moved under an unchanged URL, and the widget shots have now been
  * retaken twice on 2026-09-06.
  */
-const SHOT_V = '?v=2026-11-05p';
+const SHOT_V = '?v=2026-11-28p';
 /**
  * The stylesheet's address carries a stamp of its contents. Pages are cached
  * for ten minutes and so is the stylesheet, separately: a phone that had
@@ -177,7 +177,7 @@ ${items}
  * assets/img/panels/<lang>/; xplat.jpg carries no words and is shared.
  */
 const PANEL_STRINGS = path.join(__dirname, '..', 'branding', 'tools', 'panels', 'strings');
-const PHONE_PANELS = ['hero', 'accuracy', 'mushaf', 'tilawah', 'understand', 'hifz', 'remember', 'day'];
+const PHONE_PANELS = ['hero', 'accuracy', 'mushaf', 'tilawah', 'understand', 'hadith', 'remember', 'day'];
 const WIDE_PANELS = [
   { key: 'mushaf', device: 'iPad' },
   { key: 'hero', device: 'Mac' },

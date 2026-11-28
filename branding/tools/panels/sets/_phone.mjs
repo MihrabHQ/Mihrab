@@ -131,6 +131,16 @@ export function phonePanels({ kind, raw, extra = {}, tabletKind = 'ipad', tablet
         </div>
       `,
     },
+    hadith: {
+      id: 'hadith',
+      html: ({ u, t }) => `
+        ${words(u, { limit: 56, eyebrow: t('hadith.eyebrow'), title: t('hadith.title'), sub: t('hadith.sub') })}
+        <div class="lower">
+        ${device({ kind, img: s('library'), x: u * 48, y: u * 64, w: u * 48, rot: 6, z: 1 })}
+        ${device({ kind, img: s('hadith'), x: u * 5, y: u * 58, w: u * 52, rot: -4, z: 2 })}
+        </div>
+      `,
+    },
     remember: {
       id: 'remember',
       html: ({ u, t }) => `
