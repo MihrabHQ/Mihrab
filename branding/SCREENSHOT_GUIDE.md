@@ -20,6 +20,15 @@ node scripts/build-site.js
 python3 branding/tools/verify_store.py                                    # must print ALL STORE ASSETS PASS
 ```
 
+Play's listing images go up through the API, when Hassan says so:
+`node branding/tools/panels/play_upload.mjs list` shows what each of the
+thirteen listings holds (read-only), `… upload` replaces the phone, 7-inch
+and 10-inch screenshots and the feature graphic from `store-panels` and
+commits the edit — about half an hour for all languages. The key is where
+`docs/DISTRIBUTION.md` §3 says. App Store screenshots cannot be changed
+while a version is waiting for review; the Microsoft Store and the
+Chromebook set are uploaded by hand from `branding/store-upload/`.
+
 Only `store-panels/<set>/en` is in git; the other languages are built when
 needed and `publish.py` copies whatever is built. The README and the site
 show the Play phone panels by position (`PHONE_PANELS` in
