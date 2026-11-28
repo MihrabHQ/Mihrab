@@ -22,7 +22,7 @@
     "en-US": {
       "name": "Mihrab: The Muslim Companion",
       "subtitle": "Prayer Times to the Minute",
-      "keywords": "quran,qibla,salah,namaz,adhan,azan,dua,dhikr,tasbih,mushaf,indopak,tajweed,islam,ramadan,hijri",
+      "keywords": "quran,qibla,salah,namaz,adhan,azan,dua,dhikr,tasbih,mushaf,hadith,tajweed,islam,ramadan,hijri",
       "promotional_text": "Prayer times that match the published timetables of Diyanet, Kemenag, Islamiska Förbundet, Habous and Algeria’s ministry to the minute: {{total.off}} of {{total.timesCompact}} off.",
       "description": "@full.en.txt"
     }
